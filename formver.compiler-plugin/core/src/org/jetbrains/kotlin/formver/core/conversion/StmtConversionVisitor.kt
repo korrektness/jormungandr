@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
 import org.jetbrains.kotlin.fir.expressions.impl.FirUnitExpression
-import org.jetbrains.kotlin.fir.references.toResolvedSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.coneType
@@ -42,6 +41,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
 import org.jetbrains.kotlin.formver.core.functionCallArguments
 import org.jetbrains.kotlin.text
 import org.jetbrains.kotlin.types.ConstantValueKind
+import org.jetbrains.kotlin.util.OperatorNameConventions
 
 /**
  * Convert a statement, emitting the resulting Viper statements and
@@ -287,6 +287,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val symbol = functionCall.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
             ?: throw NotImplementedError("Only functions are expected as callables of function calls, got ${functionCall.toResolvedCallableSymbol()}")
 
+        if (symbol.isFunctionTypeInvoke(data)) return convertFunctionObjectCall(functionCall, data)
+
         val callee = data.embedAnyFunction(symbol)
         return callee.insertCall(
             functionCall.functionCallArguments.withVarargsHandled(data, callee),
@@ -298,39 +300,26 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitImplicitInvokeCall(
         implicitInvokeCall: FirImplicitInvokeCall,
         data: StmtConversionContext,
-    ): ExpEmbedding {
-        val receiver =
-            implicitInvokeCall.dispatchReceiver as? FirPropertyAccessExpression ?: throw SnaktInternalException(
-                implicitInvokeCall.source,
-                "Implicit invoke calls only support a limited range of receivers at the moment."
-            )
-        if (!receiver.resolvedType.isSomeFunctionType(data.session)) {
-            val symbol = implicitInvokeCall.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
-                ?: throw SnaktInternalException(
-                    implicitInvokeCall.source,
-                    "Expected an implicit invoke call on a non-function receiver to resolve to a function."
-                )
-            val callee = data.embedAnyFunction(symbol)
-            return callee.insertCall(
-                implicitInvokeCall.functionCallArguments.withVarargsHandled(data, callee),
-                data,
-                data.embedType(implicitInvokeCall.resolvedType),
-            )
-        }
+    ): ExpEmbedding = visitFunctionCall(implicitInvokeCall, data)
 
-        val returnType = data.embedType(implicitInvokeCall.resolvedType)
-        val receiverSymbol = receiver.calleeReference.toResolvedSymbol<FirBasedSymbol<*>>()!!
-        val args = implicitInvokeCall.argumentList.arguments.withVarargsHandled(data, function = null)
-        return when (val exp = data.embedLocalSymbol(receiverSymbol).ignoringMetaNodes()) {
-            is LambdaExp -> {
-                // The lambda is already the receiver, so we do not need to convert it.
-                // TODO: do this more uniformly: convert the receiver, see it is a lambda, use insertCall on it.
-                exp.insertCall(args, data, returnType)
-            }
+    /**
+     * `invoke` declared by a function type has no declaration to embed; the call goes to the receiver object.
+     * User-declared `invoke` operators, including overrides in classes implementing a function type, are ordinary calls.
+     */
+    private fun FirFunctionSymbol<*>.isFunctionTypeInvoke(data: StmtConversionContext): Boolean =
+        name == OperatorNameConventions.INVOKE && dispatchReceiverType?.isSomeFunctionType(data.session) == true
 
-            else -> {
-                InvokeFunctionObject(data.convert(receiver), args, returnType)
-            }
+    private fun convertFunctionObjectCall(functionCall: FirFunctionCall, data: StmtConversionContext): ExpEmbedding {
+        val receiver = functionCall.dispatchReceiver ?: throw SnaktInternalException(
+            functionCall.source,
+            "Function type invoke call has no dispatch receiver."
+        )
+        val returnType = data.embedType(functionCall.resolvedType)
+        val functionObject = data.convert(receiver)
+        val args = functionCall.argumentList.arguments.withVarargsHandled(data, function = null)
+        return when (val exp = functionObject.ignoringMetaNodes()) {
+            is LambdaExp -> exp.insertCall(args, data, returnType)
+            else -> InvokeFunctionObject(functionObject, args, returnType)
         }
     }
 
@@ -505,7 +494,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     ): ExpEmbedding {
         val function = anonymousFunctionExpression.anonymousFunction
         val (signature, _) = with(data) { function.symbol.toFunctionSignature() }
-        return LambdaExp(signature, function, data, function.symbol.label!!.name)
+        return LambdaExp(signature, function, data, function.symbol.label?.name)
     }
 
 
