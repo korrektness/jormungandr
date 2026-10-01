@@ -1,0 +1,10 @@
+# land-gate.yaml — gates this repo through the bots-host land gate.
+# The gate runs test_cmd on each rebased candidate and lands it only if
+# that passes. See `request-land init` and
+# /opt/bots/docs/bots-host/landing.md.
+# Mirrors the Gradle CI workflow. Needs z3 4.8.7 on PATH or in Z3_EXE.
+test_cmd: ["./gradlew", "detekt", "apiCheck", ":formver.compiler-plugin:locality:test", ":formver.compiler-plugin:test"]
+# target_branch: main          # default: origin/HEAD
+# review:
+#   extra_standards: |
+#     - <repo-specific review rules, appended to the packaged brief>
