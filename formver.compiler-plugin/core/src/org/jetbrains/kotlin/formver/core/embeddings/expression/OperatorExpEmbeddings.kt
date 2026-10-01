@@ -52,6 +52,10 @@ object OperatorExpEmbeddings {
     val RemIntInt = buildBinaryOperator {
         setName("remInts")
         setSignature(intIntToIntType)
+        // Viper `%` is Euclidean: its result is always nonnegative. Kotlin `%` truncates, so its result
+        // takes the sign of the dividend. The two agree on nonnegative operands, so this relies on
+        // `a % b == sign(a) * (|a| mod |b|)` for `b != 0`. Viper integers are unbounded, so negating
+        // `Int.MIN_VALUE` here does not overflow.
         viperImplementation {
             val zero = Exp.IntLit(0, pos, info)
             val dividendIsNegative = Exp.LtCmp(args[0], zero, pos, info)
