@@ -734,6 +734,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("division_semantics.kt")
+      public void testDivision_semantics() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/operators/division_semantics.kt");
+      }
+
+      @Test
       @TestMetadata("elvis.kt")
       public void testElvis() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/operators/elvis.kt");
