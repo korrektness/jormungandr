@@ -335,6 +335,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("list_reverse.kt")
+    public void testList_reverse() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/list_reverse.kt");
+    }
+
+    @Test
     @TestMetadata("loop.kt")
     public void testLoop() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/loop.kt");
@@ -597,6 +603,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("interfaces.kt")
       public void testInterfaces() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interfaces.kt");
+      }
+
+      @Test
+      @TestMetadata("list_reverse.kt")
+      public void testList_reverse() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/list_reverse.kt");
       }
 
       @Test

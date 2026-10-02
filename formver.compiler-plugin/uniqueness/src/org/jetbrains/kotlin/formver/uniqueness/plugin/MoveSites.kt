@@ -32,9 +32,12 @@ typealias PathAwareMoveSites = PathAwareControlFlowInfo<Path, PersistentSet<CFGN
  * the node moves it, that is, if [transfer] moves it from the state before the node with the path not moved. The input
  * state of a node in a loop already has the paths the loop moves moved, so this test, rather than a comparison of the
  * node's input and output, is what finds a move in a loop. A path that is not moved after a node has no sites.
+ *
+ * A join that truncates the uniqueness state (see [truncate]) moves a path whose descendants moved without moving it
+ * itself. Such a path takes the sites of those descendants.
  */
 private class MoveSitesAnalyzer(
-    private val uniquenessStateFlows: Map<CFGNode<*>, PathAwareUniquenessStateFlow>,
+    private val uniquenessStateFlows: UniquenessStateFlows,
     private val transfer: (CFGNode<*>, UniquenessState) -> UniquenessState,
 ) : PathAwareControlFlowGraphVisitor<Path, PersistentSet<CFGNode<*>>>() {
     override fun mergeInfo(a: MoveSites, b: MoveSites, node: CFGNode<*>): MoveSites =
@@ -59,19 +62,27 @@ private class MoveSitesAnalyzer(
 
         return data.transformValues { sites ->
             movedPaths.fold(persistentMapOf()) { result, path ->
-                val pathSites = sites[path] ?: persistentSetOf<CFGNode<*>>(node).takeIf { node.moves(path) }
+                val pathSites = sites[path]
+                    ?: persistentSetOf<CFGNode<*>>(node).takeIf { node.moves(path) }
+                    ?: sites.descendantSitesOf(path)
                 if (pathSites != null) result.put(path, pathSites) else result
             }
         }
     }
 }
 
+private fun MoveSites.descendantSitesOf(path: Path): PersistentSet<CFGNode<*>>? =
+    entries
+        .filter { (descendant, _) -> descendant.size > path.size && descendant.subList(0, path.size) == path }
+        .fold(persistentSetOf<CFGNode<*>>()) { result, (_, sites) -> result.addAll(sites) }
+        .takeIf { it.isNotEmpty() }
+
 /**
  * Resolves, for each node of [this] graph, the move sites of the paths moved after it.
  */
 context(context: CheckerContext)
 fun ControlFlowGraph.resolveMoveSites(
-    uniquenessStateFlows: Map<CFGNode<*>, PathAwareUniquenessStateFlow>,
+    uniquenessStateFlows: UniquenessStateFlows,
 ): Map<CFGNode<*>, PathAwareMoveSites> =
     traverseToFixedPoint(MoveSitesAnalyzer(uniquenessStateFlows, uniquenessTransfer()))
 

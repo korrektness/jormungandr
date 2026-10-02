@@ -1,0 +1,172 @@
+/list_reverse.kt: info: Generated Viper text for length:
+field next: Ref
+
+field value: Ref
+
+function length(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    ((n == nullValue() ? intToRef(0) : null)) in
+    (let anon_3_0 ==
+      ((!(n == nullValue()) ?
+        (unfolding acc(Node_unique(n), write) in n.next) :
+        null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            plusInts(intToRef(1), length(anon_3_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((n == nullValue() ? anon_1_0 : anon_2_0)) in
+          anon_0_0))))
+}
+
+/list_reverse.kt: info: Generated Viper text for reverseWithOld:
+field next: Ref
+
+field value: Ref
+
+function length(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    ((n == nullValue() ? intToRef(0) : null)) in
+    (let anon_3_0 ==
+      ((!(n == nullValue()) ?
+        (unfolding acc(Node_unique(n), write) in n.next) :
+        null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            plusInts(intToRef(1), length(anon_3_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((n == nullValue() ? anon_1_0 : anon_2_0)) in
+          anon_0_0))))
+}
+
+method reverseWithOld(head: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(head), nullable(Node()))
+  requires head != nullValue() ==> acc(Node_unique(head), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(Node()))
+  ensures v_ret_0 != nullValue() ==> acc(Node_unique(v_ret_0), write)
+  ensures intFromRef(length(v_ret_0)) == old(intFromRef(length(head)))
+{
+  var acc: Ref
+  var cur: Ref
+  var anon_4: Ref
+  acc := nullValue()
+  cur := head
+  label cont
+    invariant acc != nullValue() ==> acc(Node_unique(acc), write)
+    invariant cur != nullValue() ==> acc(Node_unique(cur), write)
+    invariant isSubtype(typeOf(acc), nullable(Node()))
+    invariant isSubtype(typeOf(cur), nullable(Node()))
+    invariant isSubtype(typeOf(head), nullable(Node()))
+    invariant intFromRef(length(acc)) + intFromRef(length(cur)) ==
+      old(intFromRef(length(head)))
+  anon_4 := notBool(boolToRef(cur == nullValue()))
+  if (boolFromRef(anon_4)) {
+    var nxt: Ref
+    if (cur != nullValue()) {
+      unfold acc(Node_unique(cur), write)
+    }
+    nxt := cur.next
+    cur.next := acc
+    if (cur != nullValue()) {
+      fold acc(Node_unique(cur), write)
+    }
+    acc := cur
+    cur := nxt
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(acc), nullable(Node()))
+  assert isSubtype(typeOf(cur), nullable(Node()))
+  assert isSubtype(typeOf(head), nullable(Node()))
+  assert intFromRef(length(acc)) + intFromRef(length(cur)) ==
+    old(intFromRef(length(head)))
+  v_ret_0 := acc
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/list_reverse.kt: info: Generated Viper text for reverseWithGhost:
+field next: Ref
+
+field value: Ref
+
+function length(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    ((n == nullValue() ? intToRef(0) : null)) in
+    (let anon_3_0 ==
+      ((!(n == nullValue()) ?
+        (unfolding acc(Node_unique(n), write) in n.next) :
+        null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            plusInts(intToRef(1), length(anon_3_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((n == nullValue() ? anon_1_0 : anon_2_0)) in
+          anon_0_0))))
+}
+
+method reverseWithGhost(head: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(head), nullable(Node()))
+  requires head != nullValue() ==> acc(Node_unique(head), write)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(length(head)) == intFromRef(n)
+  ensures isSubtype(typeOf(v_ret_0), nullable(Node()))
+  ensures v_ret_0 != nullValue() ==> acc(Node_unique(v_ret_0), write)
+  ensures intFromRef(length(v_ret_0)) == intFromRef(n)
+{
+  var acc: Ref
+  var cur: Ref
+  var anon_4: Ref
+  acc := nullValue()
+  cur := head
+  label cont
+    invariant acc != nullValue() ==> acc(Node_unique(acc), write)
+    invariant cur != nullValue() ==> acc(Node_unique(cur), write)
+    invariant isSubtype(typeOf(acc), nullable(Node()))
+    invariant isSubtype(typeOf(cur), nullable(Node()))
+    invariant isSubtype(typeOf(head), nullable(Node()))
+    invariant isSubtype(typeOf(n), intType())
+    invariant intFromRef(length(acc)) + intFromRef(length(cur)) ==
+      intFromRef(n)
+  anon_4 := notBool(boolToRef(cur == nullValue()))
+  if (boolFromRef(anon_4)) {
+    var nxt: Ref
+    if (cur != nullValue()) {
+      unfold acc(Node_unique(cur), write)
+    }
+    nxt := cur.next
+    cur.next := acc
+    if (cur != nullValue()) {
+      fold acc(Node_unique(cur), write)
+    }
+    acc := cur
+    cur := nxt
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(acc), nullable(Node()))
+  assert isSubtype(typeOf(cur), nullable(Node()))
+  assert isSubtype(typeOf(head), nullable(Node()))
+  assert isSubtype(typeOf(n), intType())
+  assert intFromRef(length(acc)) + intFromRef(length(cur)) == intFromRef(n)
+  v_ret_0 := acc
+  goto lbl_ret_0
+  label lbl_ret_0
+}

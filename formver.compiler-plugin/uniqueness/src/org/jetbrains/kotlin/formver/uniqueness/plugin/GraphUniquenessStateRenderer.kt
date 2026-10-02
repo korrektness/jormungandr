@@ -33,7 +33,7 @@ private fun UniquenessState.render(): String? =
  * - On the border of the function the flow is displayed
  * - On nodes that join multiple flows the flow is displayed
  */
-fun CFGNode<*>.render(uniquenessStateFlows: Map<CFGNode<*>, PathAwareUniquenessStateFlow>): String {
+fun CFGNode<*>.render(uniquenessStateFlows: UniquenessStateFlows): String {
     val flowBefore = uniquenessStateFlows.readInputUniquenessStateOf(this)
     val flowAfter = uniquenessStateFlows.readOutputUniquenessStateOf(this)
     val renderedFlowBefore = flowBefore.renderOrNull()
@@ -70,7 +70,7 @@ fun CFGNode<*>.render(uniquenessStateFlows: Map<CFGNode<*>, PathAwareUniquenessS
 /**
  * Renders [this] whole [ControlFlowGraph] showing the intermediate [UniquenessState].
  */
-fun ControlFlowGraph.render(uniquenessStateFlows: Map<CFGNode<*>, PathAwareUniquenessStateFlow>): String {
+fun ControlFlowGraph.render(uniquenessStateFlows: UniquenessStateFlows): String {
     val options = ControlFlowGraphRenderOptions(
         data = { data: CFGNode<*> -> data.render(uniquenessStateFlows) },
     )

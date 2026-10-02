@@ -97,9 +97,14 @@ fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessSta
  * Calls to `@Pure` functions, element accesses of an `IntArray`, `StringBuilder` intrinsics, and declarations and calls
  * in [readOnlyContext], move nothing. The `<array>` temporary of a compound index assignment is not tracked: its accesses resolve to its
  * initializer.
+ *
+ * A join truncates its result to [maxPathLength] components (see [truncate]). An assignment places the source's
+ * subtree under the target, so a loop such as `cur.next = acc; acc = cur` would otherwise deepen the state at its head
+ * on every pass and never reach a fixed point.
  */
 class GraphUniquenessStatesAnalyzer(
     private val initialState: UniquenessState,
+    private val maxPathLength: Int,
     private val context: CheckerContext,
     private val callArgumentLocalitiesMapper: CallArgumentTypeFactsMapper<Locality>,
     private val readOnlyContext: ReadOnlyContext,
@@ -110,7 +115,7 @@ class GraphUniquenessStatesAnalyzer(
         node: CFGNode<*>
     ): UniquenessStateFlow =
         a.merge(b) { leftState, rightState ->
-            leftState.join(rightState)
+            leftState.join(rightState).truncate(maxPathLength)
         }
 
     private fun UniquenessStateFlow.getOrInitialize(): UniquenessState =
