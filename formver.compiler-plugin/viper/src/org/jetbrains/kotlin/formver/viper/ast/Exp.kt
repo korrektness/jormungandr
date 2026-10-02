@@ -636,6 +636,91 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         override val type = left.type
     }
 
+    data class EmptyMultiset(
+        val elementType: Type,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : Exp {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.EmptyMultiset =
+            viper.silver.ast.EmptyMultiset.apply(elementType.toSilver(), pos.toSilver(), info.toSilver(), silverNoTrafos)
+
+        override val type = Type.Multiset(elementType)
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() {}
+    }
+
+    data class ExplicitMultiset(
+        val args: List<Exp>,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : Exp {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.ExplicitMultiset =
+            viper.silver.ast.ExplicitMultiset.apply(
+                args.toSilver().toScalaSeq(),
+                pos.toSilver(),
+                info.toSilver(),
+                silverNoTrafos,
+            )
+
+        override val type = Type.Multiset(args.first().type)
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() {
+            args.forEach { it.registerNames() }
+        }
+    }
+
+    data class MultisetUnion(
+        override val left: Exp,
+        override val right: Exp,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : BinaryExp {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.AnySetUnion = toSilverVia(viper.silver.ast.AnySetUnion::apply)
+
+        override val type = left.type
+    }
+
+    data class MultisetMinus(
+        override val left: Exp,
+        override val right: Exp,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : BinaryExp {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.AnySetMinus = toSilverVia(viper.silver.ast.AnySetMinus::apply)
+
+        override val type = left.type
+    }
+
+    /** The number of occurrences of [left] in the multiset [right]: `left in right`. */
+    data class MultisetCount(
+        override val left: Exp,
+        override val right: Exp,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : BinaryExp {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.AnySetContains = toSilverVia(viper.silver.ast.AnySetContains::apply)
+
+        override val type = Type.Int
+    }
+
+    data class MultisetSize(
+        override val arg: Exp,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : UnaryExp {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.AnySetCardinality = toSilverVia(viper.silver.ast.AnySetCardinality::apply)
+
+        override val type = Type.Int
+    }
+
     data class Old(
         val exp: Exp,
         override val pos: Position = Position.NoPosition,

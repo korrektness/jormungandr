@@ -55,6 +55,8 @@ internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbed
     override fun visitOld(e: Old) = e.allChildrenPure(this)
     override fun visitIntArraySize(e: IntArraySize) = e.allChildrenPure(this)
     override fun visitIntArrayAllZero(e: IntArrayAllZero) = e.allChildrenPure(this)
+    override fun visitIntArrayContents(e: IntArrayContents) = e.allChildrenPure(this)
+    override fun visitMultisetOf(e: MultisetOf) = e.allChildrenPure(this)
     override fun visitIntArrayGet(e: IntArrayGet) = e.allChildrenPure(this)
     override fun visitStringBuilderLength(e: StringBuilderLength) = e.allChildrenPure(this)
     override fun visitStringBuilderToString(e: StringBuilderToString) = e.allChildrenPure(this)

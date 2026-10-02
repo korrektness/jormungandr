@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.*
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
+import org.jetbrains.kotlin.formver.core.domains.SeqMultisetDomain
 import org.jetbrains.kotlin.formver.core.embeddings.callables.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousBuiltinVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
@@ -38,8 +39,10 @@ import org.jetbrains.kotlin.formver.core.purity.checkValidity
 import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.core.purity.checkReadOnlyVarReads
 import org.jetbrains.kotlin.formver.core.purity.checkSpecificationVarReads
+import org.jetbrains.kotlin.formver.core.purity.checkNoMultisetValues
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isGuaranteedDefault
+import org.jetbrains.kotlin.formver.uniqueness.plugin.multisetClassId
 import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessFacts
 import org.jetbrains.kotlin.formver.core.linearization.FoldStateException
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -160,12 +163,14 @@ class ProgramConverter(
         get() = typeResolver.lookupClassTypeEmbedding(StringBuilderEmbedding.classType.name) != null
 
     fun buildProgram(): Program = Program(
-        domains = listOf(RuntimeTypeDomain(typeResolver)),
+        domains = listOf(RuntimeTypeDomain(typeResolver)) +
+                listOfNotNull(SeqMultisetDomain.takeIf { usesIntArray && typeResolver.usesMultiset }),
         // Public fields with the same name are represented differently at `FieldEmbedding` level
         // but map to the same Viper field, so we deduplicate before emitting.
         fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
                 listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder }),
-        functions = SpecialFunctions.all + linearizedBodyResolver.functions +
+        functions = SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
+                linearizedBodyResolver.functions +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray }),
         methods = SpecialMethods.all + linearizedBodyResolver.methods,
         predicates = typeResolver.classTypeEmbeddings().map {
@@ -393,6 +398,7 @@ class ProgramConverter(
         } else {
             val body = context.convertImpureBody(declaration, signature.signature, signature.returnTarget)
             checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
+            declaration.source?.let { source -> body?.bodyExp?.checkNoMultisetValues(source, this) }
             body?.let { convertedBodyResolver.storeImpure(signature.signature.name, it) }
         }
     }
@@ -763,6 +769,14 @@ class ProgramConverter(
         }
 
         type.isAny -> any()
+        type is ConeClassLikeType && type.lookupTag.classId == multisetClassId -> {
+            val element = type.typeArguments.single().type
+            if (element !is ConeTypeParameterType && element?.isInt != true) {
+                throw UnsupportedFeatureException(null, "type `$type`, a `Multiset` whose element type is not `Int`")
+            }
+            typeResolver.markMultisetUsed()
+            multiset()
+        }
         type is ConeClassLikeType -> {
             val classLikeSymbol = type.toClassSymbol(session)
             if (classLikeSymbol is FirRegularClassSymbol) {

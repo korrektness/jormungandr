@@ -10,10 +10,22 @@ import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.types.lowerBoundIfFlexible
+import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.StandardClassIds
 
-private val valueTypeClassIds =
-    setOf(StandardClassIds.Int, StandardClassIds.Boolean, StandardClassIds.Char, StandardClassIds.String, StandardClassIds.Unit)
+/** The specification-only `Multiset` of `formver.annotations`. */
+val multisetClassId = ClassId(FqName("org.jetbrains.kotlin.formver.plugin"), Name.identifier("Multiset"))
+
+private val valueTypeClassIds = setOf(
+    StandardClassIds.Int,
+    StandardClassIds.Boolean,
+    StandardClassIds.Char,
+    StandardClassIds.String,
+    StandardClassIds.Unit,
+    multisetClassId,
+)
 
 /**
  * Whether [this] is a value type, nullable or not: its values carry no predicate, so ownership means nothing for them.

@@ -1,0 +1,334 @@
+/permutation_array.kt: info: Generated Viper text for selectionSort:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method selectionSort(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_0: Int ::(forall anon_builtin_1: Int ::0 <=
+          anon_builtin_0 &&
+          anon_builtin_0 < anon_builtin_1 &&
+          anon_builtin_1 < arraySize(arr) ==>
+          arr.contents[anon_builtin_0] <= arr.contents[anon_builtin_1])))
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      toMultiset(arr.contents) ==
+      old((unfolding acc(IntArray_unique(arr), write) in
+        toMultiset(arr.contents))))
+{
+  var i: Ref
+  var anon_2: Ref
+  i := intToRef(0)
+  label cont_0
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
+    invariant (unfolding acc(IntArray_unique(arr), write) in
+        (forall anon_builtin_2: Int ::(forall anon_builtin_3: Int ::0 <=
+            anon_builtin_2 &&
+            anon_builtin_2 < anon_builtin_3 &&
+            anon_builtin_3 < intFromRef(i) ==>
+            arr.contents[anon_builtin_2] <= arr.contents[anon_builtin_3])))
+    invariant (unfolding acc(IntArray_unique(arr), write) in
+        (forall anon_builtin_4: Int ::(forall anon_builtin_5: Int ::0 <=
+            anon_builtin_4 &&
+            anon_builtin_4 < intFromRef(i) &&
+            intFromRef(i) <= anon_builtin_5 &&
+            anon_builtin_5 < arraySize(arr) ==>
+            arr.contents[anon_builtin_4] <= arr.contents[anon_builtin_5])))
+    invariant (unfolding acc(IntArray_unique(arr), write) in
+        toMultiset(arr.contents) ==
+        old((unfolding acc(IntArray_unique(arr), write) in
+          toMultiset(arr.contents))))
+  anon_2 := ltInts(i, intToRef(arraySize(arr)))
+  if (boolFromRef(anon_2)) {
+    var m: Ref
+    var k: Ref
+    var anon_3: Ref
+    var l1_t: Ref
+    var anon_6: Ref
+    var anon_7: Ref
+    var anon_1: Ref
+    m := i
+    k := plusInts(i, intToRef(1))
+    label cont_1
+      invariant acc(IntArray_unique(arr), write)
+      invariant isSubtype(typeOf(m), intType())
+      invariant isSubtype(typeOf(k), intType())
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(arr), IntArray())
+      invariant 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(m) &&
+        intFromRef(m) < intFromRef(k) &&
+        intFromRef(k) <= arraySize(arr)
+      invariant (unfolding acc(IntArray_unique(arr), write) in
+          (forall anon_builtin_6: Int ::intFromRef(i) <= anon_builtin_6 &&
+            anon_builtin_6 < intFromRef(k) ==>
+            arr.contents[intFromRef(m)] <= arr.contents[anon_builtin_6]))
+      invariant (unfolding acc(IntArray_unique(arr), write) in
+          (forall anon_builtin_7: Int ::(forall anon_builtin_8: Int ::0 <=
+              anon_builtin_7 &&
+              anon_builtin_7 < anon_builtin_8 &&
+              anon_builtin_8 < intFromRef(i) ==>
+              arr.contents[anon_builtin_7] <= arr.contents[anon_builtin_8])))
+      invariant (unfolding acc(IntArray_unique(arr), write) in
+          (forall anon_builtin_9: Int ::(forall anon_builtin_10: Int ::0 <=
+              anon_builtin_9 &&
+              anon_builtin_9 < intFromRef(i) &&
+              intFromRef(i) <= anon_builtin_10 &&
+              anon_builtin_10 < arraySize(arr) ==>
+              arr.contents[anon_builtin_9] <= arr.contents[anon_builtin_10])))
+      invariant (unfolding acc(IntArray_unique(arr), write) in
+          toMultiset(arr.contents) ==
+          old((unfolding acc(IntArray_unique(arr), write) in
+            toMultiset(arr.contents))))
+    anon_3 := ltInts(k, intToRef(arraySize(arr)))
+    if (boolFromRef(anon_3)) {
+      var anon_4: Ref
+      var anon_5: Ref
+      var anon_0: Ref
+      assert intFromRef(k) >= 0
+      assert intFromRef(k) < arraySize(arr)
+      unfold acc(IntArray_unique(arr), write)
+      anon_4 := intToRef(arr.contents[intFromRef(k)])
+      assert intFromRef(m) >= 0
+      assert intFromRef(m) < arraySize(arr)
+      anon_5 := intToRef(arr.contents[intFromRef(m)])
+      fold acc(IntArray_unique(arr), write)
+      if (intFromRef(anon_4) < intFromRef(anon_5)) {
+        m := k
+      }
+      anon_0 := k
+      k := plusInts(anon_0, intToRef(1))
+      goto cont_1
+    }
+    label break_1
+    assert isSubtype(typeOf(m), intType())
+    assert isSubtype(typeOf(k), intType())
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(arr), IntArray())
+    assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(m) &&
+      intFromRef(m) < intFromRef(k) &&
+      intFromRef(k) <= arraySize(arr)
+    assert (unfolding acc(IntArray_unique(arr), write) in
+        (forall anon_builtin_6: Int ::intFromRef(i) <= anon_builtin_6 &&
+          anon_builtin_6 < intFromRef(k) ==>
+          arr.contents[intFromRef(m)] <= arr.contents[anon_builtin_6]))
+    assert (unfolding acc(IntArray_unique(arr), write) in
+        (forall anon_builtin_7: Int ::(forall anon_builtin_8: Int ::0 <=
+            anon_builtin_7 &&
+            anon_builtin_7 < anon_builtin_8 &&
+            anon_builtin_8 < intFromRef(i) ==>
+            arr.contents[anon_builtin_7] <= arr.contents[anon_builtin_8])))
+    assert (unfolding acc(IntArray_unique(arr), write) in
+        (forall anon_builtin_9: Int ::(forall anon_builtin_10: Int ::0 <=
+            anon_builtin_9 &&
+            anon_builtin_9 < intFromRef(i) &&
+            intFromRef(i) <= anon_builtin_10 &&
+            anon_builtin_10 < arraySize(arr) ==>
+            arr.contents[anon_builtin_9] <= arr.contents[anon_builtin_10])))
+    assert (unfolding acc(IntArray_unique(arr), write) in
+        toMultiset(arr.contents) ==
+        old((unfolding acc(IntArray_unique(arr), write) in
+          toMultiset(arr.contents))))
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    anon_6 := intToRef(arr.contents[intFromRef(i)])
+    l1_t := anon_6
+    assert intFromRef(m) >= 0
+    assert intFromRef(m) < arraySize(arr)
+    anon_7 := intToRef(arr.contents[intFromRef(m)])
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    arr.contents := arr.contents[intFromRef(i) := intFromRef(anon_7)]
+    assert intFromRef(m) >= 0
+    assert intFromRef(m) < arraySize(arr)
+    arr.contents := arr.contents[intFromRef(m) := intFromRef(l1_t)]
+    anon_1 := i
+    i := plusInts(anon_1, intToRef(1))
+    fold acc(IntArray_unique(arr), write)
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
+  assert (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_2: Int ::(forall anon_builtin_3: Int ::0 <=
+          anon_builtin_2 &&
+          anon_builtin_2 < anon_builtin_3 &&
+          anon_builtin_3 < intFromRef(i) ==>
+          arr.contents[anon_builtin_2] <= arr.contents[anon_builtin_3])))
+  assert (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_4: Int ::(forall anon_builtin_5: Int ::0 <=
+          anon_builtin_4 &&
+          anon_builtin_4 < intFromRef(i) &&
+          intFromRef(i) <= anon_builtin_5 &&
+          anon_builtin_5 < arraySize(arr) ==>
+          arr.contents[anon_builtin_4] <= arr.contents[anon_builtin_5])))
+  assert (unfolding acc(IntArray_unique(arr), write) in
+      toMultiset(arr.contents) ==
+      old((unfolding acc(IntArray_unique(arr), write) in
+        toMultiset(arr.contents))))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/permutation_array.kt: info: Generated Viper text for swap:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method swap(arr: Ref, i: Ref, j: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(j), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < arraySize(arr)
+  requires 0 <= intFromRef(j) && intFromRef(j) < arraySize(arr)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      toMultiset(arr.contents) ==
+      old((unfolding acc(IntArray_unique(arr), write) in
+        toMultiset(arr.contents))))
+{
+  var l0_t: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < arraySize(arr)
+  unfold acc(IntArray_unique(arr), write)
+  anon_0 := intToRef(arr.contents[intFromRef(i)])
+  l0_t := anon_0
+  assert intFromRef(j) >= 0
+  assert intFromRef(j) < arraySize(arr)
+  anon_1 := intToRef(arr.contents[intFromRef(j)])
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < arraySize(arr)
+  arr.contents := arr.contents[intFromRef(i) := intFromRef(anon_1)]
+  assert intFromRef(j) >= 0
+  assert intFromRef(j) < arraySize(arr)
+  arr.contents := arr.contents[intFromRef(j) := intFromRef(l0_t)]
+  label lbl_ret_0
+  fold acc(IntArray_unique(arr), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/permutation_array.kt: info: Generated Viper text for rotateFirstThree:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method rotateFirstThree(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires arraySize(arr) >= 3
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      toMultiset(arr.contents) ==
+      old((unfolding acc(IntArray_unique(arr), write) in
+        toMultiset(arr.contents))))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := swap(arr, intToRef(0), intToRef(1))
+  anon_1 := swap(arr, intToRef(1), intToRef(2))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method swap(arr: Ref, i: Ref, j: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(j), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < arraySize(arr)
+  requires 0 <= intFromRef(j) && intFromRef(j) < arraySize(arr)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      toMultiset(arr.contents) ==
+      old((unfolding acc(IntArray_unique(arr), write) in
+        toMultiset(arr.contents))))
+
+
+/permutation_array.kt: info: Generated Viper text for zeroAll:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method zeroAll(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      toMultiset(arr.contents) ==
+      old((unfolding acc(IntArray_unique(arr), write) in
+        toMultiset(arr.contents))))
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
+  anon_1 := ltInts(i, intToRef(arraySize(arr)))
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    arr.contents := arr.contents[intFromRef(i) := 0]
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    fold acc(IntArray_unique(arr), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/permutation_array.kt: info: Generated Viper text for multisetOperators:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method multisetOperators(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert ((intFromRef(x) in
+    Multiset(intFromRef(x), intFromRef(y), intFromRef(x)))) >=
+    2
+  assert ((intFromRef(y) in Multiset(intFromRef(x), intFromRef(y)))) > 0
+  assert (Multiset(intFromRef(x), intFromRef(y)) setminus
+    Multiset(intFromRef(y))) ==
+    Multiset(intFromRef(x))
+  assert |(Multiset(intFromRef(x)) union Multiset(intFromRef(y)))| == 2
+  assert |Multiset[Int]()| == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

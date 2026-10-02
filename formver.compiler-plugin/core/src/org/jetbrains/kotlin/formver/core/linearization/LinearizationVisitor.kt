@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.constructedOpen
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
+import org.jetbrains.kotlin.formver.core.domains.SeqMultisetDomain
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.isOf
 import org.jetbrains.kotlin.formver.core.embeddings.*
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
@@ -624,6 +625,27 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitIntArrayContents(e: IntArrayContents): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp {
+            val array = e.array.linearize().toViper(ctx)
+            val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = false)
+            val pos = ctx.source.asPosition
+            val contents = SeqMultisetDomain.toMultiset(array.fieldAccess(contentsField, pos), pos = pos)
+            return ctx.addOwnedRead(IntArrayEmbedding.uniquePredicateAccess(array, pos), contents, e.type, arrayPath)
+        }
+    }
+
+    override fun visitMultisetOf(e: MultisetOf): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp =
+            RuntimeTypeDomain.multisetInjection.toRef(toViperBuiltinType(ctx), pos = ctx.source.asPosition)
+
+        override fun toViperBuiltinType(ctx: LinearizationContext): Exp {
+            val pos = ctx.source.asPosition
+            val elements = e.elements.map { it.linearize().toViperBuiltinType(ctx) }
+            return if (elements.isEmpty()) Exp.EmptyMultiset(Type.Int, pos) else Exp.ExplicitMultiset(elements, pos)
+        }
+    }
+
     override fun visitIntArraySet(e: IntArraySet): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = true)
@@ -632,7 +654,7 @@ data class LinearizationVisitor(
                 return
             }
             val array = e.array.linearize().toViper(ctx)
-            val index = e.index.linearize().toViperBuiltinType(ctx)
+            val index = atomicIndex(e.index, ctx)
             val value = e.value.linearize().toViperBuiltinType(ctx)
             ctx.assertInBounds(array, index, e.arraySymbol)
             ctx.foldState?.openOwn(ctx, arrayPath)
@@ -641,6 +663,21 @@ data class LinearizationVisitor(
                 Stmt.FieldAssign(contents, Exp.SeqUpdate(contents, index, value, ctx.source.asPosition), ctx.source.asPosition)
             }
         }
+    }
+
+    /**
+     * [index] as a Viper `Int`, first stored in a fresh variable unless it is a literal or linearizes to a variable.
+     * Silicon relates the contents of an updated sequence, such as its `toMultiset`, to reads at the updated index only
+     * when that index is atomic: with `s[j + 1 := v]` it does not re-establish the contents invariant of an in-place
+     * insertion sort.
+     */
+    private fun atomicIndex(index: ExpEmbedding, ctx: LinearizationContext): Exp {
+        if (index.ignoringMetaNodes() is LiteralEmbedding) return index.linearize().toViperBuiltinType(ctx)
+        val ref = index.linearize().toViper(ctx)
+        if (ref is Exp.LocalVar) return RuntimeTypeDomain.intInjection.fromRef(ref)
+        val variable = ctx.freshAnonVar { int() }
+        ctx.addStatement { Stmt.assign(variable.toViperExp(this), ref, source.asPosition) }
+        return RuntimeTypeDomain.intInjection.fromRef(variable.toViperExp(ctx))
     }
 
     override fun visitStringBuilderLength(e: StringBuilderLength): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {

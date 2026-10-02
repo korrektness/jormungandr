@@ -14,10 +14,18 @@ fun <!VIPER_TEXT!>isSorted<!>(n: Node?): Boolean =
         n.value <= n.next.value && isSorted(n.next)
     }
 
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>contents<!>(n: Node?): Multiset<Int> =
+    if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
+
 @AlwaysVerify
 fun <!VIPER_TEXT!>insert<!>(x: Int, l: Node?): Node {
     preconditions { isSorted(l) }
-    postconditions<Node> { r -> isSorted(r) && (r.value == x || (l != null && r.value == l.value)) }
+    postconditions<Node> { r ->
+        isSorted(r) && (r.value == x || (l != null && r.value == l.value))
+        contents(r) == contents(l) + multisetOf(x)
+    }
     if (l == null || x <= l.value) {
         return Node(x, l)
     }
@@ -26,7 +34,7 @@ fun <!VIPER_TEXT!>insert<!>(x: Int, l: Node?): Node {
 
 @AlwaysVerify
 fun <!VIPER_TEXT!>insertionSort<!>(l: Node?): Node? {
-    postconditions<Node?> { r -> isSorted(r) }
+    postconditions<Node?> { r -> isSorted(r) && contents(r) == contents(l) }
     if (l == null) {
         return null
     }
@@ -36,7 +44,10 @@ fun <!VIPER_TEXT!>insertionSort<!>(l: Node?): Node? {
 @AlwaysVerify
 fun <!VIPER_TEXT!>insertProbeStart<!>(x: Int, l: Node?): Node {
     preconditions { isSorted(l) }
-    postconditions<Node> { r -> isSorted(r) && (r.value == x || (l != null && r.value == l.value)) }
+    postconditions<Node> { r ->
+        isSorted(r) && (r.value == x || (l != null && r.value == l.value))
+        contents(r) == contents(l) + multisetOf(x)
+    }
     verify(<!VIPER_VERIFICATION_ERROR!>false<!>)
     if (l == null || x <= l.value) {
         return Node(x, l)

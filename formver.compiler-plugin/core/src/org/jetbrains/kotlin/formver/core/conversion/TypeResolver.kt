@@ -42,6 +42,17 @@ class TypeResolver {
     private val manualClassNames = mutableSetOf<SymbolicName>()
 
     /**
+     * Whether the program embeds `Multiset`. The multiset type and its operations are declared only then, so that
+     * Silicon sets up its multiset theory only for programs that use it.
+     */
+    var usesMultiset: Boolean = false
+        private set
+
+    fun markMultisetUsed() {
+        usesMultiset = true
+    }
+
+    /**
      * Register a class or interface type embedding.
      * This is needed to know which classes were already registered.
      */

@@ -70,4 +70,10 @@ data object StringTypeEmbedding : PretypeEmbedding {
     override val name = PretypeName("String")
 }
 
+/** `Multiset<Int>` from the specification vocabulary; no other element type has an embedding. */
+data object MultisetTypeEmbedding : PretypeEmbedding {
+    override val runtimeType = RuntimeTypeDomain.multisetType()
+    override val name = PretypeName("Multiset")
+}
+
 fun PretypeEmbedding.asTypeEmbedding() = TypeEmbedding(this, TypeEmbeddingFlags(nullable = false))

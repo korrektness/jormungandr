@@ -1,0 +1,280 @@
+/insertion_sort_linked_contents.kt: info: Generated Viper text for isSorted:
+field next: Ref
+
+function isSorted(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let m_0 ==
+    ((!(n == nullValue()) ?
+      (unfolding acc(Node_unique(n), write) in n.next) :
+      null)) in
+    (let anon_1_0 ==
+      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((!(n == nullValue()) ?
+            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
+            null)) in
+          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/insertion_sort_linked_contents.kt: info: Generated Viper text for contents:
+field next: Ref
+
+function contents(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), multisetType())
+{
+  (let anon_1_0 ==
+    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
+    (let anon_3_0 ==
+      ((!(n == nullValue()) ?
+        (unfolding acc(Node_unique(n), write) in n.next) :
+        null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_3_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((n == nullValue() ? anon_1_0 : anon_2_0)) in
+          anon_0_0))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/insertion_sort_linked_contents.kt: info: Generated Viper text for insertSorted:
+field next: Ref
+
+function contents(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), multisetType())
+{
+  (let anon_4_0 ==
+    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
+    (let anon_6_0 ==
+      ((!(n == nullValue()) ?
+        (unfolding acc(Node_unique(n), write) in n.next) :
+        null)) in
+      (let anon_5_0 ==
+        ((!(n == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_6_0))) :
+          null)) in
+        (let anon_3_0 ==
+          ((n == nullValue() ? anon_4_0 : anon_5_0)) in
+          anon_3_0))))
+}
+
+function isSorted(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let m_0 ==
+    ((!(n == nullValue()) ?
+      (unfolding acc(Node_unique(n), write) in n.next) :
+      null)) in
+    (let anon_1_0 ==
+      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((!(n == nullValue()) ?
+            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
+            null)) in
+          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sorted), nullable(Node()))
+  requires sorted != nullValue() ==> acc(Node_unique(sorted), write)
+  requires isSubtype(typeOf(node), Node())
+  requires acc(Node_unique(node), write)
+  requires boolFromRef(isSorted(sorted))
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures acc(Node_unique(v_ret_0), write)
+  ensures boolFromRef(isSorted(v_ret_0)) &&
+    (intFromRef(value(v_ret_0)) == intFromRef(value(node)) ||
+    !(sorted == nullValue()) &&
+    intFromRef(value(v_ret_0)) == intFromRef(value(sorted)))
+  ensures multisetFromRef(contents(v_ret_0)) ==
+    (old(multisetFromRef(contents(sorted))) union
+    Multiset(intFromRef(value(node))))
+{
+  var anon_7: Ref
+  var anon_8: Ref
+  var anon_9: Ref
+  if (sorted == nullValue()) {
+    anon_7 := boolToRef(true)
+  } else {
+    anon_7 := leInts(value(node), value(sorted))}
+  if (boolFromRef(anon_7)) {
+    unfold acc(Node_unique(node), write)
+    node.next := sorted
+    fold acc(Node_unique(node), write)
+    v_ret_0 := node
+    goto lbl_ret_0
+  }
+  if (sorted != nullValue()) {
+    unfold acc(Node_unique(sorted), write)
+  }
+  anon_9 := sorted.next
+  anon_8 := insertSorted(anon_9, node)
+  sorted.next := anon_8
+  if (sorted != nullValue()) {
+    fold acc(Node_unique(sorted), write)
+  }
+  v_ret_0 := sorted
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/insertion_sort_linked_contents.kt: info: Generated Viper text for insertionSort:
+field bf_next: Ref
+
+function contents(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), multisetType())
+{
+  (let anon_4_0 ==
+    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
+    (let anon_6_0 ==
+      ((!(n == nullValue()) ?
+        (unfolding acc(Node_unique(n), write) in n.bf_next) :
+        null)) in
+      (let anon_5_0 ==
+        ((!(n == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_6_0))) :
+          null)) in
+        (let anon_3_0 ==
+          ((n == nullValue() ? anon_4_0 : anon_5_0)) in
+          anon_3_0))))
+}
+
+function isSorted(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let m_0 ==
+    ((!(n == nullValue()) ?
+      (unfolding acc(Node_unique(n), write) in n.bf_next) :
+      null)) in
+    (let anon_1_0 ==
+      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((!(n == nullValue()) ?
+            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
+            null)) in
+          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method insertSorted(par_sorted: Ref, node: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_sorted), nullable(Node()))
+  requires par_sorted != nullValue() ==>
+    acc(Node_unique(par_sorted), write)
+  requires isSubtype(typeOf(node), Node())
+  requires acc(Node_unique(node), write)
+  requires boolFromRef(isSorted(par_sorted))
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures acc(Node_unique(ret_3), write)
+  ensures boolFromRef(isSorted(ret_3)) &&
+    (intFromRef(value(ret_3)) == intFromRef(value(node)) ||
+    !(par_sorted == nullValue()) &&
+    intFromRef(value(ret_3)) == intFromRef(value(par_sorted)))
+  ensures multisetFromRef(contents(ret_3)) ==
+    (old(multisetFromRef(contents(par_sorted))) union
+    Multiset(intFromRef(value(node))))
+
+
+method insertionSort(head: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(head), nullable(Node()))
+  requires head != nullValue() ==> acc(Node_unique(head), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(Node()))
+  ensures v_ret_0 != nullValue() ==> acc(Node_unique(v_ret_0), write)
+  ensures boolFromRef(isSorted(v_ret_0)) &&
+    multisetFromRef(contents(v_ret_0)) ==
+    old(multisetFromRef(contents(head)))
+{
+  var l10_sorted: Ref
+  var cur: Ref
+  var anon_7: Ref
+  l10_sorted := nullValue()
+  cur := head
+  label cont
+    invariant l10_sorted != nullValue() ==>
+      acc(Node_unique(l10_sorted), write)
+    invariant cur != nullValue() ==> acc(Node_unique(cur), write)
+    invariant isSubtype(typeOf(l10_sorted), nullable(Node()))
+    invariant isSubtype(typeOf(cur), nullable(Node()))
+    invariant isSubtype(typeOf(head), nullable(Node()))
+    invariant boolFromRef(isSorted(l10_sorted))
+    invariant (multisetFromRef(contents(l10_sorted)) union
+      multisetFromRef(contents(cur))) ==
+      old(multisetFromRef(contents(head)))
+  anon_7 := notBool(boolToRef(cur == nullValue()))
+  if (boolFromRef(anon_7)) {
+    var l11_next: Ref
+    var anon_8: Ref
+    if (cur != nullValue()) {
+      unfold acc(Node_unique(cur), write)
+    }
+    l11_next := cur.bf_next
+    cur.bf_next := nullValue()
+    if (cur != nullValue()) {
+      fold acc(Node_unique(cur), write)
+    }
+    anon_8 := insertSorted(l10_sorted, cur)
+    l10_sorted := anon_8
+    cur := l11_next
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(l10_sorted), nullable(Node()))
+  assert isSubtype(typeOf(cur), nullable(Node()))
+  assert isSubtype(typeOf(head), nullable(Node()))
+  assert boolFromRef(isSorted(l10_sorted))
+  assert (multisetFromRef(contents(l10_sorted)) union
+    multisetFromRef(contents(cur))) ==
+    old(multisetFromRef(contents(head)))
+  v_ret_0 := l10_sorted
+  goto lbl_ret_0
+  label lbl_ret_0
+}

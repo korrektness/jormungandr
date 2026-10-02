@@ -109,3 +109,35 @@ class InvariantBuilder {
     fun triggers(@Suppress("UNUSED_PARAMETER") vararg expressions: Any?): Unit =
         throw FormverFunctionCalledInRuntimeException("triggers")
 }
+
+/**
+ * The elements of a collection counted with multiplicity, compared with `==`. Usable only in specifications and
+ * `@Pure` functions. The element type must be `Int`.
+ */
+class Multiset<T> private constructor() {
+    /** Multiset union: the counts add up. */
+    operator fun plus(@Suppress("UNUSED_PARAMETER") other: Multiset<T>): Multiset<T> =
+        throw FormverFunctionCalledInRuntimeException("Multiset.plus")
+
+    /** Multiset difference: counts subtract, never below zero. */
+    operator fun minus(@Suppress("UNUSED_PARAMETER") other: Multiset<T>): Multiset<T> =
+        throw FormverFunctionCalledInRuntimeException("Multiset.minus")
+
+    /** The number of occurrences of [element]. */
+    fun count(@Suppress("UNUSED_PARAMETER") element: T): Int =
+        throw FormverFunctionCalledInRuntimeException("Multiset.count")
+
+    operator fun contains(@Suppress("UNUSED_PARAMETER") element: T): Boolean =
+        throw FormverFunctionCalledInRuntimeException("Multiset.contains")
+
+    /** The number of elements, counted with multiplicity. */
+    val size: Int
+        get() = throw FormverFunctionCalledInRuntimeException("Multiset.size")
+}
+
+fun <T> multisetOf(@Suppress("UNUSED_PARAMETER") vararg elements: T): Multiset<T> =
+    throw FormverFunctionCalledInRuntimeException("multisetOf")
+
+/** The elements of [arr], order forgotten. Reading them needs [arr] to be `@Unique`. */
+fun contents(@Suppress("UNUSED_PARAMETER") arr: @Borrowed IntArray): Multiset<Int> =
+    throw FormverFunctionCalledInRuntimeException("contents")

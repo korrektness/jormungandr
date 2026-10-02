@@ -264,6 +264,7 @@ class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(R
         val boolType: DomainFunc = createNewTypeDomainFunc("boolType")
         val unitType: DomainFunc = createNewTypeDomainFunc("unitType")
         val stringType: DomainFunc = createNewTypeDomainFunc("stringType")
+        val multisetType: DomainFunc = createNewTypeDomainFunc("multisetType")
         val nothingType: DomainFunc = createNewTypeDomainFunc("nothingType")
         val anyType: DomainFunc = createNewTypeDomainFunc("anyType")
         val functionType: DomainFunc = createNewTypeDomainFunc("functionType")
@@ -276,15 +277,20 @@ class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(R
         val boolInjection = Injection(UnqualifiedDomainFuncName("bool"), Type.Bool, boolType)
         val charInjection = Injection(UnqualifiedDomainFuncName("char"), Type.Int, charType)
         val stringInjection = Injection(UnqualifiedDomainFuncName("string"), Type.Seq(Type.Int), stringType)
+        val multisetInjection =
+            Injection(UnqualifiedDomainFuncName("multiset"), Type.Multiset(Type.Int), multisetType)
         val primitiveTypeInjections = listOf(intInjection, boolInjection, charInjection, stringInjection)
         // special values
         val nullValue = createDomainFunc(UnqualifiedDomainFuncName("nullValue"), emptyList(), Ref)
         val unitValue = createDomainFunc(UnqualifiedDomainFuncName("unitValue"), emptyList(), Ref)
     }
 
-    private val allInjections: List<Injection> = primitiveTypeInjections
+    private val usesMultiset = typeResolver.usesMultiset
+    private val allInjections: List<Injection> =
+        primitiveTypeInjections + listOfNotNull(multisetInjection.takeIf { usesMultiset })
     val builtinTypes: List<DomainFunc> =
-        listOf(intType, boolType, charType, unitType, nothingType, anyType, functionType, stringType)
+        listOf(intType, boolType, charType, unitType, nothingType, anyType, functionType, stringType) +
+                listOfNotNull(multisetType.takeIf { usesMultiset })
     private val userTypes: List<DomainFunc> =
         typeResolver.classTypeEmbeddings().map { it.embedClassTypeFunc() }
     val nonNullableTypes: List<DomainFunc> = (builtinTypes + userTypes).distinctBy { it.name }

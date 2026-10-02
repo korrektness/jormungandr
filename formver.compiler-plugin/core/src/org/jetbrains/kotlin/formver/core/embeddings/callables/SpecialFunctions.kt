@@ -11,4 +11,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 object SpecialFunctions {
     val all
         get() = OperatorExpEmbeddings.allTemplates.map { it.refsOperation }
+
+    val multiset
+        get() = OperatorExpEmbeddings.multisetTemplates.map { it.refsOperation }
 }

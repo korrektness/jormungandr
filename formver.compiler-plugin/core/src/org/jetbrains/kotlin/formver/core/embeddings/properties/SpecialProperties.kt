@@ -19,6 +19,9 @@ import org.jetbrains.kotlin.formver.core.names.MemberEmbeddingPolicy
 import org.jetbrains.kotlin.formver.core.names.NameMatcher
 import org.jetbrains.kotlin.formver.core.names.embedMemberBackingFieldName
 import org.jetbrains.kotlin.formver.core.names.embedName
+import org.jetbrains.kotlin.formver.uniqueness.plugin.multisetClassId
+import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.Name
 
 abstract class SpecialProperty(val property: PropertyEmbedding) {
     context(typeResolver: TypeResolver, session: FirSession)
@@ -56,6 +59,23 @@ object IntArraySizeProperty :
     override fun match(symbol: FirPropertySymbol): Boolean = symbol.callableId == kotlinCallableId("IntArray", "size")
 }
 
+object MultisetSizeProperty :
+    SpecialProperty(
+        PropertyEmbedding(
+            MultisetSizeGetter,
+            setter = null,
+            hasDefaultBehaviour = true,
+            isUnique = false,
+            isVal = true,
+            type = IntTypeEmbedding.asTypeEmbedding()
+        )
+    ) {
+    private val callableId = CallableId(multisetClassId, Name.identifier("size"))
+
+    context(typeResolver: TypeResolver, session: FirSession)
+    override fun match(symbol: FirPropertySymbol): Boolean = symbol.callableId == callableId
+}
+
 object CollectionSizeProperty :
     SpecialProperty(
         PropertyEmbedding(
@@ -88,7 +108,7 @@ object CollectionSizeProperty :
 
 object SpecialProperties {
 
-    val all: List<SpecialProperty> = listOf(StringSizeProperty, IntArraySizeProperty, CollectionSizeProperty)
+    val all: List<SpecialProperty> = listOf(StringSizeProperty, IntArraySizeProperty, MultisetSizeProperty, CollectionSizeProperty)
 
     context(typeResolver: TypeResolver, session: FirSession)
     fun lookup(symbol: FirPropertySymbol): PropertyEmbedding? = all.firstOrNull { it.match(symbol) }?.property

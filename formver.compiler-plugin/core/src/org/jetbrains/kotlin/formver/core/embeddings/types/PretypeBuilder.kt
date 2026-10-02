@@ -48,6 +48,10 @@ object StringPretypeBuilder : PretypeBuilder {
     override fun complete() = StringTypeEmbedding
 }
 
+object MultisetPretypeBuilder : PretypeBuilder {
+    override fun complete() = MultisetTypeEmbedding
+}
+
 class FunctionPretypeBuilder : PretypeBuilder {
     private val paramTypes = mutableListOf<TypeEmbedding>()
     private var extensionReceiverType: TypeEmbedding? = null

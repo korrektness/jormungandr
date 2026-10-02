@@ -99,17 +99,26 @@ private fun Exp.hoist(): Hoisted = when (this) {
     is Exp.GeCmp -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
     is Exp.EqCmp -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
     is Exp.NeCmp -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
-    is Exp.SeqAppend -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
     is Exp.FuncApp -> transparent(args) { copy(args = it) }
     is Exp.DomainFuncApp -> transparent(args) { copy(args = it) }
     is Exp.FieldAccess -> transparent(listOf(rcv)) { (rcv) -> copy(rcv = rcv) }
+    else -> hoistCollection() ?: Hoisted(this, emptyList())
+}
+
+/** [hoist] for sequence and multiset operations, which are all transparent; `null` for any other expression. */
+private fun Exp.hoistCollection(): Hoisted? = when (this) {
+    is Exp.SeqAppend -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
     is Exp.SeqLength -> transparent(listOf(seq)) { (seq) -> copy(seq = seq) }
     is Exp.SeqIndex -> transparent(listOf(seq, idx)) { (seq, idx) -> copy(seq = seq, idx = idx) }
     is Exp.SeqTake -> transparent(listOf(seq, idx)) { (seq, idx) -> copy(seq = seq, idx = idx) }
     is Exp.SeqUpdate -> transparent(listOf(seq, idx, elem)) { (seq, idx, elem) -> copy(seq = seq, idx = idx, elem = elem) }
     is Exp.ExplicitSeq -> transparent(args) { copy(args = it) }
-
-    else -> Hoisted(this, emptyList())
+    is Exp.ExplicitMultiset -> transparent(args) { copy(args = it) }
+    is Exp.MultisetUnion -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
+    is Exp.MultisetMinus -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
+    is Exp.MultisetCount -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
+    is Exp.MultisetSize -> transparent(listOf(arg)) { (arg) -> copy(arg = arg) }
+    else -> null
 }
 
 private fun transparent(children: List<Exp>, rebuild: (List<Exp>) -> Exp): Hoisted {

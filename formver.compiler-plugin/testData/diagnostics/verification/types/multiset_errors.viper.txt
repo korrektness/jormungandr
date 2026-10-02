@@ -1,0 +1,70 @@
+/multiset_errors.kt: info: Generated Viper text for contents:
+field next: Ref
+
+function contents(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), multisetType())
+{
+  (let anon_1_0 ==
+    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
+    (let anon_3_0 ==
+      ((!(n == nullValue()) ?
+        (unfolding acc(Node_unique(n), write) in n.next) :
+        null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_3_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((n == nullValue() ? anon_1_0 : anon_2_0)) in
+          anon_0_0))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/multiset_errors.kt: info: Generated Viper text for handBackOld:
+field next: Ref
+
+function contents(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), multisetType())
+{
+  (let anon_1_0 ==
+    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
+    (let anon_3_0 ==
+      ((!(n == nullValue()) ?
+        (unfolding acc(Node_unique(n), write) in n.next) :
+        null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_3_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((n == nullValue() ? anon_1_0 : anon_2_0)) in
+          anon_0_0))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method handBackOld(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures acc(Node_unique(v_ret_0), write)
+  ensures multisetFromRef(contents(v_ret_0)) ==
+    old(multisetFromRef(contents(n)))
+{
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}

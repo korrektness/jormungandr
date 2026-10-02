@@ -70,6 +70,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("insertion_sort_linked_contents.kt")
+      public void testInsertion_sort_linked_contents() {
+        runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/insertion_sort_linked_contents.kt");
+      }
+
+      @Test
       @TestMetadata("levenshtein.kt")
       public void testLevenshtein() {
         runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/levenshtein.kt");
@@ -85,6 +91,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("merge_sort_of_string.kt")
       public void testMerge_sort_of_string() {
         runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/merge_sort_of_string.kt");
+      }
+
+      @Test
+      @TestMetadata("permutation_array.kt")
+      public void testPermutation_array() {
+        runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/permutation_array.kt");
       }
 
       @Test
@@ -1177,6 +1189,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("generics.kt")
       public void testGenerics() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/types/generics.kt");
+      }
+
+      @Test
+      @TestMetadata("multiset_errors.kt")
+      public void testMultiset_errors() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/types/multiset_errors.kt");
       }
 
       @Test

@@ -10,6 +10,7 @@ fun <!VIPER_TEXT!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
                 (0 <= i && i < j && j < arr.size) implies (arr[i] <= arr[j])
             }
         }
+        contents(arr) == old(contents(arr))
     }
     var i = 1
     while (i < arr.size) {
@@ -20,6 +21,7 @@ fun <!VIPER_TEXT!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
                     (0 <= a && a < b && b < i) implies (arr[a] <= arr[b])
                 }
             }
+            contents(arr) == old(contents(arr))
         }
         val key = arr[i]
         var j = i - 1
@@ -34,6 +36,7 @@ fun <!VIPER_TEXT!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
                 forAll<Int> { a ->
                     (j + 1 < a && a <= i) implies (key < arr[a])
                 }
+                contents(arr) + multisetOf(key) == old(contents(arr)) + multisetOf(arr[j + 1])
             }
             arr[j + 1] = arr[j]
             j--
@@ -51,6 +54,7 @@ fun <!VIPER_TEXT!>insertionSortProbeInnerLoopBody<!>(arr: @Unique @Borrowed IntA
                 (0 <= i && i < j && j < arr.size) implies (arr[i] <= arr[j])
             }
         }
+        contents(arr) == old(contents(arr))
     }
     var i = 1
     while (i < arr.size) {
@@ -61,6 +65,7 @@ fun <!VIPER_TEXT!>insertionSortProbeInnerLoopBody<!>(arr: @Unique @Borrowed IntA
                     (0 <= a && a < b && b < i) implies (arr[a] <= arr[b])
                 }
             }
+            contents(arr) == old(contents(arr))
         }
         val key = arr[i]
         var j = i - 1
@@ -75,6 +80,7 @@ fun <!VIPER_TEXT!>insertionSortProbeInnerLoopBody<!>(arr: @Unique @Borrowed IntA
                 forAll<Int> { a ->
                     (j + 1 < a && a <= i) implies (key < arr[a])
                 }
+                contents(arr) + multisetOf(key) == old(contents(arr)) + multisetOf(arr[j + 1])
             }
             arr[j + 1] = arr[j]
             j--
@@ -93,6 +99,7 @@ fun <!VIPER_TEXT!>insertionSortProbeOuterLoopBody<!>(arr: @Unique @Borrowed IntA
                 (0 <= i && i < j && j < arr.size) implies (arr[i] <= arr[j])
             }
         }
+        contents(arr) == old(contents(arr))
     }
     var i = 1
     while (i < arr.size) {
@@ -103,6 +110,7 @@ fun <!VIPER_TEXT!>insertionSortProbeOuterLoopBody<!>(arr: @Unique @Borrowed IntA
                     (0 <= a && a < b && b < i) implies (arr[a] <= arr[b])
                 }
             }
+            contents(arr) == old(contents(arr))
         }
         val key = arr[i]
         var j = i - 1
@@ -117,6 +125,7 @@ fun <!VIPER_TEXT!>insertionSortProbeOuterLoopBody<!>(arr: @Unique @Borrowed IntA
                 forAll<Int> { a ->
                     (j + 1 < a && a <= i) implies (key < arr[a])
                 }
+                contents(arr) + multisetOf(key) == old(contents(arr)) + multisetOf(arr[j + 1])
             }
             arr[j + 1] = arr[j]
             j--
@@ -135,6 +144,7 @@ fun <!VIPER_TEXT!>insertionSortProbeExit<!>(arr: @Unique @Borrowed IntArray) {
                 (0 <= i && i < j && j < arr.size) implies (arr[i] <= arr[j])
             }
         }
+        contents(arr) == old(contents(arr))
     }
     var i = 1
     while (i < arr.size) {
@@ -145,6 +155,7 @@ fun <!VIPER_TEXT!>insertionSortProbeExit<!>(arr: @Unique @Borrowed IntArray) {
                     (0 <= a && a < b && b < i) implies (arr[a] <= arr[b])
                 }
             }
+            contents(arr) == old(contents(arr))
         }
         val key = arr[i]
         var j = i - 1
@@ -159,6 +170,7 @@ fun <!VIPER_TEXT!>insertionSortProbeExit<!>(arr: @Unique @Borrowed IntArray) {
                 forAll<Int> { a ->
                     (j + 1 < a && a <= i) implies (key < arr[a])
                 }
+                contents(arr) + multisetOf(key) == old(contents(arr)) + multisetOf(arr[j + 1])
             }
             arr[j + 1] = arr[j]
             j--

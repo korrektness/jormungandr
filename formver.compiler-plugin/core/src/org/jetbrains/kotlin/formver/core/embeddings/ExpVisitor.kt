@@ -73,6 +73,8 @@ interface ExpVisitor<R> {
     fun visitUnfold(e: Unfold): R
     fun visitIntArraySize(e: IntArraySize): R
     fun visitIntArrayAllZero(e: IntArrayAllZero): R
+    fun visitIntArrayContents(e: IntArrayContents): R
+    fun visitMultisetOf(e: MultisetOf): R
     fun visitIntArrayGet(e: IntArrayGet): R
     fun visitIntArraySet(e: IntArraySet): R
     fun visitIntArrayInit(e: IntArrayInit): R
@@ -146,6 +148,8 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitUnfold(e: Unfold): R = visitDefault(e)
     override fun visitIntArraySize(e: IntArraySize): R = visitDefault(e)
     override fun visitIntArrayAllZero(e: IntArrayAllZero): R = visitDefault(e)
+    override fun visitIntArrayContents(e: IntArrayContents): R = visitDefault(e)
+    override fun visitMultisetOf(e: MultisetOf): R = visitDefault(e)
     override fun visitIntArrayGet(e: IntArrayGet): R = visitDefault(e)
     override fun visitIntArraySet(e: IntArraySet): R = visitDefault(e)
     override fun visitIntArrayInit(e: IntArrayInit): R = visitDefault(e)

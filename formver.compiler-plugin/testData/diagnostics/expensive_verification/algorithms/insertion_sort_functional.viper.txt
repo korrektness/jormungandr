@@ -32,7 +32,48 @@ function value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+/insertion_sort_functional.kt: info: Generated Viper text for contents:
+function contents(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  ensures isSubtype(typeOf(result), multisetType())
+{
+  (let anon_1_0 ==
+    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
+    (let anon_2_0 ==
+      ((!(n == nullValue()) ?
+        unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(next(n))) :
+        null)) in
+      (let anon_0_0 ==
+        ((n == nullValue() ? anon_1_0 : anon_2_0)) in
+        anon_0_0)))
+}
+
+function next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), nullable(Node()))
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
 /insertion_sort_functional.kt: info: Generated Viper text for insert:
+function contents(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  ensures isSubtype(typeOf(result), multisetType())
+{
+  (let anon_6_0 ==
+    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
+    (let anon_7_0 ==
+      ((!(n == nullValue()) ?
+        unionMultisets(multisetToRef(Multiset(intFromRef(g_value(n)))), contents(g_next(n))) :
+        null)) in
+      (let anon_5_0 ==
+        ((n == nullValue() ? anon_6_0 : anon_7_0)) in
+        anon_5_0)))
+}
+
 function g_next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), nullable(Node()))
@@ -83,26 +124,43 @@ method insert(x: Ref, l: Ref) returns (v_ret_0: Ref)
     (intFromRef(g_value(v_ret_0)) == intFromRef(x) ||
     !(l == nullValue()) &&
     intFromRef(g_value(v_ret_0)) == intFromRef(g_value(l)))
+  ensures multisetFromRef(contents(v_ret_0)) ==
+    (multisetFromRef(contents(l)) union Multiset(intFromRef(x)))
 {
-  var anon_5: Ref
-  var anon_6: Ref
+  var anon_8: Ref
+  var anon_9: Ref
   if (l == nullValue()) {
-    anon_5 := boolToRef(true)
+    anon_8 := boolToRef(true)
   } else {
-    anon_5 := leInts(x, g_value(l))}
-  if (boolFromRef(anon_5)) {
+    anon_8 := leInts(x, g_value(l))}
+  if (boolFromRef(anon_8)) {
     v_ret_0 := con(x, l)
     fold acc(Node_unique(v_ret_0), write)
     goto lbl_ret_0
   }
-  anon_6 := insert(x, g_next(l))
-  v_ret_0 := con(g_value(l), anon_6)
+  anon_9 := insert(x, g_next(l))
+  v_ret_0 := con(g_value(l), anon_9)
   fold acc(Node_unique(v_ret_0), write)
   goto lbl_ret_0
   label lbl_ret_0
 }
 
 /insertion_sort_functional.kt: info: Generated Viper text for insertionSort:
+function contents(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  ensures isSubtype(typeOf(result), multisetType())
+{
+  (let anon_6_0 ==
+    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
+    (let anon_7_0 ==
+      ((!(n == nullValue()) ?
+        unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(next(n))) :
+        null)) in
+      (let anon_5_0 ==
+        ((n == nullValue() ? anon_6_0 : anon_7_0)) in
+        anon_5_0)))
+}
+
 function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   ensures isSubtype(typeOf(result), boolType())
@@ -144,27 +202,45 @@ method insert(x: Ref, l: Ref) returns (ret_2: Ref)
   ensures boolFromRef(isSorted(ret_2)) &&
     (intFromRef(value(ret_2)) == intFromRef(x) ||
     !(l == nullValue()) && intFromRef(value(ret_2)) == intFromRef(value(l)))
+  ensures multisetFromRef(contents(ret_2)) ==
+    (multisetFromRef(contents(l)) union Multiset(intFromRef(x)))
 
 
 method insertionSort(l: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(l), nullable(Node()))
   ensures isSubtype(typeOf(v_ret_0), nullable(Node()))
-  ensures boolFromRef(isSorted(v_ret_0))
+  ensures boolFromRef(isSorted(v_ret_0)) &&
+    multisetFromRef(contents(v_ret_0)) == multisetFromRef(contents(l))
 {
-  var anon_5: Ref
-  var anon_6: Ref
+  var anon_8: Ref
+  var anon_9: Ref
   if (l == nullValue()) {
     v_ret_0 := nullValue()
     goto lbl_ret_0
   }
-  anon_6 := insertionSort(next(l))
-  anon_5 := insert(value(l), anon_6)
-  v_ret_0 := anon_5
+  anon_9 := insertionSort(next(l))
+  anon_8 := insert(value(l), anon_9)
+  v_ret_0 := anon_8
   goto lbl_ret_0
   label lbl_ret_0
 }
 
 /insertion_sort_functional.kt: info: Generated Viper text for insertProbeStart:
+function contents(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  ensures isSubtype(typeOf(result), multisetType())
+{
+  (let anon_6_0 ==
+    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
+    (let anon_7_0 ==
+      ((!(n == nullValue()) ?
+        unionMultisets(multisetToRef(Multiset(intFromRef(g_value(n)))), contents(g_next(n))) :
+        null)) in
+      (let anon_5_0 ==
+        ((n == nullValue() ? anon_6_0 : anon_7_0)) in
+        anon_5_0)))
+}
+
 function g_next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), nullable(Node()))
@@ -220,6 +296,8 @@ method insert(x: Ref, l: Ref) returns (ret_4: Ref)
     (intFromRef(g_value(ret_4)) == intFromRef(x) ||
     !(l == nullValue()) &&
     intFromRef(g_value(ret_4)) == intFromRef(g_value(l)))
+  ensures multisetFromRef(contents(ret_4)) ==
+    (multisetFromRef(contents(l)) union Multiset(intFromRef(x)))
 
 
 method insertProbeStart(x: Ref, l: Ref) returns (v_ret_0: Ref)
@@ -231,21 +309,23 @@ method insertProbeStart(x: Ref, l: Ref) returns (v_ret_0: Ref)
     (intFromRef(g_value(v_ret_0)) == intFromRef(x) ||
     !(l == nullValue()) &&
     intFromRef(g_value(v_ret_0)) == intFromRef(g_value(l)))
+  ensures multisetFromRef(contents(v_ret_0)) ==
+    (multisetFromRef(contents(l)) union Multiset(intFromRef(x)))
 {
-  var anon_5: Ref
-  var anon_6: Ref
+  var anon_8: Ref
+  var anon_9: Ref
   assert false
   if (l == nullValue()) {
-    anon_5 := boolToRef(true)
+    anon_8 := boolToRef(true)
   } else {
-    anon_5 := leInts(x, g_value(l))}
-  if (boolFromRef(anon_5)) {
+    anon_8 := leInts(x, g_value(l))}
+  if (boolFromRef(anon_8)) {
     v_ret_0 := con(x, l)
     fold acc(Node_unique(v_ret_0), write)
     goto lbl_ret_0
   }
-  anon_6 := insert(x, g_next(l))
-  v_ret_0 := con(g_value(l), anon_6)
+  anon_9 := insert(x, g_next(l))
+  v_ret_0 := con(g_value(l), anon_9)
   fold acc(Node_unique(v_ret_0), write)
   goto lbl_ret_0
   label lbl_ret_0

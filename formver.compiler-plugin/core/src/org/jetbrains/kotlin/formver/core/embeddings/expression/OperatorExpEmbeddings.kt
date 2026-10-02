@@ -245,6 +245,59 @@ object OperatorExpEmbeddings {
         viperImplementation { Exp.SeqAppend(args[0], Exp.ExplicitSeq(listOf(args[1])), pos, info) }
     }
 
+    val UnionMultisets = buildBinaryOperator {
+        setName("unionMultisets")
+        withSignature {
+            withParam { multiset() }
+            withParam { multiset() }
+            withReturnType { multiset() }
+        }
+        viperImplementation { Exp.MultisetUnion(args[0], args[1], pos, info) }
+    }
+
+    val MinusMultisets = buildBinaryOperator {
+        setName("minusMultisets")
+        withSignature {
+            withParam { multiset() }
+            withParam { multiset() }
+            withReturnType { multiset() }
+        }
+        viperImplementation { Exp.MultisetMinus(args[0], args[1], pos, info) }
+    }
+
+    val MultisetCount = buildBinaryOperator {
+        setName("multisetCount")
+        withSignature {
+            withParam { multiset() }
+            withParam { int() }
+            withReturnType { int() }
+        }
+        viperImplementation { Exp.MultisetCount(args[1], args[0], pos, info) }
+    }
+
+    val MultisetContains = buildBinaryOperator {
+        setName("multisetContains")
+        withSignature {
+            withParam { multiset() }
+            withParam { int() }
+            withReturnType { boolean() }
+        }
+        viperImplementation { Exp.GtCmp(Exp.MultisetCount(args[1], args[0], pos, info), 0.toExp(), pos, info) }
+    }
+
+    val MultisetSize = buildUnaryOperator {
+        setName("multisetSize")
+        withSignature {
+            withParam { multiset() }
+            withReturnType { int() }
+        }
+        viperImplementation { Exp.MultisetSize(args[0], pos, info) }
+    }
+
+    /** Declared only in programs that use `Multiset`: their signatures need its injection. */
+    val multisetTemplates
+        get() = listOf(UnionMultisets, MinusMultisets, MultisetCount, MultisetContains, MultisetSize)
+
     val allTemplates
         get() = listOf(
             AddIntInt, SubIntInt, MulIntInt, DivIntInt, RemIntInt, NegInt,

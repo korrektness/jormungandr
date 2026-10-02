@@ -112,6 +112,7 @@ private fun Exp.subExps(): List<Exp> = when (this) {
     is Exp.DomainFuncApp -> args
     is Exp.AdtConstructorApp -> args
     is Exp.ExplicitSeq -> args
+    is Exp.ExplicitMultiset -> args
     is Exp.SeqLength -> listOf(seq)
     is Exp.SeqTake -> listOf(seq, idx)
     is Exp.SeqIndex -> listOf(seq, idx)
@@ -123,5 +124,6 @@ private fun Exp.subExps(): List<Exp> = when (this) {
     is AccessPredicate.FieldAccessPredicate -> listOf(access)
     is Exp.LetBinding -> listOf(varExp, body)
     is Exp.TernaryExp -> listOf(condExp, thenExp, elseExp)
-    is Exp.IntLit, is Exp.NullLit, is Exp.BoolLit, is Exp.LocalVar, is Exp.Result, is Exp.EmptySeq -> emptyList()
+    is Exp.IntLit, is Exp.NullLit, is Exp.BoolLit, is Exp.LocalVar, is Exp.Result, is Exp.EmptySeq,
+    is Exp.EmptyMultiset -> emptyList()
 }

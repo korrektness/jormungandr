@@ -11,6 +11,8 @@ import org.jetbrains.kotlin.formver.core.diagnostics.ErrorCollectionContext
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Assert
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
+import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionCall
+import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayContents
 import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayGet
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Old
 import org.jetbrains.kotlin.formver.core.embeddings.expression.StringBuilderRead
@@ -21,9 +23,10 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.WithPosition
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
 /**
- * Reports the `var` reads, array element reads and `StringBuilder` reads in [this] read-only context (a pure function body or a
+ * Reports the `var` reads, array element and contents reads and `StringBuilder` reads in [this] read-only context (a pure function body or a
  * specification) that no unique predicate covers: a read through a receiver the uniqueness checker does not find
- * `Unique`, and, outside `old`, a read through a path rooted at one of [consumed].
+ * `Unique`, and, outside `old`, a read through a path rooted at one of [consumed] or a pure call passing such a path
+ * to a `@Unique` parameter.
  */
 fun ExpEmbedding.checkReadOnlyVarReads(
     source: KtSourceElement,
@@ -43,7 +46,17 @@ fun ExpEmbedding.checkReadOnlyVarReads(
         this is FieldAccess && field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS ->
             checkOwnedRead(receiver, receiverOwned, "this var property", "receiver")
         this is IntArrayGet -> checkOwnedRead(array, receiverOwned, "an array element", "array")
+        this is IntArrayContents -> checkOwnedRead(array, receiverOwned, "the contents of an array", "array")
         this is StringBuilderRead -> checkOwnedRead(builder, receiverOwned, "a StringBuilder", "builder")
+        this is FunctionCall -> function.formalArgs.zip(args)
+            .filter { (param, arg) -> param.isUnique && arg.pathRoot()?.name in consumed }
+            .forEach { (_, arg) ->
+                errors.reportUnsupportedOwnership(
+                    (arg as? WithPosition)?.source ?: nextSource,
+                    "Passing this @Unique parameter to a pure function in a postcondition needs a @Borrowed root; " +
+                            "the function consumes it.",
+                )
+            }
     }
     val childConsumed = if (this is Old) emptySet() else consumed
     children().forEach { it.checkReadOnlyVarReads(nextSource, errors, childConsumed) }

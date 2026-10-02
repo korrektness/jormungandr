@@ -20,6 +20,13 @@ object LengthFieldGetter : GetterEmbedding {
     ): ExpEmbedding = OperatorExpEmbeddings.StringLength(receiver)
 }
 
+object MultisetSizeGetter : GetterEmbedding {
+    override fun getValue(receiver: ExpEmbedding, ctx: TypeResolver, receiverOwned: Boolean) =
+        OperatorExpEmbeddings.MultisetSize(receiver)
+
+    override fun getValueSimple(receiver: ExpEmbedding, ctx: TypeResolver) = OperatorExpEmbeddings.MultisetSize(receiver)
+}
+
 object IntArraySizeGetter : GetterEmbedding {
     override fun getValue(receiver: ExpEmbedding, ctx: TypeResolver, receiverOwned: Boolean) = IntArraySize(receiver)
 

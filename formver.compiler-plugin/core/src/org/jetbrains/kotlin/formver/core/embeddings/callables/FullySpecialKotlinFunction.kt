@@ -389,6 +389,38 @@ object SpecialKotlinFunctions {
             StringGet(args[0], args[1])
         }
 
+        val multisetMultisetToMultisetType = buildFunctionPretype {
+            withDispatchReceiver { multiset() }
+            withParam { multiset() }
+            withReturnType { multiset() }
+        }
+        withCallableType(multisetMultisetToMultisetType) {
+            addFunction(SpecialPackages.formver, className = "Multiset", name = "plus") { args, _ ->
+                OperatorExpEmbeddings.UnionMultisets(args[0], args[1])
+            }
+            addFunction(SpecialPackages.formver, className = "Multiset", name = "minus") { args, _ ->
+                OperatorExpEmbeddings.MinusMultisets(args[0], args[1])
+            }
+        }
+
+        val multisetElementToIntType = buildFunctionPretype {
+            withDispatchReceiver { multiset() }
+            withParam { int() }
+            withReturnType { int() }
+        }
+        addFunction(multisetElementToIntType, SpecialPackages.formver, className = "Multiset", name = "count") { args, _ ->
+            OperatorExpEmbeddings.MultisetCount(args[0], args[1])
+        }
+
+        val multisetElementToBooleanType = buildFunctionPretype {
+            withDispatchReceiver { multiset() }
+            withParam { int() }
+            withReturnType { boolean() }
+        }
+        addFunction(multisetElementToBooleanType, SpecialPackages.formver, className = "Multiset", name = "contains") { args, _ ->
+            OperatorExpEmbeddings.MultisetContains(args[0], args[1])
+        }
+
         val uniquePredicatePermissionsToUnit = buildFunctionPretype {
             withParam {
                 klass {
