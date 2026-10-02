@@ -4,12 +4,12 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 @Manual
 class Counter(
-    var n: @Unique Int
+    var n: Int
 )
 
 // Without the predicate in the invariant, the loop head holds no permission to c.
-@AlwaysVerify
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Counter, k: Int) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
+<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
+fun <!VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Counter, k: Int) {
     preconditions {
         k >= 0
     }
@@ -18,9 +18,9 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Counter, k:
         loopInvariants {
             i >= 0
         }
-        unfold(UniquePred(<!INVALID_MOVED_ACCESS, LOCALITY_MISMATCH!>c<!>))
-        <!INVALID_MOVED_ACCESS!>c<!>.n = <!UNIQUENESS_MISMATCH!><!INVALID_MOVED_ACCESS!>c<!>.n + 1<!>
-        fold(UniquePred(<!INVALID_MOVED_ACCESS, LOCALITY_MISMATCH!>c<!>))
+        unfold(UniquePred(c))
+        c.n = c.n + 1
+        fold(UniquePred(c))
         i = i + 1
     }
 }<!>

@@ -89,10 +89,13 @@ Checkers consume the above analyses:
 - `FunctionExitUniquenessConsistencyChecker.kt`
   - reports moved subpaths left in borrowed locals at function exit
   - also checks the parameters of `@Pure` functions, as its KDoc describes
-- `PureFunctionUniqueResultChecker.kt`
-  - reports a `@Unique` result on a `@Pure` function
+- `PureFunctionResultChecker.kt`
+  - reports a `@Unique` result on a `@Pure` function, and a result that is not a value type on a `@Pure` function
+    with a `@Unique` parameter
+- `UniquePredPlacementChecker.kt`
+  - reports a `UniquePred` constructed outside the arguments of a specification builtin
 - `ExpressionArgumentUniquenessCollisionChecker.kt`
-  - reports duplicate/overlapping unique arguments in one call
+  - reports equal or overlapping arguments of one call when one of their parameters is unique
 
 ### Facade for the converter
 

@@ -1,14 +1,7 @@
 /unique_fields.kt: info: Generated Viper text for testPrimitiveFieldGetterUnique:
 field bf_sharedVar: Ref
 
-field bf_uniqueVar: Ref
-
 function g_sharedVal(this: Ref): Ref
-  requires isSubtype(typeOf(this), UniquePrimitiveFields())
-  ensures isSubtype(typeOf(result), intType())
-
-
-function g_uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniquePrimitiveFields())
   ensures isSubtype(typeOf(result), intType())
 
@@ -20,13 +13,9 @@ method testPrimitiveFieldGetterUnique(pf: Ref) returns (v_ret_0: Ref)
 {
   var l0_sharedVal: Ref
   var l0_sharedVar: Ref
-  var l0_uniqueVal: Ref
-  var l0_uniqueVar: Ref
   l0_sharedVal := g_sharedVal(pf)
   unfold acc(UniquePrimitiveFields_unique(pf), write)
   l0_sharedVar := pf.bf_sharedVar
-  l0_uniqueVal := g_uniqueVal(pf)
-  l0_uniqueVar := pf.bf_uniqueVar
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -34,14 +23,7 @@ method testPrimitiveFieldGetterUnique(pf: Ref) returns (v_ret_0: Ref)
 /unique_fields.kt: info: Generated Viper text for testPrimitiveFieldGetterShared:
 field bf_sharedVar: Ref
 
-field bf_uniqueVar: Ref
-
 function g_sharedVal(this: Ref): Ref
-  requires isSubtype(typeOf(this), UniquePrimitiveFields())
-  ensures isSubtype(typeOf(result), intType())
-
-
-function g_uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniquePrimitiveFields())
   ensures isSubtype(typeOf(result), intType())
 
@@ -52,29 +34,16 @@ method testPrimitiveFieldGetterShared(pf: Ref) returns (v_ret_0: Ref)
 {
   var l0_sharedVal: Ref
   var l0_sharedVar: Ref
-  var l0_uniqueVal: Ref
-  var l0_uniqueVar: Ref
   l0_sharedVal := g_sharedVal(pf)
   l0_sharedVar := havoc(intType())
-  l0_uniqueVal := g_uniqueVal(pf)
-  l0_uniqueVar := havoc(intType())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-/unique_fields.kt: error: Function 'testPrimitiveFieldSetterUnique' was not verified because of uniqueness or locality errors
-
 /unique_fields.kt: info: Generated Viper text for testPrimitiveFieldSetterUnique:
 field sharedVar: Ref
 
-field uniqueVar: Ref
-
 function sharedVal(this: Ref): Ref
-  requires isSubtype(typeOf(this), UniquePrimitiveFields())
-  ensures isSubtype(typeOf(result), intType())
-
-
-function uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniquePrimitiveFields())
   ensures isSubtype(typeOf(result), intType())
 
@@ -84,23 +53,16 @@ method testPrimitiveFieldSetterUnique(pf: Ref) returns (v_ret_0: Ref)
   requires acc(UniquePrimitiveFields_unique(pf), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  unfold acc(UniquePrimitiveFields_unique(pf), write)
+  pf.sharedVar := intToRef(1)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-/unique_fields.kt: error: Assignment uniqueness mismatch: expected 'unique', actual 'shared'.
-
 /unique_fields.kt: info: Generated Viper text for testPrimitiveFieldSetterShared:
 field sharedVar: Ref
 
-field uniqueVar: Ref
-
 function sharedVal(this: Ref): Ref
-  requires isSubtype(typeOf(this), UniquePrimitiveFields())
-  ensures isSubtype(typeOf(result), intType())
-
-
-function uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniquePrimitiveFields())
   ensures isSubtype(typeOf(result), intType())
 
@@ -123,17 +85,12 @@ function UniquePrimitiveFields_g_sharedVal(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function UniquePrimitiveFields_g_uniqueVal(this: Ref): Ref
-  requires isSubtype(typeOf(this), UniquePrimitiveFields())
-  ensures isSubtype(typeOf(result), intType())
-
-
 function UniqueReferenceFields_g_sharedVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniqueReferenceFields())
   ensures isSubtype(typeOf(result), UniquePrimitiveFields())
 
 
-function UniqueReferenceFields_g_uniqueVal(this: Ref): Ref
+function g_uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniqueReferenceFields())
   ensures isSubtype(typeOf(result), UniquePrimitiveFields())
 
@@ -150,7 +107,7 @@ method testReferenceFieldGetterUnique(rf: Ref) returns (v_ret_0: Ref)
   l0_sharedVal := UniqueReferenceFields_g_sharedVal(rf)
   unfold acc(UniqueReferenceFields_unique(rf), write)
   l0_sharedVar := rf.bf_sharedVar
-  l0_uniqueVal := UniqueReferenceFields_g_uniqueVal(rf)
+  l0_uniqueVal := g_uniqueVal(rf)
   l0_uniqueVar := rf.bf_uniqueVar
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -166,17 +123,12 @@ function UniquePrimitiveFields_g_sharedVal(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function UniquePrimitiveFields_g_uniqueVal(this: Ref): Ref
-  requires isSubtype(typeOf(this), UniquePrimitiveFields())
-  ensures isSubtype(typeOf(result), intType())
-
-
 function UniqueReferenceFields_g_sharedVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniqueReferenceFields())
   ensures isSubtype(typeOf(result), UniquePrimitiveFields())
 
 
-function UniqueReferenceFields_g_uniqueVal(this: Ref): Ref
+function g_uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniqueReferenceFields())
   ensures isSubtype(typeOf(result), UniquePrimitiveFields())
 
@@ -191,25 +143,18 @@ method testReferenceFieldGetterShared(rf: Ref) returns (v_ret_0: Ref)
   var l0_uniqueVar: Ref
   l0_sharedVal := UniqueReferenceFields_g_sharedVal(rf)
   l0_sharedVar := havoc(UniquePrimitiveFields())
-  l0_uniqueVal := UniqueReferenceFields_g_uniqueVal(rf)
+  l0_uniqueVal := g_uniqueVal(rf)
   l0_uniqueVar := havoc(UniquePrimitiveFields())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-/unique_fields.kt: error: Function 'testReferenceFieldSetterUnique' was not verified because of uniqueness or locality errors
-
 /unique_fields.kt: info: Generated Viper text for testReferenceFieldSetterUnique:
 field bf_sharedVar: Ref
 
-field bf_uniqueVar: Ref
+field uniqueVar: Ref
 
 function UniquePrimitiveFields_g_sharedVal(this: Ref): Ref
-  requires isSubtype(typeOf(this), UniquePrimitiveFields())
-  ensures isSubtype(typeOf(result), intType())
-
-
-function UniquePrimitiveFields_g_uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniquePrimitiveFields())
   ensures isSubtype(typeOf(result), intType())
 
@@ -219,17 +164,14 @@ function UniqueReferenceFields_g_sharedVal(this: Ref): Ref
   ensures isSubtype(typeOf(result), UniquePrimitiveFields())
 
 
-function UniqueReferenceFields_g_uniqueVal(this: Ref): Ref
+function uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniqueReferenceFields())
   ensures isSubtype(typeOf(result), UniquePrimitiveFields())
 
 
-method con(par_sharedVal: Ref, par_sharedVar: Ref, par_uniqueVal: Ref, par_uniqueVar: Ref)
-  returns (ret_1: Ref)
+method con(par_sharedVal: Ref, par_sharedVar: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_sharedVal), intType())
   requires isSubtype(typeOf(par_sharedVar), intType())
-  requires isSubtype(typeOf(par_uniqueVal), intType())
-  requires isSubtype(typeOf(par_uniqueVar), intType())
   ensures isSubtype(typeOf(ret_1), UniquePrimitiveFields())
   ensures acc(UniquePrimitiveFields_unique(ret_1), write)
   ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
@@ -237,11 +179,6 @@ method con(par_sharedVal: Ref, par_sharedVar: Ref, par_uniqueVal: Ref, par_uniqu
   ensures intFromRef((unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
       ret_1.bf_sharedVar)) ==
     intFromRef(par_sharedVar)
-  ensures intFromRef(UniquePrimitiveFields_g_uniqueVal(ret_1)) ==
-    intFromRef(par_uniqueVal)
-  ensures intFromRef((unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
-      ret_1.bf_uniqueVar)) ==
-    intFromRef(par_uniqueVar)
 
 
 method testReferenceFieldSetterUnique(rf: Ref) returns (v_ret_0: Ref)
@@ -251,33 +188,21 @@ method testReferenceFieldSetterUnique(rf: Ref) returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_1: Ref
-  anon_0 := con(intToRef(5), intToRef(6), intToRef(7), intToRef(8))
-  anon_1 := con(intToRef(9), intToRef(10), intToRef(11), intToRef(12))
+  unfold acc(UniqueReferenceFields_unique(rf), write)
+  anon_0 := con(intToRef(5), intToRef(6))
+  rf.bf_sharedVar := anon_0
+  anon_1 := con(intToRef(9), intToRef(10))
+  rf.uniqueVar := anon_1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-/unique_fields.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/unique_fields.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/unique_fields.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/unique_fields.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/unique_fields.kt: error: Function 'testReferenceFieldSetterShared' was not verified because of uniqueness or locality errors
-
 /unique_fields.kt: info: Generated Viper text for testReferenceFieldSetterShared:
 field bf_sharedVar: Ref
 
-field bf_uniqueVar: Ref
+field uniqueVar: Ref
 
 function UniquePrimitiveFields_g_sharedVal(this: Ref): Ref
-  requires isSubtype(typeOf(this), UniquePrimitiveFields())
-  ensures isSubtype(typeOf(result), intType())
-
-
-function UniquePrimitiveFields_g_uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniquePrimitiveFields())
   ensures isSubtype(typeOf(result), intType())
 
@@ -287,17 +212,14 @@ function UniqueReferenceFields_g_sharedVal(this: Ref): Ref
   ensures isSubtype(typeOf(result), UniquePrimitiveFields())
 
 
-function UniqueReferenceFields_g_uniqueVal(this: Ref): Ref
+function uniqueVal(this: Ref): Ref
   requires isSubtype(typeOf(this), UniqueReferenceFields())
   ensures isSubtype(typeOf(result), UniquePrimitiveFields())
 
 
-method con(par_sharedVal: Ref, par_sharedVar: Ref, par_uniqueVal: Ref, par_uniqueVar: Ref)
-  returns (ret_1: Ref)
+method con(par_sharedVal: Ref, par_sharedVar: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_sharedVal), intType())
   requires isSubtype(typeOf(par_sharedVar), intType())
-  requires isSubtype(typeOf(par_uniqueVal), intType())
-  requires isSubtype(typeOf(par_uniqueVar), intType())
   ensures isSubtype(typeOf(ret_1), UniquePrimitiveFields())
   ensures acc(UniquePrimitiveFields_unique(ret_1), write)
   ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
@@ -305,11 +227,6 @@ method con(par_sharedVal: Ref, par_sharedVar: Ref, par_uniqueVal: Ref, par_uniqu
   ensures intFromRef((unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
       ret_1.bf_sharedVar)) ==
     intFromRef(par_sharedVar)
-  ensures intFromRef(UniquePrimitiveFields_g_uniqueVal(ret_1)) ==
-    intFromRef(par_uniqueVal)
-  ensures intFromRef((unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
-      ret_1.bf_uniqueVar)) ==
-    intFromRef(par_uniqueVar)
 
 
 method testReferenceFieldSetterShared(rf: Ref) returns (v_ret_0: Ref)
@@ -318,16 +235,8 @@ method testReferenceFieldSetterShared(rf: Ref) returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_1: Ref
-  anon_0 := con(intToRef(13), intToRef(14), intToRef(15), intToRef(16))
-  anon_1 := con(intToRef(17), intToRef(18), intToRef(19), intToRef(20))
+  anon_0 := con(intToRef(13), intToRef(14))
+  anon_1 := con(intToRef(17), intToRef(18))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
-
-/unique_fields.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/unique_fields.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/unique_fields.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/unique_fields.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.

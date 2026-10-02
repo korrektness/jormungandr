@@ -46,6 +46,10 @@ object UniquenessErrorMessages : BaseDiagnosticRendererFactory() {
                     "A declaration whose type is a type parameter cannot be unique.",
                 )
                 map.put(
+                    UniquenessErrors.INVALID_VALUE_TYPE_UNIQUENESS,
+                    "A declaration of a value type cannot be unique.",
+                )
+                map.put(
                     UniquenessErrors.OVERRIDE_UNIQUENESS_MISMATCH,
                     "Uniqueness or borrowing annotations differ from those of the overridden declaration.",
                 )
@@ -57,6 +61,14 @@ object UniquenessErrorMessages : BaseDiagnosticRendererFactory() {
                 map.put(
                     UniquenessErrors.INVALID_PURE_UNIQUE_RESULT,
                     "A pure function cannot return a unique value.",
+                )
+                map.put(
+                    UniquenessErrors.INVALID_PURE_REFERENCE_RESULT,
+                    "A pure function with a unique parameter cannot return a reference.",
+                )
+                map.put(
+                    UniquenessErrors.INVALID_UNIQUE_PRED_PLACEMENT,
+                    "'UniquePred' constructed outside a specification builtin.",
                 )
                 map.put(
                     UniquenessErrors.ESCAPE_UNIQUENESS_INCONSISTENCY,

@@ -277,6 +277,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("ghost.kt")
+    public void testGhost() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/ghost.kt");
+    }
+
+    @Test
     @TestMetadata("int_array.kt")
     public void testInt_array() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/int_array.kt");

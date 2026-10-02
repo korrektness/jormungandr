@@ -20,34 +20,39 @@ import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.lowerBoundIfFlexible
 import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_TYPE_PARAMETER_UNIQUENESS
+import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_VALUE_TYPE_UNIQUENESS
 
 /**
- * Checks that no declaration whose type is a type parameter is declared `@Unique`: predicates are per erased class, so
- * ownership cannot cross erasure.
+ * Checks that no declaration whose type is a type parameter or a value type is declared `@Unique`. Predicates are per
+ * erased class, so ownership cannot cross erasure; values of a value type carry no predicate, so owning one means
+ * nothing.
  *
  * The declared type of a property, local, parameter or function result is checked, and so is the type of its extension
  * receiver. Inferred types are skipped, since they take their uniqueness from a declaration checked on its own.
  */
-object TypeParameterUniquenessChecker : FirCallableDeclarationChecker(MppCheckerKind.Common) {
+object DeclaredTypeUniquenessChecker : FirCallableDeclarationChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirCallableDeclaration) {
         if (declaration.source?.kind is KtFakeSourceElementKind) return
 
         val typeRefs = listOfNotNull(declaration.returnTypeRef, declaration.receiverParameter?.typeRef)
         for (typeRef in typeRefs) {
-            if (typeRef.isUniqueTypeParameter) {
-                reporter.reportOn(typeRef.source, INVALID_TYPE_PARAMETER_UNIQUENESS)
+            if (!typeRef.isExplicitlyUnique) continue
+
+            val type = typeRef.coneType
+            when {
+                type.isTypeParameter -> reporter.reportOn(typeRef.source, INVALID_TYPE_PARAMETER_UNIQUENESS)
+                type.isValueType() -> reporter.reportOn(typeRef.source, INVALID_VALUE_TYPE_UNIQUENESS)
             }
         }
     }
 
-    private val FirTypeRef.isUniqueTypeParameter: Boolean
+    private val FirTypeRef.isExplicitlyUnique: Boolean
         get() {
             val source = source ?: return false
             if (source.kind is KtFakeSourceElementKind) return false
 
-            val type = coneType
-            return type.attributes.uniquenessAttribute != null && type.isTypeParameter
+            return coneType.attributes.uniquenessAttribute != null
         }
 
     private val ConeKotlinType.isTypeParameter: Boolean

@@ -123,7 +123,12 @@ fun `consume as context and argument`() {
 
 context(box: @Unique Box)
 fun `borrow as context and consume as argument`() {
-    borrowContextAndConsumeArg(box)
+    <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>borrowContextAndConsumeArg(<!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>box<!>)<!>
+}
+
+context(box: @Unique Box)
+fun `borrow as context and consume another box as argument`(other: @Unique Box) {
+    borrowContextAndConsumeArg(other)
 }
 
 context(box: @Unique Box)

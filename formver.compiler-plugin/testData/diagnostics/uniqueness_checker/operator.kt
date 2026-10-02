@@ -59,13 +59,6 @@ fun `consume after in operator`(a: @Unique A, b: @Unique A) {
     consume(<!INVALID_MOVED_ACCESS!>b<!>)
 }
 
-// String concatenation via `+`
-
-fun `consume after string plus`(a: @Unique String) {
-    val s: String = a + " suffix"
-    consume(<!INVALID_MOVED_ACCESS!>a<!>)
-}
-
 // Augmented assignment += desugars to `a = a + b`
 
 fun `consume after plus assign`(b: @Unique A) {

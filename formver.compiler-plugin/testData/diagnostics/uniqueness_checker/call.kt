@@ -14,6 +14,10 @@ class B {
 
 class Node(val next: @Unique Node?)
 
+class C(val value: Int, var shared: Any, var unique: @Unique Any) {
+    fun consumeArg(other: @Unique Any) {}
+}
+
 fun borrow(a: @Borrowed Any) {}
 
 fun borrowUnique(a: @Borrowed @Unique Any) {}
@@ -27,6 +31,14 @@ fun borrowBoth(a: @Borrowed Any, b: @Borrowed Any) {}
 fun consumeBoth(a: @Unique Any, b: @Unique Any) {}
 
 fun shareBoth(a: Any, b: Any) {}
+
+fun consumeAndShare(a: @Unique Any, b: Any) {}
+
+fun borrowUniqueAndShare(a: @Unique @Borrowed Any, b: Any) {}
+
+fun borrowUniqueAndBorrow(a: @Unique @Borrowed Any, b: @Borrowed Any) {}
+
+fun consumeAndTakeInt(a: @Unique Any, b: Int) {}
 
 fun `pass unique subproperty and parent to consumeBoth`(a: @Unique B) {
     consumeBoth(<!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>a.y<!>, <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>a<!>)
@@ -347,4 +359,46 @@ fun `pass shared subproperty and parent to shareBoth`(a: B) {
 
 fun `pass borrowed subproperty and parent to borrowBoth`(a: @Borrowed B) {
     borrowBoth(a.y, a)
+}
+
+// Passing an owned path to a unique parameter and an overlapping path to any other parameter
+
+fun `pass unique to consumeAndShare twice`(a: @Unique Any) {
+    consumeAndShare(<!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>, <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>)
+}
+
+fun `pass unique to borrowUniqueAndShare twice`(a: @Unique Any) {
+    borrowUniqueAndShare(<!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>, <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>)
+}
+
+fun `pass unique to borrowUniqueAndBorrow twice`(a: @Unique Any) {
+    borrowUniqueAndBorrow(<!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>, <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>)
+}
+
+fun `pass unique and its unique subproperty to borrowUniqueAndShare`(a: @Unique B) {
+    borrowUniqueAndShare(<!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>a<!>, <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>a.y<!>)
+}
+
+fun `pass unique subproperty and its parent to borrowUniqueAndShare`(a: @Unique B) {
+    borrowUniqueAndShare(<!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>a.y<!>, <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>a<!>)
+}
+
+fun `pass unique as dispatch receiver and unique argument`(c: @Unique C) {
+    <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>c<!>.consumeArg(<!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>c<!>)
+}
+
+fun `pass unique field of dispatch receiver as unique argument`(c: @Unique C) {
+    <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>c<!>.consumeArg(<!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>c.unique<!>)
+}
+
+fun `pass unique and its value field`(c: @Unique C) {
+    consumeAndTakeInt(c, c.value)
+}
+
+fun `pass unique and its shared field`(c: @Unique C) {
+    consumeAndShare(c, c.shared)
+}
+
+fun `pass distinct unique fields to borrowUniqueAndShare`(a: @Unique A) {
+    borrowUniqueAndShare(a.x, a.w)
 }

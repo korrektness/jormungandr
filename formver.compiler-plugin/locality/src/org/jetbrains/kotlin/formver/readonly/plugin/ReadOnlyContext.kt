@@ -14,10 +14,12 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 import org.jetbrains.kotlin.name.CallableId
@@ -35,11 +37,23 @@ private fun builtinId(name: String): CallableId =
 val postconditionsId = builtinId("postconditions")
 
 /**
- * The builtins whose arguments are specifications.
+ * The builtins whose arguments are never run: specifications, and the ghost operations on permissions.
  */
 private val specificationFunctionIds: Set<CallableId> =
     setOf(builtinId("preconditions"), postconditionsId, builtinId("loopInvariants"), builtinId("verify"),
-        builtinId("forAll"), builtinId("exists"))
+        builtinId("forAll"), builtinId("exists"), builtinId("old"), builtinId("acc"), builtinId("fold"),
+        builtinId("unfold"))
+
+private val uniquePredClassId = ClassId(formverPluginPackage, Name.identifier("UniquePred"))
+
+private val FirFunctionSymbol<*>.isUniquePredConstructor: Boolean
+    get() = this is FirConstructorSymbol && resolvedReturnType.classId == uniquePredClassId
+
+/**
+ * Whether [this] call constructs a `UniquePred`. See `UniquePredPlacementChecker`.
+ */
+fun FirFunctionCall.isUniquePredConstruction(): Boolean =
+    (toResolvedCallableSymbol() as? FirFunctionSymbol<*>)?.isUniquePredConstructor == true
 
 fun FirBasedSymbol<*>.isPure(session: FirSession): Boolean =
     hasAnnotation(pureAnnotationId, session)
@@ -48,11 +62,12 @@ fun FirFunctionCall.isPureCall(session: FirSession): Boolean =
     toResolvedCallableSymbol()?.isPure(session) == true
 
 private fun FirFunctionSymbol<*>.borrowsParameterOfType(type: ConeKotlinType, session: FirSession): Boolean =
-    callableId in specificationFunctionIds || isPure(session) && type.attributes.uniquenessAttribute != null
+    callableId in specificationFunctionIds || isUniquePredConstructor ||
+            isPure(session) && type.attributes.uniquenessAttribute != null
 
 /**
  * Whether [this] parameter is borrowed because its function only reads it: every parameter of a specification
- * builtin, and every `@Unique` parameter of a `@Pure` function.
+ * builtin or of the `UniquePred` constructor, and every `@Unique` parameter of a `@Pure` function.
  */
 fun FirValueParameterSymbol.isReadOnlyBorrowed(session: FirSession): Boolean {
     val function = containingDeclarationSymbol as? FirFunctionSymbol<*> ?: return false
@@ -69,6 +84,12 @@ fun FirReceiverParameterSymbol.isReadOnlyBorrowed(session: FirSession): Boolean 
 
 private fun FirElement.isSpecificationCall(): Boolean =
     this is FirFunctionCall && toResolvedCallableSymbol()?.callableId in specificationFunctionIds
+
+/**
+ * Whether the element checked in [this] context lies in the arguments of a specification builtin.
+ */
+fun CheckerContext.isInSpecification(): Boolean =
+    containingElements.any { it.isSpecificationCall() }
 
 private fun FirElement.opensReadOnlyContext(session: FirSession): Boolean =
     when (this) {

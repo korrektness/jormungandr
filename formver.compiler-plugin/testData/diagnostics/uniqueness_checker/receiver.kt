@@ -94,10 +94,20 @@ fun `borrow same value as receiver and arg`(a: @Unique A) {
     consume(a)
 }
 
+fun (@Unique @Borrowed A).borrowUniqueSelfAndShareArg(other: A) {}
+
+fun `borrow unique value as receiver and share as arg`(a: @Unique A) {
+    <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>.borrowUniqueSelfAndShareArg(<!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>)
+}
+
 fun (@Borrowed A).borrowSelfAndConsumeArg(other: @Unique A) {}
 
 fun `borrow value as receiver and consume as arg`(a: @Unique A) {
-    a.borrowSelfAndConsumeArg(a)
+    <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>.borrowSelfAndConsumeArg(<!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>a<!>)
+}
+
+fun `borrow value as receiver and consume another value as arg`(a: @Unique A, b: @Unique A) {
+    a.borrowSelfAndConsumeArg(b)
     consume(a)
 }
 

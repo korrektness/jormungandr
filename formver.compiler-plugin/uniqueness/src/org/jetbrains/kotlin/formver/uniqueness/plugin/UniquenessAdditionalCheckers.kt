@@ -33,7 +33,7 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> =
             setOf(
                 OverrideUniquenessChecker,
-                TypeParameterUniquenessChecker,
+                DeclaredTypeUniquenessChecker,
             )
 
         override val propertyCheckers: Set<FirPropertyChecker> =
@@ -45,7 +45,7 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
                 FunctionEscapeUniquenessConsistencyChecker,
                 FunctionExitUniquenessConsistencyChecker,
                 FunctionUseAfterMoveChecker,
-                PureFunctionUniqueResultChecker,
+                PureFunctionResultChecker,
             )
 
         override val valueParameterCheckers: Set<FirValueParameterChecker> =
@@ -60,7 +60,7 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
             setOf(CallUniquenessChecker)
 
         override val functionCallCheckers: Set<FirFunctionCallChecker> =
-            setOf(FunctionCallArgumentUniquenessCollisionChecker)
+            setOf(FunctionCallArgumentUniquenessCollisionChecker, UniquePredPlacementChecker)
 
         override val qualifiedAccessExpressionCheckers: Set<FirQualifiedAccessExpressionChecker> =
             setOf(

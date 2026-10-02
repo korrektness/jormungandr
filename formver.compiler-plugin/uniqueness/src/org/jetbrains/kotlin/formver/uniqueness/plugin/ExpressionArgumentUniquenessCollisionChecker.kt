@@ -35,6 +35,16 @@ private fun Path.computeCommonPrefix(other: Path): Int {
     return commonPrefix
 }
 
+/**
+ * Whether the object at [longer] is reachable from the object at [shorter] through `@Unique` fields only, so that a
+ * predicate held for one of them covers the other. [shorter] must share its first [commonPrefixLength] symbols with
+ * [longer] and have no others.
+ */
+context(context: CheckerContext)
+private fun extendsThroughUniqueFields(shorter: Path, longer: Path, commonPrefixLength: Int): Boolean =
+    commonPrefixLength == shorter.size &&
+            longer.subList(shorter.size, longer.size).resolveDeclaredUniqueness() == Uniqueness.Unique
+
 context(context: CheckerContext, reporter: DiagnosticReporter)
 private fun checkUniquenessCollision(
     ownerElement: FirElement,
@@ -55,21 +65,28 @@ private fun checkUniquenessCollision(
                     reporter.reportOn(leftSource, INVALID_DUPLICATE_UNIQUE_ARGUMENT, leftPath)
                 }
                 reporter.reportOn(rightSource, INVALID_DUPLICATE_UNIQUE_ARGUMENT, rightPath)
-            } else {
+            } else if (
+                extendsThroughUniqueFields(leftPath, rightPath, commonPrefixLength) ||
+                extendsThroughUniqueFields(rightPath, leftPath, commonPrefixLength)
+            ) {
                 if (leftSource != rightSource) {
-                    reporter.reportOn(leftArgument.source, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, leftPath, rightPath)
+                    reporter.reportOn(leftSource, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, leftPath, rightPath)
                 }
-                reporter.reportOn(rightArgument.source, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, rightPath, leftPath)
+                reporter.reportOn(rightSource, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, rightPath, leftPath)
             }
         }
     }
 }
 
 /**
- * Checker for detecting collisions between expressions passed to unique arguments of the same expression.
+ * Checker for detecting collisions between the arguments of one expression when at least one of them is passed to a
+ * unique parameter.
  *
- * Two unique arguments collide when their access paths are identical, or when one access path is a prefix of the other.
- * For example, passing both `x` and `x.f` to unique parameters is invalid because the accesses overlap.
+ * Two arguments collide when their access paths are identical, or when one access path extends the other through
+ * `@Unique` fields only. For example, passing `x` to a unique parameter and `x.f` for a `@Unique` field `f` to any
+ * parameter is invalid: the callee would hold the predicate of one and a shared alias into it. Extending through a
+ * field that is not `@Unique` reaches an object the predicate does not cover, so `x` and `x.value` for an `Int` field `value` do
+ * not collide.
  *
  * @param Statement the FIR expression kind handled by this checker.
  * @param argumentUniquenessMapper the mapper for resolving required uniqueness of argument-like expressions.
@@ -84,18 +101,21 @@ class ExpressionArgumentUniquenessCollisionChecker<Statement : FirStatement>(
         if (!shouldBeChecked(expression)) return
 
         val argumentUniquenesses = argumentUniquenessMapper.mapArgumentUniquenessesOf(expression)
-        val uniqueArguments =
-            argumentUniquenesses
-                .filter { (_, uniqueness) -> uniqueness == Uniqueness.Unique }
-                .map { (expression, _) -> expression }
 
-        for ((index, leftArgument) in uniqueArguments.withIndex()) {
-            for (rightArgument in uniqueArguments.subList(index + 1, uniqueArguments.size)) {
-                checkUniquenessCollision(expression, leftArgument, rightArgument)
+        for ((index, left) in argumentUniquenesses.withIndex()) {
+            for (right in argumentUniquenesses.subList(index + 1, argumentUniquenesses.size)) {
+                if (left.second != Uniqueness.Unique && right.second != Uniqueness.Unique) continue
+                checkUniquenessCollision(expression, left.first, right.first)
             }
         }
     }
 }
+
+/**
+ * Maps the dispatch receiver of [expression] to `Shared`: a dispatch receiver cannot be annotated.
+ */
+private fun dispatchReceiverUniquenessOf(expression: FirQualifiedAccessExpression): List<Pair<FirExpression, Uniqueness>> =
+    listOfNotNull(expression.dispatchReceiver?.let { it to Uniqueness.Shared })
 
 /**
  * Checks collisions between value arguments, receivers, and context arguments of [FirFunctionCall]s.
@@ -103,7 +123,8 @@ class ExpressionArgumentUniquenessCollisionChecker<Statement : FirStatement>(
 val FunctionCallArgumentUniquenessCollisionChecker =
     ExpressionArgumentUniquenessCollisionChecker<FirFunctionCall>(
         { expression ->
-            QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(expression) +
+            dispatchReceiverUniquenessOf(expression) +
+                    QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(expression) +
                     CallArgumentUniquenessesMapper.mapArgumentTypeFactsOf(expression)
         }
     )
@@ -114,7 +135,8 @@ val FunctionCallArgumentUniquenessCollisionChecker =
 val QualifiedAccessArgumentUniquenessCollisionChecker =
     ExpressionArgumentUniquenessCollisionChecker<FirQualifiedAccessExpression>(
         { expression ->
-            QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(expression)
+            dispatchReceiverUniquenessOf(expression) +
+                    QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(expression)
         },
         { statement -> statement !is FirFunctionCall }
     )

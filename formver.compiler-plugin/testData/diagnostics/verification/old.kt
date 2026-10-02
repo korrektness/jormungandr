@@ -4,10 +4,10 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 
 class C(
-    var field: @Unique Int
+    var field: Int
 )
 
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>test<!>(c: @Unique @Borrowed C) {
+fun <!VIPER_TEXT!>test<!>(c: @Unique @Borrowed C) {
     preconditions {
         c.field == 42
     }
@@ -15,7 +15,7 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>test<!>(c: @Unique @Borrowed C) {
         c.field == 43
     }
     inc(c)
-    verify(c == old(<!LOCALITY_MISMATCH!>c<!>))
+    verify(c == old(c))
 }
 
 // TODO: Remove the @NeverConvert once we have uniqueness information.
@@ -24,5 +24,5 @@ fun inc(c: @Unique @Borrowed C) {
     postconditions<Unit> {
         c.field == old(c.field) + 1
     }
-    c.field = <!UNIQUENESS_MISMATCH!>c.field + 1<!>
+    c.field = c.field + 1
 }
