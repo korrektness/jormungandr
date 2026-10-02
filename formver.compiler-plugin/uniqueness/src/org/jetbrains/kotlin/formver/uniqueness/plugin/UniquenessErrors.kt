@@ -32,5 +32,8 @@ object UniquenessErrors : KtDiagnosticsContainer() {
     // Checking unique attributes
     val INVALID_UNIQUENESS_TYPE_TARGET by error0<PsiElement>()
 
+    // Checking pure functions
+    val INVALID_PURE_UNIQUE_RESULT by error0<PsiElement>()
+
     override fun getRendererFactory() = UniquenessErrorMessages
 }

@@ -34,6 +34,10 @@ val FirBasedSymbol<*>.locality: Locality
 /**
  * Checks that local roots do not contain moved paths when a function exits.
  *
+ * The parameters of a `@Pure` function are borrowed from its caller, so they are checked as local roots too, and so is
+ * whether the parameter itself has moved. A local root itself cannot move, since locality checking rejects every use
+ * that would move it.
+ *
  * TODO: Do not consider locally caught `throw`s as exit operations.
  */
 object FunctionExitUniquenessConsistencyChecker : FirFunctionChecker( MppCheckerKind.Common) {
@@ -41,6 +45,13 @@ object FunctionExitUniquenessConsistencyChecker : FirFunctionChecker( MppChecker
     override fun check(declaration: FirFunction) {
         val graph = declaration.controlFlowGraphReference?.controlFlowGraph ?: return
         val uniquenessStateFlows = graph.resolveUniquenessStateFlows()
+        val pureParameters: Set<FirBasedSymbol<*>> =
+            if (declaration.symbol.isPure(context.session)) {
+                val parameters = listOfNotNull(declaration.receiverParameter) + declaration.valueParameters
+                parameters.mapTo(mutableSetOf()) { it.symbol }
+            } else {
+                emptySet()
+            }
 
         fun CFGNode<*>.isExit(): Boolean =
             when (this) {
@@ -64,16 +75,20 @@ object FunctionExitUniquenessConsistencyChecker : FirFunctionChecker( MppChecker
             val rootUniquenessStates = outputUniquenessState.children
 
             for ((symbol, uniquenessState) in rootUniquenessStates) {
-                if (symbol.locality == Locality.Local) {
-                    val inconsistentPaths = uniquenessState.enumerateInconsistentPaths()
+                val inconsistentPaths = when {
+                    symbol in pureParameters ->
+                        uniquenessState.enumerateInconsistentPaths(includeRoot = true)
+                    symbol.locality == Locality.Local ->
+                        uniquenessState.enumerateInconsistentPaths()
+                    else -> continue
+                }
 
-                    for (inconsistentPath in inconsistentPaths) {
-                        reporter.reportOn(
-                            node.fir.source ?: declaration.source,
-                            EXIT_UNIQUENESS_INCONSISTENCY,
-                            listOf(symbol) + inconsistentPath
-                        )
-                    }
+                for (inconsistentPath in inconsistentPaths) {
+                    reporter.reportOn(
+                        node.fir.source ?: declaration.source,
+                        EXIT_UNIQUENESS_INCONSISTENCY,
+                        listOf(symbol) + inconsistentPath
+                    )
                 }
             }
         }

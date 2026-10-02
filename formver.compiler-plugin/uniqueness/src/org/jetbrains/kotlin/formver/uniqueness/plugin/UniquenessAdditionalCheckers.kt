@@ -36,7 +36,8 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
             setOf(
                 FunctionEscapeUniquenessConsistencyChecker,
                 FunctionExitUniquenessConsistencyChecker,
-                FunctionUseAfterMoveChecker
+                FunctionUseAfterMoveChecker,
+                PureFunctionUniqueResultChecker,
             )
 
         override val valueParameterCheckers: Set<FirValueParameterChecker> =

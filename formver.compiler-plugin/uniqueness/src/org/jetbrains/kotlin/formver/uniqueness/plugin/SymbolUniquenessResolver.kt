@@ -6,12 +6,23 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.KtFakeSourceElementKind
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
+import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
+import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.arguments
+import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
+import org.jetbrains.kotlin.fir.expressions.unwrapArgument
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeErrorType
+import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 
 fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =
@@ -21,11 +32,48 @@ context(context: CheckerContext)
 fun FirVariableSymbol<*>.resolveUniqueness(): Uniqueness {
     if (resolvedReturnType is ConeErrorType) return Uniqueness.Shared
 
+    if (this is FirValueParameterSymbol) {
+        resolvePostconditionResultUniqueness()?.let { return it }
+    }
+
     if (resolvedReturnTypeRef.source?.kind !is KtFakeSourceElementKind.ImplicitTypeRef) {
         return resolvedReturnType.scopeUniqueness
     }
 
     return resolvedInitializer?.resolveAccessUniqueness() ?: Uniqueness.Shared
+}
+
+/**
+ * Resolves the uniqueness of [this] as the result parameter of a `postconditions` lambda, which is the result
+ * uniqueness of the function the postconditions belong to. Returns null when [this] is not such a parameter.
+ */
+context(context: CheckerContext)
+private fun FirValueParameterSymbol.resolvePostconditionResultUniqueness(): Uniqueness? {
+    val lambda = containingDeclarationSymbol as? FirAnonymousFunctionSymbol ?: return null
+    val function = context.containingElements
+        .lastOrNull { it is FirFunction && it !is FirAnonymousFunction } as? FirFunction ?: return null
+    if (lambda !in function.collectPostconditionLambdas()) return null
+
+    return function.returnTypeRef.coneType.scopeUniqueness
+}
+
+private fun FirFunction.collectPostconditionLambdas(): Set<FirAnonymousFunctionSymbol> {
+    val function = this
+    val lambdas = mutableSetOf<FirAnonymousFunctionSymbol>()
+
+    function.body?.accept(object : FirVisitorVoid() {
+        override fun visitElement(element: FirElement) {
+            if (element is FirFunction && element !is FirAnonymousFunction) return
+            if (element is FirFunctionCall && element.toResolvedCallableSymbol()?.callableId == postconditionsId) {
+                element.arguments.mapNotNullTo(lambdas) { argument ->
+                    (argument.unwrapArgument() as? FirAnonymousFunctionExpression)?.anonymousFunction?.symbol
+                }
+            }
+            element.acceptChildren(this)
+        }
+    })
+
+    return lambdas
 }
 
 object ParameterUniquenessResolver: SymbolTypeFactResolver<Uniqueness, FirValueParameterSymbol> {

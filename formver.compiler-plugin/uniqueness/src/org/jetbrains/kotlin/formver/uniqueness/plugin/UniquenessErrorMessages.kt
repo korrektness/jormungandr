@@ -42,6 +42,10 @@ object UniquenessErrorMessages : BaseDiagnosticRendererFactory() {
                     "Uniqueness can only be specified on values, properties, functions, and compatible type positions.",
                 )
                 map.put(
+                    UniquenessErrors.INVALID_PURE_UNIQUE_RESULT,
+                    "A pure function cannot return a unique value.",
+                )
+                map.put(
                     UniquenessErrors.ESCAPE_UNIQUENESS_INCONSISTENCY,
                     "Escaping value has moved field: ''{0}''.",
                     PathRenderer

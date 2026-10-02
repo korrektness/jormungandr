@@ -21,10 +21,18 @@ fun UniquenessState.joinOverPath(path: List<FirBasedSymbol<*>>): Uniqueness =
     data.join((children[path.first()]?.joinOverPath(path.drop(1)) ?: Uniqueness.Unique))
 
 /**
- * Enumerates the paths whose uniqueness state is [Uniqueness.Moved].
+ * Enumerates the paths whose uniqueness state is [Uniqueness.Moved], including the empty path when [includeRoot] is set
+ * and the root itself has moved.
  */
-fun UniquenessState.enumerateInconsistentPaths(): Sequence<Path> =
-    enumerate(emptyList()) { data == Uniqueness.Moved }
+fun UniquenessState.enumerateInconsistentPaths(includeRoot: Boolean = false): Sequence<Path> {
+    val childPaths = enumerate(emptyList()) { data == Uniqueness.Moved }
+
+    return if (includeRoot && data == Uniqueness.Moved) {
+        sequenceOf(emptyList<FirBasedSymbol<*>>()) + childPaths
+    } else {
+        childPaths
+    }
+}
 
 /**
  * Replaces the substate at [path] with [child].

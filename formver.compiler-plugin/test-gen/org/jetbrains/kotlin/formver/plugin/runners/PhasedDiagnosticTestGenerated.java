@@ -273,6 +273,24 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("pure.kt")
+    public void testPure() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/pure.kt");
+    }
+
+    @Test
+    @TestMetadata("pure_postconditions.kt")
+    public void testPure_postconditions() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/pure_postconditions.kt");
+    }
+
+    @Test
+    @TestMetadata("pure_spec.kt")
+    public void testPure_spec() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/pure_spec.kt");
+    }
+
+    @Test
     @TestMetadata("receiver.kt")
     public void testReceiver() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/receiver.kt");

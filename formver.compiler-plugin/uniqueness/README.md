@@ -51,10 +51,11 @@ The checker tracks two kinds of uniqueness:
 - **Variable declaration/assignment**
   - Project RHS' uniqueness substate into LHS' path.
   - Initialize LHS path to declared uniqueness.
-  - Move RHS access paths.
+  - Move RHS access paths, unless the declaration is in a read-only context.
 
 - **Function-call enter**
   - Move all receivers (including context receivers) and value arguments.
+  - Calls to `@Pure` functions and calls in a read-only context move nothing.
 
 - **Function-call exit**
   - Re-initialize arguments/receiver whose required locality is local (`@Borrowed`).
@@ -64,6 +65,8 @@ The checker tracks two kinds of uniqueness:
 
 - **Merges**
   - Join incoming states path-wise.
+
+`ReadOnlyContext.kt` defines the read-only contexts.
 
 ### Diagnostics
 
@@ -77,6 +80,9 @@ Checkers consume the above analyses:
   - reports moved subpaths on escaping values
 - `FunctionExitUniquenessConsistencyChecker.kt`
   - reports moved subpaths left in borrowed locals at function exit
+  - also checks the parameters of `@Pure` functions, as its KDoc describes
+- `PureFunctionUniqueResultChecker.kt`
+  - reports a `@Unique` result on a `@Pure` function
 - `ExpressionArgumentUniquenessCollisionChecker.kt`
   - reports duplicate/overlapping unique arguments in one call
 

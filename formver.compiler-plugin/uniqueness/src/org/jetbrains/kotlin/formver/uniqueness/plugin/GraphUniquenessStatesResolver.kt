@@ -69,7 +69,8 @@ class GraphUniquenessStatesResolver(session: FirSession) : FirExtensionSessionCo
         val analyzer = GraphUniquenessStatesAnalyzer(
             initialState,
             context,
-            CallArgumentLocalitiesMapper
+            CallArgumentLocalitiesMapper,
+            ReadOnlyContext.of(graph, context),
         )
 
         return graph.traverseToFixedPoint(analyzer)

@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.fir.analysis.cfa.util.merge
 import org.jetbrains.kotlin.fir.analysis.cfa.util.transformValues
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
+import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
 import org.jetbrains.kotlin.fir.expressions.allReceiverExpressions
 import org.jetbrains.kotlin.fir.expressions.arguments
@@ -65,11 +66,14 @@ val ControlFlowGraph.uniquenessAnalysisTargetNodes: Sequence<CFGNode<*>>
  *
  * Assignments and declarations initialize their target paths and move their source paths. Function calls move all
  * passed paths on entry, and restore paths whose corresponding parameters are local on exit.
+ *
+ * Calls to `@Pure` functions, and declarations and calls in [readOnlyContext], move nothing.
  */
 class GraphUniquenessStatesAnalyzer(
     private val initialState: UniquenessState,
     private val context: CheckerContext,
     private val callArgumentLocalitiesMapper: CallArgumentTypeFactsMapper<Locality>,
+    private val readOnlyContext: ReadOnlyContext,
 ) : PathAwareControlFlowGraphVisitor<Unit, UniquenessState>() {
     override fun mergeInfo(
         a: UniquenessStateFlow,
@@ -82,6 +86,9 @@ class GraphUniquenessStatesAnalyzer(
 
     private fun UniquenessStateFlow.getOrInitialize(): UniquenessState =
         this[Unit] ?: initialState
+
+    private val FirFunctionCall.movesArguments: Boolean
+        get() = this !in readOnlyContext && !isPureCall(context.session)
 
     override fun visitSubGraph(node: CFGNodeWithSubgraphs<*>, graph: ControlFlowGraph): Boolean {
         return node.extendsLocalFlow
@@ -121,7 +128,9 @@ class GraphUniquenessStatesAnalyzer(
 
                 newUniquenessState = leftAccessState.initialize(newUniquenessState)
 
-                if (leftSymbol.source?.kind != KtFakeSourceElementKind.WhenGeneratedSubject) {
+                val isWhenSubject = leftSymbol.source?.kind == KtFakeSourceElementKind.WhenGeneratedSubject
+
+                if (!isWhenSubject && declaration !in readOnlyContext) {
                     newUniquenessState = rightAccessState.move(newUniquenessState)
                 }
 
@@ -165,6 +174,7 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
         val call = node.fir
+        if (!call.movesArguments) return visitNode(node, data)
 
         with(context) {
             return data.transformValues { data ->
@@ -189,6 +199,7 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
         val call = node.fir
+        if (!call.movesArguments) return visitNode(node, data)
 
         with(context) {
             return data.transformValues { data ->

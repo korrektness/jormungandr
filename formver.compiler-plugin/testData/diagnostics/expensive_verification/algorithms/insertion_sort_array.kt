@@ -7,7 +7,7 @@ fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
     postconditions<Unit> <!LOCALITY_MISMATCH!>{
         forAll<Int> <!LOCALITY_MISMATCH!>{ i ->
             forAll<Int> <!LOCALITY_MISMATCH!>{ j ->
-                (0 <= i && i < j && j < <!INVALID_MOVED_ACCESS!>arr<!>.size) implies (<!INVALID_MOVED_ACCESS!>arr<!>[i] <= <!INVALID_MOVED_ACCESS!>arr<!>[j])
+                (0 <= i && i < j && j < arr.size) implies (arr[i] <= arr[j])
             }<!>
         }<!>
     }<!>
@@ -17,7 +17,7 @@ fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
             1 <= i && i <= arr.size
             forAll<Int> <!LOCALITY_MISMATCH!>{ a ->
                 forAll<Int> <!LOCALITY_MISMATCH!>{ b ->
-                    (0 <= a && a < b && b < i) implies (<!INVALID_MOVED_ACCESS!>arr<!>[a] <= <!INVALID_MOVED_ACCESS!>arr<!>[b])
+                    (0 <= a && a < b && b < i) implies (arr[a] <= arr[b])
                 }<!>
             }<!>
         }<!>
@@ -28,11 +28,11 @@ fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
                 -1 <= j && j < i && i < arr.size
                 forAll<Int> <!LOCALITY_MISMATCH!>{ a ->
                     forAll<Int> <!LOCALITY_MISMATCH!>{ b ->
-                        (0 <= a && a < b && b <= i && a != j + 1 && b != j + 1) implies (<!INVALID_MOVED_ACCESS!>arr<!>[a] <= <!INVALID_MOVED_ACCESS!>arr<!>[b])
+                        (0 <= a && a < b && b <= i && a != j + 1 && b != j + 1) implies (arr[a] <= arr[b])
                     }<!>
                 }<!>
                 forAll<Int> <!LOCALITY_MISMATCH!>{ a ->
-                    (j + 1 < a && a <= i) implies (key < <!INVALID_MOVED_ACCESS!>arr<!>[a])
+                    (j + 1 < a && a <= i) implies (key < arr[a])
                 }<!>
             }<!>
             <!INVALID_MOVED_ACCESS!>arr<!>.set(j + 1, <!INVALID_MOVED_ACCESS!>arr<!>[j])
