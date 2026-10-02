@@ -1,0 +1,361 @@
+/unique_val_fields.kt: info: Generated Viper text for bumpBoth:
+field x: Ref
+
+field y: Ref
+
+function inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(result), Inner())
+
+
+method bumpBoth(o: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(o), Outer())
+  requires acc(Outer_unique(o), write)
+  ensures acc(Outer_unique(o), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Outer_unique(o), write) in
+      (unfolding acc(Inner_unique(inner(o)), write) in
+        intFromRef(inner(o).x) ==
+        old((unfolding acc(Outer_unique(o), write) in
+          (unfolding acc(Inner_unique(inner(o)), write) in
+            intFromRef(inner(o).x)))) +
+        1))
+  ensures (unfolding acc(Outer_unique(o), write) in
+      intFromRef(o.y) ==
+      old((unfolding acc(Outer_unique(o), write) in intFromRef(o.y))) + 1)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Outer_unique(o), write)
+  unfold acc(Inner_unique(inner(o)), write)
+  anon_0 := inner(o).x
+  inner(o).x := plusInts(anon_0, intToRef(1))
+  anon_1 := o.y
+  o.y := plusInts(anon_1, intToRef(1))
+  label lbl_ret_0
+  fold acc(Inner_unique(inner(o)), write)
+  fold acc(Outer_unique(o), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_val_fields.kt: info: Generated Viper text for callBumpTwice:
+field x: Ref
+
+field y: Ref
+
+function inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(result), Inner())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bumpBoth(o: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(o), Outer())
+  requires acc(Outer_unique(o), write)
+  ensures acc(Outer_unique(o), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Outer_unique(o), write) in
+      (unfolding acc(Inner_unique(inner(o)), write) in
+        intFromRef(inner(o).x) ==
+        old((unfolding acc(Outer_unique(o), write) in
+          (unfolding acc(Inner_unique(inner(o)), write) in
+            intFromRef(inner(o).x)))) +
+        1))
+  ensures (unfolding acc(Outer_unique(o), write) in
+      intFromRef(o.y) ==
+      old((unfolding acc(Outer_unique(o), write) in intFromRef(o.y))) + 1)
+
+
+method callBumpTwice(o: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(o), Outer())
+  requires acc(Outer_unique(o), write)
+  requires (unfolding acc(Outer_unique(o), write) in
+      (unfolding acc(Inner_unique(inner(o)), write) in
+        intFromRef(inner(o).x) == 0)) &&
+    (unfolding acc(Outer_unique(o), write) in intFromRef(o.y) == 0)
+  ensures acc(Outer_unique(o), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := bumpBoth(o)
+  anon_1 := bumpBoth(o)
+  unfold acc(Outer_unique(o), write)
+  unfold acc(Inner_unique(inner(o)), write)
+  anon_3 := inner(o).x
+  fold acc(Inner_unique(inner(o)), write)
+  fold acc(Outer_unique(o), write)
+  if (intFromRef(anon_3) == 2) {
+    var anon_4: Ref
+    unfold acc(Outer_unique(o), write)
+    anon_4 := o.y
+    anon_2 := boolToRef(intFromRef(anon_4) == 2)
+    fold acc(Outer_unique(o), write)
+  } else {
+    anon_2 := boolToRef(false)}
+  assert boolFromRef(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_val_fields.kt: info: Generated Viper text for bump:
+field x: Ref
+
+method bump(i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(i), Inner())
+  requires acc(Inner_unique(i), write)
+  ensures acc(Inner_unique(i), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Inner_unique(i), write) in
+      intFromRef(i.x) ==
+      old((unfolding acc(Inner_unique(i), write) in intFromRef(i.x))) + 1)
+{
+  var anon: Ref
+  unfold acc(Inner_unique(i), write)
+  anon := i.x
+  i.x := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Inner_unique(i), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_val_fields.kt: info: Generated Viper text for borrowThroughVal:
+field x: Ref
+
+field y: Ref
+
+function inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(result), Inner())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method borrowThroughVal(o: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(o), Outer())
+  requires acc(Outer_unique(o), write)
+  requires (unfolding acc(Outer_unique(o), write) in
+      (unfolding acc(Inner_unique(inner(o)), write) in
+        intFromRef(inner(o).x) == 5))
+  ensures acc(Outer_unique(o), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Outer_unique(o), write)
+  anon_0 := bump(inner(o))
+  unfold acc(Inner_unique(inner(o)), write)
+  anon_1 := inner(o).x
+  assert intFromRef(anon_1) == 6
+  label lbl_ret_0
+  fold acc(Inner_unique(inner(o)), write)
+  fold acc(Outer_unique(o), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method bump(i: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(i), Inner())
+  requires acc(Inner_unique(i), write)
+  ensures acc(Inner_unique(i), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Inner_unique(i), write) in
+      intFromRef(i.x) ==
+      old((unfolding acc(Inner_unique(i), write) in intFromRef(i.x))) + 1)
+
+
+/unique_val_fields.kt: info: Generated Viper text for moveOutThroughVal:
+field x: Ref
+
+field y: Ref
+
+function inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(result), Inner())
+
+
+method moveOutThroughVal(o: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(o), Outer())
+  requires acc(Outer_unique(o), write)
+  ensures isSubtype(typeOf(v_ret_0), Inner())
+  ensures acc(Inner_unique(v_ret_0), write)
+  ensures (unfolding acc(Inner_unique(v_ret_0), write) in
+      intFromRef(v_ret_0.x) == 3)
+{
+  unfold acc(Outer_unique(o), write)
+  unfold acc(Inner_unique(inner(o)), write)
+  inner(o).x := intToRef(3)
+  fold acc(Inner_unique(inner(o)), write)
+  v_ret_0 := inner(o)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_val_fields.kt: info: Generated Viper text for readThroughSharedVal:
+field x: Ref
+
+field y: Ref
+
+function inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(result), Inner())
+
+
+method readThroughSharedVal(o: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(o), Outer())
+  ensures isSubtype(typeOf(v_ret_0), Inner())
+{
+  v_ret_0 := inner(o)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_val_fields.kt: info: Generated Viper text for push:
+field contents: Seq[Int]
+
+field count: Ref
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Buf())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+method push(b: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Buf())
+  requires acc(Buf_unique(b), write)
+  requires isSubtype(typeOf(par_v), intType())
+  requires (unfolding acc(Buf_unique(b), write) in
+      0 <= intFromRef(b.count)) &&
+    (unfolding acc(Buf_unique(b), write) in
+      intFromRef(b.count) < arraySize(data(b)))
+  ensures acc(Buf_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Buf_unique(b), write) in
+      intFromRef(b.count) ==
+      old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count))) + 1)
+  ensures (unfolding acc(Buf_unique(b), write) in
+      (unfolding acc(IntArray_unique(data(b)), write) in
+        data(b).contents[old((unfolding acc(Buf_unique(b), write) in
+          intFromRef(b.count)))] ==
+        intFromRef(par_v)))
+  ensures (forall anon_builtin: Int ::0 <= anon_builtin &&
+      (unfolding acc(Buf_unique(b), write) in
+        anon_builtin < arraySize(data(b))) &&
+      !(anon_builtin ==
+      old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count)))) ==>
+      (unfolding acc(Buf_unique(b), write) in
+        (unfolding acc(IntArray_unique(data(b)), write) in
+          data(b).contents[anon_builtin] ==
+          old((unfolding acc(Buf_unique(b), write) in
+            (unfolding acc(IntArray_unique(data(b)), write) in
+              data(b).contents[anon_builtin]))))))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Buf_unique(b), write)
+  anon_0 := b.count
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) < arraySize(data(b))
+  unfold acc(IntArray_unique(data(b)), write)
+  data(b).contents := data(b).contents[intFromRef(anon_0) :=
+    intFromRef(par_v)]
+  anon_1 := b.count
+  b.count := plusInts(anon_1, intToRef(1))
+  label lbl_ret_0
+  fold acc(IntArray_unique(data(b)), write)
+  fold acc(Buf_unique(b), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_val_fields.kt: info: Generated Viper text for pushTwice:
+field contents: Seq[Int]
+
+field count: Ref
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Buf())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method push(b: Ref, par_v: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(b), Buf())
+  requires acc(Buf_unique(b), write)
+  requires isSubtype(typeOf(par_v), intType())
+  requires (unfolding acc(Buf_unique(b), write) in
+      0 <= intFromRef(b.count)) &&
+    (unfolding acc(Buf_unique(b), write) in
+      intFromRef(b.count) < arraySize(data(b)))
+  ensures acc(Buf_unique(b), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Buf_unique(b), write) in
+      intFromRef(b.count) ==
+      old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count))) + 1)
+  ensures (unfolding acc(Buf_unique(b), write) in
+      (unfolding acc(IntArray_unique(data(b)), write) in
+        data(b).contents[old((unfolding acc(Buf_unique(b), write) in
+          intFromRef(b.count)))] ==
+        intFromRef(par_v)))
+  ensures (forall anon_builtin: Int ::0 <= anon_builtin &&
+      (unfolding acc(Buf_unique(b), write) in
+        anon_builtin < arraySize(data(b))) &&
+      !(anon_builtin ==
+      old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count)))) ==>
+      (unfolding acc(Buf_unique(b), write) in
+        (unfolding acc(IntArray_unique(data(b)), write) in
+          data(b).contents[anon_builtin] ==
+          old((unfolding acc(Buf_unique(b), write) in
+            (unfolding acc(IntArray_unique(data(b)), write) in
+              data(b).contents[anon_builtin]))))))
+
+
+method pushTwice(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Buf())
+  requires acc(Buf_unique(b), write)
+  requires (unfolding acc(Buf_unique(b), write) in
+      intFromRef(b.count) == 0) &&
+    (unfolding acc(Buf_unique(b), write) in arraySize(data(b)) >= 2)
+  ensures acc(Buf_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := push(b, intToRef(7))
+  anon_1 := push(b, intToRef(8))
+  assert 0 >= 0
+  assert 0 < arraySize(data(b))
+  unfold acc(Buf_unique(b), write)
+  unfold acc(IntArray_unique(data(b)), write)
+  anon_2 := intToRef(data(b).contents[0])
+  assert intFromRef(anon_2) == 7
+  assert 1 >= 0
+  assert 1 < arraySize(data(b))
+  anon_3 := intToRef(data(b).contents[1])
+  assert intFromRef(anon_3) == 8
+  label lbl_ret_0
+  fold acc(IntArray_unique(data(b)), write)
+  fold acc(Buf_unique(b), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

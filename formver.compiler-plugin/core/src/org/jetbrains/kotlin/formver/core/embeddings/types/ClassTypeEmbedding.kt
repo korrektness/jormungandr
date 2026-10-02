@@ -8,7 +8,7 @@ package org.jetbrains.kotlin.formver.core.embeddings.types
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.names.PredicateName
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.core.names.asScope
@@ -59,8 +59,8 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
             }
             forType {
                 if (isUnique) {
-                    val field = backingField
-                    addAccessToUniquePredicate { access -> if (field == null) access else nested.ofField(field, access) }
+                    val step = ownedStep
+                    addAccessToUniquePredicate { access -> if (step == null) access else nested.ofField(step, access) }
                 }
             }
         }
@@ -88,8 +88,8 @@ fun ClassTypeEmbedding.embedClassTypeFunc(): DomainFunc = RuntimeTypeDomain.clas
  * the nested predicate and returns the assertion that stands for it, `null` to leave it out.
  */
 interface NestedPredicates {
-    /** The predicate of the value of the `@Unique` field [field]. */
-    fun ofField(field: FieldEmbedding, access: TypeInvariantEmbedding): TypeInvariantEmbedding? = access
+    /** The predicate of the value of the `@Unique` property [step]. */
+    fun ofField(step: PathStep, access: TypeInvariantEmbedding): TypeInvariantEmbedding? = access
 
     /** The predicate of the supertype [type] of the subject. */
     fun ofSuperType(type: ClassTypeEmbedding, access: TypeInvariantEmbedding): TypeInvariantEmbedding? = access

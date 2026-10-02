@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.linearization
 
+import org.jetbrains.kotlin.formver.core.embeddings.properties.UniqueValStep
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
@@ -113,6 +114,14 @@ data class PureExpLinearizer(
         val primitiveAccess: Exp = Exp.FieldAccess(receiverViper, field.toViper(), source.asPosition)
         return hierarchyPredicateAccesses(receiverViper, receiverType, field).toList()
             .foldRight(primitiveAccess) { predicateAccess, acc -> Exp.Unfolding(predicateAccess, acc) }
+    }
+
+    override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean): Exp {
+        val receiverViper = receiver.toViper(this)
+        val value = step.valueOf(receiverViper, source.asPosition)
+        if (!owned) return value
+        return hierarchyPredicateAccesses(receiverViper, receiverType, step).toList()
+            .foldRight(value) { predicateAccess, acc -> Exp.Unfolding(predicateAccess, acc) }
     }
 
     override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp =

@@ -16,7 +16,47 @@ method bump(l: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-/ownership_not_established.kt: info: Generated Viper text for borrowThroughVal:
+/ownership_not_established.kt: info: Generated Viper text for makeHolder:
+field bf_count: Ref
+
+field bf_n: Ref
+
+function g_leaf(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Leaf())
+
+
+method con_Holder(par_leaf: Ref, par_count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_leaf), Leaf())
+  requires acc(Leaf_unique(par_leaf), write)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(ret_1), Holder())
+  ensures acc(Holder_unique(ret_1), write)
+  ensures g_leaf(ret_1) == par_leaf
+  ensures (unfolding acc(Holder_unique(ret_1), write) in
+      intFromRef(ret_1.bf_count) == intFromRef(par_count))
+
+
+method con_Leaf(par_n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_2), Leaf())
+  ensures acc(Leaf_unique(ret_2), write)
+  ensures (unfolding acc(Leaf_unique(ret_2), write) in
+      intFromRef(ret_2.bf_n) == intFromRef(par_n))
+
+
+method makeHolder() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures acc(Holder_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := con_Leaf(intToRef(0))
+  v_ret_0 := con_Holder(anon, intToRef(0))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/ownership_not_established.kt: info: Generated Viper text for borrowThroughCallResult:
 field count: Ref
 
 field n: Ref
@@ -26,14 +66,13 @@ function leaf(this: Ref): Ref
   ensures isSubtype(typeOf(result), Leaf())
 
 
-method borrowThroughVal(h: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(h), Holder())
-  requires acc(Holder_unique(h), write)
-  ensures acc(Holder_unique(h), write)
+method borrowThroughCallResult() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon: Ref
-  anon := bump(leaf(h))
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := makeHolder()
+  anon_0 := bump(leaf(anon_1))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -45,7 +84,12 @@ method bump(l: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), unitType())
 
 
-/ownership_not_established.kt: info: Generated Viper text for writeThroughVal:
+method makeHolder() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Holder())
+  ensures acc(Holder_unique(ret_2), write)
+
+
+/ownership_not_established.kt: info: Generated Viper text for writeThroughCallResult:
 field count: Ref
 
 field n: Ref
@@ -55,24 +99,10 @@ function leaf(this: Ref): Ref
   ensures isSubtype(typeOf(result), Leaf())
 
 
-method writeThroughVal(h: Ref) returns (ret: Ref)
-  requires isSubtype(typeOf(h), Holder())
-  requires acc(Holder_unique(h), write)
-  ensures isSubtype(typeOf(ret), unitType())
+method makeHolder() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Holder())
+  ensures acc(Holder_unique(ret_1), write)
 
 
-/ownership_not_established.kt: info: Generated Viper text for returnThroughVal:
-field count: Ref
-
-field n: Ref
-
-function leaf(this: Ref): Ref
-  requires isSubtype(typeOf(this), Holder())
-  ensures isSubtype(typeOf(result), Leaf())
-
-
-method returnThroughVal(h: Ref) returns (ret: Ref)
-  requires isSubtype(typeOf(h), Holder())
-  requires acc(Holder_unique(h), write)
-  ensures isSubtype(typeOf(ret), Leaf())
-  ensures acc(Leaf_unique(ret), write)
+method writeThroughCallResult() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), unitType())

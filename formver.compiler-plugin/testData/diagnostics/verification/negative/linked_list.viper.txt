@@ -19,8 +19,16 @@ method getVal(l: Ref) returns (v_ret_0: Ref)
 {
   if (next(l) != nullValue()) {
     var anon: Ref
-    anon := havoc(intType())
+    unfold acc(Link_unique(l), write)
+    if (next(l) != nullValue()) {
+      unfold acc(Link_unique(next(l)), write)
+    }
+    anon := next(l).data
     v_ret_0 := anon
+    if (next(l) != nullValue()) {
+      fold acc(Link_unique(next(l)), write)
+    }
+    fold acc(Link_unique(l), write)
   } else {
     v_ret_0 := nullValue()}
   goto lbl_ret_0

@@ -732,6 +732,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("unique_val_fields.kt")
+      public void testUnique_val_fields() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_val_fields.kt");
+      }
+
+      @Test
       @TestMetadata("untracked_write.kt")
       public void testUntracked_write() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/untracked_write.kt");

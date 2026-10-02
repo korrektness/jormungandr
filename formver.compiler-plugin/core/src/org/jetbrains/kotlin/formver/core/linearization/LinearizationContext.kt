@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.linearization
 
+import org.jetbrains.kotlin.formver.core.embeddings.properties.UniqueValStep
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
@@ -98,6 +99,13 @@ interface LinearizationContext {
         result: VariableEmbedding,
         receiverPath: OwnedPath? = null,
     )
+
+    /**
+     * The value of the `@Unique` `val` [step] on [receiver]. The value needs no permission, but in a specification an
+     * [owned] receiver's predicates are unfolded down to the class declaring [step], so that reads below it can unfold
+     * the value's predicate.
+     */
+    fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean): Exp
 
     /**
      * [value], a read of the contents of a built-in owned object under its unique [predicate], as a `Ref` of [type],

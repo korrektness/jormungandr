@@ -152,6 +152,10 @@ class DebugTreeViewVisitor(private val nameResolver: NameResolver) : DefaultingE
         OperatorNode(e.receiver.tree(), ".", e.field.debugTreeView)
     }
 
+    override fun visitUniqueValAccess(e: UniqueValAccess): TreeView = with(nameResolver) {
+        OperatorNode(e.receiver.tree(), ".", PlaintextLeaf(e.step.spelling))
+    }
+
     override fun visitFieldModification(e: FieldModification): TreeView = with(nameResolver) {
         OperatorNode(
             OperatorNode(e.receiver.tree(), ".", e.field.debugTreeView),

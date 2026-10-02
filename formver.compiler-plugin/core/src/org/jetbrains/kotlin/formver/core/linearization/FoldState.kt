@@ -14,9 +14,9 @@ import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
-import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveFieldAccess
+import org.jetbrains.kotlin.formver.core.embeddings.expression.UniqueValAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.NestedPredicates
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeInvariantEmbedding
@@ -32,26 +32,27 @@ import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
 
 /**
- * A path the fold state can track: a root variable followed by `@Unique` fields.
+ * A path the fold state can track: a root variable followed by `@Unique` properties.
  */
-typealias OwnedPath = FoldPath<VariableEmbedding, FieldEmbedding>
+typealias OwnedPath = FoldPath<VariableEmbedding, PathStep>
 
 /** The shape of an owned root's predicate where the uniqueness checker finds the root `Unique`. */
-typealias OwnedShape = RootShape<VariableEmbedding, FieldEmbedding>
+typealias OwnedShape = RootShape<VariableEmbedding, PathStep>
 
 /**
- * The owned path this expression reads, or `null` when it is not a variable followed by reads of `@Unique` fields. A
- * `StringBuilder` update returns its receiver, so it reads its receiver's path.
+ * The owned path this expression reads, or `null` when it is not a variable followed by reads of `@Unique` properties.
+ * A `StringBuilder` update returns its receiver, so it reads its receiver's path.
  */
 fun ExpEmbedding.ownedPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaNodes()) {
     is VariableEmbedding -> OwnedPath(exp)
     is StringBuilderUpdate -> exp.builder.ownedPath()
     is FieldAccess -> if (exp.field.isUnique) exp.receiver.ownedPath()?.plus(exp.field) else null
+    is UniqueValAccess -> exp.receiver.ownedPath()?.plus(exp.step)
     else -> null
 }
 
 /** The state of a [FoldState] at a program point, for joining at labels and branch merges. */
-typealias FoldSnapshot = FoldTrie.Snapshot<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?>
+typealias FoldSnapshot = FoldTrie.Snapshot<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourceElement?>
 
 /**
  * Raised when the linearized code needs a unique predicate that the fold state does not hold.
@@ -68,9 +69,6 @@ fun OwnedPath.render(): String {
     return "`" + (listOf(root) + fields.map { it.spelling }).joinToString(".") + "`"
 }
 
-private val FieldEmbedding.spelling: String
-    get() = name.sourceSpelling ?: symbol?.name?.asString() ?: "<field>"
-
 /** The first line of the source text of [site], in backticks, cut short when it is long. */
 internal fun renderSite(site: KtSourceElement?): String? {
     val line = site?.text?.lineSequence()?.firstOrNull()?.trim() ?: return null
@@ -79,7 +77,7 @@ internal fun renderSite(site: KtSourceElement?): String? {
 
 private const val MAX_SITE_LENGTH = 40
 
-private fun Absence<VariableEmbedding, FieldEmbedding, KtSourceElement?>.render(): String = when (this) {
+private fun Absence<VariableEmbedding, PathStep, KtSourceElement?>.render(): String = when (this) {
     Absence.NeverHeld -> "was not tracked as owned before this point"
     is Absence.Released -> "was consumed" + (renderSite(site)?.let { " by $it" } ?: "")
     is Absence.Moved -> "was moved to ${target.render()}" + (renderSite(site)?.let { " by $it" } ?: "")
@@ -87,7 +85,7 @@ private fun Absence<VariableEmbedding, FieldEmbedding, KtSourceElement?>.render(
 }
 
 /** A message naming the path a failure needs and why the fold state does not hold it. */
-private fun FoldFailure<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?>.message(): String =
+private fun FoldFailure<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourceElement?>.message(): String =
     when (this) {
         is FoldFailure.NotHeld -> {
             val subject = if (absent == path) "it" else absent.render()
@@ -107,10 +105,10 @@ private fun FoldFailure<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, K
  * `@Manual` are tracked. Each operation is the [FoldTrie] operation of the same name.
  */
 class FoldState(private val typeResolver: TypeResolver) {
-    private val trie = FoldTrie<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?>(object : FoldHierarchy<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding> {
+    private val trie = FoldTrie<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourceElement?>(object : FoldHierarchy<VariableEmbedding, PathStep, ClassTypeEmbedding> {
         override fun rootClass(root: VariableEmbedding) = trackedClass(root.type)
-        override fun fieldClass(field: FieldEmbedding) = trackedClass(field.type)
-        override fun chainTo(cls: ClassTypeEmbedding, field: FieldEmbedding) =
+        override fun fieldClass(field: PathStep) = trackedClass(field.type)
+        override fun chainTo(cls: ClassTypeEmbedding, field: PathStep) =
             typeResolver.hierarchyPathTo(cls, field).toList()
 
         override fun chainBelow(cls: ClassTypeEmbedding, target: ClassTypeEmbedding): List<ClassTypeEmbedding>? {
@@ -125,7 +123,7 @@ class FoldState(private val typeResolver: TypeResolver) {
         }
 
         override fun rootKey(root: VariableEmbedding): Any = root.name
-        override fun fieldKey(field: FieldEmbedding): Any = field.name
+        override fun fieldKey(field: PathStep): Any = field.name
     })
 
     /** The class of the predicate a path of [type] holds, `null` when such a path is not tracked. */
@@ -138,7 +136,7 @@ class FoldState(private val typeResolver: TypeResolver) {
 
     fun release(ctx: LinearizationContext, path: OwnedPath) = trie.release(ctx.foldSink(), path)
 
-    fun open(ctx: LinearizationContext, path: OwnedPath, field: FieldEmbedding) = trie.open(ctx.foldSink(), path, field)
+    fun open(ctx: LinearizationContext, path: OwnedPath, field: PathStep) = trie.open(ctx.foldSink(), path, field)
 
     fun openOwn(ctx: LinearizationContext, path: OwnedPath) = trie.openOwn(ctx.foldSink(), path)
 
@@ -201,7 +199,7 @@ class FoldState(private val typeResolver: TypeResolver) {
     private inner class OpenedPredicates(
         private val path: OwnedPath,
         private val opened: List<ClassTypeEmbedding>,
-        children: List<Pair<FieldEmbedding, TypeInvariantEmbedding?>>,
+        children: List<Pair<PathStep, TypeInvariantEmbedding?>>,
     ) : TypeInvariantEmbedding {
         private val children = children.associate { (field, held) -> field.name to held }
 
@@ -210,9 +208,9 @@ class FoldState(private val typeResolver: TypeResolver) {
         private fun bodyOf(cls: ClassTypeEmbedding, exp: ExpEmbedding): ExpEmbedding =
             with(typeResolver) {
                 cls.uniquePredicateBody(exp, object : NestedPredicates {
-                    override fun ofField(field: FieldEmbedding, access: TypeInvariantEmbedding) =
-                        if (field.name in children) children[field.name]
-                        else access.withAccessRole((path + field).loopHeadRole())
+                    override fun ofField(step: PathStep, access: TypeInvariantEmbedding) =
+                        if (step.name in children) children[step.name]
+                        else access.withAccessRole((path + step).loopHeadRole())
 
                     override fun ofSuperType(type: ClassTypeEmbedding, access: TypeInvariantEmbedding) =
                         if (type in opened) TypeInvariantEmbedding { bodyOf(type, it) }
@@ -225,7 +223,7 @@ class FoldState(private val typeResolver: TypeResolver) {
 private fun OwnedPath.loopHeadRole() = SourceRole.Ownership(render(), SourceRole.Ownership.Site.LoopHead)
 
 private fun LinearizationContext.foldSink() =
-    object : FoldSink<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?> {
+    object : FoldSink<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourceElement?> {
         override fun unfold(path: OwnedPath, cls: ClassTypeEmbedding) {
             val place = placeOf(path)
             val info = SourceRole.Ownership(path.render(), SourceRole.Ownership.Site.Unfold).asInfo
@@ -264,7 +262,7 @@ private fun LinearizationContext.foldSink() =
 
         override val site: KtSourceElement? get() = source
 
-        override fun fail(failure: FoldFailure<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?>): Nothing =
+        override fun fail(failure: FoldFailure<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourceElement?>): Nothing =
             throw FoldStateException(source, failure.message())
     }
 
@@ -280,15 +278,15 @@ private fun LinearizationContext.guardsOf(exp: Exp, type: TypeEmbedding): List<E
 
 private fun LinearizationContext.placeOf(path: OwnedPath): Place {
     val rootExp = path.root.toViperExp(this)
-    return path.fields.fold(Place(rootExp, guardsOf(rootExp, path.root.type))) { parent, field ->
-        val exp = Exp.FieldAccess(parent.exp, field.toViper(), source.asPosition)
-        Place(exp, parent.guards + guardsOf(exp, field.type))
+    return path.fields.fold(Place(rootExp, guardsOf(rootExp, path.root.type))) { parent, step ->
+        val exp = step.valueOf(parent.exp, source.asPosition)
+        Place(exp, parent.guards + guardsOf(exp, step.type))
     }
 }
 
 /** The expression reading [path]. */
 private fun embeddingOf(path: OwnedPath): ExpEmbedding =
-    path.fields.fold<FieldEmbedding, ExpEmbedding>(path.root) { receiver, field -> PrimitiveFieldAccess(receiver, field) }
+    path.fields.fold<PathStep, ExpEmbedding>(path.root) { receiver, step -> step.valueOf(receiver) }
 
 /** Add the statement [buildStmt] builds, nested in one `if` per guard of [place]. */
 private fun LinearizationContext.addGuarded(place: Place, buildStmt: LinearizationContext.() -> Stmt) =

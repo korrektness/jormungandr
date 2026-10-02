@@ -56,6 +56,7 @@ interface ExpVisitor<R> {
     fun visitNonDeterministically(e: NonDeterministically): R
     fun visitWhile(e: While): R
     fun visitFieldAccess(e: FieldAccess): R
+    fun visitUniqueValAccess(e: UniqueValAccess): R
     fun visitInvokeFunctionObject(e: InvokeFunctionObject): R
     fun visitAssign(e: Assign): R
     fun visitFieldModification(e: FieldModification): R
@@ -127,6 +128,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitNonDeterministically(e: NonDeterministically): R = visitDefault(e)
     override fun visitWhile(e: While): R = visitDefault(e)
     override fun visitFieldAccess(e: FieldAccess): R = visitDefault(e)
+    override fun visitUniqueValAccess(e: UniqueValAccess): R = visitDefault(e)
     override fun visitInvokeFunctionObject(e: InvokeFunctionObject): R = visitDefault(e)
     override fun visitAssign(e: Assign): R = visitDefault(e)
     override fun visitFieldModification(e: FieldModification): R = visitDefault(e)

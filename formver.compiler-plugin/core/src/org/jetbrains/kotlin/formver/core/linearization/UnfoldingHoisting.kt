@@ -14,9 +14,10 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
 /**
  * [this] specification with each `unfolding` placed as high as it can go.
  *
- * An `unfolding` of a predicate whose arguments are paths (a variable followed by field reads) rises through
- * arithmetic, comparisons, `||`, `==>`, `!`, conditionals, quantifiers, function applications and sequence and field
- * reads. Equal `unfolding`s that meet are merged. It stops:
+ * An `unfolding` of a predicate whose arguments are paths (a variable followed by field reads and applications of
+ * single-argument functions, such as the getter of a `@Unique` `val`) rises through arithmetic, comparisons, `||`,
+ * `==>`, `!`, conditionals, quantifiers, function applications and sequence and field reads. Equal `unfolding`s that
+ * meet are merged. It stops:
  * - at a conjunction, so a conjunct never reads a predicate that an earlier conjunct provides;
  * - at a quantifier whose variables its arguments mention;
  * - below the guard of `==>`, `||` or a conditional when the guard mentions the root of one of its arguments,
@@ -32,7 +33,7 @@ private class Hoisted(val body: Exp, val pending: List<Exp.Unfolding>) {
     fun wrapped(): Exp = wrap(body, pending)
 }
 
-/** The arguments of an `unfolding`'s predicate as paths: the root variable, then the field names. */
+/** The arguments of an `unfolding`'s predicate as paths: the root variable, then the field and function names. */
 private typealias UnfoldingKey = Pair<SymbolicName, List<List<Any>>>
 
 private fun Exp.Unfolding.key(): UnfoldingKey? {
@@ -43,6 +44,7 @@ private fun Exp.Unfolding.key(): UnfoldingKey? {
 private fun Exp.pathKey(): List<Any>? = when (this) {
     is Exp.LocalVar -> listOf(name)
     is Exp.FieldAccess -> rcv.pathKey()?.plus(field.name)
+    is Exp.FuncApp -> args.singleOrNull()?.pathKey()?.plus(functionName)
     else -> null
 }
 

@@ -2,6 +2,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.PretypeEmbedding
@@ -129,7 +130,7 @@ class TypeResolver {
         lookupSuperTypes(classType.name).firstOrNull { !interfaceEmbedding.containsKey(it.name) }
 
     /** Whether [field] is declared in [classType] or one of its superclasses. */
-    fun declaresOnChain(classType: ClassTypeEmbedding, field: FieldEmbedding): Boolean =
+    fun declaresOnChain(classType: ClassTypeEmbedding, field: PathStep): Boolean =
         generateSequence(classType, ::superClass).any { it.name == field.containingClass?.name }
 
     /**
@@ -137,7 +138,7 @@ class TypeResolver {
      */
     fun hierarchyPathTo(
         typeEmbedding: PretypeEmbedding,
-        field: FieldEmbedding
+        field: PathStep
     ): Sequence<ClassTypeEmbedding> = sequence {
         val classType = (typeEmbedding as? ClassTypeEmbedding) ?: return@sequence
         val className = field.containingClass?.name

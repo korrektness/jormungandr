@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.asPosition
-import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.viper.ast.Exp
@@ -39,7 +39,7 @@ fun hierarchyPredicateAccess(
 fun LinearizationContext.hierarchyPredicateAccesses(
     receiver: Exp,
     receiverType: TypeEmbedding,
-    field: FieldEmbedding,
+    field: PathStep,
 ): Sequence<Exp.PredicateAccess> =
     typeResolver.hierarchyPathTo(receiverType.pretype, field)
         .map { hierarchyPredicateAccess(receiver, it, source) }

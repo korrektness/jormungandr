@@ -8,34 +8,42 @@ package org.jetbrains.kotlin.formver.core.embeddings.properties
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
+import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveFieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FieldAccessTypeInvariantEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeInvariantEmbedding
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
+import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Field
 import org.jetbrains.kotlin.formver.viper.ast.PermExp
+import org.jetbrains.kotlin.formver.viper.ast.Position
 import org.jetbrains.kotlin.formver.viper.ast.Type
 
 /**
  * Embedding of a backing field of a property.
  */
-interface FieldEmbedding {
-    val name: SymbolicName
-    val type: TypeEmbedding
+interface FieldEmbedding : PathStep {
+    override val name: SymbolicName
+    override val type: TypeEmbedding
     val viperType: Type
     val accessPolicy: AccessPolicy
     val isUnique: Boolean
         get() = false
 
-    val containingClass: ClassTypeEmbedding?
+    override val containingClass: ClassTypeEmbedding?
         get() = null
     val includeInShortDump: Boolean
-    val symbol: FirPropertySymbol?
+    override val symbol: FirPropertySymbol?
         get() = null
 
     fun toViper(): Field = Field(name, viperType, includeInShortDump)
+
+    override fun valueOf(receiver: ExpEmbedding): ExpEmbedding = PrimitiveFieldAccess(receiver, this)
+
+    override fun valueOf(receiver: Exp, pos: Position): Exp = Exp.FieldAccess(receiver, toViper(), pos)
 
     fun extraAccessInvariantsForParameter(): List<TypeInvariantEmbedding> = listOf()
 

@@ -14,4 +14,12 @@ data class PropertyEmbedding(
     val isUnique: Boolean,
     val isVal: Boolean,
     val type: TypeEmbedding,
-)
+) {
+    /** The step an owned path takes through this property, `null` when the property's value is not tracked. */
+    val ownedStep: PathStep?
+        get() = when (getter) {
+            is BackingFieldGetter -> getter.field.takeIf { it.isUnique }
+            is UniqueValGetter -> getter.step
+            else -> null
+        }
+}

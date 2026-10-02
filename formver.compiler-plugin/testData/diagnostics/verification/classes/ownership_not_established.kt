@@ -9,17 +9,14 @@ fun <!VIPER_TEXT!>bump<!>(l: @Unique @Borrowed Leaf) {
     l.n = l.n + 1
 }
 
+fun <!VIPER_TEXT!>makeHolder<!>(): @Unique Holder = Holder(Leaf(0), 0)
+
 @AlwaysVerify
-fun <!VIPER_TEXT!>borrowThroughVal<!>(h: @Unique @Borrowed Holder) {
-    <!OWNERSHIP_NOT_ESTABLISHED!>bump(h.leaf)<!>
+fun <!VIPER_TEXT!>borrowThroughCallResult<!>() {
+    <!OWNERSHIP_NOT_ESTABLISHED!>bump(makeHolder().leaf)<!>
 }
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>writeThroughVal<!>(h: @Unique Holder) {
-    <!UNSUPPORTED_OWNERSHIP!>h.leaf.n = 3<!>
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>writeThroughCallResult<!>() {
+    <!UNSUPPORTED_OWNERSHIP!>makeHolder().leaf.n = 3<!>
 }
-
-<!UNSUPPORTED_OWNERSHIP!>@AlwaysVerify
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>returnThroughVal<!>(h: @Unique Holder): @Unique Leaf {
-    return h.leaf
-}<!>

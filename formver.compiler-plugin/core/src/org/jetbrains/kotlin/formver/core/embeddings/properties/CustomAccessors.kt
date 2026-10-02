@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.UniqueValAccess
 
 class CustomGetter(val getterMethod: NonInlineFunctionSignature) : GetterEmbedding {
     override fun getValue(
@@ -32,4 +33,18 @@ class CustomSetter(val setterMethod: NonInlineFunctionSignature) : SetterEmbeddi
         ctx: StmtConversionContext,
         receiverOwned: Boolean,
     ): ExpEmbedding = setterMethod.insertCall(listOf(receiver, value), ctx, setterMethod.callableType.returnType)
+}
+
+/** The getter of a `@Unique` `val` with default behaviour: a read through [step]. */
+class UniqueValGetter(val step: UniqueValStep) : GetterEmbedding {
+    override fun getValue(
+        receiver: ExpEmbedding,
+        ctx: TypeResolver,
+        receiverOwned: Boolean,
+    ): ExpEmbedding = UniqueValAccess(receiver, step, receiverOwned)
+
+    override fun getValueSimple(
+        receiver: ExpEmbedding,
+        ctx: TypeResolver,
+    ): ExpEmbedding = step.valueOf(receiver)
 }

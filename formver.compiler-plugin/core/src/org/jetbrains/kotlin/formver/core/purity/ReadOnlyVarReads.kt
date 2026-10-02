@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayGet
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Old
 import org.jetbrains.kotlin.formver.core.embeddings.expression.StringBuilderRead
+import org.jetbrains.kotlin.formver.core.embeddings.expression.UniqueValAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.While
 import org.jetbrains.kotlin.formver.core.embeddings.expression.WithPosition
@@ -65,5 +66,6 @@ fun ExpEmbedding.checkSpecificationVarReads(source: KtSourceElement, errors: Err
 private fun ExpEmbedding.pathRoot(): VariableEmbedding? = when (val exp = ignoringCastsAndMetaNodes()) {
     is VariableEmbedding -> exp
     is FieldAccess -> exp.receiver.pathRoot()
+    is UniqueValAccess -> exp.receiver.pathRoot()
     else -> null
 }

@@ -491,6 +491,11 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitUniqueValAccess(e: UniqueValAccess): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp =
+            ctx.addUniqueValAccess(e.receiver.linearize(), e.receiver.type, e.step, e.receiverOwned)
+    }
+
     override fun visitFieldModification(e: FieldModification): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             val receiverPath = ctx.ownedReceiverPath(e.receiver, e.receiverOwned, isWrite = true)
@@ -826,6 +831,7 @@ private fun LinearizationContext.requireFoldedReads(invariants: List<ExpEmbeddin
     if (open.isEmpty()) return
     fun ExpEmbedding.openRead(): OwnedPath? = when (this) {
         is FieldAccess -> receiver.ownedPath()?.takeIf { receiverOwned && it.root.name in open }
+        is UniqueValAccess -> receiver.ownedPath()?.takeIf { receiverOwned && it.root.name in open }
         is FunctionCall -> args.zip(function.formalArgs).firstNotNullOfOrNull { (arg, formal) ->
             arg.ownedPath()?.takeIf { formal.isUnique && it.root.name in open }
         }
@@ -843,9 +849,9 @@ private fun LinearizationContext.requireFoldedReads(invariants: List<ExpEmbeddin
 /**
  * The tracked path of an owned [receiver], or `null` when the access havocs or drops.
  *
- * An owned receiver the fold state cannot name, such as one reached through a `@Unique val` getter, is read with a
- * havoc: the value read is unconstrained, so this is sound. A write through it would leave the value its predicate
- * holds stale, so it is an error.
+ * An owned receiver the fold state cannot name, one that is not a variable followed by `@Unique` properties, is read
+ * with a havoc: the value read is unconstrained, so this is sound. A write through it would leave the value its
+ * predicate holds stale, so it is an error.
  */
 private fun LinearizationContext.ownedReceiverPath(
     receiver: ExpEmbedding,
@@ -860,7 +866,7 @@ private fun LinearizationContext.ownedReceiverPath(
         throw FoldStateException(
             source,
             "Ownership of the receiver written$written is needed here, but the receiver is not a variable followed " +
-                "by `@Unique` `var` fields, so its permissions are not tracked.",
+                "by `@Unique` properties, so its permissions are not tracked.",
         )
     }
     return path

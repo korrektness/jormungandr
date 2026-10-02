@@ -568,8 +568,11 @@ class ProgramConverter(
                             withDispatchReceiver(embedType(symbol.dispatchReceiverType!!))
                             withReturnType(returnType)
                         }
+                        val getter = embedAccessorFunction(symbol, functionType, defaultBehaviour = true)
                         Pair(
-                            CustomGetter(embedAccessorFunction(symbol, functionType, defaultBehaviour = true)), null
+                            if (isUnique) UniqueValGetter(UniqueValStep(symbol, returnType, embedClass(regularClass), getter))
+                            else CustomGetter(getter),
+                            null,
                         )
                     }
 

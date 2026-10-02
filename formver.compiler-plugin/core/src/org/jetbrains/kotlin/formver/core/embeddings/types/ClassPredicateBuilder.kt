@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
 import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
@@ -86,7 +87,10 @@ class PropertyAssertionsBuilder(private val subject: ExpEmbedding, private val p
     val isUnique = property.isUnique
 
     /** The field holding the property's value, when it has one. */
-    val backingField: FieldEmbedding? = (property.getter as? BackingFieldGetter)?.field
+    private val backingField: FieldEmbedding? = (property.getter as? BackingFieldGetter)?.field
+
+    /** The step an owned path takes through the property, when its value is tracked. */
+    val ownedStep: PathStep? = property.ownedStep
 
     context(ctx: TypeResolver)
     private fun getPlainValue() = when (val getter = property.getter!!) {

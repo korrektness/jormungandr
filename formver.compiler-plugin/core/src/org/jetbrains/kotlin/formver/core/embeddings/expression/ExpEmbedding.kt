@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.UniqueValStep
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.purity.PurityContext
@@ -70,6 +71,23 @@ data class FieldAccess(
     override val type: TypeEmbedding = field.type
 
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitFieldAccess(this)
+    override fun children(): Sequence<ExpEmbedding> = sequenceOf(receiver)
+}
+
+/**
+ * A read of the `@Unique` `val` [step] on [receiver]. The value needs no permission; when [receiverOwned], it is the
+ * owned path through [step], whose predicate is nested in the receiver's.
+ *
+ * [receiverOwned] says whether the uniqueness checker finds the receiver `Unique` before the read.
+ */
+data class UniqueValAccess(
+    val receiver: ExpEmbedding,
+    val step: UniqueValStep,
+    val receiverOwned: Boolean = false,
+) : ExpEmbedding {
+    override val type: TypeEmbedding = step.type
+
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitUniqueValAccess(this)
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(receiver)
 }
 

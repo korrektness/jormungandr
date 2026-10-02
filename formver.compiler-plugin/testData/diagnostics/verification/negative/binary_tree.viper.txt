@@ -25,8 +25,16 @@ method get_left_val(n: Ref) returns (v_ret_0: Ref)
 {
   if (left(n) != nullValue()) {
     var anon: Ref
-    anon := havoc(intType())
+    unfold acc(Node_unique(n), write)
+    if (left(n) != nullValue()) {
+      unfold acc(Node_unique(left(n)), write)
+    }
+    anon := left(n).data
     v_ret_0 := anon
+    if (left(n) != nullValue()) {
+      fold acc(Node_unique(left(n)), write)
+    }
+    fold acc(Node_unique(n), write)
   } else {
     v_ret_0 := nullValue()}
   goto lbl_ret_0

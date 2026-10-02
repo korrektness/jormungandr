@@ -45,6 +45,7 @@ internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbed
     override fun visitIf(e: If) = e.allChildrenPure(this)
     override fun visitElvis(e: Elvis) = e.allChildrenPure(this)
     override fun visitFieldAccess(e: FieldAccess): Boolean = e.allChildrenPure(this)
+    override fun visitUniqueValAccess(e: UniqueValAccess): Boolean = e.allChildrenPure(this)
     override fun visitPrimitiveFieldAccess(e: PrimitiveFieldAccess): Boolean = e.allChildrenPure(this)
     override fun visitIs(e: Is) = e.allChildrenPure(this)
     override fun visitCast(e: Cast): Boolean = e.allChildrenPure(this)

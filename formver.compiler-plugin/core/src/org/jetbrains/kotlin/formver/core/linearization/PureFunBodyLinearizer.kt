@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.linearization
 
+import org.jetbrains.kotlin.formver.core.embeddings.properties.UniqueValStep
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.asPosition
@@ -125,6 +126,9 @@ data class PureFunBodyLinearizer(
         addFieldAccessStoringIn(receiver, receiverType, field, result)
         return result.toViperExp(this)
     }
+
+    override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean): Exp =
+        step.valueOf(receiver.toViper(this), source.asPosition)
 
     override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp {
         if (predicate.formalArgs.any { it !is Exp.LocalVar }) {

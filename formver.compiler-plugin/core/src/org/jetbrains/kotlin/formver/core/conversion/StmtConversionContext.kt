@@ -175,14 +175,15 @@ fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpress
 
 /**
  * Whether [receiver] is owned for an access to [property] at [element]: the uniqueness checker finds its path `Unique`,
- * and the field holding [property], if any, is declared on the class chain of the path's static type, so the path's
- * predicate holds it. A field reached only through a cast to a subtype is accessed as shared.
+ * and the backing field of [property] or, for a `@Unique` `val`, the property itself is declared on the class chain of
+ * the path's static type, so the path's predicate holds it. A property reached only through a cast to a subtype is
+ * accessed as shared.
  */
 private fun StmtConversionContext.ownsFor(element: FirElement, receiver: FirExpression, property: PropertyEmbedding): Boolean {
     if (!ownsBefore(element, receiver)) return false
-    val field = (property.getter as? BackingFieldGetter)?.field ?: return true
+    val step = (property.getter as? BackingFieldGetter)?.field ?: property.ownedStep ?: return true
     val static = embedType(receiver.withoutCasts().resolvedType).pretype as? ClassTypeEmbedding ?: return true
-    return typeResolver.declaresOnChain(static, field)
+    return typeResolver.declaresOnChain(static, step)
 }
 
 private fun FirExpression.withoutCasts(): FirExpression = when (this) {
@@ -443,8 +444,8 @@ fun StmtConversionContext.collectInvariantsAndTriggers(block: FirBlock): Invaria
  * The shapes of the roots among [roots] that [state] has `Unique`, with a hole at each path below them that [state]
  * has `Moved`.
  *
- * A moved path that does not run through `@Unique` backing fields alone is left out: the fold state tracks no move
- * of it either, so the root's predicate is not opened for it.
+ * A moved path that does not run through tracked `@Unique` properties alone is left out: the fold state tracks no
+ * move of it either, so the root's predicate is not opened for it.
  */
 fun StmtConversionContext.ownedShapes(
     analysis: FunctionUniquenessAnalysis,
@@ -456,8 +457,7 @@ fun StmtConversionContext.ownedShapes(
         OwnedShape(root, analysis.movedBelow(state, root.symbol).mapNotNull { path ->
             path.map { symbol ->
                 val property = symbol as? FirPropertySymbol ?: return@mapNotNull null
-                val field = (embedProperty(property).getter as? BackingFieldGetter)?.field
-                field?.takeIf { it.isUnique } ?: return@mapNotNull null
+                embedProperty(property).ownedStep ?: return@mapNotNull null
             }
         })
     }
