@@ -162,3 +162,89 @@ method insertionSort(l: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/insertion_sort_functional.kt: info: Generated Viper text for insertProbeStart:
+function g_next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), nullable(Node()))
+
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function isSorted(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let anon_1_0 ==
+    ((n == nullValue() ? boolToRef(true) : null)) in
+    (let anon_3_0 ==
+      ((!(n == nullValue()) && g_next(n) == nullValue() ?
+        boolToRef(true) :
+        null)) in
+      (let anon_4_0 ==
+        ((!(n == nullValue()) && !(g_next(n) == nullValue()) ?
+          andBools(leInts(g_value(n), g_value(g_next(n))), isSorted(g_next(n))) :
+          null)) in
+        (let anon_2_0 ==
+          ((!(n == nullValue()) ?
+            (g_next(n) == nullValue() ? anon_3_0 : anon_4_0) :
+            null)) in
+          (let anon_0_0 ==
+            ((n == nullValue() ? anon_1_0 : anon_2_0)) in
+            anon_0_0)))))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures acc(Node_unique(ret_3), write)
+  ensures intFromRef(g_value(ret_3)) == intFromRef(par_value)
+  ensures g_next(ret_3) == par_next
+
+
+method insert(x: Ref, l: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(l), nullable(Node()))
+  requires boolFromRef(isSorted(l))
+  ensures isSubtype(typeOf(ret_4), Node())
+  ensures boolFromRef(isSorted(ret_4)) &&
+    (intFromRef(g_value(ret_4)) == intFromRef(x) ||
+    !(l == nullValue()) &&
+    intFromRef(g_value(ret_4)) == intFromRef(g_value(l)))
+
+
+method insertProbeStart(x: Ref, l: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(l), nullable(Node()))
+  requires boolFromRef(isSorted(l))
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures boolFromRef(isSorted(v_ret_0)) &&
+    (intFromRef(g_value(v_ret_0)) == intFromRef(x) ||
+    !(l == nullValue()) &&
+    intFromRef(g_value(v_ret_0)) == intFromRef(g_value(l)))
+{
+  var anon_5: Ref
+  var anon_6: Ref
+  assert false
+  if (l == nullValue()) {
+    anon_5 := boolToRef(true)
+  } else {
+    anon_5 := leInts(x, g_value(l))}
+  if (boolFromRef(anon_5)) {
+    v_ret_0 := con(x, l)
+    goto lbl_ret_0
+  }
+  anon_6 := insert(x, g_next(l))
+  v_ret_0 := con(g_value(l), anon_6)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

@@ -275,3 +275,1143 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/levenshtein.kt: info: Generated Viper text for levenshteinDistanceProbeInitLoopBody:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_size: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_2), IntArray())
+  ensures acc(IntArray_unique(ret_2), write)
+  ensures arraySize(ret_2) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_2), write) in
+      (forall v_j: Int ::
+        { ret_2.contents[v_j] }
+        v_j >= 0 && v_j < arraySize(ret_2) ==> ret_2.contents[v_j] == 0))
+
+
+method levenshteinDistanceProbeInitLoopBody(first: Ref, second: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(first), stringType())
+  requires isSubtype(typeOf(second), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 0 <= intFromRef(v_ret_0)
+  ensures intFromRef(v_ret_0) <= |stringFromRef(first)| ||
+    intFromRef(v_ret_0) <= |stringFromRef(second)|
+{
+  var firstLen: Ref
+  var secondLen: Ref
+  var distance: Ref
+  var newDistance: Ref
+  var k: Ref
+  var anon_3: Ref
+  var i: Ref
+  var anon_4: Ref
+  var anon_10: Ref
+  if (stringFromRef(first) == stringFromRef(second)) {
+    v_ret_0 := intToRef(0)
+    goto lbl_ret_0
+  } elseif (|stringFromRef(first)| == 0) {
+    v_ret_0 := stringLength(second)
+    goto lbl_ret_0
+  } elseif (|stringFromRef(second)| == 0) {
+    v_ret_0 := stringLength(first)
+    goto lbl_ret_0
+  }
+  firstLen := plusInts(stringLength(first), intToRef(1))
+  secondLen := plusInts(stringLength(second), intToRef(1))
+  distance := con(firstLen)
+  newDistance := con(firstLen)
+  k := intToRef(0)
+  label cont_0
+    invariant acc(IntArray_unique(distance), write)
+    invariant acc(IntArray_unique(newDistance), write)
+    invariant isSubtype(typeOf(firstLen), intType())
+    invariant isSubtype(typeOf(secondLen), intType())
+    invariant isSubtype(typeOf(distance), IntArray())
+    invariant isSubtype(typeOf(newDistance), IntArray())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(first), stringType())
+    invariant isSubtype(typeOf(second), stringType())
+    invariant 0 <= intFromRef(k) && intFromRef(k) <= intFromRef(firstLen)
+    invariant arraySize(distance) == intFromRef(firstLen)
+    invariant arraySize(newDistance) == intFromRef(firstLen)
+    invariant (unfolding acc(IntArray_unique(distance), write) in
+        (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+          anon_builtin_0 < intFromRef(k) ==>
+          distance.contents[anon_builtin_0] == anon_builtin_0))
+  anon_3 := ltInts(k, firstLen)
+  if (boolFromRef(anon_3)) {
+    var anon_0: Ref
+    assert intFromRef(k) >= 0
+    assert intFromRef(k) < arraySize(distance)
+    unfold acc(IntArray_unique(distance), write)
+    distance.contents := distance.contents[intFromRef(k) := intFromRef(k)]
+    anon_0 := k
+    k := plusInts(anon_0, intToRef(1))
+    assert false
+    fold acc(IntArray_unique(distance), write)
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(firstLen), intType())
+  assert isSubtype(typeOf(secondLen), intType())
+  assert isSubtype(typeOf(distance), IntArray())
+  assert isSubtype(typeOf(newDistance), IntArray())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(first), stringType())
+  assert isSubtype(typeOf(second), stringType())
+  assert 0 <= intFromRef(k) && intFromRef(k) <= intFromRef(firstLen)
+  assert arraySize(distance) == intFromRef(firstLen)
+  assert arraySize(newDistance) == intFromRef(firstLen)
+  assert (unfolding acc(IntArray_unique(distance), write) in
+      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+        anon_builtin_0 < intFromRef(k) ==>
+        distance.contents[anon_builtin_0] == anon_builtin_0))
+  i := intToRef(1)
+  label cont_1
+    invariant acc(IntArray_unique(distance), write)
+    invariant acc(IntArray_unique(newDistance), write)
+    invariant isSubtype(typeOf(firstLen), intType())
+    invariant isSubtype(typeOf(secondLen), intType())
+    invariant isSubtype(typeOf(distance), IntArray())
+    invariant isSubtype(typeOf(newDistance), IntArray())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(first), stringType())
+    invariant isSubtype(typeOf(second), stringType())
+    invariant 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
+    invariant arraySize(distance) == intFromRef(firstLen)
+    invariant arraySize(newDistance) == intFromRef(firstLen)
+    invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+        anon_builtin_1 < intFromRef(firstLen) ==>
+        (unfolding acc(IntArray_unique(distance), write) in
+          0 <= distance.contents[anon_builtin_1]) &&
+        (unfolding acc(IntArray_unique(distance), write) in
+          distance.contents[anon_builtin_1] <= anon_builtin_1 ||
+          distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+  anon_4 := ltInts(i, secondLen)
+  if (boolFromRef(anon_4)) {
+    var l7_j: Ref
+    var anon_5: Ref
+    var swap: Ref
+    var anon_2: Ref
+    assert 0 >= 0
+    assert 0 < arraySize(newDistance)
+    unfold acc(IntArray_unique(newDistance), write)
+    newDistance.contents := newDistance.contents[0 := intFromRef(i)]
+    l7_j := intToRef(1)
+    fold acc(IntArray_unique(newDistance), write)
+    label cont_2
+      invariant acc(IntArray_unique(distance), write)
+      invariant acc(IntArray_unique(newDistance), write)
+      invariant isSubtype(typeOf(l7_j), intType())
+      invariant isSubtype(typeOf(firstLen), intType())
+      invariant isSubtype(typeOf(secondLen), intType())
+      invariant isSubtype(typeOf(distance), IntArray())
+      invariant isSubtype(typeOf(newDistance), IntArray())
+      invariant isSubtype(typeOf(k), intType())
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(first), stringType())
+      invariant isSubtype(typeOf(second), stringType())
+      invariant 1 <= intFromRef(l7_j) &&
+        intFromRef(l7_j) <= intFromRef(firstLen)
+      invariant arraySize(distance) == intFromRef(firstLen)
+      invariant arraySize(newDistance) == intFromRef(firstLen)
+      invariant (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+          anon_builtin_2 < intFromRef(firstLen) ==>
+          (unfolding acc(IntArray_unique(distance), write) in
+            0 <= distance.contents[anon_builtin_2]) &&
+          (unfolding acc(IntArray_unique(distance), write) in
+            distance.contents[anon_builtin_2] <= anon_builtin_2 ||
+            distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+      invariant (unfolding acc(IntArray_unique(newDistance), write) in
+          newDistance.contents[0] == intFromRef(i))
+      invariant (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
+          anon_builtin_3 < intFromRef(l7_j) ==>
+          (unfolding acc(IntArray_unique(newDistance), write) in
+            0 <= newDistance.contents[anon_builtin_3]) &&
+          (unfolding acc(IntArray_unique(newDistance), write) in
+            newDistance.contents[anon_builtin_3] <= anon_builtin_3 ||
+            newDistance.contents[anon_builtin_3] <= intFromRef(i)))
+    anon_5 := ltInts(l7_j, firstLen)
+    if (boolFromRef(anon_5)) {
+      var costReplace: Ref
+      var anon_6: Ref
+      var anon_7: Ref
+      var costInsert: Ref
+      var anon_8: Ref
+      var costDelete: Ref
+      var anon_9: Ref
+      var cost: Ref
+      var anon_1: Ref
+      assert intFromRef(l7_j) - 1 >= 0
+      assert intFromRef(l7_j) - 1 < arraySize(distance)
+      unfold acc(IntArray_unique(distance), write)
+      anon_6 := intToRef(distance.contents[intFromRef(l7_j) - 1])
+      fold acc(IntArray_unique(distance), write)
+      if (stringFromRef(first)[intFromRef(l7_j) - 1] ==
+      stringFromRef(second)[intFromRef(i) - 1]) {
+        anon_7 := intToRef(0)
+      } else {
+        anon_7 := intToRef(1)}
+      costReplace := plusInts(anon_6, anon_7)
+      assert intFromRef(l7_j) >= 0
+      assert intFromRef(l7_j) < arraySize(distance)
+      unfold acc(IntArray_unique(distance), write)
+      anon_8 := intToRef(distance.contents[intFromRef(l7_j)])
+      costInsert := plusInts(anon_8, intToRef(1))
+      assert intFromRef(l7_j) - 1 >= 0
+      assert intFromRef(l7_j) - 1 < arraySize(newDistance)
+      unfold acc(IntArray_unique(newDistance), write)
+      anon_9 := intToRef(newDistance.contents[intFromRef(l7_j) - 1])
+      costDelete := plusInts(anon_9, intToRef(1))
+      cost := costInsert
+      fold acc(IntArray_unique(distance), write)
+      fold acc(IntArray_unique(newDistance), write)
+      if (intFromRef(costDelete) < intFromRef(cost)) {
+        cost := costDelete
+      }
+      if (intFromRef(costReplace) < intFromRef(cost)) {
+        cost := costReplace
+      }
+      assert intFromRef(l7_j) >= 0
+      assert intFromRef(l7_j) < arraySize(newDistance)
+      unfold acc(IntArray_unique(newDistance), write)
+      newDistance.contents := newDistance.contents[intFromRef(l7_j) :=
+        intFromRef(cost)]
+      anon_1 := l7_j
+      l7_j := plusInts(anon_1, intToRef(1))
+      fold acc(IntArray_unique(newDistance), write)
+      goto cont_2
+    }
+    label break_2
+    assert isSubtype(typeOf(l7_j), intType())
+    assert isSubtype(typeOf(firstLen), intType())
+    assert isSubtype(typeOf(secondLen), intType())
+    assert isSubtype(typeOf(distance), IntArray())
+    assert isSubtype(typeOf(newDistance), IntArray())
+    assert isSubtype(typeOf(k), intType())
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(first), stringType())
+    assert isSubtype(typeOf(second), stringType())
+    assert 1 <= intFromRef(l7_j) &&
+      intFromRef(l7_j) <= intFromRef(firstLen)
+    assert arraySize(distance) == intFromRef(firstLen)
+    assert arraySize(newDistance) == intFromRef(firstLen)
+    assert (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+        anon_builtin_2 < intFromRef(firstLen) ==>
+        (unfolding acc(IntArray_unique(distance), write) in
+          0 <= distance.contents[anon_builtin_2]) &&
+        (unfolding acc(IntArray_unique(distance), write) in
+          distance.contents[anon_builtin_2] <= anon_builtin_2 ||
+          distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+    assert (unfolding acc(IntArray_unique(newDistance), write) in
+        newDistance.contents[0] == intFromRef(i))
+    assert (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
+        anon_builtin_3 < intFromRef(l7_j) ==>
+        (unfolding acc(IntArray_unique(newDistance), write) in
+          0 <= newDistance.contents[anon_builtin_3]) &&
+        (unfolding acc(IntArray_unique(newDistance), write) in
+          newDistance.contents[anon_builtin_3] <= anon_builtin_3 ||
+          newDistance.contents[anon_builtin_3] <= intFromRef(i)))
+    swap := distance
+    distance := newDistance
+    newDistance := swap
+    anon_2 := i
+    i := plusInts(anon_2, intToRef(1))
+    goto cont_1
+  }
+  label break_1
+  assert isSubtype(typeOf(firstLen), intType())
+  assert isSubtype(typeOf(secondLen), intType())
+  assert isSubtype(typeOf(distance), IntArray())
+  assert isSubtype(typeOf(newDistance), IntArray())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(first), stringType())
+  assert isSubtype(typeOf(second), stringType())
+  assert 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
+  assert arraySize(distance) == intFromRef(firstLen)
+  assert arraySize(newDistance) == intFromRef(firstLen)
+  assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(firstLen) ==>
+      (unfolding acc(IntArray_unique(distance), write) in
+        0 <= distance.contents[anon_builtin_1]) &&
+      (unfolding acc(IntArray_unique(distance), write) in
+        distance.contents[anon_builtin_1] <= anon_builtin_1 ||
+        distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+  assert intFromRef(firstLen) - 1 >= 0
+  assert intFromRef(firstLen) - 1 < arraySize(distance)
+  unfold acc(IntArray_unique(distance), write)
+  anon_10 := intToRef(distance.contents[intFromRef(firstLen) - 1])
+  v_ret_0 := anon_10
+  fold acc(IntArray_unique(distance), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/levenshtein.kt: info: Generated Viper text for levenshteinDistanceProbeInnerLoopBody:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_size: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_2), IntArray())
+  ensures acc(IntArray_unique(ret_2), write)
+  ensures arraySize(ret_2) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_2), write) in
+      (forall v_j: Int ::
+        { ret_2.contents[v_j] }
+        v_j >= 0 && v_j < arraySize(ret_2) ==> ret_2.contents[v_j] == 0))
+
+
+method levenshteinDistanceProbeInnerLoopBody(first: Ref, second: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(first), stringType())
+  requires isSubtype(typeOf(second), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 0 <= intFromRef(v_ret_0)
+  ensures intFromRef(v_ret_0) <= |stringFromRef(first)| ||
+    intFromRef(v_ret_0) <= |stringFromRef(second)|
+{
+  var firstLen: Ref
+  var secondLen: Ref
+  var distance: Ref
+  var newDistance: Ref
+  var k: Ref
+  var anon_3: Ref
+  var i: Ref
+  var anon_4: Ref
+  var anon_10: Ref
+  if (stringFromRef(first) == stringFromRef(second)) {
+    v_ret_0 := intToRef(0)
+    goto lbl_ret_0
+  } elseif (|stringFromRef(first)| == 0) {
+    v_ret_0 := stringLength(second)
+    goto lbl_ret_0
+  } elseif (|stringFromRef(second)| == 0) {
+    v_ret_0 := stringLength(first)
+    goto lbl_ret_0
+  }
+  firstLen := plusInts(stringLength(first), intToRef(1))
+  secondLen := plusInts(stringLength(second), intToRef(1))
+  distance := con(firstLen)
+  newDistance := con(firstLen)
+  k := intToRef(0)
+  label cont_0
+    invariant acc(IntArray_unique(distance), write)
+    invariant acc(IntArray_unique(newDistance), write)
+    invariant isSubtype(typeOf(firstLen), intType())
+    invariant isSubtype(typeOf(secondLen), intType())
+    invariant isSubtype(typeOf(distance), IntArray())
+    invariant isSubtype(typeOf(newDistance), IntArray())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(first), stringType())
+    invariant isSubtype(typeOf(second), stringType())
+    invariant 0 <= intFromRef(k) && intFromRef(k) <= intFromRef(firstLen)
+    invariant arraySize(distance) == intFromRef(firstLen)
+    invariant arraySize(newDistance) == intFromRef(firstLen)
+    invariant (unfolding acc(IntArray_unique(distance), write) in
+        (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+          anon_builtin_0 < intFromRef(k) ==>
+          distance.contents[anon_builtin_0] == anon_builtin_0))
+  anon_3 := ltInts(k, firstLen)
+  if (boolFromRef(anon_3)) {
+    var anon_0: Ref
+    assert intFromRef(k) >= 0
+    assert intFromRef(k) < arraySize(distance)
+    unfold acc(IntArray_unique(distance), write)
+    distance.contents := distance.contents[intFromRef(k) := intFromRef(k)]
+    anon_0 := k
+    k := plusInts(anon_0, intToRef(1))
+    fold acc(IntArray_unique(distance), write)
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(firstLen), intType())
+  assert isSubtype(typeOf(secondLen), intType())
+  assert isSubtype(typeOf(distance), IntArray())
+  assert isSubtype(typeOf(newDistance), IntArray())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(first), stringType())
+  assert isSubtype(typeOf(second), stringType())
+  assert 0 <= intFromRef(k) && intFromRef(k) <= intFromRef(firstLen)
+  assert arraySize(distance) == intFromRef(firstLen)
+  assert arraySize(newDistance) == intFromRef(firstLen)
+  assert (unfolding acc(IntArray_unique(distance), write) in
+      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+        anon_builtin_0 < intFromRef(k) ==>
+        distance.contents[anon_builtin_0] == anon_builtin_0))
+  i := intToRef(1)
+  label cont_1
+    invariant acc(IntArray_unique(distance), write)
+    invariant acc(IntArray_unique(newDistance), write)
+    invariant isSubtype(typeOf(firstLen), intType())
+    invariant isSubtype(typeOf(secondLen), intType())
+    invariant isSubtype(typeOf(distance), IntArray())
+    invariant isSubtype(typeOf(newDistance), IntArray())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(first), stringType())
+    invariant isSubtype(typeOf(second), stringType())
+    invariant 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
+    invariant arraySize(distance) == intFromRef(firstLen)
+    invariant arraySize(newDistance) == intFromRef(firstLen)
+    invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+        anon_builtin_1 < intFromRef(firstLen) ==>
+        (unfolding acc(IntArray_unique(distance), write) in
+          0 <= distance.contents[anon_builtin_1]) &&
+        (unfolding acc(IntArray_unique(distance), write) in
+          distance.contents[anon_builtin_1] <= anon_builtin_1 ||
+          distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+  anon_4 := ltInts(i, secondLen)
+  if (boolFromRef(anon_4)) {
+    var l7_j: Ref
+    var anon_5: Ref
+    var swap: Ref
+    var anon_2: Ref
+    assert 0 >= 0
+    assert 0 < arraySize(newDistance)
+    unfold acc(IntArray_unique(newDistance), write)
+    newDistance.contents := newDistance.contents[0 := intFromRef(i)]
+    l7_j := intToRef(1)
+    fold acc(IntArray_unique(newDistance), write)
+    label cont_2
+      invariant acc(IntArray_unique(distance), write)
+      invariant acc(IntArray_unique(newDistance), write)
+      invariant isSubtype(typeOf(l7_j), intType())
+      invariant isSubtype(typeOf(firstLen), intType())
+      invariant isSubtype(typeOf(secondLen), intType())
+      invariant isSubtype(typeOf(distance), IntArray())
+      invariant isSubtype(typeOf(newDistance), IntArray())
+      invariant isSubtype(typeOf(k), intType())
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(first), stringType())
+      invariant isSubtype(typeOf(second), stringType())
+      invariant 1 <= intFromRef(l7_j) &&
+        intFromRef(l7_j) <= intFromRef(firstLen)
+      invariant arraySize(distance) == intFromRef(firstLen)
+      invariant arraySize(newDistance) == intFromRef(firstLen)
+      invariant (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+          anon_builtin_2 < intFromRef(firstLen) ==>
+          (unfolding acc(IntArray_unique(distance), write) in
+            0 <= distance.contents[anon_builtin_2]) &&
+          (unfolding acc(IntArray_unique(distance), write) in
+            distance.contents[anon_builtin_2] <= anon_builtin_2 ||
+            distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+      invariant (unfolding acc(IntArray_unique(newDistance), write) in
+          newDistance.contents[0] == intFromRef(i))
+      invariant (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
+          anon_builtin_3 < intFromRef(l7_j) ==>
+          (unfolding acc(IntArray_unique(newDistance), write) in
+            0 <= newDistance.contents[anon_builtin_3]) &&
+          (unfolding acc(IntArray_unique(newDistance), write) in
+            newDistance.contents[anon_builtin_3] <= anon_builtin_3 ||
+            newDistance.contents[anon_builtin_3] <= intFromRef(i)))
+    anon_5 := ltInts(l7_j, firstLen)
+    if (boolFromRef(anon_5)) {
+      var costReplace: Ref
+      var anon_6: Ref
+      var anon_7: Ref
+      var costInsert: Ref
+      var anon_8: Ref
+      var costDelete: Ref
+      var anon_9: Ref
+      var cost: Ref
+      var anon_1: Ref
+      assert intFromRef(l7_j) - 1 >= 0
+      assert intFromRef(l7_j) - 1 < arraySize(distance)
+      unfold acc(IntArray_unique(distance), write)
+      anon_6 := intToRef(distance.contents[intFromRef(l7_j) - 1])
+      fold acc(IntArray_unique(distance), write)
+      if (stringFromRef(first)[intFromRef(l7_j) - 1] ==
+      stringFromRef(second)[intFromRef(i) - 1]) {
+        anon_7 := intToRef(0)
+      } else {
+        anon_7 := intToRef(1)}
+      costReplace := plusInts(anon_6, anon_7)
+      assert intFromRef(l7_j) >= 0
+      assert intFromRef(l7_j) < arraySize(distance)
+      unfold acc(IntArray_unique(distance), write)
+      anon_8 := intToRef(distance.contents[intFromRef(l7_j)])
+      costInsert := plusInts(anon_8, intToRef(1))
+      assert intFromRef(l7_j) - 1 >= 0
+      assert intFromRef(l7_j) - 1 < arraySize(newDistance)
+      unfold acc(IntArray_unique(newDistance), write)
+      anon_9 := intToRef(newDistance.contents[intFromRef(l7_j) - 1])
+      costDelete := plusInts(anon_9, intToRef(1))
+      cost := costInsert
+      fold acc(IntArray_unique(distance), write)
+      fold acc(IntArray_unique(newDistance), write)
+      if (intFromRef(costDelete) < intFromRef(cost)) {
+        cost := costDelete
+      }
+      if (intFromRef(costReplace) < intFromRef(cost)) {
+        cost := costReplace
+      }
+      assert intFromRef(l7_j) >= 0
+      assert intFromRef(l7_j) < arraySize(newDistance)
+      unfold acc(IntArray_unique(newDistance), write)
+      newDistance.contents := newDistance.contents[intFromRef(l7_j) :=
+        intFromRef(cost)]
+      anon_1 := l7_j
+      l7_j := plusInts(anon_1, intToRef(1))
+      assert false
+      fold acc(IntArray_unique(newDistance), write)
+      goto cont_2
+    }
+    label break_2
+    assert isSubtype(typeOf(l7_j), intType())
+    assert isSubtype(typeOf(firstLen), intType())
+    assert isSubtype(typeOf(secondLen), intType())
+    assert isSubtype(typeOf(distance), IntArray())
+    assert isSubtype(typeOf(newDistance), IntArray())
+    assert isSubtype(typeOf(k), intType())
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(first), stringType())
+    assert isSubtype(typeOf(second), stringType())
+    assert 1 <= intFromRef(l7_j) &&
+      intFromRef(l7_j) <= intFromRef(firstLen)
+    assert arraySize(distance) == intFromRef(firstLen)
+    assert arraySize(newDistance) == intFromRef(firstLen)
+    assert (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+        anon_builtin_2 < intFromRef(firstLen) ==>
+        (unfolding acc(IntArray_unique(distance), write) in
+          0 <= distance.contents[anon_builtin_2]) &&
+        (unfolding acc(IntArray_unique(distance), write) in
+          distance.contents[anon_builtin_2] <= anon_builtin_2 ||
+          distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+    assert (unfolding acc(IntArray_unique(newDistance), write) in
+        newDistance.contents[0] == intFromRef(i))
+    assert (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
+        anon_builtin_3 < intFromRef(l7_j) ==>
+        (unfolding acc(IntArray_unique(newDistance), write) in
+          0 <= newDistance.contents[anon_builtin_3]) &&
+        (unfolding acc(IntArray_unique(newDistance), write) in
+          newDistance.contents[anon_builtin_3] <= anon_builtin_3 ||
+          newDistance.contents[anon_builtin_3] <= intFromRef(i)))
+    swap := distance
+    distance := newDistance
+    newDistance := swap
+    anon_2 := i
+    i := plusInts(anon_2, intToRef(1))
+    goto cont_1
+  }
+  label break_1
+  assert isSubtype(typeOf(firstLen), intType())
+  assert isSubtype(typeOf(secondLen), intType())
+  assert isSubtype(typeOf(distance), IntArray())
+  assert isSubtype(typeOf(newDistance), IntArray())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(first), stringType())
+  assert isSubtype(typeOf(second), stringType())
+  assert 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
+  assert arraySize(distance) == intFromRef(firstLen)
+  assert arraySize(newDistance) == intFromRef(firstLen)
+  assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(firstLen) ==>
+      (unfolding acc(IntArray_unique(distance), write) in
+        0 <= distance.contents[anon_builtin_1]) &&
+      (unfolding acc(IntArray_unique(distance), write) in
+        distance.contents[anon_builtin_1] <= anon_builtin_1 ||
+        distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+  assert intFromRef(firstLen) - 1 >= 0
+  assert intFromRef(firstLen) - 1 < arraySize(distance)
+  unfold acc(IntArray_unique(distance), write)
+  anon_10 := intToRef(distance.contents[intFromRef(firstLen) - 1])
+  v_ret_0 := anon_10
+  fold acc(IntArray_unique(distance), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/levenshtein.kt: info: Generated Viper text for levenshteinDistanceProbeOuterLoopBody:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_size: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_2), IntArray())
+  ensures acc(IntArray_unique(ret_2), write)
+  ensures arraySize(ret_2) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_2), write) in
+      (forall v_j: Int ::
+        { ret_2.contents[v_j] }
+        v_j >= 0 && v_j < arraySize(ret_2) ==> ret_2.contents[v_j] == 0))
+
+
+method levenshteinDistanceProbeOuterLoopBody(first: Ref, second: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(first), stringType())
+  requires isSubtype(typeOf(second), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 0 <= intFromRef(v_ret_0)
+  ensures intFromRef(v_ret_0) <= |stringFromRef(first)| ||
+    intFromRef(v_ret_0) <= |stringFromRef(second)|
+{
+  var firstLen: Ref
+  var secondLen: Ref
+  var distance: Ref
+  var newDistance: Ref
+  var k: Ref
+  var anon_3: Ref
+  var i: Ref
+  var anon_4: Ref
+  var anon_10: Ref
+  if (stringFromRef(first) == stringFromRef(second)) {
+    v_ret_0 := intToRef(0)
+    goto lbl_ret_0
+  } elseif (|stringFromRef(first)| == 0) {
+    v_ret_0 := stringLength(second)
+    goto lbl_ret_0
+  } elseif (|stringFromRef(second)| == 0) {
+    v_ret_0 := stringLength(first)
+    goto lbl_ret_0
+  }
+  firstLen := plusInts(stringLength(first), intToRef(1))
+  secondLen := plusInts(stringLength(second), intToRef(1))
+  distance := con(firstLen)
+  newDistance := con(firstLen)
+  k := intToRef(0)
+  label cont_0
+    invariant acc(IntArray_unique(distance), write)
+    invariant acc(IntArray_unique(newDistance), write)
+    invariant isSubtype(typeOf(firstLen), intType())
+    invariant isSubtype(typeOf(secondLen), intType())
+    invariant isSubtype(typeOf(distance), IntArray())
+    invariant isSubtype(typeOf(newDistance), IntArray())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(first), stringType())
+    invariant isSubtype(typeOf(second), stringType())
+    invariant 0 <= intFromRef(k) && intFromRef(k) <= intFromRef(firstLen)
+    invariant arraySize(distance) == intFromRef(firstLen)
+    invariant arraySize(newDistance) == intFromRef(firstLen)
+    invariant (unfolding acc(IntArray_unique(distance), write) in
+        (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+          anon_builtin_0 < intFromRef(k) ==>
+          distance.contents[anon_builtin_0] == anon_builtin_0))
+  anon_3 := ltInts(k, firstLen)
+  if (boolFromRef(anon_3)) {
+    var anon_0: Ref
+    assert intFromRef(k) >= 0
+    assert intFromRef(k) < arraySize(distance)
+    unfold acc(IntArray_unique(distance), write)
+    distance.contents := distance.contents[intFromRef(k) := intFromRef(k)]
+    anon_0 := k
+    k := plusInts(anon_0, intToRef(1))
+    fold acc(IntArray_unique(distance), write)
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(firstLen), intType())
+  assert isSubtype(typeOf(secondLen), intType())
+  assert isSubtype(typeOf(distance), IntArray())
+  assert isSubtype(typeOf(newDistance), IntArray())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(first), stringType())
+  assert isSubtype(typeOf(second), stringType())
+  assert 0 <= intFromRef(k) && intFromRef(k) <= intFromRef(firstLen)
+  assert arraySize(distance) == intFromRef(firstLen)
+  assert arraySize(newDistance) == intFromRef(firstLen)
+  assert (unfolding acc(IntArray_unique(distance), write) in
+      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+        anon_builtin_0 < intFromRef(k) ==>
+        distance.contents[anon_builtin_0] == anon_builtin_0))
+  i := intToRef(1)
+  label cont_1
+    invariant acc(IntArray_unique(distance), write)
+    invariant acc(IntArray_unique(newDistance), write)
+    invariant isSubtype(typeOf(firstLen), intType())
+    invariant isSubtype(typeOf(secondLen), intType())
+    invariant isSubtype(typeOf(distance), IntArray())
+    invariant isSubtype(typeOf(newDistance), IntArray())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(first), stringType())
+    invariant isSubtype(typeOf(second), stringType())
+    invariant 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
+    invariant arraySize(distance) == intFromRef(firstLen)
+    invariant arraySize(newDistance) == intFromRef(firstLen)
+    invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+        anon_builtin_1 < intFromRef(firstLen) ==>
+        (unfolding acc(IntArray_unique(distance), write) in
+          0 <= distance.contents[anon_builtin_1]) &&
+        (unfolding acc(IntArray_unique(distance), write) in
+          distance.contents[anon_builtin_1] <= anon_builtin_1 ||
+          distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+  anon_4 := ltInts(i, secondLen)
+  if (boolFromRef(anon_4)) {
+    var l7_j: Ref
+    var anon_5: Ref
+    var swap: Ref
+    var anon_2: Ref
+    assert 0 >= 0
+    assert 0 < arraySize(newDistance)
+    unfold acc(IntArray_unique(newDistance), write)
+    newDistance.contents := newDistance.contents[0 := intFromRef(i)]
+    l7_j := intToRef(1)
+    fold acc(IntArray_unique(newDistance), write)
+    label cont_2
+      invariant acc(IntArray_unique(distance), write)
+      invariant acc(IntArray_unique(newDistance), write)
+      invariant isSubtype(typeOf(l7_j), intType())
+      invariant isSubtype(typeOf(firstLen), intType())
+      invariant isSubtype(typeOf(secondLen), intType())
+      invariant isSubtype(typeOf(distance), IntArray())
+      invariant isSubtype(typeOf(newDistance), IntArray())
+      invariant isSubtype(typeOf(k), intType())
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(first), stringType())
+      invariant isSubtype(typeOf(second), stringType())
+      invariant 1 <= intFromRef(l7_j) &&
+        intFromRef(l7_j) <= intFromRef(firstLen)
+      invariant arraySize(distance) == intFromRef(firstLen)
+      invariant arraySize(newDistance) == intFromRef(firstLen)
+      invariant (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+          anon_builtin_2 < intFromRef(firstLen) ==>
+          (unfolding acc(IntArray_unique(distance), write) in
+            0 <= distance.contents[anon_builtin_2]) &&
+          (unfolding acc(IntArray_unique(distance), write) in
+            distance.contents[anon_builtin_2] <= anon_builtin_2 ||
+            distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+      invariant (unfolding acc(IntArray_unique(newDistance), write) in
+          newDistance.contents[0] == intFromRef(i))
+      invariant (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
+          anon_builtin_3 < intFromRef(l7_j) ==>
+          (unfolding acc(IntArray_unique(newDistance), write) in
+            0 <= newDistance.contents[anon_builtin_3]) &&
+          (unfolding acc(IntArray_unique(newDistance), write) in
+            newDistance.contents[anon_builtin_3] <= anon_builtin_3 ||
+            newDistance.contents[anon_builtin_3] <= intFromRef(i)))
+    anon_5 := ltInts(l7_j, firstLen)
+    if (boolFromRef(anon_5)) {
+      var costReplace: Ref
+      var anon_6: Ref
+      var anon_7: Ref
+      var costInsert: Ref
+      var anon_8: Ref
+      var costDelete: Ref
+      var anon_9: Ref
+      var cost: Ref
+      var anon_1: Ref
+      assert intFromRef(l7_j) - 1 >= 0
+      assert intFromRef(l7_j) - 1 < arraySize(distance)
+      unfold acc(IntArray_unique(distance), write)
+      anon_6 := intToRef(distance.contents[intFromRef(l7_j) - 1])
+      fold acc(IntArray_unique(distance), write)
+      if (stringFromRef(first)[intFromRef(l7_j) - 1] ==
+      stringFromRef(second)[intFromRef(i) - 1]) {
+        anon_7 := intToRef(0)
+      } else {
+        anon_7 := intToRef(1)}
+      costReplace := plusInts(anon_6, anon_7)
+      assert intFromRef(l7_j) >= 0
+      assert intFromRef(l7_j) < arraySize(distance)
+      unfold acc(IntArray_unique(distance), write)
+      anon_8 := intToRef(distance.contents[intFromRef(l7_j)])
+      costInsert := plusInts(anon_8, intToRef(1))
+      assert intFromRef(l7_j) - 1 >= 0
+      assert intFromRef(l7_j) - 1 < arraySize(newDistance)
+      unfold acc(IntArray_unique(newDistance), write)
+      anon_9 := intToRef(newDistance.contents[intFromRef(l7_j) - 1])
+      costDelete := plusInts(anon_9, intToRef(1))
+      cost := costInsert
+      fold acc(IntArray_unique(distance), write)
+      fold acc(IntArray_unique(newDistance), write)
+      if (intFromRef(costDelete) < intFromRef(cost)) {
+        cost := costDelete
+      }
+      if (intFromRef(costReplace) < intFromRef(cost)) {
+        cost := costReplace
+      }
+      assert intFromRef(l7_j) >= 0
+      assert intFromRef(l7_j) < arraySize(newDistance)
+      unfold acc(IntArray_unique(newDistance), write)
+      newDistance.contents := newDistance.contents[intFromRef(l7_j) :=
+        intFromRef(cost)]
+      anon_1 := l7_j
+      l7_j := plusInts(anon_1, intToRef(1))
+      fold acc(IntArray_unique(newDistance), write)
+      goto cont_2
+    }
+    label break_2
+    assert isSubtype(typeOf(l7_j), intType())
+    assert isSubtype(typeOf(firstLen), intType())
+    assert isSubtype(typeOf(secondLen), intType())
+    assert isSubtype(typeOf(distance), IntArray())
+    assert isSubtype(typeOf(newDistance), IntArray())
+    assert isSubtype(typeOf(k), intType())
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(first), stringType())
+    assert isSubtype(typeOf(second), stringType())
+    assert 1 <= intFromRef(l7_j) &&
+      intFromRef(l7_j) <= intFromRef(firstLen)
+    assert arraySize(distance) == intFromRef(firstLen)
+    assert arraySize(newDistance) == intFromRef(firstLen)
+    assert (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+        anon_builtin_2 < intFromRef(firstLen) ==>
+        (unfolding acc(IntArray_unique(distance), write) in
+          0 <= distance.contents[anon_builtin_2]) &&
+        (unfolding acc(IntArray_unique(distance), write) in
+          distance.contents[anon_builtin_2] <= anon_builtin_2 ||
+          distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+    assert (unfolding acc(IntArray_unique(newDistance), write) in
+        newDistance.contents[0] == intFromRef(i))
+    assert (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
+        anon_builtin_3 < intFromRef(l7_j) ==>
+        (unfolding acc(IntArray_unique(newDistance), write) in
+          0 <= newDistance.contents[anon_builtin_3]) &&
+        (unfolding acc(IntArray_unique(newDistance), write) in
+          newDistance.contents[anon_builtin_3] <= anon_builtin_3 ||
+          newDistance.contents[anon_builtin_3] <= intFromRef(i)))
+    swap := distance
+    distance := newDistance
+    newDistance := swap
+    anon_2 := i
+    i := plusInts(anon_2, intToRef(1))
+    assert false
+    goto cont_1
+  }
+  label break_1
+  assert isSubtype(typeOf(firstLen), intType())
+  assert isSubtype(typeOf(secondLen), intType())
+  assert isSubtype(typeOf(distance), IntArray())
+  assert isSubtype(typeOf(newDistance), IntArray())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(first), stringType())
+  assert isSubtype(typeOf(second), stringType())
+  assert 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
+  assert arraySize(distance) == intFromRef(firstLen)
+  assert arraySize(newDistance) == intFromRef(firstLen)
+  assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(firstLen) ==>
+      (unfolding acc(IntArray_unique(distance), write) in
+        0 <= distance.contents[anon_builtin_1]) &&
+      (unfolding acc(IntArray_unique(distance), write) in
+        distance.contents[anon_builtin_1] <= anon_builtin_1 ||
+        distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+  assert intFromRef(firstLen) - 1 >= 0
+  assert intFromRef(firstLen) - 1 < arraySize(distance)
+  unfold acc(IntArray_unique(distance), write)
+  anon_10 := intToRef(distance.contents[intFromRef(firstLen) - 1])
+  v_ret_0 := anon_10
+  fold acc(IntArray_unique(distance), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/levenshtein.kt: info: Generated Viper text for levenshteinDistanceProbeExit:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_size: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_2), IntArray())
+  ensures acc(IntArray_unique(ret_2), write)
+  ensures arraySize(ret_2) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_2), write) in
+      (forall v_j: Int ::
+        { ret_2.contents[v_j] }
+        v_j >= 0 && v_j < arraySize(ret_2) ==> ret_2.contents[v_j] == 0))
+
+
+method levenshteinDistanceProbeExit(first: Ref, second: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(first), stringType())
+  requires isSubtype(typeOf(second), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 0 <= intFromRef(v_ret_0)
+  ensures intFromRef(v_ret_0) <= |stringFromRef(first)| ||
+    intFromRef(v_ret_0) <= |stringFromRef(second)|
+{
+  var firstLen: Ref
+  var secondLen: Ref
+  var distance: Ref
+  var newDistance: Ref
+  var k: Ref
+  var anon_3: Ref
+  var i: Ref
+  var anon_4: Ref
+  var anon_10: Ref
+  if (stringFromRef(first) == stringFromRef(second)) {
+    v_ret_0 := intToRef(0)
+    goto lbl_ret_0
+  } elseif (|stringFromRef(first)| == 0) {
+    v_ret_0 := stringLength(second)
+    goto lbl_ret_0
+  } elseif (|stringFromRef(second)| == 0) {
+    v_ret_0 := stringLength(first)
+    goto lbl_ret_0
+  }
+  firstLen := plusInts(stringLength(first), intToRef(1))
+  secondLen := plusInts(stringLength(second), intToRef(1))
+  distance := con(firstLen)
+  newDistance := con(firstLen)
+  k := intToRef(0)
+  label cont_0
+    invariant acc(IntArray_unique(distance), write)
+    invariant acc(IntArray_unique(newDistance), write)
+    invariant isSubtype(typeOf(firstLen), intType())
+    invariant isSubtype(typeOf(secondLen), intType())
+    invariant isSubtype(typeOf(distance), IntArray())
+    invariant isSubtype(typeOf(newDistance), IntArray())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(first), stringType())
+    invariant isSubtype(typeOf(second), stringType())
+    invariant 0 <= intFromRef(k) && intFromRef(k) <= intFromRef(firstLen)
+    invariant arraySize(distance) == intFromRef(firstLen)
+    invariant arraySize(newDistance) == intFromRef(firstLen)
+    invariant (unfolding acc(IntArray_unique(distance), write) in
+        (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+          anon_builtin_0 < intFromRef(k) ==>
+          distance.contents[anon_builtin_0] == anon_builtin_0))
+  anon_3 := ltInts(k, firstLen)
+  if (boolFromRef(anon_3)) {
+    var anon_0: Ref
+    assert intFromRef(k) >= 0
+    assert intFromRef(k) < arraySize(distance)
+    unfold acc(IntArray_unique(distance), write)
+    distance.contents := distance.contents[intFromRef(k) := intFromRef(k)]
+    anon_0 := k
+    k := plusInts(anon_0, intToRef(1))
+    fold acc(IntArray_unique(distance), write)
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(firstLen), intType())
+  assert isSubtype(typeOf(secondLen), intType())
+  assert isSubtype(typeOf(distance), IntArray())
+  assert isSubtype(typeOf(newDistance), IntArray())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(first), stringType())
+  assert isSubtype(typeOf(second), stringType())
+  assert 0 <= intFromRef(k) && intFromRef(k) <= intFromRef(firstLen)
+  assert arraySize(distance) == intFromRef(firstLen)
+  assert arraySize(newDistance) == intFromRef(firstLen)
+  assert (unfolding acc(IntArray_unique(distance), write) in
+      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+        anon_builtin_0 < intFromRef(k) ==>
+        distance.contents[anon_builtin_0] == anon_builtin_0))
+  i := intToRef(1)
+  label cont_1
+    invariant acc(IntArray_unique(distance), write)
+    invariant acc(IntArray_unique(newDistance), write)
+    invariant isSubtype(typeOf(firstLen), intType())
+    invariant isSubtype(typeOf(secondLen), intType())
+    invariant isSubtype(typeOf(distance), IntArray())
+    invariant isSubtype(typeOf(newDistance), IntArray())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(first), stringType())
+    invariant isSubtype(typeOf(second), stringType())
+    invariant 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
+    invariant arraySize(distance) == intFromRef(firstLen)
+    invariant arraySize(newDistance) == intFromRef(firstLen)
+    invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+        anon_builtin_1 < intFromRef(firstLen) ==>
+        (unfolding acc(IntArray_unique(distance), write) in
+          0 <= distance.contents[anon_builtin_1]) &&
+        (unfolding acc(IntArray_unique(distance), write) in
+          distance.contents[anon_builtin_1] <= anon_builtin_1 ||
+          distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+  anon_4 := ltInts(i, secondLen)
+  if (boolFromRef(anon_4)) {
+    var l7_j: Ref
+    var anon_5: Ref
+    var swap: Ref
+    var anon_2: Ref
+    assert 0 >= 0
+    assert 0 < arraySize(newDistance)
+    unfold acc(IntArray_unique(newDistance), write)
+    newDistance.contents := newDistance.contents[0 := intFromRef(i)]
+    l7_j := intToRef(1)
+    fold acc(IntArray_unique(newDistance), write)
+    label cont_2
+      invariant acc(IntArray_unique(distance), write)
+      invariant acc(IntArray_unique(newDistance), write)
+      invariant isSubtype(typeOf(l7_j), intType())
+      invariant isSubtype(typeOf(firstLen), intType())
+      invariant isSubtype(typeOf(secondLen), intType())
+      invariant isSubtype(typeOf(distance), IntArray())
+      invariant isSubtype(typeOf(newDistance), IntArray())
+      invariant isSubtype(typeOf(k), intType())
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(first), stringType())
+      invariant isSubtype(typeOf(second), stringType())
+      invariant 1 <= intFromRef(l7_j) &&
+        intFromRef(l7_j) <= intFromRef(firstLen)
+      invariant arraySize(distance) == intFromRef(firstLen)
+      invariant arraySize(newDistance) == intFromRef(firstLen)
+      invariant (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+          anon_builtin_2 < intFromRef(firstLen) ==>
+          (unfolding acc(IntArray_unique(distance), write) in
+            0 <= distance.contents[anon_builtin_2]) &&
+          (unfolding acc(IntArray_unique(distance), write) in
+            distance.contents[anon_builtin_2] <= anon_builtin_2 ||
+            distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+      invariant (unfolding acc(IntArray_unique(newDistance), write) in
+          newDistance.contents[0] == intFromRef(i))
+      invariant (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
+          anon_builtin_3 < intFromRef(l7_j) ==>
+          (unfolding acc(IntArray_unique(newDistance), write) in
+            0 <= newDistance.contents[anon_builtin_3]) &&
+          (unfolding acc(IntArray_unique(newDistance), write) in
+            newDistance.contents[anon_builtin_3] <= anon_builtin_3 ||
+            newDistance.contents[anon_builtin_3] <= intFromRef(i)))
+    anon_5 := ltInts(l7_j, firstLen)
+    if (boolFromRef(anon_5)) {
+      var costReplace: Ref
+      var anon_6: Ref
+      var anon_7: Ref
+      var costInsert: Ref
+      var anon_8: Ref
+      var costDelete: Ref
+      var anon_9: Ref
+      var cost: Ref
+      var anon_1: Ref
+      assert intFromRef(l7_j) - 1 >= 0
+      assert intFromRef(l7_j) - 1 < arraySize(distance)
+      unfold acc(IntArray_unique(distance), write)
+      anon_6 := intToRef(distance.contents[intFromRef(l7_j) - 1])
+      fold acc(IntArray_unique(distance), write)
+      if (stringFromRef(first)[intFromRef(l7_j) - 1] ==
+      stringFromRef(second)[intFromRef(i) - 1]) {
+        anon_7 := intToRef(0)
+      } else {
+        anon_7 := intToRef(1)}
+      costReplace := plusInts(anon_6, anon_7)
+      assert intFromRef(l7_j) >= 0
+      assert intFromRef(l7_j) < arraySize(distance)
+      unfold acc(IntArray_unique(distance), write)
+      anon_8 := intToRef(distance.contents[intFromRef(l7_j)])
+      costInsert := plusInts(anon_8, intToRef(1))
+      assert intFromRef(l7_j) - 1 >= 0
+      assert intFromRef(l7_j) - 1 < arraySize(newDistance)
+      unfold acc(IntArray_unique(newDistance), write)
+      anon_9 := intToRef(newDistance.contents[intFromRef(l7_j) - 1])
+      costDelete := plusInts(anon_9, intToRef(1))
+      cost := costInsert
+      fold acc(IntArray_unique(distance), write)
+      fold acc(IntArray_unique(newDistance), write)
+      if (intFromRef(costDelete) < intFromRef(cost)) {
+        cost := costDelete
+      }
+      if (intFromRef(costReplace) < intFromRef(cost)) {
+        cost := costReplace
+      }
+      assert intFromRef(l7_j) >= 0
+      assert intFromRef(l7_j) < arraySize(newDistance)
+      unfold acc(IntArray_unique(newDistance), write)
+      newDistance.contents := newDistance.contents[intFromRef(l7_j) :=
+        intFromRef(cost)]
+      anon_1 := l7_j
+      l7_j := plusInts(anon_1, intToRef(1))
+      fold acc(IntArray_unique(newDistance), write)
+      goto cont_2
+    }
+    label break_2
+    assert isSubtype(typeOf(l7_j), intType())
+    assert isSubtype(typeOf(firstLen), intType())
+    assert isSubtype(typeOf(secondLen), intType())
+    assert isSubtype(typeOf(distance), IntArray())
+    assert isSubtype(typeOf(newDistance), IntArray())
+    assert isSubtype(typeOf(k), intType())
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(first), stringType())
+    assert isSubtype(typeOf(second), stringType())
+    assert 1 <= intFromRef(l7_j) &&
+      intFromRef(l7_j) <= intFromRef(firstLen)
+    assert arraySize(distance) == intFromRef(firstLen)
+    assert arraySize(newDistance) == intFromRef(firstLen)
+    assert (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+        anon_builtin_2 < intFromRef(firstLen) ==>
+        (unfolding acc(IntArray_unique(distance), write) in
+          0 <= distance.contents[anon_builtin_2]) &&
+        (unfolding acc(IntArray_unique(distance), write) in
+          distance.contents[anon_builtin_2] <= anon_builtin_2 ||
+          distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+    assert (unfolding acc(IntArray_unique(newDistance), write) in
+        newDistance.contents[0] == intFromRef(i))
+    assert (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
+        anon_builtin_3 < intFromRef(l7_j) ==>
+        (unfolding acc(IntArray_unique(newDistance), write) in
+          0 <= newDistance.contents[anon_builtin_3]) &&
+        (unfolding acc(IntArray_unique(newDistance), write) in
+          newDistance.contents[anon_builtin_3] <= anon_builtin_3 ||
+          newDistance.contents[anon_builtin_3] <= intFromRef(i)))
+    swap := distance
+    distance := newDistance
+    newDistance := swap
+    anon_2 := i
+    i := plusInts(anon_2, intToRef(1))
+    goto cont_1
+  }
+  label break_1
+  assert isSubtype(typeOf(firstLen), intType())
+  assert isSubtype(typeOf(secondLen), intType())
+  assert isSubtype(typeOf(distance), IntArray())
+  assert isSubtype(typeOf(newDistance), IntArray())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(first), stringType())
+  assert isSubtype(typeOf(second), stringType())
+  assert 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
+  assert arraySize(distance) == intFromRef(firstLen)
+  assert arraySize(newDistance) == intFromRef(firstLen)
+  assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(firstLen) ==>
+      (unfolding acc(IntArray_unique(distance), write) in
+        0 <= distance.contents[anon_builtin_1]) &&
+      (unfolding acc(IntArray_unique(distance), write) in
+        distance.contents[anon_builtin_1] <= anon_builtin_1 ||
+        distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+  assert false
+  assert intFromRef(firstLen) - 1 >= 0
+  assert intFromRef(firstLen) - 1 < arraySize(distance)
+  unfold acc(IntArray_unique(distance), write)
+  anon_10 := intToRef(distance.contents[intFromRef(firstLen) - 1])
+  v_ret_0 := anon_10
+  fold acc(IntArray_unique(distance), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

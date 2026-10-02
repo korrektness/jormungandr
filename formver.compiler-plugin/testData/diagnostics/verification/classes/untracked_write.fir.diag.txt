@@ -20,6 +20,11 @@ method sharedNode() returns (v_ret_0: Ref)
 /untracked_write.kt: info: Generated Viper text for writeThroughConstructedLocal:
 field bf_value: Ref
 
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
 method con(par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_1), Node())
@@ -32,7 +37,10 @@ method writeThroughConstructedLocal() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var n: Ref
+  var x: Ref
   n := con(intToRef(0))
+  x := havoc(intType())
+  assert intFromRef(x) == 1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -46,12 +54,17 @@ function arraySize(this: Ref): Int
   ensures result >= 0
 
 
-method con(size: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(size), intType())
-  requires intFromRef(size) >= 0
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_size: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
   ensures isSubtype(typeOf(ret_1), IntArray())
   ensures acc(IntArray_unique(ret_1), write)
-  ensures arraySize(ret_1) == intFromRef(size)
+  ensures arraySize(ret_1) == intFromRef(par_size)
   ensures (unfolding acc(IntArray_unique(ret_1), write) in
       (forall j: Int ::
         { ret_1.contents[j] }
@@ -62,9 +75,14 @@ method storeThroughConstructedArray() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var a: Ref
-  var anon: Ref
+  var anon_0: Ref
+  var x: Ref
+  var anon_1: Ref
   a := con(intToRef(3))
-  anon := intToRef(1)
+  anon_0 := intToRef(1)
+  anon_1 := havoc(intType())
+  x := anon_1
+  assert intFromRef(x) == 1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -84,12 +102,17 @@ function arraySize(this: Ref): Int
   ensures result >= 0
 
 
-method con_IntArray(size: Ref) returns (ret_2: Ref)
-  requires isSubtype(typeOf(size), intType())
-  requires intFromRef(size) >= 0
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_IntArray(par_size: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
   ensures isSubtype(typeOf(ret_2), IntArray())
   ensures acc(IntArray_unique(ret_2), write)
-  ensures arraySize(ret_2) == intFromRef(size)
+  ensures arraySize(ret_2) == intFromRef(par_size)
   ensures (unfolding acc(IntArray_unique(ret_2), write) in
       (forall j: Int ::
         { ret_2.contents[j] }
@@ -109,6 +132,9 @@ method writeThroughUniqueLocal() returns (v_ret_0: Ref)
 {
   var n: Ref
   var a: Ref
+  var x: Ref
+  var y: Ref
+  var anon: Ref
   n := con_Node(intToRef(0))
   unfold acc(Node_unique(n), write)
   n.bf_value := intToRef(1)
@@ -117,6 +143,13 @@ method writeThroughUniqueLocal() returns (v_ret_0: Ref)
   assert 0 < arraySize(a)
   unfold acc(IntArray_unique(a), write)
   a.contents := a.contents[0 := 1]
+  x := n.bf_value
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  anon := intToRef(a.contents[0])
+  y := anon
+  assert intFromRef(x) == 1
+  assert intFromRef(y) == 1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -138,6 +171,51 @@ method writeThroughCallResult() returns (v_ret_0: Ref)
 }
 
 /untracked_write.kt: info: Generated Viper text for writeThroughSharedParameter:
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method writeThroughSharedParameter(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  x := havoc(intType())
+  assert intFromRef(x) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/untracked_write.kt: info: Generated Viper text for storeThroughSharedParameter:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method storeThroughSharedParameter(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires arraySize(a) == 3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon: Ref
+  anon := havoc(intType())
+  x := anon
+  assert intFromRef(x) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/untracked_write.kt: info: Generated Viper text for writeThroughUniqueParameter:
 field contents: Seq[Int]
 
 field value: Ref
@@ -146,11 +224,39 @@ function arraySize(this: Ref): Int
   ensures result >= 0
 
 
-method writeThroughSharedParameter(n: Ref, a: Ref) returns (v_ret_0: Ref)
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method writeThroughUniqueParameter(n: Ref, a: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
   requires isSubtype(typeOf(a), IntArray())
+  requires acc(IntArray_unique(a), write)
+  requires arraySize(a) == 3
+  ensures acc(Node_unique(n), write)
+  ensures acc(IntArray_unique(a), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var x: Ref
+  var y: Ref
+  var anon: Ref
+  unfold acc(Node_unique(n), write)
+  n.value := intToRef(1)
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  unfold acc(IntArray_unique(a), write)
+  a.contents := a.contents[0 := 1]
+  x := n.value
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  anon := intToRef(a.contents[0])
+  y := anon
+  assert intFromRef(x) == 1
+  assert intFromRef(y) == 1
   label lbl_ret_0
+  fold acc(Node_unique(n), write)
+  fold acc(IntArray_unique(a), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

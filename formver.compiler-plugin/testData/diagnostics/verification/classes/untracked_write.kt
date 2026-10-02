@@ -9,6 +9,8 @@ fun <!VIPER_TEXT!>sharedNode<!>(): Node = Node(0)
 fun <!VIPER_TEXT!>writeThroughConstructedLocal<!>() {
     val n = Node(0)
     <!UNTRACKED_WRITE!>n.value = 1<!>
+    val x = n.value
+    verify(<!VIPER_VERIFICATION_ERROR!>x == 1<!>)
 }
 
 fun <!VIPER_TEXT!>storeThroughConstructedArray<!>() {
@@ -16,6 +18,8 @@ fun <!VIPER_TEXT!>storeThroughConstructedArray<!>() {
     <!UNTRACKED_WRITE!>a[0] = 1<!>
     <!UNTRACKED_WRITE!>a[1] += 1<!>
     <!UNTRACKED_WRITE!>a.set(2, 1)<!>
+    val x = a[0]
+    verify(<!VIPER_VERIFICATION_ERROR!>x == 1<!>)
 }
 
 fun <!VIPER_TEXT!>writeThroughUniqueLocal<!>() {
@@ -23,6 +27,10 @@ fun <!VIPER_TEXT!>writeThroughUniqueLocal<!>() {
     n.value = 1
     val a: @Unique IntArray = IntArray(3)
     a[0] = 1
+    val x = n.value
+    val y = a[0]
+    verify(x == 1)
+    verify(y == 1)
 }
 
 fun <!VIPER_TEXT!>writeThroughCallResult<!>() {
@@ -30,7 +38,25 @@ fun <!VIPER_TEXT!>writeThroughCallResult<!>() {
     n.value = 1
 }
 
-fun <!VIPER_TEXT!>writeThroughSharedParameter<!>(n: Node, a: IntArray) {
+fun <!VIPER_TEXT!>writeThroughSharedParameter<!>(n: Node) {
+    n.value = 1
+    val x = n.value
+    verify(<!VIPER_VERIFICATION_ERROR!>x == 1<!>)
+}
+
+fun <!VIPER_TEXT!>storeThroughSharedParameter<!>(a: IntArray) {
+    preconditions { a.size == 3 }
+    a[0] = 1
+    val x = a[0]
+    verify(<!VIPER_VERIFICATION_ERROR!>x == 1<!>)
+}
+
+fun <!VIPER_TEXT!>writeThroughUniqueParameter<!>(n: @Unique @Borrowed Node, a: @Unique @Borrowed IntArray) {
+    preconditions { a.size == 3 }
     n.value = 1
     a[0] = 1
+    val x = n.value
+    val y = a[0]
+    verify(x == 1)
+    verify(y == 1)
 }

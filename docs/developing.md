@@ -35,6 +35,20 @@ function's verification outcome is refused unless
 `-Pformver.recordOutcomes=true` is passed as well; docs/agents-dev.md, under
 Regenerating, says what counts as one.
 
+### Negative tests
+
+A test whose functions verify also holds functions that must fail, in the same
+file and over the same classes:
+
+- A sibling that breaks one thing the verified function relies on, such as
+  writing through a shared root instead of an owned one.
+- A vacuity probe for each function with a precondition or a loop invariant: a
+  copy named `<function>Probe<Point>` that adds `verify(false)` at one point.
+  Probes go at the start of a function with a precondition, at the end of every
+  loop body, and after the last loop of a function. If a probe verifies, the
+  specifications or the permissions the plugin adds are inconsistent there, and
+  whatever verifies past that point proves nothing.
+
 ### Directives
 
 Test files support directives that control how they run, written as `// NAME` at

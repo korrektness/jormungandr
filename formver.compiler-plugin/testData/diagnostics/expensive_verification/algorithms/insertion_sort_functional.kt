@@ -32,3 +32,14 @@ fun <!VIPER_TEXT!>insertionSort<!>(l: Node?): Node? {
     }
     return insert(l.value, insertionSort(l.next))
 }
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>insertProbeStart<!>(x: Int, l: Node?): Node {
+    preconditions { isSorted(l) }
+    postconditions<Node> { r -> isSorted(r) && (r.value == x || (l != null && r.value == l.value)) }
+    verify(<!VIPER_VERIFICATION_ERROR!>false<!>)
+    if (l == null || x <= l.value) {
+        return Node(x, l)
+    }
+    return Node(l.value, insert(x, l.next))
+}

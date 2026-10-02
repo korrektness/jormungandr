@@ -158,3 +158,79 @@ method passToUniqueBorrowed(b: Ref) returns (v_ret_0: Ref)
   fold acc(Box_unique(b), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/unique_borrowed_shared.kt: info: Generated Viper text for writeThroughBothParameters:
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method writeThroughBothParameters(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Box())
+  requires acc(Box_unique(a), write)
+  requires isSubtype(typeOf(b), Box())
+  ensures acc(Box_unique(a), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(Box_unique(a), write)
+  a.value := intToRef(1)
+  anon := a.value
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  fold acc(Box_unique(a), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_borrowed_shared.kt: info: Generated Viper text for passDistinctObjects:
+field value: Ref
+
+method passDistinctObjects(u: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(u), Box())
+  requires acc(Box_unique(u), write)
+  requires isSubtype(typeOf(par_v), Box())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := writeThroughBothParameters(u, par_v)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method writeThroughBothParameters(a: Ref, b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(a), Box())
+  requires acc(Box_unique(a), write)
+  requires isSubtype(typeOf(b), Box())
+  ensures acc(Box_unique(a), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/unique_borrowed_shared.kt: error: Function 'passOneObjectTwice' was not verified because of uniqueness or locality errors
+
+/unique_borrowed_shared.kt: info: Generated Viper text for passOneObjectTwice:
+field value: Ref
+
+method passOneObjectTwice(u: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(u), Box())
+  requires acc(Box_unique(u), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := writeThroughBothParameters(u, u)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method writeThroughBothParameters(a: Ref, b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(a), Box())
+  requires acc(Box_unique(a), write)
+  requires isSubtype(typeOf(b), Box())
+  ensures acc(Box_unique(a), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/unique_borrowed_shared.kt: error: Attempt to pass the same unique argument 'u' twice.
+
+/unique_borrowed_shared.kt: error: Attempt to pass the same unique argument 'u' twice.
