@@ -45,7 +45,7 @@ class GraphScopeLocalityResolver(session: FirSession) : FirExtensionSessionCompo
         when (symbol) {
             is FirCallableSymbol<*> -> symbol.resolveLocality()
             is FirReceiverParameterSymbol -> symbol.resolveLocality()
-            else -> Locality.Global
+            else -> if (symbol.isUnderConstruction()) Locality.Local else Locality.Global
         }
 }
 

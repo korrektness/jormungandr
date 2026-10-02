@@ -88,6 +88,12 @@ public class LocalityDiagnosticTestGenerated extends AbstractLocalityDiagnosticT
   }
 
   @Test
+  @TestMetadata("construction_receiver.kt")
+  public void testConstruction_receiver() {
+    runTest("formver.compiler-plugin/locality/testData/diagnostics/construction_receiver.kt");
+  }
+
+  @Test
   @TestMetadata("constructor.kt")
   public void testConstructor() {
     runTest("formver.compiler-plugin/locality/testData/diagnostics/constructor.kt");

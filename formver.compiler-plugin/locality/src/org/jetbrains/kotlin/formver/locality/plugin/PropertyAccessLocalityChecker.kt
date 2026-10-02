@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousInitializerSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
@@ -46,6 +47,9 @@ object PropertyAccessLocalityChecker : FirPropertyAccessExpressionChecker(MppChe
 
         for (parentSymbol in context.containingDeclarations.asReversed()) {
             if (!parentSymbol.isBoundary) continue
+
+            // Only an `init` block's own locals are local inside it.
+            if (parentSymbol is FirAnonymousInitializerSymbol) return
 
             if (parentSymbol is FirFunctionSymbol) {
                 if (parentSymbol.declares(capturedSymbol)) {

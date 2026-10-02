@@ -62,6 +62,11 @@ object LocalityErrorMessages : BaseDiagnosticRendererFactory() {
                     LocalityBoundarySymbolRenderer,
                 )
                 map.put(
+                    LocalityErrors.INVALID_CONSTRUCTION_RECEIVER,
+                    "Member ''{0}'' called on a receiver under construction.",
+                    FirDiagnosticRenderers.DECLARATION_NAME,
+                )
+                map.put(
                     LocalityErrors.INVALID_LOCALITY_TYPE_TARGET,
                     "Locality can only be specified on types of function parameters, extension receivers, or local variables.",
                 )

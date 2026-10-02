@@ -84,3 +84,17 @@ fun `consume nested unique after moving back`(a: @Unique R) {
 
     consume(<!ESCAPE_UNIQUENESS_INCONSISTENCY!>a<!>)
 }
+
+// Assignments through a conditional receiver
+
+fun `return after conditional write over a moved property`(a: @Unique A, b: @Unique A, c: Boolean): @Unique A {
+    consume(a.x)
+    (if (c) a else b).x = Any()
+    return <!ESCAPE_UNIQUENESS_INCONSISTENCY!>a<!>
+}
+
+fun `consume both after conditional write`(a: @Unique A, b: @Unique A, c: Boolean) {
+    (if (c) a else b).x = Any()
+    consume(a)
+    consume(b)
+}

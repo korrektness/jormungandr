@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirSafeCallExpression
+import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
@@ -39,6 +40,8 @@ fun FirExpression.resolveTerminalAccessState(): AccessState =
                 else -> EmptyAccessState
             }
         }
+        is FirVarargArgumentsExpression ->
+            arguments.fold(EmptyAccessState) { state, argument -> state.join(argument.resolveAccessState()) }
         is FirSafeCallExpression -> {
             val selector = selector
 

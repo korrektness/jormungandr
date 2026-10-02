@@ -51,10 +51,12 @@ The checker tracks two kinds of uniqueness:
 - **Variable declaration/assignment**
   - Project RHS' uniqueness substate into LHS' path.
   - Initialize LHS path to declared uniqueness.
+  - When the LHS has several possible paths (a conditional receiver), join each path's old substate with the one
+    the two steps above would write.
   - Move RHS access paths, unless the declaration is in a read-only context.
 
 - **Function-call enter**
-  - Move all receivers (including context receivers) and value arguments.
+  - Move all receivers (including context receivers) and value arguments, including each `vararg` element.
   - Calls to `@Pure` functions and calls in a read-only context move nothing.
 
 - **Function-call exit**

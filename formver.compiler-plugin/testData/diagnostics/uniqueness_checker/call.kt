@@ -28,6 +28,8 @@ fun share(a: Any) {}
 
 fun borrowBoth(a: @Borrowed Any, b: @Borrowed Any) {}
 
+fun shareVararg(vararg xs: Any) {}
+
 fun consumeBoth(a: @Unique Any, b: @Unique Any) {}
 
 fun shareBoth(a: Any, b: Any) {}
@@ -401,4 +403,14 @@ fun `pass unique and its shared field`(c: @Unique C) {
 
 fun `pass distinct unique fields to borrowUniqueAndShare`(a: @Unique A) {
     borrowUniqueAndShare(a.x, a.w)
+}
+
+fun `use after sharing as a vararg element`(a: @Unique A) {
+    shareVararg(Any(), a)
+    consume(<!INVALID_MOVED_ACCESS!>a<!>)
+}
+
+fun `use another value after sharing a vararg element`(a: @Unique A, b: @Unique A) {
+    shareVararg(Any(), b)
+    consume(a)
 }

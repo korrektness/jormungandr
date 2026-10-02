@@ -193,13 +193,21 @@ class GraphUniquenessStatesAnalyzer(
                 // The source moves before the target is written; see `visitVariableDeclarationNode`.
                 var newUniquenessState = rightAccessState.move(uniquenessState)
 
-                if (leftAccessPaths.count() == 1) {
-                    val leftPath = leftAccessPaths.first()
-                    val rightUniquenessState = rightAccessState.projectTerminalUniquenessState(uniquenessState)
-                    newUniquenessState = newUniquenessState.insert(leftPath, rightUniquenessState)
-                }
+                val rightUniquenessState = rightAccessState.projectTerminalUniquenessState(uniquenessState)
 
-                newUniquenessState = leftAccessState.initialize(newUniquenessState)
+                if (leftAccessPaths.count() == 1) {
+                    newUniquenessState = newUniquenessState.insert(leftAccessPaths.first(), rightUniquenessState)
+                    newUniquenessState = leftAccessState.initialize(newUniquenessState)
+                } else {
+                    // Only one of the paths is written, so each keeps its old state joined with the written one.
+                    for (leftPath in leftAccessPaths) {
+                        val writtenUniquenessState =
+                            rightUniquenessState.copy(data = leftPath.last().resolveDeclaredUniqueness())
+                        val oldUniquenessState = newUniquenessState.find(leftPath) ?: EmptyUniquenessState
+                        newUniquenessState =
+                            newUniquenessState.insert(leftPath, oldUniquenessState.join(writtenUniquenessState))
+                    }
+                }
 
                 data.put(Unit, newUniquenessState)
             }

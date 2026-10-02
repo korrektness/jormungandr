@@ -43,7 +43,7 @@ class LocalityAdditionalCheckers(session: FirSession) : FirAdditionalCheckersExt
             setOf(CallLocalityChecker)
 
         override val qualifiedAccessExpressionCheckers: Set<FirQualifiedAccessExpressionChecker> =
-            setOf(QualifiedAccessLocalityChecker)
+            setOf(QualifiedAccessLocalityChecker, ConstructionReceiverChecker)
 
         override val propertyAccessExpressionCheckers: Set<FirPropertyAccessExpressionChecker> =
             setOf(PropertyAccessLocalityChecker)

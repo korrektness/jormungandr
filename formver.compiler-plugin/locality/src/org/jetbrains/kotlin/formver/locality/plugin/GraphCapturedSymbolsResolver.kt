@@ -42,8 +42,11 @@ class GraphCapturedSymbolsResolver(session: FirSession) : FirExtensionSessionCom
 
         for (node in graph.nodes) {
             when (node) {
-                is QualifiedAccessNode ->
+                is QualifiedAccessNode -> {
                     capturedSymbols.addIfNotNull(node.fir.calleeReference.symbol)
+                    capturedSymbols.addIfNotNull(node.fir.dispatchReceiver?.thisReceiverSymbol)
+                    capturedSymbols.addIfNotNull(node.fir.extensionReceiver?.thisReceiverSymbol)
+                }
 
                 is CallableReferenceNode ->
                     capturedSymbols.addIfNotNull(node.fir.calleeReference.symbol)
@@ -65,8 +68,8 @@ private val FirSession.graphCapturedSymbolsResolver: GraphCapturedSymbolsResolve
 /**
  * Resolves symbols captured by [this] graph.
  *
- * Captures are computed as symbols used by graph accesses (including nested sub-graphs in the current implementation)
- * minus symbols declared by [resolveDeclaredSymbols].
+ * Captures are computed as symbols used by graph accesses (including the classes bound by their `this` receivers, and
+ * nested sub-graphs in the current implementation) minus symbols declared by [resolveDeclaredSymbols].
  *
  * @param context Is used for resolving the declared symbols with [resolveDeclaredSymbols] and to access this session's
  *  [GraphCapturedSymbolsResolver].

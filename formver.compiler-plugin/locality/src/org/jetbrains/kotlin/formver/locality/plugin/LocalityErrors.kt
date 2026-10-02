@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.locality.plugin
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.error0
+import org.jetbrains.kotlin.diagnostics.error1
 import org.jetbrains.kotlin.diagnostics.error2
 import org.jetbrains.kotlin.diagnostics.error3
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
@@ -18,6 +19,7 @@ object LocalityErrors : KtDiagnosticsContainer() {
     val CONTEXT_LOCALITY_MISMATCH by error3<PsiElement, ConeKotlinType, Locality, Locality>()
     val INVALID_LOCALITY_CAPTURE by error2<PsiElement, FirBasedSymbol<*>, FirBasedSymbol<*>>()
     val INVALID_LOCALITY_TYPE_TARGET by error0<PsiElement>()
+    val INVALID_CONSTRUCTION_RECEIVER by error1<PsiElement, FirBasedSymbol<*>>()
 
     override fun getRendererFactory() = LocalityErrorMessages
 }
