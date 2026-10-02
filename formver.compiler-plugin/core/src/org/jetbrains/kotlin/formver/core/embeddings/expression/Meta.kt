@@ -53,8 +53,8 @@ data class SharingContext(val inner: ExpEmbedding) : ExpEmbedding {
         else -> r
     }
 
-    override fun ignoringMetaNodes() = inner
-    override fun ignoringCastsAndMetaNodes() = inner
+    override fun ignoringMetaNodes() = inner.ignoringMetaNodes()
+    override fun ignoringCastsAndMetaNodes() = inner.ignoringCastsAndMetaNodes()
 
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitSharingContext(this)
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(inner)
@@ -77,8 +77,8 @@ data class Shared(val inner: ExpEmbedding) : ExpEmbedding {
     override val type: TypeEmbedding
         get() = inner.type
 
-    override fun ignoringMetaNodes() = inner
-    override fun ignoringCastsAndMetaNodes() = inner
+    override fun ignoringMetaNodes() = inner.ignoringMetaNodes()
+    override fun ignoringCastsAndMetaNodes() = inner.ignoringCastsAndMetaNodes()
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(inner)
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitShared(this)
 

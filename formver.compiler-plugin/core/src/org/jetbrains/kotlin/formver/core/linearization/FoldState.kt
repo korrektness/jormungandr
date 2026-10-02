@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.asPosition
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
@@ -82,6 +83,9 @@ class FoldState {
     /** Labels that jumps have reached, with the joined state of those jumps. */
     private val pendingJumps: MutableMap<SymbolicName, Snapshot> = mutableMapOf()
 
+    /** Loop heads entered so far, with the roots each one holds folded. */
+    private val loopHeads: MutableMap<SymbolicName, List<VariableEmbedding>> = mutableMapOf()
+
     private fun LinearizationContext.trackedClass(type: TypeEmbedding): ClassTypeEmbedding? =
         (type.pretype as? ClassTypeEmbedding)?.takeUnless { with(typeResolver) { it.isManual } }
 
@@ -132,12 +136,12 @@ class FoldState {
         if (roots == null || ctx.trackedClass(path.type) == null) return
         if (!holds(path)) throw notHeld(ctx)
         var node = roots!![path.root.name]?.second ?: return
-        var exp = path.root.toViperExp(ctx)
+        var place = ctx.rootPlace(path.root)
         for (field in path.fields) {
             node = node.children[field.name]?.second ?: return
-            exp = Exp.FieldAccess(exp, field.toViper(), ctx.source.asPosition)
+            place = ctx.fieldPlace(place, field)
         }
-        closeNode(ctx, node, exp)
+        closeNode(ctx, node, place)
     }
 
     /** Move the predicate of [src] to [dst]: [src] holds nothing afterwards. [src] must be folded. */
@@ -154,7 +158,7 @@ class FoldState {
         val live = roots ?: return
         for ((name, entry) in live.entries.toList()) {
             val (variable, node) = entry
-            if (node.hasHole()) live.remove(name) else closeNode(ctx, node, variable.toViperExp(ctx))
+            if (node.hasHole()) live.remove(name) else closeNode(ctx, node, ctx.rootPlace(variable))
         }
     }
 
@@ -184,12 +188,50 @@ class FoldState {
         })
     }
 
-    /** Normalize, record the state for the jump target [label], and become dead. */
+    /**
+     * Normalize and become dead. A jump to an entered loop head must hold the roots of that head folded; a jump to
+     * any other [label] records its state for the label.
+     */
     fun jumpTo(ctx: LinearizationContext, label: SymbolicName) {
         normalize(ctx)
-        val current = snapshot()
-        pendingJumps[label] = pendingJumps[label]?.let { join(it, current) } ?: current
+        val head = loopHeads[label]
+        if (head != null) {
+            requireFolded(ctx, head)
+        } else {
+            val current = snapshot()
+            pendingJumps[label] = pendingJumps[label]?.let { join(it, current) } ?: current
+        }
         kill()
+    }
+
+    /**
+     * Enter the head of the loop whose continue label is [label]. [unique] are the variables the uniqueness checker
+     * finds `Unique` there. The state is normalized, every tracked one of them must be held folded, and every other
+     * root is forgotten. Jumps to [label] must hold the same roots folded.
+     *
+     * Returns the tracked variables of [unique]: the loop invariant holds their predicates.
+     */
+    fun enterLoopHead(
+        ctx: LinearizationContext,
+        label: SymbolicName,
+        unique: List<VariableEmbedding>,
+    ): List<VariableEmbedding> {
+        val tracked = unique.filter { ctx.trackedClass(it.type) != null }
+        loopHeads[label] = tracked
+        normalize(ctx)
+        val live = roots ?: return tracked
+        requireFolded(ctx, tracked)
+        live.keys.retainAll(tracked.map { it.name }.toSet())
+        return tracked
+    }
+
+    private fun requireFolded(ctx: LinearizationContext, variables: List<VariableEmbedding>) {
+        val live = roots ?: return
+        for (variable in variables) {
+            if (live[variable.name]?.second?.status != Status.Folded) {
+                throw FoldStateException(ctx.source, "The loop head needs a unique predicate that is not held.")
+            }
+        }
     }
 
     /** Join the states of jumps to [label] into the state falling through to it. */
@@ -205,17 +247,17 @@ class FoldState {
      */
     private fun reach(ctx: LinearizationContext, path: OwnedPath, field: FieldEmbedding): Node? {
         var node = roots?.get(path.root.name)?.second ?: return null
-        var exp: Exp = path.root.toViperExp(ctx)
+        var place = ctx.rootPlace(path.root)
         for (step in path.fields) {
-            if (!openThrough(ctx, node, exp, step)) return null
+            if (!openThrough(ctx, node, place, step)) return null
             node = node.children.getOrPut(step.name) { step to Node(step.type, Status.Folded) }.second
-            exp = Exp.FieldAccess(exp, step.toViper(), ctx.source.asPosition)
+            place = ctx.fieldPlace(place, step)
         }
-        return node.takeIf { openThrough(ctx, it, exp, field) }
+        return node.takeIf { openThrough(ctx, it, place, field) }
     }
 
     /** Unfold the chain of [node] through the class declaring [field]. Returns false when [node] holds nothing. */
-    private fun openThrough(ctx: LinearizationContext, node: Node, exp: Exp, field: FieldEmbedding): Boolean {
+    private fun openThrough(ctx: LinearizationContext, node: Node, place: Place, field: FieldEmbedding): Boolean {
         val opened = when (val status = node.status) {
             Status.Absent -> return false
             Status.Folded -> emptyList()
@@ -225,7 +267,7 @@ class FoldState {
         val chain = ctx.typeResolver.hierarchyPathTo(node.type.pretype, field).toList()
         if (chain.size <= opened.size) return true
         for (cls in chain.drop(opened.size)) {
-            ctx.addStatement { Stmt.Unfold(hierarchyPredicateAccess(exp, cls, source), source.asPosition) }
+            ctx.addGuarded(place) { Stmt.Unfold(hierarchyPredicateAccess(place.exp, cls, source), source.asPosition) }
         }
         node.status = Status.Open(chain)
         return true
@@ -234,17 +276,17 @@ class FoldState {
     private fun Node.hasHole(): Boolean =
         children.values.any { (_, child) -> child.status == Status.Absent || child.hasHole() }
 
-    private fun closeNode(ctx: LinearizationContext, node: Node, exp: Exp) {
+    private fun closeNode(ctx: LinearizationContext, node: Node, place: Place) {
         for ((field, child) in node.children.values) {
             if (child.status == Status.Absent) {
                 throw FoldStateException(ctx.source, "A unique path must be folded here, but one of its @Unique fields was moved out.")
             }
-            closeNode(ctx, child, Exp.FieldAccess(exp, field.toViper(), ctx.source.asPosition))
+            closeNode(ctx, child, ctx.fieldPlace(place, field))
         }
         node.children.clear()
         val status = node.status as? Status.Open ?: return
         for (cls in status.opened.reversed()) {
-            ctx.addStatement { Stmt.Fold(hierarchyPredicateAccess(exp, cls, source), source.asPosition) }
+            ctx.addGuarded(place) { Stmt.Fold(hierarchyPredicateAccess(place.exp, cls, source), source.asPosition) }
         }
         node.status = Status.Folded
     }
@@ -252,3 +294,31 @@ class FoldState {
     private fun notHeld(ctx: LinearizationContext) =
         FoldStateException(ctx.source, "A unique predicate needed here is not held.")
 }
+
+/**
+ * A tracked path as Viper reads it. [guards] say that each nullable prefix of the path, the path itself included, is
+ * not `null`, outermost first.
+ */
+private data class Place(val exp: Exp, val guards: List<Exp>)
+
+private fun LinearizationContext.guardsOf(exp: Exp, type: TypeEmbedding): List<Exp> =
+    if (type.isNullable) listOf(Exp.NeCmp(exp, RuntimeTypeDomain.nullValue(pos = source.asPosition), source.asPosition))
+    else emptyList()
+
+private fun LinearizationContext.rootPlace(root: VariableEmbedding): Place {
+    val exp = root.toViperExp(this)
+    return Place(exp, guardsOf(exp, root.type))
+}
+
+private fun LinearizationContext.fieldPlace(parent: Place, field: FieldEmbedding): Place {
+    val exp = Exp.FieldAccess(parent.exp, field.toViper(), source.asPosition)
+    return Place(exp, parent.guards + guardsOf(exp, field.type))
+}
+
+/** Add the statement [buildStmt] builds, nested in one `if` per guard of [place]. */
+private fun LinearizationContext.addGuarded(place: Place, buildStmt: LinearizationContext.() -> Stmt) =
+    addStatement {
+        place.guards.foldRight(buildStmt()) { guard, inner ->
+            Stmt.If(guard, Stmt.Seqn(listOf(inner)), Stmt.Seqn(), source.asPosition)
+        }
+    }

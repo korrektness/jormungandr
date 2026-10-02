@@ -335,17 +335,23 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     override fun visitWhileLoop(whileLoop: FirWhileLoop, data: StmtConversionContext): ExpEmbedding {
         val condition = data.convert(whileLoop.condition).withType { boolean() }
+        val inScope = data.retrievePropertiesAndParameters().toList()
         val invariants = buildList {
-            data.retrievePropertiesAndParameters().forEach {
+            inScope.forEach {
                 addAll(it.provenInvariants())
             }
             extractLoopInvariants(whileLoop.block)?.let {
                 addAll(data.withScopeImpl(ScopeIndex.NoScope) { data.collectInvariants(it) })
             }
         }
+        val headUnique = data.uniquenessAnalysis?.let { analysis ->
+            inScope.filter { variable ->
+                variable is FirVariableEmbedding && analysis.ownsAtLoopHead(whileLoop, variable.symbol)
+            }
+        } ?: emptyList()
         return data.withFreshWhile(whileLoop.label) {
             val body = convert(whileLoop.block)
-            While(condition, body, breakLabelName(), continueLabelName(), invariants)
+            While(condition, body, breakLabelName(), continueLabelName(), invariants, headUnique)
         }
     }
 

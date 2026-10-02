@@ -64,8 +64,10 @@ data class LinearizationVisitor(
 
     override fun visitWhile(e: While): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            ctx.foldState?.normalize(ctx)
-            ctx.addLabel(e.continueLabel.toViper(ctx))
+            val headUnique = ctx.foldState?.enterLoopHead(ctx, e.continueLabel.name, e.headUnique).orEmpty()
+            // The permissions come first, since the user's invariants may read through them.
+            val headPermissions = headUnique.mapNotNull { it.uniquePredicateAccessInvariant(ctx.typeResolver) }
+            ctx.addLabel(e.continueLabel.copy(invariants = headPermissions + e.continueLabel.invariants).toViper(ctx))
             val condVar = ctx.freshAnonVar { boolean() }
             e.condition.linearize().toViperStoringIn(condVar, ctx)
             ctx.addStatement {

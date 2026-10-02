@@ -1,0 +1,151 @@
+/unique_nullable_fold.kt: info: Generated Viper text for readSafeCall:
+field value: Ref
+
+method readSafeCall(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), nullable(Box()))
+  requires b != nullValue() ==> acc(Box_unique(b), write)
+  ensures b != nullValue() ==> acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  if (b != nullValue()) {
+    var anon_1: Ref
+    if (b != nullValue()) {
+      unfold acc(Box_unique(b), write)
+    }
+    anon_1 := b.value
+    anon_0 := anon_1
+    if (b != nullValue()) {
+      fold acc(Box_unique(b), write)
+    }
+  } else {
+    anon_0 := nullValue()}
+  if (anon_0 != nullValue()) {
+    v_ret_0 := anon_0
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_nullable_fold.kt: info: Generated Viper text for readFieldSafeCall:
+field box: Ref
+
+field count: Ref
+
+field value: Ref
+
+method readFieldSafeCall(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Cell_unique(c), write)
+  anon_1 := c.box
+  fold acc(Cell_unique(c), write)
+  if (anon_1 != nullValue()) {
+    var anon_2: Ref
+    unfold acc(Cell_unique(c), write)
+    if (c.box != nullValue()) {
+      unfold acc(Box_unique(c.box), write)
+    }
+    anon_2 := anon_1.value
+    anon_0 := anon_2
+    if (c.box != nullValue()) {
+      fold acc(Box_unique(c.box), write)
+    }
+    fold acc(Cell_unique(c), write)
+  } else {
+    anon_0 := nullValue()}
+  if (anon_0 != nullValue()) {
+    v_ret_0 := anon_0
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_nullable_fold.kt: info: Generated Viper text for readAfterEarlyReturn:
+field value: Ref
+
+method readAfterEarlyReturn(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), nullable(Box()))
+  requires b != nullValue() ==> acc(Box_unique(b), write)
+  ensures b != nullValue() ==> acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  if (b == nullValue()) {
+    v_ret_0 := intToRef(0)
+    goto lbl_ret_0
+  }
+  if (b != nullValue()) {
+    unfold acc(Box_unique(b), write)
+  }
+  anon := b.value
+  b.value := plusInts(anon, intToRef(1))
+  v_ret_0 := b.value
+  if (b != nullValue()) {
+    fold acc(Box_unique(b), write)
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_nullable_fold.kt: info: Generated Viper text for clearBox:
+field box: Ref
+
+field count: Ref
+
+field value: Ref
+
+method clearBox(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(Cell_unique(c), write)
+  c.box := nullValue()
+  c.count := intToRef(0)
+  label lbl_ret_0
+  fold acc(Cell_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_nullable_fold.kt: info: Generated Viper text for classify:
+field value: Ref
+
+method classify(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  unfold acc(Box_unique(b), write)
+  anon_0 := b.value
+  fold acc(Box_unique(b), write)
+  if (intFromRef(anon_0) == 0) {
+    v_ret_0 := intToRef(0)
+    goto lbl_ret_0
+  } elseif (intFromRef(anon_0) == 1) {
+    unfold acc(Box_unique(b), write)
+    b.value := intToRef(2)
+    fold acc(Box_unique(b), write)
+  } else {
+    var anon_1: Ref
+    unfold acc(Box_unique(b), write)
+    anon_1 := b.value
+    b.value := plusInts(anon_1, intToRef(1))
+    fold acc(Box_unique(b), write)
+  }
+  unfold acc(Box_unique(b), write)
+  v_ret_0 := b.value
+  fold acc(Box_unique(b), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

@@ -156,11 +156,13 @@ fun StmtConversionContext.embedPropertyAccess(
 
 
 /**
- * Whether the uniqueness checker finds the path [expression] denotes `Unique` on entry to [element].
+ * Whether the uniqueness checker finds the path [expression] denotes `Unique` on entry to [element]. The checked
+ * subject of a safe call denotes the path of the safe call's receiver.
  */
 fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpression): Boolean {
     val analysis = uniquenessAnalysis ?: return false
-    val path = analysis.pathOf(expression) ?: return false
+    val denoted = (expression as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: expression
+    val path = analysis.pathOf(denoted) ?: return false
     return analysis.ownsBefore(element, path)
 }
 

@@ -606,6 +606,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testUnique_fold_state() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_fold_state.kt");
       }
+
+      @Test
+      @TestMetadata("unique_loop_heads.kt")
+      public void testUnique_loop_heads() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_loop_heads.kt");
+      }
+
+      @Test
+      @TestMetadata("unique_nullable_fold.kt")
+      public void testUnique_nullable_fold() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_nullable_fold.kt");
+      }
     }
 
     @Nested

@@ -36,7 +36,7 @@ fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @U
 fun <!VIPER_TEXT!>insertionSort<!>(head: @Unique Node?): @Unique Node? {
     var sorted: @Unique Node? = null
     var cur: @Unique Node? = head
-    <!VIPER_VERIFICATION_ERROR, VIPER_VERIFICATION_ERROR!>while (cur != null) {
+    <!VIPER_VERIFICATION_ERROR!>while (cur != null) {
         loopInvariants { isSorted(sorted) }
         val next: @Unique Node? = cur.next
         cur.next = null

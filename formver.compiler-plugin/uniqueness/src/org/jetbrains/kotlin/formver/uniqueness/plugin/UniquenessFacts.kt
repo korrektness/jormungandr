@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirExpression
+import org.jetbrains.kotlin.fir.expressions.FirWhileLoop
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
@@ -79,6 +80,13 @@ class FunctionUniquenessAnalysis internal constructor(
      */
     fun ownsBefore(element: FirElement, path: Path): Boolean =
         stateBefore(element).uniquenessOf(path) == Uniqueness.Unique
+
+    /**
+     * Whether [symbol] is `Unique` at the head of [loop]: before its condition, where the entry and back edges join.
+     * The state before [loop] itself is the entry state alone.
+     */
+    fun ownsAtLoopHead(loop: FirWhileLoop, symbol: FirBasedSymbol<*>): Boolean =
+        ownsBefore(loop.condition, listOf(symbol))
 
     /**
      * Whether [path] is `Unique` on exit from [element].

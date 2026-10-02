@@ -46,12 +46,16 @@ data class If(
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitIf(this)
 }
 
+/**
+ * [headUnique] are the variables in scope that the uniqueness checker finds `Unique` at the loop head.
+ */
 data class While(
     val condition: ExpEmbedding,
     val body: ExpEmbedding,
     val breakLabelName: SymbolicName,
     val continueLabelName: SymbolicName,
     val invariants: List<ExpEmbedding>,
+    val headUnique: List<VariableEmbedding> = emptyList(),
 ) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 

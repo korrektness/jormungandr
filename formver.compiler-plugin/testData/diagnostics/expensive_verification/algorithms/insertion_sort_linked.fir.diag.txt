@@ -81,11 +81,15 @@ method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
     v_ret_0 := node
     goto lbl_ret_0
   }
-  unfold acc(Node_unique(sorted), write)
+  if (sorted != nullValue()) {
+    unfold acc(Node_unique(sorted), write)
+  }
   anon_5 := sorted.next
   anon_4 := insertSorted(anon_5, node)
   sorted.next := anon_4
-  fold acc(Node_unique(sorted), write)
+  if (sorted != nullValue()) {
+    fold acc(Node_unique(sorted), write)
+  }
   v_ret_0 := sorted
   goto lbl_ret_0
   label lbl_ret_0
@@ -147,6 +151,9 @@ method insertionSort(head: Ref) returns (v_ret_0: Ref)
   l0_sorted := nullValue()
   cur := head
   label cont
+    invariant l0_sorted != nullValue() ==>
+      acc(Node_unique(l0_sorted), write)
+    invariant cur != nullValue() ==> acc(Node_unique(cur), write)
     invariant isSubtype(typeOf(l0_sorted), nullable(Node()))
     invariant isSubtype(typeOf(cur), nullable(Node()))
     invariant isSubtype(typeOf(head), nullable(Node()))
@@ -155,10 +162,14 @@ method insertionSort(head: Ref) returns (v_ret_0: Ref)
   if (boolFromRef(anon_3)) {
     var l7_next: Ref
     var anon_4: Ref
-    unfold acc(Node_unique(cur), write)
+    if (cur != nullValue()) {
+      unfold acc(Node_unique(cur), write)
+    }
     l7_next := cur.bf_next
     cur.bf_next := nullValue()
-    fold acc(Node_unique(cur), write)
+    if (cur != nullValue()) {
+      fold acc(Node_unique(cur), write)
+    }
     anon_4 := insertSorted(l0_sorted, cur)
     l0_sorted := anon_4
     cur := l7_next
