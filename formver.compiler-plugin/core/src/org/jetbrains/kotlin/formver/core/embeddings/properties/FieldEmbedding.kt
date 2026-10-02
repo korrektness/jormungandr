@@ -29,9 +29,6 @@ interface FieldEmbedding {
     val isUnique: Boolean
         get() = false
 
-    // If true, it is necessary to unfold the predicate of the receiver before accessing the field
-    val unfoldToAccess: Boolean
-        get() = false
     val containingClass: ClassTypeEmbedding?
         get() = null
     val includeInShortDump: Boolean
@@ -68,7 +65,5 @@ data class UserFieldEmbedding(
                 "Failed to determine AccessPolicy. Field is neither val nor var."
             )
         }
-    override val unfoldToAccess: Boolean
-        get() = accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS
     override val includeInShortDump: Boolean = true
 }

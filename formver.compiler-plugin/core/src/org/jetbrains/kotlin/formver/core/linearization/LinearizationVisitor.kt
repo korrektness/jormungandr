@@ -64,13 +64,17 @@ data class LinearizationVisitor(
 
     override fun visitWhile(e: While): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
+            ctx.foldState?.normalize(ctx)
             ctx.addLabel(e.continueLabel.toViper(ctx))
             val condVar = ctx.freshAnonVar { boolean() }
             e.condition.linearize().toViperStoringIn(condVar, ctx)
             ctx.addStatement {
-                val bodyBlock = ctx.asBlock {
-                    e.body.linearize().toViperUnusedResult(this)
-                    addStatement { e.continueLabel.toLink().toViperGoto(this) }
+                ctx.foldState?.normalize(ctx)
+                val bodyBlock = ctx.withFoldStateRestored {
+                    asBlock {
+                        e.body.linearize().toViperUnusedResult(this)
+                        addStatement { e.continueLabel.toLink().toViperGoto(this) }
+                    }
                 }
                 Stmt.If(condVar.linearize().toViperBuiltinType(ctx), bodyBlock, els = Stmt.Seqn(), ctx.source.asPosition)
             }
@@ -110,7 +114,13 @@ data class LinearizationVisitor(
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addStatement {
                 val choice = ctx.freshAnonVar { boolean() }
-                val expViper = ctx.asBlock { e.exp.linearize().toViper(this) }
+                ctx.foldState?.normalize(ctx)
+                val expViper = ctx.withFoldStateRestored {
+                    asBlock {
+                        e.exp.linearize().toViper(this)
+                        foldState?.normalize(this)
+                    }
+                }
                 Stmt.If(choice.linearize().toViperBuiltinType(ctx), expViper, Stmt.Seqn(), ctx.source.asPosition)
             }
         }
@@ -118,21 +128,28 @@ data class LinearizationVisitor(
 
     override fun visitMethodCall(e: MethodCall): Linearizable = object : StoredResultLinearizable(e) {
         override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
+            val argsViper = e.args.map { it.linearize().toViper(ctx) }
+            val heldArgs = ctx.heldPaths(e.args, e.method.formalArgs)
+            for ((path, formal) in heldArgs) {
+                if (formal.isUnique || formal.isBorrowed) ctx.foldState?.close(ctx, path)
+            }
             ctx.addStatement {
-                e.method.toMethodCall(
-                    e.args.map { it.linearize().toViper(ctx) },
-                    result.toLocalVarUse(ctx.source.asPosition),
-                    ctx.source.asPosition
-                )
+                e.method.toMethodCall(argsViper, result.toLocalVarUse(ctx.source.asPosition), ctx.source.asPosition)
+            }
+            for ((path, formal) in heldArgs) {
+                if (!formal.isBorrowed) ctx.foldState?.release(ctx, path)
             }
         }
     }
 
     override fun visitFunctionCall(e: FunctionCall): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
-        override fun toViper(ctx: LinearizationContext): Exp = e.function.toFuncApp(
-            e.args.map { it.linearize().toViper(ctx) },
-            ctx.source.asPosition
-        )
+        override fun toViper(ctx: LinearizationContext): Exp {
+            val argsViper = e.args.map { it.linearize().toViper(ctx) }
+            for ((path, formal) in ctx.heldPaths(e.args, e.function.formalArgs)) {
+                if (formal.isUnique) ctx.foldState?.close(ctx, path)
+            }
+            return e.function.toFuncApp(argsViper, ctx.source.asPosition)
+        }
     }
 
     override fun visitInvokeFunctionObject(e: InvokeFunctionObject): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
@@ -154,8 +171,17 @@ data class LinearizationVisitor(
 
     override fun visitFunctionExp(e: FunctionExp): Linearizable = object : OptionalResultLinearizable(e) {
         override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) {
+            val foldState = ctx.foldState
+            val signature = e.signature
+            if (foldState != null && signature != null) {
+                signature.formalArgs.filter { it.isUnique }.forEach { foldState.acquire(ctx, OwnedPath(it)) }
+            }
             e.body.linearize().toViperMaybeStoringIn(result, ctx)
             ctx.addLabel(e.returnLabel.toViper(ctx))
+            if (foldState != null && signature != null) {
+                signature.formalArgs.filter { it.isUnique && it.isBorrowed }.forEach { foldState.close(ctx, OwnedPath(it)) }
+                if (signature.callableType.returnsUnique) foldState.close(ctx, OwnedPath(signature.returns))
+            }
         }
     }
 
@@ -170,6 +196,8 @@ data class LinearizationVisitor(
 
     override fun visitReturn(e: Return): Linearizable = object : OptionalResultLinearizable(e) {
         override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) {
+            val source = ctx.moveSource(e.returnExp, targetOwned = true)
+            ctx.finishMove(e.returnExp, source, targetOwned = true, OwnedPath(e.target.variable))
             ctx.addReturn(e.returnExp.linearize(), e.target)
         }
     }
@@ -409,11 +437,12 @@ data class LinearizationVisitor(
             if (e.field.accessPolicy == AccessPolicy.ALWAYS_WRITEABLE) {
                 return PrimitiveFieldAccess(e.receiver, e.field).linearize().toViper(ctx)
             }
-            return ctx.addFieldAccess(receiverLinearizable, e.receiver.type, e.field)
+            return ctx.addFieldAccess(receiverLinearizable, e.receiver.type, e.field, ctx.ownedReceiverPath(e.receiver, e.receiverOwned, isWrite = false))
         }
 
         override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
-            ctx.addFieldAccessStoringIn(receiverLinearizable, e.receiver.type, e.field, result)
+            val receiverPath = ctx.ownedReceiverPath(e.receiver, e.receiverOwned, isWrite = false)
+            ctx.addFieldAccessStoringIn(receiverLinearizable, e.receiver.type, e.field, result, receiverPath)
         }
 
         override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) {
@@ -432,26 +461,27 @@ data class LinearizationVisitor(
     override fun visitFieldModification(e: FieldModification): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             val accessIsManual = with(ctx.typeResolver) { (e.receiver.type.pretype as? ClassTypeEmbedding)?.isManual ?: false }
-            when (e.field.accessPolicy) {
-                AccessPolicy.BY_RECEIVER_UNIQUENESS if !accessIsManual -> {
-                    e.receiver.linearize().toViperUnusedResult(ctx)
-                    e.newValue.linearize().toViperUnusedResult(ctx)
-                }
-                else -> {
-                    val receiverViper = e.receiver.linearize().toViper(ctx)
-                    if (e.field.unfoldToAccess && !accessIsManual) {
-                        ctx.unfoldHierarchyPredicates(receiverViper, e.receiver.type, e.field)
-                    }
-                    val newValueViper = e.newValue.linearize().toViper(ctx)
-                    ctx.addStatement {
-                        Stmt.FieldAssign(
-                            Exp.FieldAccess(receiverViper, e.field.toViper()),
-                            newValueViper,
-                            ctx.source.asPosition
-                        )
-                    }
-                }
+            val receiverPath = ctx.ownedReceiverPath(e.receiver, e.receiverOwned, isWrite = true)
+            if (e.field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS && !accessIsManual && receiverPath == null) {
+                e.receiver.linearize().toViperUnusedResult(ctx)
+                val source = ctx.moveSource(e.newValue, targetOwned = false)
+                e.newValue.linearize().toViperUnusedResult(ctx)
+                ctx.finishMove(e.newValue, source, targetOwned = false, target = null)
+                return
             }
+            val receiverViper = e.receiver.linearize().toViper(ctx)
+            receiverPath?.let { ctx.foldState?.open(ctx, it, e.field) }
+            val targetOwned = receiverPath != null && e.field.isUnique
+            val source = ctx.moveSource(e.newValue, targetOwned)
+            val newValueViper = e.newValue.linearize().toViper(ctx)
+            ctx.addStatement {
+                Stmt.FieldAssign(
+                    Exp.FieldAccess(receiverViper, e.field.toViper()),
+                    newValueViper,
+                    ctx.source.asPosition
+                )
+            }
+            ctx.finishMove(e.newValue, source, targetOwned, receiverPath?.plus(e.field))
         }
     }
 
@@ -499,15 +529,19 @@ data class LinearizationVisitor(
 
     override fun visitAssign(e: Assign): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
+            val source = ctx.moveSource(e.rhs, e.targetOwned)
             e.rhs.linearize().toViperStoringIn(LinearizationVariableEmbedding(e.lhs.name, e.lhs.type), ctx)
+            ctx.finishMove(e.rhs, source, e.targetOwned, OwnedPath(e.lhs))
         }
     }
 
     override fun visitDeclare(e: Declare): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addDeclaration(e.variable.toLocalVarDecl(ctx.source.asPosition))
-            e.initializer
-                ?.linearize()?.toViperStoringIn(LinearizationVariableEmbedding(e.variable.name, e.variable.type), ctx)
+            val initializer = e.initializer ?: return
+            val source = ctx.moveSource(initializer, e.targetOwned)
+            initializer.linearize().toViperStoringIn(LinearizationVariableEmbedding(e.variable.name, e.variable.type), ctx)
+            ctx.finishMove(initializer, source, e.targetOwned, OwnedPath(e.variable))
         }
     }
 
@@ -644,4 +678,83 @@ data class LinearizationVisitor(
     }
 
     // endregion
+}
+
+private fun <R> LinearizationContext.withFoldStateRestored(action: LinearizationContext.() -> R): R {
+    val state = foldState ?: return action()
+    val entry = state.snapshot()
+    val result = action()
+    state.restore(state.join(state.snapshot(), entry))
+    return result
+}
+
+/**
+ * The tracked path of an owned [receiver], or `null` when the access havocs or drops.
+ *
+ * An owned receiver the fold state cannot name, such as one reached through a `@Unique val` getter, is read with a
+ * havoc: the value read is unconstrained, so this is sound. A write through it would leave the value its predicate
+ * holds stale, so it is an error.
+ */
+private fun LinearizationContext.ownedReceiverPath(
+    receiver: ExpEmbedding,
+    receiverOwned: Boolean,
+    isWrite: Boolean,
+): OwnedPath? {
+    if (!receiverOwned || foldState == null) return null
+    if (with(typeResolver) { (receiver.type.pretype as? ClassTypeEmbedding)?.isManual } != false) return null
+    val path = receiver.ownedPath()
+    if (path == null && isWrite) {
+        throw FoldStateException(source, "The receiver is owned, but it is not a path whose permissions are tracked.")
+    }
+    return path
+}
+
+/** The arguments that are held paths, with the formal parameter each is passed to. */
+private fun LinearizationContext.heldPaths(
+    args: List<ExpEmbedding>,
+    formals: List<VariableEmbedding>,
+): List<Pair<OwnedPath, VariableEmbedding>> {
+    val state = foldState ?: return emptyList()
+    return args.zip(formals).mapNotNull { (arg, formal) ->
+        arg.ownedPath()?.takeIf { state.holds(it) }?.let { it to formal }
+    }
+}
+
+/** Whether [this] produces a value whose unique predicate the caller receives. */
+private fun ExpEmbedding.isFreshUnique(): Boolean = when (val exp = ignoringCastsAndMetaNodes()) {
+    is MethodCall -> exp.method.callableType.returnsUnique
+    is FunctionCall -> exp.function.callableType.returnsUnique
+    is NullLit -> true
+    else -> false
+}
+
+/**
+ * Prepares a move out of [value] before it is linearized: when [value] is a held path, folds it and returns it.
+ * [targetOwned] is `null` when the store is not a move in the source.
+ */
+private fun LinearizationContext.moveSource(value: ExpEmbedding, targetOwned: Boolean?): OwnedPath? {
+    val state = foldState ?: return null
+    if (targetOwned == null) return null
+    val path = value.ownedPath()?.takeIf { state.holds(it) } ?: return null
+    if (targetOwned) state.close(this, path)
+    return path
+}
+
+/**
+ * Completes a move of [value] into [target] after the store. An owned target takes the predicate of [source] or of
+ * a fresh unique value; otherwise the predicate of [source] is leaked.
+ */
+private fun LinearizationContext.finishMove(
+    value: ExpEmbedding,
+    source: OwnedPath?,
+    targetOwned: Boolean?,
+    target: OwnedPath?,
+) {
+    val state = foldState ?: return
+    when {
+        targetOwned != true || target == null -> source?.let { state.release(this, it) }
+        source != null -> state.transfer(this, source, target)
+        value.isFreshUnique() -> state.acquire(this, target)
+        else -> state.release(this, target)
+    }
 }

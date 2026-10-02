@@ -75,11 +75,17 @@ method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
   } else {
     anon_3 := leInts(value(node), value(sorted))}
   if (boolFromRef(anon_3)) {
+    unfold acc(Node_unique(node), write)
+    node.next := sorted
+    fold acc(Node_unique(node), write)
     v_ret_0 := node
     goto lbl_ret_0
   }
-  anon_5 := havoc(nullable(Node()))
+  unfold acc(Node_unique(sorted), write)
+  anon_5 := sorted.next
   anon_4 := insertSorted(anon_5, node)
+  sorted.next := anon_4
+  fold acc(Node_unique(sorted), write)
   v_ret_0 := sorted
   goto lbl_ret_0
   label lbl_ret_0
@@ -149,7 +155,10 @@ method insertionSort(head: Ref) returns (v_ret_0: Ref)
   if (boolFromRef(anon_3)) {
     var l7_next: Ref
     var anon_4: Ref
-    l7_next := havoc(nullable(Node()))
+    unfold acc(Node_unique(cur), write)
+    l7_next := cur.bf_next
+    cur.bf_next := nullValue()
+    fold acc(Node_unique(cur), write)
     anon_4 := insertSorted(l0_sorted, cur)
     l0_sorted := anon_4
     cur := l7_next

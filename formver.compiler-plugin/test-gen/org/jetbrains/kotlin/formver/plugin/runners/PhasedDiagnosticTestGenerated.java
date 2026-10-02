@@ -594,6 +594,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testUnique_fields() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_fields.kt");
       }
+
+      @Test
+      @TestMetadata("unique_fold_state.kt")
+      public void testUnique_fold_state() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_fold_state.kt");
+      }
     }
 
     @Nested

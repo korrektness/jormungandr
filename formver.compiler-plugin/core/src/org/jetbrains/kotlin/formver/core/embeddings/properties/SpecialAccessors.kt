@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArraySize
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings
 
 object LengthFieldGetter : GetterEmbedding {
-    override fun getValue(receiver: ExpEmbedding, ctx: TypeResolver) =
+    override fun getValue(receiver: ExpEmbedding, ctx: TypeResolver, receiverOwned: Boolean) =
         OperatorExpEmbeddings.StringLength(receiver)
 
     override fun getValueSimple(
@@ -21,7 +21,7 @@ object LengthFieldGetter : GetterEmbedding {
 }
 
 object IntArraySizeGetter : GetterEmbedding {
-    override fun getValue(receiver: ExpEmbedding, ctx: TypeResolver) = IntArraySize(receiver)
+    override fun getValue(receiver: ExpEmbedding, ctx: TypeResolver, receiverOwned: Boolean) = IntArraySize(receiver)
 
     override fun getValueSimple(receiver: ExpEmbedding, ctx: TypeResolver) = IntArraySize(receiver)
 }

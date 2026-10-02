@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.formver.core.purity.checkValidity
 import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessFacts
+import org.jetbrains.kotlin.formver.core.linearization.FoldStateException
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Program
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
@@ -78,6 +79,9 @@ class ProgramConverter(
     override fun reportPurityViolation(source: KtSourceElement?, msg: String) =
         emit(source, ConversionErrors.PURITY_VIOLATION, msg)
 
+    override fun reportUnsupportedOwnership(source: KtSourceElement?, msg: String) =
+        emit(source, ConversionErrors.UNSUPPORTED_OWNERSHIP, msg)
+
     override fun reportMinorInternalError(msg: String) =
         emit(currentDeclarationSource, ConversionErrors.MINOR_INTERNAL_ERROR, msg)
 
@@ -110,6 +114,16 @@ class ProgramConverter(
      */
     val hadUniquenessError: Boolean
         get() = registered.any { it.hasUniquenessErrors }
+
+    /**
+     * Whether linearization found a unique predicate it needs but does not hold. Such a function is linearized
+     * without its body, and not verified.
+     */
+    var hadOwnershipError: Boolean = false
+        private set
+
+    val skipsVerification: Boolean
+        get() = hadUniquenessError || hadOwnershipError
 
     override val typeResolver: TypeResolver = TypeResolver()
 
@@ -173,7 +187,7 @@ class ProgramConverter(
      * summary on every registered declaration so the user sees per-function attribution for the bail-out.
      * Otherwise, emit it on every registered declaration with uniqueness or locality errors.
      * Callers should inspect [hadConversionError] afterwards and skip [linearizeAll] when set, and skip verification
-     * when [hadUniquenessError] is set.
+     * when [skipsVerification] is set after [linearizeAll].
      */
     fun validateAll() {
         convertedBodyResolver.forEachImpure { name, body ->
@@ -215,11 +229,22 @@ class ProgramConverter(
     private fun linearizeImpure(name: SymbolicName, signature: CompleteFunctionSignature) {
         val source = signature.declarationSource
         val converted = convertedBodyResolver.lookupImpure(name)
-        val method = if (converted != null) {
-            linearizeImpureBody(source, converted).toViperMethod(signature, typeResolver)
-        } else {
-            signature.toViperMethod(typeResolver, null)
+        val body = converted?.let {
+            try {
+                linearizeImpureBody(source, it)
+            } catch (e: FoldStateException) {
+                hadOwnershipError = true
+                context(checkerContext) {
+                    reporter.reportOn(e.source ?: source, ConversionErrors.UNSUPPORTED_OWNERSHIP, e.message!!)
+                }
+                reportVerificationSkipped(
+                    source,
+                    "Function '${signature.symbol?.name?.asString()}' was not verified because of unsupported ownership",
+                )
+                null
+            }
         }
+        val method = body?.toViperMethod(signature, typeResolver) ?: signature.toViperMethod(typeResolver, null)
         linearizedBodyResolver.storeMethod(name, method)
     }
 

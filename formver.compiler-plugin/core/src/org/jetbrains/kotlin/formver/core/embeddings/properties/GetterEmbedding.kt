@@ -9,7 +9,10 @@ import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 
 interface GetterEmbedding {
-    fun getValue(receiver: ExpEmbedding, ctx: TypeResolver): ExpEmbedding
+    /**
+     * [receiverOwned] says whether the uniqueness checker finds [receiver] `Unique` at the read.
+     */
+    fun getValue(receiver: ExpEmbedding, ctx: TypeResolver, receiverOwned: Boolean = false): ExpEmbedding
 
     /**
      * Gets the values without adding type invariants.

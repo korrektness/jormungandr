@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.PermExp
-import org.jetbrains.kotlin.formver.viper.ast.Stmt
 
 /**
  * The unique-predicate access on [classOnPath] that must be unfolded to reach a field on a superclass
@@ -41,13 +40,3 @@ fun LinearizationContext.hierarchyPredicateAccesses(
 ): Sequence<Exp.PredicateAccess> =
     typeResolver.hierarchyPathTo(receiverType.pretype, field)
         .map { hierarchyPredicateAccess(receiver, it, source) }
-
-/**
- * Emits a `Stmt.Unfold` for each unique-predicate on the hierarchy path from [receiverType]
- * down to the class declaring [field].
- */
-fun LinearizationContext.unfoldHierarchyPredicates(receiver: Exp, receiverType: TypeEmbedding, field: FieldEmbedding) {
-    for (predicateAccess in hierarchyPredicateAccesses(receiver, receiverType, field)) {
-        addStatement { Stmt.Unfold(predicateAccess, source.asPosition) }
-    }
-}

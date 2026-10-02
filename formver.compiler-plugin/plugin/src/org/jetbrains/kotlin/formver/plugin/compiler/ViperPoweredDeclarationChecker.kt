@@ -98,11 +98,11 @@ class ViperPoweredDeclarationChecker(private val session: FirSession, private va
             if (inTestRun) {
                 declaration.viperProgram = viperProgram
                 declaration.shouldVerify =
-                    config.shouldVerify(declaration) && !programConversionContext.hadUniquenessError
+                    config.shouldVerify(declaration) && !programConversionContext.skipsVerification
             }
 
 
-            if (!inTestRun && !programConversionContext.hadUniquenessError) {
+            if (!inTestRun && !programConversionContext.skipsVerification) {
                 // If we are in a test, then the verification happens later.
 
                 val onFailure = { err: VerifierError ->

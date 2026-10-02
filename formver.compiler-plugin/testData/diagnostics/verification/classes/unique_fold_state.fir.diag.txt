@@ -1,0 +1,59 @@
+/unique_fold_state.kt: info: Generated Viper text for bump:
+field value: Ref
+
+method bump(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(Box_unique(b), write)
+  anon := b.value
+  b.value := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Box_unique(b), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_fold_state.kt: info: Generated Viper text for useHolder:
+field box: Ref
+
+field count: Ref
+
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bump(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method useHolder(h: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  ensures acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  unfold acc(Holder_unique(h), write)
+  h.count := intToRef(3)
+  before := h.count
+  anon_1 := h.box
+  anon_0 := bump(anon_1)
+  assert intFromRef(before) == 3
+  anon_2 := h.count
+  assert intFromRef(anon_2) == 3
+  label lbl_ret_0
+  fold acc(Holder_unique(h), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

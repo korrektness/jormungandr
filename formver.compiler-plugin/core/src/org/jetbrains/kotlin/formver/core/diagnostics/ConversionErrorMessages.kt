@@ -22,6 +22,11 @@ object ConversionErrorMessages : BaseDiagnosticRendererFactory() {
             CommonRenderers.STRING,
         )
         map.put(
+            ConversionErrors.UNSUPPORTED_OWNERSHIP,
+            "{0}",
+            CommonRenderers.STRING,
+        )
+        map.put(
             ConversionErrors.VERIFICATION_SKIPPED,
             "{0}",
             CommonRenderers.STRING,

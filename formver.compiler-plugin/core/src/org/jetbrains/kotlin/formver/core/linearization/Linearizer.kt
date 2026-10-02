@@ -33,6 +33,7 @@ data class Linearizer(
     val seqnBuilder: SeqnBuilder,
     override val source: KtSourceElement?,
     override val typeResolver: TypeResolver,
+    override val foldState: FoldState? = null,
     val stmtModifierTracker: StmtModifierTracker? = null
 ) : LinearizationContext {
     override val logicOperatorPolicy: LogicOperatorPolicy
@@ -91,14 +92,30 @@ data class Linearizer(
     ) =
         addStatement {
             val condViper = condition.toViperBuiltinType(this)
-            val thenViper = asBlock { thenBranch.toViperMaybeStoringIn(result, this) }
-            val elseViper = asBlock { elseBranch.toViperMaybeStoringIn(result, this) }
+            foldState?.normalize(this)
+            val entry = foldState?.snapshot()
+            val thenViper = asBlock {
+                thenBranch.toViperMaybeStoringIn(result, this)
+                foldState?.normalize(this)
+            }
+            val afterThen = foldState?.snapshot()
+            entry?.let { foldState?.restore(it) }
+            val elseViper = asBlock {
+                elseBranch.toViperMaybeStoringIn(result, this)
+                foldState?.normalize(this)
+            }
+            foldState?.let { it.restore(it.join(afterThen!!, it.snapshot())) }
             Stmt.If(condViper, thenViper, elseViper, source.asPosition)
         }
 
-    override fun addFieldAccess(receiver: Linearizable, receiverType: TypeEmbedding, field: FieldEmbedding): Exp {
+    override fun addFieldAccess(
+        receiver: Linearizable,
+        receiverType: TypeEmbedding,
+        field: FieldEmbedding,
+        receiverPath: OwnedPath?,
+    ): Exp {
         val result = freshAnonVar(field.type)
-        addFieldAccessStoringIn(receiver, receiverType, field, result)
+        addFieldAccessStoringIn(receiver, receiverType, field, result, receiverPath)
         return result.toViperExp(this)
     }
 
@@ -106,30 +123,27 @@ data class Linearizer(
         stmtModifierTracker?.add(mod) ?: error("Not in a statement")
     }
 
-    override fun addFieldAccessStoringIn(receiver: Linearizable, receiverType: TypeEmbedding, field: FieldEmbedding, result: VariableEmbedding) {
+    override fun addFieldAccessStoringIn(
+        receiver: Linearizable,
+        receiverType: TypeEmbedding,
+        field: FieldEmbedding,
+        result: VariableEmbedding,
+        receiverPath: OwnedPath?,
+    ) {
         addStatement {
             val accessIsManual = with(typeResolver) { (receiverType.pretype as? ClassTypeEmbedding)?.isManual ?: false }
-            when (field.accessPolicy) {
-                // TODO: Handling a unique field on a shared receiver must be added here.
-                AccessPolicy.BY_RECEIVER_UNIQUENESS if !accessIsManual -> {
-                    receiver.toViperUnusedResult(this)
-                    SpecialMethods.havocMethod.toMethodCall(
-                        listOf(field.type.runtimeType),
-                        listOf(result.toLocalVarUse())
-                    )
-                }
-
-                else -> {
-                    val receiverViper = receiver.toViper(this)
-                    // If the field access is not replaced with havoc,
-                    // we might need to unfold some predicate to access it.
-                    if (field.unfoldToAccess && !accessIsManual) {
-                        unfoldHierarchyPredicates(receiverViper, receiverType, field)
-                    }
-                    Stmt.assign(
-                        result.toLocalVarUse(), Exp.FieldAccess(receiverViper, field.toViper(), source.asPosition)
-                    )
-                }
+            if (field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS && !accessIsManual && receiverPath == null) {
+                receiver.toViperUnusedResult(this)
+                SpecialMethods.havocMethod.toMethodCall(
+                    listOf(field.type.runtimeType),
+                    listOf(result.toLocalVarUse())
+                )
+            } else {
+                val receiverViper = receiver.toViper(this)
+                receiverPath?.let { foldState?.open(this, it, field) }
+                Stmt.assign(
+                    result.toLocalVarUse(), Exp.FieldAccess(receiverViper, field.toViper(), source.asPosition)
+                )
             }
         }
     }

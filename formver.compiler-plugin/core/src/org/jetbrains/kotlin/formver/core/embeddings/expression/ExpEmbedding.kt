@@ -58,7 +58,14 @@ data class PrimitiveFieldAccess(val inner: ExpEmbedding, val field: FieldEmbeddi
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(inner)
 }
 
-data class FieldAccess(val receiver: ExpEmbedding, val field: FieldEmbedding) : ExpEmbedding {
+/**
+ * [receiverOwned] says whether the uniqueness checker finds the receiver `Unique` before the read.
+ */
+data class FieldAccess(
+    val receiver: ExpEmbedding,
+    val field: FieldEmbedding,
+    val receiverOwned: Boolean = false,
+) : ExpEmbedding {
     override val type: TypeEmbedding = field.type
 
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitFieldAccess(this)
@@ -67,9 +74,15 @@ data class FieldAccess(val receiver: ExpEmbedding, val field: FieldEmbedding) : 
 
 /**
  * Represents a combination of `Assign` + `FieldAccess`.
+ *
+ * [receiverOwned] says whether the uniqueness checker finds the receiver `Unique` before the write.
  */
-data class FieldModification(val receiver: ExpEmbedding, val field: FieldEmbedding, val newValue: ExpEmbedding) :
-    ExpEmbedding {
+data class FieldModification(
+    val receiver: ExpEmbedding,
+    val field: FieldEmbedding,
+    val newValue: ExpEmbedding,
+    val receiverOwned: Boolean = false,
+) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(receiver, newValue)
@@ -97,14 +110,25 @@ data class PredicateAccessPermissions(
     override fun children(): Sequence<ExpEmbedding> = args.asSequence()
 }
 
-data class Assign(val lhs: VariableEmbedding, val rhs: ExpEmbedding) : ExpEmbedding {
+/**
+ * [targetOwned] is set for an assignment in the source: whether the uniqueness checker finds [lhs] `Unique` after it.
+ */
+data class Assign(val lhs: VariableEmbedding, val rhs: ExpEmbedding, val targetOwned: Boolean? = null) : ExpEmbedding {
     override val type: TypeEmbedding = lhs.type
 
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(lhs, rhs)
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitAssign(this)
 }
 
-data class Declare(val variable: VariableEmbedding, val initializer: ExpEmbedding?) : ExpEmbedding {
+/**
+ * [targetOwned] is set for a declaration in the source: whether the uniqueness checker finds [variable] `Unique`
+ * after it.
+ */
+data class Declare(
+    val variable: VariableEmbedding,
+    val initializer: ExpEmbedding?,
+    val targetOwned: Boolean? = null,
+) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 
     override fun children(): Sequence<ExpEmbedding> = listOfNotNull(variable, initializer).asSequence()

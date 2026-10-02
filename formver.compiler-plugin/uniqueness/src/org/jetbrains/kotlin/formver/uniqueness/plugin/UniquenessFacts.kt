@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
@@ -57,6 +58,46 @@ class FunctionUniquenessAnalysis internal constructor(
 
     fun declaredUniqueness(symbol: FirBasedSymbol<*>): Uniqueness =
         context(context) { symbol.resolveDeclaredUniqueness() }
+
+    /**
+     * Whether some root is `Unique` somewhere in the function.
+     */
+    val ownsAnyPath: Boolean by lazy {
+        (statesBefore.values + statesAfter.values).any { state -> state.children.values.any { it.data == Uniqueness.Unique } }
+    }
+
+    fun hasState(element: FirElement): Boolean = element in statesBefore
+
+    /**
+     * The path [expression] denotes, or `null` when it denotes none or more than one.
+     */
+    fun pathOf(expression: FirExpression): Path? =
+        context(context) { expression.resolveAccessState().enumeratePaths().singleOrNull() }
+
+    /**
+     * Whether [path] is `Unique` on entry to [element].
+     */
+    fun ownsBefore(element: FirElement, path: Path): Boolean =
+        stateBefore(element).uniquenessOf(path) == Uniqueness.Unique
+
+    /**
+     * Whether [path] is `Unique` on exit from [element].
+     */
+    fun ownsAfter(element: FirElement, path: Path): Boolean =
+        stateAfter(element).uniquenessOf(path) == Uniqueness.Unique
+
+    /**
+     * The uniqueness of [path]: the join along the path, where a component with no entry has its declared uniqueness.
+     */
+    private fun UniquenessState.uniquenessOf(path: Path): Uniqueness {
+        var node: UniquenessState? = this
+        var uniqueness = data
+        for (symbol in path) {
+            node = node?.children[symbol]
+            uniqueness = uniqueness.join(node?.data ?: declaredUniqueness(symbol))
+        }
+        return uniqueness
+    }
 
     private fun FirElement.render(): String = "${this::class.simpleName} at ${source?.startOffset}"
 }

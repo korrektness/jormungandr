@@ -19,8 +19,13 @@ data class LabelEmbedding(val name: SymbolicName, val invariants: List<ExpEmbedd
 
 fun LabelEmbedding.toLink() = LabelLink(name)
 
-fun LabelLink.toViperGoto(ctx: LinearizationContext): Stmt.Goto =
-    Label(name, emptyList()).toGoto(pos = ctx.source.asPosition)
+/**
+ * The jump to this label. The fold state is recorded for the label and is dead after the jump.
+ */
+fun LabelLink.toViperGoto(ctx: LinearizationContext): Stmt.Goto {
+    ctx.foldState?.jumpTo(ctx, name)
+    return Label(name, emptyList()).toGoto(pos = ctx.source.asPosition)
+}
 
 fun LabelEmbedding.toViper(ctx: LinearizationContext): Label {
     return Label(name, invariants.pureToViper(toBuiltin = true, ctx.typeResolver, ctx.source))

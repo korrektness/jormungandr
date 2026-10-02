@@ -18,6 +18,10 @@ import org.jetbrains.kotlin.diagnostics.error1
  */
 object ConversionErrors : KtDiagnosticsContainer() {
     val PURITY_VIOLATION by error1<PsiElement, String>()
+    /**
+     * Code whose ownership the permission encoding cannot follow, such as folding a path with a moved-out field.
+     */
+    val UNSUPPORTED_OWNERSHIP by error1<PsiElement, String>()
     val MINOR_INTERNAL_ERROR by error1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
 
     /**

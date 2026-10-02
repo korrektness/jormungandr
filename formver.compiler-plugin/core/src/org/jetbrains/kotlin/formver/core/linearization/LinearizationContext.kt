@@ -40,6 +40,10 @@ interface LinearizationContext {
 
     val typeResolver: TypeResolver
 
+    /** The unique predicates the linearized code holds; `null` where no permissions are tracked. */
+    val foldState: FoldState?
+        get() = null
+
     fun freshAnonVar(type: TypeEmbedding): AnonymousVariableEmbedding
 
     fun asBlock(action: LinearizationContext.() -> Unit): Stmt.Seqn
@@ -56,9 +60,24 @@ interface LinearizationContext {
         result: VariableEmbedding?
     )
 
-    fun addFieldAccess(receiver: Linearizable, receiverType: TypeEmbedding, field: FieldEmbedding): Exp
+    /**
+     * [receiverPath] is the receiver's path when it is owned: the access then unfolds the receiver's predicates
+     * instead of havocking the result.
+     */
+    fun addFieldAccess(
+        receiver: Linearizable,
+        receiverType: TypeEmbedding,
+        field: FieldEmbedding,
+        receiverPath: OwnedPath? = null,
+    ): Exp
 
-    fun addFieldAccessStoringIn(receiver: Linearizable, receiverType: TypeEmbedding, field: FieldEmbedding, result: VariableEmbedding)
+    fun addFieldAccessStoringIn(
+        receiver: Linearizable,
+        receiverType: TypeEmbedding,
+        field: FieldEmbedding,
+        result: VariableEmbedding,
+        receiverPath: OwnedPath? = null,
+    )
 
     fun addModifier(mod: StmtModifier)
 
@@ -69,6 +88,7 @@ fun LinearizationContext.freshAnonVar(init: TypeBuilder.() -> PretypeBuilder): A
     freshAnonVar(buildType(init))
 
 fun LinearizationContext.addLabel(label: Label) {
+    foldState?.arriveAt(this, label.name)
     addDeclaration(label.toDecl())
     addStatement { label.toStmt() }
 }

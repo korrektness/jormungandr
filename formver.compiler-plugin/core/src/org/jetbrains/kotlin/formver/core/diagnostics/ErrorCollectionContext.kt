@@ -16,6 +16,9 @@ interface ErrorCollectionContext {
     /** Report a purity violation at [source]. */
     fun reportPurityViolation(source: KtSourceElement?, msg: String)
 
+    /** Report code whose ownership the permission encoding cannot follow, at [source]. */
+    fun reportUnsupportedOwnership(source: KtSourceElement?, msg: String)
+
     /** Report a minor internal error; the source is supplied by the implementation. */
     fun reportMinorInternalError(msg: String)
 }

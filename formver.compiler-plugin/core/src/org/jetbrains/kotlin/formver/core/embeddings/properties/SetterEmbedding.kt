@@ -9,5 +9,13 @@ import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 
 interface SetterEmbedding {
-    fun setValue(receiver: ExpEmbedding, value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding
+    /**
+     * [receiverOwned] says whether the uniqueness checker finds [receiver] `Unique` at the write.
+     */
+    fun setValue(
+        receiver: ExpEmbedding,
+        value: ExpEmbedding,
+        ctx: StmtConversionContext,
+        receiverOwned: Boolean = false,
+    ): ExpEmbedding
 }

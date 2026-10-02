@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
@@ -122,7 +123,10 @@ fun FirPropertySymbol.findFinalParentProperty(): FirPropertySymbol? =
  * If final backing field is not found, we lazily create a getter/setter pair for this
  * `FirIntersectionOverrideProperty`.
  */
-fun StmtConversionContext.embedPropertyAccess(accessExpression: FirPropertyAccessExpression): PropertyAccessEmbedding =
+fun StmtConversionContext.embedPropertyAccess(
+    accessExpression: FirPropertyAccessExpression,
+    accessElement: FirElement = accessExpression,
+): PropertyAccessEmbedding =
     when (val calleeSymbol = accessExpression.calleeReference.symbol) {
         is FirValueParameterSymbol -> embedParameter(calleeSymbol).asPropertyAccess()
         is FirPropertySymbol -> {
@@ -132,12 +136,14 @@ fun StmtConversionContext.embedPropertyAccess(accessExpression: FirPropertyAcces
                     val property = calleeSymbol.findFinalParentProperty()?.let {
                         embedProperty(it)
                     } ?: embedProperty(calleeSymbol)
-                    ClassPropertyAccess(convert(accessExpression.dispatchReceiver!!), property, type)
+                    val receiver = accessExpression.dispatchReceiver!!
+                    ClassPropertyAccess(convert(receiver), property, type, ownsBefore(accessElement, receiver))
                 }
 
                 accessExpression.extensionReceiver != null -> {
                     val property = embedProperty(calleeSymbol)
-                    ClassPropertyAccess(convert(accessExpression.extensionReceiver!!), property, type)
+                    val receiver = accessExpression.extensionReceiver!!
+                    ClassPropertyAccess(convert(receiver), property, type, ownsBefore(accessElement, receiver))
                 }
 
                 else -> embedLocalProperty(calleeSymbol)
@@ -148,6 +154,15 @@ fun StmtConversionContext.embedPropertyAccess(accessExpression: FirPropertyAcces
             error("Property access symbol $calleeSymbol has unsupported type.")
     }
 
+
+/**
+ * Whether the uniqueness checker finds the path [expression] denotes `Unique` on entry to [element].
+ */
+fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpression): Boolean {
+    val analysis = uniquenessAnalysis ?: return false
+    val path = analysis.pathOf(expression) ?: return false
+    return analysis.ownsBefore(element, path)
+}
 
 fun StmtConversionContext.argumentDeclaration(
     arg: ExpEmbedding,
@@ -200,10 +215,16 @@ fun StmtConversionContext.insertInlineFunctionCall(
     }
     val (declarations, callArgs) = getInlineFunctionCallArgs(args, calleeSignature.callableType.formalArgTypes)
     val subs = paramNames.zip(callArgs).toMap()
+    // A lambda called in place is analysed as part of the function containing it; an inline function is not.
+    val enclosingAnalysis = parentCtx?.uniquenessAnalysis
+    val bodyAnalysis = enclosingAnalysis?.takeIf { it.hasState(body) }
+    if (enclosingAnalysis != null && bodyAnalysis == null && enclosingAnalysis.ownsAnyPath) {
+        reportUnsupportedOwnership(body.source, "The uniqueness checker has no state for this lambda body.")
+    }
     val methodCtxFactory = MethodContextFactory(
         calleeSignature,
         InlineParameterResolver(subs, returnTargetName, returnTarget),
-        uniquenessAnalysis = null,
+        uniquenessAnalysis = bodyAnalysis,
         parent = parentCtx,
     )
 
@@ -272,7 +293,7 @@ fun ProgramConversionContext.linearizeImpureBody(
 ): FunctionBodyEmbedding {
     val seqnBuilder = SeqnBuilder(source)
     val linearizer =
-        Linearizer(SharedLinearizationState(anonVarProducer), seqnBuilder, source, typeResolver)
+        Linearizer(SharedLinearizationState(anonVarProducer), seqnBuilder, source, typeResolver, FoldState())
     converted.bodyExp.toLinearizable(source).toViperUnusedResult(linearizer)
     // note: we must guarantee somewhere that returned value is Unit
     // as we may not encounter any `return` statement in the body

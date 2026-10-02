@@ -328,7 +328,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             )
         }
 
-        return data.declareLocalProperty(symbol, property.initializer?.let { data.convert(it) })
+        val declaration = data.declareLocalProperty(symbol, property.initializer?.let { data.convert(it) })
+        val targetOwned = data.uniquenessAnalysis?.ownsAfter(property, listOf(symbol)) ?: return declaration
+        return declaration.copy(targetOwned = targetOwned)
     }
 
     override fun visitWhileLoop(whileLoop: FirWhileLoop, data: StmtConversionContext): ExpEmbedding {
@@ -376,21 +378,20 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         variableAssignment: FirVariableAssignment,
         data: StmtConversionContext,
     ): ExpEmbedding {
-        val embedding = when (val lValue = variableAssignment.lValue) {
-            is FirPropertyAccessExpression -> {
-                data.embedPropertyAccess(lValue)
-            }
-
-            is FirDesugaredAssignmentValueReferenceExpression -> {
-                data.embedPropertyAccess(lValue.expressionRef.value as FirPropertyAccessExpression)
-            }
-
+        val lValue = when (val lValue = variableAssignment.lValue) {
+            is FirPropertyAccessExpression -> lValue
+            is FirDesugaredAssignmentValueReferenceExpression -> lValue.expressionRef.value as FirPropertyAccessExpression
             else -> throw SnaktInternalException(
                 variableAssignment.source, "Lvalue must be either property access or desugared assignment."
             )
         }
+        val embedding = data.embedPropertyAccess(lValue, variableAssignment)
         val convertedRValue = data.convert(variableAssignment.rValue)
-        return embedding.setValue(convertedRValue, data)
+        val assignment = embedding.setValue(convertedRValue, data)
+        val analysis = data.uniquenessAnalysis
+        if (assignment !is Assign || analysis == null) return assignment
+        val lValuePath = analysis.pathOf(lValue) ?: return assignment
+        return assignment.copy(targetOwned = analysis.ownsAfter(variableAssignment, lValuePath))
     }
 
     override fun visitSmartCastExpression(

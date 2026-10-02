@@ -14,7 +14,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 class CustomGetter(val getterMethod: NonInlineFunctionSignature) : GetterEmbedding {
     override fun getValue(
         receiver: ExpEmbedding,
-        ctx: TypeResolver
+        ctx: TypeResolver,
+        receiverOwned: Boolean,
     ): ExpEmbedding = getterMethod.insertCall(listOf(receiver))
 
 
@@ -29,5 +30,6 @@ class CustomSetter(val setterMethod: NonInlineFunctionSignature) : SetterEmbeddi
         receiver: ExpEmbedding,
         value: ExpEmbedding,
         ctx: StmtConversionContext,
+        receiverOwned: Boolean,
     ): ExpEmbedding = setterMethod.insertCall(listOf(receiver, value), ctx, setterMethod.callableType.returnType)
 }
