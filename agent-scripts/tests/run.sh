@@ -86,6 +86,10 @@ assert_eq "counts: a golden mismatch is counted apart from a thrown exception" \
     "2 1 1 0 0" 0 \
     -- python3 "$LIB_DIR/junit_counts.py" "$FIXTURES/failure.xml" "$FIXTURES/error.xml"
 
+assert_eq "counts: several golden mismatches in one test are one mismatch; a mix is not" \
+    "2 1 1 0 0" 0 \
+    -- python3 "$LIB_DIR/junit_counts.py" "$FIXTURES/multi-failure.xml"
+
 assert_eq "counts: a skipped test is neither passed nor failed" \
     "2 0 0 1 0" 0 \
     -- python3 "$LIB_DIR/junit_counts.py" "$FIXTURES/skipped.xml"
@@ -93,6 +97,22 @@ assert_eq "counts: a skipped test is neither passed nor failed" \
 assert_eq "counts: malformed XML is reported, not silently dropped" \
     "1 0 0 0 1" 0 \
     -- python3 "$LIB_DIR/junit_counts.py" "$FIXTURES/malformed.xml" "$FIXTURES/passing.xml"
+
+assert_eq "other_failures: golden mismatches are left out, other failures listed" \
+    "verification.BasicTest.testNon_local_returns: boom" 0 \
+    -- python3 "$LIB_DIR/junit_other_failures.py" "$FIXTURES/failure.xml" "$FIXTURES/error.xml"
+
+assert_eq "other_failures: a run with only golden mismatches reports nothing" \
+    "" 1 \
+    -- python3 "$LIB_DIR/junit_other_failures.py" "$FIXTURES/failure.xml" "$FIXTURES/passing.xml"
+
+assert_eq "other_failures: an unreadable result file is listed" \
+    "$FIXTURES/malformed.xml: unreadable test result" 0 \
+    -- python3 "$LIB_DIR/junit_other_failures.py" "$FIXTURES/malformed.xml" "$FIXTURES/passing.xml"
+
+assert_eq "other_failures: a multi-cause failure is listed only if a cause is not a mismatch" \
+    "verification.BasicTest.testNon_local_returns: org.gradle.internal.exceptions.DefaultMultiCauseException: Multiple Failures (2 failures)" 0 \
+    -- sh -c 'python3 "$1" "$2" | head -1' sh "$LIB_DIR/junit_other_failures.py" "$FIXTURES/multi-failure.xml"
 
 assert_eq "gradle_filter: a source path becomes its generated test method" \
     "Non_local_returns" 0 \

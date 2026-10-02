@@ -97,6 +97,7 @@ abstract class AbstractPhasedDiagnosticTest : AbstractKotlinCompilerWithTargetBa
         useAdditionalService(::VerificationDiagnosticsCollector)
         useAdditionalService(::ConversionTagCollector)
         useAdditionalService(::AllTagCollector)
+        useAdditionalService(::VerificationOutcomes)
 
         // This facade might verify the programs. This depends on the testMode and the result of the conversion check.
         facadeStep(::ViperProgramVerificationFacade)

@@ -75,6 +75,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                     val diagnostics = verifyFunction(verifier, decl, module)
                     testServices.verificationDiagnosticsCollector.addDiagnostics(diagnostics)
                     testServices.allTagCollector.reportDiagnostics(testFile, diagnostics)
+                    testServices.verificationOutcomes.reportDiagnostics(testFile, diagnostics)
                 }
                 verifier.close()
 
@@ -197,6 +198,7 @@ class ViperResultHandler(testServices: TestServices) :
     override fun processModule(module: TestModule, info: FirOutputArtifact) {
         if (shouldSkipByTestMode(testServices)) return
 
+        testServices.verificationOutcomes.check(info, verified = true)
         runChecks(
             testServices,
             { testServices.conversionDiagnosticsCollector.assertEquality() },

@@ -1,13 +1,16 @@
 # AGENTS.md
 
 Tests are golden-file based: a test passes when its goldens match. Regenerating
-records whatever the run produced, so a function that fails verification passes
-from then on once that failure is in the golden. Read what `--update-goldens`
-prints.
+records whatever the run produced, except a change in whether a function
+verifies, fails or is skipped: that fails the test and writes nothing. Read what
+`--update-goldens` prints.
 
     ./agent-scripts/test.sh [pattern]                  # conversion only — the fast loop
     ./agent-scripts/test.sh --verify [pattern]         # full pipeline, including verification
+    ./agent-scripts/test.sh --verify-changed [pattern] # verify only where conversion output changed
     ./agent-scripts/test.sh --update-goldens [pattern] # regenerate goldens, then report what changed
+    ./agent-scripts/test.sh --update-goldens --record-outcomes <pattern>
+                                                       # also record verification outcome changes
 
 A pattern is the testData file's name, the path to it, or the generated method
 name. A failing run prints the expected/actual diff.

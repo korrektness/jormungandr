@@ -30,7 +30,10 @@ before opening a PR.
 All three only check the goldens. Regenerating them is a separate thing, run by
 passing `-Pkotlin.test.update.test.data=true` to `test`: it rewrites the golden
 files and writes the diagnostic markers into the `.kt`, which a new test needs.
-Verification runs, because the goldens include its output.
+Verification runs, because the goldens include its output. A change in a
+function's verification outcome is refused unless
+`-Pformver.recordOutcomes=true` is passed as well; docs/agents-dev.md, under
+Regenerating, says what counts as one.
 
 ### Directives
 

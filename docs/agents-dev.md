@@ -8,8 +8,9 @@ them.
 
 - `test.sh` — the test driver. Conversion only by default (`untilConversion`
   plus the locality tests, which have no verification stage), `--verify` for the
-  full pipeline, `--update-goldens` to regenerate goldens and report what they
-  now say.
+  full pipeline, `--verify-changed` for `./gradlew update` (convert everything,
+  verify only where conversion output changed), `--update-goldens` to regenerate
+  goldens and report what they now say.
 - `check-all.sh` — `check`, `pre-commit` and the testData checks together.
   `--rerun` re-executes tests Gradle considers current.
 - `check-testdata.sh` — golden files with no source, and empty golden files.
@@ -50,11 +51,21 @@ Gradle's `--tests` filter is case-sensitive, and the scripts convert for you.
 
 ## Regenerating
 
-`--update-goldens` regenerates and then prints what each golden now says,
-because regeneration records whatever the run produced: a function that fails
-verification has that failure written into `<name>.viper.diag.txt` and passes
-from then on. Verification diagnostics are printed whole, since that is the
-change most likely to be recorded by accident.
+`--update-goldens` regenerates and then prints what each golden now says.
+Regeneration records whatever the run produced, except a change in a function's
+verification outcome.
 
-This is not `./gradlew update`, which is a test mode: convert everything, and
-verify only where conversion changed.
+A function's outcome is failed when a verifier diagnostic lies inside it,
+skipped when it carries `VERIFICATION_SKIPPED`, and clean otherwise; clean
+covers both verified and not selected for verification. The expected outcome is
+read from the markers the `.kt` already has. When any function's outcome
+differs, the test writes no golden at all and fails with
+`OutcomeChangeRefused`, naming each function and quoting the new diagnostics;
+`test.sh` lists these under "not regenerated" and exits 1. A failure that
+starts verifying is a change too: a negative test that stops failing has lost
+what it tests. The check is `VerificationOutcomes` in
+`formver.compiler-plugin/test-fixtures/org/jetbrains/kotlin/formver/plugin/services/`.
+
+`--update-goldens --record-outcomes <pattern>` lets outcomes change, for the
+one test that is meant to record a new failure, skip or fix. It takes a pattern
+so that it covers only that test, and prints the marker changes uncut.

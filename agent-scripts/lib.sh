@@ -54,12 +54,12 @@ is_assertion_failure_type() {
     esac
 }
 
-# Print the first failing <testcase> from JUnit XML newer than $1: failure
-# "type" on the first line, then "classname.name: message", then stack trace.
-# Returns 1 with nothing printed if there is no fresh XML at all, or none of it
-# holds a failure.
-report_first_xml_failure() {
-    need_python3 || return 1
+# Print the JUnit XML files of both modules written since marker file $1, one
+# per line. Returns 1 if there are none.
+#
+# Sorted: find's order is the filesystem's, and with two failing tests "the
+# first failure" would vary between runs of the same failure.
+fresh_xml_files() {
     local marker="$1" dirs=() dir
     for dir in "$COMPILER_RESULTS_DIR" "$LOCALITY_RESULTS_DIR"; do
         if [[ -d "$dir" ]]; then
@@ -69,16 +69,41 @@ report_first_xml_failure() {
     if [[ "${#dirs[@]}" -eq 0 ]]; then
         return 1
     fi
-    # Sorted: find's order is the filesystem's, and with two failing tests
-    # "the first failure" would vary between runs of the same failure.
-    local files=()
-    while IFS= read -r f; do
-        files+=("$f")
-    done < <(find "${dirs[@]}" -name '*.xml' -newer "$marker" | sort)
-    if [[ "${#files[@]}" -eq 0 ]]; then
+    local files
+    files="$(find "${dirs[@]}" -name '*.xml' -newer "$marker" | sort)"
+    if [[ -z "$files" ]]; then
         return 1
     fi
-    python3 "$LIB_DIR/junit_first_failure.py" "${files[@]}"
+    printf '%s\n' "$files"
+}
+
+# Run the python script $1 over the fresh JUnit XML (see fresh_xml_files) and
+# return its status. Returns 2 when python3 is missing or there is no fresh XML.
+over_fresh_xml() {
+    need_python3 || return 2
+    local script="$1" marker="$2" files=() f
+    while IFS= read -r f; do
+        files+=("$f")
+    done < <(fresh_xml_files "$marker")
+    if [[ "${#files[@]}" -eq 0 ]]; then
+        return 2
+    fi
+    python3 "$LIB_DIR/$script" "${files[@]}"
+}
+
+# Print the first failing <testcase> from JUnit XML newer than $1: failure
+# "type" on the first line, then "classname.name: message", then stack trace.
+# Prints nothing and returns non-zero if none of the fresh XML holds a failure,
+# or there is no fresh XML at all.
+report_first_xml_failure() {
+    over_fresh_xml junit_first_failure.py "$1"
+}
+
+# Print each failing test in JUnit XML newer than $1 that is not a golden-file
+# mismatch, one "classname.name: message" per test. Returns 1 if there is none,
+# 2 if the results could not be read.
+report_other_xml_failures() {
+    over_fresh_xml junit_other_failures.py "$1"
 }
 
 # Print "total assertion_failed other_failed skipped unreadable" over the JUnit

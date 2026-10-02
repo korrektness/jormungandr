@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
  * The flag the Kotlin test framework uses to decide whether a failing golden-file
  * assertion rewrites the file instead of failing the test.
  */
-private val updatingTestData: Boolean
+val updatingTestData: Boolean
     get() = System.getProperty("kotlin.test.update.test.data") == "true"
 
 /**

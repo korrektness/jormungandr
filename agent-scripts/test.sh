@@ -13,7 +13,10 @@ usage() {
 Usage:
   ./agent-scripts/test.sh [pattern]                  # conversion only — the fast loop, default
   ./agent-scripts/test.sh --verify [pattern]         # full pipeline
+  ./agent-scripts/test.sh --verify-changed [pattern] # verify only where conversion output changed
   ./agent-scripts/test.sh --update-goldens [pattern] # regenerate goldens, then report what changed
+  ./agent-scripts/test.sh --update-goldens --record-outcomes <pattern>
+                                                     # also let verification outcomes change
 
 A pattern can be given as the testData file is named (assign_local), as the
 path to it, or as the generated test method (testAssign_local).
@@ -21,9 +24,10 @@ EOF
 }
 
 MODE=conversion
+RECORD_OUTCOMES=0
 set_mode() {
     if [[ "$MODE" != conversion && "$MODE" != "$1" ]]; then
-        echo "--verify and --update-goldens select different runs; pass one." >&2
+        echo "--verify, --verify-changed and --update-goldens select different runs; pass one." >&2
         exit 1
     fi
     MODE="$1"
@@ -32,7 +36,9 @@ set_mode() {
 while [[ "${1:-}" == -* ]]; do
     case "$1" in
         --verify) set_mode verify ;;
+        --verify-changed) set_mode verify-changed ;;
         --update-goldens) set_mode update ;;
+        --record-outcomes) RECORD_OUTCOMES=1 ;;
         -h|--help) usage; exit 0 ;;
         *) echo "Unknown flag: $1" >&2; echo >&2; usage >&2; exit 1 ;;
     esac
@@ -45,17 +51,25 @@ if [[ $# -gt 1 ]]; then
     exit 1
 fi
 
-if [[ "$MODE" == conversion ]]; then
-    COMPILER_TASK=:formver.compiler-plugin:untilConversion
-else
-    COMPILER_TASK=:formver.compiler-plugin:test
+if [[ "$RECORD_OUTCOMES" -eq 1 && ( "$MODE" != update || -z "$PATTERN" ) ]]; then
+    echo "--record-outcomes needs --update-goldens and a pattern." >&2
+    exit 1
 fi
+
+case "$MODE" in
+    conversion) COMPILER_TASK=:formver.compiler-plugin:untilConversion ;;
+    verify-changed) COMPILER_TASK=:formver.compiler-plugin:update ;;
+    *) COMPILER_TASK=:formver.compiler-plugin:test ;;
+esac
 LOCALITY_TASK=:formver.compiler-plugin:locality:test
 
 # --rerun: an UP-TO-DATE task is green without executing anything.
 args=(--rerun --no-daemon -q)
 if [[ "$MODE" == update ]]; then
     args+=(-Pkotlin.test.update.test.data=true)
+fi
+if [[ "$RECORD_OUTCOMES" -eq 1 ]]; then
+    args+=(-Pformver.recordOutcomes=true)
 fi
 if [[ -n "$PATTERN" ]]; then
     args+=(--tests "*$(gradle_filter "$PATTERN")*")
@@ -150,6 +164,15 @@ run_module() {
 
 run_module compiler "$COMPILER_TASK" "$COMPILER_RESULTS_DIR" report_compiler_failure
 run_module locality "$LOCALITY_TASK" "$LOCALITY_RESULTS_DIR" report_locality_failure
+# In update mode these are the tests that wrote nothing, such as those refusing
+# to change a verification outcome.
+UNWRITTEN=""
+if [[ "$MODE" == update ]]; then
+    UNWRITTEN="$(report_other_xml_failures "$MARKER")" && unwritten_status=0 || unwritten_status=$?
+    if [[ "$unwritten_status" -gt 1 ]]; then
+        UNWRITTEN="The test results could not be read, so tests that wrote nothing are not listed."
+    fi
+fi
 rm -f "$MARKER"
 
 if [[ "$matched" -eq 0 ]]; then
@@ -250,7 +273,13 @@ report "verification produced diagnostics for these; confirm that is intended:" 
     '*.viper.diag.txt'
 report "conversion output changed:" 40 \
     '*.fir.diag.txt'
-report "diagnostic markers changed:" 40 \
+# Under --record-outcomes, outcome changes are among these, so nothing is cut.
+if [[ "$RECORD_OUTCOMES" -eq 1 ]]; then
+    marker_cap=100000
+else
+    marker_cap=40
+fi
+report "diagnostic markers changed:" "$marker_cap" \
     'formver.compiler-plugin/testData/*.kt' \
     'formver.compiler-plugin/locality/testData/*.kt'
 report "regenerated test registration; commit as-is:" 0 \
@@ -262,6 +291,13 @@ echo "=== check-testdata.sh ==="
 
 cat <<'EOF'
 
-Regeneration records whatever the run produced. What is above is what these
-tests now assert: read it and confirm it is what you meant.
+What is above is what these tests now assert: read it and confirm it is what
+you meant.
 EOF
+
+if [[ -n "$UNWRITTEN" ]]; then
+    echo
+    echo "=== not regenerated ==="
+    echo "$UNWRITTEN"
+    exit 1
+fi

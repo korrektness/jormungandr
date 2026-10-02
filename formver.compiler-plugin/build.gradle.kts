@@ -96,6 +96,9 @@ fun Test.configureFormverTest() {
     project.findProperty("kotlin.test.update.test.data")?.let {
         systemProperty("kotlin.test.update.test.data", it)
     }
+    project.findProperty("formver.recordOutcomes")?.let {
+        systemProperty("formver.recordOutcomes", it)
+    }
 
     jvmArgs = listOf("-Xss30M", "-Xmx2g", "-XX:MaxMetaspaceSize=512m")
 }

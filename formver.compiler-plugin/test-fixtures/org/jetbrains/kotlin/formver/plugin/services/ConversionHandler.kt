@@ -30,10 +30,12 @@ class AfterConversionHandler(testServices: TestServices) : FirAnalysisHandler(te
             val simpleDiagnostics = diagnostics.map { it.diagnostic }
             testServices.conversionTagCollector.reportDiagnostics(file, simpleDiagnostics)
             testServices.allTagCollector.reportDiagnostics(file, simpleDiagnostics)
+            testServices.verificationOutcomes.reportDiagnostics(file, simpleDiagnostics)
         }
 
         val mode = getTestMode()
         if (mode == TestMode.CHECK_CONVERSION) {
+            testServices.verificationOutcomes.check(info, verified = false)
             runChecks(
                 testServices,
                 { testServices.conversionDiagnosticsCollector.assertEquality() },
