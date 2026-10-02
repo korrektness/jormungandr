@@ -47,7 +47,7 @@ fun `chain assign unique argument as unique default argument`(
     y: @Unique Any = x,
     z: @Unique Any = <!INVALID_MOVED_ACCESS!>x<!>
 ) {
-    val z = <!INVALID_MOVED_ACCESS!>x<!>
+    val z = x
 }
 
 fun `share default argument resolved from shared parameter twice`(

@@ -10,21 +10,21 @@
 
 /consistency.kt: error: Escaping value has moved field: 'b.y'.
 
-/consistency.kt: error: Invalid access to moved reference.
+/consistency.kt: error: 'b' is accessed after it was moved at 'consume(b)'.
 
 /consistency.kt: error: Escaping value has moved field: 'b.y'.
 
-/consistency.kt: error: Invalid access to moved reference.
+/consistency.kt: error: 'n.c' is accessed after it was moved at 'consume((if (nondet()) n.b else n).c)'.
 
-/consistency.kt: error: Invalid access to moved reference.
+/consistency.kt: error: 'n.b.c' is accessed after it was moved at 'consume((if (nondet()) n.b else n).c)'.
 
-/consistency.kt: error: Invalid access to moved reference.
+/consistency.kt: error: 'n.c' is accessed after it was moved at 'consume((when { nondet() -> n.b; else -> n }).c)'.
 
-/consistency.kt: error: Invalid access to moved reference.
+/consistency.kt: error: 'n.b.c' is accessed after it was moved at 'consume((when { nondet() -> n.b; else -> n }).c)'.
 
-/consistency.kt: error: Invalid access to moved reference.
+/consistency.kt: error: 'n.b.c' is accessed after it was moved at 'consume((if (nondet()) n.b else n.c).c)'.
 
-/consistency.kt: error: Invalid access to moved reference.
+/consistency.kt: error: 'n.c.c' is accessed after it was moved at 'consume((if (nondet()) n.b else n.c).c)'.
 
 /consistency.kt: error: Borrowed local path is moved at exit: 'b.y'.
 
@@ -38,9 +38,9 @@
 
 /consistency.kt: error: Borrowed local path is moved at exit: 'x'.
 
-/consistency.kt: error: Argument locality mismatch: expected 'global', actual 'local'.
+/consistency.kt: error: 'x' is accessed after it was moved at 'var z: @Borrowed @Unique A = x'.
 
-/consistency.kt: error: Invalid access to moved reference.
+/consistency.kt: error: Argument locality mismatch: expected 'global', actual 'local'.
 
 /consistency.kt: error: Borrowed local path is moved at exit: 'x.x'.
 

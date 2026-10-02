@@ -39,6 +39,11 @@ object FormalVerificationPluginErrorMessages : BaseDiagnosticRendererFactory() {
             CommonRenderers.STRING,
         )
         map.put(
+            PluginErrors.VERIFIER_UNAVAILABLE,
+            "The verifier cannot run, so no function in this module is verified: {0}",
+            CommonRenderers.STRING,
+        )
+        map.put(
             VerificationErrors.UNEXPECTED_RETURNED_VALUE,
             "Function may return a {0} value.",
             CommonRenderers.STRING,

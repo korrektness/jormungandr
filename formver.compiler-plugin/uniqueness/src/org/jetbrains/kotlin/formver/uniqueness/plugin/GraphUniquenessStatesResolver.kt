@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import kotlinx.collections.immutable.persistentMapOf
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.cfa.util.previousCfgNodes
 import org.jetbrains.kotlin.fir.analysis.cfa.util.traverseToFixedPoint
@@ -14,6 +15,7 @@ import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.NormalPath
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.formver.locality.plugin.CallArgumentLocalitiesMapper
 import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
@@ -41,22 +43,34 @@ class GraphUniquenessStatesResolver(session: FirSession) : FirExtensionSessionCo
     private fun analyzeUniquenessStatesOf(
         graph: ControlFlowGraph,
         context: CheckerContext
-    ): Map<CFGNode<*>, PathAwareUniquenessStateFlow> {
-        val declaration = graph.declaration
-        val initialState = if (declaration is FirFunction) {
-            context(context) { EmptyUniquenessState.initializeParametersOf(declaration) }
-        } else {
-            EmptyUniquenessState
-        }
+    ): Map<CFGNode<*>, PathAwareUniquenessStateFlow> =
+        graph.traverseToFixedPoint(graph.uniquenessStatesAnalyzer(context))
+}
 
-        val analyzer = GraphUniquenessStatesAnalyzer(
-            initialState,
-            context,
-            CallArgumentLocalitiesMapper,
-            ReadOnlyContext.of(graph, context),
-        )
+private fun ControlFlowGraph.uniquenessStatesAnalyzer(context: CheckerContext): GraphUniquenessStatesAnalyzer {
+    val declaration = declaration
+    val initialState = if (declaration is FirFunction) {
+        context(context) { EmptyUniquenessState.initializeParametersOf(declaration) }
+    } else {
+        EmptyUniquenessState
+    }
 
-        return graph.traverseToFixedPoint(analyzer)
+    return GraphUniquenessStatesAnalyzer(
+        initialState,
+        context,
+        CallArgumentLocalitiesMapper,
+        ReadOnlyContext.of(this, context),
+    )
+}
+
+/**
+ * The uniqueness state after a node of [this] graph, given the state before it.
+ */
+context(context: CheckerContext)
+fun ControlFlowGraph.uniquenessTransfer(): (CFGNode<*>, UniquenessState) -> UniquenessState {
+    val analyzer = uniquenessStatesAnalyzer(context)
+    return { node, state ->
+        node.accept(analyzer, persistentMapOf(NormalPath to persistentMapOf(Unit to state))).joinOverEdgeKinds()
     }
 }
 

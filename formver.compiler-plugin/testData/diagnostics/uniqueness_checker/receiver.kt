@@ -82,7 +82,7 @@ fun (@Unique A).`borrow implicit then explicit this`() {
 fun (@Unique A).`consume implicit then explicit this`() {
     consume(this)
     consume(<!INVALID_MOVED_ACCESS!>this@`consume implicit then explicit this`<!>)
-    consume(<!INVALID_MOVED_ACCESS!>this<!>)
+    consume(this)
 }
 
 // Mixing receiver and argument in same call

@@ -2,21 +2,21 @@
 
 /call.kt: error: Attempt to pass unique argument 'a' with overlapping unique argument 'a.y'.
 
-/call.kt: error: Invalid access to moved reference.
+/call.kt: error: 'a' is accessed after it was moved at 'val cast = a as? A ?: return'.
 
-/call.kt: error: Invalid access to moved reference.
-
-/call.kt: error: Borrowed local path is moved at exit: 'y'.
-
-/call.kt: error: Argument locality mismatch: expected 'global', actual 'local'.
+/call.kt: error: 'cast' is accessed after it was moved at 'consume(cast)'.
 
 /call.kt: error: Borrowed local path is moved at exit: 'y'.
 
 /call.kt: error: Argument locality mismatch: expected 'global', actual 'local'.
 
-/call.kt: error: Invalid access to moved reference.
+/call.kt: error: Borrowed local path is moved at exit: 'y'.
 
-/call.kt: error: Invalid access to moved reference.
+/call.kt: error: Argument locality mismatch: expected 'global', actual 'local'.
+
+/call.kt: error: 'a' is accessed after it was moved at 'consume(a)'.
+
+/call.kt: error: 'a' is accessed after it was moved at 'share(a)'.
 
 /call.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
 
@@ -110,4 +110,4 @@
 
 /call.kt: error: Attempt to pass unique argument 'c.unique' with overlapping unique argument 'c'.
 
-/call.kt: error: Invalid access to moved reference.
+/call.kt: error: 'a' is accessed after it was moved at 'shareVararg(Any(), a)'.

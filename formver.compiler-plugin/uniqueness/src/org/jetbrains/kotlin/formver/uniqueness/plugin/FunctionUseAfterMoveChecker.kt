@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ExitSafeCallNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_MOVED_ACCESS
+import org.jetbrains.kotlin.text
 
 /**
  * Resolves expressions that read paths from the uniqueness state at this CFG node.
@@ -25,24 +26,48 @@ private fun CFGNode<*>.resolveAccess(): FirExpression? =
         else -> null
     }
 
+private fun UniquenessState?.isMovedAt(path: Path): Boolean =
+    this?.find(path)?.data == Uniqueness.Moved
+
+/**
+ * Renders the source text of [sites] in source order, with each run of whitespace collapsed to one space.
+ */
+private fun renderMoveSites(sites: Set<CFGNode<*>>): String =
+    sites.mapNotNull { it.fir.source }
+        .sortedBy { it.startOffset }
+        .mapNotNull { source -> source.text?.toString()?.replace(Regex("\\s+"), " ") }
+        .distinct()
+        .joinToString("', '")
+
 /**
  * Checks that expressions do not read paths that have already been moved.
+ *
+ * Each moved path is reported once for the moves that reach it, at its first access in source order, and the report
+ * names those moves. Later accesses to the same path after the same moves are not reported again.
  */
 object FunctionUseAfterMoveChecker : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
         val graph = declaration.uniquenessAnalysisGraph ?: return
-        val uniquenessStateFlows = lazy { graph.resolveUniquenessStateFlows() }
+        val uniquenessStateFlows by lazy { graph.resolveUniquenessStateFlows() }
+        val moveSites by lazy { graph.resolveMoveSites(uniquenessStateFlows) }
+        val reported = mutableSetOf<Pair<Path, Set<CFGNode<*>>>>()
 
-        for (node in graph.uniquenessAnalysisTargetNodes) {
-            if (node.isDead) continue
-            val accessExpression = node.resolveAccess() ?: continue
+        val accesses = graph.uniquenessAnalysisTargetNodes
+            .filterNot { it.isDead }
+            .mapNotNull { node -> node.resolveAccess()?.let { node to it } }
+            .sortedBy { (_, accessExpression) -> accessExpression.source?.startOffset }
+
+        for ((node, accessExpression) in accesses) {
             val accessState = accessExpression.resolveAccessState()
-            val uniquenessState = uniquenessStateFlows.value.readInputUniquenessStateOf(node)
-                ?: EmptyUniquenessState
+            val uniquenessState = uniquenessStateFlows.readInputUniquenessStateOf(node)
 
-            if (accessState.projectTerminalUniqueness(uniquenessState) == Uniqueness.Moved) {
-                reporter.reportOn(accessExpression.source, INVALID_MOVED_ACCESS)
+            for (path in accessState.enumeratePaths()) {
+                if (!uniquenessState.isMovedAt(path)) continue
+                val sites = moveSites.readInputMoveSitesOf(node, path)
+                if (reported.add(path to sites)) {
+                    reporter.reportOn(accessExpression.source, INVALID_MOVED_ACCESS, path, renderMoveSites(sites))
+                }
             }
         }
     }

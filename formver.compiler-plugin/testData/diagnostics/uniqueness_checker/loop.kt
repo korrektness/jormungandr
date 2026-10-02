@@ -44,7 +44,7 @@ fun `consume unique after possibly consuming in loop`(a: @Unique A) {
         consume(<!INVALID_MOVED_ACCESS!>a<!>)
     }
 
-    consume(<!INVALID_MOVED_ACCESS!>a<!>)
+    consume(a)
 }
 
 fun `consume after reassigning unique in loop`() {

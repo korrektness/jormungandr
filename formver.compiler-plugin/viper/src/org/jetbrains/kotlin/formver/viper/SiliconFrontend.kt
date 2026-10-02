@@ -7,18 +7,22 @@ import viper.silver.reporter.StdIOReporter
 import java.io.Closeable
 import java.io.File
 
+/** The verifier cannot run in this environment. */
+class VerifierUnavailableException(message: String) : Exception(message)
+
 /**
- * Passes Viper programs for verification to the Silicon backend via [viper.silicon.SiliconFrontendAPI].
+ * Passes Viper programs for verification to the Silicon backend via [viper.silicon.SiliconFrontendAPI], using the Z3
+ * binary at [z3Exe], as found by [SiliconFrontend.locateZ3].
  * Use [SiliconFrontend.verify] to consistency-check and verify a given program.
  */
-class SiliconFrontend(commandLineArgs: List<String>) : Closeable {
+class SiliconFrontend(z3Exe: String, commandLineArgs: List<String> = emptyList()) : Closeable {
     private val siliconApi: viper.silicon.SiliconFrontendAPI
 
     init {
         val args = buildList {
             addAll(commandLineArgs)
             add("--z3Exe")
-            add(resolveZ3Exe(System.getenv("Z3_EXE"), System.getenv("PATH")))
+            add(z3Exe)
             System.getenv("SILICON_PARALLEL_VERIFIERS")?.let {
                 add("--numberOfParallelVerifiers")
                 add(it)
@@ -30,22 +34,27 @@ class SiliconFrontend(commandLineArgs: List<String>) : Closeable {
 
     companion object {
         /**
+         * Returns the absolute path of the Z3 binary named by the environment, or throws [VerifierUnavailableException].
+         */
+        fun locateZ3(): String = resolveZ3Exe(System.getenv("Z3_EXE"), System.getenv("PATH"))
+
+        /**
          * Returns the absolute path of the Z3 binary. Silicon takes `Z3_EXE` as a literal file path, so a bare
          * command name (or the default `z3` when `Z3_EXE` is unset) is looked up on [path] here.
          */
-        internal fun resolveZ3Exe(z3Exe: String?, path: String?): String {
+        private fun resolveZ3Exe(z3Exe: String?, path: String?): String {
             val name = z3Exe?.takeIf { it.isNotEmpty() } ?: defaultZ3Name()
             if (File(name).isAbsolute) {
-                require(File(name).isFile) { "Z3_EXE is set to '$name', which is not a file." }
+                if (!File(name).isFile) throw VerifierUnavailableException("Z3_EXE is set to '$name', which is not a file.")
                 return name
             }
-            require(File(name).parent == null) { "Z3_EXE is the relative path '$name'." }
+            if (File(name).parent != null) throw VerifierUnavailableException("Z3_EXE is the relative path '$name'.")
             return path.orEmpty().split(File.pathSeparator)
                 .filter { it.isNotEmpty() }
                 .map { File(it, name) }
                 .firstOrNull { it.isFile && it.canExecute() }
                 ?.absolutePath
-                ?: throw IllegalArgumentException("Cannot find Z3 from Z3_EXE: '$name' is not on PATH.")
+                ?: throw VerifierUnavailableException("Cannot find Z3 from Z3_EXE: '$name' is not on PATH.")
         }
 
         private fun defaultZ3Name(): String =

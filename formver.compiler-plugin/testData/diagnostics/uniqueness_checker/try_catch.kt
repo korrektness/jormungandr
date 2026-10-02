@@ -33,7 +33,7 @@ fun `consume in try and catch`(a: @Unique A) {
         consume(<!INVALID_MOVED_ACCESS!>a<!>)
     }
 
-    consume(<!INVALID_MOVED_ACCESS!>a<!>)
+    consume(a)
 }
 
 fun `try only side-effects`(a: @Unique A) {

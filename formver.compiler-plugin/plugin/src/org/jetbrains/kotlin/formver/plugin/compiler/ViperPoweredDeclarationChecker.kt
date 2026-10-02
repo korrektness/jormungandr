@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.print
 import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
+import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.Program
@@ -53,8 +54,16 @@ private fun TargetsSelection.applicable(declaration: FirSimpleFunction): Boolean
     TargetsSelection.FORCE_DISABLE -> false
 }
 
-class ViperPoweredDeclarationChecker(private val session: FirSession, private val config: PluginConfiguration) :
-    FirSimpleFunctionChecker(MppCheckerKind.Common) {
+/**
+ * Converts each selected function to Viper and verifies it. One instance checks every function of a FIR session, so
+ * [verifierLocator] and [reportedErrors] see all of them.
+ */
+class ViperPoweredDeclarationChecker(
+    private val session: FirSession,
+    private val config: PluginConfiguration,
+    private val verifierLocator: VerifierLocator,
+    private val reportedErrors: ReportedVerifierErrors,
+) : FirSimpleFunctionChecker(MppCheckerKind.Common) {
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirSimpleFunction) {
@@ -99,23 +108,23 @@ class ViperPoweredDeclarationChecker(private val session: FirSession, private va
             val viperProgram = with(programConversionContext.nameResolver) { program.toSilver() }
 
 
+            val shouldVerify = config.shouldVerify(declaration) && !programConversionContext.skipsVerification
+
             if (inTestRun) {
+                // The test facade verifies the program later.
                 declaration.viperProgram = viperProgram
-                declaration.shouldVerify =
-                    config.shouldVerify(declaration) && !programConversionContext.skipsVerification
-            }
-
-
-            if (!inTestRun && !programConversionContext.skipsVerification) {
-                // If we are in a test, then the verification happens later.
+                declaration.shouldVerify = shouldVerify
+            } else if (shouldVerify) {
+                val z3Exe = verifierLocator.z3Exe { reason ->
+                    reporter.reportOn(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, reason)
+                } ?: return
 
                 val onFailure = { err: VerifierError ->
                     val source = err.position.unwrapOr { declaration.source }
-                    reporter.reportVerifierError(source, err, config.errorStyle)
+                    if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
                 }
 
-                val verifier = SiliconFrontend(emptyList())
-                verifier.use { it.verify(viperProgram, onFailure) }
+                SiliconFrontend(z3Exe).use { it.verify(viperProgram, onFailure) }
             }
 
         } catch (e: UnsupportedFeatureException) {

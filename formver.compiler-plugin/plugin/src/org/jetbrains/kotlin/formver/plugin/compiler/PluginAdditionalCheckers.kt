@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
+import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 
 class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration) :
     FirAdditionalCheckersExtension(session) {
@@ -21,10 +22,9 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
     }
 
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
-        override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker>
-            get() = setOf(
-                ViperPoweredDeclarationChecker(session, config),
-                FunctionUniquenessStateRenderingChecker(config)
-            )
+        override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker> = setOf(
+            ViperPoweredDeclarationChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
+            FunctionUniquenessStateRenderingChecker(config)
+        )
     }
 }

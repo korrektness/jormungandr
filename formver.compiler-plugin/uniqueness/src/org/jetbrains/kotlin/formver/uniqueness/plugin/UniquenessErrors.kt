@@ -27,7 +27,7 @@ object UniquenessErrors : KtDiagnosticsContainer() {
     val INVALID_OVERLAPPING_UNIQUE_ARGUMENTS by error2<PsiElement, Path, Path>()
 
     // Checking unique property accesses
-    val INVALID_MOVED_ACCESS by error0<PsiElement>()
+    val INVALID_MOVED_ACCESS by error2<PsiElement, Path, String>()
 
     // Checking unique attributes
     val INVALID_UNIQUENESS_TYPE_TARGET by error0<PsiElement>()

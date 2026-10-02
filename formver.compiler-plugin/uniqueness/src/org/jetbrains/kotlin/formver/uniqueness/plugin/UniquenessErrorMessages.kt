@@ -35,7 +35,9 @@ object UniquenessErrorMessages : BaseDiagnosticRendererFactory() {
                 )
                 map.put(
                     UniquenessErrors.INVALID_MOVED_ACCESS,
-                    "Invalid access to moved reference."
+                    "''{0}'' is accessed after it was moved at ''{1}''.",
+                    PathRenderer,
+                    CommonRenderers.STRING,
                 )
                 map.put(
                     UniquenessErrors.INVALID_UNIQUENESS_TYPE_TARGET,

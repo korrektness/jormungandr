@@ -1,5 +1,6 @@
 package org.jetbrains.kotlin.formver.plugin.services
 
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.InternalDiagnosticFactoryMethod
 import org.jetbrains.kotlin.diagnostics.KtDiagnostic
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
@@ -31,6 +32,8 @@ fun shouldSkipByTestMode(testServices: TestServices): Boolean = when (getTestMod
 
 class ViperProgramVerificationFacade(val testServices: TestServices) :
     AbstractTestFacade<FirOutputArtifact, FirOutputArtifact>() {
+    private val reportedErrors = ReportedVerifierErrors()
+
     override val inputKind: TestArtifactKind<FirOutputArtifact>
         get() = FrontendKinds.FIR
     override val outputKind: TestArtifactKind<FirOutputArtifact>
@@ -70,7 +73,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                 })
             }
             if (toVerify.isNotEmpty()) {
-                val verifier = SiliconFrontend(emptyList())
+                val verifier = SiliconFrontend(SiliconFrontend.locateZ3())
                 toVerify.forEach { (testFile, decl) ->
                     val diagnostics = verifyFunction(verifier, decl, module)
                     testServices.verificationDiagnosticsCollector.addDiagnostics(diagnostics)
@@ -97,11 +100,15 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         val results = mutableListOf<KtDiagnostic>()
         val program = decl.viperProgram!!
         val onFailure: (VerifierError) -> Unit = { err ->
-            val diagnostics = when (err) {
-                is ConsistencyError -> formatConsistencyError(err, decl, module)
-                is VerificationError -> formatVerificationError(err, decl, module)
+            val source = err.position.unwrapOr { decl.source }!!
+            if (reportedErrors.add(err, source)) {
+                results.add(
+                    when (err) {
+                        is ConsistencyError -> formatConsistencyError(err, source, module)
+                        is VerificationError -> formatVerificationError(err, source, module)
+                    }
+                )
             }
-            results.add(diagnostics)
         }
         verifier.verify(program, onFailure)
 
@@ -113,10 +120,9 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
 
     @OptIn(InternalDiagnosticFactoryMethod::class)
     private fun formatVerificationError(
-        err: VerificationError, decl: FirSimpleFunction,
+        err: VerificationError, source: KtSourceElement,
         module: TestModule
     ): KtDiagnostic {
-        val source = err.position.unwrapOr { decl.source }!!
         val diagnostic = when (val formattedError = err.formatUserFriendly()) {
             is ConditionalEffectError -> {
                 val msg = formattedError.msg()
@@ -175,10 +181,9 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
 
     @OptIn(InternalDiagnosticFactoryMethod::class)
     private fun formatConsistencyError(
-        err: ConsistencyError, decl: FirSimpleFunction,
+        err: ConsistencyError, source: KtSourceElement,
         module: TestModule
     ): KtDiagnostic {
-        val source = err.position.unwrapOr { decl.source }!!
         val diagnostics = VerificationErrors.CONSISTENCY.on(
             source, err.msg, positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
             languageVersionSettings = module.languageVersionSettings

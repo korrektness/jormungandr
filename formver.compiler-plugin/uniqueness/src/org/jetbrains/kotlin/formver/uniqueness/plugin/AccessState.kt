@@ -171,23 +171,6 @@ fun AccessState.move(uniquenessState: UniquenessState): UniquenessState =
     move(uniquenessState) { it.resolveDeclaredUniqueness() }
 
 /**
- * Joins the uniqueness values at the terminal access paths of this access state.
- *
- * @param this the [AccessTrie] specifying the terminal paths to read.
- * @param uniquenessState the [UniquenessTrie] to read terminal uniqueness values from.
- * @return the join of all terminal uniqueness values, or [Uniqueness.Unique] when no terminal path is present.
- */
-fun <Key> AccessTrie<Key>.projectTerminalUniqueness(uniquenessState: UniquenessTrie<Key>): Uniqueness {
-    var result = Uniqueness.Unique
-
-    for (path in enumeratePaths()) {
-        result = result.join(uniquenessState.find(path)?.data ?: Uniqueness.Unique)
-    }
-
-    return result
-}
-
-/**
  * Projects the uniqueness substates at the terminal access paths of this access state.
  *
  * @param this the [AccessTrie] specifying the terminal paths to project.

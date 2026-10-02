@@ -341,6 +341,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("moved_access.kt")
+    public void testMoved_access() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/moved_access.kt");
+    }
+
+    @Test
     @TestMetadata("nullable.kt")
     public void testNullable() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/nullable.kt");
@@ -1031,6 +1037,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("operators.kt")
       public void testOperators() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/operators.kt");
+      }
+
+      @Test
+      @TestMetadata("pure_callee_error_once.kt")
+      public void testPure_callee_error_once() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/pure_callee_error_once.kt");
       }
 
       @Test
