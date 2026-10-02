@@ -6,10 +6,19 @@
 package org.jetbrains.kotlin.formver.core.purity
 
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
+import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 
-internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbedding> = mutableSetOf()) :
-    ExpVisitor<Boolean> {
+/**
+ * @param admitsInlinedCalls whether an inlined call counts as pure when its body is: its uninitialized result
+ * variable, its body, the returns to its label and the invariants inhaled for its result. Only an expression that is
+ * linearized as statements can hold one.
+ */
+internal class ExprPurityVisitor(
+    private val admitsInlinedCalls: Boolean = false,
+    val declaredVariables: MutableSet<VariableEmbedding> = mutableSetOf(),
+) : ExpVisitor<Boolean> {
+    private val inlinedReturnLabels = mutableSetOf<LabelEmbedding>()
 
     /* ————— pure nodes ————— */
     override fun visitUnitLit(e: UnitLit) = true
@@ -18,7 +27,7 @@ internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbed
     override fun visitUnsupportedPlaceholder(e: UnsupportedPlaceholder) = true
     override fun visitFunctionCall(e: FunctionCall) = true
     override fun visitDeclare(e: Declare): Boolean {
-        val pure = e.initializer != null
+        val pure = e.initializer?.accept(this) ?: admitsInlinedCalls
         if (pure) declaredVariables.add(e.variable)
         return pure
     }
@@ -30,7 +39,8 @@ internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbed
         e.lhs.ignoringMetaNodes() is VariableEmbedding && declaredVariables.contains(e.lhs.ignoringMetaNodes())
 
     /* ————— structural nodes without side effects ————— */
-    override fun visitReturn(e: Return) = e.allChildrenPure(this)
+    override fun visitReturn(e: Return) =
+        (!admitsInlinedCalls || e.target.label in inlinedReturnLabels) && e.allChildrenPure(this)
     override fun visitBlock(e: Block) = e.allChildrenPure(this)
     override fun visitBinaryOperatorExpEmbedding(e: BinaryOperatorExpEmbedding) = e.allChildrenPure(this)
     override fun visitSequentialAnd(e: SequentialAnd) = e.allChildrenPure(this)
@@ -62,9 +72,13 @@ internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbed
     override fun visitStringBuilderToString(e: StringBuilderToString) = e.allChildrenPure(this)
 
     /* ————— impure nodes ————— */
-    override fun visitSafeCast(e: SafeCast) = false
+    override fun visitSafeCast(e: SafeCast) = admitsInlinedCalls && e.allChildrenPure(this)
     override fun visitMethodCall(e: MethodCall) = false
-    override fun visitFunctionExp(e: FunctionExp) = false
+    override fun visitFunctionExp(e: FunctionExp): Boolean {
+        if (!admitsInlinedCalls || e.signature != null) return false
+        inlinedReturnLabels.add(e.returnLabel)
+        return e.allChildrenPure(this)
+    }
     override fun visitLambdaExp(e: LambdaExp) = false
     override fun visitInvokeFunctionObject(e: InvokeFunctionObject) = false
     override fun visitInhaleDirect(e: InhaleDirect): Boolean = false
@@ -75,7 +89,7 @@ internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbed
     override fun visitGotoChainNode(e: GotoChainNode): Boolean = false
     override fun visitWhile(e: While): Boolean = false
     override fun visitNonDeterministically(e: NonDeterministically): Boolean = false
-    override fun visitInhaleInvariants(e: InhaleInvariants): Boolean = false
+    override fun visitInhaleInvariants(e: InhaleInvariants): Boolean = admitsInlinedCalls && e.exp.accept(this)
     override fun visitFieldAccessPermissions(e: FieldAccessPermissions): Boolean = false
     override fun visitPredicateAccessPermissions(e: PredicateAccessPermissions): Boolean = false
     override fun visitLabelExp(e: LabelExp): Boolean = false

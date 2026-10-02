@@ -41,9 +41,10 @@ fun ExpEmbedding.checkValidity(source: KtSourceElement?, errors: ErrorCollection
         }
 
 /**
- * Runs the purity check on a provided embedding
+ * Whether [this] has no side effects. With [admitsInlinedCalls], an inlined call whose body has none counts as pure.
  */
-fun ExpEmbedding.isPure(): Boolean = this.accept(ExprPurityVisitor())
+fun ExpEmbedding.isPure(admitsInlinedCalls: Boolean = false): Boolean =
+    this.accept(ExprPurityVisitor(admitsInlinedCalls))
 
 /**
  * Returns the `KtSourceElement` of the outermost `WithPosition`

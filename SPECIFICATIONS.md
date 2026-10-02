@@ -303,7 +303,8 @@ fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
 
 Specification blocks (`preconditions`, `postconditions`, `loopInvariants`,
 `verify` and their contents) and calls to `@Pure` functions borrow their
-arguments: they move nothing. A `@Pure` function may read `var` properties
+arguments: they move nothing. An inline function called in a specification
+borrows its arguments too, so `c.let { it.x }` may read a `@Borrowed` `c`. A `@Pure` function may read `var` properties
 only through its `@Unique` parameters, and specifications may read them only
 through unique paths.
 

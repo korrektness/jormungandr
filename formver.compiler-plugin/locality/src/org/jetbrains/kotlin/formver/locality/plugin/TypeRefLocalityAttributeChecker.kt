@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirFunctionTypeParameter
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirReceiverParameter
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
@@ -43,6 +44,8 @@ private object LocalityAttributeTargetJudgment : AttributeTargetJudgment {
 
         return when(targetElement) {
             is FirValueParameter, is FirReceiverParameter -> true
+            // The result type of a lambda that returns a local value is inferred local. Each return is checked itself.
+            is FirAnonymousFunction -> true
             is FirProperty -> targetElement.isLocal
             else -> targetElement.source?.kind is KtFakeSourceElementKind.ImplicitTypeArgument
         }

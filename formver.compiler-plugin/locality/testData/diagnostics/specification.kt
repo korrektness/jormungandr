@@ -32,6 +32,19 @@ fun `mention local in specifications`(x: @Borrowed A) {
     verify(x.size > 0)
 }
 
+inline fun <T, R> T.apply1(f: (T) -> R): R = f(this)
+
+fun `pass local to an inline function in a specification`(x: @Borrowed A) {
+    preconditions {
+        x.apply1 { it.size } > 0
+        x.apply1 { it }.size > 0
+    }
+}
+
+fun `pass local to an inline function outside a specification`(x: @Borrowed A) {
+    <!LOCALITY_MISMATCH!>x<!>.apply1 { it.size }
+}
+
 fun `pass local as shared argument in a specification`(x: @Borrowed A) {
     postconditions<Unit> {
         share(<!LOCALITY_MISMATCH!>x<!>)

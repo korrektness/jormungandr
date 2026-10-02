@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.formver.locality.contract.plugin.resolveLocalityContract
+import org.jetbrains.kotlin.formver.readonly.plugin.isInSpecification
 import org.jetbrains.kotlin.formver.type.plugin.CallArgumentTypeFactsMapper
 import org.jetbrains.kotlin.formver.type.plugin.ExpressionTypeFactResolver
 import org.jetbrains.kotlin.formver.type.plugin.InvokeParameterTypeFactsResolver
@@ -83,9 +84,14 @@ context(context: CheckerContext)
 fun FirExpression.resolveLocality(): Locality =
     ExpressionLocalityResolver.resolveTypeFactOf(this)
 
+/**
+ * A return inside a specification yields its value to the enclosing specification expression, which stores nothing,
+ * so it may return a local value.
+ */
 object ReturnResultLocalityResolver : ReturnResultTypeFactResolver<Locality> {
     context(context: CheckerContext)
-    override fun resolveResultTypeFactOf(expression: FirReturnExpression): Locality = Locality.Global
+    override fun resolveResultTypeFactOf(expression: FirReturnExpression): Locality =
+        if (context.isInSpecification()) Locality.Local else Locality.Global
 }
 
 object ThrowExceptionLocalityResolver : ThrowExceptionTypeFactResolver<Locality> {

@@ -16,14 +16,14 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
  *
  * An `unfolding` of a predicate whose arguments are paths (a variable followed by field reads and applications of
  * single-argument functions, such as the getter of a `@Unique` `val`) rises through arithmetic, comparisons, `||`,
- * `==>`, `!`, conditionals, quantifiers, function applications and sequence and field reads. Equal `unfolding`s that
- * meet are merged. It stops:
+ * `==>`, `!`, conditionals, quantifiers, `let`, function applications and sequence and field reads. Equal
+ * `unfolding`s that meet are merged. It stops:
  * - at a conjunction, so a conjunct never reads a predicate that an earlier conjunct provides;
- * - at a quantifier whose variables its arguments mention;
+ * - at a quantifier or `let` whose variables its arguments mention;
  * - below the guard of `==>`, `||` or a conditional when the guard mentions the root of one of its arguments,
  *   except within the argument of `arraySize` outside any field read or `unfolding`, which needs no permission, and
  *   unless an equal `unfolding` rises from the guard itself;
- * - at `old` and `let`, inside which `unfolding`s are placed independently;
+ * - at `old`, inside which `unfolding`s are placed independently;
  * - at any other expression.
  */
 fun Exp.hoistUnfoldings(): Exp = hoist().wrapped()
@@ -84,7 +84,12 @@ private fun Exp.hoist(): Hoisted = when (this) {
     }
 
     is Exp.Old -> Hoisted(copy(exp = exp.hoistUnfoldings()), emptyList())
-    is Exp.LetBinding -> Hoisted(copy(varExp = varExp.hoistUnfoldings(), body = body.hoistUnfoldings()), emptyList())
+    is Exp.LetBinding -> {
+        val value = varExp.hoist()
+        val inner = body.hoist()
+        val (rising, staying) = inner.pending.partition { unfolding -> variable.name !in unfolding.roots() }
+        Hoisted(copy(varExp = value.body, body = wrap(inner.body, staying)), merge(listOf(value.pending, rising)))
+    }
 
     is Exp.Not -> transparent(listOf(arg)) { (arg) -> copy(arg = arg) }
     is Exp.Minus -> transparent(listOf(arg)) { (arg) -> copy(arg = arg) }

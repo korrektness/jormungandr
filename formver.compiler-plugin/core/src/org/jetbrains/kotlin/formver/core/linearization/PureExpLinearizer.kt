@@ -192,6 +192,9 @@ class LetScope {
         return true
     }
 
+    /** [body] under the bindings of this scope. A binding whose body is just its local is replaced by its value. */
     fun bindAround(body: Exp, pos: Position): Exp =
-        bindings.foldRight(body) { (decl, value), acc -> Exp.LetBinding(decl, value, acc, pos) }
+        bindings.foldRight(body) { (decl, value), acc ->
+            if (acc is Exp.LocalVar && acc.name == decl.name) value else Exp.LetBinding(decl, value, acc, pos)
+        }
 }

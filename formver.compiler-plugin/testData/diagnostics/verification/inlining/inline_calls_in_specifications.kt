@@ -6,6 +6,14 @@ class Box(val v: Int)
 
 class Counter(var x: Int)
 
+class Node(val value: Int, var next: @Unique Node?)
+
+class Inner(var x: Int)
+
+class Middle(val inner: @Unique Inner)
+
+class Outer(val middle: @Unique Middle)
+
 @AlwaysVerify
 fun <!VIPER_TEXT!>safeLetInPostcondition<!>(o: Box?): Int {
     postconditions<Int> { r -> r == (o?.let { 1 } ?: 0) }
@@ -91,6 +99,48 @@ fun <!VIPER_TEXT!>scopeFunctionsInLoopInvariant<!>(b: Box, n: Int): Int {
         i = i + 1
     }
     return i
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>scopeFunctionsOverUniqueReceivers<!>(c: @Unique @Borrowed Counter, n: @Unique @Borrowed Node?, o: @Unique @Borrowed Outer): Int {
+    preconditions { c.x > 0 }
+    postconditions<Int> { r ->
+        r == c.let { val t = it.x; t * 2 }
+        r == with(c) { x * 2 }
+        r == c.run { x * 2 }
+        (n?.let { it.value } ?: -1) == (if (n == null) -1 else n.value)
+        o.let { it.middle.inner.x } == o.middle.inner.x
+    }
+    return c.x * 2
+}
+
+<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
+fun <!VIPER_TEXT!>wrongLetOverUniqueReceiver<!>(c: @Unique @Borrowed Counter): Int {
+    postconditions<Int> { r -> r == c.let { it.x + 1 } }
+    return c.x
+}<!>
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>letInQuantifiers<!>(arr: @Unique @Borrowed IntArray, n: Int) {
+    preconditions {
+        forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k].let { it >= 0 }) }
+        exists<Int> { k -> k.let { it == n } && true }
+    }
+    postconditions<Unit> { forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] >= 0) } }
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>letInVerify<!>(n: Int, o: Int?) {
+    verify(n.let { it + 1 } == n + 1, (o?.let { it + 1 } ?: 0) >= 0 || n == n)
+}
+
+@AlwaysVerify
+fun <!VERIFICATION_SKIPPED!>sideEffectsInVerify<!>(n: Int): Int {
+    var x = 0
+    verify(<!PURITY_VIOLATION!>n.let { x = it; true }<!>)
+    verify(<!PURITY_VIOLATION!>run { val y = x++; true }<!>)
+    verify(<!PURITY_VIOLATION!>n.let { if (it > 0) return 1; true }<!>)
+    return 0
 }
 
 @AlwaysVerify

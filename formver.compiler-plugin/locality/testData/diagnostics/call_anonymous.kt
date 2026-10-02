@@ -195,3 +195,15 @@ fun `explicitly invoke mixed-global-local-argument lambda variable with local ar
 
     h.invoke(<!LOCALITY_MISMATCH!>x<!>, y)
 }
+
+var sink: Any? = null
+
+fun takesLocalArgumentLambda(f: (@Borrowed Any) -> Unit) {}
+
+fun `store implicit local parameter of a lambda`() {
+    takesLocalArgumentLambda { sink = <!LOCALITY_MISMATCH!>it<!> }
+}
+
+fun `store implicit global parameter of a lambda`(f: ((Any) -> Unit) -> Unit) {
+    f { sink = it }
+}

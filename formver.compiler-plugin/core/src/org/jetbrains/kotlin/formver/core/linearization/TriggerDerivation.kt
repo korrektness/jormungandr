@@ -17,8 +17,8 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
 
 /**
  * Trigger sets for a user quantifier over [bound] with body [body] and no user triggers: one set for each maximal
- * subterm of [body] outside `old` that has a trigger shape and mentions [bound]. Empty when [body] contains no `old`,
- * so that Silicon infers the triggers.
+ * subterm of [body] outside `old` that has a trigger shape and mentions [bound]. Empty when [body] contains neither
+ * `old` nor `let`, so that Silicon infers the triggers. Silicon infers none for a term inside a `let`.
  *
  * Silicon's inference treats a current-state term and the same term under `old` as one candidate and keeps the `old`
  * one. The quantifier then fires only where the old-state term is already known, and a caller that proves a fact about
@@ -37,7 +37,7 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
  * guard `isSubtype(typeOf(x), T)` are not candidates.
  */
 fun derivedTriggers(bound: SymbolicName, body: Exp): List<Exp.Trigger> {
-    if (!body.containsOld()) return emptyList()
+    if (!body.contains { it is Exp.Old || it is Exp.LetBinding }) return emptyList()
     val candidates = mutableListOf<Exp>()
     body.collectCandidates(bound, emptySet(), candidates)
     return candidates.distinct().map { Exp.Trigger(listOf(it)) }
@@ -100,7 +100,8 @@ private fun List<Exp>.triggerArgs(nested: Set<SymbolicName>): List<Exp>? = map {
 private fun Exp.mentions(variable: SymbolicName): Boolean =
     this is Exp.LocalVar && name == variable || subExps().any { it.mentions(variable) }
 
-private fun Exp.containsOld(): Boolean = this is Exp.Old || subExps().any { it.containsOld() }
+private fun Exp.contains(predicate: (Exp) -> Boolean): Boolean =
+    predicate(this) || subExps().any { it.contains(predicate) }
 
 private fun Exp.subExps(): List<Exp> = when (this) {
     is BinaryExp -> listOf(left, right)

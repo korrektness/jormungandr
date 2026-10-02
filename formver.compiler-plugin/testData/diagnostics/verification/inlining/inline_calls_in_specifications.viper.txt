@@ -14,21 +14,8 @@ method safeLetInPostcondition(o: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(o), nullable(Box()))
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures v_ret_0 ==
-    ((o != nullValue() ?
-      (let ret_3 ==
-        ((let ret_4 ==
-          (intToRef(1)) in
-          ret_4)) in
-        ret_3) :
-      nullValue()) !=
-    nullValue() ?
-      (o != nullValue() ?
-        (let ret_3 ==
-          ((let ret_4 ==
-            (intToRef(1)) in
-            ret_4)) in
-          ret_3) :
-        nullValue()) :
+    ((o != nullValue() ? intToRef(1) : nullValue()) != nullValue() ?
+      (o != nullValue() ? intToRef(1) : nullValue()) :
       intToRef(0))
 {
   if (o == nullValue()) {
@@ -48,12 +35,7 @@ method run(block: Ref) returns (ret_1: Ref)
 method runInPostcondition(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) ==
-    intFromRef((let ret_3 ==
-      ((let ret_4 ==
-        (plusInts(n, intToRef(1))) in
-        ret_4)) in
-      ret_3))
+  ensures intFromRef(v_ret_0) == intFromRef(plusInts(n, intToRef(1)))
 {
   v_ret_0 := plusInts(n, intToRef(1))
   goto lbl_ret_0
@@ -69,12 +51,7 @@ function g_v(v_this: Ref): Ref
 method receiverRunInPostcondition(b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), Box())
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) ==
-    intFromRef((let ret_3 ==
-      ((let ret_4 ==
-        (timesInts(g_v(b), intToRef(2))) in
-        ret_4)) in
-      ret_3))
+  ensures intFromRef(v_ret_0) == intFromRef(timesInts(g_v(b), intToRef(2)))
 {
   v_ret_0 := timesInts(g_v(b), intToRef(2))
   goto lbl_ret_0
@@ -102,12 +79,7 @@ method with(receiver: Ref, block: Ref) returns (ret_1: Ref)
 method withInPostcondition(b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), Box())
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) ==
-    intFromRef((let ret_3 ==
-      ((let ret_4 ==
-        (plusInts(g_v(b), intToRef(3))) in
-        ret_4)) in
-      ret_3))
+  ensures intFromRef(v_ret_0) == intFromRef(plusInts(g_v(b), intToRef(3)))
 {
   v_ret_0 := plusInts(g_v(b), intToRef(3))
   goto lbl_ret_0
@@ -127,9 +99,7 @@ method alsoInPostcondition(n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0) ==
     intFromRef((let ret_4 ==
       (unitValue()) in
-      (let ret_3 ==
-        (n) in
-        ret_3)))
+      n))
 {
   v_ret_0 := n
   goto lbl_ret_0
@@ -148,9 +118,7 @@ method applyInPostcondition(b: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(g_v(v_ret_0)) ==
     intFromRef(g_v((let ret_4 ==
       (unitValue()) in
-      (let ret_3 ==
-        (b) in
-        ret_3))))
+      b)))
 {
   v_ret_0 := b
   goto lbl_ret_0
@@ -174,21 +142,8 @@ method takeIfInPostcondition(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures v_ret_0 ==
-    ((let ret_3 ==
-      ((boolFromRef((let ret_4 ==
-        (gtInts(n, intToRef(0))) in
-        ret_4)) ?
-        n :
-        nullValue())) in
-      ret_3) !=
-    nullValue() ?
-      (let ret_3 ==
-        ((boolFromRef((let ret_4 ==
-          (gtInts(n, intToRef(0))) in
-          ret_4)) ?
-          n :
-          nullValue())) in
-        ret_3) :
+    ((boolFromRef(gtInts(n, intToRef(0))) ? n : nullValue()) != nullValue() ?
+      (boolFromRef(gtInts(n, intToRef(0))) ? n : nullValue()) :
       intToRef(0))
 {
   if (intFromRef(n) > 0) {
@@ -225,15 +180,11 @@ method userInlineInPostcondition(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
-    intFromRef((let ret_3 ==
-      ((let ret_4 ==
-        (plusInts(n, intToRef(1))) in
-        (let anon ==
-          (ret_4) in
-          (let ret_5 ==
-            (plusInts(anon, intToRef(1))) in
-            ret_5)))) in
-      ret_3))
+    intFromRef((let ret_4 ==
+      (plusInts(n, intToRef(1))) in
+      (let anon ==
+        (ret_4) in
+        plusInts(anon, intToRef(1)))))
 {
   v_ret_0 := plusInts(n, intToRef(2))
   goto lbl_ret_0
@@ -279,69 +230,20 @@ method f_run_args_NAny_ret_NAny(block: Ref) returns (ret_5: Ref)
 method scopeFunctionsInPrecondition(b: Ref, n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), Box())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef((let ret_3 ==
-      ((let ret_4 ==
-        (n) in
-        ret_4)) in
-      ret_3)) >
-    0
-  requires intFromRef((let ret_7 ==
-      ((let ret_8 ==
-        (n) in
-        ret_8)) in
-      ret_7)) >
-    1
-  requires intFromRef((let ret_11 ==
-      ((let ret_12 ==
-        (g_v(b)) in
-        ret_12)) in
-      ret_11)) >
-    2
-  requires intFromRef((let ret_15 ==
-      ((let ret_16 ==
-        (g_v(b)) in
-        ret_16)) in
-      ret_15)) >
-    3
-  requires intFromRef((let ret_20 ==
-      (unitValue()) in
-      (let ret_19 ==
-        (n) in
-        ret_19))) >
-    4
-  requires intFromRef(g_v((let ret_24 ==
-      (unitValue()) in
-      (let ret_23 ==
-        (b) in
-        ret_23)))) >
-    5
-  requires intFromRef(((let ret_27 ==
-      ((boolFromRef((let ret_28 ==
-        (gtInts(n, intToRef(6))) in
-        ret_28)) ?
-        n :
-        nullValue())) in
-      ret_27) !=
+  requires intFromRef(n) > 0
+  requires intFromRef(n) > 1
+  requires intFromRef(g_v(b)) > 2
+  requires intFromRef(g_v(b)) > 3
+  requires intFromRef((let ret_20 == (unitValue()) in n)) > 4
+  requires intFromRef(g_v((let ret_24 == (unitValue()) in b))) > 5
+  requires intFromRef(((boolFromRef(gtInts(n, intToRef(6))) ?
+      n :
+      nullValue()) !=
     nullValue() ?
-      (let ret_27 ==
-        ((boolFromRef((let ret_28 ==
-          (gtInts(n, intToRef(6))) in
-          ret_28)) ?
-          n :
-          nullValue())) in
-        ret_27) :
+      (boolFromRef(gtInts(n, intToRef(6))) ? n : nullValue()) :
       intToRef(7))) >
     6
-  requires intFromRef((let ret_31 ==
-      ((let ret_32 ==
-        (n) in
-        (let anon ==
-          (ret_32) in
-          (let ret_33 ==
-            (anon) in
-            ret_33)))) in
-      ret_31)) >
-    8
+  requires intFromRef(n) > 8
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) > 8
 {
@@ -413,77 +315,29 @@ method scopeFunctionsInLoopInvariant(b: Ref, n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0) == intFromRef(n)
 {
   var i: Ref
-  var anon_1: Ref
+  var anon: Ref
   i := intToRef(0)
   label cont
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(b), Box())
     invariant isSubtype(typeOf(n), intType())
-    invariant intFromRef((let ret_5 ==
-        ((let ret_6 ==
-          (i) in
-          ret_6)) in
-        ret_5)) <=
-      intFromRef(n)
-    invariant intFromRef((let ret_9 ==
-        ((let ret_10 ==
-          (i) in
-          ret_10)) in
-        ret_9)) >=
-      0
-    invariant intFromRef((let ret_13 ==
-        ((let ret_14 ==
-          (g_v(b)) in
-          ret_14)) in
-        ret_13)) >=
-      0
-    invariant intFromRef((let ret_17 ==
-        ((let ret_18 ==
-          (g_v(b)) in
-          ret_18)) in
-        ret_17)) >=
-      0
+    invariant intFromRef(i) <= intFromRef(n)
+    invariant intFromRef(i) >= 0
+    invariant intFromRef(g_v(b)) >= 0
+    invariant intFromRef(g_v(b)) >= 0
     invariant intFromRef((let ret_22 ==
         (unitValue()) in
-        (let ret_21 ==
-          (i) in
-          ret_21))) <=
+        i)) <=
       intFromRef(n)
-    invariant intFromRef(g_v((let ret_26 ==
-        (unitValue()) in
-        (let ret_25 ==
-          (b) in
-          ret_25)))) >=
-      0
-    invariant intFromRef(((let ret_29 ==
-        ((boolFromRef((let ret_30 ==
-          (leInts(i, n)) in
-          ret_30)) ?
-          i :
-          nullValue())) in
-        ret_29) !=
+    invariant intFromRef(g_v((let ret_26 == (unitValue()) in b))) >= 0
+    invariant intFromRef(((boolFromRef(leInts(i, n)) ? i : nullValue()) !=
       nullValue() ?
-        (let ret_29 ==
-          ((boolFromRef((let ret_30 ==
-            (leInts(i, n)) in
-            ret_30)) ?
-            i :
-            nullValue())) in
-          ret_29) :
+        (boolFromRef(leInts(i, n)) ? i : nullValue()) :
         intToRef(0))) ==
       intFromRef(i)
-    invariant intFromRef((let ret_33 ==
-        ((let ret_34 ==
-          (i) in
-          (let anon_0 ==
-            (ret_34) in
-            (let ret_35 ==
-              (anon_0) in
-              ret_35)))) in
-        ret_33)) <=
-      intFromRef(n)
-  anon_1 := ltInts(i, n)
-  if (boolFromRef(anon_1)) {
+    invariant intFromRef(i) <= intFromRef(n)
+  anon := ltInts(i, n)
+  if (boolFromRef(anon)) {
     i := plusInts(i, intToRef(1))
     goto cont
   }
@@ -491,69 +345,18 @@ method scopeFunctionsInLoopInvariant(b: Ref, n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(b), Box())
   assert isSubtype(typeOf(n), intType())
-  assert intFromRef((let ret_5 ==
-      ((let ret_6 ==
-        (i) in
-        ret_6)) in
-      ret_5)) <=
-    intFromRef(n)
-  assert intFromRef((let ret_9 ==
-      ((let ret_10 ==
-        (i) in
-        ret_10)) in
-      ret_9)) >=
-    0
-  assert intFromRef((let ret_13 ==
-      ((let ret_14 ==
-        (g_v(b)) in
-        ret_14)) in
-      ret_13)) >=
-    0
-  assert intFromRef((let ret_17 ==
-      ((let ret_18 ==
-        (g_v(b)) in
-        ret_18)) in
-      ret_17)) >=
-    0
-  assert intFromRef((let ret_22 ==
-      (unitValue()) in
-      (let ret_21 ==
-        (i) in
-        ret_21))) <=
-    intFromRef(n)
-  assert intFromRef(g_v((let ret_26 ==
-      (unitValue()) in
-      (let ret_25 ==
-        (b) in
-        ret_25)))) >=
-    0
-  assert intFromRef(((let ret_29 ==
-      ((boolFromRef((let ret_30 ==
-        (leInts(i, n)) in
-        ret_30)) ?
-        i :
-        nullValue())) in
-      ret_29) !=
+  assert intFromRef(i) <= intFromRef(n)
+  assert intFromRef(i) >= 0
+  assert intFromRef(g_v(b)) >= 0
+  assert intFromRef(g_v(b)) >= 0
+  assert intFromRef((let ret_22 == (unitValue()) in i)) <= intFromRef(n)
+  assert intFromRef(g_v((let ret_26 == (unitValue()) in b))) >= 0
+  assert intFromRef(((boolFromRef(leInts(i, n)) ? i : nullValue()) !=
     nullValue() ?
-      (let ret_29 ==
-        ((boolFromRef((let ret_30 ==
-          (leInts(i, n)) in
-          ret_30)) ?
-          i :
-          nullValue())) in
-        ret_29) :
+      (boolFromRef(leInts(i, n)) ? i : nullValue()) :
       intToRef(0))) ==
     intFromRef(i)
-  assert intFromRef((let ret_33 ==
-      ((let ret_34 ==
-        (i) in
-        (let anon_0 ==
-          (ret_34) in
-          (let ret_35 ==
-            (anon_0) in
-            ret_35)))) in
-      ret_33)) <=
-    intFromRef(n)
+  assert intFromRef(i) <= intFromRef(n)
   v_ret_0 := i
   goto lbl_ret_0
   label lbl_ret_0
@@ -578,6 +381,220 @@ method with(receiver: Ref, block: Ref) returns (ret_15: Ref)
   ensures isSubtype(typeOf(ret_15), nullable(anyType()))
 
 
+/inline_calls_in_specifications.kt: info: Generated Viper text for scopeFunctionsOverUniqueReceivers:
+field next: Ref
+
+field x: Ref
+
+function inner(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Middle())
+  ensures isSubtype(typeOf(result), Inner())
+
+
+function middle(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Outer())
+  ensures isSubtype(typeOf(result), Middle())
+
+
+function value(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method f_let(v_this_extension: Ref, block: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(block), functionType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method run(v_this_extension: Ref, block: Ref) returns (ret_9: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(block), functionType())
+  ensures isSubtype(typeOf(ret_9), nullable(anyType()))
+
+
+method scopeFunctionsOverUniqueReceivers(c: Ref, n: Ref, o: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(o), Outer())
+  requires acc(Outer_unique(o), write)
+  requires (unfolding acc(Counter_unique(c), write) in intFromRef(c.x) > 0)
+  ensures acc(Counter_unique(c), write)
+  ensures n != nullValue() ==> acc(Node_unique(n), write)
+  ensures acc(Outer_unique(o), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(v_ret_0) ==
+      intFromRef((let l1_t ==
+        (c.x) in
+        timesInts(l1_t, intToRef(2)))))
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(v_ret_0) == intFromRef(timesInts(c.x, intToRef(2))))
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(v_ret_0) == intFromRef(timesInts(c.x, intToRef(2))))
+  ensures intFromRef(((n != nullValue() ? value(n) : nullValue()) !=
+    nullValue() ?
+      (n != nullValue() ? value(n) : nullValue()) :
+      intToRef(-1))) ==
+    intFromRef((n == nullValue() ? intToRef(-1) : value(n)))
+  ensures (unfolding acc(Outer_unique(o), write) in
+      (unfolding acc(Middle_unique(middle(o)), write) in
+        (unfolding acc(Inner_unique(inner(middle(o))), write) in
+          intFromRef(inner(middle(o)).x) == intFromRef(inner(middle(o)).x))))
+{
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  v_ret_0 := timesInts(anon, intToRef(2))
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method with(receiver: Ref, block: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(receiver), nullable(anyType()))
+  requires isSubtype(typeOf(block), functionType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+/inline_calls_in_specifications.kt: info: Generated Viper text for wrongLetOverUniqueReceiver:
+field x: Ref
+
+method f_let(v_this_extension: Ref, block: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(block), functionType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method wrongLetOverUniqueReceiver(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(v_ret_0) == intFromRef(plusInts(c.x, intToRef(1))))
+{
+  unfold acc(Counter_unique(c), write)
+  v_ret_0 := c.x
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/inline_calls_in_specifications.kt: info: Generated Viper text for letInQuantifiers:
+field contents: Seq[Int]
+
+function arraySize(v_this: Ref): Int
+  ensures result >= 0
+
+
+method f_let(v_this_extension: Ref, block: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(block), functionType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method letInQuantifiers(arr: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(n), intType())
+  requires (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_0: Int ::
+        { arr.contents[anon_builtin_0] }
+        0 <= anon_builtin_0 && anon_builtin_0 < arraySize(arr) ==>
+        boolFromRef((let anon_0 ==
+          (intToRef(arr.contents[anon_builtin_0])) in
+          geInts(anon_0, intToRef(0))))))
+  requires (exists anon_builtin_1: Int :: anon_builtin_1 == intFromRef(n) &&
+      true)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+        anon_builtin_2 < arraySize(arr) ==>
+        arr.contents[anon_builtin_2] >= 0))
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_calls_in_specifications.kt: info: Generated Viper text for letInVerify:
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method f_let(v_this_extension: Ref, block: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(block), functionType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method letInVerify(n: Ref, o: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(o), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var v_ret_3: Ref
+  var anon_2: Ref
+  var v_ret_4: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_8: Ref
+  inhale isSubtype(typeOf(n), intType())
+  inhale isSubtype(typeOf(n), nullable(anyType()))
+  v_ret_4 := plusInts(n, intToRef(1))
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon_2 := v_ret_4
+  v_ret_3 := anon_2
+  inhale isSubtype(typeOf(v_ret_3), nullable(anyType()))
+  goto lbl_ret_3
+  label lbl_ret_3
+  anon_1 := v_ret_3
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), intType())
+  assert intFromRef(anon_0) == intFromRef(n) + 1
+  if (o != nullValue()) {
+    var anon_5: Ref
+    var anon_6: Ref
+    var v_ret_6: Ref
+    var anon_7: Ref
+    var v_ret_7: Ref
+    inhale isSubtype(typeOf(o), intType())
+    inhale isSubtype(typeOf(o), nullable(anyType()))
+    v_ret_7 := plusInts(o, intToRef(1))
+    goto lbl_ret_7
+    label lbl_ret_7
+    anon_7 := v_ret_7
+    v_ret_6 := anon_7
+    inhale isSubtype(typeOf(v_ret_6), nullable(anyType()))
+    goto lbl_ret_6
+    label lbl_ret_6
+    anon_6 := v_ret_6
+    anon_5 := anon_6
+    inhale isSubtype(typeOf(anon_5), intType())
+    anon_4 := anon_5
+  } else {
+    anon_4 := nullValue()}
+  if (anon_4 != nullValue()) {
+    anon_8 := anon_4
+  } else {
+    anon_8 := intToRef(0)}
+  if (intFromRef(anon_8) >= 0) {
+    anon_3 := boolToRef(true)
+  } else {
+    anon_3 := boolToRef(intFromRef(n) == intFromRef(n))}
+  assert boolFromRef(anon_3)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /inline_calls_in_specifications.kt: info: Generated Viper text for letOverOldInPostcondition:
 field x: Ref
 
@@ -596,11 +613,7 @@ method letOverOldInPostcondition(c: Ref) returns (v_ret_0: Ref)
       intFromRef(c.x) ==
       intFromRef((let anon_0 ==
         (old((unfolding acc(Counter_unique(c), write) in c.x))) in
-        (let ret_3 ==
-          ((let ret_4 ==
-            (plusInts(anon_0, intToRef(1))) in
-            ret_4)) in
-          ret_3))))
+        plusInts(anon_0, intToRef(1)))))
 {
   var anon_1: Ref
   unfold acc(Counter_unique(c), write)
@@ -622,13 +635,9 @@ method localInLambdaInPostcondition(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
-    intFromRef((let ret_3 ==
-      ((let doubled ==
-        (timesInts(n, intToRef(2))) in
-        (let ret_4 ==
-          (plusInts(doubled, intToRef(1))) in
-          ret_4))) in
-      ret_3))
+    intFromRef((let doubled ==
+      (timesInts(n, intToRef(2))) in
+      plusInts(doubled, intToRef(1))))
 {
   v_ret_0 := plusInts(timesInts(n, intToRef(2)), intToRef(1))
   goto lbl_ret_0
@@ -651,15 +660,9 @@ method initializersInLambdaInPostcondition(b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), Box())
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
-    intFromRef((let ret_3 ==
-      ((let l1_v ==
-        (g_v(b)) in
-        (let clamped ==
-          ((intFromRef(l1_v) > 0 ? l1_v : intToRef(0))) in
-          (let ret_4 ==
-            (clamped) in
-            ret_4)))) in
-      ret_3))
+    intFromRef((let l1_v ==
+      (g_v(b)) in
+      (intFromRef(l1_v) > 0 ? l1_v : intToRef(0))))
 {
   if (intFromRef(g_v(b)) > 0) {
     v_ret_0 := g_v(b)
@@ -696,12 +699,7 @@ method f_let(this: Ref, block: Ref) returns (ret_1: Ref)
 method wrongLetInPostcondition(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) ==
-    intFromRef((let ret_3 ==
-      ((let ret_4 ==
-        (plusInts(n, intToRef(1))) in
-        ret_4)) in
-      ret_3))
+  ensures intFromRef(v_ret_0) == intFromRef(plusInts(n, intToRef(1)))
 {
   v_ret_0 := n
   goto lbl_ret_0
