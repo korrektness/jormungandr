@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
+import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveFieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
@@ -61,11 +62,23 @@ class FoldState(private val typeResolver: TypeResolver) {
         override fun chainTo(cls: ClassTypeEmbedding, field: FieldEmbedding) =
             typeResolver.hierarchyPathTo(cls, field).toList()
 
+        override fun chainBelow(cls: ClassTypeEmbedding, target: ClassTypeEmbedding): List<ClassTypeEmbedding>? {
+            val chain = mutableListOf<ClassTypeEmbedding>()
+            var current = cls
+            while (current != target) {
+                chain += current
+                if (target in typeResolver.lookupSuperTypes(current.name)) return chain
+                current = typeResolver.superClass(current) ?: return null
+            }
+            return chain
+        }
+
         override fun rootKey(root: VariableEmbedding): Any = root.name
         override fun fieldKey(field: FieldEmbedding): Any = field.name
     })
 
-    private fun trackedClass(type: TypeEmbedding): ClassTypeEmbedding? =
+    /** The class of the predicate a path of [type] holds, `null` when such a path is not tracked. */
+    fun trackedClass(type: TypeEmbedding): ClassTypeEmbedding? =
         (type.pretype as? ClassTypeEmbedding)?.takeUnless { with(typeResolver) { it.isManual } }
 
     fun acquire(ctx: LinearizationContext, path: OwnedPath) = trie.acquire(ctx.foldSink(), path)
@@ -81,6 +94,11 @@ class FoldState(private val typeResolver: TypeResolver) {
     fun close(ctx: LinearizationContext, path: OwnedPath) = trie.close(ctx.foldSink(), path)
 
     fun refresh(ctx: LinearizationContext, path: OwnedPath) = trie.refresh(ctx.foldSink(), path)
+
+    fun expose(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding) =
+        trie.expose(ctx.foldSink(), path, cls)
+
+    fun refreshRetained(ctx: LinearizationContext, path: OwnedPath) = trie.refreshRetained(ctx.foldSink(), path)
 
     fun tidy(ctx: LinearizationContext, path: OwnedPath) = trie.tidy(ctx.foldSink(), path)
 
@@ -175,6 +193,19 @@ private fun LinearizationContext.foldSink() =
             addStatement { Stmt.Inhale(access, pos) }
         }
 
+        override fun refreshOwn(path: OwnedPath, cls: ClassTypeEmbedding) {
+            val place = placeOf(path)
+            val pos = source.asPosition
+            val withoutSuperTypes = object : NestedPredicates {
+                override fun ofSuperType(type: ClassTypeEmbedding, access: TypeInvariantEmbedding) = null
+            }
+            val body = with(typeResolver) { cls.uniquePredicateBody(embeddingOf(path), withoutSuperTypes) }
+                .pureToViper(toBuiltin = true, typeResolver, source)
+            val held = place.guards.foldRight(body) { guard, inner -> Exp.Implies(guard, inner, pos) }
+            addStatement { Stmt.Exhale(held, pos) }
+            addStatement { Stmt.Inhale(held, pos) }
+        }
+
         override fun fail(message: String): Nothing = throw FoldStateException(source, message)
     }
 
@@ -195,6 +226,10 @@ private fun LinearizationContext.placeOf(path: OwnedPath): Place {
         Place(exp, parent.guards + guardsOf(exp, field.type))
     }
 }
+
+/** The expression reading [path]. */
+private fun embeddingOf(path: OwnedPath): ExpEmbedding =
+    path.fields.fold<FieldEmbedding, ExpEmbedding>(path.root) { receiver, field -> PrimitiveFieldAccess(receiver, field) }
 
 /** Add the statement [buildStmt] builds, nested in one `if` per guard of [place]. */
 private fun LinearizationContext.addGuarded(place: Place, buildStmt: LinearizationContext.() -> Stmt) =

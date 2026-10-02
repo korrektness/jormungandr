@@ -1,0 +1,42 @@
+/manual_shared_write.kt: info: Generated Viper text for writeShared:
+field n: Ref
+
+method writeShared(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/manual_shared_write.kt: info: Generated Viper text for writeOwned:
+field n: Ref
+
+function exp(this: Ref): Ref
+  requires isSubtype(typeOf(this), Predicate())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), UniquePred())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+method con(par_data: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_data), anyType())
+  ensures isSubtype(typeOf(ret_1), UniquePred())
+  ensures acc(UniquePred_unique(ret_1), write)
+
+
+method writeOwned(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(Counter_unique(c), write)
+  c.n := intToRef(1)
+  fold acc(Counter_unique(c), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

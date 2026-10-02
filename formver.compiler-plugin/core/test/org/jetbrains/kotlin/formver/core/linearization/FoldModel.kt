@@ -81,6 +81,12 @@ class TestProgram(
         return chain.subList(0, end + 1)
     }
 
+    override fun chainBelow(cls: Int, target: Int): List<Int>? {
+        val chain = chainOf(cls)
+        val end = chain.indexOf(target)
+        return if (end < 0) null else chain.subList(0, end)
+    }
+
     override fun rootKey(root: TestRoot): Any = root.name
     override fun fieldKey(field: TestField): Any = field.name
 
@@ -153,8 +159,15 @@ class HeapModel(private val program: TestProgram, private val tokens: MutableMap
         add(Pred(path, cls))
     }
 
-    /** A fresh predicate for [path] arrives. */
-    fun inhale(path: TestPath) = add(Pred(path, program.classOf(path)))
+    /** Exhale what unfolding the predicate of [cls] for [path] exposes, apart from its superclass predicate, and inhale it. */
+    fun refreshOwn(path: TestPath, cls: Int) {
+        val own = body(path, cls).filter { it !is Pred || it.path != path }
+        own.forEach(::take)
+        own.forEach(::add)
+    }
+
+    /** A fresh predicate of [cls] for [path] arrives. */
+    fun inhale(path: TestPath, cls: Int = program.classOf(path)) = add(Pred(path, cls))
 
     /** Whether the predicate of [cls] for [path] is held folded, alone or nested in another folded predicate. */
     fun folded(path: TestPath, cls: Int): Boolean {
@@ -225,7 +238,7 @@ class HeapModel(private val program: TestProgram, private val tokens: MutableMap
 
 class Refused(message: String) : Exception(message)
 
-enum class Op { UNFOLD, FOLD, REFRESH }
+enum class Op { UNFOLD, FOLD, REFRESH, REFRESH_OWN }
 
 data class Emitted(val op: Op, val path: TestPath, val cls: Int)
 
@@ -242,6 +255,10 @@ class RecordingSink : FoldSink<TestRoot, TestField, Int> {
 
     override fun refresh(path: TestPath, cls: Int) {
         emitted += Emitted(Op.REFRESH, path, cls)
+    }
+
+    override fun refreshOwn(path: TestPath, cls: Int) {
+        emitted += Emitted(Op.REFRESH_OWN, path, cls)
     }
 
     override fun fail(message: String): Nothing = throw Refused(message)
@@ -264,7 +281,16 @@ sealed interface Step {
     /** Close a held path and refresh its predicate, as after passing it to a borrowed shared parameter. */
     data class Refresh(val pick: Pick) : Step
 
-    /** Fold what can be folded under a held path, keeping its holes, and transfer it to a path of the same class. */
+    /** Make the folded predicate of a class on a held path's chain held for it, as before passing it to a supertype. */
+    data class Expose(val pick: Pick, val up: Int) : Step
+
+    /** Expose a class on a held path's chain and refresh the rest, as around a `@Unique @Borrowed` call. */
+    data class Borrow(val pick: Pick, val up: Int) : Step
+
+    /**
+     * Fold what can be folded under a held path, keeping its holes, and transfer it to a path of the same class, a
+     * superclass, or a subclass, which is refused.
+     */
     data class Move(val pick: Pick, val target: Int) : Step
     data object Normalize : Step
 
@@ -345,6 +371,7 @@ class Harness(private val program: TestProgram, private val executeIllegal: Bool
                 Op.UNFOLD -> heap.unfold(emitted.path, emitted.cls)
                 Op.FOLD -> heap.fold(emitted.path, emitted.cls)
                 Op.REFRESH -> heap.refresh(emitted.path, emitted.cls)
+                Op.REFRESH_OWN -> heap.refreshOwn(emitted.path, emitted.cls)
             }
         }
         effect(heap)
@@ -389,6 +416,8 @@ class Harness(private val program: TestProgram, private val executeIllegal: Bool
                 close(path)
             }
             is Step.Refresh -> refresh(step, heap)
+            is Step.Expose -> expose(step.pick, step.up, heap, borrow = false)
+            is Step.Borrow -> expose(step.pick, step.up, heap, borrow = true)
             is Step.Move -> move(step, heap)
             Step.Normalize -> normalize()
             is Step.Branch -> branch(step)
@@ -404,17 +433,58 @@ class Harness(private val program: TestProgram, private val executeIllegal: Bool
         }
     }
 
+    /** Whether exposing the predicate of [cls] for [path] folds back over no hole. */
+    private fun exposable(heap: HeapModel, path: TestPath, cls: Int): Boolean {
+        val chain = program.chainOf(program.classOf(path))
+        val depth = chain.indexOf(cls)
+        return depth >= 0 && heap.holes(path).none { chain.indexOf(it.first().owner) >= depth }
+    }
+
+    private fun expose(pick: Pick, up: Int, heap: HeapModel, borrow: Boolean): Boolean {
+        val path = candidates(pick, heap::live).pick(pick.index) ?: return true
+        val chain = program.chainOf(program.classOf(path))
+        val cls = chain.pick(up)!!
+        val legal = heap.live(path) && if (borrow) !heap.hasHole(path) else exposable(heap, path, cls)
+        return attempt(legal, { sink ->
+            trie.expose(sink, path, cls)
+            if (borrow) trie.refreshRetained(sink, path)
+        }) {
+            assertTrue(Pred(path, cls) in it.tokensBelow(path), "$path holds the predicate of $cls")
+            if (borrow) {
+                val retained = chain.take(chain.indexOf(cls)).flatMap { declaring ->
+                    listOf(FieldPerms(path, declaring)) + program.fieldsOf(declaring).map { f -> Pred(path + f, f.cls) }
+                }
+                assertEquals((retained + Pred(path, cls)).groupingBy { t -> t }.eachCount(), it.tokensBelow(path))
+            }
+        }
+    }
+
     private fun move(step: Step.Move, heap: HeapModel): Boolean {
         val source = candidates(step.pick, heap::live).pick(step.pick.index) ?: return true
-        val target = program.paths.filter { program.classOf(it) == program.classOf(source) }.pick(step.target)!!
+        val sourceClass = program.classOf(source)
+        val target = program.paths.filter {
+            val targetClass = program.classOf(it)
+            targetClass in program.chainOf(sourceClass) || sourceClass in program.chainOf(targetClass)
+        }.pick(step.target)!!
+        val targetClass = program.classOf(target)
         val holes = heap.holes(source)
         if (!attempt(heap.live(source), { trie.tidy(it, source) }) { tidied ->
                 assertEquals(program.shapeTokens(source, holes).groupingBy { it }.eachCount(), tidied.tokensBelow(source))
             }) return false
         // Releasing the source leaves every path outside it as held as before.
         val legal = heap.live(source) && (target.fields.isEmpty() ||
-                !target.parent().startsWith(source) && heap.live(target.parent()))
-        return attempt(legal, { trie.transfer(it, source, target) }) { it.move(source, target) }
+                !target.parent().startsWith(source) && heap.live(target.parent())) &&
+                (targetClass == sourceClass || exposable(heap, source, targetClass))
+        return attempt(legal, { trie.transfer(it, source, target) }) {
+            if (targetClass == sourceClass) {
+                it.move(source, target)
+            } else {
+                assertTrue(Pred(source, targetClass) in it.tokensBelow(source), "$source holds the predicate of $targetClass")
+                it.leak(source)
+                it.leak(target)
+                it.inhale(target)
+            }
+        }
     }
 
     private fun close(path: TestPath): Boolean {

@@ -124,6 +124,8 @@ class FoldTrieProperties {
             Tuple.of(2, picks().map(Step::Close)),
             Tuple.of(1, picks().map(Step::OpenOwn)),
             Tuple.of(1, picks().map(Step::Refresh)),
+            Tuple.of(2, Combinators.combine(picks(), index).`as`(Step::Expose)),
+            Tuple.of(3, Combinators.combine(picks(), index).`as`(Step::Borrow)),
             Tuple.of(2, Combinators.combine(picks(), index).`as`(Step::Move)),
             Tuple.of(1, Arbitraries.just(Step.Normalize)),
         )

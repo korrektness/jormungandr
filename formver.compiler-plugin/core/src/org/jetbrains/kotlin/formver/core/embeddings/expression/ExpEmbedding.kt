@@ -6,12 +6,10 @@
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
-import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.purity.PurityContext
@@ -92,13 +90,12 @@ data class FieldModification(
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitFieldModification(this)
 
     /**
-     * Whether the write is dropped when the uniqueness checker does not find [receiver] `Unique`: the field's access
-     * follows receiver uniqueness and the receiver's class is not `@Manual`.
+     * Whether the write is dropped: the field's access follows receiver uniqueness and [receiver] is not owned. This
+     * holds on `@Manual` classes too, since the checker decides ownership there as well. Reads through such a receiver
+     * keep direct field access on `@Manual` classes, so they still need the predicate the user unfolded.
      */
-    fun dropsUnownedWrite(typeResolver: TypeResolver): Boolean {
-        val receiverIsManual = with(typeResolver) { (receiver.type.pretype as? ClassTypeEmbedding)?.isManual ?: false }
-        return field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS && !receiverIsManual
-    }
+    val dropsWrite: Boolean
+        get() = this.field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS && !receiverOwned
 }
 
 data class FieldAccessPermissions(val inner: ExpEmbedding, val field: FieldEmbedding, val perm: PermExp) :

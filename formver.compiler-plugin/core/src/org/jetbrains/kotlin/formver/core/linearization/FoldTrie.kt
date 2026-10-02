@@ -35,6 +35,13 @@ interface FoldHierarchy<R, F, C> {
     /** The classes from [cls] up to the one declaring [field], [cls] first. */
     fun chainTo(cls: C, field: F): List<C>
 
+    /**
+     * The classes to unfold from [cls] so that the predicate of its supertype [target] is held folded, [cls] first:
+     * empty when [target] is [cls], and `null` when [target] is not a supertype of [cls] whose predicate an unfolding
+     * of its class chain exposes.
+     */
+    fun chainBelow(cls: C, target: C): List<C>?
+
     /** The identity of [root] in the trie. */
     fun rootKey(root: R): Any
 
@@ -54,6 +61,12 @@ interface FoldSink<R, F, C> {
 
     /** Exhale and inhale the folded predicate of [cls] for [path], which havocs every value under it. */
     fun refresh(path: FoldPath<R, F>, cls: C)
+
+    /**
+     * Exhale and inhale what unfolding the predicate of [cls] for [path] exposes, apart from the predicates of its
+     * supertypes: its fields and the folded predicates of its `@Unique` fields. This havocs every value under them.
+     */
+    fun refreshOwn(path: FoldPath<R, F>, cls: C)
 
     /** The code needs a predicate the trie does not hold. */
     fun fail(message: String): Nothing
@@ -175,6 +188,33 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
         sink.refresh(path, cls)
     }
 
+    /**
+     * Make the folded predicate of [cls], a supertype of the static class of [path], held for [path]: unfold the
+     * classes below [cls] that are still folded, or fold back up to [cls], closing the children of the classes folded.
+     * The predicates of the classes below [cls] stay unfolded.
+     */
+    fun expose(sink: FoldSink<R, F, C>, path: FoldPath<R, F>, cls: C) {
+        if (roots == null) return
+        val own = classOf(path) ?: return
+        if (!holds(path)) notHeld(sink)
+        val node = locate(sink, path) ?: notHeld(sink)
+        exposeNode(sink, node, path, own, cls)
+    }
+
+    /**
+     * Havoc what [path] holds besides the folded predicate [expose] made held: close its children, which must have no
+     * moved-out field, and refresh the fields of each unfolded class of its chain together with their nested
+     * predicates. The callee of a borrowing call that received a supertype predicate may have written them through a
+     * view the caller does not see.
+     */
+    fun refreshRetained(sink: FoldSink<R, F, C>, path: FoldPath<R, F>) {
+        if (roots == null || classOf(path) == null) return
+        val node = locate(sink, path) ?: notHeld(sink)
+        val opened = (node.status as? FoldStatus.Open)?.opened ?: return
+        closeChildren(sink, node, path)
+        for (cls in opened) sink.refreshOwn(path, cls)
+    }
+
     /** Fold everything under [path] that can be folded, keeping its holes. */
     fun tidy(sink: FoldSink<R, F, C>, path: FoldPath<R, F>) {
         if (roots == null || classOf(path) == null) return
@@ -184,18 +224,21 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
     }
 
     /**
-     * Move what [src] holds to [dst], emitting nothing: [src] holds nothing afterwards. When both have the same static
-     * class, the subtree of [src] moves as it is, holes included; otherwise [src] must be folded.
+     * Move what [src] holds to [dst]: [src] holds nothing afterwards. When both have the same static class, the subtree
+     * of [src] moves as it is, holes included, and nothing is emitted. Otherwise the static class of [dst] must be a
+     * supertype of that of [src]: its predicate is exposed for [src] and moves, and the rest of [src] is leaked.
      */
     fun transfer(sink: FoldSink<R, F, C>, src: FoldPath<R, F>, dst: FoldPath<R, F>) {
         if (roots == null) return
         val cls = classOf(dst) ?: return release(sink, src)
         if (!holds(src)) notHeld(sink)
         val node = locate(sink, src) ?: notHeld(sink)
-        val moved: FoldNode<F, C> = when {
-            classOf(src) == cls -> node.deepCopy()
-            node.status == FoldStatus.Folded -> FoldNode(cls, FoldStatus.Folded)
-            else -> movedOut(sink)
+        val own = classOf(src) ?: notHeld(sink)
+        val moved = if (own == cls) {
+            node.deepCopy()
+        } else {
+            exposeNode(sink, node, src, own, cls)
+            FoldNode<F, C>(cls, FoldStatus.Folded)
         }
         release(sink, src)
         place(sink, dst, moved)
@@ -334,6 +377,7 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
             override fun unfold(path: FoldPath<R, F>, cls: C) {}
             override fun fold(path: FoldPath<R, F>, cls: C) {}
             override fun refresh(path: FoldPath<R, F>, cls: C) {}
+            override fun refreshOwn(path: FoldPath<R, F>, cls: C) {}
             override fun fail(message: String): Nothing = error(message)
         }
         settle(silent, node, FoldPath(shape.root), shape.holes)
@@ -457,12 +501,36 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
         }
     }
 
-    private fun closeNode(sink: FoldSink<R, F, C>, node: FoldNode<F, C>, path: FoldPath<R, F>) {
+    /** Bring [node], at [path] with static class [own], to holding the folded predicate of its supertype [cls]. */
+    private fun exposeNode(sink: FoldSink<R, F, C>, node: FoldNode<F, C>, path: FoldPath<R, F>, own: C, cls: C) {
+        val below = hierarchy.chainBelow(own, cls)
+            ?: sink.fail("The predicate of a subtype of the path's static class is needed here, which the path does not hold.")
+        val opened = (node.status as? FoldStatus.Open)?.opened.orEmpty()
+        if (opened.size <= below.size) {
+            if (!openChain(sink, node, path) { below }) notHeld(sink)
+            return
+        }
+        val folded = node.children.filterValues { (field, _) -> hierarchy.chainTo(own, field).size > below.size }
+        for ((key, entry) in folded) {
+            node.children.remove(key)
+            val (field, child) = entry
+            if (child.status == FoldStatus.Absent) movedOut(sink)
+            closeNode(sink, child, path + field)
+        }
+        for (unneeded in opened.drop(below.size).reversed()) sink.fold(path, unneeded)
+        node.status = if (below.isEmpty()) FoldStatus.Folded else FoldStatus.Open(below)
+    }
+
+    private fun closeChildren(sink: FoldSink<R, F, C>, node: FoldNode<F, C>, path: FoldPath<R, F>) {
         for ((field, child) in node.children.values) {
             if (child.status == FoldStatus.Absent) movedOut(sink)
             closeNode(sink, child, path + field)
         }
         node.children.clear()
+    }
+
+    private fun closeNode(sink: FoldSink<R, F, C>, node: FoldNode<F, C>, path: FoldPath<R, F>) {
+        closeChildren(sink, node, path)
         val status = node.status as? FoldStatus.Open ?: return
         for (cls in status.opened.reversed()) sink.fold(path, cls)
         node.status = FoldStatus.Folded

@@ -1,0 +1,184 @@
+/unique_borrowed_supertype.kt: info: Generated Viper text for inspect:
+field extra: Ref
+
+method inspect(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Base())
+  requires acc(Base_unique(b), write)
+  ensures acc(Base_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (isSubtype(typeOf(b), Sub())) {
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_borrowed_supertype.kt: info: Generated Viper text for subFieldAfterBorrow:
+field extra: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inspect(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Base())
+  requires acc(Base_unique(b), write)
+  ensures acc(Base_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method subFieldAfterBorrow(sub: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sub), Sub())
+  requires acc(Sub_unique(sub), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Sub_unique(sub), write)
+  sub.extra := intToRef(0)
+  anon_0 := inspect(sub)
+  exhale isSubtype(typeOf(sub), Sub()) && acc(sub.extra, write) &&
+    isSubtype(typeOf(sub.extra), intType())
+  inhale isSubtype(typeOf(sub), Sub()) && acc(sub.extra, write) &&
+    isSubtype(typeOf(sub.extra), intType())
+  anon_1 := sub.extra
+  assert intFromRef(anon_1) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_borrowed_supertype.kt: info: Generated Viper text for plainValAfterBorrow:
+field next: Ref
+
+field value: Ref
+
+function fixed(this: Ref): Ref
+  requires isSubtype(typeOf(this), Rich())
+  ensures isSubtype(typeOf(result), Cell())
+
+
+function plain(this: Ref): Ref
+  requires isSubtype(typeOf(this), Rich())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inspect(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Base())
+  requires acc(Base_unique(b), write)
+  ensures acc(Base_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method plainValAfterBorrow(rich: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(rich), Rich())
+  requires acc(Rich_unique(rich), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var p: Ref
+  var anon: Ref
+  p := plain(rich)
+  unfold acc(Rich_unique(rich), write)
+  anon := inspect(rich)
+  exhale isSubtype(typeOf(rich), Rich()) &&
+    acc(Cell_unique(fixed(rich)), write) &&
+    acc(rich.next, write) &&
+    isSubtype(typeOf(rich.next), nullable(Cell())) &&
+    (rich.next != nullValue() ==> acc(Cell_unique(rich.next), write))
+  inhale isSubtype(typeOf(rich), Rich()) &&
+    acc(Cell_unique(fixed(rich)), write) &&
+    acc(rich.next, write) &&
+    isSubtype(typeOf(rich.next), nullable(Cell())) &&
+    (rich.next != nullValue() ==> acc(Cell_unique(rich.next), write))
+  assert intFromRef(plain(rich)) == intFromRef(p)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_borrowed_supertype.kt: info: Generated Viper text for nestedAfterBorrow:
+field next: Ref
+
+field value: Ref
+
+function fixed(this: Ref): Ref
+  requires isSubtype(typeOf(this), Rich())
+  ensures isSubtype(typeOf(result), Cell())
+
+
+function plain(this: Ref): Ref
+  requires isSubtype(typeOf(this), Rich())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inspect(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Base())
+  requires acc(Base_unique(b), write)
+  ensures acc(Base_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method nestedAfterBorrow(rich: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(rich), Rich())
+  requires acc(Rich_unique(rich), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  unfold acc(Rich_unique(rich), write)
+  anon_0 := rich.next
+  fold acc(Rich_unique(rich), write)
+  if (anon_0 != nullValue()) {
+    unfold acc(Rich_unique(rich), write)
+    if (rich.next != nullValue()) {
+      unfold acc(Cell_unique(rich.next), write)
+    }
+    anon_0.value := intToRef(0)
+    if (rich.next != nullValue()) {
+      fold acc(Cell_unique(rich.next), write)
+    }
+    fold acc(Rich_unique(rich), write)
+  }
+  unfold acc(Rich_unique(rich), write)
+  anon_1 := inspect(rich)
+  exhale isSubtype(typeOf(rich), Rich()) &&
+    acc(Cell_unique(fixed(rich)), write) &&
+    acc(rich.next, write) &&
+    isSubtype(typeOf(rich.next), nullable(Cell())) &&
+    (rich.next != nullValue() ==> acc(Cell_unique(rich.next), write))
+  inhale isSubtype(typeOf(rich), Rich()) &&
+    acc(Cell_unique(fixed(rich)), write) &&
+    acc(rich.next, write) &&
+    isSubtype(typeOf(rich.next), nullable(Cell())) &&
+    (rich.next != nullValue() ==> acc(Cell_unique(rich.next), write))
+  anon_3 := rich.next
+  fold acc(Rich_unique(rich), write)
+  if (anon_3 != nullValue()) {
+    var anon_4: Ref
+    unfold acc(Rich_unique(rich), write)
+    if (rich.next != nullValue()) {
+      unfold acc(Cell_unique(rich.next), write)
+    }
+    anon_4 := anon_3.value
+    anon_2 := anon_4
+    if (rich.next != nullValue()) {
+      fold acc(Cell_unique(rich.next), write)
+    }
+    fold acc(Rich_unique(rich), write)
+  } else {
+    anon_2 := nullValue()}
+  assert anon_2 == intToRef(0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

@@ -124,6 +124,14 @@ class TypeResolver {
     ): List<R> = collectFields(className).flatMap { action(it) }
 
 
+    /** The direct superclass of [classType], `null` when it has none or is an interface. */
+    fun superClass(classType: ClassTypeEmbedding): ClassTypeEmbedding? =
+        lookupSuperTypes(classType.name).firstOrNull { !interfaceEmbedding.containsKey(it.name) }
+
+    /** Whether [field] is declared in [classType] or one of its superclasses. */
+    fun declaresOnChain(classType: ClassTypeEmbedding, field: FieldEmbedding): Boolean =
+        generateSequence(classType, ::superClass).any { it.name == field.containingClass?.name }
+
     /**
      * Returns the sequence of class types that are between the [typeEmbedding] and the [field].
      */
@@ -137,8 +145,7 @@ class TypeResolver {
         if (className == typeEmbedding.name) {
             yield(classType)
         } else {
-            val sup = lookupSuperTypes(classType.name).firstOrNull { !interfaceEmbedding.containsKey(it.name) }
-                ?: throw IllegalArgumentException("Reached top of the hierarchy without finding the field")
+            val sup = superClass(classType) ?: throw IllegalArgumentException("Reached top of the hierarchy without finding the field")
 
             yield(classType)
             yieldAll(hierarchyPathTo(sup, field))

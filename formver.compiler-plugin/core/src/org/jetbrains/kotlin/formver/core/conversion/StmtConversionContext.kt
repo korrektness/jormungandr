@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.expressions.FirOperation
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
@@ -25,6 +26,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.asPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.uniqueness.plugin.indexedArrayInitializer
@@ -141,13 +144,13 @@ fun StmtConversionContext.embedPropertyAccess(
                         embedProperty(it)
                     } ?: embedProperty(calleeSymbol)
                     val receiver = accessExpression.dispatchReceiver!!
-                    ClassPropertyAccess(convert(receiver), property, type, ownsBefore(accessElement, receiver))
+                    ClassPropertyAccess(convert(receiver), property, type, ownsFor(accessElement, receiver, property))
                 }
 
                 accessExpression.extensionReceiver != null -> {
                     val property = embedProperty(calleeSymbol)
                     val receiver = accessExpression.extensionReceiver!!
-                    ClassPropertyAccess(convert(receiver), property, type, ownsBefore(accessElement, receiver))
+                    ClassPropertyAccess(convert(receiver), property, type, ownsFor(accessElement, receiver, property))
                 }
 
                 else -> embedLocalProperty(calleeSymbol)
@@ -168,6 +171,28 @@ fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpress
     val denoted = (expression as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: expression
     val path = analysis.pathOf(denoted) ?: return false
     return analysis.ownsBefore(element, path)
+}
+
+/**
+ * Whether [receiver] is owned for an access to [property] at [element]: the uniqueness checker finds its path `Unique`,
+ * and the field holding [property], if any, is declared on the class chain of the path's static type, so the path's
+ * predicate holds it. A field reached only through a cast to a subtype is accessed as shared.
+ */
+private fun StmtConversionContext.ownsFor(element: FirElement, receiver: FirExpression, property: PropertyEmbedding): Boolean {
+    if (!ownsBefore(element, receiver)) return false
+    val field = (property.getter as? BackingFieldGetter)?.field ?: return true
+    val static = embedType(receiver.withoutCasts().resolvedType).pretype as? ClassTypeEmbedding ?: return true
+    return typeResolver.declaresOnChain(static, field)
+}
+
+private fun FirExpression.withoutCasts(): FirExpression = when (this) {
+    is FirSmartCastExpression -> originalExpression.withoutCasts()
+    is FirCheckedSafeCallSubject -> originalReceiverRef.value.withoutCasts()
+    is FirTypeOperatorCall -> when (operation) {
+        FirOperation.AS, FirOperation.SAFE_AS -> argument.withoutCasts()
+        else -> this
+    }
+    else -> this
 }
 
 /**

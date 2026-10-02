@@ -606,6 +606,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("manual_shared_write.kt")
+      public void testManual_shared_write() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/manual_shared_write.kt");
+      }
+
+      @Test
       @TestMetadata("member_functions.kt")
       public void testMember_functions() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/member_functions.kt");
@@ -672,6 +678,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("unique_borrowed_supertype.kt")
+      public void testUnique_borrowed_supertype() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_borrowed_supertype.kt");
+      }
+
+      @Test
       @TestMetadata("unique_fields.kt")
       public void testUnique_fields() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_fields.kt");
@@ -681,6 +693,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("unique_fold_state.kt")
       public void testUnique_fold_state() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_fold_state.kt");
+      }
+
+      @Test
+      @TestMetadata("unique_hierarchy_moves.kt")
+      public void testUnique_hierarchy_moves() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_hierarchy_moves.kt");
       }
 
       @Test

@@ -140,7 +140,10 @@ data class LinearizationVisitor(
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
             val heldArgs = ctx.heldPaths(e.args, e.method.formalArgs)
             for ((path, formal) in heldArgs) {
-                if (formal.isUnique || formal.isBorrowed) ctx.foldState?.close(ctx, path)
+                when {
+                    formal.isUnique -> ctx.exposeFor(path, formal)
+                    formal.isBorrowed -> ctx.foldState?.close(ctx, path)
+                }
             }
             ctx.addStatement {
                 e.method.toMethodCall(argsViper, result.toLocalVarUse(ctx.source.asPosition), ctx.source.asPosition)
@@ -150,6 +153,7 @@ data class LinearizationVisitor(
                     !formal.isBorrowed -> ctx.foldState?.release(ctx, path)
                     // The callee may write through its shared view of the argument, so the caller's values are stale.
                     !formal.isUnique -> ctx.foldState?.refresh(ctx, path)
+                    else -> ctx.foldState?.refreshRetained(ctx, path)
                 }
             }
         }
@@ -159,7 +163,7 @@ data class LinearizationVisitor(
         override fun toViper(ctx: LinearizationContext): Exp {
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
             for ((path, formal) in ctx.heldPaths(e.args, e.function.formalArgs)) {
-                if (formal.isUnique) ctx.foldState?.close(ctx, path)
+                if (formal.isUnique) ctx.exposeFor(path, formal)
             }
             return e.function.toFuncApp(argsViper, ctx.source.asPosition)
         }
@@ -478,7 +482,7 @@ data class LinearizationVisitor(
     override fun visitFieldModification(e: FieldModification): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             val receiverPath = ctx.ownedReceiverPath(e.receiver, e.receiverOwned, isWrite = true)
-            if (e.dropsUnownedWrite(ctx.typeResolver) && receiverPath == null) {
+            if (e.dropsWrite) {
                 e.receiver.linearize().toViperUnusedResult(ctx)
                 val newValue = runUpdatesOfPath(e.newValue, ctx)
                 val source = ctx.moveSource(newValue, targetOwned = false)
@@ -869,6 +873,13 @@ private fun LinearizationContext.heldPaths(
     return args.zip(formals).mapNotNull { (arg, formal) ->
         arg.ownedPath()?.takeIf { state.holds(it) }?.let { it to formal }
     }
+}
+
+/** Make the folded predicate that the `@Unique` parameter [formal] takes held for the argument [path]. */
+private fun LinearizationContext.exposeFor(path: OwnedPath, formal: VariableEmbedding) {
+    val state = foldState ?: return
+    val cls = state.trackedClass(formal.type) ?: return state.close(this, path)
+    state.expose(this, path, cls)
 }
 
 /** Whether [this] produces a value whose unique predicate the caller receives. */
