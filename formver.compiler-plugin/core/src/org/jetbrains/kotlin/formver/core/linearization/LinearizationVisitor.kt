@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.toFuncApp
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toMethodCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
@@ -69,10 +70,17 @@ data class LinearizationVisitor(
             e.exps.last().linearize().toViperMaybeStoringIn(result, ctx)
         }
 
-        override fun toViper(ctx: LinearizationContext): Exp {
-            if (e.exps.isEmpty()) return super.toViper(ctx)
-            return ctx.addBlock(e.exps.dropLast(1).map { it.linearize() }, e.exps.last().linearize(), e.type)
-        }
+        private fun value(ctx: LinearizationContext, builtinType: TypeEmbedding?): Exp =
+            ctx.addBlock(e.exps.dropLast(1).map { it.linearize() }, e.exps.last().linearize(), e.type, builtinType)
+
+        override fun toViper(ctx: LinearizationContext): Exp =
+            if (e.exps.isEmpty()) super.toViper(ctx) else value(ctx, builtinType = null)
+
+        override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
+            if (e.exps.isEmpty()) super.toViperBuiltinType(ctx) else value(ctx, e.type)
+
+        override fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext): Exp =
+            if (e.exps.isEmpty()) super.toViperBuiltinTypeAs(type, ctx) else value(ctx, type)
     }
 
     override fun visitIf(e: If): Linearizable = object : OptionalResultLinearizable(e) {
@@ -313,6 +321,11 @@ data class LinearizationVisitor(
 
     override fun visitCast(e: Cast): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp = e.inner.linearize().toViper(ctx)
+
+        override fun toViperBuiltinType(ctx: LinearizationContext): Exp = toViperBuiltinTypeAs(e.type, ctx)
+
+        override fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext): Exp =
+            e.inner.linearize().toViperInBuiltinForm(e.inner.type, type, ctx)
     }
 
     override fun visitSafeCast(e: SafeCast): Linearizable = object : StoredResultLinearizable(e) {
@@ -342,6 +355,9 @@ data class LinearizationVisitor(
                 ctx.chosen().toViperMaybeStoringIn(result, ctx)
 
             override fun toViperBuiltinType(ctx: LinearizationContext): Exp = ctx.chosen().toViperBuiltinType(ctx)
+
+            override fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext): Exp =
+                ctx.chosen().toViperBuiltinTypeAs(type, ctx)
 
             override fun toViperUnusedResult(ctx: LinearizationContext) = ctx.chosen().toViperUnusedResult(ctx)
         }
@@ -847,6 +863,9 @@ data class LinearizationVisitor(
 
             override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
                 ctx.positioned { innerLinearizable.toViperBuiltinType(this) }
+
+            override fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext): Exp =
+                ctx.positioned { innerLinearizable.toViperBuiltinTypeAs(type, this) }
 
             override fun toViperUnusedResult(ctx: LinearizationContext) {
                 ctx.positioned { innerLinearizable.toViperUnusedResult(this) }

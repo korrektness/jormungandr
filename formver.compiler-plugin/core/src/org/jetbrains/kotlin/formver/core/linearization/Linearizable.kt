@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.ToViperBuiltinOnl
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.injectionOr
+import org.jetbrains.kotlin.formver.core.embeddings.types.injectionOrNull
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 
 interface Linearizable {
@@ -23,7 +24,18 @@ interface Linearizable {
     fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext)
     fun toViperBuiltinType(ctx: LinearizationContext): Exp
     fun toViperUnusedResult(ctx: LinearizationContext)
+
+    /**
+     * This value, whose type is more general than [type], in the builtin form of [type]. A cast passes the request on
+     * to its operand, so a value that passes through a generic type is not boxed and unboxed again.
+     */
+    fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext): Exp =
+        defaultToViperBuiltinType(::toViper, type, null, ctx)
 }
+
+/** This value, of [ownType], in the builtin form of [type]. */
+fun Linearizable.toViperInBuiltinForm(ownType: TypeEmbedding, type: TypeEmbedding, ctx: LinearizationContext): Exp =
+    if (ownType.injectionOrNull == type.injectionOrNull) toViperBuiltinType(ctx) else toViperBuiltinTypeAs(type, ctx)
 
 fun ExpEmbedding.toLinearizable(source: KtSourceElement? = null): Linearizable = accept(LinearizationVisitor(source))
 

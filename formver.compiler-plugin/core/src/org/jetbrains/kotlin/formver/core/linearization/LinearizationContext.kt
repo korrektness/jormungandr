@@ -65,12 +65,16 @@ interface LinearizationContext {
         result: VariableEmbedding?
     )
 
-    /** The value of a block that evaluates [statements] and then [last], which has [type]. */
-    fun addBlock(statements: List<Linearizable>, last: Linearizable, type: TypeEmbedding): Exp {
+    /**
+     * The value of a block that evaluates [statements] and then [last], which has [type]. With a [builtinType], the
+     * value is in the builtin form of that type.
+     */
+    fun addBlock(statements: List<Linearizable>, last: Linearizable, type: TypeEmbedding, builtinType: TypeEmbedding?): Exp {
         val result = freshAnonVar(type)
         statements.forEach { it.toViperUnusedResult(this) }
         last.toViperStoringIn(result, this)
-        return result.toViperExp(this)
+        val value = result.toViperExp(this)
+        return if (builtinType != null) defaultToViperBuiltinType({ value }, builtinType, null, this) else value
     }
 
     /** The value of `if ([condition]) [thenBranch] else [elseBranch]`, which has [type]. */

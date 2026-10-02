@@ -1038,6 +1038,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("default_arguments.kt")
+      public void testDefault_arguments() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/default_arguments.kt");
+      }
+
+      @Test
       @TestMetadata("inline_calls_in_specifications.kt")
       public void testInline_calls_in_specifications() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/inline_calls_in_specifications.kt");

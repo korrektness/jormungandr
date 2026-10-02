@@ -130,6 +130,12 @@ fun <!VIPER_TEXT!>letInQuantifiers<!>(arr: @Unique @Borrowed IntArray, n: Int) {
 }
 
 @AlwaysVerify
+fun <!VIPER_TEXT!>letOverArrayInQuantifier<!>(arr: @Unique @Borrowed IntArray) {
+    preconditions { forAll<Int> { k -> (0 <= k && k < arr.size) implies arr.let { it[k] >= 0 } } }
+    postconditions<Unit> { forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] >= 0) } }
+}
+
+@AlwaysVerify
 fun <!VIPER_TEXT!>letInVerify<!>(n: Int, o: Int?) {
     verify(n.let { it + 1 } == n + 1, (o?.let { it + 1 } ?: 0) >= 0 || n == n)
 }

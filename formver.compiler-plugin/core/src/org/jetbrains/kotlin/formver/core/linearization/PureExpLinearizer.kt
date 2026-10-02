@@ -86,7 +86,11 @@ data class PureExpLinearizer(
     override fun store(lhs: VariableEmbedding, rhs: Linearizable) = bind(lhs, rhs.toViper(this))
 
     override fun addReturn(returnExp: Linearizable, target: ReturnTarget) {
-        if (scope?.bind(target.variable.name, returnExp.toViper(this)) != true) {
+        val linearize = { builtinType: TypeEmbedding? ->
+            if (builtinType == null) returnExp.toViper(this)
+            else returnExp.toViperInBuiltinForm(target.variable.type, builtinType, this)
+        }
+        if (scope?.bindResult(target.variable.name, linearize) != true) {
             unsupported("A return in a specification must be the last expression of its lambda.")
         }
     }
@@ -101,11 +105,21 @@ data class PureExpLinearizer(
         bind(result, addConditional(condition, thenBranch, elseBranch, result.type))
     }
 
-    override fun addBlock(statements: List<Linearizable>, last: Linearizable, type: TypeEmbedding): Exp =
-        inNewScope {
-            statements.forEach { it.toViperUnusedResult(this) }
-            last.toViper(this)
-        }
+    override fun addBlock(
+        statements: List<Linearizable>,
+        last: Linearizable,
+        type: TypeEmbedding,
+        builtinType: TypeEmbedding?,
+    ): Exp {
+        val inner = LetScope()
+        val ctx = copy(scope = inner)
+        statements.forEach { it.toViperUnusedResult(ctx) }
+        val lastExp = last.toViper(ctx)
+        val result = inner.takeResult(lastExp, builtinType)
+        val value = inner.bindAround(result ?: lastExp, source.asPosition)
+        return if (builtinType != null && result == null) defaultToViperBuiltinType({ value }, builtinType, null, this)
+        else value
+    }
 
     override fun addConditional(
         condition: Linearizable,
@@ -176,25 +190,67 @@ fun List<ExpEmbedding>.pureToViper(
 /**
  * The locals a block in a specification declares, and the values bound to them, in the order they are bound. Each
  * local is bound once: by its initializer, or by the return that gives an inlined call its result.
+ *
+ * A returned value is linearized when the block's value is, so that a block whose value is the returned value
+ * produces it in the form the block's use asks for.
  */
 class LetScope {
+    private data class Binding(
+        val decl: Declaration.LocalVarDecl,
+        val isResult: Boolean,
+        val linearize: (builtinType: TypeEmbedding?) -> Exp,
+    )
+
     private val declared = mutableMapOf<SymbolicName, Declaration.LocalVarDecl>()
-    private val bindings = mutableListOf<Pair<Declaration.LocalVarDecl, Exp>>()
+    private val bindings = mutableListOf<Binding>()
 
     fun declare(decl: Declaration.LocalVarDecl) {
         declared[decl.name] = decl
     }
 
     /** Binds the local [name] to [value]; false when this scope declares no unbound local [name]. */
-    fun bind(name: SymbolicName, value: Exp): Boolean {
+    fun bind(name: SymbolicName, value: Exp): Boolean = add(name, isResult = false) { value }
+
+    /**
+     * Binds the local [name] to a returned value, which [linearize] produces in reference form, or in the builtin form
+     * of the type it is given.
+     */
+    fun bindResult(name: SymbolicName, linearize: (builtinType: TypeEmbedding?) -> Exp): Boolean =
+        add(name, isResult = true, linearize)
+
+    private fun add(name: SymbolicName, isResult: Boolean, linearize: (builtinType: TypeEmbedding?) -> Exp): Boolean {
         val decl = declared.remove(name) ?: return false
-        bindings.add(decl to value)
+        bindings.add(Binding(decl, isResult, linearize))
         return true
     }
 
-    /** [body] under the bindings of this scope. A binding whose body is just its local is replaced by its value. */
+    /**
+     * The returned value, in the builtin form of [builtinType] or in reference form without one, when [body] reads the
+     * local bound last and that local holds a returned value. The binding is then consumed.
+     */
+    fun takeResult(body: Exp, builtinType: TypeEmbedding?): Exp? {
+        val last = bindings.lastOrNull()?.takeIf { it.isResult } ?: return null
+        if (body !is Exp.LocalVar || body.name != last.decl.name) return null
+        bindings.removeLast()
+        return last.linearize(builtinType)
+    }
+
+    /**
+     * [body] under the bindings of this scope. A binding whose body is its local, or a domain function applied to its
+     * local alone, has its value substituted for the local.
+     */
     fun bindAround(body: Exp, pos: Position): Exp =
-        bindings.foldRight(body) { (decl, value), acc ->
-            if (acc is Exp.LocalVar && acc.name == decl.name) value else Exp.LetBinding(decl, value, acc, pos)
+        bindings.foldRight(body) { binding, acc ->
+            val value = binding.linearize(null)
+            acc.substitutingLocal(binding.decl.name, value) ?: Exp.LetBinding(binding.decl, value, acc, pos)
         }
+
+    private fun Exp.substitutingLocal(name: SymbolicName, value: Exp): Exp? {
+        fun Exp.isLocal() = this is Exp.LocalVar && this.name == name
+        return when {
+            isLocal() -> value
+            this is Exp.DomainFuncApp && args.singleOrNull()?.isLocal() == true -> copy(args = listOf(value))
+            else -> null
+        }
+    }
 }
