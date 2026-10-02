@@ -139,7 +139,11 @@ data class LinearizationVisitor(
                 e.method.toMethodCall(argsViper, result.toLocalVarUse(ctx.source.asPosition), ctx.source.asPosition)
             }
             for ((path, formal) in heldArgs) {
-                if (!formal.isBorrowed) ctx.foldState?.release(ctx, path)
+                when {
+                    !formal.isBorrowed -> ctx.foldState?.release(ctx, path)
+                    // The callee may write through its shared view of the argument, so the caller's values are stale.
+                    !formal.isUnique -> ctx.foldState?.refresh(ctx, path)
+                }
             }
         }
     }

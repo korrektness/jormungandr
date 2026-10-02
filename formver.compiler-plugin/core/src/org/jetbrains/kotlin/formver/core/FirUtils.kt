@@ -14,8 +14,6 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationDataKey
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationDataRegistry
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
-import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyGetter
-import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertySetter
 import org.jetbrains.kotlin.fir.declarations.utils.isInline
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
@@ -44,15 +42,6 @@ import org.jetbrains.kotlin.text
 //     get() = toReference()?.toResolvedBaseSymbol()!!
 // val FirElement.calleeCallableSymbol: FirCallableSymbol<*>
 //     get() = calleeReference?.toResolvedCallableSymbol()!!
-@OptIn(SymbolInternals::class)
-val FirPropertySymbol.isCustom: Boolean
-    get() {
-        val getter = getterSymbol?.fir
-        val setter = setterSymbol?.fir
-        return if (isVal) getter !is FirDefaultPropertyGetter
-        else getter !is FirDefaultPropertyGetter || setter !is FirDefaultPropertySetter
-    }
-
 val FirFunctionCall.functionCallArguments: List<FirExpression>
     get() = listOfNotNull(dispatchReceiver, extensionReceiver) + argumentList.arguments
 

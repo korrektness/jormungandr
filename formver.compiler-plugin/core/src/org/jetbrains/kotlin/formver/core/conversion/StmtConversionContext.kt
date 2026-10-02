@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAcce
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.asPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
-import org.jetbrains.kotlin.formver.core.isCustom
+import org.jetbrains.kotlin.formver.uniqueness.plugin.isCustom
 import org.jetbrains.kotlin.formver.core.isInvariantBuilderFunctionNamed
 import org.jetbrains.kotlin.formver.core.linearization.*
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -164,6 +164,16 @@ fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpress
     val denoted = (expression as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: expression
     val path = analysis.pathOf(denoted) ?: return false
     return analysis.ownsBefore(element, path)
+}
+
+/**
+ * Whether the function being converted may hold a permission beyond a single expression: its signature carries
+ * `@Unique` or `@Borrowed`, or the uniqueness checker finds a path that is not `Shared` somewhere in it.
+ */
+fun StmtConversionContext.holdsOwnership(): Boolean {
+    val annotatedSignature = signature.formalArgs.any { it.isUnique || it.isBorrowed } ||
+            signature.callableType.returnsUnique
+    return annotatedSignature || uniquenessAnalysis?.sharesEveryPath == false
 }
 
 fun StmtConversionContext.argumentDeclaration(

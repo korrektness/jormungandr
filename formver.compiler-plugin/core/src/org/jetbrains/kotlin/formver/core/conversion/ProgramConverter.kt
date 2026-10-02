@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
-import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
@@ -39,6 +38,7 @@ import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.core.purity.checkReadOnlyVarReads
 import org.jetbrains.kotlin.formver.core.purity.checkSpecificationVarReads
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
+import org.jetbrains.kotlin.formver.uniqueness.plugin.isGuaranteedDefault
 import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessFacts
 import org.jetbrains.kotlin.formver.core.linearization.FoldStateException
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -598,8 +598,7 @@ class ProgramConverter(
     }
 
     override fun isGuaranteedDefaultProperty(symbol: FirPropertySymbol): Boolean {
-        val classSymbolFinal = symbol.dispatchReceiverType?.toClassSymbol(session)?.isFinal ?: false
-        return (symbol.isFinal || classSymbolFinal) && !symbol.isCustom
+        return symbol.isGuaranteedDefault(session)
     }
 
     /**

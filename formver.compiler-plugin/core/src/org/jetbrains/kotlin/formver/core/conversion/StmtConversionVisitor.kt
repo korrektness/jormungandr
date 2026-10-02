@@ -516,6 +516,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (tryExpression.finallyBlock != null) {
             return handleUnimplementedElement(tryExpression.source, "Not yet implemented for finally blocks", data)
         }
+        if (data.holdsOwnership()) {
+            data.reportUnsupportedOwnership(tryExpression.source, "`try` is not supported in a function that holds ownership.")
+        }
         val (catchData, tryBody) = data.withCatches(tryExpression.catches) { catchData ->
             withNewScope {
                 val jumps =

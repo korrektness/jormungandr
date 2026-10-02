@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.analysis.cfa.util.transformValues
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
 import org.jetbrains.kotlin.fir.expressions.allReceiverExpressions
 import org.jetbrains.kotlin.fir.expressions.arguments
@@ -26,6 +27,7 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallEnterNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallExitNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionEnterNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.JumpNode
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ThrowExceptionNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableAssignmentNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableDeclarationNode
@@ -85,7 +87,8 @@ fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessSta
  * Data-flow analyzer that tracks the uniqueness state of paths through a CFG.
  *
  * Assignments and declarations initialize their target paths and move their source paths. Function calls move all
- * passed paths on entry, and restore paths whose corresponding parameters are local on exit.
+ * passed paths on entry, and restore paths whose corresponding parameters are local on exit. A property access that
+ * calls an accessor moves its receivers the same way.
  *
  * Default arguments and lambdas called in place are analyzed as part of the enclosing flow; a lambda called in place
  * starts with its own parameters at their declared uniqueness.
@@ -192,6 +195,9 @@ class GraphUniquenessStatesAnalyzer(
 
                 // The source moves before the target is written; see `visitVariableDeclarationNode`.
                 var newUniquenessState = rightAccessState.move(uniquenessState)
+                if (leftValue is FirQualifiedAccessExpression) {
+                    newUniquenessState = newUniquenessState.passReceiversToAccessor(leftValue)
+                }
 
                 val rightUniquenessState = rightAccessState.projectTerminalUniquenessState(uniquenessState)
 
@@ -212,6 +218,34 @@ class GraphUniquenessStatesAnalyzer(
                 data.put(Unit, newUniquenessState)
             }
         }
+    }
+
+    override fun visitQualifiedAccessNode(
+        node: QualifiedAccessNode,
+        data: PathAwareUniquenessStateFlow
+    ): PathAwareUniquenessStateFlow {
+        return context(context) {
+            data.transformValues { data -> data.put(Unit, data.getOrInitialize().passReceiversToAccessor(node.fir)) }
+        }
+    }
+
+    /**
+     * Moves the receivers that [access] passes to an accessor call, as at a function call. An access that calls no
+     * accessor leaves [this] unchanged.
+     */
+    context(context: CheckerContext)
+    private fun UniquenessState.passReceiversToAccessor(access: FirQualifiedAccessExpression): UniquenessState {
+        if (access in readOnlyContext) return this
+        val property = access.accessorCallProperty(context.session) ?: return this
+        var newUniquenessState = this
+        for (receiver in listOfNotNull(access.dispatchReceiver, access.extensionReceiver)) {
+            newUniquenessState = receiver.resolveAccessState().move(newUniquenessState)
+        }
+        val extensionReceiver = access.extensionReceiver
+        if (extensionReceiver != null && property.receiverParameterSymbol?.resolveLocality() == Locality.Local) {
+            newUniquenessState = extensionReceiver.resolveAccessState().initialize(newUniquenessState)
+        }
+        return newUniquenessState
     }
 
     override fun visitFunctionCallEnterNode(

@@ -182,6 +182,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
   @TestDataPath("$PROJECT_ROOT")
   public class Uniqueness_checker {
     @Test
+    @TestMetadata("accessor_receiver.kt")
+    public void testAccessor_receiver() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/accessor_receiver.kt");
+    }
+
+    @Test
     @TestMetadata("aliasing.kt")
     public void testAliasing() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/aliasing.kt");
@@ -596,6 +602,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("unique_accessor_receiver.kt")
+      public void testUnique_accessor_receiver() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_accessor_receiver.kt");
+      }
+
+      @Test
+      @TestMetadata("unique_borrowed_shared.kt")
+      public void testUnique_borrowed_shared() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_borrowed_shared.kt");
+      }
+
+      @Test
       @TestMetadata("unique_fields.kt")
       public void testUnique_fields() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_fields.kt");
@@ -617,6 +635,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("unique_nullable_fold.kt")
       public void testUnique_nullable_fold() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_nullable_fold.kt");
+      }
+
+      @Test
+      @TestMetadata("unique_try.kt")
+      public void testUnique_try() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_try.kt");
       }
     }
 

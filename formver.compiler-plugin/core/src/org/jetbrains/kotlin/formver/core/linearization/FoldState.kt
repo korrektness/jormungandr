@@ -144,6 +144,23 @@ class FoldState {
         closeNode(ctx, node, place)
     }
 
+    /**
+     * Replace the predicate of [path] with a fresh instance, which havocs every value under it. [path] must be
+     * folded, and stays folded.
+     */
+    fun refresh(ctx: LinearizationContext, path: OwnedPath) {
+        if (roots == null) return
+        val cls = ctx.trackedClass(path.type) ?: return
+        if (!holds(path)) throw notHeld(ctx)
+        val place = path.fields.fold(ctx.rootPlace(path.root)) { parent, field -> ctx.fieldPlace(parent, field) }
+        val pos = ctx.source.asPosition
+        val access = place.guards.foldRight<Exp, Exp>(hierarchyPredicateAccess(place.exp, cls, ctx.source)) { guard, inner ->
+            Exp.Implies(guard, inner, pos)
+        }
+        ctx.addStatement { Stmt.Exhale(access, pos) }
+        ctx.addStatement { Stmt.Inhale(access, pos) }
+    }
+
     /** Move the predicate of [src] to [dst]: [src] holds nothing afterwards. [src] must be folded. */
     fun transfer(ctx: LinearizationContext, src: OwnedPath, dst: OwnedPath) {
         if (roots == null) return

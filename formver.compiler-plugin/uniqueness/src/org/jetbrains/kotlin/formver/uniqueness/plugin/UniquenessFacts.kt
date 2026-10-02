@@ -67,6 +67,16 @@ class FunctionUniquenessAnalysis internal constructor(
         (statesBefore.values + statesAfter.values).any { state -> state.children.values.any { it.data == Uniqueness.Unique } }
     }
 
+    /**
+     * Whether every path is `Shared` everywhere in the function: no path is ever `Unique`, `Unknown` or `Moved`.
+     */
+    val sharesEveryPath: Boolean by lazy {
+        (statesBefore.values + statesAfter.values).all { state -> state.children.values.all { it.isSharedThroughout() } }
+    }
+
+    private fun UniquenessState.isSharedThroughout(): Boolean =
+        data == Uniqueness.Shared && children.values.all { it.isSharedThroughout() }
+
     fun hasState(element: FirElement): Boolean = element in statesBefore
 
     /**
