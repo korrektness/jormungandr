@@ -52,6 +52,24 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("insertion_sort_array.kt")
+      public void testInsertion_sort_array() {
+        runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/insertion_sort_array.kt");
+      }
+
+      @Test
+      @TestMetadata("insertion_sort_functional.kt")
+      public void testInsertion_sort_functional() {
+        runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/insertion_sort_functional.kt");
+      }
+
+      @Test
+      @TestMetadata("insertion_sort_linked.kt")
+      public void testInsertion_sort_linked() {
+        runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/insertion_sort_linked.kt");
+      }
+
+      @Test
       @TestMetadata("max_character.kt")
       public void testMax_character() {
         runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/max_character.kt");
