@@ -1,0 +1,109 @@
+/generics.kt: info: Generated Viper text for genericMethod:
+field bf_t: Ref
+
+method genericMethod(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Box())
+  requires isSubtype(typeOf(x), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generics.kt: info: Generated Viper text for createBox:
+field bf_t: Ref
+
+method con(par_t: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_t), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), Box())
+  ensures acc(Box_unique(ret_1), write)
+  ensures (unfolding acc(Box_unique(ret_1), write) in ret_1.bf_t == par_t)
+
+
+method createBox() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var boolBox: Ref
+  var b: Ref
+  var anon_0: Ref
+  var intBox: Ref
+  var anon_1: Ref
+  boolBox := con(boolToRef(true))
+  anon_0 := havoc(nullable(anyType()))
+  b := anon_0
+  inhale isSubtype(typeOf(b), boolType())
+  intBox := con(intToRef(2))
+  anon_1 := havoc(nullable(anyType()))
+  v_ret_0 := anon_1
+  inhale isSubtype(typeOf(v_ret_0), intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generics.kt: info: Generated Viper text for setGenericField:
+field bf_t: Ref
+
+method con(par_t: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_t), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), Box())
+  ensures acc(Box_unique(ret_1), write)
+  ensures (unfolding acc(Box_unique(ret_1), write) in ret_1.bf_t == par_t)
+
+
+method setGenericField() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var box: Ref
+  box := con(intToRef(3))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generics.kt: info: Generated Viper text for genericFun:
+method genericFun(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  v_ret_0 := par_t
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generics.kt: info: Generated Viper text for callGenericFunc:
+method callGenericFunc() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon: Ref
+  anon := genericFun(intToRef(3))
+  x := anon
+  inhale isSubtype(typeOf(x), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method genericFun(par_t: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_t), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/generics.kt: info: Generated Viper text for genericAsIfCondition:
+field bf_t: Ref
+
+method genericAsIfCondition(box: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(box), Box())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := havoc(nullable(anyType()))
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), boolType())
+  if (boolFromRef(anon_0)) {
+    v_ret_0 := intToRef(20)
+  } else {
+    v_ret_0 := intToRef(10)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}

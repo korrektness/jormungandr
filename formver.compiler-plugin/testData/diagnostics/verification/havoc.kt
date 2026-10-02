@@ -1,5 +1,7 @@
 // FULL_VIPER_DUMP
 
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
+
 class B()
 
 class A(
@@ -21,6 +23,7 @@ class A(
     var classTypeNull: B?,
 )
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>havoc<!>(a: A): Unit {
     var localUnit = a.unit
     var localNothing = a.nothing

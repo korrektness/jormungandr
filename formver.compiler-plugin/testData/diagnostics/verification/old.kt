@@ -7,6 +7,7 @@ class C(
     var field: Int
 )
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>test<!>(c: @Unique @Borrowed C) {
     preconditions {
         c.field == 42

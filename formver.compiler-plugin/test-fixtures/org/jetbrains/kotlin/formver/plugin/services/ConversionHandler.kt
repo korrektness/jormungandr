@@ -20,6 +20,7 @@ class AfterConversionHandler(testServices: TestServices) : FirAnalysisHandler(te
         module: TestModule, info: FirOutputArtifact
     ) {
         testServices.conversionDiagnosticsCollector.addDiagnostics(info)
+        testServices.viperTextCollector.addDiagnostics(info)
 
         val frontendDiagnosticsPerFile =
             FirDiagnosticCollectorService(testServices).getFrontendDiagnosticsForModule(info)
@@ -39,6 +40,7 @@ class AfterConversionHandler(testServices: TestServices) : FirAnalysisHandler(te
             runChecks(
                 testServices,
                 { testServices.conversionDiagnosticsCollector.assertEquality() },
+                { testServices.viperTextCollector.assertEquality() },
                 { testServices.conversionTagCollector.assertEqual() })
 
         }

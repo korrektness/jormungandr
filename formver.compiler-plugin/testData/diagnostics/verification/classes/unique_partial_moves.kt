@@ -8,14 +8,17 @@ class A(var count: Int, var x: @Unique Box)
 
 class B(var y: @Unique A)
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>consume<!>(b: @Unique Box) {}
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>fresh<!>(): @Unique Box {
     val b: @Unique Box = Box(0)
     return b
 }
 
 // After the first `if`, `b.y.x` is moved on one arm only, so the merge holds `b` and `b.y` open with a hole there.
+@AlwaysVerify
 fun <!VIPER_TEXT!>moveInBranch<!>(b: @Unique B, c: Boolean, d: Boolean): @Unique B {
     b.y.count = 1
     if (c) consume(b.y.x)
@@ -28,6 +31,7 @@ fun <!VIPER_TEXT!>moveInBranch<!>(b: @Unique B, c: Boolean, d: Boolean): @Unique
     return b
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>refillEach<!>(b: @Unique @Borrowed B, n: Int) {
     var i = 0
     while (i < n) {
@@ -39,6 +43,7 @@ fun <!VIPER_TEXT!>refillEach<!>(b: @Unique @Borrowed B, n: Int) {
 }
 
 // The hole at `b.y.x` stays open across the loop, whose head holds `b` and `b.y` open around it.
+@AlwaysVerify
 fun <!VIPER_TEXT!>holeAcrossLoop<!>(b: @Unique B, n: Int): @Unique B {
     consume(b.y.x)
     var i = 0
@@ -51,6 +56,7 @@ fun <!VIPER_TEXT!>holeAcrossLoop<!>(b: @Unique B, n: Int): @Unique B {
 }
 
 // Moving `b.y` while it is open with a hole moves the open subtree, hole included.
+@AlwaysVerify
 fun <!VIPER_TEXT!>moveOpenSubtree<!>(b: @Unique B): @Unique A {
     consume(b.y.x)
     val a: @Unique A = b.y
@@ -68,6 +74,7 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>forgetsToRefill<!>(b: @Unique @Borrowed 
 }<!>
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>countOf<!>(a: @Unique A): Int = a.count
 
 // Passing `b.y` while the field `x` under it is moved out lets a value with a moved field escape.

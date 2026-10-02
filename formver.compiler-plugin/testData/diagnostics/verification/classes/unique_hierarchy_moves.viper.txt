@@ -1,0 +1,57 @@
+/unique_hierarchy_moves.kt: info: Generated Viper text for keepBase:
+field count: Ref
+
+method keepBase(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Base())
+  requires acc(Base_unique(b), write)
+  ensures acc(Base_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_hierarchy_moves.kt: info: Generated Viper text for upcastMove:
+field count: Ref
+
+field extra: Ref
+
+method keepBase(par_b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_b), Base())
+  requires acc(Base_unique(par_b), write)
+  ensures acc(Base_unique(par_b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method upcastMove(sub: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sub), Sub())
+  requires acc(Sub_unique(sub), write)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+  ensures acc(Base_unique(v_ret_0), write)
+{
+  var l0_b: Ref
+  var anon: Ref
+  unfold acc(Sub_unique(sub), write)
+  sub.extra := intToRef(1)
+  fold acc(Sub_unique(sub), write)
+  l0_b := sub
+  unfold acc(Sub_unique(sub), write)
+  unfold acc(Base_unique(l0_b), write)
+  l0_b.count := intToRef(2)
+  fold acc(Base_unique(l0_b), write)
+  anon := keepBase(l0_b)
+  v_ret_0 := l0_b
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_hierarchy_moves.kt: info: Generated Viper text for downcastMove:
+field count: Ref
+
+field extra: Ref
+
+method downcastMove(base: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(base), Base())
+  requires acc(Base_unique(base), write)
+  ensures isSubtype(typeOf(ret), Sub())
+  ensures acc(Sub_unique(ret), write)

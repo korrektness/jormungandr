@@ -1,0 +1,317 @@
+/throw.kt: info: Generated Viper text for requirePositive:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con(p0: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures acc(IllegalArgumentException_unique(ret_4), write)
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method requirePositive(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  if (intFromRef(x) <= 0) {
+    var anon: Ref
+    anon := con(stringToRef(Seq(110, 111, 116, 32, 112, 111, 115, 105, 116,
+      105, 118, 101)))
+    inhale false
+  }
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/throw.kt: info: Generated Viper text for throwFromElvis:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalStateException())
+  ensures acc(IllegalStateException_unique(ret_4), write)
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method throwFromElvis(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures v_ret_0 == x
+{
+  var y: Ref
+  if (x != nullValue()) {
+    y := x
+  } else {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_1 := con()
+    inhale false
+    y := anon_0
+  }
+  v_ret_0 := y
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/throw.kt: info: Generated Viper text for falseAssertionAfterThrow:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures acc(IllegalArgumentException_unique(ret_3), write)
+
+
+method falseAssertionAfterThrow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (intFromRef(x) > 0) {
+    var anon: Ref
+    anon := con()
+    inhale false
+    assert false
+  }
+  assert intFromRef(x) <= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/throw.kt: info: Generated Viper text for throwCaughtWithState:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures acc(IllegalArgumentException_unique(ret_3), write)
+
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method throwCaughtWithState() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var e: Ref
+  var anon_4: Ref
+  x := intToRef(0)
+  if (boolFromRef(anon_0)) {
+    goto catch
+  }
+  x := intToRef(1)
+  anon_1 := con()
+  if (boolFromRef(anon_2)) {
+    goto catch
+  }
+  inhale false
+  if (boolFromRef(anon_3)) {
+    goto catch
+  }
+  goto tryExit
+  label catch
+  if (intFromRef(x) == 0) {
+    anon_4 := boolToRef(true)
+  } else {
+    anon_4 := boolToRef(intFromRef(x) == 1)}
+  assert boolFromRef(anon_4)
+  goto tryExit
+  label tryExit
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/throw.kt: info: Generated Viper text for throwCaughtSkipsState:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures acc(IllegalArgumentException_unique(ret_3), write)
+
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method throwCaughtSkipsState() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var e: Ref
+  x := intToRef(0)
+  if (boolFromRef(anon_0)) {
+    goto catch
+  }
+  x := intToRef(1)
+  anon_1 := con()
+  if (boolFromRef(anon_2)) {
+    goto catch
+  }
+  inhale false
+  if (boolFromRef(anon_3)) {
+    goto catch
+  }
+  goto tryExit
+  label catch
+  assert intFromRef(x) == 0
+  goto tryExit
+  label tryExit
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/throw.kt: info: Generated Viper text for throwReachesOuterCatch:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalStateException())
+  ensures acc(IllegalStateException_unique(ret_3), write)
+
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method throwReachesOuterCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var l3_e: Ref
+  var anon_6: Ref
+  var l4_e: Ref
+  x := intToRef(0)
+  if (boolFromRef(anon_0)) {
+    goto catch_0
+  }
+  if (boolFromRef(anon_1)) {
+    goto catch_1
+  }
+  x := intToRef(1)
+  anon_2 := con()
+  if (boolFromRef(anon_3)) {
+    goto catch_0
+  }
+  if (boolFromRef(anon_4)) {
+    goto catch_1
+  }
+  inhale false
+  if (boolFromRef(anon_5)) {
+    goto catch_1
+  }
+  goto tryExit_1
+  label catch_1
+  x := intToRef(2)
+  goto tryExit_1
+  label tryExit_1
+  if (boolFromRef(anon_6)) {
+    goto catch_0
+  }
+  goto tryExit_0
+  label catch_0
+  assert !(intFromRef(x) == 1)
+  goto tryExit_0
+  label tryExit_0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/throw.kt: info: Generated Viper text for rethrowFromCatch:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method rethrowFromCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var e: Ref
+  if (boolFromRef(anon_0)) {
+    goto catch
+  }
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  if (boolFromRef(anon_1)) {
+    goto catch
+  }
+  goto tryExit
+  label catch
+  inhale false
+  goto tryExit
+  label tryExit
+  label lbl_ret_0
+}

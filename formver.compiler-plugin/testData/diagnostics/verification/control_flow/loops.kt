@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>whileLoop<!>(b: Boolean): Boolean {
     while (b) {
         val a = 1
@@ -8,6 +10,7 @@ fun <!VIPER_TEXT!>whileLoop<!>(b: Boolean): Boolean {
     return false
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>whileFunctionCondition<!>() {
     while (whileLoop(true)) {
     }
@@ -18,12 +21,14 @@ fun returnsBoolean(): Boolean {
     return false
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>dynamicLambdaInvariant<!>(f: () -> Int) {
     while (returnsBoolean()) {
         f()
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>functionAssignment<!>(f: () -> Int) {
     val g = f
     while (returnsBoolean()) {
@@ -31,6 +36,7 @@ fun <!VIPER_TEXT!>functionAssignment<!>(f: () -> Int) {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>conditionalFunctionAssignment<!>(b: Boolean, f: () -> Int, h: () -> Int) {
     val g = if (b) f else h
     while (returnsBoolean()) {

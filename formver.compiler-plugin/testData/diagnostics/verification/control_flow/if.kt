@@ -1,4 +1,7 @@
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
+
+@AlwaysVerify
 fun <!VIPER_TEXT!>simpleIf<!>(): Int {
     if (true) {
         return 0
@@ -6,6 +9,7 @@ fun <!VIPER_TEXT!>simpleIf<!>(): Int {
         return 1
     }
 }
+@AlwaysVerify
 fun <!VIPER_TEXT!>ifOnParameter<!>(b: Boolean): Int {
     if (b) {
         return 0
@@ -13,6 +17,7 @@ fun <!VIPER_TEXT!>ifOnParameter<!>(b: Boolean): Int {
         return 1
     }
 }
+@AlwaysVerify
 fun <!VIPER_TEXT!>ifAsExpression<!>(): Boolean {
     var b = false
     // Including side effects so that we can see the sequencing is correct.

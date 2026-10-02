@@ -1,5 +1,6 @@
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 open class Base {
     open val field: Int? = null
@@ -22,6 +23,7 @@ class FinalClassFinalFieldValDerived: Base() {
 }
 
 @OptIn(ExperimentalContracts::class)
+@AlwaysVerify
 fun <!VIPER_TEXT!>extractInt<!>(base: Base, returnNull: Boolean): Int? {
     contract {
         returns(null) implies returnNull

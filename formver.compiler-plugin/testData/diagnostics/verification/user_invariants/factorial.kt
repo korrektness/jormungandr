@@ -2,6 +2,7 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>fact<!>(n: Int): Int {
     preconditions {
         n >= 0

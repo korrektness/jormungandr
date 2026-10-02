@@ -27,6 +27,11 @@ val updatingTestData: Boolean
 abstract class DiagnosticsCollector(val testServices: TestServices) : TestService {
     abstract val fileExtension: String
 
+    /**
+     * Whether this collector's golden file holds [diagnostic].
+     */
+    protected open fun records(diagnostic: KtDiagnostic): Boolean = true
+
     private val diagnostics: MutableList<KtDiagnostic> = mutableListOf()
 
     private fun render(): String? {
@@ -61,13 +66,13 @@ abstract class DiagnosticsCollector(val testServices: TestServices) : TestServic
             val currentModule = part.module
             for (file in currentModule.files) {
                 val firFile = info.mainFirFiles[file] ?: continue
-                diagnostics.addAll(frontendDiagnosticsPerFile[firFile].map { it.diagnostic })
+                diagnostics.addAll(frontendDiagnosticsPerFile[firFile].map { it.diagnostic }.filter(::records))
             }
         }
     }
 
     fun addDiagnostics(info: List<KtDiagnostic>) {
-        diagnostics.addAll(info)
+        diagnostics.addAll(info.filter(::records))
     }
 
     /**

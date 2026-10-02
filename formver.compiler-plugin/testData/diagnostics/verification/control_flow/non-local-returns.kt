@@ -1,11 +1,13 @@
 
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 @NeverConvert
 inline fun invoke(f: (Int) -> Int): Int {
     return f(0)
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>simpleReturn<!>(): Int {
     return invoke {
         return 1
@@ -13,6 +15,7 @@ fun <!VIPER_TEXT!>simpleReturn<!>(): Int {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>returnAtInline<!>(): Int {
     return invoke {
         return@invoke 1
@@ -20,6 +23,7 @@ fun <!VIPER_TEXT!>returnAtInline<!>(): Int {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>doubleInvoke<!>(): Int {
     return invoke {
         invoke {
@@ -37,6 +41,7 @@ inline fun invoke2(f: (Int) -> Int): Int {
     return f(1)
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>nested<!>(): Int {
     return invoke {
         invoke2 {

@@ -12,6 +12,7 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>readCustomGetter<!>(b: @Unique Box): Int
     return d + <!INVALID_MOVED_ACCESS!>b<!>.value
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>customGetterLast<!>(b: @Unique Box): Int {
     b.value = 1
     return b.doubled

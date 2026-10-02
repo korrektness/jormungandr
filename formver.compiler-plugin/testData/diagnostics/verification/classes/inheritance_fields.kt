@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
+
 
 open class FieldA
 open class FieldB : FieldA()
@@ -9,6 +11,7 @@ open class A(val fieldNotOverride: C) {
 
 open class B(override val fieldOverride: FieldB) : A(C())
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>createB<!>() {
     val fieldB = FieldB()
     val b = B(fieldB)
@@ -28,6 +31,7 @@ open class NoBackingFieldClass: FirstBackingFieldClass() {
 class SecondBackingFieldClass(override val x: Int) : NoBackingFieldClass()
 
 // BF stands for backing field
+@AlwaysVerify
 fun <!VIPER_TEXT!>createBFsAndNoBF<!>() {
     val fbf = FirstBackingFieldClass()
     val fbfx = fbf.x
@@ -41,6 +45,7 @@ fun <!VIPER_TEXT!>createBFsAndNoBF<!>() {
 open class X(val a: Int)
 class Y(a: Int) : X(0)
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>createY<!>() {
     val y = Y(10)
     val ya = y.a

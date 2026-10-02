@@ -27,7 +27,7 @@ done
 
 golden_files() {
     find "${TEST_DATA_DIRS[@]}" \
-        \( -name "*.fir.diag.txt" -o -name "*.viper.diag.txt" \)
+        \( -name "*.fir.diag.txt" -o -name "*.viper.diag.txt" -o -name "*.viper.txt" \)
 }
 
 # Golden files are keyed to a .kt of the same stem. Renaming or deleting the
@@ -35,6 +35,7 @@ golden_files() {
 while read -r f; do
     src="${f%.fir.diag.txt}"
     src="${src%.viper.diag.txt}"
+    src="${src%.viper.txt}"
     if [ ! -f "$src.kt" ]; then
         echo "golden file with no .kt source: $f"
         status=1

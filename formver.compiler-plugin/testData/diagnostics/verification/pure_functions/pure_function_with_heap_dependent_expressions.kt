@@ -4,21 +4,25 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Node(val value: Int, val next: Node?)
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>getValue<!>(node: Node): Int {
     return node.value
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>getSafeNextValue<!>(node: Node): Int {
     return node.next?.value ?: -1
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>getSafeNextNextValue<!>(node: Node): Int {
     return node.next?.next?.value ?: 0
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>sumFirstTwoNodes<!>(node: Node): Int {
     val nextNode = node.next
     return if (nextNode != null) {
@@ -29,11 +33,13 @@ fun <!VIPER_TEXT!>sumFirstTwoNodes<!>(node: Node): Int {
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>isLastNode<!>(node: Node): Boolean {
     return node.next == null
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>length<!>(node: Node): Int {
     val nextNode = node.next
     return if (nextNode == null) {
@@ -44,6 +50,7 @@ fun <!VIPER_TEXT!>length<!>(node: Node): Int {
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>sumAllNodes<!>(node: Node): Int {
     val nextNode = node.next
     return if (nextNode == null) {
@@ -54,6 +61,7 @@ fun <!VIPER_TEXT!>sumAllNodes<!>(node: Node): Int {
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>containsValue<!>(node: Node, target: Int): Boolean {
     if (node.value == target) return true
     val nextNode = node.next
@@ -61,6 +69,7 @@ fun <!VIPER_TEXT!>containsValue<!>(node: Node, target: Int): Boolean {
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>aliasAndReassign<!>(node: Node): Int {
     val alias1 = node
     val alias2 = alias1.next
@@ -73,21 +82,25 @@ fun <!VIPER_TEXT!>aliasAndReassign<!>(node: Node): Int {
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>id<!>(node: Node?): Node? {
     return node
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>useIdentityFunction<!>(node: Node): Int {
     val sameNode = id(node)
     return sameNode?.value ?: 0
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>getNextValueUsingId<!>(node: Node): Int {
     val nextNode = id(node.next)
     return if (nextNode == null) 0 else nextNode.value
 }
 
 @Pure
+@AlwaysVerify
 fun <!VIPER_TEXT!>testBorrowed<!>(node: @Unique @Borrowed Node): Unit = Unit

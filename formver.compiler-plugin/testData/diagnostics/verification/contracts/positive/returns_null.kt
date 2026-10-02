@@ -1,7 +1,9 @@
 import kotlin.contracts.contract
 import kotlin.contracts.ExperimentalContracts
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 @OptIn(ExperimentalContracts::class)
+@AlwaysVerify
 fun <!VIPER_TEXT!>simple_returns_null<!>(x: Int?): Int? {
     contract {
         returns(null)
@@ -11,6 +13,7 @@ fun <!VIPER_TEXT!>simple_returns_null<!>(x: Int?): Int? {
 }
 
 @OptIn(ExperimentalContracts::class)
+@AlwaysVerify
 fun <!VIPER_TEXT!>returns_null_implies<!>(x: Boolean?): Boolean? {
     contract {
         returns(null) implies (x == null)
@@ -20,6 +23,7 @@ fun <!VIPER_TEXT!>returns_null_implies<!>(x: Boolean?): Boolean? {
 }
 
 @OptIn(ExperimentalContracts::class)
+@AlwaysVerify
 fun <!VIPER_TEXT!>returns_null_with_if<!>(x: Int?, y: Int?, z: Int?): Int? {
     contract {
         returns(null) implies ((x == null && y == null) || z == null)
@@ -33,6 +37,7 @@ fun <!VIPER_TEXT!>returns_null_with_if<!>(x: Int?, y: Int?, z: Int?): Int? {
 }
 
 @OptIn(ExperimentalContracts::class)
+@AlwaysVerify
 fun <!VIPER_TEXT!>non_nullable_returns_not_null<!>(x: Int): Int {
     contract {
         returnsNotNull()
@@ -41,6 +46,7 @@ fun <!VIPER_TEXT!>non_nullable_returns_not_null<!>(x: Int): Int {
 }
 
 @OptIn(ExperimentalContracts::class)
+@AlwaysVerify
 fun <!VIPER_TEXT!>non_nullable_compared_to_null<!>(x: Int, y: Int): Int {
     contract {
         returns() implies (<!SENSELESS_COMPARISON!>y == null<!> || <!SENSELESS_COMPARISON!>x != null<!>)

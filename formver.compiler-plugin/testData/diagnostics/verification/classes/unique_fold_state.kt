@@ -6,10 +6,12 @@ class Box(var value: Int)
 
 class Holder(var count: Int, var box: @Unique Box)
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>bump<!>(b: @Unique @Borrowed Box) {
     b.value = b.value + 1
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>useHolder<!>(h: @Unique @Borrowed Holder) {
     h.count = 3
     val before = h.count

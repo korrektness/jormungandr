@@ -4,13 +4,16 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 class Box(var value: Int)
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>reset<!>(b: @Unique Box): @Unique Box {
     b.value = 0
     return b
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>sink<!>(b: @Unique Box) {}
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>bumpEach<!>(b: @Unique @Borrowed Box, n: Int) {
     var i = 0
     while (i < n) {
@@ -19,6 +22,7 @@ fun <!VIPER_TEXT!>bumpEach<!>(b: @Unique @Borrowed Box, n: Int) {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>cycle<!>(n: Int) {
     var b: @Unique Box = Box(0)
     var i = 0
@@ -29,6 +33,7 @@ fun <!VIPER_TEXT!>cycle<!>(n: Int) {
     sink(b)
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>jumps<!>(b: @Unique @Borrowed Box?, n: Int) {
     var i = 0
     while (i < n) {
@@ -40,6 +45,7 @@ fun <!VIPER_TEXT!>jumps<!>(b: @Unique @Borrowed Box?, n: Int) {
 }
 
 // The loop moves `b` on every iteration, so the checker has it Moved at the head although it is Unique on entry.
+@AlwaysVerify
 fun <!VIPER_TEXT!>movedAtHead<!>(n: Int) {
     var b: @Unique Box = Box(0)
     var i = 0

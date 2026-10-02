@@ -7,8 +7,11 @@ class Box(var content: Int)
 <!VIPER_VERIFICATION_ERROR!>@Pure
 fun <!VERIFICATION_SKIPPED!>readShared<!>(b: Box): Int = <!UNSUPPORTED_OWNERSHIP!>b.content<!><!>
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>firstCaller<!>(b: Box): Int = readShared(b)
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>secondCaller<!>(b: Box): Int = readShared(b)
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>thirdCaller<!>(b: Box): Int = readShared(b)

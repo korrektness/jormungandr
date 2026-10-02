@@ -14,11 +14,13 @@ class Rich(val fixed: @Unique Cell, val plain: Int) : Base() {
     var next: @Unique Cell? = null
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>inspect<!>(b: @Unique @Borrowed Base) {
     if (b is Sub) b.extra = 1
 }
 
 // The callee writes `extra` through its smart cast, which the caller cannot see: the field is havoced.
+@AlwaysVerify
 fun <!VIPER_TEXT!>subFieldAfterBorrow<!>(sub: @Unique Sub) {
     sub.extra = 0
     inspect(sub)
@@ -26,6 +28,7 @@ fun <!VIPER_TEXT!>subFieldAfterBorrow<!>(sub: @Unique Sub) {
 }
 
 // A plain val is heap-independent and immutable: nothing to havoc.
+@AlwaysVerify
 fun <!VIPER_TEXT!>plainValAfterBorrow<!>(rich: @Unique Rich) {
     val p = rich.plain
     inspect(rich)
@@ -33,6 +36,7 @@ fun <!VIPER_TEXT!>plainValAfterBorrow<!>(rich: @Unique Rich) {
 }
 
 // The nested predicates of `next` and of the getter value of `fixed` are havoced together with `next`.
+@AlwaysVerify
 fun <!VIPER_TEXT!>nestedAfterBorrow<!>(rich: @Unique Rich) {
     rich.next?.value = 0
     inspect(rich)

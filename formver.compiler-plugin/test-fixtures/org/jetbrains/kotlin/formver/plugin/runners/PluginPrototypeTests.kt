@@ -9,6 +9,7 @@ package org.jetbrains.kotlin.formver.plugin.runners
 import org.jetbrains.kotlin.formver.common.services.DiagnosticsCollector
 import org.jetbrains.kotlin.formver.common.services.PluginAnnotationsProvider
 import org.jetbrains.kotlin.formver.common.services.TagCollector
+import org.jetbrains.kotlin.diagnostics.KtDiagnostic
 import org.jetbrains.kotlin.formver.plugin.compiler.PluginErrors
 import org.jetbrains.kotlin.formver.plugin.services.*
 import org.jetbrains.kotlin.test.FirParser
@@ -41,6 +42,15 @@ fun getTestMode(): TestMode {
 
 class ConversionDiagnosticsCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
     override val fileExtension: String = ".fir.diag.txt"
+    override fun records(diagnostic: KtDiagnostic): Boolean = diagnostic.factory != PluginErrors.VIPER_TEXT
+}
+
+/**
+ * The generated Viper text, kept apart from [ConversionDiagnosticsCollector] so that the diagnostics stay readable.
+ */
+class ViperTextCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
+    override val fileExtension: String = ".viper.txt"
+    override fun records(diagnostic: KtDiagnostic): Boolean = diagnostic.factory == PluginErrors.VIPER_TEXT
 }
 
 class VerificationDiagnosticsCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
@@ -55,6 +65,7 @@ class AllTagCollector(testService: TestServices) : TagCollector(testService)
 
 
 val TestServices.conversionDiagnosticsCollector: ConversionDiagnosticsCollector by TestServices.testServiceAccessor()
+val TestServices.viperTextCollector: ViperTextCollector by TestServices.testServiceAccessor()
 val TestServices.verificationDiagnosticsCollector: VerificationDiagnosticsCollector by TestServices.testServiceAccessor()
 val TestServices.conversionTagCollector: ConversionTagCollector by TestServices.testServiceAccessor()
 val TestServices.allTagCollector: AllTagCollector by TestServices.testServiceAccessor()
@@ -94,6 +105,7 @@ abstract class AbstractPhasedDiagnosticTest : AbstractKotlinCompilerWithTargetBa
 
         // These special services are used to divide the conversion and verification diagnostics/tags
         useAdditionalService(::ConversionDiagnosticsCollector)
+        useAdditionalService(::ViperTextCollector)
         useAdditionalService(::VerificationDiagnosticsCollector)
         useAdditionalService(::ConversionTagCollector)
         useAdditionalService(::AllTagCollector)

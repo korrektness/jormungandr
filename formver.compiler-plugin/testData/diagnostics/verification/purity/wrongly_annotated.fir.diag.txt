@@ -1,12 +1,3 @@
-/wrongly_annotated.kt: info: Generated Viper text for iAmAMethod:
-method iAmAMethod() returns (v_ret_0: Ref)
-  ensures isSubtype(typeOf(v_ret_0), intType())
-{
-  v_ret_0 := intToRef(1)
-  goto lbl_ret_0
-  label lbl_ret_0
-}
-
 /wrongly_annotated.kt: error: Impure function body detected in pure function
 
 /wrongly_annotated.kt: error: Function 'testWronglyAnnotatedAsPure' was not verified because of errors in its declaration
@@ -22,17 +13,6 @@ method iAmAMethod() returns (v_ret_0: Ref)
 /wrongly_annotated.kt: error: Reading this var property needs a @Unique receiver.
 
 /wrongly_annotated.kt: error: Reading this var property needs a @Unique receiver.
-
-/wrongly_annotated.kt: info: Generated Viper text for impureExtension:
-field value: Ref
-
-method impureExtension(v_this_extension: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(v_this_extension), Field())
-  ensures isSubtype(typeOf(v_ret_0), unitType())
-{
-  label lbl_ret_0
-  inhale isSubtype(typeOf(v_ret_0), unitType())
-}
 
 /wrongly_annotated.kt: error: Impure function body detected in pure function
 

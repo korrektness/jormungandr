@@ -17,7 +17,8 @@ We use the test framework built for kotlinc. A test is a `.kt` file under
 `formver.compiler-plugin/testData/diagnostics/` annotated with expected
 diagnostics, alongside golden files holding the diagnostic text:
 
-- `.fir.diag.txt` — the conversion output, including the generated Viper code.
+- `.fir.diag.txt` — the conversion diagnostics.
+- `.viper.txt` — the generated Viper code.
 - `.viper.diag.txt` — verification diagnostics. Present only where verification
   reported something.
 

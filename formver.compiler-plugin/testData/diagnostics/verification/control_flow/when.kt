@@ -1,5 +1,8 @@
 // FULL_JDK
 
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
+
+@AlwaysVerify
 fun <!VIPER_TEXT!>returnWhen<!>(a: Boolean, b: Boolean, c: Boolean): Int {
     return when {
         a -> 0
@@ -9,6 +12,7 @@ fun <!VIPER_TEXT!>returnWhen<!>(a: Boolean, b: Boolean, c: Boolean): Int {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>whenReturn<!>(a: Boolean, b: Boolean, c: Boolean): Int {
     when {
         a -> return 0
@@ -18,6 +22,7 @@ fun <!VIPER_TEXT!>whenReturn<!>(a: Boolean, b: Boolean, c: Boolean): Int {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>singleBranchWhen<!>(a: Boolean): Int {
     var x = 1
     when {
@@ -26,6 +31,7 @@ fun <!VIPER_TEXT!>singleBranchWhen<!>(a: Boolean): Int {
     return x
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>noElseWhen<!>(a: Boolean, b: Boolean, c: Boolean): Int {
     var y = 0
     when {
@@ -36,6 +42,7 @@ fun <!VIPER_TEXT!>noElseWhen<!>(a: Boolean, b: Boolean, c: Boolean): Int {
     return y
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>whenWithSubjectVar<!>(x: Int): Int {
     return when (x) {
         1 -> 2
@@ -44,6 +51,7 @@ fun <!VIPER_TEXT!>whenWithSubjectVar<!>(x: Int): Int {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>whenWithSubjectCall<!>(x: Int): Int {
     return when (whenWithSubjectVar(x)) {
         1 -> 2
@@ -56,11 +64,13 @@ fun <!VIPER_TEXT!>whenWithSubjectCall<!>(x: Int): Int {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>emptyWhen<!>(): Int {
     when { }
     return 1
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>unusedResult<!>(): Int {
     val x = when {
         else -> {
@@ -76,17 +86,20 @@ fun <!VIPER_TEXT!>unusedResult<!>(): Int {
 open class Foo()
 class Bar() : Foo()
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>whenIs<!>(x: Foo): Boolean = when(x) {
     is Bar -> true
     else -> false
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>whenSubjectVal<!>(): Int =
     when (val x = 0) {
         1 -> 1
         else -> x
     }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>whenSubjectValNested<!>() {
     when (val x = 1) {
         0 -> 0
@@ -102,6 +115,7 @@ fun <!VIPER_TEXT!>whenSubjectValNested<!>() {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>whenSubjectVarShadowing<!>() {
     val x = 0
     when (val x = 1) {

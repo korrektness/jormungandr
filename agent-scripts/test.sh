@@ -265,14 +265,37 @@ report() {
     done <<<"$files"
 }
 
+# One line per file: how many lines the golden gained and lost.
+report_stat() {
+    local header="$1"; shift
+    local files file added removed
+    files="$(changed "$@")"
+    if [[ -z "$files" ]]; then
+        return 0
+    fi
+    echo
+    echo "$header"
+    while IFS= read -r file; do
+        if git ls-files --error-unmatch "$file" >/dev/null 2>&1; then
+            read -r added removed _ < <(git diff --numstat -- "$file")
+        else
+            added="$(wc -l <"$file")"
+            removed=0
+        fi
+        echo "  $file +$added -$removed"
+    done <<<"$files"
+}
+
 echo
 echo "=== golden changes ==="
 # Verification diagnostics are short and are what gets recorded by accident,
 # so they are shown whole.
 report "verification produced diagnostics for these; confirm that is intended:" 40 \
     '*.viper.diag.txt'
-report "conversion output changed:" 40 \
+# Conversion diagnostics are what a reviewer reads; the Viper text is bulk.
+report "conversion diagnostics changed:" 100000 \
     '*.fir.diag.txt'
+report_stat "Viper text changed (lines added/removed):" '*.viper.txt'
 # Under --record-outcomes, outcome changes are among these, so nothing is cut.
 if [[ "$RECORD_OUTCOMES" -eq 1 ]]; then
     marker_cap=100000

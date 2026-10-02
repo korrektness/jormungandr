@@ -2,11 +2,13 @@
 
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 import java.lang.IllegalArgumentException
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 @NeverConvert
 fun call(x: Int) {
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>tryCatch<!>() {
     try {
         call(0)
@@ -16,6 +18,7 @@ fun <!VIPER_TEXT!>tryCatch<!>() {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>nestedTryCatch<!>() {
     try {
         call(0)
@@ -36,6 +39,7 @@ inline fun callTwice() {
     call(1)
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>tryCatchWithInline<!>() {
     try {
         callTwice()
@@ -44,6 +48,7 @@ fun <!VIPER_TEXT!>tryCatchWithInline<!>() {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>tryCatchShadowing<!>() {
     val x = 0
     try {
@@ -54,6 +59,7 @@ fun <!VIPER_TEXT!>tryCatchShadowing<!>() {
     }
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>multipleCatches<!>() {
     try {
         call(0)
@@ -70,6 +76,7 @@ fun <!VIPER_TEXT!>multipleCatches<!>() {
 @NeverConvert
 fun ignore(e: Exception) {}
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>useException<!>() {
     try {
         call(0)

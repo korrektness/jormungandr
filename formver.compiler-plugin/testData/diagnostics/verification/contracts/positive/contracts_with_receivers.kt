@@ -1,8 +1,10 @@
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 open class Class {
     @OptIn(ExperimentalContracts::class)
+    @AlwaysVerify
     fun <!VIPER_TEXT!>is2<!>(): Boolean {
         contract {
             returns(true) implies (this@Class is Impl2)
@@ -11,6 +13,7 @@ open class Class {
     }
 
     @OptIn(ExperimentalContracts::class)
+    @AlwaysVerify
     fun Class.<!VIPER_TEXT!>is1butWithDispatch<!>(): Boolean {
         contract {
             returns(true) implies (this@is1butWithDispatch is Impl1)
@@ -23,6 +26,7 @@ class Impl1: Class()
 class Impl2: Class()
 
 @OptIn(ExperimentalContracts::class)
+@AlwaysVerify
 fun Class.<!VIPER_TEXT!>is1<!>(): Boolean {
     contract {
         returns(true) implies (this@is1 is Impl1)

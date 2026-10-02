@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.test.services.TestServices
 fun shouldSkipByTestMode(testServices: TestServices): Boolean = when (getTestMode()) {
     TestMode.CHECK_CONVERSION -> true
     TestMode.UPDATE -> !testServices.conversionDiagnosticsCollector.resultHasChanged()
+            && !testServices.viperTextCollector.resultHasChanged()
     TestMode.FULL -> false
 }
 
@@ -216,6 +217,7 @@ class ViperResultHandler(testServices: TestServices) :
         runChecks(
             testServices,
             { testServices.conversionDiagnosticsCollector.assertEquality() },
+            { testServices.viperTextCollector.assertEquality() },
             { testServices.verificationDiagnosticsCollector.assertEquality() },
             { testServices.allTagCollector.assertEqual() },
         )

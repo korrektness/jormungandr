@@ -8,9 +8,11 @@ class Sub(count: Int) : Base(count) {
     var extra = 0
 }
 
+@AlwaysVerify
 fun <!VIPER_TEXT!>keepBase<!>(b: @Unique @Borrowed Base) {}
 
 // An upcast move exposes the Base instance and leaks Sub's own fields.
+@AlwaysVerify
 fun <!VIPER_TEXT!>upcastMove<!>(sub: @Unique Sub): @Unique Base {
     sub.extra = 1
     val b: @Unique Base = sub
