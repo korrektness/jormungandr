@@ -956,6 +956,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("inline_calls_in_specifications.kt")
+      public void testInline_calls_in_specifications() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/inline_calls_in_specifications.kt");
+      }
+
+      @Test
       @TestMetadata("inline_returns.kt")
       public void testInline_returns() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/inline_returns.kt");

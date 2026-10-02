@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.FirOperation
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.isBoolean
@@ -375,8 +376,11 @@ fun ProgramConversionContext.linearizePureBody(
     return pureFunBodyLinearizer.constructExpression()
 }
 
-private const val INVALID_STATEMENT_MSG =
-    "Every statement in invariant block must be a pure boolean invariant."
+private fun FirStatement.requireInvariant() {
+    if (this !is FirExpression || !resolvedType.isBoolean) {
+        throw UnsupportedFeatureException(source, "Every statement in invariant block must be a pure boolean invariant.")
+    }
+}
 
 data class InvariantsAndTriggers(
     val invariants: List<ExpEmbedding>,
@@ -393,9 +397,7 @@ fun StmtConversionContext.collectInvariants(block: FirBlock) = buildList {
         return@buildList
     }
     block.statements.forEach { stmt ->
-        check(stmt is FirExpression && stmt.resolvedType.isBoolean) {
-            INVALID_STATEMENT_MSG
-        }
+        stmt.requireInvariant()
         add(stmt.accept(StmtConversionVisitor, this@collectInvariants))
     }
 }
@@ -431,9 +433,7 @@ fun StmtConversionContext.collectInvariantsAndTriggers(block: FirBlock): Invaria
         }
 
         // Otherwise, treat as invariant
-        check(stmt is FirExpression && stmt.resolvedType.isBoolean) {
-            INVALID_STATEMENT_MSG
-        }
+        stmt.requireInvariant()
         invariants.add(stmt.accept(StmtConversionVisitor, this))
     }
 

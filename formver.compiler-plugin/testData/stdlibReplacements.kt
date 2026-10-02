@@ -25,6 +25,9 @@ inline fun <T> T.apply(block: T.() -> Unit): T {
 inline fun <T, R> with(receiver: T, block: T.() -> R): R = receiver.block()
 
 @NeverConvert
+inline fun <T> T.takeIf(predicate: (T) -> Boolean): T? = if (predicate(this)) this else null
+
+@NeverConvert
 inline fun repeat(times: Int, action: (Int) -> Unit) {
     var counter: Int = 0
     while (counter < times) {

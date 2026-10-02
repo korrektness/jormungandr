@@ -746,6 +746,7 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         context(nameResolver: NameResolver)
         override fun registerNames() {
             nameResolver.register(variable.name)
+            varExp.registerNames()
             body.registerNames()
         }
     }
@@ -765,6 +766,7 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
 
         context(nameResolver: NameResolver)
         override fun registerNames() {
+            condExp.registerNames()
             thenExp.registerNames()
             elseExp.registerNames()
         }

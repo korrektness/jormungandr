@@ -39,6 +39,10 @@ interface LinearizationContext {
     val source: KtSourceElement?
     val logicOperatorPolicy: LogicOperatorPolicy
 
+    /** Whether the linearized code inhales the type invariants the conversion records for a value. */
+    val inhalesInvariants: Boolean
+        get() = true
+
     val typeResolver: TypeResolver
 
     /** The unique predicates the linearized code holds; `null` where no permissions are tracked. */
@@ -116,14 +120,14 @@ interface LinearizationContext {
 
     fun addModifier(mod: StmtModifier)
 
+    fun addLabel(label: Label) {
+        foldState?.arriveAt(this, label.name)
+        addDeclaration(label.toDecl())
+        addStatement { label.toStmt() }
+    }
+
     fun resolveVariableName(name: SymbolicName): SymbolicName
 }
 
 fun LinearizationContext.freshAnonVar(init: TypeBuilder.() -> PretypeBuilder): AnonymousVariableEmbedding =
     freshAnonVar(buildType(init))
-
-fun LinearizationContext.addLabel(label: Label) {
-    foldState?.arriveAt(this, label.name)
-    addDeclaration(label.toDecl())
-    addStatement { label.toStmt() }
-}

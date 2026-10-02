@@ -47,6 +47,13 @@ fun abs(x: Int): Int {
 
 Multiple conditions are implicitly conjoined. The postconditions block receives the return value as its parameter.
 
+A condition is a single expression. Besides operators, it may use `if`, `when`, `?.`, `?:` and `as?` for their
+values, and call `@Pure` functions and inline functions whose bodies are in the sources being compiled, together
+with the lambdas passed to them. Inside such a lambda, a local can be declared and initialized once, and a
+`return@label` can end the lambda as its last expression. Anything that needs a statement is reported as an
+unsupported construct: loops, assignments to other variables, an `if` or `when` whose value is unused, and calls
+to other functions. The standard library's compiled inline functions, such as `let`, count as other functions.
+
 ## Loop Invariants
 
 ```kotlin

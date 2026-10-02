@@ -313,14 +313,37 @@ data class LinearizationVisitor(
 
     override fun visitSafeCast(e: SafeCast): Linearizable = object : StoredResultLinearizable(e) {
         override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
-            val expViper = e.exp.linearize().toViper(ctx)
-            val expWrapped = ExpWrapper(expViper, e.exp.type)
-            val conditional = If(Is(expWrapped, e.targetType), expWrapped.withType(e.type), NullLit.withType(e.type), e.type)
-            conditional.linearize().toViperStoringIn(result, ctx)
+            conditional(ctx).toViperStoringIn(result, ctx)
+        }
+
+        override fun toViper(ctx: LinearizationContext): Exp = conditional(ctx).toViper(ctx)
+
+        private fun conditional(ctx: LinearizationContext): Linearizable {
+            val expWrapped = ExpWrapper(e.exp.linearize().toViper(ctx), e.exp.type)
+            return If(Is(expWrapped, e.targetType), expWrapped.withType(e.type), NullLit.withType(e.type), e.type).linearize()
         }
     }
 
     override fun visitInhaleInvariants(e: InhaleInvariants): Linearizable {
+        val inhaling = inhalingInvariants(e)
+        val value = e.exp.linearize()
+        fun LinearizationContext.chosen() = if (inhalesInvariants) inhaling else value
+        return object : Linearizable {
+            override fun toViper(ctx: LinearizationContext): Exp = ctx.chosen().toViper(ctx)
+
+            override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) =
+                ctx.chosen().toViperStoringIn(result, ctx)
+
+            override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) =
+                ctx.chosen().toViperMaybeStoringIn(result, ctx)
+
+            override fun toViperBuiltinType(ctx: LinearizationContext): Exp = ctx.chosen().toViperBuiltinType(ctx)
+
+            override fun toViperUnusedResult(ctx: LinearizationContext) = ctx.chosen().toViperUnusedResult(ctx)
+        }
+    }
+
+    private fun inhalingInvariants(e: InhaleInvariants): Linearizable {
         // InhaleInvariantsForVariable: expression is a variable, use OnlyToViper-style
         // (toViperUnusedResult must call toViper, not just iterate children, to emit the inhales)
         if (e.exp.underlyingVariable != null) {
