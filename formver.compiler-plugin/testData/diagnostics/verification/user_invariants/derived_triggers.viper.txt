@@ -632,9 +632,9 @@ method rejectedCandidates(arr: Ref) returns (v_ret_0: Ref)
           arr.contents[anon_builtin_1]))))
   ensures (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin_2: Int ::
-        { intToRef(arr.contents[anon_builtin_2]) }
+        { arr.contents[anon_builtin_2] }
         (forall anon_builtin_3: Int ::
-          { intFromRef(first(intToRef(arr.contents[anon_builtin_2]), intToRef(anon_builtin_3))) }
+          { first(intToRef(arr.contents[anon_builtin_2]), intToRef(anon_builtin_3)) }
           0 <= anon_builtin_2 && anon_builtin_2 < arraySize(arr) ==>
           intFromRef(first(intToRef(arr.contents[anon_builtin_2]), intToRef(anon_builtin_3))) ==
           old((unfolding acc(IntArray_unique(arr), write) in

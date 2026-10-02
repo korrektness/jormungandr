@@ -6,6 +6,9 @@
 package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
+import org.jetbrains.kotlin.formver.core.names.FromRefFuncName
+import org.jetbrains.kotlin.formver.core.names.QualifiedDomainFuncName
+import org.jetbrains.kotlin.formver.core.names.ToRefFuncName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.AccessPredicate
 import org.jetbrains.kotlin.formver.viper.ast.BinaryExp
@@ -29,8 +32,9 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
  * `{ arr.contents[k] }` it can.
  *
  * A trigger shape is a field read, a sequence index or length, or a function application, whose arguments are again
- * trigger shapes, variables or literals. The `unfolding`s around field reads are left out of the trigger. Terms
- * mentioning a variable bound inside [body] and the runtime-type guard `isSubtype(typeOf(x), T)` are not candidates.
+ * trigger shapes, variables or literals. The `unfolding`s around field reads are left out of the trigger, and a boxing
+ * into or out of `Ref` is not a candidate itself. Terms mentioning a variable bound inside [body] and the runtime-type
+ * guard `isSubtype(typeOf(x), T)` are not candidates.
  */
 fun derivedTriggers(bound: SymbolicName, body: Exp): List<Exp.Trigger> {
     if (!body.containsOld()) return emptyList()
@@ -49,13 +53,22 @@ private fun Exp.collectCandidates(bound: SymbolicName, nested: Set<SymbolicName>
             body.collectCandidates(bound, nested + variable.name, into)
         }
         else -> {
-            val term = triggerTerm(nested)
+            val term = if (isInjection()) null else triggerTerm(nested)
             when {
                 term == null -> subExps().forEach { it.collectCandidates(bound, nested, into) }
                 term.mentions(bound) -> into.add(term)
             }
         }
     }
+}
+
+/**
+ * A boxing such as `intToRef(arr.contents[k])`, or an unboxing such as `intFromRef(x.f)`, only matches where that
+ * converted term is known, which is narrower than the term inside it, so the term inside is the candidate.
+ */
+private fun Exp.isInjection(): Boolean {
+    val name = (this as? Exp.DomainFuncApp)?.function?.name as? QualifiedDomainFuncName ?: return false
+    return name.funcName is ToRefFuncName || name.funcName is FromRefFuncName
 }
 
 private val runtimeTypeGuards = setOf(RuntimeTypeDomain.isSubtype, RuntimeTypeDomain.typeOf)
