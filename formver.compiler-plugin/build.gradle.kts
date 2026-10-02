@@ -100,7 +100,7 @@ fun Test.configureFormverTest() {
         systemProperty("formver.recordOutcomes", it)
     }
 
-    jvmArgs = listOf("-Xss30M", "-Xmx2g", "-XX:MaxMetaspaceSize=512m")
+    jvmArgs = listOf("-Xss30M", "-Xmx3g", "-XX:MaxMetaspaceSize=512m")
 }
 
 // Silicon reads Z3_EXE as the path of the Z3 binary.
