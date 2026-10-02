@@ -3,6 +3,7 @@ field value: Ref
 
 method consume(b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   label lbl_ret_0
@@ -16,11 +17,13 @@ field value: Ref
 
 method consume(b: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
   ensures isSubtype(typeOf(ret_1), unitType())
 
 
 method useAfterMove(b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   var anon: Ref
@@ -37,11 +40,13 @@ field value: Ref
 
 method consume(b: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
   ensures isSubtype(typeOf(ret_1), unitType())
 
 
 method noUniquenessErrors(b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var anon: Ref

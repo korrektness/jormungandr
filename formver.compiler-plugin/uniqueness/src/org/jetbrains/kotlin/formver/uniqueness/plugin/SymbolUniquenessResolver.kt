@@ -17,6 +17,8 @@ import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.expressions.unwrapArgument
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
@@ -27,6 +29,13 @@ import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 
 fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =
     resolvedType.scopeUniqueness
+
+/**
+ * Resolves the uniqueness of the result of [this] function as its declaration states it. A constructor's result is
+ * a fresh object and so always unique.
+ */
+fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
+    if (this is FirConstructorSymbol) Uniqueness.Unique else resolvedReturnType.scopeUniqueness
 
 context(context: CheckerContext)
 fun FirVariableSymbol<*>.resolveUniqueness(): Uniqueness {

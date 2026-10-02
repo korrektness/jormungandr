@@ -9,7 +9,9 @@ import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
+import org.jetbrains.kotlin.fir.types.ConeAttributes
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.fir.types.withAttributes
 import org.jetbrains.kotlin.formver.core.isFormverFunctionNamed
 
 fun FirStatement.extractFormverFirBlock(predicate: FirFunctionSymbol<*>.() -> Boolean): FirAnonymousFunction? {
@@ -33,10 +35,13 @@ data class FirSpecification(val precond: FirBlock?, val postcond: FirBlock?, val
 
 private fun FirAnonymousFunction.extractFormverReturnVar(returnType: ConeKotlinType): FirValueParameterSymbol {
     val param = valueParameters.first()
-    if (param.symbol.resolvedReturnType != returnType)
+    // Type annotations such as `@Unique` live in attributes; they do not make the types different.
+    if (param.symbol.resolvedReturnType.withoutAttributes() != returnType.withoutAttributes())
         error("Expected type ${returnType} based on signature, got ${param.symbol.resolvedReturnType}")
     return param.symbol
 }
+
+private fun ConeKotlinType.withoutAttributes(): ConeKotlinType = withAttributes(ConeAttributes.Empty)
 
 fun extractFirSpecification(parentBlock: FirBlock, returnType: ConeKotlinType): FirSpecification {
     val firstStmt = parentBlock.statements.firstOrNull() ?: return FirSpecification()

@@ -1,11 +1,11 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Node(val value: Int, @property:Unique var next: Node?)
+class Node(val value: Int, var next: @Unique Node?)
 
-@Pure
+<!VIPER_VERIFICATION_ERROR, VIPER_VERIFICATION_ERROR, VIPER_VERIFICATION_ERROR!>@Pure
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
+fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
     if (n == null) {
         return true
     }
@@ -13,37 +13,35 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
     return if (m == null) {
         true
     } else {
-        n.value <= m.value && isSorted(<!UNIQUENESS_MISMATCH!>m<!>)
+        n.value <= m.value && isSorted(m)
     }
-}
+}<!>
 
-@AlwaysVerify
-@Unique
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): Node {
+<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
+fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @Unique Node {
     preconditions {
         isSorted(sorted)
         node.next == null
     }
-    postconditions<Node> { r -> isSorted(<!UNIQUENESS_MISMATCH!>r<!>) && (r.value == node.value || (sorted != null && r.value == sorted.value)) }
+    postconditions<Node> { r -> isSorted(r) && (r.value == node.value || (sorted != null && r.value == sorted.value)) }
     if (sorted == null || node.value <= sorted.value) {
         node.next = sorted
         return node
     }
-    sorted.next = insertSorted(<!UNIQUENESS_MISMATCH!>sorted.next<!>, node)
+    sorted.next = insertSorted(sorted.next, node)
     return sorted
-}
+}<!>
 
 @AlwaysVerify
-@Unique
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>insertionSort<!>(head: @Unique Node?): Node? {
+fun <!VIPER_TEXT!>insertionSort<!>(head: @Unique Node?): @Unique Node? {
     var sorted: @Unique Node? = null
     var cur: @Unique Node? = head
-    while (cur != null) {
+    <!VIPER_VERIFICATION_ERROR, VIPER_VERIFICATION_ERROR!>while (cur != null) {
         loopInvariants { isSorted(sorted) }
-        val next: @Unique Node? = <!UNIQUENESS_MISMATCH!>cur.next<!>
+        val next: @Unique Node? = cur.next
         cur.next = null
-        sorted = <!UNIQUENESS_MISMATCH!>insertSorted(sorted, cur)<!>
+        sorted = insertSorted(sorted, cur)
         cur = next
-    }
+    }<!>
     return sorted
 }

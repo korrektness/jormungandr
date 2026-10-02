@@ -6,9 +6,9 @@
 package org.jetbrains.kotlin.formver.core
 
 import org.jetbrains.kotlin.KtSourceElement
-import org.jetbrains.kotlin.fir.FirAnnotationContainer
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.contracts.FirEffectDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationDataKey
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationDataRegistry
@@ -24,8 +24,15 @@ import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.names.SpecialPackages
+import org.jetbrains.kotlin.formver.locality.plugin.Locality
+import org.jetbrains.kotlin.formver.locality.plugin.resolveLocality
+import org.jetbrains.kotlin.formver.uniqueness.plugin.Uniqueness
+import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveDeclaredUniqueness
+import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveResultUniqueness
 import org.jetbrains.kotlin.formver.viper.ast.Position
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
@@ -81,17 +88,31 @@ fun formverCallableId(className: String?, name: String): CallableId =
 
 fun kotlinCallableId(className: String?, name: String): CallableId = callableId(SpecialPackages.kotlin, className, name)
 
-fun FirBasedSymbol<*>.isUnique(session: FirSession) = hasAnnotation(annotationId("Unique"), session)
+/**
+ * Whether [this] parameter, receiver or property is declared `@Unique`, as the uniqueness checker reads it.
+ */
+context(context: CheckerContext)
+fun FirBasedSymbol<*>.isUnique(): Boolean = resolveDeclaredUniqueness() == Uniqueness.Unique
 
-fun FirBasedSymbol<*>.isBorrowed(session: FirSession) = hasAnnotation(annotationId("Borrowed"), session)
+/**
+ * Whether [this] parameter or receiver is declared `@Borrowed`, as the locality checker reads it.
+ */
+context(context: CheckerContext)
+fun FirBasedSymbol<*>.isBorrowed(): Boolean =
+    when (this) {
+        is FirVariableSymbol<*> -> resolveLocality() == Locality.Local
+        is FirReceiverParameterSymbol -> resolveLocality() == Locality.Local
+        else -> false
+    }
+
+/**
+ * Whether calls to [this] function return a unique object, as the uniqueness checker reads it.
+ */
+fun FirFunctionSymbol<*>.returnsUnique(): Boolean = resolveResultUniqueness() == Uniqueness.Unique
 
 fun FirBasedSymbol<*>.isPure(session: FirSession) = hasAnnotation(annotationId("Pure"), session)
 
 fun FirBasedSymbol<*>.isManual(session: FirSession) = hasAnnotation(annotationId("Manual"), session)
-
-fun FirAnnotationContainer.isUnique(session: FirSession) = hasAnnotation(annotationId("Unique"), session)
-
-fun FirAnnotationContainer.isBorrowed(session: FirSession) = hasAnnotation(annotationId("Borrowed"), session)
 
 fun FirFunctionSymbol<*>.neverConvert(session: FirSession) = hasAnnotation(annotationId("NeverConvert"), session)
 

@@ -10,17 +10,16 @@ annotation class NeverVerify
 annotation class AlwaysVerify
 annotation class DumpExpEmbeddings
 
-// We annotate the function to indicate that the return value is unique
-@Target(
-    AnnotationTarget.LOCAL_VARIABLE,
-    AnnotationTarget.VALUE_PARAMETER,
-    AnnotationTarget.FUNCTION,
-    AnnotationTarget.PROPERTY,
-    AnnotationTarget.TYPE,
-)
+/**
+ * Marks values of the annotated type as uniquely referenced, as in `x: @Unique Node` or `fun f(): @Unique Node`.
+ */
+@Target(AnnotationTarget.TYPE)
 annotation class Unique
 
-@Target(AnnotationTarget.LOCAL_VARIABLE, AnnotationTarget.VALUE_PARAMETER, AnnotationTarget.TYPE)
+/**
+ * Marks values of the annotated type as borrowed for the duration of a call, as in `x: @Borrowed @Unique Node`.
+ */
+@Target(AnnotationTarget.TYPE)
 annotation class Borrowed
 
 @Target(AnnotationTarget.FUNCTION)

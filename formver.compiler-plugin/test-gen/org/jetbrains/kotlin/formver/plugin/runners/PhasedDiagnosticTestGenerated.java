@@ -259,6 +259,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("declaration_annotations.kt")
+    public void testDeclaration_annotations() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/declaration_annotations.kt");
+    }
+
+    @Test
     @TestMetadata("default_argument.kt")
     public void testDefault_argument() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/default_argument.kt");

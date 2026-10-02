@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
-import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
@@ -53,7 +52,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 class ProgramConverter(
     override val session: FirSession,
     override val config: PluginConfiguration,
-    private val checkerContext: CheckerContext,
+    override val checkerContext: CheckerContext,
     private val reporter: DiagnosticReporter,
 ) : ProgramConversionContext {
 
@@ -492,7 +491,7 @@ class ProgramConverter(
                 val isDefaultProperty = isGuaranteedDefaultProperty(symbol)
                 val isImmutable = symbol.isVal
                 val isManual = symbol.isManual(session)
-                val isUnique = symbol.isUnique(session)
+                val isUnique = context(checkerContext) { symbol.isUnique() }
 
                 val returnType = embedType(symbol.resolvedReturnType)
 
@@ -564,7 +563,7 @@ class ProgramConverter(
             scopedName,
             embedType(symbol.resolvedReturnType),
             symbol,
-            symbol.isUnique(session),
+            context(checkerContext) { symbol.isUnique() },
             embedding,
             symbol.isManual(session)
         )
@@ -723,7 +722,7 @@ class ProgramConverter(
             }
         }
         withReturnType { embedTypeWithBuilder(symbol.resolvedReturnType) }
-        returnsUnique = symbol.isUnique(session) || symbol is FirConstructorSymbol
+        returnsUnique = symbol.returnsUnique()
     }
 
     private fun TypeBuilder.unimplementedTypeEmbedding(type: ConeKotlinType): PretypeBuilder = when (config.behaviour) {

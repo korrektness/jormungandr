@@ -1,10 +1,9 @@
-/insertion_sort_linked.kt: error: Function 'isSorted' was not verified because of uniqueness or locality errors
-
 /insertion_sort_linked.kt: info: Generated Viper text for isSorted:
 field next: Ref
 
 function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
 {
   (let m_0 ==
@@ -26,15 +25,12 @@ function value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-/insertion_sort_linked.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/insertion_sort_linked.kt: error: Function 'insertSorted' was not verified because of uniqueness or locality errors
-
 /insertion_sort_linked.kt: info: Generated Viper text for insertSorted:
 field next: Ref
 
 function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
 {
   (let m_0 ==
@@ -58,7 +54,9 @@ function value(this: Ref): Ref
 
 method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(sorted), nullable(Node()))
+  requires sorted != nullValue() ==> acc(Node_unique(sorted), write)
   requires isSubtype(typeOf(node), Node())
+  requires acc(Node_unique(node), write)
   requires boolFromRef(isSorted(sorted))
   requires (unfolding acc(Node_unique(node), write) in node.next) ==
     nullValue()
@@ -87,17 +85,12 @@ method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-/insertion_sort_linked.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/insertion_sort_linked.kt: error: Argument uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/insertion_sort_linked.kt: error: Function 'insertionSort' was not verified because of uniqueness or locality errors
-
 /insertion_sort_linked.kt: info: Generated Viper text for insertionSort:
 field bf_next: Ref
 
 function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
 {
   (let m_0 ==
@@ -121,7 +114,10 @@ function value(this: Ref): Ref
 
 method insertSorted(par_sorted: Ref, node: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_sorted), nullable(Node()))
+  requires par_sorted != nullValue() ==>
+    acc(Node_unique(par_sorted), write)
   requires isSubtype(typeOf(node), Node())
+  requires acc(Node_unique(node), write)
   requires boolFromRef(isSorted(par_sorted))
   requires (unfolding acc(Node_unique(node), write) in node.bf_next) ==
     nullValue()
@@ -135,6 +131,7 @@ method insertSorted(par_sorted: Ref, node: Ref) returns (ret_2: Ref)
 
 method insertionSort(head: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(head), nullable(Node()))
+  requires head != nullValue() ==> acc(Node_unique(head), write)
   ensures isSubtype(typeOf(v_ret_0), nullable(Node()))
   ensures v_ret_0 != nullValue() ==> acc(Node_unique(v_ret_0), write)
 {
@@ -167,7 +164,3 @@ method insertionSort(head: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
-
-/insertion_sort_linked.kt: error: Initializer uniqueness mismatch: expected 'unique', actual 'shared'.
-
-/insertion_sort_linked.kt: error: Assignment uniqueness mismatch: expected 'unique', actual 'shared'.

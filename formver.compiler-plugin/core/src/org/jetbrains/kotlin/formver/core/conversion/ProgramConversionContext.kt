@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
@@ -31,6 +32,9 @@ interface ProgramConversionContext : ErrorCollectionContext {
     val config: PluginConfiguration
 
     val session: FirSession
+
+    /** The context of the checker that runs the conversion, through which uniqueness and locality are resolved. */
+    val checkerContext: CheckerContext
 
     val whileIndexProducer: SimpleFreshEntityProducer<Int>
     val catchLabelNameProducer: SimpleFreshEntityProducer<CatchLabelName>
