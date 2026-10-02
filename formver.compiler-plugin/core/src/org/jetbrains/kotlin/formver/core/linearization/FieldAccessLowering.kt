@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.viper.ast.Info
 import org.jetbrains.kotlin.formver.viper.ast.PermExp
 
 /**
@@ -21,12 +22,14 @@ fun hierarchyPredicateAccess(
     receiver: Exp,
     classOnPath: ClassTypeEmbedding,
     source: KtSourceElement?,
+    info: Info = Info.NoInfo,
 ): Exp.PredicateAccess =
     Exp.PredicateAccess(
         classOnPath.uniquePredicateName,
         listOf(receiver),
         PermExp.FullPerm(),
         source.asPosition,
+        info,
     )
 
 /**

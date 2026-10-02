@@ -160,6 +160,15 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                 )
             }
 
+            is OwnershipError -> {
+                val msg = formattedError.msg()
+                VerificationErrors.OWNERSHIP_NOT_ESTABLISHED.on(
+                    source, msg.first, msg.second,
+                    positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
+                    languageVersionSettings = module.languageVersionSettings
+                )
+            }
+
             is ReturnsEffectError -> {
                 val msg = formattedError.msg()
                 VerificationErrors.UNEXPECTED_RETURNED_VALUE.on(

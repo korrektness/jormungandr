@@ -25,6 +25,32 @@ sealed interface SourceRole {
         }
     }
 
+    /**
+     * A permission SnaKt generates for an owned path, which the uniqueness checker guarantees is available. [path] is
+     * the path as the Kotlin source spells it, ready for messages.
+     */
+    data class Ownership(val path: String, val site: Site) : SourceRole {
+        sealed interface Site {
+            /** An `unfold` of the path's predicate, exposing its fields. */
+            data object Unfold : Site
+
+            /** A `fold` of the path's predicate. */
+            data object Fold : Site
+
+            /** The exhale and inhale that havoc what the path holds after a call that may have written through it. */
+            data object Havoc : Site
+
+            /** The invariant of a loop head. */
+            data object LoopHead : Site
+
+            /** A precondition of [function]; the path is one of its parameters. */
+            data class Precondition(val function: String) : Site
+
+            /** A postcondition of [function]; the path is one of its parameters or its result. */
+            data class Postcondition(val function: String) : Site
+        }
+    }
+
     data class ConditionalEffect(val effect: ReturnsEffect, val condition: Condition) : SourceRole
     data class FirSymbolHolder(val firSymbol: FirBasedSymbol<*>) : SourceRole, Condition
 

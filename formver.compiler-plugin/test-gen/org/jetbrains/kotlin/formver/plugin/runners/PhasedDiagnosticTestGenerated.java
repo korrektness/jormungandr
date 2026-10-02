@@ -624,6 +624,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("ownership_not_established.kt")
+      public void testOwnership_not_established() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/ownership_not_established.kt");
+      }
+
+      @Test
       @TestMetadata("predicates.kt")
       public void testPredicates() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/predicates.kt");

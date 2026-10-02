@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.formver.core.embeddings.expression.StringBuilderUpdate
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.text
 import org.jetbrains.kotlin.formver.common.SnaktException
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
@@ -20,6 +21,12 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.NestedPredicates
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeInvariantEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.withAccessRole
+import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
+import org.jetbrains.kotlin.formver.core.embeddings.asInfo
+import org.jetbrains.kotlin.formver.core.names.FunctionResultVariableName
+import org.jetbrains.kotlin.formver.core.names.ReturnVariableName
+import org.jetbrains.kotlin.formver.core.names.sourceSpelling
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
@@ -43,11 +50,55 @@ fun ExpEmbedding.ownedPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaN
     else -> null
 }
 
+/** The state of a [FoldState] at a program point, for joining at labels and branch merges. */
+typealias FoldSnapshot = FoldTrie.Snapshot<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?>
+
 /**
  * Raised when the linearized code needs a unique predicate that the fold state does not hold.
  * The converter reports it as a conversion error.
  */
 class FoldStateException(source: KtSourceElement?, message: String) : SnaktException(source, message, null)
+
+/** [this] as the Kotlin source writes it, in backticks. */
+fun OwnedPath.render(): String {
+    val root = when (val name = root.name) {
+        is ReturnVariableName, FunctionResultVariableName -> return "the result" + fields.joinToString("") { ".${it.spelling}" }
+        else -> name.sourceSpelling ?: "a temporary value"
+    }
+    return "`" + (listOf(root) + fields.map { it.spelling }).joinToString(".") + "`"
+}
+
+private val FieldEmbedding.spelling: String
+    get() = name.sourceSpelling ?: symbol?.name?.asString() ?: "<field>"
+
+/** The first line of the source text of [site], in backticks, cut short when it is long. */
+internal fun renderSite(site: KtSourceElement?): String? {
+    val line = site?.text?.lineSequence()?.firstOrNull()?.trim() ?: return null
+    return "`" + (if (line.length > MAX_SITE_LENGTH) line.take(MAX_SITE_LENGTH) + "..." else line) + "`"
+}
+
+private const val MAX_SITE_LENGTH = 40
+
+private fun Absence<VariableEmbedding, FieldEmbedding, KtSourceElement?>.render(): String = when (this) {
+    Absence.NeverHeld -> "was not tracked as owned before this point"
+    is Absence.Released -> "was consumed" + (renderSite(site)?.let { " by $it" } ?: "")
+    is Absence.Moved -> "was moved to ${target.render()}" + (renderSite(site)?.let { " by $it" } ?: "")
+    is Absence.Forgotten -> "was dropped where control flow joins" + (renderSite(site)?.let { " at $it" } ?: "")
+}
+
+/** A message naming the path a failure needs and why the fold state does not hold it. */
+private fun FoldFailure<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?>.message(): String =
+    when (this) {
+        is FoldFailure.NotHeld -> {
+            val subject = if (absent == path) "it" else absent.render()
+            "Ownership of ${path.render()} is needed here, but $subject ${why.render()}."
+        }
+        is FoldFailure.HoleBelow ->
+            "Ownership of all of ${path.render()} is needed here, but ${hole.render()} ${why.render()}."
+        is FoldFailure.NotASupertype ->
+            "Ownership of ${path.render()} as `${cls.name.sourceSpelling}` is needed here, but `${cls.name.sourceSpelling}` " +
+                "is not a supertype of its type."
+    }
 
 /**
  * The [FoldTrie] of the owned paths of a method body, emitting its folds and unfolds as Viper statements.
@@ -56,7 +107,7 @@ class FoldStateException(source: KtSourceElement?, message: String) : SnaktExcep
  * `@Manual` are tracked. Each operation is the [FoldTrie] operation of the same name.
  */
 class FoldState(private val typeResolver: TypeResolver) {
-    private val trie = FoldTrie(object : FoldHierarchy<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding> {
+    private val trie = FoldTrie<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?>(object : FoldHierarchy<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding> {
         override fun rootClass(root: VariableEmbedding) = trackedClass(root.type)
         override fun fieldClass(field: FieldEmbedding) = trackedClass(field.type)
         override fun chainTo(cls: ClassTypeEmbedding, field: FieldEmbedding) =
@@ -109,19 +160,16 @@ class FoldState(private val typeResolver: TypeResolver) {
     fun normalizeTo(ctx: LinearizationContext, shapes: List<OwnedShape>) = trie.normalizeTo(ctx.foldSink(), shapes)
 
     fun mergeShapes(
-        a: FoldTrie.Snapshot<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding>,
-        b: FoldTrie.Snapshot<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding>,
+        a: FoldSnapshot,
+        b: FoldSnapshot,
     ) = trie.mergeShapes(a, b)
 
     fun snapshot() = trie.snapshot()
 
-    fun restore(snapshot: FoldTrie.Snapshot<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding>) =
+    fun restore(snapshot: FoldSnapshot) =
         trie.restore(snapshot)
 
-    fun join(
-        a: FoldTrie.Snapshot<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding>,
-        b: FoldTrie.Snapshot<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding>,
-    ) = trie.join(a, b)
+    fun join(ctx: LinearizationContext, a: FoldSnapshot, b: FoldSnapshot) = trie.join(a, b, ctx.source)
 
     fun jumpTo(ctx: LinearizationContext, label: SymbolicName) = trie.jumpTo(ctx.foldSink(), label)
 
@@ -143,14 +191,15 @@ class FoldState(private val typeResolver: TypeResolver) {
     fun permission(shape: OwnedShape): ExpEmbedding? {
         val held = trie.describe<TypeInvariantEmbedding>(
             shape,
-            folded = { _, cls -> cls.uniquePredicateAccessInvariant(typeResolver) },
-            open = { _, _, opened, children -> OpenedPredicates(opened, children) },
+            folded = { path, cls -> cls.uniquePredicateAccessInvariant(typeResolver).withAccessRole(path.loopHeadRole()) },
+            open = { path, _, opened, children -> OpenedPredicates(path, opened, children) },
         ) ?: return null
         return shape.root.type.flags.adjustInvariant(held).fillHole(shape.root)
     }
 
     /** The bodies of the predicates of [opened], the static class first, with [children] standing for their fields. */
     private inner class OpenedPredicates(
+        private val path: OwnedPath,
         private val opened: List<ClassTypeEmbedding>,
         children: List<Pair<FieldEmbedding, TypeInvariantEmbedding?>>,
     ) : TypeInvariantEmbedding {
@@ -162,34 +211,41 @@ class FoldState(private val typeResolver: TypeResolver) {
             with(typeResolver) {
                 cls.uniquePredicateBody(exp, object : NestedPredicates {
                     override fun ofField(field: FieldEmbedding, access: TypeInvariantEmbedding) =
-                        if (field.name in children) children[field.name] else access
+                        if (field.name in children) children[field.name]
+                        else access.withAccessRole((path + field).loopHeadRole())
 
                     override fun ofSuperType(type: ClassTypeEmbedding, access: TypeInvariantEmbedding) =
-                        if (type in opened) TypeInvariantEmbedding { bodyOf(type, it) } else access
+                        if (type in opened) TypeInvariantEmbedding { bodyOf(type, it) }
+                        else access.withAccessRole(path.loopHeadRole())
                 })
             }
     }
 }
 
+private fun OwnedPath.loopHeadRole() = SourceRole.Ownership(render(), SourceRole.Ownership.Site.LoopHead)
+
 private fun LinearizationContext.foldSink() =
-    object : FoldSink<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding> {
+    object : FoldSink<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?> {
         override fun unfold(path: OwnedPath, cls: ClassTypeEmbedding) {
             val place = placeOf(path)
-            addGuarded(place) { Stmt.Unfold(hierarchyPredicateAccess(place.exp, cls, source), source.asPosition) }
+            val info = SourceRole.Ownership(path.render(), SourceRole.Ownership.Site.Unfold).asInfo
+            addGuarded(place) { Stmt.Unfold(hierarchyPredicateAccess(place.exp, cls, source, info), source.asPosition, info) }
         }
 
         override fun fold(path: OwnedPath, cls: ClassTypeEmbedding) {
             val place = placeOf(path)
-            addGuarded(place) { Stmt.Fold(hierarchyPredicateAccess(place.exp, cls, source), source.asPosition) }
+            val info = SourceRole.Ownership(path.render(), SourceRole.Ownership.Site.Fold).asInfo
+            addGuarded(place) { Stmt.Fold(hierarchyPredicateAccess(place.exp, cls, source, info), source.asPosition, info) }
         }
 
         override fun refresh(path: OwnedPath, cls: ClassTypeEmbedding) {
             val place = placeOf(path)
             val pos = source.asPosition
-            val access = place.guards.foldRight<Exp, Exp>(hierarchyPredicateAccess(place.exp, cls, source)) { guard, inner ->
+            val info = SourceRole.Ownership(path.render(), SourceRole.Ownership.Site.Havoc).asInfo
+            val access = place.guards.foldRight<Exp, Exp>(hierarchyPredicateAccess(place.exp, cls, source, info)) { guard, inner ->
                 Exp.Implies(guard, inner, pos)
             }
-            addStatement { Stmt.Exhale(access, pos) }
+            addStatement { Stmt.Exhale(access, pos, info) }
             addStatement { Stmt.Inhale(access, pos) }
         }
 
@@ -202,11 +258,14 @@ private fun LinearizationContext.foldSink() =
             val body = with(typeResolver) { cls.uniquePredicateBody(embeddingOf(path), withoutSuperTypes) }
                 .pureToViper(toBuiltin = true, typeResolver, source)
             val held = place.guards.foldRight(body) { guard, inner -> Exp.Implies(guard, inner, pos) }
-            addStatement { Stmt.Exhale(held, pos) }
+            addStatement { Stmt.Exhale(held, pos, SourceRole.Ownership(path.render(), SourceRole.Ownership.Site.Havoc).asInfo) }
             addStatement { Stmt.Inhale(held, pos) }
         }
 
-        override fun fail(message: String): Nothing = throw FoldStateException(source, message)
+        override val site: KtSourceElement? get() = source
+
+        override fun fail(failure: FoldFailure<VariableEmbedding, FieldEmbedding, ClassTypeEmbedding, KtSourceElement?>): Nothing =
+            throw FoldStateException(source, failure.message())
     }
 
 /**
@@ -266,6 +325,6 @@ fun LinearizationContext.branchBlocks(
         val merged = Stmt.Seqn(block.stmts + tail.stmts, block.scopedSeqnDeclarations + tail.scopedSeqnDeclarations)
         merged to state.snapshot()
     }
-    state.restore(state.join(thenBlock.second, elseBlock.second))
+    state.restore(state.join(this, thenBlock.second, elseBlock.second))
     return thenBlock.first to elseBlock.first
 }

@@ -67,6 +67,12 @@ object FormalVerificationPluginErrorMessages : BaseDiagnosticRendererFactory() {
             CommonRenderers.STRING,
         )
         map.put(
+            VerificationErrors.OWNERSHIP_NOT_ESTABLISHED,
+            "SnaKt could not establish ownership of {0} {1} (a translation gap: the uniqueness checker accepted this code).",
+            CommonRenderers.STRING,
+            CommonRenderers.STRING,
+        )
+        map.put(
             PluginErrors.UNIQUENESS_VIOLATION,
             "{0}",
             CommonRenderers.STRING,

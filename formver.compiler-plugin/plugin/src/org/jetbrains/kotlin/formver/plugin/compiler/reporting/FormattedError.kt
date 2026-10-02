@@ -131,6 +131,25 @@ class InvalidSubListRangeError(
     }
 }
 
+/** A permission on a path the fold state tracks that the verifier could not establish. */
+class OwnershipError(private val sourceRole: SourceRole.Ownership) : FormattedError {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun report(source: KtSourceElement?) {
+        val (path, site) = msg()
+        reporter.reportOn(source, VerificationErrors.OWNERSHIP_NOT_ESTABLISHED, path, site)
+    }
+
+    fun msg(): Pair<String, String> = when (val site = sourceRole.site) {
+        SourceRole.Ownership.Site.Unfold -> sourceRole.path to "to unfold it"
+        SourceRole.Ownership.Site.Fold -> sourceRole.path to "to fold it"
+        SourceRole.Ownership.Site.Havoc -> sourceRole.path to "to havoc it after a call"
+        SourceRole.Ownership.Site.LoopHead -> sourceRole.path to "at the loop head"
+        is SourceRole.Ownership.Site.Precondition ->
+            "the argument for parameter ${sourceRole.path}" to "at the call to `${site.function}`"
+        is SourceRole.Ownership.Site.Postcondition -> sourceRole.path to "when `${site.function}` returns"
+    }
+}
+
 fun VerificationError.formatUserFriendly(): FormattedError? =
     when (val sourceRole = lookupSourceRole()) {
         is SourceRole.ReturnsEffect -> ReturnsEffectError(sourceRole)
@@ -138,6 +157,7 @@ fun VerificationError.formatUserFriendly(): FormattedError? =
         is SourceRole.ListElementAccessCheck -> listIndexOutOfBound(sourceRole)
         is SourceRole.ArrayElementAccessCheck -> sourceRole.indexOutOfBound()
         is SourceRole.SubListCreation -> InvalidSubListRangeError(this, sourceRole)
+        is SourceRole.Ownership -> OwnershipError(sourceRole)
         else -> null
     }
 

@@ -4,10 +4,16 @@ import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.conversion.stdLibPostconditions
 import org.jetbrains.kotlin.formver.core.conversion.stdLibPreconditions
+import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AccEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PredicateAccessPermissions
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.withAccessRole
+import org.jetbrains.kotlin.formver.core.linearization.OwnedPath
+import org.jetbrains.kotlin.formver.core.linearization.render
+import org.jetbrains.kotlin.formver.core.names.sourceSpelling
 import org.jetbrains.kotlin.formver.core.purity.preorder
 
 
@@ -104,8 +110,10 @@ class PreconditionScope(
     private val typeResolver: TypeResolver,
     private val list: MutableList<ExpEmbedding>
 ) {
+    private val site = SourceRole.Ownership.Site.Precondition(signature.spelling)
+
     fun args(block: VariableScope.() -> Unit) {
-        signature.formalArgs.forEach { variable -> VariableScope(variable, list, typeResolver).apply(block) }
+        signature.formalArgs.forEach { variable -> VariableScope(variable, list, typeResolver, site).apply(block) }
     }
 
     fun stdLib() {
@@ -117,14 +125,19 @@ class PreconditionScope(
 class VariableScope(
     val variable: VariableEmbedding,
     private val list: MutableList<ExpEmbedding>,
-    private val typeResolver: TypeResolver
+    private val typeResolver: TypeResolver,
+    private val site: SourceRole.Ownership.Site,
 ) {
     fun pureInvariants() = list.addAll(variable.pureInvariants())
     fun accessInvariants() = list.addAll(variable.accessInvariants(typeResolver))
     fun provenInvariants() = list.addAll(variable.provenInvariants())
 
     fun uniquePredicateInvariants() {
-        variable.type.uniquePredicateAccessInvariant(typeResolver)?.fillHole(variable)?.let { inv ->
+        val invariant = variable.type.uniquePredicateAccessInvariant(typeResolver)
+        // The predicates of `@Manual` classes are folded by the user, so a failure to hold one is the user's error.
+        val manual = with(typeResolver) { (variable.type.pretype as? ClassTypeEmbedding)?.isManual } != false
+        val role = SourceRole.Ownership(OwnedPath(variable).render(), site).takeUnless { manual }
+        (if (role == null) invariant else invariant?.withAccessRole(role))?.fillHole(variable)?.let { inv ->
             list.add(inv)
         }
     }
@@ -135,15 +148,21 @@ class PostconditionScope(
     private val typeResolver: TypeResolver,
     private val list: MutableList<ExpEmbedding>
 ) {
+    private val site = SourceRole.Ownership.Site.Postcondition(signature.spelling)
+
     fun args(block: VariableScope.() -> Unit) {
-        signature.formalArgs.forEach { variable -> VariableScope(variable, list, typeResolver).apply(block) }
+        signature.formalArgs.forEach { variable -> VariableScope(variable, list, typeResolver, site).apply(block) }
     }
 
     fun returns(block: VariableScope.() -> Unit) {
-        VariableScope(signature.returns, list, typeResolver).apply(block)
+        VariableScope(signature.returns, list, typeResolver, site).apply(block)
     }
 
     fun stdLib() {
         list.addAll(signature.stdLibPostconditions(signature.returns, typeResolver))
     }
 }
+
+/** The function's name as the Kotlin source spells it. */
+private val NamedFunctionSignature.spelling: String
+    get() = labelName ?: name.sourceSpelling ?: "this function"

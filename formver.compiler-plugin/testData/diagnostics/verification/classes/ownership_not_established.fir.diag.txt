@@ -1,0 +1,86 @@
+/ownership_not_established.kt: info: Generated Viper text for bump:
+field n: Ref
+
+method bump(l: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), Leaf())
+  requires acc(Leaf_unique(l), write)
+  ensures acc(Leaf_unique(l), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(Leaf_unique(l), write)
+  anon := l.n
+  l.n := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Leaf_unique(l), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/ownership_not_established.kt: info: Generated Viper text for borrowThroughVal:
+field count: Ref
+
+field n: Ref
+
+function leaf(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Leaf())
+
+
+method borrowThroughVal(h: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  ensures acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := bump(leaf(h))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method bump(l: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(l), Leaf())
+  requires acc(Leaf_unique(l), write)
+  ensures acc(Leaf_unique(l), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/ownership_not_established.kt: error: Function 'writeThroughVal' was not verified because of unsupported ownership
+
+/ownership_not_established.kt: info: Generated Viper text for writeThroughVal:
+field count: Ref
+
+field n: Ref
+
+function leaf(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Leaf())
+
+
+method writeThroughVal(h: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(ret), unitType())
+
+
+/ownership_not_established.kt: error: Ownership of the receiver written by `h.leaf.n = 3` is needed here, but the receiver is not a variable followed by `@Unique` `var` fields, so its permissions are not tracked.
+
+/ownership_not_established.kt: error: Ownership of the result is needed here, but it was not tracked as owned before this point.
+
+/ownership_not_established.kt: error: Function 'returnThroughVal' was not verified because of unsupported ownership
+
+/ownership_not_established.kt: info: Generated Viper text for returnThroughVal:
+field count: Ref
+
+field n: Ref
+
+function leaf(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Leaf())
+
+
+method returnThroughVal(h: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(ret), Leaf())
+  ensures acc(Leaf_unique(ret), write)

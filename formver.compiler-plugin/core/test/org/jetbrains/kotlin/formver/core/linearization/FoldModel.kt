@@ -242,7 +242,7 @@ enum class Op { UNFOLD, FOLD, REFRESH, REFRESH_OWN }
 
 data class Emitted(val op: Op, val path: TestPath, val cls: Int)
 
-class RecordingSink : FoldSink<TestRoot, TestField, Int> {
+class RecordingSink : FoldSink<TestRoot, TestField, Int, Unit> {
     val emitted = mutableListOf<Emitted>()
 
     override fun unfold(path: TestPath, cls: Int) {
@@ -261,7 +261,9 @@ class RecordingSink : FoldSink<TestRoot, TestField, Int> {
         emitted += Emitted(Op.REFRESH_OWN, path, cls)
     }
 
-    override fun fail(message: String): Nothing = throw Refused(message)
+    override val site = Unit
+
+    override fun fail(failure: FoldFailure<TestRoot, TestField, Int, Unit>): Nothing = throw Refused(failure.toString())
 }
 
 /** Selects a path among the candidates for an operation, or among every path when [wild] is set. */
@@ -306,7 +308,7 @@ sealed interface Step {
  * the run. Otherwise they are skipped.
  */
 class Harness(private val program: TestProgram, private val executeIllegal: Boolean) {
-    val trie = FoldTrie(program)
+    val trie = FoldTrie<TestRoot, TestField, Int, Unit>(program)
 
     /** `null` when the state is dead. */
     private var model: HeapModel? = HeapModel(program)
@@ -314,7 +316,7 @@ class Harness(private val program: TestProgram, private val executeIllegal: Bool
     private val pendingJumps = mutableMapOf<String, HeapModel>()
     private var labels = 0
 
-    data class Saved(val snapshot: FoldTrie.Snapshot<TestRoot, TestField, Int>, val model: HeapModel?)
+    data class Saved(val snapshot: FoldTrie.Snapshot<TestRoot, TestField, Int, Unit>, val model: HeapModel?)
 
     fun save() = Saved(trie.snapshot(), model?.copy())
 
@@ -325,7 +327,7 @@ class Harness(private val program: TestProgram, private val executeIllegal: Bool
 
     /** Join two saved normalized states into the current state. */
     fun merge(a: Saved, b: Saved) {
-        trie.restore(trie.join(a.snapshot, b.snapshot))
+        trie.restore(trie.join(a.snapshot, b.snapshot, Unit))
         model = joinModels(a.model, b.model)
         checkAgreement()
     }

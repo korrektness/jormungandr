@@ -514,7 +514,9 @@ data class LinearizationVisitor(
 
     override fun visitPredicateAccessPermissions(e: PredicateAccessPermissions): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
-            Exp.PredicateAccess(e.predicateName, e.args.map { it.linearize().toViper(ctx) }, e.perm, ctx.source.asPosition)
+            Exp.PredicateAccess(
+                e.predicateName, e.args.map { it.linearize().toViper(ctx) }, e.perm, ctx.source.asPosition, e.sourceRole.asInfo,
+            )
     }
 
     override fun visitUnfold(e: Unfold): Linearizable = object : UnitResultLinearizable(e) {
@@ -799,7 +801,7 @@ private fun <R> LinearizationContext.withFoldStateRestored(action: Linearization
     val state = foldState ?: return action()
     val entry = state.snapshot()
     val result = action()
-    state.restore(state.join(state.snapshot(), entry))
+    state.restore(state.join(this, state.snapshot(), entry))
     return result
 }
 
@@ -808,18 +810,22 @@ private fun <R> LinearizationContext.withFoldStateRestored(action: Linearization
  * needs the root's predicate folded.
  */
 private fun LinearizationContext.requireFoldedReads(invariants: List<ExpEmbedding>, shapes: List<OwnedShape>) {
-    val open = shapes.filter { it.holes.isNotEmpty() }.mapTo(mutableSetOf()) { it.root.name }
+    val open = shapes.filter { it.holes.isNotEmpty() }.associateBy { it.root.name }
     if (open.isEmpty()) return
-    fun ExpEmbedding.readsOpen(): Boolean = when (this) {
-        is FieldAccess -> receiverOwned && receiver.ownedPath()?.root?.name in open
-        is FunctionCall -> args.zip(function.formalArgs).any { (arg, formal) ->
-            formal.isUnique && arg.ownedPath()?.root?.name in open
+    fun ExpEmbedding.openRead(): OwnedPath? = when (this) {
+        is FieldAccess -> receiver.ownedPath()?.takeIf { receiverOwned && it.root.name in open }
+        is FunctionCall -> args.zip(function.formalArgs).firstNotNullOfOrNull { (arg, formal) ->
+            arg.ownedPath()?.takeIf { formal.isUnique && it.root.name in open }
         }
-        else -> false
-    } || children().any { it.readsOpen() }
-    if (invariants.any { it.readsOpen() }) {
-        throw FoldStateException(source, "A loop invariant needs a unique predicate that the loop holds open.")
-    }
+        else -> null
+    } ?: children().firstNotNullOfOrNull { it.openRead() }
+    val read = invariants.firstNotNullOfOrNull { it.openRead() } ?: return
+    val shape = open.getValue(read.root.name)
+    val hole = OwnedPath(shape.root, shape.holes.first())
+    throw FoldStateException(
+        source,
+        "Ownership of all of ${read.render()} is needed by a loop invariant, but ${hole.render()} is not held at the loop head.",
+    )
 }
 
 /**
@@ -838,7 +844,12 @@ private fun LinearizationContext.ownedReceiverPath(
     if (with(typeResolver) { (receiver.type.pretype as? ClassTypeEmbedding)?.isManual } != false) return null
     val path = receiver.ownedPath()
     if (path == null && isWrite) {
-        throw FoldStateException(source, "The receiver is owned, but it is not a path whose permissions are tracked.")
+        val written = renderSite(source)?.let { " by $it" } ?: ""
+        throw FoldStateException(
+            source,
+            "Ownership of the receiver written$written is needed here, but the receiver is not a variable followed " +
+                "by `@Unique` `var` fields, so its permissions are not tracked.",
+        )
     }
     return path
 }

@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.types
 
+import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -46,8 +47,18 @@ data class FieldAccessTypeInvariantEmbedding(val field: FieldEmbedding, val perm
 
 // Note that at present, the predicate name and class name are the same.
 // We may want to mangle it better down the line.
-data class PredicateAccessTypeInvariantEmbedding(val predicateName: SymbolicName, val perm: PermExp) :
-    TypeInvariantEmbedding {
+data class PredicateAccessTypeInvariantEmbedding(
+    val predicateName: SymbolicName,
+    val perm: PermExp,
+    val sourceRole: SourceRole? = null,
+) : TypeInvariantEmbedding {
     override fun fillHole(exp: ExpEmbedding): ExpEmbedding =
-        PredicateAccessPermissions(predicateName, listOf(exp), perm)
+        PredicateAccessPermissions(predicateName, listOf(exp), perm, sourceRole)
+}
+
+/** [this], with the predicate access it asserts, guarded or not, tagged with [role]. */
+fun TypeInvariantEmbedding.withAccessRole(role: SourceRole): TypeInvariantEmbedding = when (this) {
+    is PredicateAccessTypeInvariantEmbedding -> copy(sourceRole = role)
+    is IfNonNullInvariant -> copy(invariant = invariant.withAccessRole(role))
+    else -> this
 }

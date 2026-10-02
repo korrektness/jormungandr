@@ -32,19 +32,19 @@ class FoldTrieProperties {
         @ForAll("arms") b: List<Step>,
         @ForAll("arms") c: List<Step>,
     ) {
-        val trie = FoldTrie(program)
+        val trie = FoldTrie<TestRoot, TestField, Int, Unit>(program)
         val (x, y, z) = listOf(a, b, c).map { normalizedState(program, it).snapshot }
-        val dead = FoldTrie(program).apply { kill() }.snapshot()
-        fun FoldTrie.Snapshot<TestRoot, TestField, Int>.shape() = roots?.mapValues { it.value.second.status }
+        val dead = FoldTrie<TestRoot, TestField, Int, Unit>(program).apply { kill() }.snapshot()
+        fun FoldTrie.Snapshot<TestRoot, TestField, Int, Unit>.shape() = roots?.mapValues { it.value.second.status }
 
-        assertEquals(trie.join(x, y).shape(), trie.join(y, x).shape(), "commutative")
-        assertEquals(trie.join(trie.join(x, y), z).shape(), trie.join(x, trie.join(y, z)).shape(), "associative")
-        assertEquals(x.shape(), trie.join(x, x).shape(), "idempotent")
-        assertEquals(x.shape(), trie.join(x, dead).shape(), "dead is a right identity")
-        assertEquals(x.shape(), trie.join(dead, x).shape(), "dead is a left identity")
-        val joined = FoldTrie(program).apply { restore(join(x, y)) }
-        val left = FoldTrie(program).apply { restore(x) }
-        val right = FoldTrie(program).apply { restore(y) }
+        assertEquals(trie.join(x, y, Unit).shape(), trie.join(y, x, Unit).shape(), "commutative")
+        assertEquals(trie.join(trie.join(x, y, Unit), z, Unit).shape(), trie.join(x, trie.join(y, z, Unit), Unit).shape(), "associative")
+        assertEquals(x.shape(), trie.join(x, x, Unit).shape(), "idempotent")
+        assertEquals(x.shape(), trie.join(x, dead, Unit).shape(), "dead is a right identity")
+        assertEquals(x.shape(), trie.join(dead, x, Unit).shape(), "dead is a left identity")
+        val joined = FoldTrie<TestRoot, TestField, Int, Unit>(program).apply { restore(join(x, y, Unit)) }
+        val left = FoldTrie<TestRoot, TestField, Int, Unit>(program).apply { restore(x) }
+        val right = FoldTrie<TestRoot, TestField, Int, Unit>(program).apply { restore(y) }
         for (path in program.paths) {
             if (joined.holds(path)) assertTrue(left.holds(path) && right.holds(path), "join holds no more than $path")
         }

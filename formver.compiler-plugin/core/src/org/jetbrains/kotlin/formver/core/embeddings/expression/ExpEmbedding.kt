@@ -110,7 +110,8 @@ data class FieldAccessPermissions(val inner: ExpEmbedding, val field: FieldEmbed
 data class PredicateAccessPermissions(
     val predicateName: SymbolicName,
     val args: List<ExpEmbedding>,
-    val perm: PermExp
+    val perm: PermExp,
+    override val sourceRole: SourceRole? = null,
 ) :
     ExpEmbedding {
     override val type: TypeEmbedding = buildType { boolean() }
