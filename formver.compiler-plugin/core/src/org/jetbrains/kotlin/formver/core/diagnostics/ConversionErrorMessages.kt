@@ -27,6 +27,10 @@ object ConversionErrorMessages : BaseDiagnosticRendererFactory() {
             CommonRenderers.STRING,
         )
         map.put(
+            ConversionErrors.UNTRACKED_WRITE,
+            "Write is not tracked because the local it goes through is shared; declare the local '@Unique'.",
+        )
+        map.put(
             ConversionErrors.VERIFICATION_SKIPPED,
             "{0}",
             CommonRenderers.STRING,

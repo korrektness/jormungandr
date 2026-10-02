@@ -403,6 +403,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val embedding = data.embedPropertyAccess(lValue, variableAssignment)
         val convertedRValue = data.convert(variableAssignment.rValue)
         val assignment = embedding.setValue(convertedRValue, data)
+        if (assignment is FieldModification && assignment.dropsUnownedWrite(data.typeResolver)) {
+            lValue.dispatchReceiver?.let { data.warnIfUntrackedWrite(variableAssignment, it, assignment.receiverOwned) }
+        }
         val analysis = data.uniquenessAnalysis
         if (assignment !is Assign || analysis == null) return assignment
         val lValuePath = analysis.pathOf(lValue) ?: return assignment

@@ -469,9 +469,8 @@ data class LinearizationVisitor(
 
     override fun visitFieldModification(e: FieldModification): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            val accessIsManual = with(ctx.typeResolver) { (e.receiver.type.pretype as? ClassTypeEmbedding)?.isManual ?: false }
             val receiverPath = ctx.ownedReceiverPath(e.receiver, e.receiverOwned, isWrite = true)
-            if (e.field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS && !accessIsManual && receiverPath == null) {
+            if (e.dropsUnownedWrite(ctx.typeResolver) && receiverPath == null) {
                 e.receiver.linearize().toViperUnusedResult(ctx)
                 val source = ctx.moveSource(e.newValue, targetOwned = false)
                 e.newValue.linearize().toViperUnusedResult(ctx)

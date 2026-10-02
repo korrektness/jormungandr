@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAcce
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.asPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.uniqueness.plugin.indexedArrayInitializer
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isCustom
 import org.jetbrains.kotlin.formver.core.isInvariantBuilderFunctionNamed
 import org.jetbrains.kotlin.formver.core.linearization.*
@@ -164,6 +165,22 @@ fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpress
     val denoted = (expression as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: expression
     val path = analysis.pathOf(denoted) ?: return false
     return analysis.ownsBefore(element, path)
+}
+
+/**
+ * Warns at [write] when it stores through [receiver] without owning it and [receiver] reads a local initialized from
+ * a constructor call. Such a local is `Shared` unless declared `@Unique`, so the write is dropped.
+ */
+fun StmtConversionContext.warnIfUntrackedWrite(write: FirElement, receiver: FirExpression, owned: Boolean) {
+    if (!owned && receiver.readsConstructedLocal()) reportUntrackedWrite(write.source)
+}
+
+private fun FirExpression.readsConstructedLocal(): Boolean {
+    val access = (this as? FirSmartCastExpression)?.originalExpression ?: this
+    val symbol = (access as? FirPropertyAccessExpression)?.calleeReference?.symbol as? FirPropertySymbol ?: return false
+    symbol.indexedArrayInitializer?.let { return it.readsConstructedLocal() }
+    val initializer = symbol.resolvedInitializer as? FirFunctionCall ?: return false
+    return symbol.isLocal && initializer.calleeReference.symbol is FirConstructorSymbol
 }
 
 /**

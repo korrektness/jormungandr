@@ -9,6 +9,7 @@ import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.error1
+import org.jetbrains.kotlin.diagnostics.warning0
 
 /**
  * Diagnostics emitted by the conversion pipeline (FIR -> ExpEmbedding -> Viper).
@@ -22,6 +23,10 @@ object ConversionErrors : KtDiagnosticsContainer() {
      * Code whose ownership the permission encoding cannot follow, such as folding a path with a moved-out field.
      */
     val UNSUPPORTED_OWNERSHIP by error1<PsiElement, String>()
+    /**
+     * A write through a `Shared` local initialized from a constructor call, which conversion drops.
+     */
+    val UNTRACKED_WRITE by warning0<PsiElement>()
     val MINOR_INTERNAL_ERROR by error1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
 
     /**

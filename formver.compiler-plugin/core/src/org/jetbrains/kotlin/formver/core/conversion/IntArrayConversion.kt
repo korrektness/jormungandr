@@ -38,6 +38,7 @@ fun StmtConversionContext.convertIntArrayElementAccess(call: FirFunctionCall): E
     return if (call.toResolvedCallableSymbol()?.callableId == intArrayGetId) {
         IntArrayGet(array, args[0], owned, symbol)
     } else {
+        warnIfUntrackedWrite(call, receiver, owned)
         IntArraySet(array, args[0], args[1], owned, symbol)
     }
 }

@@ -84,6 +84,12 @@ class ProgramConverter(
     override fun reportUnsupportedOwnership(source: KtSourceElement?, msg: String) =
         emit(source, ConversionErrors.UNSUPPORTED_OWNERSHIP, msg)
 
+    override fun reportUntrackedWrite(source: KtSourceElement?) {
+        context(checkerContext) {
+            reporter.reportOn(source, ConversionErrors.UNTRACKED_WRITE)
+        }
+    }
+
     override fun reportMinorInternalError(msg: String) =
         emit(currentDeclarationSource, ConversionErrors.MINOR_INTERNAL_ERROR, msg)
 

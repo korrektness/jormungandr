@@ -183,3 +183,34 @@ fun `advance to own field keeps new field`(x: @Unique L?): @Unique L? {
     }
     return p
 }
+
+// Declarations initialized from calls
+
+fun makeUnique(): @Unique Any = Any()
+
+fun makeShared(): Any = Any()
+
+fun `declare from unique call`() {
+    val y = makeUnique()
+    consume(y)
+}
+
+fun `declare from shared call`() {
+    val y = makeShared()
+    consume(<!UNIQUENESS_MISMATCH!>y<!>)
+}
+
+fun `declare from constructor`() {
+    val y = Any()
+    consume(<!UNIQUENESS_MISMATCH!>y<!>)
+}
+
+fun `declare from unique call or unique path`(x: @Unique Any) {
+    val y = if (nondet()) x else makeUnique()
+    consume(y)
+}
+
+fun `declare from shared call or unique path`(x: @Unique Any) {
+    val y = if (nondet()) x else makeShared()
+    consume(<!UNIQUENESS_MISMATCH!>y<!>)
+}

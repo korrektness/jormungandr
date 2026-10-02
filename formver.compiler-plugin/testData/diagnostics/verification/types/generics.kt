@@ -14,7 +14,7 @@ fun <!VIPER_TEXT!>createBox<!>(): Int {
 
 fun <!VIPER_TEXT!>setGenericField<!>() {
     val box = Box(3)
-    box.t = 5
+    <!UNTRACKED_WRITE!>box.t = 5<!>
 }
 
 fun <T> <!VIPER_TEXT!>genericFun<!>(t: T): T = t

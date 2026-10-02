@@ -654,6 +654,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testUnique_try() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_try.kt");
       }
+
+      @Test
+      @TestMetadata("untracked_write.kt")
+      public void testUntracked_write() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/untracked_write.kt");
+      }
     }
 
     @Nested

@@ -11,10 +11,13 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.arguments
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.expressions.unwrapArgument
+import org.jetbrains.kotlin.fir.expressions.unwrapExpression
+import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
@@ -24,9 +27,12 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeErrorType
 import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.readonly.plugin.postconditionsId
 import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
+import org.jetbrains.kotlin.formver.type.plugin.collectTails
+import org.jetbrains.kotlin.formver.type.plugin.removeCast
 
 fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =
     resolvedType.scopeUniqueness
@@ -50,7 +56,29 @@ fun FirVariableSymbol<*>.resolveUniqueness(): Uniqueness {
         return resolvedReturnType.scopeUniqueness
     }
 
-    return resolvedInitializer?.resolveAccessUniqueness() ?: Uniqueness.Shared
+    return resolvedInitializer?.resolveInitializerUniqueness() ?: Uniqueness.Shared
+}
+
+/**
+ * Resolves the uniqueness that a local of inferred type takes from its initializer [this]: the join of the access
+ * uniqueness of the paths it references and the result uniqueness of each function call among its tails. A
+ * constructor call contributes nothing, so a local initialized from a constructor alone is Shared.
+ */
+context(context: CheckerContext)
+private fun FirExpression.resolveInitializerUniqueness(): Uniqueness {
+    val pathUniqueness = sequenceOf(this)
+        .filter { it.resolveAccessState() != EmptyAccessState }
+        .map { it.resolveAccessUniqueness() }
+    val callUniquenesses = collectCallTails().map { it.resolvedType.scopeUniqueness }
+    return (pathUniqueness + callUniquenesses).reduceOrNull(Uniqueness::join) ?: Uniqueness.Shared
+}
+
+private fun FirExpression.collectCallTails(): Sequence<FirFunctionCall> {
+    val expression = unwrapExpression().removeCast()
+    val tails = expression.collectTails()
+    if (tails.any()) return tails.flatMap { it.collectCallTails() }
+    val call = expression as? FirFunctionCall ?: return emptySequence()
+    return if (call.calleeReference.symbol is FirConstructorSymbol) emptySequence() else sequenceOf(call)
 }
 
 /**

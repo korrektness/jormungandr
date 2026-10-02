@@ -19,6 +19,9 @@ interface ErrorCollectionContext {
     /** Report code whose ownership the permission encoding cannot follow, at [source]. */
     fun reportUnsupportedOwnership(source: KtSourceElement?, msg: String)
 
+    /** Warn that the write at [source] is dropped because the local it goes through is shared. */
+    fun reportUntrackedWrite(source: KtSourceElement?)
+
     /** Report a minor internal error; the source is supplied by the implementation. */
     fun reportMinorInternalError(msg: String)
 }
