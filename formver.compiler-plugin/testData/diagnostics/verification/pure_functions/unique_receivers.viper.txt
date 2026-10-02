@@ -6,22 +6,20 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
 {
-  (let m_0 ==
-    ((!(n == nullValue()) ?
-      (unfolding acc(Node_unique(n), write) in n.next) :
-      null)) in
-    (let anon_1_0 ==
-      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
-      (let anon_2_0 ==
-        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
-          (unfolding acc(Node_unique(n), write) in
-            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
-          null)) in
+  (n == nullValue() ?
+    boolToRef(true) :
+    (unfolding acc(Node_unique(n), write) in
+      (let m_0 ==
+        (n.next) in
         (let anon_0_0 ==
-          ((!(n == nullValue()) ?
-            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
-            null)) in
-          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+          ((m_0 == nullValue() ?
+            (let anon_1_0 ==
+              (boolToRef(true)) in
+              anon_1_0) :
+            (let anon_2_0 ==
+              (andBools(leInts(value(n), value(m_0)), isSorted(m_0))) in
+              anon_2_0))) in
+          anon_0_0))))
 }
 
 function value(this: Ref): Ref
@@ -37,22 +35,20 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
 {
-  (let m_0 ==
-    ((!(n == nullValue()) ?
-      (unfolding acc(Node_unique(n), write) in n.next) :
-      null)) in
-    (let anon_1_0 ==
-      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
-      (let anon_2_0 ==
-        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
-          (unfolding acc(Node_unique(n), write) in
-            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
-          null)) in
+  (n == nullValue() ?
+    boolToRef(true) :
+    (unfolding acc(Node_unique(n), write) in
+      (let m_0 ==
+        (n.next) in
         (let anon_0_0 ==
-          ((!(n == nullValue()) ?
-            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
-            null)) in
-          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+          ((m_0 == nullValue() ?
+            (let anon_1_0 ==
+              (boolToRef(true)) in
+              anon_1_0) :
+            (let anon_2_0 ==
+              (andBools(leInts(value(n), value(m_0)), isSorted(m_0))) in
+              anon_2_0))) in
+          anon_0_0))))
 }
 
 function value(this: Ref): Ref
@@ -81,22 +77,20 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
 {
-  (let m_0 ==
-    ((!(n == nullValue()) ?
-      (unfolding acc(Node_unique(n), write) in n.next) :
-      null)) in
-    (let anon_1_0 ==
-      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
-      (let anon_2_0 ==
-        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
-          (unfolding acc(Node_unique(n), write) in
-            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
-          null)) in
+  (n == nullValue() ?
+    boolToRef(true) :
+    (unfolding acc(Node_unique(n), write) in
+      (let m_0 ==
+        (n.next) in
         (let anon_0_0 ==
-          ((!(n == nullValue()) ?
-            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
-            null)) in
-          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+          ((m_0 == nullValue() ?
+            (let anon_1_0 ==
+              (boolToRef(true)) in
+              anon_1_0) :
+            (let anon_2_0 ==
+              (andBools(leInts(value(n), value(m_0)), isSorted(m_0))) in
+              anon_2_0))) in
+          anon_0_0))))
 }
 
 function value(this: Ref): Ref
@@ -126,13 +120,13 @@ function f_content(h: Ref): Ref
   requires acc(Holder_unique(h), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_1_0 ==
-    ((unfolding acc(Holder_unique(h), write) in h.cell)) in
-    (let anon_0_0 ==
-      ((unfolding acc(Holder_unique(h), write) in
-        (unfolding acc(Cell_unique(anon_1_0), write) in
-          anon_1_0.bf_content))) in
-      anon_0_0))
+  (unfolding acc(Holder_unique(h), write) in
+    (let anon_1_0 ==
+      (h.cell) in
+      (unfolding acc(Cell_unique(anon_1_0), write) in
+        (let anon_0_0 ==
+          (anon_1_0.bf_content) in
+          anon_0_0))))
 }
 
 /unique_receivers.kt: info: Generated Viper text for sum:
@@ -145,10 +139,11 @@ function sum(d: Ref): Ref
   requires acc(Derived_unique(d), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_0_0 ==
-    ((unfolding acc(Derived_unique(d), write) in
-      (unfolding acc(Base_unique(d), write) in d.x))) in
-    (let anon_1_0 ==
-      ((unfolding acc(Derived_unique(d), write) in d.y)) in
-      plusInts(anon_0_0, anon_1_0)))
+  (unfolding acc(Derived_unique(d), write) in
+    (unfolding acc(Base_unique(d), write) in
+      (let anon_0_0 ==
+        (d.x) in
+        (let anon_1_0 ==
+          (d.y) in
+          plusInts(anon_0_0, anon_1_0)))))
 }

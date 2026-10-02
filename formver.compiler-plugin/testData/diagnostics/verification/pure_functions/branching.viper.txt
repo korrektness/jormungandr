@@ -17,13 +17,15 @@ function simpleBranching(a: Ref): Ref
 {
   (let l0_result_0 ==
     (intToRef(0)) in
-    (let l0_result_1 ==
-      ((boolFromRef(a) ? plusInts(l0_result_0, intToRef(1)) : null)) in
-      (let l0_result_2 ==
-        ((!boolFromRef(a) ? plusInts(l0_result_0, intToRef(2)) : null)) in
-        (let l0_result_3 ==
-          ((boolFromRef(a) ? l0_result_1 : l0_result_2)) in
-          l0_result_3))))
+    (let l0_result_3 ==
+      ((boolFromRef(a) ?
+        (let l0_result_1 ==
+          (plusInts(l0_result_0, intToRef(1))) in
+          l0_result_1) :
+        (let l0_result_2 ==
+          (plusInts(l0_result_0, intToRef(2))) in
+          l0_result_2))) in
+      l0_result_3))
 }
 
 /branching.kt: info: Generated Viper text for nestedBranching:
@@ -34,39 +36,33 @@ function nestedBranching(a: Ref, b: Ref): Ref
 {
   (let l0_result_0 ==
     (intToRef(0)) in
-    (let l0_result_1 ==
-      ((boolFromRef(a) ? plusInts(intToRef(1), l0_result_0) : null)) in
-      (let l0_result_2 ==
-        ((boolFromRef(a) && boolFromRef(b) ?
-          plusInts(intToRef(2), l0_result_1) :
-          null)) in
-        (let l0_result_3 ==
-          ((boolFromRef(a) && !boolFromRef(b) ?
-            plusInts(intToRef(3), l0_result_1) :
-            null)) in
-          (let l0_result_4 ==
-            ((!boolFromRef(a) && boolFromRef(b) ?
-              plusInts(intToRef(4), l0_result_0) :
-              null)) in
+    (let l0_result_9 ==
+      ((boolFromRef(a) ?
+        (let l0_result_1 ==
+          (plusInts(intToRef(1), l0_result_0)) in
+          (let l0_result_8 ==
+            ((boolFromRef(b) ?
+              (let l0_result_2 ==
+                (plusInts(intToRef(2), l0_result_1)) in
+                l0_result_2) :
+              (let l0_result_3 ==
+                (plusInts(intToRef(3), l0_result_1)) in
+                l0_result_3))) in
+            l0_result_8)) :
+        (let l0_result_6 ==
+          ((boolFromRef(b) ?
+            (let l0_result_4 ==
+              (plusInts(intToRef(4), l0_result_0)) in
+              l0_result_4) :
             (let l0_result_5 ==
-              ((!boolFromRef(a) && !boolFromRef(b) ?
-                plusInts(intToRef(5), l0_result_0) :
-                null)) in
-              (let l0_result_6 ==
-                ((!boolFromRef(a) ?
-                  (boolFromRef(b) ? l0_result_4 : l0_result_5) :
-                  null)) in
-                (let l0_result_7 ==
-                  ((!boolFromRef(a) ?
-                    plusInts(intToRef(6), l0_result_6) :
-                    null)) in
-                  (let l0_result_8 ==
-                    ((boolFromRef(b) ? l0_result_2 : l0_result_3)) in
-                    (let l0_result_9 ==
-                      ((boolFromRef(a) ? l0_result_8 : l0_result_7)) in
-                      (let l0_result_10 ==
-                        (plusInts(intToRef(7), l0_result_9)) in
-                        l0_result_10)))))))))))
+              (plusInts(intToRef(5), l0_result_0)) in
+              l0_result_5))) in
+          (let l0_result_7 ==
+            (plusInts(intToRef(6), l0_result_6)) in
+            l0_result_7)))) in
+      (let l0_result_10 ==
+        (plusInts(intToRef(7), l0_result_9)) in
+        l0_result_10)))
 }
 
 /branching.kt: info: Generated Viper text for whenExpressionSimple:
@@ -78,20 +74,23 @@ function whenExpressionSimple(x: Ref): Ref
     (intToRef(0)) in
     (let anon_0_0 ==
       (x) in
-      (let y_1 ==
-        ((intFromRef(anon_0_0) == 1 ? intToRef(10) : null)) in
-        (let y_2 ==
-          ((!(intFromRef(anon_0_0) == 1) && !(intFromRef(anon_0_0) == 2) ?
-            intToRef(30) :
+      (!(intFromRef(anon_0_0) == 1) && intFromRef(anon_0_0) == 2 ?
+        intToRef(20) :
+        (let y_3 ==
+          ((intFromRef(anon_0_0) == 1 ||
+          !(intFromRef(anon_0_0) == 1) && !(intFromRef(anon_0_0) == 2) ?
+            (intFromRef(anon_0_0) == 1 ?
+              (let y_1 ==
+                (intToRef(10)) in
+                y_1) :
+              (let y_2 ==
+                ((!(intFromRef(anon_0_0) == 1) &&
+                !(intFromRef(anon_0_0) == 2) ?
+                  intToRef(30) :
+                  null)) in
+                y_2)) :
             null)) in
-          (let y_3 ==
-            ((intFromRef(anon_0_0) == 1 ||
-            !(intFromRef(anon_0_0) == 1) && !(intFromRef(anon_0_0) == 2) ?
-              (intFromRef(anon_0_0) == 1 ? y_1 : y_2) :
-              null)) in
-            (!(intFromRef(anon_0_0) == 1) && intFromRef(anon_0_0) == 2 ?
-              intToRef(20) :
-              plusInts(y_3, intToRef(1))))))))
+          plusInts(y_3, intToRef(1))))))
 }
 
 /branching.kt: info: Generated Viper text for whenNoArgumentBranching:
@@ -100,18 +99,15 @@ function whenNoArgumentBranching(x: Ref, y: Ref): Ref
   requires isSubtype(typeOf(y), intType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let z_0 ==
-    ((!(intFromRef(x) == 0) && !(intFromRef(x) > 0 && intFromRef(y) > 0) &&
-    !(intFromRef(x) < 0 || intFromRef(y) < 0) ?
-      intToRef(5) :
-      null)) in
-    (intFromRef(x) == 0 ?
-      intToRef(0) :
-      (!(intFromRef(x) == 0) && (intFromRef(x) > 0 && intFromRef(y) > 0) ?
-        intToRef(1) :
-        (!(intFromRef(x) == 0) && !(intFromRef(x) > 0 && intFromRef(y) > 0) &&
-        (intFromRef(x) < 0 || intFromRef(y) < 0) ?
-          intToRef(-1) :
+  (intFromRef(x) == 0 ?
+    intToRef(0) :
+    (!(intFromRef(x) == 0) && (intFromRef(x) > 0 && intFromRef(y) > 0) ?
+      intToRef(1) :
+      (!(intFromRef(x) == 0) && !(intFromRef(x) > 0 && intFromRef(y) > 0) &&
+      (intFromRef(x) < 0 || intFromRef(y) < 0) ?
+        intToRef(-1) :
+        (let z_0 ==
+          (intToRef(5)) in
           z_0))))
 }
 
@@ -122,25 +118,17 @@ function stringEqualityBranching(input: Ref): Ref
 {
   (let isValid_0 ==
     (boolToRef(false)) in
-    (let isValid_1 ==
-      ((!(stringFromRef(input) == Seq(97, 100, 109, 105, 110)) &&
-      stringFromRef(input) == Seq(117, 115, 101, 114) ?
-        boolToRef(true) :
-        null)) in
-      (let isValid_2 ==
-        ((!(stringFromRef(input) == Seq(97, 100, 109, 105, 110)) &&
-        !(stringFromRef(input) == Seq(117, 115, 101, 114)) ?
-          boolToRef(false) :
-          null)) in
-        (let isValid_3 ==
-          ((!(stringFromRef(input) == Seq(97, 100, 109, 105, 110)) ?
-            (stringFromRef(input) == Seq(117, 115, 101, 114) ?
-              isValid_1 :
-              isValid_2) :
-            null)) in
-          (stringFromRef(input) == Seq(97, 100, 109, 105, 110) ?
-            boolToRef(true) :
-            isValid_3)))))
+    (stringFromRef(input) == Seq(97, 100, 109, 105, 110) ?
+      boolToRef(true) :
+      (let isValid_3 ==
+        ((stringFromRef(input) == Seq(117, 115, 101, 114) ?
+          (let isValid_1 ==
+            (boolToRef(true)) in
+            isValid_1) :
+          (let isValid_2 ==
+            (boolToRef(false)) in
+            isValid_2))) in
+        isValid_3)))
 }
 
 /branching.kt: info: Generated Viper text for sequentialIfWithMutation:
@@ -149,13 +137,15 @@ function sequentialIfWithMutation(): Ref
 {
   (let x_0 ==
     (intToRef(10)) in
-    (let x_1 ==
-      ((intFromRef(x_0) > 5 ? intToRef(2) : null)) in
-      (let x_2 ==
-        ((!(intFromRef(x_0) > 5) ? intToRef(20) : null)) in
-        (let x_3 ==
-          ((intFromRef(x_0) > 5 ? x_1 : x_2)) in
-          (intFromRef(x_3) == 2 ? intToRef(100) : intToRef(0))))))
+    (let x_3 ==
+      ((intFromRef(x_0) > 5 ?
+        (let x_1 ==
+          (intToRef(2)) in
+          x_1) :
+        (let x_2 ==
+          (intToRef(20)) in
+          x_2))) in
+      (intFromRef(x_3) == 2 ? intToRef(100) : intToRef(0))))
 }
 
 /branching.kt: info: Generated Viper text for complexBooleanReturn:
@@ -165,32 +155,31 @@ function complexBooleanReturn(x: Ref): Ref
 {
   (let l0_result_0 ==
     ((!(intFromRef(x) > 100) ? boolToRef(false) : null)) in
-    (let l0_result_1 ==
-      ((!(intFromRef(x) > 100) && intFromRef(x) > 50 ?
-        boolToRef(true) :
-        null)) in
-      (let l0_result_2 ==
-        ((!(intFromRef(x) > 100) && !(intFromRef(x) > 50) &&
-        !(intFromRef(x) < 0) ?
-          boolToRef(true) :
-          null)) in
+    (intFromRef(x) > 100 ?
+      boolToRef(true) :
+      (!(intFromRef(x) > 100) && !(intFromRef(x) > 50) && intFromRef(x) < 0 ?
+        boolToRef(false) :
         (let l0_result_3 ==
           ((!(intFromRef(x) > 100) && intFromRef(x) > 50 ||
           !(intFromRef(x) > 100) && !(intFromRef(x) > 50) &&
           !(intFromRef(x) < 0) ?
-            (intFromRef(x) > 50 ? l0_result_1 : l0_result_2) :
+            (intFromRef(x) > 50 ?
+              (let l0_result_1 ==
+                (boolToRef(true)) in
+                l0_result_1) :
+              (let l0_result_2 ==
+                ((!(intFromRef(x) > 100) && !(intFromRef(x) > 50) &&
+                !(intFromRef(x) < 0) ?
+                  boolToRef(true) :
+                  null)) in
+                l0_result_2)) :
             null)) in
-          (intFromRef(x) > 100 ?
-            boolToRef(true) :
-            (!(intFromRef(x) > 100) && !(intFromRef(x) > 50) &&
-            intFromRef(x) < 0 ?
-              boolToRef(false) :
-              ((!(intFromRef(x) > 100) && intFromRef(x) > 50 ||
-              !(intFromRef(x) > 100) && !(intFromRef(x) > 50) &&
-              !(intFromRef(x) < 0)) &&
-              boolFromRef(l0_result_3) ?
-                boolToRef(false) :
-                boolToRef(true))))))))
+          ((!(intFromRef(x) > 100) && intFromRef(x) > 50 ||
+          !(intFromRef(x) > 100) && !(intFromRef(x) > 50) &&
+          !(intFromRef(x) < 0)) &&
+          boolFromRef(l0_result_3) ?
+            boolToRef(false) :
+            boolToRef(true))))))
 }
 
 /branching.kt: info: Generated Viper text for safeDivide:
@@ -199,13 +188,15 @@ function safeDivide(x: Ref, y: Ref): Ref
   requires isSubtype(typeOf(y), intType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let res_0 ==
-    (intToRef(0)) in
-    (let res_1 ==
-      ((!(intFromRef(y) == 0) ? divInts(x, y) : null)) in
-      (let res_2 ==
-        ((!(intFromRef(y) == 0) ? res_1 : res_0)) in
-        res_2)))
+  (let res_2 ==
+    ((!(intFromRef(y) == 0) ?
+      (let res_1 ==
+        (divInts(x, y)) in
+        res_1) :
+      (let res_0 ==
+        (intToRef(0)) in
+        res_0))) in
+    res_2)
 }
 
 /branching.kt: info: Generated Viper text for getStringLength:
@@ -213,13 +204,15 @@ function getStringLength(obj: Ref): Ref
   requires isSubtype(typeOf(obj), anyType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let len_0 ==
-    (intToRef(-1)) in
-    (let len_1 ==
-      ((isSubtype(typeOf(obj), stringType()) ? stringLength(obj) : null)) in
-      (let len_2 ==
-        ((isSubtype(typeOf(obj), stringType()) ? len_1 : len_0)) in
-        len_2)))
+  (let len_2 ==
+    ((isSubtype(typeOf(obj), stringType()) ?
+      (let len_1 ==
+        (stringLength(obj)) in
+        len_1) :
+      (let len_0 ==
+        (intToRef(-1)) in
+        len_0))) in
+    len_2)
 }
 
 /branching.kt: info: Generated Viper text for safeNestedDivide:
@@ -231,15 +224,17 @@ function safeNestedDivide(x: Ref, y: Ref, z: Ref): Ref
 {
   (let res_0 ==
     (intToRef(0)) in
-    (let res_1 ==
-      ((!(intFromRef(y) == 0) && !(intFromRef(z) == 0) ?
-        divInts(divInts(x, y), z) :
-        null)) in
-      (let res_2 ==
-        ((!(intFromRef(z) == 0) ? res_1 : res_0)) in
-        (let res_3 ==
-          ((!(intFromRef(y) == 0) ? res_2 : res_0)) in
-          res_3))))
+    (let res_3 ==
+      ((!(intFromRef(y) == 0) ?
+        (let res_2 ==
+          ((!(intFromRef(z) == 0) ?
+            (let res_1 ==
+              (divInts(divInts(x, y), z)) in
+              res_1) :
+            res_0)) in
+          res_2) :
+        res_0)) in
+      res_3))
 }
 
 /branching.kt: info: Generated Viper text for safeInverseDifference:
@@ -248,13 +243,13 @@ function safeInverseDifference(x: Ref, y: Ref): Ref
   requires isSubtype(typeOf(y), intType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let res_0 ==
-    (intToRef(0)) in
-    (let res_1 ==
-      ((!(intFromRef(x) == intFromRef(y)) ?
-        divInts(intToRef(100), minusInts(x, y)) :
-        null)) in
-      (let res_2 ==
-        ((!(intFromRef(x) == intFromRef(y)) ? res_1 : res_0)) in
-        res_2)))
+  (let res_2 ==
+    ((!(intFromRef(x) == intFromRef(y)) ?
+      (let res_1 ==
+        (divInts(intToRef(100), minusInts(x, y))) in
+        res_1) :
+      (let res_0 ==
+        (intToRef(0)) in
+        res_0))) in
+    res_2)
 }

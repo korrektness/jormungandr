@@ -6,22 +6,20 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
 {
-  (let m_0 ==
-    ((!(n == nullValue()) ?
-      (unfolding acc(Node_unique(n), write) in n.next) :
-      null)) in
-    (let anon_1_0 ==
-      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
-      (let anon_2_0 ==
-        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
-          (unfolding acc(Node_unique(n), write) in
-            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
-          null)) in
+  (n == nullValue() ?
+    boolToRef(true) :
+    (unfolding acc(Node_unique(n), write) in
+      (let m_0 ==
+        (n.next) in
         (let anon_0_0 ==
-          ((!(n == nullValue()) ?
-            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
-            null)) in
-          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+          ((m_0 == nullValue() ?
+            (let anon_1_0 ==
+              (boolToRef(true)) in
+              anon_1_0) :
+            (let anon_2_0 ==
+              (andBools(leInts(value(n), value(m_0)), isSorted(m_0))) in
+              anon_2_0))) in
+          anon_0_0))))
 }
 
 function value(this: Ref): Ref
@@ -37,20 +35,18 @@ function contents(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), multisetType())
 {
-  (let anon_1_0 ==
-    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
-    (let anon_3_0 ==
-      ((!(n == nullValue()) ?
-        (unfolding acc(Node_unique(n), write) in n.next) :
-        null)) in
-      (let anon_2_0 ==
-        ((!(n == nullValue()) ?
-          (unfolding acc(Node_unique(n), write) in
-            unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_3_0))) :
-          null)) in
-        (let anon_0_0 ==
-          ((n == nullValue() ? anon_1_0 : anon_2_0)) in
-          anon_0_0))))
+  (let anon_0_0 ==
+    ((n == nullValue() ?
+      (let anon_1_0 ==
+        (multisetToRef(Multiset[Int]())) in
+        anon_1_0) :
+      (unfolding acc(Node_unique(n), write) in
+        (let anon_3_0 ==
+          (n.next) in
+          (let anon_2_0 ==
+            (unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_3_0))) in
+            anon_2_0))))) in
+    anon_0_0)
 }
 
 function value(this: Ref): Ref
@@ -66,20 +62,18 @@ function contents(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), multisetType())
 {
-  (let anon_4_0 ==
-    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
-    (let anon_6_0 ==
-      ((!(n == nullValue()) ?
-        (unfolding acc(Node_unique(n), write) in n.next) :
-        null)) in
-      (let anon_5_0 ==
-        ((!(n == nullValue()) ?
-          (unfolding acc(Node_unique(n), write) in
-            unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_6_0))) :
-          null)) in
-        (let anon_3_0 ==
-          ((n == nullValue() ? anon_4_0 : anon_5_0)) in
-          anon_3_0))))
+  (let anon_3_0 ==
+    ((n == nullValue() ?
+      (let anon_4_0 ==
+        (multisetToRef(Multiset[Int]())) in
+        anon_4_0) :
+      (unfolding acc(Node_unique(n), write) in
+        (let anon_6_0 ==
+          (n.next) in
+          (let anon_5_0 ==
+            (unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_6_0))) in
+            anon_5_0))))) in
+    anon_3_0)
 }
 
 function isSorted(n: Ref): Ref
@@ -87,22 +81,20 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
 {
-  (let m_0 ==
-    ((!(n == nullValue()) ?
-      (unfolding acc(Node_unique(n), write) in n.next) :
-      null)) in
-    (let anon_1_0 ==
-      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
-      (let anon_2_0 ==
-        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
-          (unfolding acc(Node_unique(n), write) in
-            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
-          null)) in
+  (n == nullValue() ?
+    boolToRef(true) :
+    (unfolding acc(Node_unique(n), write) in
+      (let m_0 ==
+        (n.next) in
         (let anon_0_0 ==
-          ((!(n == nullValue()) ?
-            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
-            null)) in
-          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+          ((m_0 == nullValue() ?
+            (let anon_1_0 ==
+              (boolToRef(true)) in
+              anon_1_0) :
+            (let anon_2_0 ==
+              (andBools(leInts(value(n), value(m_0)), isSorted(m_0))) in
+              anon_2_0))) in
+          anon_0_0))))
 }
 
 function value(this: Ref): Ref
@@ -162,20 +154,18 @@ function contents(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), multisetType())
 {
-  (let anon_4_0 ==
-    ((n == nullValue() ? multisetToRef(Multiset[Int]()) : null)) in
-    (let anon_6_0 ==
-      ((!(n == nullValue()) ?
-        (unfolding acc(Node_unique(n), write) in n.bf_next) :
-        null)) in
-      (let anon_5_0 ==
-        ((!(n == nullValue()) ?
-          (unfolding acc(Node_unique(n), write) in
-            unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_6_0))) :
-          null)) in
-        (let anon_3_0 ==
-          ((n == nullValue() ? anon_4_0 : anon_5_0)) in
-          anon_3_0))))
+  (let anon_3_0 ==
+    ((n == nullValue() ?
+      (let anon_4_0 ==
+        (multisetToRef(Multiset[Int]())) in
+        anon_4_0) :
+      (unfolding acc(Node_unique(n), write) in
+        (let anon_6_0 ==
+          (n.bf_next) in
+          (let anon_5_0 ==
+            (unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_6_0))) in
+            anon_5_0))))) in
+    anon_3_0)
 }
 
 function isSorted(n: Ref): Ref
@@ -183,22 +173,20 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
 {
-  (let m_0 ==
-    ((!(n == nullValue()) ?
-      (unfolding acc(Node_unique(n), write) in n.bf_next) :
-      null)) in
-    (let anon_1_0 ==
-      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
-      (let anon_2_0 ==
-        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
-          (unfolding acc(Node_unique(n), write) in
-            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
-          null)) in
+  (n == nullValue() ?
+    boolToRef(true) :
+    (unfolding acc(Node_unique(n), write) in
+      (let m_0 ==
+        (n.bf_next) in
         (let anon_0_0 ==
-          ((!(n == nullValue()) ?
-            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
-            null)) in
-          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+          ((m_0 == nullValue() ?
+            (let anon_1_0 ==
+              (boolToRef(true)) in
+              anon_1_0) :
+            (let anon_2_0 ==
+              (andBools(leInts(value(n), value(m_0)), isSorted(m_0))) in
+              anon_2_0))) in
+          anon_0_0))))
 }
 
 function value(this: Ref): Ref

@@ -8,13 +8,13 @@ function fact(n: Ref): Ref
     intFromRef(result) ==
     intFromRef(n) * intFromRef(fact(minusInts(n, intToRef(1))))
 {
-  (let anon_1_0 ==
-    ((intFromRef(n) == 0 ? intToRef(1) : null)) in
-    (let anon_2_0 ==
-      ((!(intFromRef(n) == 0) ?
-        timesInts(n, fact(minusInts(n, intToRef(1)))) :
-        null)) in
-      (let anon_0_0 ==
-        ((intFromRef(n) == 0 ? anon_1_0 : anon_2_0)) in
-        anon_0_0)))
+  (let anon_0_0 ==
+    ((intFromRef(n) == 0 ?
+      (let anon_1_0 ==
+        (intToRef(1)) in
+        anon_1_0) :
+      (let anon_2_0 ==
+        (timesInts(n, fact(minusInts(n, intToRef(1))))) in
+        anon_2_0))) in
+    anon_0_0)
 }

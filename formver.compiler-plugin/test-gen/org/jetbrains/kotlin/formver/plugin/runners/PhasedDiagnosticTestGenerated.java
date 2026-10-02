@@ -106,6 +106,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("reverse_linked.kt")
+      public void testReverse_linked() {
+        runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/reverse_linked.kt");
+      }
+
+      @Test
       @TestMetadata("z_function.kt")
       public void testZ_function() {
         runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/z_function.kt");
@@ -1133,6 +1139,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("unique_receivers.kt")
       public void testUnique_receivers() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/unique_receivers.kt");
+      }
+
+      @Test
+      @TestMetadata("unique_recursion.kt")
+      public void testUnique_recursion() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/unique_recursion.kt");
+      }
+
+      @Test
+      @TestMetadata("unique_tree_recursion.kt")
+      public void testUnique_tree_recursion() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/unique_tree_recursion.kt");
       }
 
       @Test

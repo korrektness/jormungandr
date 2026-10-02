@@ -153,13 +153,15 @@ function clamp(n: Ref, bound: Ref): Ref
   ensures intFromRef(result) ==
     intFromRef((intFromRef(n) > intFromRef(bound) ? bound : n))
 {
-  (let anon_1_0 ==
-    ((intFromRef(n) > intFromRef(bound) ? bound : null)) in
-    (let anon_2_0 ==
-      ((!(intFromRef(n) > intFromRef(bound)) ? n : null)) in
-      (let anon_0_0 ==
-        ((intFromRef(n) > intFromRef(bound) ? anon_1_0 : anon_2_0)) in
-        anon_0_0)))
+  (let anon_0_0 ==
+    ((intFromRef(n) > intFromRef(bound) ?
+      (let anon_1_0 ==
+        (bound) in
+        anon_1_0) :
+      (let anon_2_0 ==
+        (n) in
+        anon_2_0))) in
+    anon_0_0)
 }
 
 /conditional_specifications.kt: info: Generated Viper text for callsClamp:
@@ -171,13 +173,15 @@ function clamp(n: Ref, bound: Ref): Ref
   ensures intFromRef(result) ==
     intFromRef((intFromRef(n) > intFromRef(bound) ? bound : n))
 {
-  (let anon_1_0 ==
-    ((intFromRef(n) > intFromRef(bound) ? bound : null)) in
-    (let anon_2_0 ==
-      ((!(intFromRef(n) > intFromRef(bound)) ? n : null)) in
-      (let anon_0_0 ==
-        ((intFromRef(n) > intFromRef(bound) ? anon_1_0 : anon_2_0)) in
-        anon_0_0)))
+  (let anon_0_0 ==
+    ((intFromRef(n) > intFromRef(bound) ?
+      (let anon_1_0 ==
+        (bound) in
+        anon_1_0) :
+      (let anon_2_0 ==
+        (n) in
+        anon_2_0))) in
+    anon_0_0)
 }
 
 function size(this: Ref): Ref

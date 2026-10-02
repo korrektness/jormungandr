@@ -97,13 +97,13 @@ private fun Exp.triggerArg(nested: Set<SymbolicName>): Exp? = when (this) {
 
 private fun List<Exp>.triggerArgs(nested: Set<SymbolicName>): List<Exp>? = map { it.triggerArg(nested) ?: return null }
 
-private fun Exp.mentions(variable: SymbolicName): Boolean =
+internal fun Exp.mentions(variable: SymbolicName): Boolean =
     this is Exp.LocalVar && name == variable || subExps().any { it.mentions(variable) }
 
 private fun Exp.contains(predicate: (Exp) -> Boolean): Boolean =
     predicate(this) || subExps().any { it.contains(predicate) }
 
-private fun Exp.subExps(): List<Exp> = when (this) {
+internal fun Exp.subExps(): List<Exp> = when (this) {
     is BinaryExp -> listOf(left, right)
     is UnaryExp -> listOf(arg)
     is Exp.Forall -> listOf(exp)

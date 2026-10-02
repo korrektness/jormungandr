@@ -13,7 +13,7 @@ class SsaConverter(
     val source: KtSourceElement? = null,
 ) {
     private var head: SsaBlockNode = SsaBlockNode(SsaStartNode(), Exp.BoolLit(true))
-    private val ssaAssignments: MutableList<Pair<SsaVariableName, Exp>> = mutableListOf()
+    private val ssaAssignments: MutableList<Assignment> = mutableListOf()
     private val returnExpressions: MutableList<Pair<Exp, Exp>> = mutableListOf()
     private val accessInvariants: MutableMap<SsaVariableName, List<Exp.PredicateAccess>> = mutableMapOf()
 
@@ -67,9 +67,65 @@ class SsaConverter(
                 elseBranch
             )
         }
-        return ssaAssignments.foldRight(bodyExp) { assignment, innerScope ->
-            Exp.LetBinding(Declaration.LocalVarDecl(assignment.first, Type.Ref), assignment.second, innerScope)
+        return ssaAssignments.foldRight(bodyExp) { assignment, innerScope -> innerScope.bind(assignment) }
+            .hoistUnfoldings()
+    }
+
+    /** [value] is evaluated where [guard] holds; elsewhere the variable is [default]. */
+    private data class Assignment(val name: SsaVariableName, val guard: Exp, val value: Exp, val default: Exp)
+
+    /**
+     * [this] with [assignment] bound in the innermost arm of its conditionals that holds every use of it, reached
+     * through the values and bodies of let bindings, or around [this] when there is no such arm. [known] are the
+     * conditions of the arms entered on the way; when they imply the guard, the value is bound unguarded, so the
+     * binding and its uses can share one `unfolding`.
+     */
+    private fun Exp.bind(assignment: Assignment, known: Set<Exp> = emptySet()): Exp {
+        bindInArm(assignment, known)?.let { return it }
+        val value = with(assignment) {
+            if (known.containsAll(guard.conjuncts())) value else Exp.TernaryExp(guard, value, default)
         }
+        return Exp.LetBinding(Declaration.LocalVarDecl(assignment.name, Type.Ref), value, this)
+    }
+
+    /** [this] with [assignment] bound inside one arm of a conditional, or `null` when no arm holds every use of it. */
+    private fun Exp.bindInArm(assignment: Assignment, known: Set<Exp>): Exp? {
+        fun Exp.uses() = mentions(assignment.name)
+        return when (this) {
+            is Exp.LetBinding -> when {
+                varExp.uses() && !body.uses() -> varExp.bindInArm(assignment, known)?.let { copy(varExp = it) }
+                body.uses() && !varExp.uses() -> body.bindInArm(assignment, known)?.let { copy(body = it) }
+                else -> null
+            }
+
+            is Exp.TernaryExp -> when {
+                condExp.uses() -> null
+                thenExp.uses() && !elseExp.uses() -> copy(thenExp = thenExp.bind(assignment, known + condExp.conjuncts()))
+                elseExp.uses() && !thenExp.uses() -> copy(elseExp = elseExp.bind(assignment, known + condExp.negations(known)))
+                else -> null
+            }
+
+            else -> null
+        }
+    }
+
+    /**
+     * What `!this` implies given [known]: itself, and the negation of the one condition it extends that [known] does
+     * not imply. A branching condition extends its block's condition with `&&`, so the conditions it extends are its
+     * left-nested conjuncts.
+     */
+    private fun Exp.negations(known: Set<Exp>): List<Exp> {
+        val unknown = extendedConditions().filterNot { known.containsAll(it.conjuncts()) }
+        return listOfNotNull(Exp.Not(this), unknown.singleOrNull()?.let { Exp.Not(it) })
+    }
+
+    private fun Exp.extendedConditions(): List<Exp> =
+        if (this is Exp.And) left.extendedConditions() + right else listOf(this)
+
+    private fun Exp.conjuncts(): List<Exp> = when (this) {
+        Exp.BoolLit(true) -> emptyList()
+        is Exp.And -> left.conjuncts() + right.conjuncts()
+        else -> listOf(this)
     }
 
     fun generateFreshSsaName(name: SymbolicName): SsaVariableName {
@@ -123,11 +179,7 @@ class SsaConverter(
             source,
             "Tried to assign a variable without a default expression"
         )
-        if (head.fullBranchingCondition == Exp.BoolLit(true)) {
-            ssaAssignments.add(name to varExp)
-        } else {
-            ssaAssignments.add(name to Exp.TernaryExp(head.fullBranchingCondition, varExp, defaultExpression))
-        }
+        ssaAssignments.add(Assignment(name, head.fullBranchingCondition, varExp, defaultExpression))
     }
 
     private fun Exp.withAccessInvariants(name: SsaVariableName): Exp =

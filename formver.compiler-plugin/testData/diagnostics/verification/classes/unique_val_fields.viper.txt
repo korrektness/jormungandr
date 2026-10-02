@@ -378,16 +378,16 @@ function xOf(a: Ref): Ref
   requires acc(A_unique(a), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_1_0 ==
-    ((unfolding acc(A_unique(a), write) in b(a))) in
-    (let anon_2_0 ==
-      ((unfolding acc(A_unique(a), write) in
-        (unfolding acc(B_unique(anon_1_0), write) in c(anon_1_0)))) in
-      (let anon_0_0 ==
-        ((unfolding acc(A_unique(a), write) in
-          (unfolding acc(B_unique(anon_1_0), write) in
-            (unfolding acc(C_unique(anon_2_0), write) in anon_2_0.x)))) in
-        anon_0_0)))
+  (unfolding acc(A_unique(a), write) in
+    (let anon_1_0 ==
+      (b(a)) in
+      (unfolding acc(B_unique(anon_1_0), write) in
+        (let anon_2_0 ==
+          (c(anon_1_0)) in
+          (unfolding acc(C_unique(anon_2_0), write) in
+            (let anon_0_0 ==
+              (anon_2_0.x) in
+              anon_0_0))))))
 }
 
 /unique_val_fields.kt: info: Generated Viper text for innerXOf:
@@ -405,12 +405,13 @@ function innerXOf(o: Ref): Ref
   requires acc(Outer_unique(o), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_1_0 ==
-    ((unfolding acc(Outer_unique(o), write) in inner(o))) in
-    (let anon_0_0 ==
-      ((unfolding acc(Outer_unique(o), write) in
-        (unfolding acc(Inner_unique(anon_1_0), write) in anon_1_0.x))) in
-      anon_0_0))
+  (unfolding acc(Outer_unique(o), write) in
+    (let anon_1_0 ==
+      (inner(o)) in
+      (unfolding acc(Inner_unique(anon_1_0), write) in
+        (let anon_0_0 ==
+          (anon_1_0.x) in
+          anon_0_0))))
 }
 
 /unique_val_fields.kt: info: Generated Viper text for firstOrZero:
@@ -434,23 +435,21 @@ function firstOrZero(b: Ref): Ref
 {
   (let anon_1_0 ==
     (data(b)) in
-    (let anon_3_0 ==
-      ((arraySize(anon_1_0) > 0 ?
-        (unfolding acc(Buf_unique(b), write) in data(b)) :
-        null)) in
-      (let anon_4_0 ==
+    (unfolding acc(Buf_unique(b), write) in
+      (let anon_0_0 ==
         ((arraySize(anon_1_0) > 0 ?
-          (unfolding acc(Buf_unique(b), write) in
+          (let anon_3_0 ==
+            (data(b)) in
             (unfolding acc(IntArray_unique(anon_3_0), write) in
-              intToRef(anon_3_0.contents[0]))) :
-          null)) in
-        (let anon_2_0 ==
-          ((arraySize(anon_1_0) > 0 ? anon_4_0 : null)) in
+              (let anon_4_0 ==
+                (intToRef(anon_3_0.contents[0])) in
+                (let anon_2_0 ==
+                  (anon_4_0) in
+                  anon_2_0)))) :
           (let anon_5_0 ==
-            ((!(arraySize(anon_1_0) > 0) ? intToRef(0) : null)) in
-            (let anon_0_0 ==
-              ((arraySize(anon_1_0) > 0 ? anon_2_0 : anon_5_0)) in
-              anon_0_0))))))
+            (intToRef(0)) in
+            anon_5_0))) in
+        anon_0_0)))
 }
 
 /unique_val_fields.kt: info: Generated Viper text for bumpThroughPure:
@@ -471,16 +470,16 @@ function xOf(a: Ref): Ref
   requires acc(A_unique(a), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_1_0 ==
-    ((unfolding acc(A_unique(a), write) in b(a))) in
-    (let anon_2_0 ==
-      ((unfolding acc(A_unique(a), write) in
-        (unfolding acc(B_unique(anon_1_0), write) in c(anon_1_0)))) in
-      (let anon_0_0 ==
-        ((unfolding acc(A_unique(a), write) in
-          (unfolding acc(B_unique(anon_1_0), write) in
-            (unfolding acc(C_unique(anon_2_0), write) in anon_2_0.x)))) in
-        anon_0_0)))
+  (unfolding acc(A_unique(a), write) in
+    (let anon_1_0 ==
+      (b(a)) in
+      (unfolding acc(B_unique(anon_1_0), write) in
+        (let anon_2_0 ==
+          (c(anon_1_0)) in
+          (unfolding acc(C_unique(anon_2_0), write) in
+            (let anon_0_0 ==
+              (anon_2_0.x) in
+              anon_0_0))))))
 }
 
 method bumpThroughPure(a: Ref) returns (v_ret_0: Ref)
@@ -524,23 +523,21 @@ function firstOrZero(b: Ref): Ref
 {
   (let anon_1_0 ==
     (data(b)) in
-    (let anon_3_0 ==
-      ((arraySize(anon_1_0) > 0 ?
-        (unfolding acc(Buf_unique(b), write) in data(b)) :
-        null)) in
-      (let anon_4_0 ==
+    (unfolding acc(Buf_unique(b), write) in
+      (let anon_0_0 ==
         ((arraySize(anon_1_0) > 0 ?
-          (unfolding acc(Buf_unique(b), write) in
+          (let anon_3_0 ==
+            (data(b)) in
             (unfolding acc(IntArray_unique(anon_3_0), write) in
-              intToRef(anon_3_0.contents[0]))) :
-          null)) in
-        (let anon_2_0 ==
-          ((arraySize(anon_1_0) > 0 ? anon_4_0 : null)) in
+              (let anon_4_0 ==
+                (intToRef(anon_3_0.contents[0])) in
+                (let anon_2_0 ==
+                  (anon_4_0) in
+                  anon_2_0)))) :
           (let anon_5_0 ==
-            ((!(arraySize(anon_1_0) > 0) ? intToRef(0) : null)) in
-            (let anon_0_0 ==
-              ((arraySize(anon_1_0) > 0 ? anon_2_0 : anon_5_0)) in
-              anon_0_0))))))
+            (intToRef(0)) in
+            anon_5_0))) in
+        anon_0_0)))
 }
 
 function size(this: Ref): Ref

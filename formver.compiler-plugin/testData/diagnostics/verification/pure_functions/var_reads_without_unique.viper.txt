@@ -6,9 +6,10 @@ function readUnique(b: Ref): Ref
   requires acc(Box_unique(b), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_0_0 ==
-    ((unfolding acc(Box_unique(b), write) in b.content)) in
-    anon_0_0)
+  (unfolding acc(Box_unique(b), write) in
+    (let anon_0_0 ==
+      (b.content) in
+      anon_0_0))
 }
 
 /var_reads_without_unique.kt: info: Generated Viper text for callsShared:
@@ -18,9 +19,10 @@ function readShared(b: Ref): Ref
   requires isSubtype(typeOf(b), Box())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_0_0 ==
-    ((unfolding acc(Box_unique(b), write) in b.content)) in
-    anon_0_0)
+  (unfolding acc(Box_unique(b), write) in
+    (let anon_0_0 ==
+      (b.content) in
+      anon_0_0))
 }
 
 method callsShared(b: Ref) returns (v_ret_0: Ref)

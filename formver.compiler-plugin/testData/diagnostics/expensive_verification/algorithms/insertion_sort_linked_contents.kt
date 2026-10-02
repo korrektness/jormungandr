@@ -1,8 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-// The contents specifications of the linked insertion sort. They do not verify yet: the pure function body reads
-// `n.next` under an `unfolding` of its own rather than the one around the recursive call.
+// The contents specifications of the linked insertion sort.
 
 class Node(val value: Int, var next: @Unique Node?)
 
@@ -24,7 +23,7 @@ fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
 fun <!VIPER_TEXT!>contents<!>(n: @Unique Node?): Multiset<Int> =
     if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
 
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
+@AlwaysVerify
 fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @Unique Node {
     preconditions {
         isSorted(sorted)
@@ -39,14 +38,14 @@ fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @U
     }
     sorted.next = insertSorted(sorted.next, node)
     return sorted
-}<!>
+}
 
 @AlwaysVerify
 fun <!VIPER_TEXT!>insertionSort<!>(head: @Unique Node?): @Unique Node? {
     postconditions<Node?> { r -> isSorted(r) && contents(r) == old(contents(head)) }
     var sorted: @Unique Node? = null
     var cur: @Unique Node? = head
-    <!VIPER_VERIFICATION_ERROR!>while (cur != null) {
+    while (cur != null) {
         loopInvariants {
             isSorted(sorted)
             contents(sorted) + contents(cur) == old(contents(head))
@@ -55,6 +54,6 @@ fun <!VIPER_TEXT!>insertionSort<!>(head: @Unique Node?): @Unique Node? {
         cur.next = null
         sorted = insertSorted(sorted, cur)
         cur = next
-    }<!>
+    }
     return sorted
 }

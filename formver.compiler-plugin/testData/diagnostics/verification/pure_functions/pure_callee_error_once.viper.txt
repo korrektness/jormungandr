@@ -5,9 +5,10 @@ function readShared(b: Ref): Ref
   requires isSubtype(typeOf(b), Box())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_0_0 ==
-    ((unfolding acc(Box_unique(b), write) in b.content)) in
-    anon_0_0)
+  (unfolding acc(Box_unique(b), write) in
+    (let anon_0_0 ==
+      (b.content) in
+      anon_0_0))
 }
 
 method firstCaller(b: Ref) returns (v_ret_0: Ref)
@@ -26,9 +27,10 @@ function readShared(b: Ref): Ref
   requires isSubtype(typeOf(b), Box())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_0_0 ==
-    ((unfolding acc(Box_unique(b), write) in b.content)) in
-    anon_0_0)
+  (unfolding acc(Box_unique(b), write) in
+    (let anon_0_0 ==
+      (b.content) in
+      anon_0_0))
 }
 
 method secondCaller(b: Ref) returns (v_ret_0: Ref)
@@ -47,9 +49,10 @@ function readShared(b: Ref): Ref
   requires isSubtype(typeOf(b), Box())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_0_0 ==
-    ((unfolding acc(Box_unique(b), write) in b.content)) in
-    anon_0_0)
+  (unfolding acc(Box_unique(b), write) in
+    (let anon_0_0 ==
+      (b.content) in
+      anon_0_0))
 }
 
 method thirdCaller(b: Ref) returns (v_ret_0: Ref)

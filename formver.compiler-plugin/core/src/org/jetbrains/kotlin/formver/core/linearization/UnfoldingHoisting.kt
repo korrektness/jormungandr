@@ -19,10 +19,12 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
  * `==>`, `!`, conditionals, quantifiers, `let`, function applications and sequence and field reads. Equal
  * `unfolding`s that meet are merged. It stops:
  * - at a conjunction, so a conjunct never reads a predicate that an earlier conjunct provides;
- * - at a quantifier or `let` whose variables its arguments mention;
+ * - at a quantifier whose variables its arguments mention;
  * - below the guard of `==>`, `||` or a conditional when the guard mentions the root of one of its arguments,
  *   except within the argument of `arraySize` outside any field read or `unfolding`, which needs no permission, and
  *   unless an equal `unfolding` rises from the guard itself;
+ * - at a `let` whose variable is the root of one of its arguments, or whose value mentions such a root, unless an
+ *   equal `unfolding` rises from the value;
  * - at `old`, inside which `unfolding`s are placed independently;
  * - at any other expression.
  */
@@ -84,12 +86,7 @@ private fun Exp.hoist(): Hoisted = when (this) {
     }
 
     is Exp.Old -> Hoisted(copy(exp = exp.hoistUnfoldings()), emptyList())
-    is Exp.LetBinding -> {
-        val value = varExp.hoist()
-        val inner = body.hoist()
-        val (rising, staying) = inner.pending.partition { unfolding -> variable.name !in unfolding.roots() }
-        Hoisted(copy(varExp = value.body, body = wrap(inner.body, staying)), merge(listOf(value.pending, rising)))
-    }
+    is Exp.LetBinding -> bound()
 
     is Exp.Not -> transparent(listOf(arg)) { (arg) -> copy(arg = arg) }
     is Exp.Minus -> transparent(listOf(arg)) { (arg) -> copy(arg = arg) }
@@ -152,6 +149,23 @@ private fun guarded(guard: Exp, branches: List<Exp>, rebuild: (Exp, List<Exp>) -
         rebuild(hoistedGuard.body, hoistedBranches.map { it.body }),
         merge(listOf(hoistedGuard.pending) + hoistedBranches.map { it.pending }),
     )
+}
+
+/**
+ * An `unfolding` from the body rises unless the bound variable is the root of one of its arguments, or the value
+ * mentions such a root and no equal `unfolding` rises from the value.
+ */
+private fun Exp.LetBinding.bound(): Hoisted {
+    val value = varExp.hoist()
+    val inner = body.hoist()
+    val mentioned = varExp.mentionedVariables()
+    val valueKeys = value.pending.map { it.key() }.toSet()
+    val (rising, staying) = inner.pending.partition { unfolding ->
+        val roots = unfolding.roots()
+        variable.name !in roots &&
+            (unfolding.key() in valueKeys || mentioned != null && roots.none { it in mentioned })
+    }
+    return Hoisted(copy(varExp = value.body, body = wrap(inner.body, staying)), merge(listOf(value.pending, rising)))
 }
 
 /**

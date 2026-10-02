@@ -136,23 +136,27 @@ function nestedConditionalAssignment(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_1_0 ==
-    ((boolFromRef(a) && boolFromRef(b) ? intToRef(4) : null)) in
-    (let anon_2_0 ==
-      ((boolFromRef(a) && !boolFromRef(b) ? intToRef(3) : null)) in
+  (let x_0 ==
+    ((boolFromRef(a) ?
       (let anon_0_0 ==
-        ((boolFromRef(a) ? (boolFromRef(b) ? anon_1_0 : anon_2_0) : null)) in
-        (let anon_4_0 ==
-          ((!boolFromRef(a) && boolFromRef(b) ? intToRef(2) : null)) in
+        ((boolFromRef(b) ?
+          (let anon_1_0 ==
+            (intToRef(4)) in
+            anon_1_0) :
+          (let anon_2_0 ==
+            (intToRef(3)) in
+            anon_2_0))) in
+        anon_0_0) :
+      (let anon_3_0 ==
+        ((boolFromRef(b) ?
+          (let anon_4_0 ==
+            (intToRef(2)) in
+            anon_4_0) :
           (let anon_5_0 ==
-            ((!boolFromRef(a) && !boolFromRef(b) ? intToRef(1) : null)) in
-            (let anon_3_0 ==
-              ((!boolFromRef(a) ?
-                (boolFromRef(b) ? anon_4_0 : anon_5_0) :
-                null)) in
-              (let x_0 ==
-                ((boolFromRef(a) ? anon_0_0 : anon_3_0)) in
-                x_0)))))))
+            (intToRef(1)) in
+            anon_5_0))) in
+        anon_3_0))) in
+    x_0)
 }
 
 /local_variables.kt: info: Generated Viper text for blockConditionalAssignment:
@@ -161,19 +165,23 @@ function blockConditionalAssignment(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_1_0 ==
-    ((boolFromRef(a) && boolFromRef(b) ? intToRef(10) : null)) in
-    (let anon_2_0 ==
-      ((boolFromRef(a) && !boolFromRef(b) ? intToRef(20) : null)) in
+  (let x_0 ==
+    ((boolFromRef(a) ?
       (let y_0 ==
-        ((boolFromRef(a) ? (boolFromRef(b) ? anon_1_0 : anon_2_0) : null)) in
+        ((boolFromRef(b) ?
+          (let anon_1_0 ==
+            (intToRef(10)) in
+            anon_1_0) :
+          (let anon_2_0 ==
+            (intToRef(20)) in
+            anon_2_0))) in
         (let anon_0_0 ==
-          ((boolFromRef(a) ? plusInts(y_0, intToRef(1)) : null)) in
-          (let anon_3_0 ==
-            ((!boolFromRef(a) ? intToRef(30) : null)) in
-            (let x_0 ==
-              ((boolFromRef(a) ? anon_0_0 : anon_3_0)) in
-              x_0))))))
+          (plusInts(y_0, intToRef(1))) in
+          anon_0_0)) :
+      (let anon_3_0 ==
+        (intToRef(30)) in
+        anon_3_0))) in
+    x_0)
 }
 
 /local_variables.kt: info: Generated Viper text for whenAssignment:
@@ -184,30 +192,25 @@ function whenAssignment(a: Ref, b: Ref): Ref
 {
   (let anon_0_0 ==
     (a) in
-    (let anon_2_0 ==
-      ((intFromRef(anon_0_0) == 1 && boolFromRef(b) ? intToRef(2) : null)) in
-      (let anon_3_0 ==
-        ((intFromRef(anon_0_0) == 1 && !boolFromRef(b) ?
-          intToRef(3) :
-          null)) in
+    (let x_0 ==
+      ((intFromRef(anon_0_0) == 1 ?
         (let anon_1_0 ==
-          ((intFromRef(anon_0_0) == 1 ?
-            (boolFromRef(b) ? anon_2_0 : anon_3_0) :
-            null)) in
-          (let anon_5_0 ==
-            ((!(intFromRef(anon_0_0) == 1) && intFromRef(anon_0_0) == 2 ?
-              intToRef(4) :
-              null)) in
+          ((boolFromRef(b) ?
+            (let anon_2_0 ==
+              (intToRef(2)) in
+              anon_2_0) :
+            (let anon_3_0 ==
+              (intToRef(3)) in
+              anon_3_0))) in
+          anon_1_0) :
+        (let anon_4_0 ==
+          ((intFromRef(anon_0_0) == 2 ?
+            (let anon_5_0 ==
+              (intToRef(4)) in
+              anon_5_0) :
             (let anon_6_0 ==
-              ((!(intFromRef(anon_0_0) == 1) &&
-              !(intFromRef(anon_0_0) == 2) ?
-                intToRef(5) :
-                null)) in
-              (let anon_4_0 ==
-                ((!(intFromRef(anon_0_0) == 1) ?
-                  (intFromRef(anon_0_0) == 2 ? anon_5_0 : anon_6_0) :
-                  null)) in
-                (let x_0 ==
-                  ((intFromRef(anon_0_0) == 1 ? anon_1_0 : anon_4_0)) in
-                  x_0))))))))
+              (intToRef(5)) in
+              anon_6_0))) in
+          anon_4_0))) in
+      x_0))
 }
