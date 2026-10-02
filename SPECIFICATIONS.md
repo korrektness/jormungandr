@@ -299,6 +299,39 @@ fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
 }
 ```
 
+### Multisets
+
+A `Multiset<Int>` states which elements a collection holds, counted with
+multiplicity and in no order. It exists only in specifications and `@Pure`
+functions. `multisetOf(...)` builds one, and `contents(arr)` gives the elements
+of a unique `IntArray`. The operators `+`, `-`, `count`, `in` and `size` are
+described in `Builtins.kt`. Any element type other than `Int` is a compile
+error.
+
+A postcondition `contents(arr) == old(contents(arr))` says the function only
+permuted the array. Together with a sortedness condition it specifies a sort.
+For a linked structure, write a recursive `@Pure` function that returns a
+`Multiset<Int>`.
+
+```kotlin
+@AlwaysVerify
+fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
+    preconditions {
+        0 <= i && i < arr.size
+        0 <= j && j < arr.size
+    }
+    postconditions<Unit> { contents(arr) == old(contents(arr)) }
+    val tmp = arr[i]
+    arr[i] = arr[j]
+    arr[j] = tmp
+}
+```
+
+The verifier relates `contents(arr)` to individual elements only at element
+reads it already knows of. A quantified fact such as "every element equals
+`v`" does not prove `v in contents(arr)` on its own. A statement naming one
+element, such as `verify(arr[0] == v)`, supplies that read.
+
 ### Pure functions and specifications
 
 Specification blocks (`preconditions`, `postconditions`, `loopInvariants`,
