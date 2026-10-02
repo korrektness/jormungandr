@@ -13,7 +13,7 @@ fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
     return if (m == null) {
         true
     } else {
-        n.value <= m.value && isSorted(m)
+        n.value <= m.value && isSorted(<!UNIQUENESS_MISMATCH!>m<!>)
     }
 }<!>
 
@@ -21,15 +21,15 @@ fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
 @Unique
 fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): Node {
     preconditions {
-        isSorted(sorted)
+        isSorted(<!INVALID_MOVED_ACCESS!>sorted<!>)
         node.next == null
     }
-    postconditions<Node> { r -> isSorted(r) && (r.value == node.value || (sorted != null && r.value == sorted.value)) }
+    postconditions<Node> { r -> isSorted(<!UNIQUENESS_MISMATCH!>r<!>) && (r.value == node.value || (sorted != null && r.value == sorted.value)) }
     if (sorted == null || node.value <= sorted.value) {
         node.next = sorted
         return node
     }
-    sorted.next = insertSorted(sorted.next, node)
+    sorted.next = insertSorted(<!UNIQUENESS_MISMATCH!>sorted.next<!>, node)
     return sorted
 }<!>
 
@@ -39,10 +39,10 @@ fun <!VIPER_TEXT!>insertionSort<!>(head: @Unique Node?): Node? {
     var sorted: @Unique Node? = null
     var cur: @Unique Node? = head
     <!VIPER_VERIFICATION_ERROR!>while (cur != null) {
-        loopInvariants { isSorted(sorted) }
-        val next: @Unique Node? = cur.next
+        loopInvariants { isSorted(<!INVALID_MOVED_ACCESS!>sorted<!>) }
+        val next: @Unique Node? = <!UNIQUENESS_MISMATCH!>cur.next<!>
         cur.next = null
-        sorted = insertSorted(sorted, cur)
+        sorted = <!UNIQUENESS_MISMATCH!>insertSorted(sorted, cur)<!>
         cur = next
     }<!>
     return sorted

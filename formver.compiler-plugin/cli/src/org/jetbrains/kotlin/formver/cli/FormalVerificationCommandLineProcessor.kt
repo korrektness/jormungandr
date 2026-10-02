@@ -8,8 +8,6 @@ package org.jetbrains.kotlin.formver.cli
 import org.jetbrains.kotlin.compiler.plugin.*
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.CHECK_LOCALITY
-import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.CHECK_UNIQUENESS
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.CONVERSION_TARGETS_SELECTION
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.DUMP_UNIQUENESS_CFG
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.ERROR_STYLE
@@ -17,8 +15,6 @@ import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.LOG_
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.UNSUPPORTED_FEATURE_BEHAVIOUR
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.VERIFICATION_TARGETS_SELECTION
 import org.jetbrains.kotlin.formver.common.*
-import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.CHECK_LOCALITY_OPTION_NAME
-import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.CHECK_UNIQUENESS_OPTION_NAME
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.CONVERSION_TARGETS_SELECTION_OPTION_NAME
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.DUMP_UNIQUENESS_CFG_OPTION_NAME
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.ERROR_STYLE_NAME
@@ -36,10 +32,6 @@ object FormalVerificationConfigurationKeys {
         CompilerConfigurationKey.create("conversion targets selection")
     val VERIFICATION_TARGETS_SELECTION: CompilerConfigurationKey<TargetsSelection> =
         CompilerConfigurationKey.create("verification targets selection")
-    val CHECK_UNIQUENESS: CompilerConfigurationKey<Boolean> =
-        CompilerConfigurationKey.create("check uniqueness")
-    val CHECK_LOCALITY: CompilerConfigurationKey<Boolean> =
-        CompilerConfigurationKey.create("check locality")
     val DUMP_UNIQUENESS_CFG: CompilerConfigurationKey<Boolean> =
         CompilerConfigurationKey.create("dump uniqueness CFG")
 }
@@ -76,20 +68,6 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
             required = false,
             allowMultipleOccurrences = false
         )
-        val CHECK_UNIQUENESS_OPTION = CliOption(
-            CHECK_UNIQUENESS_OPTION_NAME,
-            "<true|false>",
-            "Enable the uniqueness checker (@Unique / @Borrowed)",
-            required = false,
-            allowMultipleOccurrences = false
-        )
-        val CHECK_LOCALITY_OPTION = CliOption(
-            CHECK_LOCALITY_OPTION_NAME,
-            "<true|false>",
-            "Enable the locality checker",
-            required = false,
-            allowMultipleOccurrences = false
-        )
         val DUMP_UNIQUENESS_CFG_OPTION = CliOption(
             DUMP_UNIQUENESS_CFG_OPTION_NAME,
             "<true|false>",
@@ -106,8 +84,6 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
         UNSUPPORTED_FEATURE_BEHAVIOUR_OPTION,
         CONVERSION_TARGETS_SELECTION_OPTION,
         VERIFICATION_TARGETS_SELECTION_OPTION,
-        CHECK_UNIQUENESS_OPTION,
-        CHECK_LOCALITY_OPTION,
         DUMP_UNIQUENESS_CFG_OPTION,
     )
 
@@ -135,12 +111,6 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
                         VERIFICATION_TARGETS_SELECTION,
                         TargetsSelection.valueOf(value.toUpperCaseAsciiOnly())
                     )
-
-                CHECK_UNIQUENESS_OPTION ->
-                    configuration.put(CHECK_UNIQUENESS, value.toBooleanStrict())
-
-                CHECK_LOCALITY_OPTION ->
-                    configuration.put(CHECK_LOCALITY, value.toBooleanStrict())
 
                 DUMP_UNIQUENESS_CFG_OPTION ->
                     configuration.put(DUMP_UNIQUENESS_CFG, value.toBooleanStrict())

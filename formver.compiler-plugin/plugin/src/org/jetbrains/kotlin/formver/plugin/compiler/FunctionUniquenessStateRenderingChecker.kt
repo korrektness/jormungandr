@@ -25,7 +25,7 @@ class FunctionUniquenessStateRenderingChecker(
 ) : FirSimpleFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirSimpleFunction) {
-        if (!config.checkUniqueness || !config.dumpUniquenessCFG) return
+        if (!config.dumpUniquenessCFG) return
 
         if (declaration.origin != FirDeclarationOrigin.Source) return
 

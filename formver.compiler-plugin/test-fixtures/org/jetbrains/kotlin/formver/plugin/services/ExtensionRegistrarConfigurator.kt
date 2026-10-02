@@ -50,7 +50,8 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
                 || NEVER_VALIDATE in module.directives
         val uniquenessOnly = UNIQUE_CHECK_ONLY in module.directives
         val localityOnly = LOCALITY_CHECK_ONLY in module.directives
-        val dumpUniquenessCFG = DUMP_UNIQUENESS_CFG in module.directives
+        // The dump needs the uniqueness extension, which LOCALITY_CHECK_ONLY leaves out.
+        val dumpUniquenessCFG = DUMP_UNIQUENESS_CFG in module.directives && !localityOnly
         val verificationSelection = when {
             conversionOnly -> TargetsSelection.FORCE_DISABLE
             ALWAYS_VALIDATE in module.directives -> TargetsSelection.ALL_TARGETS
@@ -61,25 +62,19 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
             uniquenessOnly || localityOnly -> TargetsSelection.NO_TARGETS
             else -> TargetsSelection.ALL_TARGETS
         }
-        val checkUniqueness = uniquenessOnly
-        // Locality must run before uniqueness in tests.
-        // UNIQUE_CHECK_ONLY enables both checkers (in this order), while LOCALITY_CHECK_ONLY keeps uniqueness off.
-        val checkLocality = localityOnly || checkUniqueness
         val config = PluginConfiguration(
             logLevel,
             errorStyle,
             UnsupportedFeatureBehaviour.THROW_EXCEPTION,
             conversionSelection = conversionSelection,
             verificationSelection = verificationSelection,
-            checkUniqueness = checkUniqueness,
             dumpUniquenessCFG = dumpUniquenessCFG,
-            checkLocality = checkLocality,
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
-        if (config.checkLocality) {
-            FirExtensionRegistrarAdapter.registerExtension(LocalityExtensionRegistrar())
-        }
-        if (config.checkUniqueness) {
+        // Locality must run before uniqueness.
+        // LOCALITY_CHECK_ONLY runs locality alone; every other mode runs both.
+        FirExtensionRegistrarAdapter.registerExtension(LocalityExtensionRegistrar())
+        if (!localityOnly) {
             FirExtensionRegistrarAdapter.registerExtension(UniquenessExtensionRegistrar())
         }
     }

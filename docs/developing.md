@@ -41,9 +41,11 @@ framework; ours are declared in `FormVerDirectives`, in
 
 Which checks run:
 
+Locality and uniqueness checking run in every mode that converts.
+
 - `NEVER_VALIDATE` — convert but do not verify. Consistency checking still runs.
   This is how a test that is not meant to reach the verifier says so.
-- `UNIQUE_CHECK_ONLY` — uniqueness checking, with locality first. No conversion.
+- `UNIQUE_CHECK_ONLY` — locality and uniqueness checking only. No conversion.
 - `LOCALITY_CHECK_ONLY` — locality checking alone, uniqueness off. No conversion.
 - `ALWAYS_VALIDATE` — verify every target. Verification is already the default,
   so this changes nothing on its own; it earns its place by overriding the two

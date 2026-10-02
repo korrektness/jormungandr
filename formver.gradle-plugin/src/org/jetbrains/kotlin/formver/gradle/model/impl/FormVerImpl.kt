@@ -18,13 +18,11 @@ data class FormVerImpl(
     override val unsupportedFeatureBehaviour: String?,
     override val conversionTargetsSelection: String?,
     override val verificationTargetsSelection: String?,
-    override val checkUniqueness: Boolean?,
-    override val checkLocality: Boolean?,
     override val dumpUniquenessCFG: Boolean?,
 ) : FormVer, Serializable {
     override val modelVersion = serialVersionUID
 
     companion object {
-        private const val serialVersionUID = 2L
+        private const val serialVersionUID = 3L
     }
 }

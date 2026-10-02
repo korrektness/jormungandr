@@ -40,20 +40,18 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             FormalVerificationConfigurationKeys.VERIFICATION_TARGETS_SELECTION,
             TargetsSelection.Companion.defaultBehaviour()
         )
-        val checkUniqueness = configuration.get(FormalVerificationConfigurationKeys.CHECK_UNIQUENESS, false)
-        val checkLocality = configuration.get(FormalVerificationConfigurationKeys.CHECK_LOCALITY, false)
+        // The dump needs the uniqueness extension, which is registered only when converting.
         val dumpUniquenessCFG = configuration.get(FormalVerificationConfigurationKeys.DUMP_UNIQUENESS_CFG, false)
+                && conversionSelection != TargetsSelection.NO_TARGETS
         val config = PluginConfiguration(
             logLevel, errorStyle, behaviour, conversionSelection, verificationSelection,
-            checkLocality, checkUniqueness, dumpUniquenessCFG
+            dumpUniquenessCFG
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
 
-        if (config.checkLocality) {
+        if (config.conversionSelection != TargetsSelection.NO_TARGETS) {
+            // Locality must run before uniqueness.
             FirExtensionRegistrarAdapter.registerExtension(LocalityExtensionRegistrar())
-        }
-
-        if (config.checkUniqueness) {
             FirExtensionRegistrarAdapter.registerExtension(UniquenessExtensionRegistrar())
         }
     }

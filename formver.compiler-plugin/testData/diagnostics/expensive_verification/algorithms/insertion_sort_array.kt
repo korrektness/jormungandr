@@ -4,41 +4,41 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 <!PURITY_VIOLATION, PURITY_VIOLATION!>@AlwaysVerify
 fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
-    postconditions<Unit> {
-        forAll<Int> { i ->
-            forAll<Int> { j ->
-                (0 <= i && i < j && j < arr.size) implies (arr[i] <= arr[j])
-            }
-        }
-    }
+    postconditions<Unit> <!LOCALITY_MISMATCH!>{
+        forAll<Int> <!LOCALITY_MISMATCH!>{ i ->
+            forAll<Int> <!LOCALITY_MISMATCH!>{ j ->
+                (0 <= i && i < j && j < <!INVALID_MOVED_ACCESS!>arr<!>.size) implies (<!INVALID_MOVED_ACCESS!>arr<!>[i] <= <!INVALID_MOVED_ACCESS!>arr<!>[j])
+            }<!>
+        }<!>
+    }<!>
     var i = 1
-    while (i < arr.size) {
-        loopInvariants {
+    while (i < <!INVALID_MOVED_ACCESS!>arr<!>.size) {
+        loopInvariants <!LOCALITY_MISMATCH!>{
             1 <= i && i <= arr.size
-            forAll<Int> { a ->
-                forAll<Int> { b ->
-                    (0 <= a && a < b && b < i) implies (arr[a] <= arr[b])
-                }
-            }
-        }
-        val key = arr[i]
+            forAll<Int> <!LOCALITY_MISMATCH!>{ a ->
+                forAll<Int> <!LOCALITY_MISMATCH!>{ b ->
+                    (0 <= a && a < b && b < i) implies (<!INVALID_MOVED_ACCESS!>arr<!>[a] <= <!INVALID_MOVED_ACCESS!>arr<!>[b])
+                }<!>
+            }<!>
+        }<!>
+        val key = <!INVALID_MOVED_ACCESS!>arr<!>[i]
         var j = i - 1
-        while (j >= 0 && arr[j] > key) {
-            loopInvariants {
+        while (j >= 0 && <!INVALID_MOVED_ACCESS!>arr<!>[j] > key) {
+            loopInvariants <!LOCALITY_MISMATCH!>{
                 -1 <= j && j < i && i < arr.size
-                forAll<Int> { a ->
-                    forAll<Int> { b ->
-                        (0 <= a && a < b && b <= i && a != j + 1 && b != j + 1) implies (arr[a] <= arr[b])
-                    }
-                }
-                forAll<Int> { a ->
-                    (j + 1 < a && a <= i) implies (key < arr[a])
-                }
-            }
-            arr.set(j + 1, arr[j])
+                forAll<Int> <!LOCALITY_MISMATCH!>{ a ->
+                    forAll<Int> <!LOCALITY_MISMATCH!>{ b ->
+                        (0 <= a && a < b && b <= i && a != j + 1 && b != j + 1) implies (<!INVALID_MOVED_ACCESS!>arr<!>[a] <= <!INVALID_MOVED_ACCESS!>arr<!>[b])
+                    }<!>
+                }<!>
+                forAll<Int> <!LOCALITY_MISMATCH!>{ a ->
+                    (j + 1 < a && a <= i) implies (key < <!INVALID_MOVED_ACCESS!>arr<!>[a])
+                }<!>
+            }<!>
+            <!INVALID_MOVED_ACCESS!>arr<!>.set(j + 1, <!INVALID_MOVED_ACCESS!>arr<!>[j])
             j--
         }
-        arr.set(j + 1, key)
+        <!INVALID_MOVED_ACCESS!>arr<!>.set(j + 1, key)
         i++
     }
 }<!>
