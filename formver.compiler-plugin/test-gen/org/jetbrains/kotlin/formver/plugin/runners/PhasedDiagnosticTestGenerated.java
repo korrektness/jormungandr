@@ -337,6 +337,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("loop_predicate_invariant.kt")
+    public void testLoop_predicate_invariant() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/loop_predicate_invariant.kt");
+    }
+
+    @Test
+    @TestMetadata("loop_predicate_invariant_negative.kt")
+    public void testLoop_predicate_invariant_negative() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/loop_predicate_invariant_negative.kt");
+    }
+
+    @Test
     @TestMetadata("manualFolding.kt")
     public void testManualFolding() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/manualFolding.kt");

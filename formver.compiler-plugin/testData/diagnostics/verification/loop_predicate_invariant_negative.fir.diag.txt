@@ -1,0 +1,52 @@
+/loop_predicate_invariant_negative.kt: info: Generated Viper text for bump:
+field n: Ref
+
+function exp(this: Ref): Ref
+  requires isSubtype(typeOf(this), Predicate())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), UniquePred())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+method bump(c: Ref, k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(k), intType())
+  requires intFromRef(k) >= 0
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(c), Counter())
+    invariant isSubtype(typeOf(k), intType())
+    invariant intFromRef(i) >= 0
+  anon_0 := ltInts(i, k)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    unfold acc(Counter_unique(c), write)
+    anon_1 := c.n
+    c.n := plusInts(anon_1, intToRef(1))
+    fold acc(Counter_unique(c), write)
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(c), Counter())
+  assert isSubtype(typeOf(k), intType())
+  assert intFromRef(i) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_data: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_data), anyType())
+  ensures isSubtype(typeOf(ret_3), UniquePred())
+  ensures acc(UniquePred_unique(ret_3), write)
