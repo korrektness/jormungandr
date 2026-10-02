@@ -18,6 +18,13 @@ need_python3() {
     return 1
 }
 
+# Print each line of the given files that holds a default Object.toString()
+# rendering, such as FirUnitExpression@1a2b3c4: the hash differs between runs, so
+# a golden containing one cannot match again. Exits 0 when it found any.
+identity_hash_lines() {
+    grep -HnE '[A-Za-z_$][A-Za-z0-9_$]*@[0-9a-f]{5,8}\b' "$@"
+}
+
 # Turn a test name into the pattern Gradle's --tests expects.
 #
 # GenerateTestsKt capitalizes a testData stem and turns dashes into underscores

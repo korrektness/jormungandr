@@ -9,11 +9,18 @@ import org.jetbrains.kotlin.formver.core.embeddings.DefaultingExpVisitor
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.viper.NameResolver
 import org.jetbrains.kotlin.formver.viper.mangled
+import java.util.IdentityHashMap
 
 class DebugTreeViewVisitor(private val nameResolver: NameResolver) : DefaultingExpVisitor<TreeView> {
 
     private fun ExpEmbedding.tree(): TreeView = accept(this@DebugTreeViewVisitor)
     private fun List<ExpEmbedding>.trees(): List<TreeView> = map { it.tree() }
+
+    // Numbered in order of first appearance so that dumps are identical between runs. Keyed by identity because
+    // distinct contexts can be equal as data classes.
+    private val sharingContextIds = IdentityHashMap<SharingContext, Int>()
+    private fun SharingContext.idLeaf(): TreeView =
+        PlaintextLeaf(sharingContextIds.getOrPut(this) { sharingContextIds.size }.toString()).withDesignation("ctxId")
 
     // region Helpers for the DefaultDebugTreeViewImplementation pattern
 
@@ -242,14 +249,14 @@ class DebugTreeViewVisitor(private val nameResolver: NameResolver) : DefaultingE
         NamedBranchingNode(
             "SharingContext",
             e.inner.tree(),
-            PlaintextLeaf(System.identityHashCode(e).toString()).withDesignation("ctxId"),
+            e.idLeaf(),
         )
 
     override fun visitShared(e: Shared): TreeView =
         NamedBranchingNode(
             "Shared",
             e.inner.tree(),
-            PlaintextLeaf(System.identityHashCode(e.context).toString()).withDesignation("ctxId"),
+            e.context.idLeaf(),
         )
 
     // endregion
