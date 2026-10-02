@@ -950,6 +950,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testPure_function_with_heap_dependent_expressions() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/pure_function_with_heap_dependent_expressions.kt");
       }
+
+      @Test
+      @TestMetadata("unique_receivers.kt")
+      public void testUnique_receivers() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/unique_receivers.kt");
+      }
+
+      @Test
+      @TestMetadata("var_reads_without_unique.kt")
+      public void testVar_reads_without_unique() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/var_reads_without_unique.kt");
+      }
     }
 
     @Nested

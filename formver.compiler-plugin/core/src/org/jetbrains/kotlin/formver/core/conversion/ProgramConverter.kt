@@ -36,6 +36,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.*
 import org.jetbrains.kotlin.formver.core.names.*
 import org.jetbrains.kotlin.formver.core.purity.checkValidity
 import org.jetbrains.kotlin.formver.core.purity.isPure
+import org.jetbrains.kotlin.formver.core.purity.checkReadOnlyVarReads
+import org.jetbrains.kotlin.formver.core.purity.checkSpecificationVarReads
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessFacts
 import org.jetbrains.kotlin.formver.core.linearization.FoldStateException
@@ -170,10 +172,14 @@ class ProgramConverter(
 
     // region Callable Conversion
 
+    /** The declaration passed to [register]. */
+    private var registeredSymbol: FirFunctionSymbol<*>? = null
+
     /**
      * Embed the declaration's signature and embeds the body.
      */
     fun register(declaration: FirSimpleFunction) {
+        registeredSymbol = declaration.symbol
         val signature = embedCompleteSignature(declaration.symbol)
         embedFunctionBody(declaration.symbol, signature)
         val hasUniquenessErrors = uniquenessOutcomeOf(declaration).hasErrors
@@ -284,6 +290,17 @@ class ProgramConverter(
             }
         }
 
+    /**
+     * Runs [check] on the source of [declaration] when it is the registered declaration and the uniqueness checker
+     * has a state for it. The callees it embeds are checked when they are registered themselves. Without a state
+     * every receiver counts as not owned, and the function is not verified anyway.
+     */
+    private fun checkVarReads(declaration: FirFunction, check: (KtSourceElement) -> Unit) {
+        if (declaration.symbol != registeredSymbol) return
+        val source = declaration.source ?: return
+        if (uniquenessOutcomeOf(declaration).analysis != null) check(source)
+    }
+
     private fun createBodyConversionContext(
         symbol: FirFunctionSymbol<*>,
         signature: SignatureWithTarget<NamedFunctionSignature>,
@@ -362,9 +379,11 @@ class ProgramConverter(
         val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis)
         if (signature.signature.isPure) {
             val body = context.convertPureBody(declaration)
+            checkVarReads(declaration) { body.checkReadOnlyVarReads(it, this) }
             convertedBodyResolver.storePure(signature.signature.name, body)
         } else {
             val body = context.convertImpureBody(declaration, signature.signature, signature.returnTarget)
+            checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
             body?.let { convertedBodyResolver.storeImpure(signature.signature.name, it) }
         }
     }
@@ -461,6 +480,13 @@ class ProgramConverter(
 
         val preconditions = firSpec.precond?.let { preconditionContext.collectInvariants(it) } ?: emptyList()
         val postconditions = firSpec.postcond?.let { postconditionContext.collectInvariants(it) } ?: emptyList()
+
+        checkVarReads(declaration) { source ->
+            val consumed = if (signature.isPure) emptySet() else
+                signature.formalArgs.filter { it.isUnique && !it.isBorrowed }.map { it.name }.toSet()
+            preconditions.forEach { it.checkReadOnlyVarReads(source, this) }
+            postconditions.forEach { it.checkReadOnlyVarReads(source, this, consumed) }
+        }
 
         return Pair(preconditions, postconditions)
     }

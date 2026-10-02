@@ -19,8 +19,8 @@ class Field(var value: Int)
 
 <!PURITY_VIOLATION!>@Pure
 fun <!VERIFICATION_SKIPPED!>testFieldModification<!>(field: Field): Int {
-    field.value += 1
-    return field.value
+    <!UNSUPPORTED_OWNERSHIP!>field.value<!> += 1
+    return <!UNSUPPORTED_OWNERSHIP!>field.value<!>
 }<!>
 
 fun Field.<!VIPER_TEXT!>impureExtension<!>() {
@@ -30,18 +30,18 @@ fun Field.<!VIPER_TEXT!>impureExtension<!>() {
 <!PURITY_VIOLATION!>@Pure
 fun <!VERIFICATION_SKIPPED!>testImpureExtensionCall<!>(field: Field): Int {
     field.impureExtension()
-    return field.value
+    return <!UNSUPPORTED_OWNERSHIP!>field.value<!>
 }<!>
 
 <!PURITY_VIOLATION!>@Pure
 fun Field.<!VERIFICATION_SKIPPED!>wronglyAnnotatedExtension<!>() {
-    this.value += 1
+    <!UNSUPPORTED_OWNERSHIP!>this.value<!> += 1
 }<!>
 
 class Wrapper(val field: Field)
 
 <!PURITY_VIOLATION!>@Pure
 fun <!VERIFICATION_SKIPPED!>testNestedFieldModification<!>(wrapper: Wrapper): Int {
-    wrapper.field.value += 1
-    return wrapper.field.value
+    <!UNSUPPORTED_OWNERSHIP!>wrapper.field.value<!> += 1
+    return <!UNSUPPORTED_OWNERSHIP!>wrapper.field.value<!>
 }<!>

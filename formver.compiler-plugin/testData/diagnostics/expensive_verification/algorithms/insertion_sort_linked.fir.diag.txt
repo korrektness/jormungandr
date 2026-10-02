@@ -7,16 +7,20 @@ function isSorted(n: Ref): Ref
   ensures isSubtype(typeOf(result), boolType())
 {
   (let m_0 ==
-    ((unfolding acc(Node_unique(n), write) in n.next)) in
+    ((!(n == nullValue()) ?
+      (unfolding acc(Node_unique(n), write) in n.next) :
+      null)) in
     (let anon_1_0 ==
-      ((m_0 == nullValue() ? boolToRef(true) : null)) in
+      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
       (let anon_2_0 ==
-        ((!(m_0 == nullValue()) ?
+        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
           (unfolding acc(Node_unique(n), write) in
             andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
           null)) in
         (let anon_0_0 ==
-          ((m_0 == nullValue() ? anon_1_0 : anon_2_0)) in
+          ((!(n == nullValue()) ?
+            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
+            null)) in
           (n == nullValue() ? boolToRef(true) : anon_0_0)))))
 }
 
@@ -34,16 +38,20 @@ function isSorted(n: Ref): Ref
   ensures isSubtype(typeOf(result), boolType())
 {
   (let m_0 ==
-    ((unfolding acc(Node_unique(n), write) in n.next)) in
+    ((!(n == nullValue()) ?
+      (unfolding acc(Node_unique(n), write) in n.next) :
+      null)) in
     (let anon_1_0 ==
-      ((m_0 == nullValue() ? boolToRef(true) : null)) in
+      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
       (let anon_2_0 ==
-        ((!(m_0 == nullValue()) ?
+        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
           (unfolding acc(Node_unique(n), write) in
             andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
           null)) in
         (let anon_0_0 ==
-          ((m_0 == nullValue() ? anon_1_0 : anon_2_0)) in
+          ((!(n == nullValue()) ?
+            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
+            null)) in
           (n == nullValue() ? boolToRef(true) : anon_0_0)))))
 }
 
@@ -104,16 +112,20 @@ function isSorted(n: Ref): Ref
   ensures isSubtype(typeOf(result), boolType())
 {
   (let m_0 ==
-    ((unfolding acc(Node_unique(n), write) in n.bf_next)) in
+    ((!(n == nullValue()) ?
+      (unfolding acc(Node_unique(n), write) in n.bf_next) :
+      null)) in
     (let anon_1_0 ==
-      ((m_0 == nullValue() ? boolToRef(true) : null)) in
+      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
       (let anon_2_0 ==
-        ((!(m_0 == nullValue()) ?
+        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
           (unfolding acc(Node_unique(n), write) in
             andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
           null)) in
         (let anon_0_0 ==
-          ((m_0 == nullValue() ? anon_1_0 : anon_2_0)) in
+          ((!(n == nullValue()) ?
+            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
+            null)) in
           (n == nullValue() ? boolToRef(true) : anon_0_0)))))
 }
 

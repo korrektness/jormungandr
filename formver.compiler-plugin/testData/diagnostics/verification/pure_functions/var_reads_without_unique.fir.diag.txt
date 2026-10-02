@@ -1,0 +1,104 @@
+/var_reads_without_unique.kt: error: Function 'readShared' was not verified because of errors in its declaration
+
+/var_reads_without_unique.kt: error: Reading this var property needs a @Unique receiver.
+
+/var_reads_without_unique.kt: info: Generated Viper text for readUnique:
+field content: Ref
+
+function readUnique(b: Ref): Ref
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((unfolding acc(Box_unique(b), write) in b.content)) in
+    anon_0_0)
+}
+
+/var_reads_without_unique.kt: info: Generated Viper text for callsShared:
+field content: Ref
+
+function readShared(b: Ref): Ref
+  requires isSubtype(typeOf(b), Box())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((unfolding acc(Box_unique(b), write) in b.content)) in
+    anon_0_0)
+}
+
+method callsShared(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_1: Ref
+  anon_1 := preconditionShared(b)
+  v_ret_0 := readShared(b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method preconditionShared(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires intFromRef((unfolding acc(Box_unique(b), write) in b.content)) >
+    0
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/var_reads_without_unique.kt: error: Function 'preconditionShared' was not verified because of errors in its declaration
+
+/var_reads_without_unique.kt: error: Reading this var property needs a @Unique receiver.
+
+/var_reads_without_unique.kt: error: Function 'invariantShared' was not verified because of errors in its declaration
+
+/var_reads_without_unique.kt: error: Reading this var property needs a @Unique receiver.
+
+/var_reads_without_unique.kt: error: Function 'verifyShared' was not verified because of errors in its declaration
+
+/var_reads_without_unique.kt: error: Reading this var property needs a @Unique receiver.
+
+/var_reads_without_unique.kt: error: Reading this var property needs a @Unique receiver.
+
+/var_reads_without_unique.kt: error: Function 'postconditionConsumed' was not verified because of errors in its declaration
+
+/var_reads_without_unique.kt: error: Reading this var property in a postcondition needs a @Borrowed root; the function consumes this @Unique parameter.
+
+/var_reads_without_unique.kt: info: Generated Viper text for postconditionConsumedOld:
+field next: Ref
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method postconditionConsumedOld(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures old((unfolding acc(Node_unique(n), write) in n.next)) ==
+    old((unfolding acc(Node_unique(n), write) in n.next))
+  ensures intFromRef(value(n)) == old(intFromRef(value(n)))
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/var_reads_without_unique.kt: info: Generated Viper text for postconditionBorrowed:
+field next: Ref
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method postconditionBorrowed(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  requires (unfolding acc(Node_unique(n), write) in n.next) == nullValue()
+  ensures acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Node_unique(n), write) in n.next) == nullValue()
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

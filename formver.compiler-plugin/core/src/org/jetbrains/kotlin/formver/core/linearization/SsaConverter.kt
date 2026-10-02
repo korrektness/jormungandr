@@ -27,18 +27,31 @@ class SsaConverter(
         elseBlock: () -> Unit
     ) {
         val splitPoint = head
-        head = splitPoint.generateBranchingBlockNodeFromThisNode(condition)
+        val thenStart = splitPoint.generateBranchingBlockNodeFromThisNode(condition)
+        head = thenStart
         thenBlock()
         val thenResultHead = head
-        head = splitPoint.generateBranchingBlockNodeFromThisNode(Exp.Not(condition))
+        val elseStart = splitPoint.generateBranchingBlockNodeFromThisNode(Exp.Not(condition))
+        head = elseStart
         elseBlock()
+        val elseResultHead = head
         val joinNode = SsaJoinNode(
             thenResultHead,
-            head,
+            elseResultHead,
             condition,
             this
         )
-        head = SsaBlockNode(joinNode, splitPoint.fullBranchingCondition)
+        val thenReach = thenResultHead.fullBranchingCondition
+        val elseReach = elseResultHead.fullBranchingCondition
+        val joinReach = when {
+            thenResultHead.isUnreachable -> elseReach
+            elseResultHead.isUnreachable -> thenReach
+            thenReach == thenStart.fullBranchingCondition && elseReach == elseStart.fullBranchingCondition ->
+                splitPoint.fullBranchingCondition
+
+            else -> Exp.Or(thenReach, elseReach)
+        }
+        head = SsaBlockNode(joinNode, joinReach)
     }
 
     fun constructExpression(): Exp {
@@ -92,7 +105,9 @@ class SsaConverter(
     }
 
     fun addReturn(returnExp: Exp) {
+        if (head.isUnreachable) return
         returnExpressions.add(head.fullBranchingCondition to returnExp)
+        head = head.generateUnreachableBlockNodeFromThisNode()
     }
 
     fun resolveVariableName(name: SymbolicName): SymbolicName {

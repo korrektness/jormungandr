@@ -21,17 +21,30 @@ class SsaStartNode : SsaNode {
         name
 }
 
+/**
+ * [fullBranchingCondition] holds exactly where control reaches this block: it is `false` after a return.
+ */
 class SsaBlockNode(
     private val predecessor: SsaNode,
     val fullBranchingCondition: Exp
 ) : SsaNode {
     val latestName: MutableMap<SymbolicName, SsaVariableName> = mutableMapOf()
 
+    val isUnreachable: Boolean
+        get() = fullBranchingCondition == Exp.BoolLit(false)
+
     fun generateBranchingBlockNodeFromThisNode(condition: Exp): SsaBlockNode =
         SsaBlockNode(
             this,
-            if (fullBranchingCondition == Exp.BoolLit(true)) condition else Exp.And(fullBranchingCondition, condition),
+            when (fullBranchingCondition) {
+                Exp.BoolLit(true) -> condition
+                Exp.BoolLit(false) -> fullBranchingCondition
+                else -> Exp.And(fullBranchingCondition, condition)
+            },
         )
+
+    /** The block following a return from this one. */
+    fun generateUnreachableBlockNodeFromThisNode(): SsaBlockNode = SsaBlockNode(this, Exp.BoolLit(false))
 
     context(ssaConverter: SsaConverter)
     fun updateLatestName(name: SymbolicName): SsaVariableName =
@@ -53,6 +66,8 @@ class SsaJoinNode(
         lookupCache[name] ?: resolveNameFromPredecessors(name)
 
     private fun resolveNameFromPredecessors(name: SymbolicName): SymbolicName {
+        if (leftPredecessor.isUnreachable) return rightPredecessor.resolveVariableName(name)
+        if (rightPredecessor.isUnreachable) return leftPredecessor.resolveVariableName(name)
         val leftIncoming = leftPredecessor.resolveVariableName(name)
         val rightIncoming = rightPredecessor.resolveVariableName(name)
         return if (rightIncoming == leftIncoming) {

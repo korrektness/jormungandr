@@ -1,0 +1,154 @@
+/unique_receivers.kt: info: Generated Viper text for isSorted:
+field next: Ref
+
+function isSorted(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let m_0 ==
+    ((!(n == nullValue()) ?
+      (unfolding acc(Node_unique(n), write) in n.next) :
+      null)) in
+    (let anon_1_0 ==
+      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((!(n == nullValue()) ?
+            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
+            null)) in
+          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/unique_receivers.kt: info: Generated Viper text for keepSorted:
+field next: Ref
+
+function isSorted(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let m_0 ==
+    ((!(n == nullValue()) ?
+      (unfolding acc(Node_unique(n), write) in n.next) :
+      null)) in
+    (let anon_1_0 ==
+      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((!(n == nullValue()) ?
+            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
+            null)) in
+          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method keepSorted(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires boolFromRef(isSorted(n))
+  ensures isSubtype(typeOf(v_ret_0), nullable(Node()))
+  ensures v_ret_0 != nullValue() ==> acc(Node_unique(v_ret_0), write)
+  ensures boolFromRef(isSorted(v_ret_0))
+{
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_receivers.kt: info: Generated Viper text for stillSorted:
+field next: Ref
+
+function isSorted(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  (let m_0 ==
+    ((!(n == nullValue()) ?
+      (unfolding acc(Node_unique(n), write) in n.next) :
+      null)) in
+    (let anon_1_0 ==
+      ((!(n == nullValue()) && m_0 == nullValue() ? boolToRef(true) : null)) in
+      (let anon_2_0 ==
+        ((!(n == nullValue()) && !(m_0 == nullValue()) ?
+          (unfolding acc(Node_unique(n), write) in
+            andBools(leInts(value(n), value(m_0)), isSorted(m_0))) :
+          null)) in
+        (let anon_0_0 ==
+          ((!(n == nullValue()) ?
+            (m_0 == nullValue() ? anon_1_0 : anon_2_0) :
+            null)) in
+          (n == nullValue() ? boolToRef(true) : anon_0_0)))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method stillSorted(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  requires boolFromRef(isSorted(n))
+  ensures acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures boolFromRef(isSorted(n))
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_receivers.kt: info: Generated Viper text for content:
+field bf_content: Ref
+
+field cell: Ref
+
+function f_content(h: Ref): Ref
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    ((unfolding acc(Holder_unique(h), write) in h.cell)) in
+    (let anon_0_0 ==
+      ((unfolding acc(Holder_unique(h), write) in
+        (unfolding acc(Cell_unique(anon_1_0), write) in
+          anon_1_0.bf_content))) in
+      anon_0_0))
+}
+
+/unique_receivers.kt: info: Generated Viper text for sum:
+field x: Ref
+
+field y: Ref
+
+function sum(d: Ref): Ref
+  requires isSubtype(typeOf(d), Derived())
+  requires acc(Derived_unique(d), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((unfolding acc(Derived_unique(d), write) in
+      (unfolding acc(Base_unique(d), write) in d.x))) in
+    (let anon_1_0 ==
+      ((unfolding acc(Derived_unique(d), write) in d.y)) in
+      plusInts(anon_0_0, anon_1_0)))
+}
