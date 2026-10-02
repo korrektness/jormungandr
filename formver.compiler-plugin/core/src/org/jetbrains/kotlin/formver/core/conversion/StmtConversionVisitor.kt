@@ -89,7 +89,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     }
 
     override fun visitBlock(block: FirBlock, data: StmtConversionContext): ExpEmbedding =
-        block.statements.map { data.convertReportingUnsupported(it) }.toBlock()
+        block.asForRangeLoop()?.let { data.convertForRangeLoop(it) }
+            ?: block.statements.map { data.convertReportingUnsupported(it) }.toBlock()
 
     override fun visitLiteralExpression(
         literalExpression: FirLiteralExpression,
@@ -339,21 +340,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     override fun visitWhileLoop(whileLoop: FirWhileLoop, data: StmtConversionContext): ExpEmbedding {
         val condition = data.convert(whileLoop.condition).withType { boolean() }
-        val inScope = data.retrievePropertiesAndParameters().toList()
-        val invariants = buildList {
-            inScope.forEach {
-                addAll(it.provenInvariants())
-            }
-            extractLoopInvariants(whileLoop.block)?.let {
-                addAll(data.withScopeImpl(ScopeIndex.NoScope) { data.collectInvariants(it) })
-            }
-        }
-        val analysis = data.uniquenessAnalysis
-        val headShapes = analysis?.let { data.ownedShapes(it, it.stateAtLoopHead(whileLoop), inScope) }.orEmpty()
-        val exitShapes = analysis?.let { data.ownedShapes(it, it.stateAfter(whileLoop), inScope) }.orEmpty()
-        return data.withFreshWhile(whileLoop.label) {
-            val body = convert(whileLoop.block)
-            While(condition, body, breakLabelName(), continueLabelName(), invariants, headShapes, exitShapes)
+        return data.convertLoop(whileLoop, condition, extractLoopInvariants(whileLoop.block.statements)) {
+            convert(whileLoop.block)
         }
     }
 
@@ -506,15 +494,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     }
 
 
-    /**
-     * The thrown exception may be caught by any enclosing catch of this function, whatever its declared type,
-     * or leave the function, in which case the postcondition does not apply.
-     */
     override fun visitThrowExpression(throwExpression: FirThrowExpression, data: StmtConversionContext): ExpEmbedding =
         Block {
             add(data.convert(throwExpression.exception))
-            data.activeCatchLabels.forEach { add(NonDeterministically(Goto(it.toLink()))) }
-            add(Unreachable)
+            add(data.exceptionalExit())
         }
 
     override fun visitTryExpression(tryExpression: FirTryExpression, data: StmtConversionContext): ExpEmbedding {
@@ -598,16 +581,4 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         checkedSafeCallSubject.source,
         "Trying to resolve checked subject ${checkedSafeCallSubject.description} which was not captured in StmtConversionContext"
     )
-
-    /**
-     * Converts [stmt], reporting an unsupported construct in it and standing in a placeholder,
-     * so that the rest of the function still converts and reports its own errors.
-     */
-    private fun StmtConversionContext.convertReportingUnsupported(stmt: FirStatement): ExpEmbedding =
-        try {
-            convert(stmt)
-        } catch (e: UnsupportedFeatureException) {
-            reportUnsupportedFeature(e.source ?: stmt.source, e.message)
-            UnsupportedPlaceholder.withPosition(stmt.source)
-        }
 }

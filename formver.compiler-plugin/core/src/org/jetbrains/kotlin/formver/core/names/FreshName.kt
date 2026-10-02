@@ -129,6 +129,7 @@ sealed class LabelName(val labelString: String) : NumberedName {
 data class ReturnLabelName(override val n: Int) : LabelName("ret")
 data class BreakLabelName(override val n: Int) : LabelName("break")
 data class ContinueLabelName(override val n: Int) : LabelName("cont")
+data class LoopHeadLabelName(override val n: Int) : LabelName("head")
 data class CatchLabelName(override val n: Int) : LabelName("catch")
 data class TryExitLabelName(override val n: Int) : LabelName("tryExit")
 

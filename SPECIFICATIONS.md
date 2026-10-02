@@ -81,6 +81,28 @@ The rules are as follows:
 - Loop invariant must hold when the loop is exited.
 - Code after the loop may assume the condition fails.
 
+A `for` loop over an `Int` progression written with `until`, `..<`, `..` or `downTo`, optionally followed by
+`step`, puts its `loopInvariants` at the start of its body:
+
+```kotlin
+@AlwaysVerify
+fun fill(arr: @Unique @Borrowed IntArray, v: Int) {
+    postconditions<Unit> {
+        forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] == v) }
+    }
+    for (i in 0 until arr.size) {
+        loopInvariants {
+            forAll<Int> { k -> (0 <= k && k < i) implies (arr[k] == v) }
+        }
+        arr[i] = v
+    }
+}
+```
+
+The ends and the step are evaluated once, before the loop. In the invariants, the loop variable holds the value of
+the coming iteration, and after the last iteration the value one step past it; it stays at the start when the
+range is empty. The body may assume the variable lies within the range. A step that is not positive throws.
+
 ## Universal Quantification
 
 Use `forAll<T>` for quantified formulas:

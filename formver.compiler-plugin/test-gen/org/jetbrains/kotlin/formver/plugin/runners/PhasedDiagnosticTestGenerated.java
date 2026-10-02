@@ -898,6 +898,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("for_ranges.kt")
+      public void testFor_ranges() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/control_flow/for_ranges.kt");
+      }
+
+      @Test
       @TestMetadata("function_call.kt")
       public void testFunction_call() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/control_flow/function_call.kt");

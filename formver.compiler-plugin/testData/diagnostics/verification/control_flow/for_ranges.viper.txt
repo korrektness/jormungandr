@@ -1,0 +1,460 @@
+/for_ranges.kt: info: Generated Viper text for fill:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+        anon_builtin_0 < arraySize(arr) ==>
+        arr.contents[anon_builtin_0] == intFromRef(par_v)))
+{
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  anon_0 := intToRef(arraySize(arr))
+  i := intToRef(0)
+  label head
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant isSubtype(typeOf(par_v), intType())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+    invariant (unfolding acc(IntArray_unique(arr), write) in
+        (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+          anon_builtin_1 < intFromRef(i) ==>
+          arr.contents[anon_builtin_1] == intFromRef(par_v)))
+  anon_1 := ltInts(i, anon_0)
+  if (boolFromRef(anon_1)) {
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    arr.contents := arr.contents[intFromRef(i) := intFromRef(par_v)]
+    label cont
+    i := plusInts(i, intToRef(1))
+    fold acc(IntArray_unique(arr), write)
+    goto head
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert isSubtype(typeOf(par_v), intType())
+  assert 0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+  assert (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+        anon_builtin_1 < intFromRef(i) ==>
+        arr.contents[anon_builtin_1] == intFromRef(par_v)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/for_ranges.kt: info: Generated Viper text for sum:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method sum(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+      anon_builtin_0 < arraySize(arr) ==>
+      (unfolding acc(IntArray_unique(arr), write) in
+        0 <= arr.contents[anon_builtin_0]) &&
+      (unfolding acc(IntArray_unique(arr), write) in
+        arr.contents[anon_builtin_0] <= 10))
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 0 <= intFromRef(v_ret_0) &&
+    intFromRef(v_ret_0) <= 10 * arraySize(arr)
+{
+  var total: Ref
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  total := intToRef(0)
+  anon_0 := intToRef(arraySize(arr))
+  i := intToRef(0)
+  label head
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(total), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+    invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+        anon_builtin_1 < arraySize(arr) ==>
+        (unfolding acc(IntArray_unique(arr), write) in
+          0 <= arr.contents[anon_builtin_1]) &&
+        (unfolding acc(IntArray_unique(arr), write) in
+          arr.contents[anon_builtin_1] <= 10))
+    invariant 0 <= intFromRef(total) &&
+      intFromRef(total) <= 10 * intFromRef(i)
+  anon_1 := ltInts(i, anon_0)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    anon_2 := intToRef(arr.contents[intFromRef(i)])
+    total := plusInts(total, anon_2)
+    label cont
+    i := plusInts(i, intToRef(1))
+    fold acc(IntArray_unique(arr), write)
+    goto head
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(total), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert 0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+  assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+      anon_builtin_1 < arraySize(arr) ==>
+      (unfolding acc(IntArray_unique(arr), write) in
+        0 <= arr.contents[anon_builtin_1]) &&
+      (unfolding acc(IntArray_unique(arr), write) in
+        arr.contents[anon_builtin_1] <= 10))
+  assert 0 <= intFromRef(total) && intFromRef(total) <= 10 * intFromRef(i)
+  v_ret_0 := total
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/for_ranges.kt: info: Generated Viper text for countInclusive:
+method countInclusive(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(n) + 1
+{
+  var m: Ref
+  var count: Ref
+  var anon_0: Ref
+  var i: Ref
+  var anon_2: Ref
+  m := n
+  count := intToRef(0)
+  anon_0 := m
+  i := intToRef(0)
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(m), intType())
+    invariant isSubtype(typeOf(count), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) + 1 || intFromRef(i) == 0)
+    invariant intFromRef(count) == intFromRef(i)
+  anon_2 := leInts(i, anon_0)
+  if (boolFromRef(anon_2)) {
+    var anon_1: Ref
+    m := intToRef(0)
+    anon_1 := count
+    count := plusInts(anon_1, intToRef(1))
+    label cont
+    i := plusInts(i, intToRef(1))
+    goto head
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(m), intType())
+  assert isSubtype(typeOf(count), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert 0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) + 1 || intFromRef(i) == 0)
+  assert intFromRef(count) == intFromRef(i)
+  v_ret_0 := count
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/for_ranges.kt: info: Generated Viper text for clearBackwards:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method clearBackwards(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+        anon_builtin_0 < arraySize(arr) ==>
+        arr.contents[anon_builtin_0] == 0))
+{
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  anon_0 := minusInts(intToRef(arraySize(arr)), intToRef(1))
+  i := anon_0
+  label head
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant intFromRef(i) <= intFromRef(anon_0) &&
+      (intFromRef(i) >= 0 - 1 || intFromRef(i) == intFromRef(anon_0))
+    invariant (unfolding acc(IntArray_unique(arr), write) in
+        (forall anon_builtin_1: Int ::intFromRef(i) < anon_builtin_1 &&
+          anon_builtin_1 < arraySize(arr) ==>
+          arr.contents[anon_builtin_1] == 0))
+  anon_1 := geInts(i, intToRef(0))
+  if (boolFromRef(anon_1)) {
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    arr.contents := arr.contents[intFromRef(i) := 0]
+    label cont
+    i := minusInts(i, intToRef(1))
+    fold acc(IntArray_unique(arr), write)
+    goto head
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert intFromRef(i) <= intFromRef(anon_0) &&
+    (intFromRef(i) >= 0 - 1 || intFromRef(i) == intFromRef(anon_0))
+  assert (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_1: Int ::intFromRef(i) < anon_builtin_1 &&
+        anon_builtin_1 < arraySize(arr) ==>
+        arr.contents[anon_builtin_1] == 0))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/for_ranges.kt: info: Generated Viper text for evenSlots:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method evenSlots(arr: Ref, s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(s), intType())
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var l1_i: Ref
+  var anon_3: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var l3_i: Ref
+  var anon_4: Ref
+  anon_0 := intToRef(arraySize(arr))
+  l1_i := intToRef(0)
+  label head_0
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(l1_i), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant isSubtype(typeOf(s), intType())
+    invariant 0 <= intFromRef(l1_i) &&
+      (intFromRef(l1_i) < intFromRef(anon_0) + 2 || intFromRef(l1_i) == 0)
+  anon_3 := ltInts(l1_i, anon_0)
+  if (boolFromRef(anon_3)) {
+    assert intFromRef(l1_i) >= 0
+    assert intFromRef(l1_i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    arr.contents := arr.contents[intFromRef(l1_i) := 1]
+    label cont_0
+    l1_i := plusInts(l1_i, intToRef(2))
+    fold acc(IntArray_unique(arr), write)
+    goto head_0
+  }
+  label break_0
+  assert isSubtype(typeOf(l1_i), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert isSubtype(typeOf(s), intType())
+  assert 0 <= intFromRef(l1_i) &&
+    (intFromRef(l1_i) < intFromRef(anon_0) + 2 || intFromRef(l1_i) == 0)
+  anon_1 := minusInts(intToRef(arraySize(arr)), intToRef(1))
+  anon_2 := s
+  if (!(intFromRef(anon_2) > 0)) {
+    inhale false
+  }
+  l3_i := anon_1
+  label head_1
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(l3_i), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant isSubtype(typeOf(s), intType())
+    invariant intFromRef(l3_i) <= intFromRef(anon_1) &&
+      (intFromRef(l3_i) >= 0 - intFromRef(anon_2) ||
+      intFromRef(l3_i) == intFromRef(anon_1))
+  anon_4 := geInts(l3_i, intToRef(0))
+  if (boolFromRef(anon_4)) {
+    assert intFromRef(l3_i) >= 0
+    assert intFromRef(l3_i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    arr.contents := arr.contents[intFromRef(l3_i) := 2]
+    label cont_1
+    l3_i := minusInts(l3_i, anon_2)
+    fold acc(IntArray_unique(arr), write)
+    goto head_1
+  }
+  label break_1
+  assert isSubtype(typeOf(l3_i), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert isSubtype(typeOf(s), intType())
+  assert intFromRef(l3_i) <= intFromRef(anon_1) &&
+    (intFromRef(l3_i) >= 0 - intFromRef(anon_2) ||
+    intFromRef(l3_i) == intFromRef(anon_1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/for_ranges.kt: info: Generated Viper text for skipAndStop:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method skipAndStop(arr: Ref, stop: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(stop), intType())
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) <= arraySize(arr)
+{
+  var last: Ref
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  last := intToRef(0)
+  anon_0 := intToRef(arraySize(arr))
+  i := intToRef(0)
+  label head
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(last), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant isSubtype(typeOf(stop), intType())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+    invariant 0 <= intFromRef(last) && intFromRef(last) <= intFromRef(i)
+  anon_1 := ltInts(i, anon_0)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    anon_2 := intToRef(arr.contents[intFromRef(i)])
+    fold acc(IntArray_unique(arr), write)
+    if (intFromRef(anon_2) == 0) {
+      goto cont
+    }
+    last := i
+    if (intFromRef(i) == intFromRef(stop)) {
+      goto break
+    }
+    label cont
+    i := plusInts(i, intToRef(1))
+    goto head
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(last), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert isSubtype(typeOf(stop), intType())
+  assert 0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+  assert 0 <= intFromRef(last) && intFromRef(last) <= intFromRef(i)
+  v_ret_0 := last
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/for_ranges.kt: info: Generated Viper text for emptyRange:
+method emptyRange() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0
+{
+  var count: Ref
+  var i: Ref
+  var anon_1: Ref
+  count := intToRef(0)
+  i := intToRef(5)
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(count), intType())
+    invariant 5 <= intFromRef(i) &&
+      (intFromRef(i) <= 3 || intFromRef(i) == 5)
+    invariant intFromRef(count) == intFromRef(i) - 5
+  anon_1 := ltInts(i, intToRef(3))
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    anon_0 := count
+    count := plusInts(anon_0, intToRef(1))
+    label cont
+    i := plusInts(i, intToRef(1))
+    goto head
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(count), intType())
+  assert 5 <= intFromRef(i) && (intFromRef(i) <= 3 || intFromRef(i) == 5)
+  assert intFromRef(count) == intFromRef(i) - 5
+  v_ret_0 := count
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/for_ranges.kt: info: Generated Viper text for writePastEnd:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method writePastEnd(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  anon_0 := intToRef(arraySize(arr))
+  i := intToRef(0)
+  label head
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) + 1 || intFromRef(i) == 0)
+  anon_1 := leInts(i, anon_0)
+  if (boolFromRef(anon_1)) {
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    arr.contents := arr.contents[intFromRef(i) := 0]
+    label cont
+    i := plusInts(i, intToRef(1))
+    fold acc(IntArray_unique(arr), write)
+    goto head
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert 0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) + 1 || intFromRef(i) == 0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

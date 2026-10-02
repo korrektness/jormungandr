@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.embeddings.FunctionBodyEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.toLink
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignatureWithContract
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -63,6 +64,11 @@ interface StmtConversionContext : MethodConversionContext {
 
     fun continueLabelName(targetName: String? = null): SymbolicName
     fun breakLabelName(targetName: String? = null): SymbolicName
+
+    /**
+     * The head of the innermost loop, for a loop whose `continue` reaches a step before the head.
+     */
+    fun loopHeadLabelName(): SymbolicName
     fun addLoopName(targetName: String)
     fun convert(stmt: FirStatement): ExpEmbedding
 
@@ -438,6 +444,58 @@ fun StmtConversionContext.collectInvariantsAndTriggers(block: FirBlock): Invaria
     }
 
     return InvariantsAndTriggers(invariants, triggers)
+}
+
+/**
+ * Converts [stmt], reporting an unsupported construct in it and standing in a placeholder,
+ * so that the rest of the function still converts and reports its own errors.
+ */
+fun StmtConversionContext.convertReportingUnsupported(stmt: FirStatement): ExpEmbedding =
+    try {
+        convert(stmt)
+    } catch (e: UnsupportedFeatureException) {
+        reportUnsupportedFeature(e.source ?: stmt.source, e.message)
+        UnsupportedPlaceholder.withPosition(stmt.source)
+    }
+
+/**
+ * Leaves by an exception, which may be caught by any enclosing catch of this function, whatever its declared type,
+ * or leave the function, in which case the postcondition does not apply.
+ */
+fun StmtConversionContext.exceptionalExit(): ExpEmbedding = Block {
+    activeCatchLabels.forEach { add(NonDeterministically(Goto(it.toLink()))) }
+    add(Unreachable)
+}
+
+/**
+ * A loop whose head carries the proven invariants of the variables in scope, then [boundInvariants], then the
+ * user's [userInvariants]. The body is converted in the loop's own context; [headLabelName] names the head there.
+ */
+fun StmtConversionContext.convertLoop(
+    loop: FirWhileLoop,
+    condition: ExpEmbedding,
+    userInvariants: FirBlock?,
+    boundInvariants: List<ExpEmbedding> = emptyList(),
+    headLabelName: StmtConversionContext.() -> SymbolicName = { continueLabelName() },
+    body: StmtConversionContext.() -> ExpEmbedding,
+): ExpEmbedding {
+    val inScope = retrievePropertiesAndParameters().toList()
+    val invariants = buildList {
+        inScope.forEach {
+            addAll(it.provenInvariants())
+        }
+        addAll(boundInvariants)
+        userInvariants?.let {
+            addAll(withScopeImpl(ScopeIndex.NoScope) { collectInvariants(it) })
+        }
+    }
+    val analysis = uniquenessAnalysis
+    val headShapes = analysis?.let { ownedShapes(it, it.stateAtLoopHead(loop), inScope) }.orEmpty()
+    val exitShapes = analysis?.let { ownedShapes(it, it.stateAfter(loop), inScope) }.orEmpty()
+    return withFreshWhile(loop.label) {
+        val convertedBody = body()
+        While(condition, convertedBody, breakLabelName(), headLabelName(), invariants, headShapes, exitShapes)
+    }
 }
 
 /**
