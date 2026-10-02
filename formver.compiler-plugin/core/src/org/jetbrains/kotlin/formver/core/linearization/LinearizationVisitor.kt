@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.toFuncApp
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toMethodCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.viper.ast.Exp
@@ -478,6 +479,18 @@ data class LinearizationVisitor(
                 Stmt.Fold(e.pred.linearize().toViperBuiltinType(ctx) as Exp.PredicateAccess)
             }
         }
+    }
+
+    override fun visitIntArraySize(e: IntArraySize): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp = RuntimeTypeDomain.intInjection.toRef(
+            IntArrayEmbedding.arraySize(e.array.linearize().toViper(ctx), ctx.source.asPosition),
+            pos = ctx.source.asPosition,
+        )
+    }
+
+    override fun visitIntArrayAllZero(e: IntArrayAllZero): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {
+        override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
+            IntArrayEmbedding.allZero(e.array.linearize().toViper(ctx), ctx.source.asPosition)
     }
 
     // endregion

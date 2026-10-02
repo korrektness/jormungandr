@@ -10,10 +10,11 @@ import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.embeddings.callables.*
-import org.jetbrains.kotlin.formver.core.embeddings.expression.EqCmp
+import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PlaceholderVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FunctionTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.isBorrowed
 import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.isUnique
@@ -185,6 +186,12 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
         val contract = current.signature.buildConditions(converter.typeResolver) {
             userFunctionContract()
             addPostconditions(fieldPostconditions)
+            if (constructedClassSymbol.classId == IntArrayEmbedding.classId) {
+                val size = current.signature.params.single()
+                val array = returnTarget.variable
+                addPreconditions(listOf(OperatorExpEmbeddings.GeIntInt(size, IntLit(0))))
+                addPostconditions(listOf(EqCmp(IntArraySize(array), size), IntArrayAllZero(array)))
+            }
         }
 
         NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions, symbol.source)

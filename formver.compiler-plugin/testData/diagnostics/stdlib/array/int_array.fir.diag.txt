@@ -1,0 +1,52 @@
+/int_array.kt: info: Generated Viper text for createAndSize:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+method con(par_size: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_1), IntArray())
+  ensures acc(IntArray_unique(ret_1), write)
+  ensures arraySize(ret_1) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_1), write) in
+      (forall j: Int ::
+        { ret_1.contents[j] }
+        j >= 0 && j < arraySize(ret_1) ==> ret_1.contents[j] == 0))
+
+
+method createAndSize() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var a: Ref
+  a := con(intToRef(3))
+  assert arraySize(a) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

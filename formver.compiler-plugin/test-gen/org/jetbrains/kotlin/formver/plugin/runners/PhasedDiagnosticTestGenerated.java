@@ -111,6 +111,22 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Nested
+    @TestMetadata("formver.compiler-plugin/testData/diagnostics/stdlib/array")
+    @TestDataPath("$PROJECT_ROOT")
+    public class Array {
+      @Test
+      public void testAllFilesPresentInArray() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics/stdlib/array"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      }
+
+      @Test
+      @TestMetadata("int_array.kt")
+      public void testInt_array() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/array/int_array.kt");
+      }
+    }
+
+    @Nested
     @TestMetadata("formver.compiler-plugin/testData/diagnostics/stdlib/list")
     @TestDataPath("$PROJECT_ROOT")
     public class List {
@@ -240,6 +256,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("dump_cfg.kt")
     public void testDump_cfg() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/dump_cfg.kt");
+    }
+
+    @Test
+    @TestMetadata("int_array.kt")
+    public void testInt_array() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/int_array.kt");
     }
 
     @Test

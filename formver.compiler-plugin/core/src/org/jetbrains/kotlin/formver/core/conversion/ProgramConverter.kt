@@ -134,12 +134,17 @@ class ProgramConverter(
     override val linearizedBodyResolver = LinearizedBodyResolver()
 
 
+    private val usesIntArray: Boolean
+        get() = typeResolver.lookupClassTypeEmbedding(IntArrayEmbedding.classType.name) != null
+
     fun buildProgram(): Program = Program(
         domains = listOf(RuntimeTypeDomain(typeResolver)),
         // Public fields with the same name are represented differently at `FieldEmbedding` level
         // but map to the same Viper field, so we deduplicate before emitting.
-        fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() },
-        functions = SpecialFunctions.all + linearizedBodyResolver.functions,
+        fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
+                listOfNotNull(IntArrayEmbedding.contentsField.takeIf { usesIntArray }),
+        functions = SpecialFunctions.all + linearizedBodyResolver.functions +
+                listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray }),
         methods = SpecialMethods.all + linearizedBodyResolver.methods,
         predicates = typeResolver.classTypeEmbeddings().map {
             with(typeResolver) {
@@ -622,6 +627,11 @@ class ProgramConverter(
      * Returns an embedding of the class type, with details set.
      */
     private fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
+        if (symbol.classId == IntArrayEmbedding.classId) {
+            typeResolver.register(IntArrayEmbedding.classType, isInterface = false)
+            return IntArrayEmbedding.classType
+        }
+
         val className = symbol.classId.embedName()
         typeResolver.lookupClassTypeEmbedding(className)?.let { return it }
 

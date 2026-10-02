@@ -23,7 +23,12 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
     val uniquePredicateName = ScopedName(name.asScope(), PredicateName("unique"))
 
     context(ctx: TypeResolver)
-    fun uniquePredicate(): Predicate = ClassPredicateBuilder.build(name, uniquePredicateName) {
+    fun uniquePredicate(): Predicate =
+        if (this == IntArrayEmbedding.classType) IntArrayEmbedding.uniquePredicate()
+        else userClassUniquePredicate()
+
+    context(ctx: TypeResolver)
+    private fun userClassUniquePredicate(): Predicate = ClassPredicateBuilder.build(name, uniquePredicateName) {
         includeSubTypeInvariants()
         forEachPropertyField {
             forBackingField {
