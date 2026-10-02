@@ -149,6 +149,34 @@ method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/int_array_elements.kt: info: Generated Viper text for boundedByIndexOr:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method boundedByIndexOr(arr: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(n), intType())
+  requires (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+        anon_builtin_0 < arraySize(arr) ==>
+        arr.contents[anon_builtin_0] <= anon_builtin_0 ||
+        arr.contents[anon_builtin_0] <= intFromRef(n)))
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+        anon_builtin_1 < arraySize(arr) ==>
+        arr.contents[anon_builtin_1] <= anon_builtin_1 ||
+        arr.contents[anon_builtin_1] <= intFromRef(n)))
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /int_array_elements.kt: info: Generated Viper text for readPastEnd:
 field contents: Seq[Int]
 

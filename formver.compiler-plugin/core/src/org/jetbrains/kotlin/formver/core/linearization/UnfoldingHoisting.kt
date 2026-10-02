@@ -20,7 +20,8 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
  * - at a conjunction, so a conjunct never reads a predicate that an earlier conjunct provides;
  * - at a quantifier whose variables its arguments mention;
  * - below the guard of `==>`, `||` or a conditional when the guard mentions the root of one of its arguments,
- *   except as the argument of `arraySize`, which needs no permission;
+ *   except as the argument of `arraySize`, which needs no permission, and unless an equal `unfolding` rises from
+ *   the guard itself;
  * - at `old` and `let`, inside which `unfolding`s are placed independently;
  * - at any other expression.
  */
@@ -116,15 +117,18 @@ private fun transparent(children: List<Exp>, rebuild: (List<Exp>) -> Exp): Hoist
 
 /**
  * [guard] decides whether [branches] are evaluated. An `unfolding` from a branch stays in that branch when the guard
- * mentions the root of one of its arguments.
+ * mentions the root of one of its arguments, unless an equal `unfolding` rises from the guard: the branch is then
+ * evaluated under it, and keeping the branch's copy would nest an `unfolding` inside an equal one, which has no
+ * predicate left to unfold.
  */
 private fun guarded(guard: Exp, branches: List<Exp>, rebuild: (Exp, List<Exp>) -> Exp): Hoisted {
     val hoistedGuard = guard.hoist()
     val mentioned = guard.mentionedVariables()
+    val guardKeys = hoistedGuard.pending.map { it.key() }.toSet()
     val hoistedBranches = branches.map { branch ->
         val hoisted = branch.hoist()
         val (rising, staying) = hoisted.pending.partition { unfolding ->
-            mentioned != null && unfolding.roots().none { it in mentioned }
+            unfolding.key() in guardKeys || mentioned != null && unfolding.roots().none { it in mentioned }
         }
         Hoisted(wrap(hoisted.body, staying), rising)
     }

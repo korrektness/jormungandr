@@ -44,6 +44,17 @@ fun <!VIPER_TEXT!>fill<!>(arr: @Unique @Borrowed IntArray, v: Int) {
     }
 }
 
+// The guard of `||` reads the array as its right operand does, so both are evaluated under one `unfolding`.
+@AlwaysVerify
+fun <!VIPER_TEXT!>boundedByIndexOr<!>(arr: @Unique @Borrowed IntArray, n: Int) {
+    preconditions {
+        forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] <= k || arr[k] <= n) }
+    }
+    postconditions<Unit> {
+        forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] <= k || arr[k] <= n) }
+    }
+}
+
 @AlwaysVerify
 fun <!VIPER_TEXT!>readPastEnd<!>(arr: @Unique @Borrowed IntArray): Int = <!POSSIBLE_INDEX_OUT_OF_BOUND!>arr[arr.size]<!>
 

@@ -70,6 +70,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("levenshtein.kt")
+      public void testLevenshtein() {
+        runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/levenshtein.kt");
+      }
+
+      @Test
       @TestMetadata("max_character.kt")
       public void testMax_character() {
         runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/max_character.kt");
