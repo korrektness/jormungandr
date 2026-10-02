@@ -250,7 +250,9 @@ method push(b: Ref, par_v: Ref) returns (v_ret_0: Ref)
         data(b).contents[old((unfolding acc(Buf_unique(b), write) in
           intFromRef(b.count)))] ==
         intFromRef(par_v)))
-  ensures (forall anon_builtin: Int ::0 <= anon_builtin &&
+  ensures (forall anon_builtin: Int ::
+      { data(b).contents[anon_builtin] }
+      0 <= anon_builtin &&
       (unfolding acc(Buf_unique(b), write) in
         anon_builtin < arraySize(data(b))) &&
       !(anon_builtin ==
@@ -316,7 +318,9 @@ method push(b: Ref, par_v: Ref) returns (ret_2: Ref)
         data(b).contents[old((unfolding acc(Buf_unique(b), write) in
           intFromRef(b.count)))] ==
         intFromRef(par_v)))
-  ensures (forall anon_builtin: Int ::0 <= anon_builtin &&
+  ensures (forall anon_builtin: Int ::
+      { data(b).contents[anon_builtin] }
+      0 <= anon_builtin &&
       (unfolding acc(Buf_unique(b), write) in
         anon_builtin < arraySize(data(b))) &&
       !(anon_builtin ==

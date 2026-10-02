@@ -42,11 +42,13 @@ data class LinearizationVisitor(
     private fun ExpEmbedding.linearize(): Linearizable = accept(this@LinearizationVisitor)
 
     private fun getQuantifierParts(
+        variable: VariableEmbedding,
         conditions: List<ExpEmbedding>,
         triggerExpressions: List<ExpEmbedding>,
         ctx: LinearizationContext,
     ): Pair<Exp, List<Exp.Trigger>> {
         val conjunction = conditions.pureToViper(true, ctx.typeResolver, ctx.source).toConjunction()
+        if (triggerExpressions.isEmpty()) return conjunction to derivedTriggers(variable.name, conjunction)
         val viperTriggers = triggerExpressions.map { triggerExpr ->
             Exp.Trigger(listOf(triggerExpr.linearize().toViperBuiltinType(ctx)))
         }
@@ -683,7 +685,7 @@ data class LinearizationVisitor(
 
     override fun visitForAllEmbedding(e: ForAllEmbedding): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp {
-            val (conjunction, viperTriggers) = getQuantifierParts(e.conditions, e.triggerExpressions, ctx)
+            val (conjunction, viperTriggers) = getQuantifierParts(e.variable, e.conditions, e.triggerExpressions, ctx)
             return Exp.Forall(
                 variables = listOf(e.variable.toLocalVarDecl()),
                 triggers = viperTriggers,
@@ -700,7 +702,7 @@ data class LinearizationVisitor(
 
     override fun visitExistsEmbedding(e: ExistsEmbedding): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp {
-            val (conjunction, viperTriggers) = getQuantifierParts(e.conditions, e.triggerExpressions, ctx)
+            val (conjunction, viperTriggers) = getQuantifierParts(e.variable, e.conditions, e.triggerExpressions, ctx)
             return Exp.Exists(
                 variables = listOf(e.variable.toLocalVarDecl()),
                 triggers = viperTriggers,

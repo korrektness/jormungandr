@@ -1172,6 +1172,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("derived_triggers.kt")
+      public void testDerived_triggers() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/user_invariants/derived_triggers.kt");
+      }
+
+      @Test
       @TestMetadata("empty.kt")
       public void testEmpty() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/user_invariants/empty.kt");

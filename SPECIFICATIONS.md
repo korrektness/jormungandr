@@ -94,7 +94,25 @@ The `implies` infix operator is provided for convenience (`a implies b` ≡ `!a 
 
 ### Triggers
 
-By default, Viper infers triggers automatically. You can specify them explicitly:
+A quantifier without `triggers()` gets its triggers inferred by Viper, unless its
+body contains `old(...)`. Viper's inference then tends to keep only the term
+under `old`, so the quantifier fires only where the old value is already known,
+and a fact about the current state at a new index cannot use it. For such a
+quantifier SnaKt derives the triggers itself: each largest current-state term
+that mentions the bound variable and is built only from property reads, array
+element reads, sizes and function calls becomes a trigger. In
+
+```kotlin
+forAll<Int> { k -> (0 <= k && k < arr.size && k != i) implies (arr[k] == old(arr[k])) }
+```
+
+the trigger is `arr[k]`. A term whose index is arithmetic, such as `arr[k + 1]`,
+cannot be a trigger, so `forAll<Int> { k -> arr[k + 1] == old(arr[k]) }` has no
+current-state trigger to derive and keeps the inferred `old` one; write
+`triggers(...)` for it when a caller needs it.
+
+You can specify triggers explicitly; explicit triggers replace both the derived
+and the inferred ones:
 
 ```kotlin
 forAll<Int> { x ->
