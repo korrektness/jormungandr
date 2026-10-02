@@ -223,6 +223,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("capture_accepted.kt")
+    public void testCapture_accepted() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/capture_accepted.kt");
+    }
+
+    @Test
+    @TestMetadata("capture_rejected.kt")
+    public void testCapture_rejected() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/capture_rejected.kt");
+    }
+
+    @Test
     @TestMetadata("consistency.kt")
     public void testConsistency() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/consistency.kt");
@@ -295,6 +307,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("override_accepted.kt")
+    public void testOverride_accepted() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/override_accepted.kt");
+    }
+
+    @Test
+    @TestMetadata("override_rejected.kt")
+    public void testOverride_rejected() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/override_rejected.kt");
+    }
+
+    @Test
     @TestMetadata("primitive.kt")
     public void testPrimitive() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/primitive.kt");
@@ -340,6 +364,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("try_catch.kt")
     public void testTry_catch() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/try_catch.kt");
+    }
+
+    @Test
+    @TestMetadata("type_parameter_accepted.kt")
+    public void testType_parameter_accepted() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/type_parameter_accepted.kt");
+    }
+
+    @Test
+    @TestMetadata("type_parameter_rejected.kt")
+    public void testType_parameter_rejected() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/type_parameter_rejected.kt");
     }
 
     @Test

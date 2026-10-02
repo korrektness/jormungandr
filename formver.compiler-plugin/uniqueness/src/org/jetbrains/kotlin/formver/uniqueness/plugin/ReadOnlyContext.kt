@@ -42,11 +42,13 @@ fun FirBasedSymbol<*>.isPure(session: FirSession): Boolean =
 fun FirFunctionCall.isPureCall(session: FirSession): Boolean =
     toResolvedCallableSymbol()?.isPure(session) == true
 
+private fun FirElement.isSpecificationCall(): Boolean =
+    this is FirFunctionCall && toResolvedCallableSymbol()?.callableId in specificationFunctionIds
+
 private fun FirElement.opensReadOnlyContext(session: FirSession): Boolean =
     when (this) {
         is FirFunction -> symbol.isPure(session)
-        is FirFunctionCall -> toResolvedCallableSymbol()?.callableId in specificationFunctionIds
-        else -> false
+        else -> isSpecificationCall()
     }
 
 /**
@@ -60,12 +62,12 @@ class ReadOnlyContext private constructor(
     operator fun contains(element: FirElement): Boolean =
         coversDeclaration || element in elements
 
-    private class Collector(private val session: FirSession) : FirVisitorVoid() {
+    private class Collector(private val opensContext: (FirElement) -> Boolean) : FirVisitorVoid() {
         val elements = mutableSetOf<FirElement>()
         private var depth = 0
 
         override fun visitElement(element: FirElement) {
-            val opens = element.opensReadOnlyContext(session)
+            val opens = opensContext(element)
 
             if (opens) depth++
             if (depth > 0) elements.add(element)
@@ -80,14 +82,29 @@ class ReadOnlyContext private constructor(
          */
         fun of(graph: ControlFlowGraph, context: CheckerContext): ReadOnlyContext {
             val session = context.session
-            val declaration = graph.declaration
-            val enclosedByReadOnlyContext = context.containingElements.any { it.opensReadOnlyContext(session) }
+            return collect(graph, context) { it.opensReadOnlyContext(session) }
+        }
 
-            if (enclosedByReadOnlyContext || declaration?.opensReadOnlyContext(session) == true) {
+        /**
+         * Resolves the part of the read-only context of [graph] that lies in specifications: the arguments of
+         * specification builtins, which are never run.
+         */
+        fun specificationsOf(graph: ControlFlowGraph, context: CheckerContext): ReadOnlyContext =
+            collect(graph, context) { it.isSpecificationCall() }
+
+        private fun collect(
+            graph: ControlFlowGraph,
+            context: CheckerContext,
+            opensContext: (FirElement) -> Boolean,
+        ): ReadOnlyContext {
+            val declaration = graph.declaration
+            val enclosedByContext = context.containingElements.any(opensContext)
+
+            if (enclosedByContext || declaration?.let(opensContext) == true) {
                 return ReadOnlyContext(coversDeclaration = true, elements = emptySet())
             }
 
-            val collector = Collector(session)
+            val collector = Collector(opensContext)
             declaration?.accept(collector)
 
             return ReadOnlyContext(coversDeclaration = false, elements = collector.elements)

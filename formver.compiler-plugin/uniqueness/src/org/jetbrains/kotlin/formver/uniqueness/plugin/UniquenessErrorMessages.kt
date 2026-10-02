@@ -42,6 +42,19 @@ object UniquenessErrorMessages : BaseDiagnosticRendererFactory() {
                     "Uniqueness can only be specified on values, properties, functions, and compatible type positions.",
                 )
                 map.put(
+                    UniquenessErrors.INVALID_TYPE_PARAMETER_UNIQUENESS,
+                    "A declaration whose type is a type parameter cannot be unique.",
+                )
+                map.put(
+                    UniquenessErrors.OVERRIDE_UNIQUENESS_MISMATCH,
+                    "Uniqueness or borrowing annotations differ from those of the overridden declaration.",
+                )
+                map.put(
+                    UniquenessErrors.INVALID_UNIQUENESS_CAPTURE,
+                    "Unique or borrowed reference ''{0}'' is captured by a declaration that is not called in place.",
+                    PathRenderer
+                )
+                map.put(
                     UniquenessErrors.INVALID_PURE_UNIQUE_RESULT,
                     "A pure function cannot return a unique value.",
                 )
