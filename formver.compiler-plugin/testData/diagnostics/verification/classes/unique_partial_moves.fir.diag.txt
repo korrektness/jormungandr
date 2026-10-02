@@ -1,0 +1,465 @@
+/unique_partial_moves.kt: info: Generated Viper text for consume:
+field value: Ref
+
+method consume(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_partial_moves.kt: info: Generated Viper text for fresh:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_1), Box())
+  ensures acc(Box_unique(ret_1), write)
+  ensures (unfolding acc(Box_unique(ret_1), write) in
+      intFromRef(ret_1.bf_value) == intFromRef(par_value))
+
+
+method fresh() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures acc(Box_unique(v_ret_0), write)
+{
+  var b: Ref
+  b := con(intToRef(0))
+  v_ret_0 := b
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_partial_moves.kt: info: Generated Viper text for moveInBranch:
+field count: Ref
+
+field value: Ref
+
+field x: Ref
+
+field y: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method consume(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method fresh() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Box())
+  ensures acc(Box_unique(ret_2), write)
+
+
+method moveInBranch(b: Ref, c: Ref, d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), B())
+  requires acc(B_unique(b), write)
+  requires isSubtype(typeOf(c), boolType())
+  requires isSubtype(typeOf(d), boolType())
+  ensures isSubtype(typeOf(v_ret_0), B())
+  ensures acc(B_unique(v_ret_0), write)
+{
+  var anon_0: Ref
+  var anon_8: Ref
+  var anon_9: Ref
+  unfold acc(B_unique(b), write)
+  anon_0 := b.y
+  unfold acc(A_unique(b.y), write)
+  anon_0.count := intToRef(1)
+  fold acc(A_unique(b.y), write)
+  fold acc(B_unique(b), write)
+  if (boolFromRef(c)) {
+    var anon_1: Ref
+    var anon_2: Ref
+    var anon_3: Ref
+    unfold acc(B_unique(b), write)
+    anon_3 := b.y
+    unfold acc(A_unique(b.y), write)
+    anon_2 := anon_3.x
+    anon_1 := consume(anon_2)
+  } else {
+    unfold acc(B_unique(b), write)
+    unfold acc(A_unique(b.y), write)
+  }
+  if (boolFromRef(d)) {
+    var anon_4: Ref
+    var anon_5: Ref
+    anon_4 := b.y
+    anon_5 := fresh()
+    anon_4.x := anon_5
+    fold acc(A_unique(b.y), write)
+    fold acc(B_unique(b), write)
+  } else {
+    var anon_6: Ref
+    var anon_7: Ref
+    anon_6 := b.y
+    anon_7 := fresh()
+    anon_6.x := anon_7
+    fold acc(A_unique(b.y), write)
+    fold acc(B_unique(b), write)
+  }
+  unfold acc(B_unique(b), write)
+  anon_9 := b.y
+  unfold acc(A_unique(b.y), write)
+  anon_8 := anon_9.count
+  assert intFromRef(anon_8) == 1
+  fold acc(A_unique(b.y), write)
+  fold acc(B_unique(b), write)
+  v_ret_0 := b
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_partial_moves.kt: info: Generated Viper text for refillEach:
+field count: Ref
+
+field value: Ref
+
+field x: Ref
+
+field y: Ref
+
+method consume(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method fresh() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Box())
+  ensures acc(Box_unique(ret_2), write)
+
+
+method refillEach(b: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), B())
+  requires acc(B_unique(b), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(B_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  i := intToRef(0)
+  label cont
+    invariant acc(B_unique(b), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(b), B())
+    invariant isSubtype(typeOf(n), intType())
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    var anon_2: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    var anon_5: Ref
+    var anon_6: Ref
+    unfold acc(B_unique(b), write)
+    anon_3 := b.y
+    unfold acc(A_unique(b.y), write)
+    anon_2 := anon_3.x
+    anon_1 := consume(anon_2)
+    anon_4 := b.y
+    anon_4.count := i
+    anon_5 := b.y
+    anon_6 := fresh()
+    anon_5.x := anon_6
+    i := plusInts(i, intToRef(1))
+    fold acc(A_unique(b.y), write)
+    fold acc(B_unique(b), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(b), B())
+  assert isSubtype(typeOf(n), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_partial_moves.kt: info: Generated Viper text for holeAcrossLoop:
+field count: Ref
+
+field value: Ref
+
+field x: Ref
+
+field y: Ref
+
+method consume(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method fresh() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Box())
+  ensures acc(Box_unique(ret_2), write)
+
+
+method holeAcrossLoop(b: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), B())
+  requires acc(B_unique(b), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), B())
+  ensures acc(B_unique(v_ret_0), write)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var i: Ref
+  var anon_3: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  unfold acc(B_unique(b), write)
+  anon_2 := b.y
+  unfold acc(A_unique(b.y), write)
+  anon_1 := anon_2.x
+  anon_0 := consume(anon_1)
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(b), B()) && acc(b.y, write) &&
+      isSubtype(typeOf(b.y), A()) &&
+      (isSubtype(typeOf(b.y), A()) && acc(b.y.count, write) &&
+      isSubtype(typeOf(b.y.count), intType()) &&
+      acc(b.y.x, write) &&
+      isSubtype(typeOf(b.y.x), Box()))
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(b), B())
+    invariant isSubtype(typeOf(n), intType())
+  anon_3 := ltInts(i, n)
+  if (boolFromRef(anon_3)) {
+    var anon_4: Ref
+    anon_4 := b.y
+    anon_4.count := i
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(b), B())
+  assert isSubtype(typeOf(n), intType())
+  anon_5 := b.y
+  anon_6 := fresh()
+  anon_5.x := anon_6
+  fold acc(A_unique(b.y), write)
+  fold acc(B_unique(b), write)
+  v_ret_0 := b
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_partial_moves.kt: info: Generated Viper text for moveOpenSubtree:
+field count: Ref
+
+field value: Ref
+
+field x: Ref
+
+field y: Ref
+
+method consume(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method fresh() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Box())
+  ensures acc(Box_unique(ret_2), write)
+
+
+method moveOpenSubtree(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), B())
+  requires acc(B_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), A())
+  ensures acc(A_unique(v_ret_0), write)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var a: Ref
+  var anon_3: Ref
+  unfold acc(B_unique(b), write)
+  anon_2 := b.y
+  unfold acc(A_unique(b.y), write)
+  anon_1 := anon_2.x
+  anon_0 := consume(anon_1)
+  a := b.y
+  a.count := intToRef(2)
+  anon_3 := fresh()
+  a.x := anon_3
+  fold acc(A_unique(a), write)
+  v_ret_0 := a
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_partial_moves.kt: error: Function 'forgetsToRefill' was not verified because of uniqueness or locality errors
+
+/unique_partial_moves.kt: info: Generated Viper text for forgetsToRefill:
+field count: Ref
+
+field value: Ref
+
+field x: Ref
+
+field y: Ref
+
+method consume(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method forgetsToRefill(b: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), B())
+  requires acc(B_unique(b), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(B_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(b), B())
+    invariant isSubtype(typeOf(n), intType())
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    var anon_2: Ref
+    anon_2 := havoc(Box())
+    anon_1 := consume(anon_2)
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(b), B())
+  assert isSubtype(typeOf(n), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_partial_moves.kt: error: Borrowed local path is moved at exit: 'b.y.x'.
+
+/unique_partial_moves.kt: error: Invalid access to moved reference.
+
+/unique_partial_moves.kt: info: Generated Viper text for countOf:
+field count: Ref
+
+field value: Ref
+
+field x: Ref
+
+function countOf(a: Ref): Ref
+  requires isSubtype(typeOf(a), A())
+  requires acc(A_unique(a), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((unfolding acc(A_unique(a), write) in a.count)) in
+    anon_0_0)
+}
+
+/unique_partial_moves.kt: error: Function 'verifyThroughHole' was not verified because of uniqueness or locality errors
+
+/unique_partial_moves.kt: info: Generated Viper text for verifyThroughHole:
+field count: Ref
+
+field value: Ref
+
+field x: Ref
+
+field y: Ref
+
+function countOf(a: Ref): Ref
+  requires isSubtype(typeOf(a), A())
+  requires acc(A_unique(a), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((unfolding acc(A_unique(a), write) in a.count)) in
+    anon_0_0)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method consume(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method fresh() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Box())
+  ensures acc(Box_unique(ret_2), write)
+
+
+method verifyThroughHole(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), B())
+  requires acc(B_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), B())
+  ensures acc(B_unique(v_ret_0), write)
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_2 := havoc(Box())
+  anon_1 := consume(anon_2)
+  anon_3 := havoc(A())
+  anon_4 := havoc(A())
+  assert intFromRef(countOf(anon_3)) == intFromRef(countOf(anon_4))
+  anon_5 := fresh()
+  v_ret_0 := b
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_partial_moves.kt: error: Escaping value has moved field: 'b.y.x'.
+
+/unique_partial_moves.kt: error: Escaping value has moved field: 'b.y.x'.
+
+/unique_partial_moves.kt: error: Function 'invariantThroughHole' was not verified because of unsupported ownership
+
+/unique_partial_moves.kt: info: Generated Viper text for invariantThroughHole:
+field count: Ref
+
+field value: Ref
+
+field x: Ref
+
+field y: Ref
+
+method consume(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method fresh() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), Box())
+  ensures acc(Box_unique(ret_3), write)
+
+
+method invariantThroughHole(b: Ref, n: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(b), B())
+  requires acc(B_unique(b), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(ret_0), B())
+  ensures acc(B_unique(ret_0), write)
+
+
+/unique_partial_moves.kt: error: A loop invariant needs a unique predicate that the loop holds open.

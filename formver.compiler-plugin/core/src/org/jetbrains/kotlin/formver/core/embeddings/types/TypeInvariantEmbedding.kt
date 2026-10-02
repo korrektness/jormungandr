@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.formver.viper.ast.PermExp
  * These are different from invariants in general because they are parametrised by a variable of this type,
  * i.e. they can be seen as an `ExpEmbedding` with a hole.
  */
-interface TypeInvariantEmbedding {
+fun interface TypeInvariantEmbedding {
     fun fillHole(exp: ExpEmbedding): ExpEmbedding
 }
 

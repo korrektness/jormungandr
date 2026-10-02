@@ -88,21 +88,32 @@ class FunctionUniquenessAnalysis internal constructor(
     /**
      * Whether [path] is `Unique` on entry to [element].
      */
-    fun ownsBefore(element: FirElement, path: Path): Boolean =
-        stateBefore(element).uniquenessOf(path) == Uniqueness.Unique
+    fun ownsBefore(element: FirElement, path: Path): Boolean = owns(stateBefore(element), path)
 
     /**
-     * Whether [symbol] is `Unique` at the head of [loop]: before its condition, where the entry and back edges join.
-     * The state before [loop] itself is the entry state alone.
+     * The state at the head of [loop]: before its condition, where the entry and back edges join. The state before
+     * [loop] itself is the entry state alone.
      */
-    fun ownsAtLoopHead(loop: FirWhileLoop, symbol: FirBasedSymbol<*>): Boolean =
-        ownsBefore(loop.condition, listOf(symbol))
+    fun stateAtLoopHead(loop: FirWhileLoop): UniquenessState = stateBefore(loop.condition)
+
+    /**
+     * Whether [path] is `Unique` in [state].
+     */
+    fun owns(state: UniquenessState, path: Path): Boolean = state.uniquenessOf(path) == Uniqueness.Unique
+
+    /**
+     * The paths below [symbol] that are `Moved` in [state], each given by the symbols after [symbol]. None extends
+     * another.
+     */
+    fun movedBelow(state: UniquenessState, symbol: FirBasedSymbol<*>): List<Path> {
+        val moved = state.children[symbol]?.enumerateInconsistentPaths()?.toList() ?: return emptyList()
+        return moved.filter { path -> (1 until path.size).none { path.subList(0, it) in moved } }
+    }
 
     /**
      * Whether [path] is `Unique` on exit from [element].
      */
-    fun ownsAfter(element: FirElement, path: Path): Boolean =
-        stateAfter(element).uniquenessOf(path) == Uniqueness.Unique
+    fun ownsAfter(element: FirElement, path: Path): Boolean = owns(stateAfter(element), path)
 
     /**
      * The uniqueness of [path]: the join along the path, where a component with no entry has its declared uniqueness.

@@ -93,19 +93,10 @@ data class Linearizer(
     ) =
         addStatement {
             val condViper = condition.toViperBuiltinType(this)
-            foldState?.normalize(this)
-            val entry = foldState?.snapshot()
-            val thenViper = asBlock {
-                thenBranch.toViperMaybeStoringIn(result, this)
-                foldState?.normalize(this)
-            }
-            val afterThen = foldState?.snapshot()
-            entry?.let { foldState?.restore(it) }
-            val elseViper = asBlock {
-                elseBranch.toViperMaybeStoringIn(result, this)
-                foldState?.normalize(this)
-            }
-            foldState?.let { it.restore(it.join(afterThen!!, it.snapshot())) }
+            val (thenViper, elseViper) = branchBlocks(
+                { thenBranch.toViperMaybeStoringIn(result, this) },
+                { elseBranch.toViperMaybeStoringIn(result, this) },
+            )
             Stmt.If(condViper, thenViper, elseViper, source.asPosition)
         }
 

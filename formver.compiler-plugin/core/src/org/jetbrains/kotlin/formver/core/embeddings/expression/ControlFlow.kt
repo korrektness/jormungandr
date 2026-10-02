@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSigna
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineCallable
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
+import org.jetbrains.kotlin.formver.core.linearization.OwnedShape
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
 private data class BlockImpl(override val exps: List<ExpEmbedding>) : Block
@@ -47,7 +48,8 @@ data class If(
 }
 
 /**
- * [headUnique] are the variables in scope that the uniqueness checker finds `Unique` at the loop head.
+ * [headShapes] are the shapes of the variables in scope that the uniqueness checker finds `Unique` at the loop head,
+ * and [exitShapes] those after the loop.
  */
 data class While(
     val condition: ExpEmbedding,
@@ -55,7 +57,8 @@ data class While(
     val breakLabelName: SymbolicName,
     val continueLabelName: SymbolicName,
     val invariants: List<ExpEmbedding>,
-    val headUnique: List<VariableEmbedding> = emptyList(),
+    val headShapes: List<OwnedShape> = emptyList(),
+    val exitShapes: List<OwnedShape> = emptyList(),
 ) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 

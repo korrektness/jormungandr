@@ -73,9 +73,13 @@ data class LinearizationVisitor(
 
     override fun visitWhile(e: While): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            val headUnique = ctx.foldState?.enterLoopHead(ctx, e.continueLabel.name, e.headUnique).orEmpty()
+            val foldState = ctx.foldState
+            val headShapes = foldState?.enterLoop(
+                ctx, e.continueLabel.name, e.headShapes, e.breakLabel.name, e.exitShapes,
+            ).orEmpty()
+            ctx.requireFoldedReads(e.invariants, headShapes + e.exitShapes)
             // The permissions come first, since the user's invariants may read through them.
-            val headPermissions = headUnique.mapNotNull { it.uniquePredicateAccessInvariant(ctx.typeResolver) }
+            val headPermissions = headShapes.mapNotNull { foldState?.permission(it) }
             ctx.addLabel(e.continueLabel.copy(invariants = headPermissions + e.continueLabel.invariants).toViper(ctx))
             val condVar = ctx.freshAnonVar { boolean() }
             e.condition.linearize().toViperStoringIn(condVar, ctx)
@@ -125,14 +129,8 @@ data class LinearizationVisitor(
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addStatement {
                 val choice = ctx.freshAnonVar { boolean() }
-                ctx.foldState?.normalize(ctx)
-                val expViper = ctx.withFoldStateRestored {
-                    asBlock {
-                        e.exp.linearize().toViper(this)
-                        foldState?.normalize(this)
-                    }
-                }
-                Stmt.If(choice.linearize().toViperBuiltinType(ctx), expViper, Stmt.Seqn(), ctx.source.asPosition)
+                val (expViper, skipViper) = ctx.branchBlocks({ e.exp.linearize().toViper(this) }, {})
+                Stmt.If(choice.linearize().toViperBuiltinType(ctx), expViper, skipViper, ctx.source.asPosition)
             }
         }
     }
@@ -802,6 +800,25 @@ private fun <R> LinearizationContext.withFoldStateRestored(action: Linearization
 }
 
 /**
+ * Fails when one of [invariants] reads through a root that one of [shapes] holds open around a hole: such a read
+ * needs the root's predicate folded.
+ */
+private fun LinearizationContext.requireFoldedReads(invariants: List<ExpEmbedding>, shapes: List<OwnedShape>) {
+    val open = shapes.filter { it.holes.isNotEmpty() }.mapTo(mutableSetOf()) { it.root.name }
+    if (open.isEmpty()) return
+    fun ExpEmbedding.readsOpen(): Boolean = when (this) {
+        is FieldAccess -> receiverOwned && receiver.ownedPath()?.root?.name in open
+        is FunctionCall -> args.zip(function.formalArgs).any { (arg, formal) ->
+            formal.isUnique && arg.ownedPath()?.root?.name in open
+        }
+        else -> false
+    } || children().any { it.readsOpen() }
+    if (invariants.any { it.readsOpen() }) {
+        throw FoldStateException(source, "A loop invariant needs a unique predicate that the loop holds open.")
+    }
+}
+
+/**
  * The tracked path of an owned [receiver], or `null` when the access havocs or drops.
  *
  * An owned receiver the fold state cannot name, such as one reached through a `@Unique val` getter, is read with a
@@ -863,14 +880,15 @@ private fun ExpEmbedding.isFreshUnique(): Boolean = when (val exp = ignoringCast
 }
 
 /**
- * Prepares a move out of [value] before it is linearized: when [value] is a held path, folds it and returns it.
+ * Prepares a move out of [value] before it is linearized: when [value] is a held path, folds what can be folded under
+ * it, keeping its holes, and returns it.
  * [targetOwned] is `null` when the store is not a move in the source.
  */
 private fun LinearizationContext.moveSource(value: ExpEmbedding, targetOwned: Boolean?): OwnedPath? {
     val state = foldState ?: return null
     if (targetOwned == null) return null
     val path = value.ownedPath()?.takeIf { state.holds(it) } ?: return null
-    if (targetOwned) state.close(this, path)
+    if (targetOwned) state.tidy(this, path)
     return path
 }
 

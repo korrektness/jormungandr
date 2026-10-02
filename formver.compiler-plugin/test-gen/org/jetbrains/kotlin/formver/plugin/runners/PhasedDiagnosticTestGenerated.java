@@ -690,6 +690,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("unique_partial_moves.kt")
+      public void testUnique_partial_moves() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_partial_moves.kt");
+      }
+
+      @Test
       @TestMetadata("unique_try.kt")
       public void testUnique_try() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_try.kt");

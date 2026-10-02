@@ -242,9 +242,11 @@ class ProgramConverter(
     private fun linearizeImpure(name: SymbolicName, signature: CompleteFunctionSignature) {
         val source = signature.declarationSource
         val converted = convertedBodyResolver.lookupImpure(name)
+        // The fold state follows the uniqueness checker's facts, which a function with uniqueness errors lacks.
+        val tracksOwnership = signature.symbol?.let { uniquenessOutcomes[it]?.hasErrors } != true
         val body = converted?.let {
             try {
-                linearizeImpureBody(source, it)
+                linearizeImpureBody(source, it, tracksOwnership)
             } catch (e: FoldStateException) {
                 hadOwnershipError = true
                 context(checkerContext) {

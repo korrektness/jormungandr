@@ -43,6 +43,34 @@ class TestProgram(
         roots.flatMap { extend(FoldPath(it)) }
     }
 
+    /**
+     * The permissions a path of the shape with [holes] holds: without holes its folded predicate; otherwise the
+     * predicates of its chain unfolded just far enough to expose the first field of every hole, with each exposed field
+     * holding the permissions of the shape of the holes below it, nothing for a hole, and its folded predicate
+     * otherwise.
+     */
+    fun shapeTokens(path: TestPath, holes: List<List<TestField>>): List<Token> {
+        val cls = classOf(path)
+        if (holes.isEmpty()) return listOf(Pred(path, cls))
+        val chain = chainOf(cls)
+        val depth = holes.maxOf { chain.indexOf(it.first().owner) + 1 }
+        val opened = chain.take(depth).flatMap { declaring ->
+            listOf(FieldPerms(path, declaring)) + fieldsOf(declaring).flatMap { field ->
+                val below = holes.filter { it.first() == field }.map { it.drop(1) }
+                when {
+                    below.isEmpty() -> listOf(Pred(path + field, field.cls))
+                    below.any { it.isEmpty() } -> emptyList()
+                    else -> shapeTokens(path + field, below)
+                }
+            }
+        }
+        return opened + listOfNotNull(chain.getOrNull(depth)?.let { Pred(path, it) })
+    }
+
+    /** [holes] without duplicates and without the holes that extend another. */
+    fun outermost(holes: List<List<TestField>>): Set<List<TestField>> =
+        holes.filterTo(mutableSetOf()) { hole -> (1 until hole.size).none { hole.subList(0, it) in holes } }
+
     override fun rootClass(root: TestRoot): Int = root.cls
     override fun fieldClass(field: TestField): Int = field.cls
 
@@ -147,9 +175,35 @@ class HeapModel(private val program: TestProgram, private val tokens: MutableMap
     }
 
     /** Whether some field exposed below [path] lost its predicate. */
-    fun hasHole(path: TestPath): Boolean = tokens.keys.any { token ->
-        token is FieldPerms && token.path.startsWith(path) &&
-                program.fieldsOf(token.cls).any { !live(token.path + it) }
+    fun hasHole(path: TestPath): Boolean = holes(path).isNotEmpty()
+
+    /** The paths below [path], as field lists, that lost their predicates under fields exposed by unfolding. */
+    fun holes(path: TestPath): List<List<TestField>> = tokens.keys.filter { it is FieldPerms && it.path == path }
+        .flatMap { perms ->
+            program.fieldsOf((perms as FieldPerms).cls).flatMap { field ->
+                if (live(path + field)) holes(path + field).map { listOf(field) + it } else listOf(listOf(field))
+            }
+        }
+
+    /** Move every permission at or below [source] to the same place below [target], replacing what [target] held. */
+    fun move(source: TestPath, target: TestPath) {
+        val moved = tokensBelow(source)
+        leak(source)
+        leak(target)
+        fun TestPath.rebased() = FoldPath(target.root, target.fields + fields.drop(source.fields.size))
+        for ((token, count) in moved) {
+            val rebased = when (token) {
+                is Pred -> token.copy(path = token.path.rebased())
+                is FieldPerms -> token.copy(path = token.path.rebased())
+            }
+            tokens[rebased] = count
+        }
+    }
+
+    /** Bring [path] to the shape with [holes], forgetting what it held under them. */
+    fun settle(path: TestPath, holes: List<List<TestField>>) {
+        leak(path)
+        program.shapeTokens(path, holes).forEach(::add)
     }
 
     /** Forget every permission at or below [path]. */
@@ -161,12 +215,11 @@ class HeapModel(private val program: TestProgram, private val tokens: MutableMap
 
     fun tokensBelow(path: TestPath): Map<Token, Int> = tokens.filterKeys { it.path.startsWith(path) }
 
-    /** The permissions both models hold: what code after a merge of the two may rely on. */
-    fun intersect(other: HeapModel) = HeapModel(
+    /** The join of two normalized states at a label: a root stays held when both hold the same permissions for it. */
+    fun joinAtLabel(other: HeapModel) = HeapModel(
         program,
-        tokens.mapNotNullTo(mutableListOf()) { (token, count) ->
-            other.tokens[token]?.let { token to minOf(count, it) }
-        }.toMap().toMutableMap(),
+        tokens.filterKeys { tokensBelow(FoldPath(it.path.root)) == other.tokensBelow(FoldPath(it.path.root)) }
+            .toMutableMap(),
     )
 }
 
@@ -211,7 +264,7 @@ sealed interface Step {
     /** Close a held path and refresh its predicate, as after passing it to a borrowed shared parameter. */
     data class Refresh(val pick: Pick) : Step
 
-    /** Close a held path and transfer it to a path of the same class. */
+    /** Fold what can be folded under a held path, keeping its holes, and transfer it to a path of the same class. */
     data class Move(val pick: Pick, val target: Int) : Step
     data object Normalize : Step
 
@@ -252,7 +305,7 @@ class Harness(private val program: TestProgram, private val executeIllegal: Bool
     }
 
     private fun joinModels(a: HeapModel?, b: HeapModel?): HeapModel? =
-        if (a == null) b?.copy() else if (b == null) a.copy() else a.intersect(b)
+        if (a == null) b?.copy() else if (b == null) a.copy() else a.joinAtLabel(b)
 
     /** Runs [steps]. Returns false once an operation is refused or the state is dead. */
     fun run(steps: List<Step>): Boolean = steps.all { step ->
@@ -354,15 +407,14 @@ class Harness(private val program: TestProgram, private val executeIllegal: Bool
     private fun move(step: Step.Move, heap: HeapModel): Boolean {
         val source = candidates(step.pick, heap::live).pick(step.pick.index) ?: return true
         val target = program.paths.filter { program.classOf(it) == program.classOf(source) }.pick(step.target)!!
-        if (!close(source)) return false
+        val holes = heap.holes(source)
+        if (!attempt(heap.live(source), { trie.tidy(it, source) }) { tidied ->
+                assertEquals(program.shapeTokens(source, holes).groupingBy { it }.eachCount(), tidied.tokensBelow(source))
+            }) return false
         // Releasing the source leaves every path outside it as held as before.
-        val legal = target.fields.isEmpty() ||
-                !target.parent().startsWith(source) && heap.live(target.parent())
-        return attempt(legal, { trie.transfer(it, source, target) }) {
-            it.leak(source)
-            it.leak(target)
-            it.inhale(target)
-        }
+        val legal = heap.live(source) && (target.fields.isEmpty() ||
+                !target.parent().startsWith(source) && heap.live(target.parent()))
+        return attempt(legal, { trie.transfer(it, source, target) }) { it.move(source, target) }
     }
 
     private fun close(path: TestPath): Boolean {
@@ -375,15 +427,45 @@ class Harness(private val program: TestProgram, private val executeIllegal: Bool
 
     private fun closable(path: TestPath): Boolean = model.let { it != null && it.live(path) && !it.hasHole(path) }
 
-    /** Normalization on the model: roots with a hole are forgotten, every other root is held folded and nothing else. */
+    /** Normalization on the model: every root is brought to the shape of its own holes. */
     private fun normalizedBy(action: (RecordingSink) -> Unit): Boolean {
         val heap = model ?: return true.also { assertEquals(emptyList(), RecordingSink().also(action).emitted) }
-        val holed = heap.roots().filter { heap.hasHole(FoldPath(it)) }
+        val shapes = heap.roots().associateWith { heap.holes(FoldPath(it)) }
         return attempt(true, action) {
-            holed.forEach { root -> it.leak(FoldPath(root)) }
-            for (root in it.roots()) {
-                assertEquals(mapOf<Token, Int>(Pred(FoldPath(root), root.cls) to 1), it.tokensBelow(FoldPath(root)))
+            assertEquals(shapes.keys, it.roots(), "normalize keeps every root")
+            for ((root, holes) in shapes) assertShape(it, FoldPath(root), holes)
+        }
+    }
+
+    private fun assertShape(heap: HeapModel, path: TestPath, holes: List<List<TestField>>) =
+        assertEquals(program.shapeTokens(path, holes).groupingBy { it }.eachCount(), heap.tokensBelow(path), "shape of $path")
+
+    /**
+     * Bring the state to the shapes two normalized arms merge into: the roots both hold, with the holes either has.
+     * Returns false when the state is dead.
+     */
+    private fun settleForMerge(a: Saved, b: Saved): Boolean {
+        val shapes = trie.mergeShapes(a.snapshot, b.snapshot).orEmpty()
+        val expected = mergedHoles(a.model, b.model)
+        assertEquals(expected, shapes.associate { it.root to it.holes.toSet() }, "merged shapes")
+        return attempt(true, { trie.normalizeTo(it, shapes) }) { heap ->
+            for (root in heap.roots() - expected.keys) heap.leak(FoldPath(root))
+            assertEquals(expected.keys, heap.roots(), "the merge holds the roots both arms hold")
+            for ((root, holes) in expected) {
+                // The predicates under the holes the other arm has are forgotten.
+                for (hole in holes) heap.leak(FoldPath(root, hole))
+                assertShape(heap, FoldPath(root), holes.toList())
             }
+        }
+    }
+
+    private fun mergedHoles(a: HeapModel?, b: HeapModel?): Map<TestRoot, Set<List<TestField>>> {
+        if (a == null || b == null) {
+            val live = a ?: b ?: return emptyMap()
+            return live.roots().associateWith { live.holes(FoldPath(it)).toSet() }
+        }
+        return (a.roots() intersect b.roots()).associateWith { root ->
+            program.outermost(a.holes(FoldPath(root)) + b.holes(FoldPath(root)))
         }
     }
 
@@ -433,7 +515,12 @@ class Harness(private val program: TestProgram, private val executeIllegal: Bool
         }
         val left = arm(step.left, step.leftExit) ?: return false
         val right = arm(step.right, step.rightExit) ?: return false
-        merge(left, right)
+        val settled = listOf(left, right).map { end ->
+            restore(end)
+            if (model != null && !settleForMerge(left, right)) return false
+            save()
+        }
+        merge(settled[0], settled[1])
         return arrive(label) && model != null
     }
 }

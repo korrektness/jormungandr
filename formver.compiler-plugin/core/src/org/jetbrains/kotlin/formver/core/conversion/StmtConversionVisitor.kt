@@ -348,14 +348,12 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 addAll(data.withScopeImpl(ScopeIndex.NoScope) { data.collectInvariants(it) })
             }
         }
-        val headUnique = data.uniquenessAnalysis?.let { analysis ->
-            inScope.filter { variable ->
-                variable is FirVariableEmbedding && analysis.ownsAtLoopHead(whileLoop, variable.symbol)
-            }
-        } ?: emptyList()
+        val analysis = data.uniquenessAnalysis
+        val headShapes = analysis?.let { data.ownedShapes(it, it.stateAtLoopHead(whileLoop), inScope) }.orEmpty()
+        val exitShapes = analysis?.let { data.ownedShapes(it, it.stateAfter(whileLoop), inScope) }.orEmpty()
         return data.withFreshWhile(whileLoop.label) {
             val body = convert(whileLoop.block)
-            While(condition, body, breakLabelName(), continueLabelName(), invariants, headUnique)
+            While(condition, body, breakLabelName(), continueLabelName(), invariants, headShapes, exitShapes)
         }
     }
 

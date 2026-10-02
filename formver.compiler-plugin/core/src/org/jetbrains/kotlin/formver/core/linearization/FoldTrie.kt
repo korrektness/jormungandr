@@ -13,6 +13,15 @@ data class FoldPath<R, F>(val root: R, val fields: List<F> = emptyList()) {
 }
 
 /**
+ * The shape a root's predicate has where the uniqueness checker finds the root `Unique`: [holes] are the paths below
+ * it, as field lists, whose predicates are moved out. No hole extends another.
+ *
+ * Without holes the root is folded. Otherwise each ancestor of a hole is open just far enough to expose the field on
+ * the way to it, a hole holds nothing, and every other path is folded.
+ */
+data class RootShape<R, F>(val root: R, val holes: List<List<F>> = emptyList())
+
+/**
  * What a [FoldTrie] needs to know about the program: the class whose predicate a root or field holds, and the class
  * chains that are opened to reach a field.
  */
@@ -93,8 +102,8 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
     /** Labels that jumps have reached, with the joined state of those jumps. */
     private val pendingJumps: MutableMap<Any, Snapshot<R, F, C>> = mutableMapOf()
 
-    /** Loop heads entered so far, with the roots each one holds folded. */
-    private val loopHeads: MutableMap<Any, List<R>> = mutableMapOf()
+    /** Labels whose shape is fixed in advance: every edge into one of them is brought to that shape. */
+    private val labelShapes: MutableMap<Any, List<RootShape<R, F>>> = mutableMapOf()
 
     private fun classOf(path: FoldPath<R, F>): C? =
         if (path.fields.isEmpty()) hierarchy.rootClass(path.root) else hierarchy.fieldClass(path.fields.last())
@@ -104,15 +113,7 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
     /** Mark [path] as holding its folded predicate. */
     fun acquire(sink: FoldSink<R, F, C>, path: FoldPath<R, F>) {
         val cls = classOf(path) ?: return
-        val node = FoldNode<F, C>(cls, FoldStatus.Folded)
-        val live = roots ?: return
-        if (path.fields.isEmpty()) {
-            live[hierarchy.rootKey(path.root)] = path.root to node
-        } else {
-            val field = path.fields.last()
-            val parent = reach(sink, path.parent(), field) ?: notHeld(sink)
-            parent.children[hierarchy.fieldKey(field)] = field to node
-        }
+        place(sink, path, FoldNode(cls, FoldStatus.Folded))
     }
 
     /** Whether the predicate of [path] is held, possibly nested in the folded predicate of an ancestor. */
@@ -174,21 +175,53 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
         sink.refresh(path, cls)
     }
 
-    /** Move the predicate of [src] to [dst]: [src] holds nothing afterwards. [src] must be folded. */
-    fun transfer(sink: FoldSink<R, F, C>, src: FoldPath<R, F>, dst: FoldPath<R, F>) {
-        if (roots == null) return
-        release(sink, src)
-        acquire(sink, dst)
+    /** Fold everything under [path] that can be folded, keeping its holes. */
+    fun tidy(sink: FoldSink<R, F, C>, path: FoldPath<R, F>) {
+        if (roots == null || classOf(path) == null) return
+        if (!holds(path)) notHeld(sink)
+        val node = locate(sink, path) ?: notHeld(sink)
+        settle(sink, node, path, node.holes())
     }
 
     /**
-     * Fold every root that can be folded and forget the others, so that the state can be joined with another.
+     * Move what [src] holds to [dst], emitting nothing: [src] holds nothing afterwards. When both have the same static
+     * class, the subtree of [src] moves as it is, holes included; otherwise [src] must be folded.
+     */
+    fun transfer(sink: FoldSink<R, F, C>, src: FoldPath<R, F>, dst: FoldPath<R, F>) {
+        if (roots == null) return
+        val cls = classOf(dst) ?: return release(sink, src)
+        if (!holds(src)) notHeld(sink)
+        val node = locate(sink, src) ?: notHeld(sink)
+        val moved: FoldNode<F, C> = when {
+            classOf(src) == cls -> node.deepCopy()
+            node.status == FoldStatus.Folded -> FoldNode(cls, FoldStatus.Folded)
+            else -> movedOut(sink)
+        }
+        release(sink, src)
+        place(sink, dst, moved)
+    }
+
+    /**
+     * Fold everything that can be folded: each root is brought to the [RootShape] of its own holes, so that the state
+     * can be joined with another.
      */
     fun normalize(sink: FoldSink<R, F, C>) {
         val live = roots ?: return
-        for ((key, entry) in live.entries.toList()) {
-            val (root, node) = entry
-            if (node.hasHole()) live.remove(key) else closeNode(sink, node, FoldPath(root))
+        normalizeTo(sink, live.values.map { (root, node) -> RootShape(root, node.holes()) })
+    }
+
+    /**
+     * Bring the state to [shapes]: each of their roots to its shape, forgetting the predicates under its holes, and
+     * forget every other root. Every root of [shapes] must be held, and every path that holds nothing must lie under a
+     * hole.
+     */
+    fun normalizeTo(sink: FoldSink<R, F, C>, shapes: List<RootShape<R, F>>) {
+        val live = roots ?: return
+        val wanted = shapes.filter { hierarchy.rootClass(it.root) != null }.associateBy { hierarchy.rootKey(it.root) }
+        live.keys.retainAll(wanted.keys)
+        for ((key, shape) in wanted) {
+            val node = live[key]?.second ?: notHeld(sink)
+            settle(sink, node, FoldPath(shape.root), shape.holes)
         }
     }
 
@@ -207,27 +240,42 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
     }
 
     /**
-     * Join of two normalized snapshots: a root stays held only when both hold it folded. A dead snapshot is the
-     * identity.
+     * Join of two normalized snapshots of edges into a label: a root stays held only when both hold it with the same
+     * holes. A dead snapshot is the identity.
      */
     fun join(a: Snapshot<R, F, C>, b: Snapshot<R, F, C>): Snapshot<R, F, C> {
         val left = a.roots ?: return b
         val right = b.roots ?: return a
         return Snapshot(left.filter { (key, entry) ->
-            entry.second.status == FoldStatus.Folded && right[key]?.second?.status == FoldStatus.Folded
+            val other = right[key]?.second
+            other != null && entry.second.holes().keys() == other.holes().keys()
         })
     }
 
     /**
-     * Normalize and become dead. A jump to an entered loop head must hold the roots of that head folded; a jump to
-     * any other [label] records its state for the label.
+     * The shapes that the arms of a branch, ending in the normalized snapshots [a] and [b], are brought to where they
+     * merge: a root stays held when both arms hold it, with every hole either arm has. `null` when both arms are dead.
+     */
+    fun mergeShapes(a: Snapshot<R, F, C>, b: Snapshot<R, F, C>): List<RootShape<R, F>>? {
+        val left = a.roots
+        val right = b.roots
+        if (left == null || right == null) return (left ?: right)?.values?.map { (root, node) -> RootShape(root, node.holes()) }
+        return left.mapNotNull { (key, entry) ->
+            val other = right[key]?.second ?: return@mapNotNull null
+            RootShape(entry.first, outermost(entry.second.holes() + other.holes()))
+        }
+    }
+
+    /**
+     * Become dead. A jump to a label whose shape is fixed brings the state to that shape first; a jump to any other
+     * [label] is normalized and records its state for the label.
      */
     fun jumpTo(sink: FoldSink<R, F, C>, label: Any) {
-        normalize(sink)
-        val head = loopHeads[label]
-        if (head != null) {
-            requireFolded(sink, head)
+        val shapes = labelShapes[label]
+        if (shapes != null) {
+            normalizeTo(sink, shapes)
         } else {
+            normalize(sink)
             val current = snapshot()
             pendingJumps[label] = pendingJumps[label]?.let { join(it, current) } ?: current
         }
@@ -235,36 +283,71 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
     }
 
     /**
-     * Enter the head of the loop whose continue label is [label]. [unique] are the roots the uniqueness checker finds
-     * `Unique` there. The state is normalized, every tracked one of them must be held folded, and every other root is
-     * forgotten. Jumps to [label] must hold the same roots folded.
+     * Enter a loop: [head] are the shapes of the roots the uniqueness checker finds `Unique` at the head, whose
+     * continue label is [headLabel], and [exit] those after the loop, whose break label is [exitLabel]. The state is
+     * brought to [head], and every edge into either label is brought to its shapes.
      *
-     * Returns the tracked roots of [unique]: the loop invariant holds their predicates.
+     * Returns the tracked shapes of [head]: the loop invariant holds their permissions.
      */
-    fun enterLoopHead(sink: FoldSink<R, F, C>, label: Any, unique: List<R>): List<R> {
-        val tracked = unique.filter { hierarchy.rootClass(it) != null }
-        loopHeads[label] = tracked
-        normalize(sink)
-        val live = roots ?: return tracked
-        requireFolded(sink, tracked)
-        live.keys.retainAll(tracked.map(hierarchy::rootKey).toSet())
+    fun enterLoop(
+        sink: FoldSink<R, F, C>,
+        headLabel: Any,
+        head: List<RootShape<R, F>>,
+        exitLabel: Any,
+        exit: List<RootShape<R, F>>,
+    ): List<RootShape<R, F>> {
+        val tracked = head.filter { hierarchy.rootClass(it.root) != null }
+        labelShapes[headLabel] = tracked
+        labelShapes[exitLabel] = exit
+        val live = roots
+        if (live != null && tracked.any { hierarchy.rootKey(it.root) !in live }) {
+            sink.fail("The loop head needs a unique predicate that is not held.")
+        }
+        normalizeTo(sink, tracked)
         return tracked
     }
 
-    private fun requireFolded(sink: FoldSink<R, F, C>, required: List<R>) {
-        val live = roots ?: return
-        for (root in required) {
-            if (live[hierarchy.rootKey(root)]?.second?.status != FoldStatus.Folded) {
-                sink.fail("The loop head needs a unique predicate that is not held.")
-            }
-        }
-    }
-
-    /** Join the states of jumps to [label] into the state falling through to it. */
+    /**
+     * Arrive at [label] falling through. At a label whose shape is fixed the state is brought to that shape; otherwise
+     * the states of jumps to [label] are joined into the current one.
+     */
     fun arriveAt(sink: FoldSink<R, F, C>, label: Any) {
+        labelShapes[label]?.let { return normalizeTo(sink, it) }
         val jumps = pendingJumps.remove(label) ?: return
         normalize(sink)
         restore(join(snapshot(), jumps))
+    }
+
+    /**
+     * How [shape] holds its root: [folded] describes a folded path with its static class, and [open] an open path
+     * with the classes unfolded on it and its children, a hole being `null`. A field of an unfolded class with no
+     * child is folded. `null` when the root is not tracked.
+     */
+    fun <T> describe(
+        shape: RootShape<R, F>,
+        folded: (FoldPath<R, F>, C) -> T,
+        open: (FoldPath<R, F>, C, List<C>, List<Pair<F, T?>>) -> T,
+    ): T? {
+        val cls = hierarchy.rootClass(shape.root) ?: return null
+        val node = FoldNode<F, C>(cls, FoldStatus.Folded)
+        val silent = object : FoldSink<R, F, C> {
+            override fun unfold(path: FoldPath<R, F>, cls: C) {}
+            override fun fold(path: FoldPath<R, F>, cls: C) {}
+            override fun refresh(path: FoldPath<R, F>, cls: C) {}
+            override fun fail(message: String): Nothing = error(message)
+        }
+        settle(silent, node, FoldPath(shape.root), shape.holes)
+        fun describeNode(node: FoldNode<F, C>, path: FoldPath<R, F>): T? {
+            val nodeCls = node.cls ?: return null
+            return when (val status = node.status) {
+                FoldStatus.Absent -> null
+                FoldStatus.Folded -> folded(path, nodeCls)
+                is FoldStatus.Open -> open(path, nodeCls, status.opened, node.children.values.map { (field, child) ->
+                    field to describeNode(child, path + field)
+                })
+            }
+        }
+        return describeNode(node, FoldPath(shape.root))
     }
 
     /**
@@ -315,14 +398,68 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
         return true
     }
 
-    private fun FoldNode<F, C>.hasHole(): Boolean =
-        children.values.any { (_, child) -> child.status == FoldStatus.Absent || child.hasHole() }
+    /** The paths below this node, as field lists, that hold nothing; none extends another. */
+    private fun FoldNode<F, C>.holes(): List<List<F>> = children.values.flatMap { (field, child) ->
+        if (child.status == FoldStatus.Absent) listOf(listOf(field)) else child.holes().map { listOf(field) + it }
+    }
+
+    private fun List<List<F>>.keys(): Set<List<Any>> = mapTo(mutableSetOf()) { path -> path.map(hierarchy::fieldKey) }
+
+    /** [holes] without duplicates and without the holes that extend another. */
+    private fun outermost(holes: List<List<F>>): List<List<F>> {
+        val distinct = holes.distinctBy { path -> path.map(hierarchy::fieldKey) }
+        val keys = distinct.keys()
+        return distinct.filter { path -> (1 until path.size).none { path.subList(0, it).map(hierarchy::fieldKey) in keys } }
+    }
+
+    /**
+     * Bring [node], at [path], to the shape with [holes]: open each ancestor of a hole through the field on the way to
+     * it, and no further; mark each hole as holding nothing, forgetting what it held; fold everything else.
+     */
+    private fun settle(sink: FoldSink<R, F, C>, node: FoldNode<F, C>, path: FoldPath<R, F>, holes: List<List<F>>) {
+        if (holes.isEmpty()) return closeNode(sink, node, path)
+        val cls = node.cls ?: notHeld(sink)
+        val byField = holes.groupBy { hierarchy.fieldKey(it.first()) }
+        for ((key, group) in byField) {
+            val field = group.first().first()
+            if (!openThrough(sink, node, path, field)) notHeld(sink)
+            val tails = group.map { it.drop(1) }
+            if (tails.any { it.isEmpty() }) {
+                node.children[key] = field to FoldNode(hierarchy.fieldClass(field), FoldStatus.Absent)
+            } else {
+                val child = node.children.getOrPut(key) {
+                    field to FoldNode(hierarchy.fieldClass(field), FoldStatus.Folded)
+                }.second
+                if (child.status == FoldStatus.Absent) notHeld(sink)
+                settle(sink, child, path + field, tails)
+            }
+        }
+        for (key in node.children.keys - byField.keys) {
+            val (field, child) = node.children.remove(key)!!
+            if (child.status == FoldStatus.Absent) movedOut(sink)
+            closeNode(sink, child, path + field)
+        }
+        val depth = byField.values.maxOf { hierarchy.chainTo(cls, it.first().first()).size }
+        val opened = (node.status as FoldStatus.Open).opened
+        for (unneeded in opened.drop(depth).reversed()) sink.fold(path, unneeded)
+        node.status = FoldStatus.Open(opened.take(depth))
+    }
+
+    /** Put [node] at [path], whose parent must be held. */
+    private fun place(sink: FoldSink<R, F, C>, path: FoldPath<R, F>, node: FoldNode<F, C>) {
+        val live = roots ?: return
+        if (path.fields.isEmpty()) {
+            live[hierarchy.rootKey(path.root)] = path.root to node
+        } else {
+            val field = path.fields.last()
+            val parent = reach(sink, path.parent(), field) ?: notHeld(sink)
+            parent.children[hierarchy.fieldKey(field)] = field to node
+        }
+    }
 
     private fun closeNode(sink: FoldSink<R, F, C>, node: FoldNode<F, C>, path: FoldPath<R, F>) {
         for ((field, child) in node.children.values) {
-            if (child.status == FoldStatus.Absent) {
-                sink.fail("A unique path must be folded here, but one of its @Unique fields was moved out.")
-            }
+            if (child.status == FoldStatus.Absent) movedOut(sink)
             closeNode(sink, child, path + field)
         }
         node.children.clear()
@@ -332,4 +469,7 @@ class FoldTrie<R, F, C>(private val hierarchy: FoldHierarchy<R, F, C>) {
     }
 
     private fun notHeld(sink: FoldSink<R, F, C>): Nothing = sink.fail("A unique predicate needed here is not held.")
+
+    private fun movedOut(sink: FoldSink<R, F, C>): Nothing =
+        sink.fail("A unique path must be folded here, but one of its @Unique fields was moved out.")
 }

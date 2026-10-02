@@ -22,11 +22,14 @@ import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignatureWithContract
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
+import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.asPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.uniqueness.plugin.indexedArrayInitializer
+import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
+import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isCustom
 import org.jetbrains.kotlin.formver.core.isInvariantBuilderFunctionNamed
 import org.jetbrains.kotlin.formver.core.linearization.*
@@ -319,10 +322,11 @@ fun StmtConversionContext.convertPureBody(declaration: FirSimpleFunction): ExpEm
 fun ProgramConversionContext.linearizeImpureBody(
     source: KtSourceElement?,
     converted: ConvertedMethodBody,
+    tracksOwnership: Boolean,
 ): FunctionBodyEmbedding {
     val seqnBuilder = SeqnBuilder(source)
-    val linearizer =
-        Linearizer(SharedLinearizationState(anonVarProducer), seqnBuilder, source, typeResolver, FoldState(typeResolver))
+    val foldState = if (tracksOwnership) FoldState(typeResolver) else null
+    val linearizer = Linearizer(SharedLinearizationState(anonVarProducer), seqnBuilder, source, typeResolver, foldState)
     converted.bodyExp.toLinearizable(source).toViperUnusedResult(linearizer)
     // note: we must guarantee somewhere that returned value is Unit
     // as we may not encounter any `return` statement in the body
@@ -409,3 +413,26 @@ fun StmtConversionContext.collectInvariantsAndTriggers(block: FirBlock): Invaria
 
     return InvariantsAndTriggers(invariants, triggers)
 }
+
+/**
+ * The shapes of the roots among [roots] that [state] has `Unique`, with a hole at each path below them that [state]
+ * has `Moved`.
+ *
+ * A moved path that does not run through `@Unique` backing fields alone is left out: the fold state tracks no move
+ * of it either, so the root's predicate is not opened for it.
+ */
+fun StmtConversionContext.ownedShapes(
+    analysis: FunctionUniquenessAnalysis,
+    state: UniquenessState,
+    roots: List<VariableEmbedding>,
+): List<OwnedShape> = roots.filterIsInstance<FirVariableEmbedding>()
+    .filter { analysis.owns(state, listOf(it.symbol)) }
+    .map { root ->
+        OwnedShape(root, analysis.movedBelow(state, root.symbol).mapNotNull { path ->
+            path.map { symbol ->
+                val property = symbol as? FirPropertySymbol ?: return@mapNotNull null
+                val field = (embedProperty(property).getter as? BackingFieldGetter)?.field
+                field?.takeIf { it.isUnique } ?: return@mapNotNull null
+            }
+        })
+    }

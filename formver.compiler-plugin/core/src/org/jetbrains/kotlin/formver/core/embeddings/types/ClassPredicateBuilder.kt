@@ -21,9 +21,9 @@ import org.jetbrains.kotlin.utils.addIfNotNull
 internal class ClassPredicateBuilder private constructor(
     val typeEmbedding: TypeEmbedding,
     val properties: List<PropertyEmbedding>,
-    val classSuperTypes: List<ClassTypeEmbedding>
+    val classSuperTypes: List<ClassTypeEmbedding>,
+    private val subject: ExpEmbedding,
 ) {
-    private val subject = PlaceholderVariableEmbedding(DispatchReceiverName, typeEmbedding)
     private val body = mutableListOf<ExpEmbedding>()
 
     companion object {
@@ -33,19 +33,30 @@ internal class ClassPredicateBuilder private constructor(
             predicateName: SymbolicName,
             action: ClassPredicateBuilder.() -> Unit,
         ): Predicate {
-            val typeEmbedding = ctx.lookupClassTypeEmbedding(name)!!
-            val builder = ClassPredicateBuilder(
-                TypeEmbedding(typeEmbedding, TypeEmbeddingFlags(nullable = false)),
-                ctx.lookupClassProperties(name),
-                ctx.lookupSuperTypes(name)
-            )
-            builder.action()
+            val subject = PlaceholderVariableEmbedding(DispatchReceiverName, classType(name))
             return Predicate(
                 predicateName,
-                listOf(builder.subject.toLocalVarDecl()),
-                builder.body.toConjunction().pureToViper(toBuiltin = true, ctx)
+                listOf(subject.toLocalVarDecl()),
+                body(name, subject, action).pureToViper(toBuiltin = true, ctx)
             )
         }
+
+        /** The assertions [action] builds about [subject], an instance of the class [name]. */
+        context(ctx: TypeResolver)
+        fun body(name: SymbolicName, subject: ExpEmbedding, action: ClassPredicateBuilder.() -> Unit): ExpEmbedding {
+            val builder = ClassPredicateBuilder(
+                classType(name),
+                ctx.lookupClassProperties(name),
+                ctx.lookupSuperTypes(name),
+                subject,
+            )
+            builder.action()
+            return builder.body.toConjunction()
+        }
+
+        context(ctx: TypeResolver)
+        private fun classType(name: SymbolicName) =
+            TypeEmbedding(ctx.lookupClassTypeEmbedding(name)!!, TypeEmbeddingFlags(nullable = false))
     }
 
     fun includeSubTypeInvariants() = body.add(
@@ -68,11 +79,14 @@ internal class ClassPredicateBuilder private constructor(
         }
 }
 
-class PropertyAssertionsBuilder(private val subject: VariableEmbedding, private val property: PropertyEmbedding) {
+class PropertyAssertionsBuilder(private val subject: ExpEmbedding, private val property: PropertyEmbedding) {
     private val assertions = mutableListOf<ExpEmbedding>()
     fun toAssertionsList() = assertions.toList()
 
     val isUnique = property.isUnique
+
+    /** The field holding the property's value, when it has one. */
+    val backingField: FieldEmbedding? = (property.getter as? BackingFieldGetter)?.field
 
     context(ctx: TypeResolver)
     private fun getPlainValue() = when (val getter = property.getter!!) {
@@ -89,7 +103,7 @@ class PropertyAssertionsBuilder(private val subject: VariableEmbedding, private 
     }
 
     fun forBackingField(action: BackingFieldAssertionsBuilder.() -> Unit) {
-        (property.getter as? BackingFieldGetter)?.field?.let { field ->
+        backingField?.let { field ->
             val builder = BackingFieldAssertionsBuilder(subject, field)
             builder.action()
             assertions.addAll(builder.toAssertionsList())
@@ -102,7 +116,7 @@ class PropertyAssertionsBuilder(private val subject: VariableEmbedding, private 
     }
 }
 
-class BackingFieldAssertionsBuilder(private val subject: VariableEmbedding, private val field: FieldEmbedding) {
+class BackingFieldAssertionsBuilder(private val subject: ExpEmbedding, private val field: FieldEmbedding) {
     private val assertions = mutableListOf<ExpEmbedding>()
 
     val isAlwaysWriteable = field.accessPolicy == AccessPolicy.ALWAYS_WRITEABLE
@@ -121,14 +135,19 @@ class BackingFieldAssertionsBuilder(private val subject: VariableEmbedding, priv
 }
 
 
-class TypeInvariantsBuilder(private val type: TypeEmbedding) {
+class TypeInvariantsBuilder(val type: TypeEmbedding) {
     private val invariants = mutableListOf<TypeInvariantEmbedding>()
     fun toInvariantsList() = invariants.toList()
 
+    /**
+     * Add the access to the unique predicate of [type], guarded by non-nullness when [type] is nullable. [replace]
+     * gives the assertion that stands for the access, `null` to leave it out.
+     */
     context(ctx: TypeResolver)
-    fun addAccessToUniquePredicate() = invariants.addIfNotNull(
-        type.uniquePredicateAccessInvariant(ctx)
-    )
+    fun addAccessToUniquePredicate(replace: (TypeInvariantEmbedding) -> TypeInvariantEmbedding? = { it }) =
+        invariants.addIfNotNull(
+            type.pretype.uniquePredicateAccessInvariant(ctx)?.let(replace)?.let(type.flags::adjustInvariant)
+        )
 
     fun includeSubTypeInvariants() = invariants.add(
         SubTypeInvariantEmbedding(type)
