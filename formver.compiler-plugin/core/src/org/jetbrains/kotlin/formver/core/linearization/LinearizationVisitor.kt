@@ -63,12 +63,20 @@ data class LinearizationVisitor(
             }
             e.exps.last().linearize().toViperMaybeStoringIn(result, ctx)
         }
+
+        override fun toViper(ctx: LinearizationContext): Exp {
+            if (e.exps.isEmpty()) return super.toViper(ctx)
+            return ctx.addBlock(e.exps.dropLast(1).map { it.linearize() }, e.exps.last().linearize(), e.type)
+        }
     }
 
     override fun visitIf(e: If): Linearizable = object : OptionalResultLinearizable(e) {
         override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) {
             ctx.addBranch(e.condition.linearize(), e.thenBranch.linearize(), e.elseBranch.linearize(), result)
         }
+
+        override fun toViper(ctx: LinearizationContext): Exp =
+            ctx.addConditional(e.condition.linearize(), e.thenBranch.linearize(), e.elseBranch.linearize(), e.type)
     }
 
     override fun visitWhile(e: While): Linearizable = object : UnitResultLinearizable(e) {
@@ -203,12 +211,16 @@ data class LinearizationVisitor(
     }
 
     override fun visitElvis(e: Elvis): Linearizable = object : StoredResultLinearizable(e) {
-        override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
-            val leftViper = e.left.linearize().toViper(ctx)
-            val leftWrapped = ExpWrapper(leftViper, e.left.type)
-            val conditional = If(leftWrapped.notNullCmp(), leftWrapped.withType(e.type), e.right.withType(e.type), e.type)
-            conditional.linearize().toViperStoringIn(result, ctx)
+        private fun conditional(ctx: LinearizationContext): Linearizable {
+            val leftWrapped = ExpWrapper(e.left.linearize().toViper(ctx), e.left.type)
+            return If(leftWrapped.notNullCmp(), leftWrapped.withType(e.type), e.right.withType(e.type), e.type).linearize()
         }
+
+        override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
+            conditional(ctx).toViperStoringIn(result, ctx)
+        }
+
+        override fun toViper(ctx: LinearizationContext): Exp = conditional(ctx).toViper(ctx)
     }
 
     override fun visitReturn(e: Return): Linearizable = object : OptionalResultLinearizable(e) {

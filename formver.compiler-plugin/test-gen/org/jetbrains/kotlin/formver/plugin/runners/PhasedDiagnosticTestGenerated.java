@@ -1160,6 +1160,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("conditional_specifications.kt")
+      public void testConditional_specifications() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/user_invariants/conditional_specifications.kt");
+      }
+
+      @Test
       @TestMetadata("empty.kt")
       public void testEmpty() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/user_invariants/empty.kt");

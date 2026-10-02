@@ -60,6 +60,26 @@ interface LinearizationContext {
         result: VariableEmbedding?
     )
 
+    /** The value of a block that evaluates [statements] and then [last], which has [type]. */
+    fun addBlock(statements: List<Linearizable>, last: Linearizable, type: TypeEmbedding): Exp {
+        val result = freshAnonVar(type)
+        statements.forEach { it.toViperUnusedResult(this) }
+        last.toViperStoringIn(result, this)
+        return result.toViperExp(this)
+    }
+
+    /** The value of `if ([condition]) [thenBranch] else [elseBranch]`, which has [type]. */
+    fun addConditional(
+        condition: Linearizable,
+        thenBranch: Linearizable,
+        elseBranch: Linearizable,
+        type: TypeEmbedding,
+    ): Exp {
+        val result = freshAnonVar(type)
+        addBranch(condition, thenBranch, elseBranch, result)
+        return result.toViperExp(this)
+    }
+
     /**
      * [receiverPath] is the receiver's path when it is owned: the access then unfolds the receiver's predicates
      * instead of havocking the result.

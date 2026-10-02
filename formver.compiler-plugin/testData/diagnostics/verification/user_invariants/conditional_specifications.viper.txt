@@ -1,0 +1,226 @@
+/conditional_specifications.kt: info: Generated Viper text for ifInPrecondition:
+method ifInPrecondition(flag: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(flag), boolType())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) ==
+    intFromRef((boolFromRef(flag) ? intToRef(1) : intToRef(0)))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(n)
+{
+  if (boolFromRef(flag)) {
+    v_ret_0 := intToRef(1)
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/conditional_specifications.kt: info: Generated Viper text for ifInPostcondition:
+method ifInPostcondition(flag: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(flag), boolType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    intFromRef((boolFromRef(flag) ? intToRef(1) : intToRef(0)))
+{
+  if (boolFromRef(flag)) {
+    v_ret_0 := intToRef(1)
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/conditional_specifications.kt: info: Generated Viper text for whenInPostcondition:
+method whenInPostcondition(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    intFromRef((intFromRef(n) < 0 ?
+      intToRef(-1) :
+      (intFromRef(n) == 0 ? intToRef(0) : intToRef(1))))
+{
+  if (intFromRef(n) < 0) {
+    v_ret_0 := intToRef(-1)
+  } elseif (intFromRef(n) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    v_ret_0 := intToRef(1)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/conditional_specifications.kt: info: Generated Viper text for ifOverOldInPostcondition:
+field x: Ref
+
+method ifOverOldInPostcondition(c: Ref, flag: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(flag), boolType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) ==
+      intFromRef((boolFromRef(flag) ?
+        plusInts(old((unfolding acc(Counter_unique(c), write) in c.x)), intToRef(1)) :
+        old((unfolding acc(Counter_unique(c), write) in c.x)))))
+{
+  if (boolFromRef(flag)) {
+    var anon: Ref
+    unfold acc(Counter_unique(c), write)
+    anon := c.x
+    c.x := plusInts(anon, intToRef(1))
+    fold acc(Counter_unique(c), write)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/conditional_specifications.kt: info: Generated Viper text for oldOfIfInPostcondition:
+field x: Ref
+
+method oldOfIfInPostcondition(c: Ref, flag: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(flag), boolType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Counter_unique(c), write) in
+      old((unfolding acc(Counter_unique(c), write) in
+        intFromRef((boolFromRef(flag) ? c.x : intToRef(0))))) +
+      1 ==
+      intFromRef((boolFromRef(flag) ? c.x : intToRef(1))))
+{
+  if (boolFromRef(flag)) {
+    var anon: Ref
+    unfold acc(Counter_unique(c), write)
+    anon := c.x
+    c.x := plusInts(anon, intToRef(1))
+    fold acc(Counter_unique(c), write)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/conditional_specifications.kt: info: Generated Viper text for ifInLoopInvariant:
+method ifInLoopInvariant(n: Ref, flag: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(flag), boolType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    intFromRef((boolFromRef(flag) ? n : intToRef(0)))
+{
+  var i: Ref
+  var sum: Ref
+  var anon: Ref
+  i := intToRef(0)
+  sum := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(sum), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(flag), boolType())
+    invariant intFromRef(i) <= intFromRef(n)
+    invariant intFromRef(sum) ==
+      intFromRef((boolFromRef(flag) ? i : intToRef(0)))
+  anon := ltInts(i, n)
+  if (boolFromRef(anon)) {
+    if (boolFromRef(flag)) {
+      sum := plusInts(sum, intToRef(1))
+    }
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(sum), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(flag), boolType())
+  assert intFromRef(i) <= intFromRef(n)
+  assert intFromRef(sum) ==
+    intFromRef((boolFromRef(flag) ? i : intToRef(0)))
+  v_ret_0 := sum
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/conditional_specifications.kt: info: Generated Viper text for clamp:
+function clamp(n: Ref, bound: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(bound), intType())
+  requires intFromRef((intFromRef(bound) > 0 ? bound : intToRef(0))) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef((intFromRef(n) > intFromRef(bound) ? bound : n))
+{
+  (let anon_1_0 ==
+    ((intFromRef(n) > intFromRef(bound) ? bound : null)) in
+    (let anon_2_0 ==
+      ((!(intFromRef(n) > intFromRef(bound)) ? n : null)) in
+      (let anon_0_0 ==
+        ((intFromRef(n) > intFromRef(bound) ? anon_1_0 : anon_2_0)) in
+        anon_0_0)))
+}
+
+/conditional_specifications.kt: info: Generated Viper text for callsClamp:
+function clamp(n: Ref, bound: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(bound), intType())
+  requires intFromRef((intFromRef(bound) > 0 ? bound : intToRef(0))) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef((intFromRef(n) > intFromRef(bound) ? bound : n))
+{
+  (let anon_1_0 ==
+    ((intFromRef(n) > intFromRef(bound) ? bound : null)) in
+    (let anon_2_0 ==
+      ((!(intFromRef(n) > intFromRef(bound)) ? n : null)) in
+      (let anon_0_0 ==
+        ((intFromRef(n) > intFromRef(bound) ? anon_1_0 : anon_2_0)) in
+        anon_0_0)))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method callsClamp(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(clamp(n, intToRef(5))) <= 5
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/conditional_specifications.kt: info: Generated Viper text for nullableOperatorsInPostcondition:
+function g_next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Link())
+  ensures isSubtype(typeOf(result), nullable(Link()))
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Link())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method nullableOperatorsInPostcondition(l: Ref, fallback: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), Link())
+  requires isSubtype(typeOf(fallback), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures v_ret_0 ==
+    ((g_next(l) != nullValue() ? n(g_next(l)) : nullValue()) != nullValue() ?
+      (g_next(l) != nullValue() ? n(g_next(l)) : nullValue()) :
+      fallback)
+{
+  var l0_next: Ref
+  l0_next := g_next(l)
+  if (!(l0_next == nullValue())) {
+    v_ret_0 := n(l0_next)
+  } else {
+    v_ret_0 := fallback}
+  goto lbl_ret_0
+  label lbl_ret_0
+}

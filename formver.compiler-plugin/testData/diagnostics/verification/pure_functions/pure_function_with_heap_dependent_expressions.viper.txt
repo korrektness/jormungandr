@@ -21,11 +21,11 @@ function getSafeNextValue(node: Ref): Ref
   requires isSubtype(typeOf(node), Node())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_1_0 ==
+  (let anon_0_0 ==
     ((next(node) != nullValue() ? value(next(node)) : nullValue())) in
-    (let anon_0_0 ==
-      ((anon_1_0 != nullValue() ? anon_1_0 : intToRef(-1))) in
-      anon_0_0))
+    (let anon_1_0 ==
+      ((anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1))) in
+      anon_1_0))
 }
 
 function next(this: Ref): Ref
@@ -43,13 +43,13 @@ function getSafeNextNextValue(node: Ref): Ref
   requires isSubtype(typeOf(node), Node())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_2_0 ==
+  (let anon_1_0 ==
     ((next(node) != nullValue() ? next(next(node)) : nullValue())) in
-    (let anon_1_0 ==
-      ((anon_2_0 != nullValue() ? value(anon_2_0) : nullValue())) in
-      (let anon_0_0 ==
-        ((anon_1_0 != nullValue() ? anon_1_0 : intToRef(0))) in
-        anon_0_0)))
+    (let anon_0_0 ==
+      ((anon_1_0 != nullValue() ? value(anon_1_0) : nullValue())) in
+      (let anon_2_0 ==
+        ((anon_0_0 != nullValue() ? anon_0_0 : intToRef(0))) in
+        anon_2_0)))
 }
 
 function next(this: Ref): Ref
@@ -268,11 +268,11 @@ function useIdentityFunction(node: Ref): Ref
 {
   (let sameNode_0 ==
     (id(node)) in
-    (let anon_1_0 ==
+    (let anon_0_0 ==
       ((sameNode_0 != nullValue() ? value(sameNode_0) : nullValue())) in
-      (let anon_0_0 ==
-        ((anon_1_0 != nullValue() ? anon_1_0 : intToRef(0))) in
-        anon_0_0)))
+      (let anon_1_0 ==
+        ((anon_0_0 != nullValue() ? anon_0_0 : intToRef(0))) in
+        anon_1_0)))
 }
 
 function value(this: Ref): Ref

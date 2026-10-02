@@ -76,6 +76,23 @@ data class PureExpLinearizer(
         throw PureExpLinearizerMisuseException("addBranch")
     }
 
+    override fun addBlock(statements: List<Linearizable>, last: Linearizable, type: TypeEmbedding): Exp {
+        statements.forEach { it.toViperUnusedResult(this) }
+        return last.toViper(this)
+    }
+
+    override fun addConditional(
+        condition: Linearizable,
+        thenBranch: Linearizable,
+        elseBranch: Linearizable,
+        type: TypeEmbedding,
+    ): Exp = Exp.TernaryExp(
+        condition.toViperBuiltinType(this),
+        thenBranch.toViper(this),
+        elseBranch.toViper(this),
+        source.asPosition,
+    )
+
     override fun addFieldAccessStoringIn(
         receiver: Linearizable,
         receiverType: TypeEmbedding,
