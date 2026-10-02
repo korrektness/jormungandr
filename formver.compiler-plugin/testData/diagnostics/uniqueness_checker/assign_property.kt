@@ -41,9 +41,9 @@ fun `assign shared to unique subproperty`(x: @Unique B, v: A): Unit {
     x.y = <!UNIQUENESS_MISMATCH!>v<!>
 }
 
-fun `assign borrowed to unique subproperty`(x: @Unique B, v: @Borrowed A): Unit {
+fun `assign borrowed to unique subproperty`(x: @Unique B, v: @Borrowed A): Unit <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     x.y = <!LOCALITY_MISMATCH, UNIQUENESS_MISMATCH!>v<!>
-}
+}<!>
 
 fun `assign unique to unique subproperty`(x: @Unique B, v: @Unique A): Unit {
     x.y = v
@@ -51,11 +51,11 @@ fun `assign unique to unique subproperty`(x: @Unique B, v: @Unique A): Unit {
     consume(x)
 }
 
-fun `assign unique-borrowed to unique subproperty`(x: @Unique B, v: @Unique @Borrowed A): Unit {
+fun `assign unique-borrowed to unique subproperty`(x: @Unique B, v: @Unique @Borrowed A): Unit <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     x.y = <!LOCALITY_MISMATCH!>v<!>
 
     consume(x)
-}
+}<!>
 
 // Property reads through if-expression initializers
 

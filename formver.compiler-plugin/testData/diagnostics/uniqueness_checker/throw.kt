@@ -19,7 +19,7 @@ fun `throw shared`(a: Throwable) {
 }
 
 fun `throw borrowed`(a: @Borrowed Throwable) {
-    throw <!LOCALITY_MISMATCH!>a<!>
+    <!EXIT_UNIQUENESS_INCONSISTENCY!>throw <!LOCALITY_MISMATCH!>a<!><!>
 }
 
 fun `throw unique`(a: @Unique Throwable) {
@@ -27,7 +27,7 @@ fun `throw unique`(a: @Unique Throwable) {
 }
 
 fun `throw unique-borrowed`(a: @Unique @Borrowed Throwable) {
-    throw <!LOCALITY_MISMATCH!>a<!>
+    <!EXIT_UNIQUENESS_INCONSISTENCY!>throw <!LOCALITY_MISMATCH!>a<!><!>
 }
 
 // Throwing subproperties

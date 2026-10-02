@@ -95,3 +95,20 @@ fun `consume then continue`(a: @Unique A) {
         continue
     }
 }
+
+class L(var next: @Unique L?)
+
+fun `cursor loop over owned list`(head: @Unique L?) {
+    var p: @Unique L? = head
+    while (p != null) {
+        p = p.next
+    }
+}
+
+fun `cursor loop consumes the head`(head: @Unique L?): @Unique L? {
+    var p: @Unique L? = head
+    while (p != null) {
+        p = p.next
+    }
+    return <!INVALID_MOVED_ACCESS!>head<!>
+}

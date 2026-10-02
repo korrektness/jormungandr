@@ -54,17 +54,17 @@ fun `share shared`(y: A) {
     share(y)
 }
 
-fun `share borrowed`(y: @Borrowed A) {
+fun `share borrowed`(y: @Borrowed A) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     share(<!LOCALITY_MISMATCH!>y<!>)
-}
+}<!>
 
 fun `share unique`(y: @Unique A) {
     share(y)
 }
 
-fun `share unique-borrowed`(y: @Borrowed @Unique A) {
+fun `share unique-borrowed`(y: @Borrowed @Unique A) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     share(<!LOCALITY_MISMATCH!>y<!>)
-}
+}<!>
 
 // Borrowing locals
 
@@ -104,17 +104,17 @@ fun `consume shared`(a: A) {
     consume(<!UNIQUENESS_MISMATCH!>a<!>)
 }
 
-fun `consume borrowed`(a: @Borrowed A) {
+fun `consume borrowed`(a: @Borrowed A) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     consume(<!LOCALITY_MISMATCH, UNIQUENESS_MISMATCH!>a<!>)
-}
+}<!>
 
 fun `consume unique`(a: @Unique A) {
     consume(a)
 }
 
-fun `consume unique-borrowed`(a: @Unique @Borrowed A) {
+fun `consume unique-borrowed`(a: @Unique @Borrowed A) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     consume(<!LOCALITY_MISMATCH!>a<!>)
-}
+}<!>
 
 fun `consume unique null`() {
     consume(null)
@@ -127,10 +127,10 @@ fun `consume shared after borrowing it`(a: A) {
     consume(<!UNIQUENESS_MISMATCH!>a<!>)
 }
 
-fun `consume borrowed after borrowing it`(a: @Borrowed A) {
+fun `consume borrowed after borrowing it`(a: @Borrowed A) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     borrow(a)
     consume(<!LOCALITY_MISMATCH, UNIQUENESS_MISMATCH!>a<!>)
-}
+}<!>
 
 fun `consume after borrowing unique`(a: @Unique A) {
     borrow(a)
@@ -142,15 +142,15 @@ fun `consume after borrowing unique as unique`(a: @Unique A) {
     consume(a)
 }
 
-fun `consume after borrowing unique-borrowed`(a: @Unique @Borrowed A) {
+fun `consume after borrowing unique-borrowed`(a: @Unique @Borrowed A) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     borrow(a)
     consume(<!LOCALITY_MISMATCH!>a<!>)
-}
+}<!>
 
-fun `consume after after borrowing unique-borrowed as unique`(a: @Unique @Borrowed A) {
+fun `consume after after borrowing unique-borrowed as unique`(a: @Unique @Borrowed A) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     borrowUnique(a)
     consume(<!LOCALITY_MISMATCH!>a<!>)
-}
+}<!>
 
 // Consuming locals after type checks and casts
 

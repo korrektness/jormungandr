@@ -32,11 +32,9 @@ val FirBasedSymbol<*>.locality: Locality
     }
 
 /**
- * Checks that local roots do not contain moved paths when a function exits.
+ * Checks that local roots, and the paths below them, are not moved when a function exits.
  *
- * The parameters of a `@Pure` function are borrowed from its caller, so they are checked as local roots too, and so is
- * whether the parameter itself has moved. A local root itself cannot move, since locality checking rejects every use
- * that would move it.
+ * The parameters of a `@Pure` function are borrowed from its caller, so they are checked as local roots too.
  *
  * TODO: Do not consider locally caught `throw`s as exit operations.
  */
@@ -75,15 +73,9 @@ object FunctionExitUniquenessConsistencyChecker : FirFunctionChecker( MppChecker
             val rootUniquenessStates = outputUniquenessState.children
 
             for ((symbol, uniquenessState) in rootUniquenessStates) {
-                val inconsistentPaths = when {
-                    symbol in pureParameters ->
-                        uniquenessState.enumerateInconsistentPaths(includeRoot = true)
-                    symbol.locality == Locality.Local ->
-                        uniquenessState.enumerateInconsistentPaths()
-                    else -> continue
-                }
+                if (symbol !in pureParameters && symbol.locality != Locality.Local) continue
 
-                for (inconsistentPath in inconsistentPaths) {
+                for (inconsistentPath in uniquenessState.enumerateInconsistentPaths(includeRoot = true)) {
                     reporter.reportOn(
                         node.fir.source ?: declaration.source,
                         EXIT_UNIQUENESS_INCONSISTENCY,

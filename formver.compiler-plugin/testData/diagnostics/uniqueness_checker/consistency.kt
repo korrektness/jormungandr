@@ -152,10 +152,10 @@ fun `assign unique local field to unique and then reassign it to unique`(x: @Bor
     x.x = A()
 }
 
-fun `move borrowed root then escape original`(x: @Borrowed @Unique A) {
+fun `move borrowed root then escape original`(x: @Borrowed @Unique A) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     var z: @Borrowed @Unique A = x
     consume(<!INVALID_MOVED_ACCESS, LOCALITY_MISMATCH!>x<!>)
-}
+}<!>
 
 fun `assign shared local field to shared`(x: @Borrowed A, y: @Unique Any) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     var z = x.x;
@@ -165,3 +165,11 @@ fun `assign shared local field to shared and then reassign it to unique`(x: @Bor
     var z = x.x;
     x.x = A()
 }
+
+class M(var x: @Unique Any) {
+    fun touch() {}
+}
+
+fun `member call consumes borrowed root`(m: @Unique @Borrowed M) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
+    m.touch()
+}<!>

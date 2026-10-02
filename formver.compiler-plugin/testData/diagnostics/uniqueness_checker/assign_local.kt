@@ -24,13 +24,13 @@ fun `assign shared`(x: Any) {
     consume(<!UNIQUENESS_MISMATCH!>y<!>)
 }
 
-fun `assign borrowed`(x: @Borrowed Any) {
+fun `assign borrowed`(x: @Borrowed Any) <!EXIT_UNIQUENESS_INCONSISTENCY, EXIT_UNIQUENESS_INCONSISTENCY!>{
     var y: @Borrowed Any
 
     y = x
 
     consume(<!LOCALITY_MISMATCH, UNIQUENESS_MISMATCH!>y<!>)
-}
+}<!>
 
 fun `assign unique`(x: @Unique Any) {
     var y: @Unique Any
@@ -40,13 +40,13 @@ fun `assign unique`(x: @Unique Any) {
     consume(y)
 }
 
-fun `assign unique-borrowed`(x: @Unique @Borrowed Any) {
+fun `assign unique-borrowed`(x: @Unique @Borrowed Any) <!EXIT_UNIQUENESS_INCONSISTENCY, EXIT_UNIQUENESS_INCONSISTENCY!>{
     var y: @Unique @Borrowed Any
 
     y = x
 
     consume(<!LOCALITY_MISMATCH!>y<!>)
-}
+}<!>
 
 // Var declarations
 
@@ -56,11 +56,11 @@ fun `assign shared in declaration`(x: Any) {
     consume(<!UNIQUENESS_MISMATCH!>y<!>)
 }
 
-fun `assign borrowed in declaration`(x: @Borrowed Any) {
+fun `assign borrowed in declaration`(x: @Borrowed Any) <!EXIT_UNIQUENESS_INCONSISTENCY, EXIT_UNIQUENESS_INCONSISTENCY!>{
     var y: @Borrowed Any = x
 
     consume(<!LOCALITY_MISMATCH, UNIQUENESS_MISMATCH!>y<!>)
-}
+}<!>
 
 fun `assign unique in unique declaration`(x: @Unique Any) {
     var y: @Unique Any = x
@@ -74,17 +74,17 @@ fun `assign unique in shared declaration`(x: @Unique Any) {
     consume(y)
 }
 
-fun `assign unique-borrowed in borrowed declaration`(x: @Unique @Borrowed Any) {
+fun `assign unique-borrowed in borrowed declaration`(x: @Unique @Borrowed Any) <!EXIT_UNIQUENESS_INCONSISTENCY, EXIT_UNIQUENESS_INCONSISTENCY!>{
     var y: @Borrowed Any = x
 
     consume(<!LOCALITY_MISMATCH, UNIQUENESS_MISMATCH!>y<!>)
-}
+}<!>
 
-fun `assign unique-borrowed in unique-borrowed declaration`(x: @Unique @Borrowed Any) {
+fun `assign unique-borrowed in unique-borrowed declaration`(x: @Unique @Borrowed Any) <!EXIT_UNIQUENESS_INCONSISTENCY, EXIT_UNIQUENESS_INCONSISTENCY!>{
     var y: @Unique @Borrowed Any = x
 
     consume(<!LOCALITY_MISMATCH!>y<!>)
-}
+}<!>
 
 // Assignment chaining
 
@@ -98,7 +98,7 @@ fun `chain shared assignments`(x: Any) {
     consume(<!UNIQUENESS_MISMATCH!>z<!>)
 }
 
-fun `chain borrowed assignments`(x: @Borrowed Any) {
+fun `chain borrowed assignments`(x: @Borrowed Any) <!EXIT_UNIQUENESS_INCONSISTENCY, EXIT_UNIQUENESS_INCONSISTENCY, EXIT_UNIQUENESS_INCONSISTENCY!>{
     var y: @Borrowed Any
     var z: @Borrowed Any
 
@@ -106,7 +106,7 @@ fun `chain borrowed assignments`(x: @Borrowed Any) {
     z = y
 
     consume(<!LOCALITY_MISMATCH, UNIQUENESS_MISMATCH!>z<!>)
-}
+}<!>
 
 fun `chain unique assignments`(x: @Unique Any) {
     var y: @Unique Any
@@ -118,7 +118,7 @@ fun `chain unique assignments`(x: @Unique Any) {
     consume(z)
 }
 
-fun `chain unique-borrowed assignments`(x: @Unique @Borrowed Any) {
+fun `chain unique-borrowed assignments`(x: @Unique @Borrowed Any) <!EXIT_UNIQUENESS_INCONSISTENCY, EXIT_UNIQUENESS_INCONSISTENCY, EXIT_UNIQUENESS_INCONSISTENCY!>{
     var y: @Unique @Borrowed Any
     var z: @Unique @Borrowed Any
 
@@ -126,7 +126,7 @@ fun `chain unique-borrowed assignments`(x: @Unique @Borrowed Any) {
     z = y
 
     consume(<!LOCALITY_MISMATCH!>z<!>)
-}
+}<!>
 
 // Conditional assignments
 
@@ -168,4 +168,18 @@ fun `assign local in if`(x: @Unique Any) {
     } else {
         x
     }
+}
+
+class L(var next: @Unique L?)
+
+fun `advance to own field keeps new field`(x: @Unique L?): @Unique L? {
+    var p: @Unique L? = x
+    if (p != null) {
+        p = p.next
+    }
+    if (p != null) {
+        val q: @Unique L? = p.next
+        p.next = q
+    }
+    return p
 }

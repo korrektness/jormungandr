@@ -52,7 +52,7 @@ object UniquenessErrorMessages : BaseDiagnosticRendererFactory() {
                 )
                 map.put(
                     UniquenessErrors.EXIT_UNIQUENESS_INCONSISTENCY,
-                    "Borrowed local value has moved field at exit: ''{0}''.",
+                    "Borrowed local path is moved at exit: ''{0}''.",
                     PathRenderer
                 )
                 map.put(

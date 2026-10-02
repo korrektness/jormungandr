@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 <!PURITY_VIOLATION, PURITY_VIOLATION!>@AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
+fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
     postconditions<Unit> <!LOCALITY_MISMATCH!>{
         forAll<Int> <!LOCALITY_MISMATCH!>{ i ->
             forAll<Int> <!LOCALITY_MISMATCH!>{ j ->
@@ -41,4 +41,4 @@ fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
         <!INVALID_MOVED_ACCESS!>arr<!>.set(j + 1, key)
         i++
     }
-}<!>
+}<!><!>

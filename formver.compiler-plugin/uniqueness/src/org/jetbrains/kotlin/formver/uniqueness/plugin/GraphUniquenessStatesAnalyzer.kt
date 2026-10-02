@@ -115,24 +115,25 @@ class GraphUniquenessStatesAnalyzer(
 
         with(context) {
             val rightAccessState = initializer?.resolveAccessState() ?: EmptyAccessState
+            val isWhenSubject = leftSymbol.source?.kind == KtFakeSourceElementKind.WhenGeneratedSubject
+            val movesInitializer = !isWhenSubject && declaration !in readOnlyContext
 
             return data.transformValues { data ->
                 val uniquenessState = data.getOrInitialize()
                 var newUniquenessState = uniquenessState
 
+                // The source moves before the target is written, so that a source below the target (`p.next`) is
+                // resolved against the old target.
+                if (movesInitializer) {
+                    newUniquenessState = rightAccessState.move(newUniquenessState)
+                }
+
                 if (initializer != null) {
-                    val rightAccessState = initializer.resolveAccessState()
                     val rightUniquenessState = rightAccessState.projectTerminalUniquenessState(uniquenessState)
                     newUniquenessState = newUniquenessState.insert(listOf(leftSymbol), rightUniquenessState)
                 }
 
                 newUniquenessState = leftAccessState.initialize(newUniquenessState)
-
-                val isWhenSubject = leftSymbol.source?.kind == KtFakeSourceElementKind.WhenGeneratedSubject
-
-                if (!isWhenSubject && declaration !in readOnlyContext) {
-                    newUniquenessState = rightAccessState.move(newUniquenessState)
-                }
 
                 data.put(Unit, newUniquenessState)
             }
@@ -151,18 +152,20 @@ class GraphUniquenessStatesAnalyzer(
             val leftAccessState = leftValue.resolveAccessState()
 
             return data.transformValues { data ->
-                var newUniquenessState = data.getOrInitialize()
+                val uniquenessState = data.getOrInitialize()
                 val leftAccessPaths = leftAccessState.enumeratePaths()
                 val rightAccessState = rightValue.resolveAccessState()
 
+                // The source moves before the target is written; see `visitVariableDeclarationNode`.
+                var newUniquenessState = rightAccessState.move(uniquenessState)
+
                 if (leftAccessPaths.count() == 1) {
                     val leftPath = leftAccessPaths.first()
-                    val rightUniquenessState = rightAccessState.projectTerminalUniquenessState(newUniquenessState)
+                    val rightUniquenessState = rightAccessState.projectTerminalUniquenessState(uniquenessState)
                     newUniquenessState = newUniquenessState.insert(leftPath, rightUniquenessState)
                 }
 
                 newUniquenessState = leftAccessState.initialize(newUniquenessState)
-                newUniquenessState = rightAccessState.move(newUniquenessState)
 
                 data.put(Unit, newUniquenessState)
             }
