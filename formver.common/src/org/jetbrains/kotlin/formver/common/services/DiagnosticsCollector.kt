@@ -113,6 +113,13 @@ abstract class DiagnosticsCollector(val testServices: TestServices) : TestServic
             return
         }
 
+        // assertEqualsToFile creates a missing golden file, so a check run would record
+        // these diagnostics and the next run would pass.
+        if (!updatingTestData && !expectedFile.exists()) {
+            testServices.assertions.assertEquals("", expectedOutput) {
+                "${expectedFile.name} does not exist, but the run produced diagnostics"
+            }
+        }
         testServices.assertions.assertEqualsToFile(expectedFile, expectedOutput)
     }
 }
