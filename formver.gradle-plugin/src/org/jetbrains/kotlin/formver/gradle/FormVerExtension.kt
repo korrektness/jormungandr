@@ -9,7 +9,6 @@ package org.jetbrains.kotlin.formver.gradle
 open class FormVerExtension {
     internal var myLogLevel: String? = null
     internal var myErrorStyle: String? = null
-    internal var myUnsupportedFeatureBehaviour: String? = null
     internal var myConversionTargetsSelection: String? = null
     internal var myVerificationTargetsSelection: String? = null
     internal var myDumpUniquenessCFG: Boolean? = null
@@ -20,10 +19,6 @@ open class FormVerExtension {
 
     open fun errorStyle(style: String) {
         myErrorStyle = style
-    }
-
-    open fun unsupportedFeatureBehaviour(behaviour: String) {
-        myUnsupportedFeatureBehaviour = behaviour
     }
 
     open fun conversionTargetsSelection(selection: String) {

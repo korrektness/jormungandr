@@ -22,7 +22,6 @@ class FormVerModelBuilder : ToolingModelBuilder {
             project.name,
             extension.myLogLevel,
             extension.myErrorStyle,
-            extension.myUnsupportedFeatureBehaviour,
             extension.myConversionTargetsSelection,
             extension.myVerificationTargetsSelection,
             extension.myDumpUniquenessCFG,

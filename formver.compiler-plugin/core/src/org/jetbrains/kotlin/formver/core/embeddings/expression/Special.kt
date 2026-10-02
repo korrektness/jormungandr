@@ -31,6 +31,16 @@ data object Unreachable : ExpEmbedding {
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitUnreachable(this)
 }
 
+/**
+ * Stands in for a statement that could not be converted because it is unsupported.
+ * The unsupported construct is reported, which stops the function before linearization.
+ */
+data object UnsupportedPlaceholder : ExpEmbedding {
+    override val type: TypeEmbedding = buildType { nothing() }
+
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitUnsupportedPlaceholder(this)
+}
+
 data class Assert(val exp: ExpEmbedding) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 

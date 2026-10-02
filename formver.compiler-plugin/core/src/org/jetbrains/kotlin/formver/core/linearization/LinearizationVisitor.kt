@@ -9,6 +9,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.StringBuilderEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.CharTypeEmbedding
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.formver.common.SnaktInternalException
+import org.jetbrains.kotlin.formver.common.attributingFailuresTo
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
@@ -255,6 +257,9 @@ data class LinearizationVisitor(
             ctx.addStatement { Stmt.Inhale(Exp.BoolLit(false, ctx.source.asPosition), ctx.source.asPosition) }
         }
     }
+
+    override fun visitUnsupportedPlaceholder(e: UnsupportedPlaceholder): Linearizable =
+        throw SnaktInternalException(source, "A function with an unsupported construct reached linearization.")
 
     override fun visitAssert(e: Assert): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
@@ -713,24 +718,26 @@ data class LinearizationVisitor(
     // region Meta / Sharing
 
     override fun visitWithPosition(e: WithPosition): Linearizable {
-        val innerLinearizable = e.inner.accept(copy(source = e.source))
+        val innerLinearizable = attributingFailuresTo(e.source) { e.inner.accept(copy(source = e.source)) }
+        fun <R> LinearizationContext.positioned(action: LinearizationContext.() -> R): R =
+            attributingFailuresTo(e.source) { withPosition(e.source, action) }
         return object : Linearizable {
             override fun toViper(ctx: LinearizationContext): Exp =
-                ctx.withPosition(e.source) { innerLinearizable.toViper(this) }
+                ctx.positioned { innerLinearizable.toViper(this) }
 
             override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
-                ctx.withPosition(e.source) { innerLinearizable.toViperStoringIn(result, this) }
+                ctx.positioned { innerLinearizable.toViperStoringIn(result, this) }
             }
 
             override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) {
-                ctx.withPosition(e.source) { innerLinearizable.toViperMaybeStoringIn(result, this) }
+                ctx.positioned { innerLinearizable.toViperMaybeStoringIn(result, this) }
             }
 
             override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
-                ctx.withPosition(e.source) { innerLinearizable.toViperBuiltinType(this) }
+                ctx.positioned { innerLinearizable.toViperBuiltinType(this) }
 
             override fun toViperUnusedResult(ctx: LinearizationContext) {
-                ctx.withPosition(e.source) { innerLinearizable.toViperUnusedResult(this) }
+                ctx.positioned { innerLinearizable.toViperUnusedResult(this) }
             }
         }
     }

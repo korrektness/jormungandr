@@ -73,8 +73,8 @@ fun <!VIPER_TEXT!>rethrowFromCatch<!>(): Int {
 }
 
 @AlwaysVerify
-fun throwInsideTryWithFinally() {
-    <!INTERNAL_ERROR!>try {
+fun <!VERIFICATION_SKIPPED!>throwInsideTryWithFinally<!>() {
+    <!UNSUPPORTED_FEATURE!>try {
         throw IllegalArgumentException()
     } finally {
         verify(false)

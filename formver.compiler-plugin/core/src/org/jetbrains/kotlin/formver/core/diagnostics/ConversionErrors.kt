@@ -27,7 +27,10 @@ object ConversionErrors : KtDiagnosticsContainer() {
      * A write through a `Shared` local initialized from a constructor call, which conversion drops.
      */
     val UNTRACKED_WRITE by warning0<PsiElement>()
-    val MINOR_INTERNAL_ERROR by error1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
+    /**
+     * A construct outside the fragment of Kotlin that SnaKt translates.
+     */
+    val UNSUPPORTED_FEATURE by error1<PsiElement, String>()
 
     /**
      * Per-function summary fired by `ProgramConverter.validateAll` whenever a registered declaration's

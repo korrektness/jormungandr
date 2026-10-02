@@ -15,7 +15,6 @@ data class FormVerImpl(
     override val name: String,
     override val logLevel: String?,
     override val errorStyle: String?,
-    override val unsupportedFeatureBehaviour: String?,
     override val conversionTargetsSelection: String?,
     override val verificationTargetsSelection: String?,
     override val dumpUniquenessCFG: Boolean?,
@@ -23,6 +22,6 @@ data class FormVerImpl(
     override val modelVersion = serialVersionUID
 
     companion object {
-        private const val serialVersionUID = 3L
+        private const val serialVersionUID = 4L
     }
 }

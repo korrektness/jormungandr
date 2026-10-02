@@ -13,6 +13,9 @@ internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbed
 
     /* ————— pure nodes ————— */
     override fun visitUnitLit(e: UnitLit) = true
+
+    /** Pure so that a pure body or a specification with an unsupported construct reports only that construct. */
+    override fun visitUnsupportedPlaceholder(e: UnsupportedPlaceholder) = true
     override fun visitFunctionCall(e: FunctionCall) = true
     override fun visitDeclare(e: Declare): Boolean {
         val pure = e.initializer != null

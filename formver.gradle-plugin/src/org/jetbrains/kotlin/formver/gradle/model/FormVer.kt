@@ -36,13 +36,6 @@ interface FormVer {
     val errorStyle: String?
 
     /**
-     * Returns the desired behaviour when encountering unsupported Kotlin features.
-     *
-     * @return the behaviour for unsupported features
-     */
-    val unsupportedFeatureBehaviour: String?
-
-    /**
      * Returns the choice of targets to convert to Viper.
      *
      * @return the choice of targets

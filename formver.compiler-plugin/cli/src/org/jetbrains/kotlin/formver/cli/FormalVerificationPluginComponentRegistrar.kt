@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.cli
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.messageCollector
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.locality.plugin.LocalityExtensionRegistrar
@@ -24,10 +25,6 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         val logLevel =
             configuration.get(FormalVerificationConfigurationKeys.LOG_LEVEL, LogLevel.Companion.defaultLogLevel())
-        val behaviour = configuration.get(
-            FormalVerificationConfigurationKeys.UNSUPPORTED_FEATURE_BEHAVIOUR,
-            UnsupportedFeatureBehaviour.Companion.defaultBehaviour()
-        )
         val errorStyle = configuration.get(
             FormalVerificationConfigurationKeys.ERROR_STYLE,
             ErrorStyle.Companion.defaultBehaviour()
@@ -44,8 +41,8 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
         val dumpUniquenessCFG = configuration.get(FormalVerificationConfigurationKeys.DUMP_UNIQUENESS_CFG, false)
                 && conversionSelection != TargetsSelection.NO_TARGETS
         val config = PluginConfiguration(
-            logLevel, errorStyle, behaviour, conversionSelection, verificationSelection,
-            dumpUniquenessCFG
+            logLevel, errorStyle, conversionSelection, verificationSelection,
+            dumpUniquenessCFG, configuration.messageCollector,
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
 

@@ -48,10 +48,6 @@ class FormVerGradleSubplugin
                 options += SubpluginOption(FormalVerificationPluginNames.ERROR_STYLE_NAME, it)
             }
 
-            formVerExtension.myUnsupportedFeatureBehaviour?.let {
-                options += SubpluginOption(FormalVerificationPluginNames.UNSUPPORTED_FEATURE_BEHAVIOUR_OPTION_NAME, it)
-            }
-
             formVerExtension.myConversionTargetsSelection?.let {
                 options += SubpluginOption(FormalVerificationPluginNames.CONVERSION_TARGETS_SELECTION_OPTION_NAME, it)
             }

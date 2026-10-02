@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.expressions.FirCatch
 import org.jetbrains.kotlin.fir.expressions.FirStatement
+import org.jetbrains.kotlin.formver.common.attributingFailuresTo
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
@@ -34,7 +35,7 @@ data class StmtConverter(
     override val activeCatchLabels: List<LabelEmbedding> = listOf(),
 ) : StmtConversionContext, MethodConversionContext by methodCtx {
     override fun convert(stmt: FirStatement): ExpEmbedding =
-        stmt.accept(StmtConversionVisitor, this).withPosition(stmt.source)
+        attributingFailuresTo(stmt.source) { stmt.accept(StmtConversionVisitor, this) }.withPosition(stmt.source)
 
     override fun <R> withNewScope(action: StmtConversionContext.() -> R): R = withNewScopeImpl { action() }
     override fun <R> withNoScope(action: StmtConversionContext.() -> R): R =

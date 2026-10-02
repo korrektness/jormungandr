@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.plugin.services
 
+import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
+import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar.ExtensionStorage
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
@@ -65,10 +67,11 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
         val config = PluginConfiguration(
             logLevel,
             errorStyle,
-            UnsupportedFeatureBehaviour.THROW_EXCEPTION,
             conversionSelection = conversionSelection,
             verificationSelection = verificationSelection,
             dumpUniquenessCFG = dumpUniquenessCFG,
+            // Stack traces go to the test's stderr, outside the goldens.
+            messageCollector = PrintingMessageCollector(System.err, MessageRenderer.PLAIN_RELATIVE_PATHS, true),
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
         // Locality must run before uniqueness.

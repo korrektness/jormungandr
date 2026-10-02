@@ -116,6 +116,5 @@ Each argument to `triggers()` becomes a separate trigger. This differs from Vipe
 formver {
     errorStyle("user_friendly")  // or "original_viper", "both"
     logLevel("only_warnings")    // or "short_viper_dump", "full_viper_dump"
-    unsupportedFeatureBehaviour("throw_exception")  // or "assume_unreachable"
 }
 ```

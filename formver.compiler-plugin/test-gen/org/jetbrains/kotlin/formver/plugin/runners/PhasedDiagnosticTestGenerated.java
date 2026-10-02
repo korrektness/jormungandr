@@ -489,6 +489,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("internal_error_position.kt")
+    public void testInternal_error_position() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/internal_error_position.kt");
+    }
+
+    @Test
     @TestMetadata("loop_predicate_invariant.kt")
     public void testLoop_predicate_invariant() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/loop_predicate_invariant.kt");
@@ -546,6 +552,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("unit_return_type.kt")
     public void testUnit_return_type() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/unit_return_type.kt");
+    }
+
+    @Test
+    @TestMetadata("unsupported_constructs.kt")
+    public void testUnsupported_constructs() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/unsupported_constructs.kt");
     }
 
     @Nested

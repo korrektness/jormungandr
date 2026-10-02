@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
-import org.jetbrains.kotlin.formver.common.UnsupportedFeatureBehaviour
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.*
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
@@ -69,9 +69,6 @@ class ProgramConverter(
     var hadConversionError: Boolean = false
         private set
 
-    /** Source attached to source-less diagnostics (e.g. unimplemented features raised deep in conversion). */
-    private var currentDeclarationSource: KtSourceElement? = null
-
     private fun emit(source: KtSourceElement?, factory: KtDiagnosticFactory1<String>, msg: String) {
         context(checkerContext) {
             reporter.reportOn(source, factory, msg)
@@ -91,8 +88,8 @@ class ProgramConverter(
         }
     }
 
-    override fun reportMinorInternalError(msg: String) =
-        emit(currentDeclarationSource, ConversionErrors.MINOR_INTERNAL_ERROR, msg)
+    override fun reportUnsupportedFeature(source: KtSourceElement?, msg: String) =
+        emit(source, ConversionErrors.UNSUPPORTED_FEATURE, msg)
 
     private fun reportVerificationSkipped(source: KtSourceElement?, msg: String) {
         context(checkerContext) {
@@ -251,7 +248,7 @@ class ProgramConverter(
             } catch (e: FoldStateException) {
                 hadOwnershipError = true
                 context(checkerContext) {
-                    reporter.reportOn(e.source ?: source, ConversionErrors.UNSUPPORTED_OWNERSHIP, e.message!!)
+                    reporter.reportOn(e.source ?: source, ConversionErrors.UNSUPPORTED_OWNERSHIP, e.message)
                 }
                 reportVerificationSkipped(
                     source,
@@ -789,14 +786,8 @@ class ProgramConverter(
         returnsUnique = symbol.returnsUnique()
     }
 
-    private fun TypeBuilder.unimplementedTypeEmbedding(type: ConeKotlinType): PretypeBuilder = when (config.behaviour) {
-        UnsupportedFeatureBehaviour.THROW_EXCEPTION -> throw NotImplementedError("The embedding for type $type is not yet implemented.")
-
-        UnsupportedFeatureBehaviour.ASSUME_UNREACHABLE -> {
-            reportMinorInternalError("Requested type $type, for which we do not yet have an embedding.")
-            unit()
-        }
-    }
+    private fun unimplementedTypeEmbedding(type: ConeKotlinType): Nothing =
+        throw UnsupportedFeatureException(null, "type `$type`")
 
     // endregion
 }

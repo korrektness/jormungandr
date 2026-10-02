@@ -17,8 +17,8 @@ object ConversionErrorMessages : BaseDiagnosticRendererFactory() {
             CommonRenderers.STRING,
         )
         map.put(
-            ConversionErrors.MINOR_INTERNAL_ERROR,
-            "Formal verification non-fatal internal error: {0}",
+            ConversionErrors.UNSUPPORTED_FEATURE,
+            "Unsupported construct: {0}",
             CommonRenderers.STRING,
         )
         map.put(

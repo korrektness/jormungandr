@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.formver.core.embeddings.expression.StringBuilderUpdate
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.formver.common.SnaktException
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
@@ -40,7 +41,7 @@ fun ExpEmbedding.ownedPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaN
  * Raised when the linearized code needs a unique predicate that the fold state does not hold.
  * The converter reports it as a conversion error.
  */
-class FoldStateException(val source: KtSourceElement?, message: String) : Exception(message)
+class FoldStateException(source: KtSourceElement?, message: String) : SnaktException(source, message, null)
 
 /**
  * The [FoldTrie] of the owned paths of a method body, emitting its folds and unfolds as Viper statements.

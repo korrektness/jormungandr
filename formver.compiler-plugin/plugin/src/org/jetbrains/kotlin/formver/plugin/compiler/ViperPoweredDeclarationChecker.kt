@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.plugin.compiler
 
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirSession
@@ -19,8 +20,11 @@ import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.formver.common.LogLevel
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
+import org.jetbrains.kotlin.formver.common.asInternalErrorAt
 import org.jetbrains.kotlin.formver.common.TargetsSelection
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
+import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.print
 import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
 import org.jetbrains.kotlin.formver.core.shouldVerify
@@ -114,12 +118,21 @@ class ViperPoweredDeclarationChecker(private val session: FirSession, private va
                 verifier.use { it.verify(viperProgram, onFailure) }
             }
 
+        } catch (e: UnsupportedFeatureException) {
+            reporter.reportOn(e.source ?: declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, e.message)
         } catch (e: SnaktInternalException) {
-            reporter.reportOn(e.source, PluginErrors.INTERNAL_ERROR, e.message)
+            reportInternalError(e, declaration)
         } catch (e: Exception) {
-            val error = e.message ?: "No message provided"
-            reporter.reportOn(declaration.source, PluginErrors.INTERNAL_ERROR, error)
+            reportInternalError(e.asInternalErrorAt(declaration.source), declaration)
+        } catch (e: NotImplementedError) {
+            reportInternalError(e.asInternalErrorAt(declaration.source), declaration)
         }
+    }
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun reportInternalError(e: SnaktInternalException, declaration: FirSimpleFunction) {
+        reporter.reportOn(e.source ?: declaration.source, PluginErrors.INTERNAL_ERROR, e.message)
+        config.messageCollector.report(CompilerMessageSeverity.LOGGING, e.stackTraceToString())
     }
 
     private fun getProgramForLogging(program: Program): Program? = when (config.logLevel) {

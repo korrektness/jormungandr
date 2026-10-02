@@ -5,13 +5,16 @@
 
 package org.jetbrains.kotlin.formver.common
 
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+
 data class PluginConfiguration(
     val logLevel: LogLevel,
     val errorStyle: ErrorStyle,
-    val behaviour: UnsupportedFeatureBehaviour,
     val conversionSelection: TargetsSelection,
     val verificationSelection: TargetsSelection,
     val dumpUniquenessCFG: Boolean,
+    /** Receives the stack traces of internal errors, which diagnostics do not carry. */
+    val messageCollector: MessageCollector,
 ) {
     init {
         require(conversionSelection >= verificationSelection) {
