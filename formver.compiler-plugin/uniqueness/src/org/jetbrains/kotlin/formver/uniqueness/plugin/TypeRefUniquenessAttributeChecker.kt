@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.fir.declarations.FirReceiverParameter
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.formver.type.plugin.AttributeTargetJudgment
 import org.jetbrains.kotlin.formver.type.plugin.TypeRefAttributeChecker
+import org.jetbrains.kotlin.formver.uniqueness.attribute.UniquenessAttribute
 
 private object UniquenessAttributeTargetJudgment : AttributeTargetJudgment {
     context(context: CheckerContext)

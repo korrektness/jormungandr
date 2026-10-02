@@ -3,7 +3,7 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
-package org.jetbrains.kotlin.formver.uniqueness.plugin
+package org.jetbrains.kotlin.formver.uniqueness.attribute
 
 import org.jetbrains.kotlin.fir.types.ConeAttribute
 import org.jetbrains.kotlin.fir.types.ConeAttributes
@@ -14,9 +14,6 @@ import kotlin.reflect.KClass
  *
  * This attribute encodes only the presence of the uniqueness annotation on a type; it does not store path-sensitive
  * uniqueness state.
- *
- * Symbol-level uniqueness checking is computed separately by the uniqueness analysis pipeline. See [scopeUniqueness]
- * and [parameterUniqueness] for how a type-level attribute is interpreted into a [Uniqueness] value.
  */
 data object UniquenessAttribute : ConeAttribute<UniquenessAttribute>() {
     override fun union(other: UniquenessAttribute?): UniquenessAttribute =
@@ -33,9 +30,6 @@ data object UniquenessAttribute : ConeAttribute<UniquenessAttribute>() {
 
     override val key: KClass<out UniquenessAttribute>
         get() = UniquenessAttribute::class
-
-    val uniqueness: Uniqueness
-        get() = Uniqueness.Unique
 
     override val keepInInferredDeclarationType: Boolean
         get() = true

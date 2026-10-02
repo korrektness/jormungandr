@@ -8,7 +8,7 @@ class Node(val value: Int) {
 }
 
 @Pure
-fun alias(n: @Unique Node): Node = <!EXIT_UNIQUENESS_INCONSISTENCY!>n<!>
+fun alias(n: @Unique Node): Node = <!EXIT_UNIQUENESS_INCONSISTENCY, LOCALITY_MISMATCH!>n<!>
 
 @Pure
 fun aliasNext(n: @Unique Node): Node? = <!EXIT_UNIQUENESS_INCONSISTENCY!>n.next<!>

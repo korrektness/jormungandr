@@ -95,7 +95,7 @@ context(context: CheckerContext)
 fun FirBasedSymbol<*>.isUnique(): Boolean = resolveDeclaredUniqueness() == Uniqueness.Unique
 
 /**
- * Whether [this] parameter or receiver is declared `@Borrowed`, as the locality checker reads it.
+ * Whether [this] parameter or receiver is borrowed, as the locality checker reads it.
  */
 context(context: CheckerContext)
 fun FirBasedSymbol<*>.isBorrowed(): Boolean =

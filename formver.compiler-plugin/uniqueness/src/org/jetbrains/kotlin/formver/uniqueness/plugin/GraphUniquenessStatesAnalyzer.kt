@@ -31,6 +31,8 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableAssignmentNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableDeclarationNode
 import org.jetbrains.kotlin.formver.locality.plugin.Locality
 import org.jetbrains.kotlin.formver.locality.plugin.resolveLocality
+import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
+import org.jetbrains.kotlin.formver.readonly.plugin.isPureCall
 import org.jetbrains.kotlin.formver.type.plugin.CallArgumentTypeFactsMapper
 
 typealias UniquenessStateFlow = ControlFlowInfo<Unit, UniquenessState>

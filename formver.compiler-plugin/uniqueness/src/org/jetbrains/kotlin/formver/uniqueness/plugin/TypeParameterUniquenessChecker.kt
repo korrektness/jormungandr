@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.fir.types.ConeTypeParameterType
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.lowerBoundIfFlexible
+import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_TYPE_PARAMETER_UNIQUENESS
 
 /**

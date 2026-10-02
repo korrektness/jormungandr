@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.formver.locality.plugin.CallArgumentLocalitiesMapper
+import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
 
 /**
  * Session component that caches uniqueness-state flow analysis for control-flow graphs.

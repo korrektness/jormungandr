@@ -33,7 +33,6 @@ val FirBasedSymbol<*>.locality: Locality
 /**
  * Checks that local roots, and the paths below them, are not moved when a function exits.
  *
- * The parameters of a `@Pure` function are borrowed from its caller, so they are checked as local roots too.
  *
  * TODO: Do not consider locally caught `throw`s as exit operations.
  */
@@ -42,13 +41,6 @@ object FunctionExitUniquenessConsistencyChecker : FirFunctionChecker( MppChecker
     override fun check(declaration: FirFunction) {
         val graph = declaration.uniquenessAnalysisGraph ?: return
         val uniquenessStateFlows = graph.resolveUniquenessStateFlows()
-        val pureParameters: Set<FirBasedSymbol<*>> =
-            if (declaration.symbol.isPure(context.session)) {
-                val parameters = listOfNotNull(declaration.receiverParameter) + declaration.valueParameters
-                parameters.mapTo(mutableSetOf()) { it.symbol }
-            } else {
-                emptySet()
-            }
 
         fun CFGNode<*>.isExit(): Boolean =
             when (this) {
@@ -72,7 +64,7 @@ object FunctionExitUniquenessConsistencyChecker : FirFunctionChecker( MppChecker
             val rootUniquenessStates = outputUniquenessState.children
 
             for ((symbol, uniquenessState) in rootUniquenessStates) {
-                if (symbol !in pureParameters && symbol.locality != Locality.Local) continue
+                if (symbol.locality != Locality.Local) continue
 
                 for (inconsistentPath in uniquenessState.enumerateInconsistentPaths(includeRoot = true)) {
                     reporter.reportOn(

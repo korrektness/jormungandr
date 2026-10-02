@@ -8,12 +8,12 @@ class C(
 )
 
 fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>test<!>(c: @Unique @Borrowed C) {
-    preconditions <!LOCALITY_MISMATCH!>{
+    preconditions {
         c.field == 42
-    }<!>
-    postconditions<Unit> <!LOCALITY_MISMATCH!>{
+    }
+    postconditions<Unit> {
         c.field == 43
-    }<!>
+    }
     inc(c)
     verify(c == old(<!LOCALITY_MISMATCH!>c<!>))
 }
@@ -21,8 +21,8 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>test<!>(c: @Unique @Borrowed C) {
 // TODO: Remove the @NeverConvert once we have uniqueness information.
 @NeverConvert
 fun inc(c: @Unique @Borrowed C) {
-    postconditions<Unit> <!LOCALITY_MISMATCH!>{
+    postconditions<Unit> {
         c.field == old(c.field) + 1
-    }<!>
+    }
     c.field = <!UNIQUENESS_MISMATCH!>c.field + 1<!>
 }

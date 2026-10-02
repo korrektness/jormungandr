@@ -11,12 +11,15 @@ import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeErrorType
+import org.jetbrains.kotlin.formver.readonly.plugin.isReadOnlyBorrowed
 import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 
+context(context: CheckerContext)
 fun FirReceiverParameterSymbol.resolveLocality(): Locality =
-    resolvedType.locality
+    if (isReadOnlyBorrowed(context.session)) Locality.Local else resolvedType.locality
 
 object ReceiverLocalityResolver :
     SymbolTypeFactResolver<Locality, FirReceiverParameterSymbol> {
@@ -36,6 +39,8 @@ fun FirFunctionSymbol<*>.resolveScopeLocality(): Locality {
 context(context: CheckerContext)
 fun FirVariableSymbol<*>.resolveLocality(): Locality {
     if (resolvedReturnType is ConeErrorType) return Locality.Global
+
+    if (this is FirValueParameterSymbol && isReadOnlyBorrowed(context.session)) return Locality.Local
 
     if (resolvedReturnTypeRef.source?.kind !is KtFakeSourceElementKind.ImplicitTypeRef) {
         return resolvedReturnType.locality

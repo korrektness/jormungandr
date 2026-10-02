@@ -3,7 +3,7 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
  */
 
-package org.jetbrains.kotlin.formver.uniqueness.plugin
+package org.jetbrains.kotlin.formver.readonly.plugin
 
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
@@ -14,7 +14,12 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
+import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -41,6 +46,26 @@ fun FirBasedSymbol<*>.isPure(session: FirSession): Boolean =
 
 fun FirFunctionCall.isPureCall(session: FirSession): Boolean =
     toResolvedCallableSymbol()?.isPure(session) == true
+
+private fun FirFunctionSymbol<*>.borrowsParameterOfType(type: ConeKotlinType, session: FirSession): Boolean =
+    callableId in specificationFunctionIds || isPure(session) && type.attributes.uniquenessAttribute != null
+
+/**
+ * Whether [this] parameter is borrowed because its function only reads it: every parameter of a specification
+ * builtin, and every `@Unique` parameter of a `@Pure` function.
+ */
+fun FirValueParameterSymbol.isReadOnlyBorrowed(session: FirSession): Boolean {
+    val function = containingDeclarationSymbol as? FirFunctionSymbol<*> ?: return false
+    return function.borrowsParameterOfType(resolvedReturnType, session)
+}
+
+/**
+ * Whether [this] receiver is borrowed because its function only reads it, as for [FirValueParameterSymbol]s.
+ */
+fun FirReceiverParameterSymbol.isReadOnlyBorrowed(session: FirSession): Boolean {
+    val function = containingDeclarationSymbol as? FirFunctionSymbol<*> ?: return false
+    return function.borrowsParameterOfType(resolvedType, session)
+}
 
 private fun FirElement.isSpecificationCall(): Boolean =
     this is FirFunctionCall && toResolvedCallableSymbol()?.callableId in specificationFunctionIds

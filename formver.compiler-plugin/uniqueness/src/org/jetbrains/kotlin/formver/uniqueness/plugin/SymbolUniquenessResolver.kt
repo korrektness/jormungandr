@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.fir.types.ConeErrorType
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
+import org.jetbrains.kotlin.formver.readonly.plugin.postconditionsId
 import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 
 fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =

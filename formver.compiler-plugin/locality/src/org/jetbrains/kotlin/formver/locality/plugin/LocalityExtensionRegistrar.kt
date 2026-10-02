@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.formver.locality.contract.plugin.ExpressionLocalityContractResolver
 import org.jetbrains.kotlin.formver.locality.contract.plugin.LocalityContractAdditionalCheckers
 import org.jetbrains.kotlin.formver.locality.contract.plugin.LocalityContractErrors
+import org.jetbrains.kotlin.formver.uniqueness.attribute.UniquenessAttributeExtension
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -20,6 +21,12 @@ private val defaultLocalityAnnotationId =
         Name.identifier("Borrowed")
     )
 
+private val defaultUniquenessAnnotationId =
+    ClassId(
+        FqName("org.jetbrains.kotlin.formver.plugin"),
+        Name.identifier("Unique")
+    )
+
 /**
  * The checker extensions that report locality diagnostics.
  */
@@ -28,13 +35,19 @@ val localityCheckerFactories: List<FirAdditionalCheckersExtension.Factory> = lis
     LocalityContractAdditionalCheckers.getFactory(),
 )
 
+/**
+ * Registers the locality checker, and the `@Borrowed` and `@Unique` type attributes. Locality reads `@Unique` to find
+ * the parameters that read-only callees borrow.
+ */
 class LocalityExtensionRegistrar(
-    private val localityAnnotationId: ClassId = defaultLocalityAnnotationId
+    private val localityAnnotationId: ClassId = defaultLocalityAnnotationId,
+    private val uniquenessAnnotationId: ClassId = defaultUniquenessAnnotationId,
 ) : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
         registerDiagnosticContainers(LocalityErrors)
         registerDiagnosticContainers(LocalityContractErrors)
         +LocalityAttributeExtension.getFactory(localityAnnotationId)
+        +UniquenessAttributeExtension.getFactory(uniquenessAnnotationId)
         +ExpressionLocalityContractResolver.getFactory()
         +ExpressionLocalityResolver.getFactory()
         +GraphDeclaredSymbolsResolver.getFactory()

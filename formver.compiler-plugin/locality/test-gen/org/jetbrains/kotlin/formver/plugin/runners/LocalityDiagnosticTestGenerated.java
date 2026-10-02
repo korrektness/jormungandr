@@ -118,9 +118,21 @@ public class LocalityDiagnosticTestGenerated extends AbstractLocalityDiagnosticT
   }
 
   @Test
+  @TestMetadata("pure_call.kt")
+  public void testPure_call() {
+    runTest("formver.compiler-plugin/locality/testData/diagnostics/pure_call.kt");
+  }
+
+  @Test
   @TestMetadata("return.kt")
   public void testReturn() {
     runTest("formver.compiler-plugin/locality/testData/diagnostics/return.kt");
+  }
+
+  @Test
+  @TestMetadata("specification.kt")
+  public void testSpecification() {
+    runTest("formver.compiler-plugin/locality/testData/diagnostics/specification.kt");
   }
 
   @Test

@@ -14,9 +14,9 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Counter, k:
     }
     var i = 0
     while (i < k) {
-        loopInvariants <!LOCALITY_MISMATCH!>{
+        loopInvariants {
             acc(UniquePred(<!LOCALITY_MISMATCH!>c<!>))
-        }<!>
+        }
         unfold(UniquePred(<!INVALID_MOVED_ACCESS, LOCALITY_MISMATCH!>c<!>))
         <!INVALID_MOVED_ACCESS!>c<!>.n = <!UNIQUENESS_MISMATCH!><!INVALID_MOVED_ACCESS!>c<!>.n + 1<!>
         fold(UniquePred(<!INVALID_MOVED_ACCESS, LOCALITY_MISMATCH!>c<!>))

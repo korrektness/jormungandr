@@ -7,15 +7,6 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
-import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.name.Name
-
-private val defaultUniquenessAnnotationId =
-    ClassId(
-        FqName("org.jetbrains.kotlin.formver.plugin"),
-        Name.identifier("Unique")
-    )
 
 /**
  * The checker extensions that report uniqueness diagnostics.
@@ -24,16 +15,17 @@ val uniquenessCheckerFactories: List<FirAdditionalCheckersExtension.Factory> = l
     UniquenessAdditionalCheckers.getFactory(),
 )
 
-class UniquenessExtensionRegistrar(
-    private val uniquenessAnnotationId: ClassId = defaultUniquenessAnnotationId
-) : FirExtensionRegistrar() {
+/**
+ * Registers the uniqueness checker. The `@Unique` type attribute it reads is registered by
+ * [org.jetbrains.kotlin.formver.locality.plugin.LocalityExtensionRegistrar], which must be registered too.
+ */
+class UniquenessExtensionRegistrar : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
         registerDiagnosticContainers(UniquenessErrors)
         +ExpressionAccessStateResolver.getFactory()
         +ExpressionUniquenessResolver.getFactory()
         +GraphUniquenessStatesResolver.getFactory()
         uniquenessCheckerFactories.forEach { +it }
-        +UniquenessAttributeExtension.getFactory(uniquenessAnnotationId)
         +UniquenessFacts.getFactory()
     }
 }

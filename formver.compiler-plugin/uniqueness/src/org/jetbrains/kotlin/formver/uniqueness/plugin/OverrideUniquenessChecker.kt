@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.formver.locality.plugin.locality
+import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.OVERRIDE_UNIQUENESS_MISMATCH
 
 /**

@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNodeWithSubgraphs
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.locality.plugin.resolveCapturedSymbols
+import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_UNIQUENESS_CAPTURE
 
 /**

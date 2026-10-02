@@ -11,6 +11,8 @@ import org.jetbrains.kotlin.formver.locality.plugin.LocalityAttribute
 import org.jetbrains.kotlin.formver.locality.plugin.locality
 import org.jetbrains.kotlin.formver.type.plugin.TypeFactJudgment
 import org.jetbrains.kotlin.formver.type.plugin.TypeFactUnifier
+import org.jetbrains.kotlin.formver.uniqueness.attribute.UniquenessAttribute
+import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 
 enum class Uniqueness {
     Unique,
@@ -40,7 +42,7 @@ val ConeKotlinType.scopeUniqueness: Uniqueness
  * Resolves the uniqueness required for a parameter declared with this type.
  */
 val ConeKotlinType.parameterUniqueness: Uniqueness
-    get() = attributes.uniquenessAttribute?.uniqueness ?: Uniqueness.Shared
+    get() = if (attributes.uniquenessAttribute != null) Uniqueness.Unique else Uniqueness.Shared
 
 fun Uniqueness.accepts(other: Uniqueness): Boolean =
     this >= other

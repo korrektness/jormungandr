@@ -12,6 +12,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.formver.readonly.plugin.isPure
+import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_PURE_UNIQUE_RESULT
 
 /**
