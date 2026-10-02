@@ -12,9 +12,9 @@ fun <!VIPER_TEXT!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
         }
     }
     var i = 1
-    <!VIPER_VERIFICATION_ERROR!>while (i < arr.size) {
+    while (i < arr.size) {
         loopInvariants {
-            1 <= i && i <= arr.size
+            1 <= i && (i <= arr.size || i == 1)
             forAll<Int> { a ->
                 forAll<Int> { b ->
                     (0 <= a && a < b && b < i) implies (arr[a] <= arr[b])
@@ -40,5 +40,5 @@ fun <!VIPER_TEXT!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
         }
         arr[j + 1] = key
         i++
-    }<!>
+    }
 }

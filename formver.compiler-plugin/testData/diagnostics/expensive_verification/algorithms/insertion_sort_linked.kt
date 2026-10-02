@@ -21,7 +21,6 @@ fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
 fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @Unique Node {
     preconditions {
         isSorted(sorted)
-        node.next == null
     }
     postconditions<Node> { r -> isSorted(r) && (r.value == node.value || (sorted != null && r.value == sorted.value)) }
     if (sorted == null || node.value <= sorted.value) {
@@ -34,6 +33,7 @@ fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @U
 
 @AlwaysVerify
 fun <!VIPER_TEXT!>insertionSort<!>(head: @Unique Node?): @Unique Node? {
+    postconditions<Node?> { r -> isSorted(r) }
     var sorted: @Unique Node? = null
     var cur: @Unique Node? = head
     while (cur != null) {

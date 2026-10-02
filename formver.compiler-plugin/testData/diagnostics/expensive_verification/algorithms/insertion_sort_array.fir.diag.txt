@@ -24,7 +24,8 @@ method insertionSort(arr: Ref) returns (v_ret_0: Ref)
     invariant acc(IntArray_unique(arr), write)
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(arr), IntArray())
-    invariant 1 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
+    invariant 1 <= intFromRef(i) &&
+      (intFromRef(i) <= arraySize(arr) || intFromRef(i) == 1)
     invariant (unfolding acc(IntArray_unique(arr), write) in
         (forall anon_builtin_2: Int ::(forall anon_builtin_3: Int ::0 <=
             anon_builtin_2 &&
@@ -121,7 +122,8 @@ method insertionSort(arr: Ref) returns (v_ret_0: Ref)
   label break_0
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(arr), IntArray())
-  assert 1 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
+  assert 1 <= intFromRef(i) &&
+    (intFromRef(i) <= arraySize(arr) || intFromRef(i) == 1)
   assert (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin_2: Int ::(forall anon_builtin_3: Int ::0 <=
           anon_builtin_2 &&

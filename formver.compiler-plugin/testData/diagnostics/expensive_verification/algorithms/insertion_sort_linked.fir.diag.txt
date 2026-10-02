@@ -66,8 +66,6 @@ method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(node), Node())
   requires acc(Node_unique(node), write)
   requires boolFromRef(isSorted(sorted))
-  requires (unfolding acc(Node_unique(node), write) in
-      node.next == nullValue())
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
   ensures boolFromRef(isSorted(v_ret_0)) &&
@@ -134,21 +132,19 @@ function value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method insertSorted(par_sorted: Ref, node: Ref) returns (ret_2: Ref)
+method insertSorted(par_sorted: Ref, node: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_sorted), nullable(Node()))
   requires par_sorted != nullValue() ==>
     acc(Node_unique(par_sorted), write)
   requires isSubtype(typeOf(node), Node())
   requires acc(Node_unique(node), write)
   requires boolFromRef(isSorted(par_sorted))
-  requires (unfolding acc(Node_unique(node), write) in
-      node.bf_next == nullValue())
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures acc(Node_unique(ret_2), write)
-  ensures boolFromRef(isSorted(ret_2)) &&
-    (intFromRef(value(ret_2)) == intFromRef(value(node)) ||
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures acc(Node_unique(ret_3), write)
+  ensures boolFromRef(isSorted(ret_3)) &&
+    (intFromRef(value(ret_3)) == intFromRef(value(node)) ||
     !(par_sorted == nullValue()) &&
-    intFromRef(value(ret_2)) == intFromRef(value(par_sorted)))
+    intFromRef(value(ret_3)) == intFromRef(value(par_sorted)))
 
 
 method insertionSort(head: Ref) returns (v_ret_0: Ref)
@@ -156,20 +152,21 @@ method insertionSort(head: Ref) returns (v_ret_0: Ref)
   requires head != nullValue() ==> acc(Node_unique(head), write)
   ensures isSubtype(typeOf(v_ret_0), nullable(Node()))
   ensures v_ret_0 != nullValue() ==> acc(Node_unique(v_ret_0), write)
+  ensures boolFromRef(isSorted(v_ret_0))
 {
-  var l0_sorted: Ref
+  var l6_sorted: Ref
   var cur: Ref
   var anon_3: Ref
-  l0_sorted := nullValue()
+  l6_sorted := nullValue()
   cur := head
   label cont
-    invariant l0_sorted != nullValue() ==>
-      acc(Node_unique(l0_sorted), write)
+    invariant l6_sorted != nullValue() ==>
+      acc(Node_unique(l6_sorted), write)
     invariant cur != nullValue() ==> acc(Node_unique(cur), write)
-    invariant isSubtype(typeOf(l0_sorted), nullable(Node()))
+    invariant isSubtype(typeOf(l6_sorted), nullable(Node()))
     invariant isSubtype(typeOf(cur), nullable(Node()))
     invariant isSubtype(typeOf(head), nullable(Node()))
-    invariant boolFromRef(isSorted(l0_sorted))
+    invariant boolFromRef(isSorted(l6_sorted))
   anon_3 := notBool(boolToRef(cur == nullValue()))
   if (boolFromRef(anon_3)) {
     var l7_next: Ref
@@ -182,17 +179,17 @@ method insertionSort(head: Ref) returns (v_ret_0: Ref)
     if (cur != nullValue()) {
       fold acc(Node_unique(cur), write)
     }
-    anon_4 := insertSorted(l0_sorted, cur)
-    l0_sorted := anon_4
+    anon_4 := insertSorted(l6_sorted, cur)
+    l6_sorted := anon_4
     cur := l7_next
     goto cont
   }
   label break
-  assert isSubtype(typeOf(l0_sorted), nullable(Node()))
+  assert isSubtype(typeOf(l6_sorted), nullable(Node()))
   assert isSubtype(typeOf(cur), nullable(Node()))
   assert isSubtype(typeOf(head), nullable(Node()))
-  assert boolFromRef(isSorted(l0_sorted))
-  v_ret_0 := l0_sorted
+  assert boolFromRef(isSorted(l6_sorted))
+  v_ret_0 := l6_sorted
   goto lbl_ret_0
   label lbl_ret_0
 }
