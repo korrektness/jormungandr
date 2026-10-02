@@ -36,7 +36,7 @@ fun FirExpression.resolveAccessUniqueness(): Uniqueness {
     return if (accessState == EmptyAccessState) {
         Uniqueness.Shared
     } else {
-        accessState.symbols.fold(Uniqueness.Unique) { result, symbol ->
+        accessState.keys.fold(Uniqueness.Unique) { result, symbol ->
             result.join(symbol.resolveDeclaredUniqueness())
         }
     }

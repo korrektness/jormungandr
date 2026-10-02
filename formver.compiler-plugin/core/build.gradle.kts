@@ -12,4 +12,12 @@ dependencies {
 
     // TODO: figure out how to avoid this dependency
     compileOnly(libs.viper.silicon)
+
+    testImplementation(kotlin("test"))
+    testImplementation(libs.jqwik)
+    testRuntimeOnly(libs.junit.platform.launcher)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

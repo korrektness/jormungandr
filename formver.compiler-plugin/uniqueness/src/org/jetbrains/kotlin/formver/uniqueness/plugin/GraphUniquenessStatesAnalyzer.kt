@@ -154,28 +154,13 @@ class GraphUniquenessStatesAnalyzer(
         )
 
         with(context) {
-            val rightAccessState = initializer?.resolveAccessState() ?: EmptyAccessState
+            val rightAccessState = initializer?.resolveAccessState()
             val isWhenSubject = leftSymbol.source?.kind == KtFakeSourceElementKind.WhenGeneratedSubject
             val movesInitializer = !isWhenSubject && declaration !in readOnlyContext
 
             return data.transformValues { data ->
                 val uniquenessState = data.getOrInitialize()
-                var newUniquenessState = uniquenessState
-
-                // The source moves before the target is written, so that a source below the target (`p.next`) is
-                // resolved against the old target.
-                if (movesInitializer) {
-                    newUniquenessState = rightAccessState.move(newUniquenessState)
-                }
-
-                if (initializer != null) {
-                    val rightUniquenessState = rightAccessState.projectTerminalUniquenessState(uniquenessState)
-                    newUniquenessState = newUniquenessState.insert(listOf(leftSymbol), rightUniquenessState)
-                }
-
-                newUniquenessState = leftAccessState.initialize(newUniquenessState)
-
-                data.put(Unit, newUniquenessState)
+                data.put(Unit, uniquenessState.assign(leftAccessState, rightAccessState, movesInitializer))
             }
         }
     }
@@ -193,32 +178,10 @@ class GraphUniquenessStatesAnalyzer(
 
             return data.transformValues { data ->
                 val uniquenessState = data.getOrInitialize()
-                val leftAccessPaths = leftAccessState.enumeratePaths()
                 val rightAccessState = rightValue.resolveAccessState()
-
-                // The source moves before the target is written; see `visitVariableDeclarationNode`.
-                var newUniquenessState = rightAccessState.move(uniquenessState)
-                if (leftValue is FirQualifiedAccessExpression) {
-                    newUniquenessState = newUniquenessState.passReceiversToAccessor(leftValue)
-                }
-
-                val rightUniquenessState = rightAccessState.projectTerminalUniquenessState(uniquenessState)
-
-                if (leftAccessPaths.count() == 1) {
-                    newUniquenessState = newUniquenessState.insert(leftAccessPaths.first(), rightUniquenessState)
-                    newUniquenessState = leftAccessState.initialize(newUniquenessState)
-                } else {
-                    // Only one of the paths is written, so each keeps its old state joined with the written one.
-                    for (leftPath in leftAccessPaths) {
-                        val writtenUniquenessState =
-                            rightUniquenessState.copy(data = leftPath.last().resolveDeclaredUniqueness())
-                        val oldUniquenessState = newUniquenessState.find(leftPath) ?: EmptyUniquenessState
-                        newUniquenessState =
-                            newUniquenessState.insert(leftPath, oldUniquenessState.join(writtenUniquenessState))
-                    }
-                }
-
-                data.put(Unit, newUniquenessState)
+                data.put(Unit, uniquenessState.assign(leftAccessState, rightAccessState, movesSource = true) {
+                    if (leftValue is FirQualifiedAccessExpression) it.passReceiversToAccessor(leftValue) else it
+                })
             }
         }
     }

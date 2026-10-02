@@ -1,34 +1,29 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
-import org.jetbrains.kotlin.formver.type.plugin.TypeFactIntersector
-import org.jetbrains.kotlin.formver.type.plugin.TypeFactUnifier
 
-typealias UniquenessState = PathTrie<Uniqueness>
+/** The uniqueness of every path below a root, keyed by path components of type [Key]. */
+typealias UniquenessTrie<Key> = PathTrie<Key, Uniqueness>
+
+typealias UniquenessState = UniquenessTrie<FirBasedSymbol<*>>
 
 val EmptyUniquenessState = UniquenessState(Uniqueness.Unique)
 
 /**
- * Performs the join of two [UniquenessState]s.
+ * Performs the join of two uniqueness tries.
  */
-fun UniquenessState.join(other: UniquenessState): UniquenessState =
+fun <Key> UniquenessTrie<Key>.join(other: UniquenessTrie<Key>): UniquenessTrie<Key> =
     join(other, UniquenessUnifier)
-
-/**
- * Joins the uniqueness values along [path], using [Uniqueness.Unique] for missing path components.
- */
-fun UniquenessState.joinOverPath(path: List<FirBasedSymbol<*>>): Uniqueness =
-    data.join((children[path.first()]?.joinOverPath(path.drop(1)) ?: Uniqueness.Unique))
 
 /**
  * Enumerates the paths whose uniqueness state is [Uniqueness.Moved], including the empty path when [includeRoot] is set
  * and the root itself has moved.
  */
-fun UniquenessState.enumerateInconsistentPaths(includeRoot: Boolean = false): Sequence<Path> {
+fun <Key> UniquenessTrie<Key>.enumerateInconsistentPaths(includeRoot: Boolean = false): Sequence<List<Key>> {
     val childPaths = enumerate(emptyList()) { data == Uniqueness.Moved }
 
     return if (includeRoot && data == Uniqueness.Moved) {
-        sequenceOf(emptyList<FirBasedSymbol<*>>()) + childPaths
+        sequenceOf(emptyList<Key>()) + childPaths
     } else {
         childPaths
     }
@@ -37,12 +32,12 @@ fun UniquenessState.enumerateInconsistentPaths(includeRoot: Boolean = false): Se
 /**
  * Replaces the substate at [path] with [child].
  */
-fun UniquenessState.insert(path: Path, child: UniquenessState): UniquenessState =
+fun <Key> UniquenessTrie<Key>.insert(path: List<Key>, child: UniquenessTrie<Key>): UniquenessTrie<Key> =
     if (path.isEmpty()) {
         child
     } else {
         val head = path.first()
         copy(
-            children = children.put(head, (children[head] ?: EmptyUniquenessState).insert(path.drop(1), child))
+            children = children.put(head, (children[head] ?: UniquenessTrie(Uniqueness.Unique)).insert(path.drop(1), child))
         )
     }

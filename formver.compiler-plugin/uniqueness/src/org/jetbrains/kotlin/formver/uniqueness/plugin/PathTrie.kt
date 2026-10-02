@@ -7,41 +7,42 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
-import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
-import org.jetbrains.kotlin.formver.type.plugin.TypeFactIntersector
 import org.jetbrains.kotlin.formver.type.plugin.TypeFactUnifier
 
 /**
- * Persistent prefix trie of symbol components.
+ * Persistent prefix trie of path components.
  *
- * A child entry `children[symbol]` represents the subtrie for all paths whose next component (relative to the current
- * node prefix) is `symbol`. Sibling children therefore represent alternative next FIR symbols under the same prefix.
+ * A child entry `children[key]` represents the subtrie for all paths whose next component (relative to the current
+ * node prefix) is `key`. Sibling children therefore represent alternative next components under the same prefix.
  *
  * For example, for a FIR access path like `a.b.c`, the trie contains:
  * `children[a] -> children[b] -> children[c]`.
  *
  * @property data value attached to the current path prefix.
- * @property children map keyed by the next symbol component.
+ * @property children map keyed by the next path component.
  */
-data class PathTrie<Type>(
+data class PathTrie<Key, Type>(
     val data: Type,
-    val children: PersistentMap<FirBasedSymbol<*>, PathTrie<Type>> = persistentMapOf(),
+    val children: PersistentMap<Key, PathTrie<Key, Type>> = persistentMapOf(),
 )
 
-fun <Type> PathTrie<Type>.putChild(symbol: FirBasedSymbol<*>, child: PathTrie<Type>): PathTrie<Type> =
-    copy(children = children.put(symbol, child))
+fun <Key, Type> PathTrie<Key, Type>.putChild(key: Key, child: PathTrie<Key, Type>): PathTrie<Key, Type> =
+    copy(children = children.put(key, child))
 
-val PathTrie<*>.symbols: Sequence<FirBasedSymbol<*>>
-    get() = children.keys.asSequence() + children.values.flatMap { it.symbols }
+val <Key> PathTrie<Key, *>.keys: Sequence<Key>
+    get() = children.keys.asSequence() + children.values.flatMap { it.keys }
 
-fun <Type> PathTrie<Type>.join(other: PathTrie<Type>, typeUnifier: TypeFactUnifier<Type>): PathTrie<Type> {
+fun <Key, Type> PathTrie<Key, Type>.join(
+    other: PathTrie<Key, Type>,
+    typeUnifier: TypeFactUnifier<Type>,
+): PathTrie<Key, Type> {
     var joinedChildren = children
 
-    for ((symbol, otherChild) in other.children) {
-        val child = joinedChildren[symbol]
+    for ((key, otherChild) in other.children) {
+        val child = joinedChildren[key]
 
         joinedChildren = joinedChildren.put(
-            symbol,
+            key,
             child?.join(otherChild, typeUnifier) ?: otherChild,
         )
     }
@@ -52,31 +53,7 @@ fun <Type> PathTrie<Type>.join(other: PathTrie<Type>, typeUnifier: TypeFactUnifi
     )
 }
 
-fun <Type> PathTrie<Type>.meet(other: PathTrie<Type>, typeIntersector: TypeFactIntersector<Type>): PathTrie<Type> {
-    var metChildren = persistentMapOf<FirBasedSymbol<*>, PathTrie<Type>>()
-
-    for ((symbol, child) in children) {
-        val otherChild = other.children[symbol] ?: continue
-        metChildren = metChildren.put(symbol, child.meet(otherChild, typeIntersector))
-    }
-
-    return copy(
-        data = typeIntersector.meet(data, other.data),
-        children = metChildren
-    )
-}
-
-fun <Type> PathTrie<Type>.joinChildren(typeUnifier: TypeFactUnifier<Type>): Type {
-    var joinedData = data
-
-    for (child in children.values) {
-        joinedData = typeUnifier.join(joinedData,child.joinChildren(typeUnifier))
-    }
-
-    return joinedData
-}
-
-fun <Type> PathTrie<Type>.find(path: List<FirBasedSymbol<*>>): PathTrie<Type>? {
+fun <Key, Type> PathTrie<Key, Type>.find(path: List<Key>): PathTrie<Key, Type>? {
     val head = path.firstOrNull()
 
     return if (head != null) {
@@ -86,13 +63,13 @@ fun <Type> PathTrie<Type>.find(path: List<FirBasedSymbol<*>>): PathTrie<Type>? {
     }
 }
 
-fun <Type> PathTrie<Type>.enumerate(isTerminal: PathTrie<Type>.() -> Boolean): Sequence<List<FirBasedSymbol<*>>> =
+fun <Key, Type> PathTrie<Key, Type>.enumerate(isTerminal: PathTrie<Key, Type>.() -> Boolean): Sequence<List<Key>> =
     enumerate(emptyList(), isTerminal)
 
-fun <Type> PathTrie<Type>.enumerate(
-    prefix: List<FirBasedSymbol<*>>,
-    isTerminal: PathTrie<Type>.() -> Boolean
-): Sequence<Path> =
+fun <Key, Type> PathTrie<Key, Type>.enumerate(
+    prefix: List<Key>,
+    isTerminal: PathTrie<Key, Type>.() -> Boolean
+): Sequence<List<Key>> =
     if (children.isEmpty()) {
         sequenceOf()
     } else {

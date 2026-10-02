@@ -305,7 +305,7 @@ fun ProgramConversionContext.linearizeImpureBody(
 ): FunctionBodyEmbedding {
     val seqnBuilder = SeqnBuilder(source)
     val linearizer =
-        Linearizer(SharedLinearizationState(anonVarProducer), seqnBuilder, source, typeResolver, FoldState())
+        Linearizer(SharedLinearizationState(anonVarProducer), seqnBuilder, source, typeResolver, FoldState(typeResolver))
     converted.bodyExp.toLinearizable(source).toViperUnusedResult(linearizer)
     // note: we must guarantee somewhere that returned value is Unit
     // as we may not encounter any `return` statement in the body

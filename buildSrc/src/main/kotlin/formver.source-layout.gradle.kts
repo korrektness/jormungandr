@@ -9,7 +9,7 @@ pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         resources.srcDir("resources")
     }
     sourceSets.named("test") {
-        java.setSrcDirs(emptyList<String>())
+        java.setSrcDirs(listOf("test"))
         resources.setSrcDirs(emptyList<String>())
     }
 }
