@@ -7,12 +7,13 @@ function g_fieldNotOverride(this: Ref): Ref
 method con_B(par_fieldOverride: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_fieldOverride), FieldB())
   ensures isSubtype(typeOf(ret_4), B())
-  ensures acc(B_unique(ret_4), write)
+  ensures isSubtype(typeOf(ret_4), B()) && isSubtype(typeOf(ret_4), A())
 
 
 method con_FieldB() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), FieldB())
-  ensures acc(FieldB_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), FieldB()) &&
+    isSubtype(typeOf(ret_1), FieldA())
 
 
 method createB() returns (v_ret_0: Ref)
@@ -24,7 +25,11 @@ method createB() returns (v_ret_0: Ref)
   var anon: Ref
   var l0_fieldNotOverride: Ref
   fieldB := con_FieldB()
+  fold acc(FieldA_unique(fieldB), write)
+  fold acc(FieldB_unique(fieldB), write)
   b := con_B(fieldB)
+  fold acc(A_unique(b), write)
+  fold acc(B_unique(b), write)
   anon := g_fieldOverride(b)
   l0_fieldOverride := anon
   inhale isSubtype(typeOf(l0_fieldOverride), FieldB())
@@ -46,18 +51,20 @@ function SecondBackingFieldClass_g_x(this: Ref): Ref
 
 method con_FirstBackingFieldClass() returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), FirstBackingFieldClass())
-  ensures acc(FirstBackingFieldClass_unique(ret_2), write)
 
 
 method con_NoBackingFieldClass() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), NoBackingFieldClass())
-  ensures acc(NoBackingFieldClass_unique(ret_4), write)
+  ensures isSubtype(typeOf(ret_4), NoBackingFieldClass()) &&
+    isSubtype(typeOf(ret_4), FirstBackingFieldClass())
 
 
 method con_SecondBackingFieldClass(par_x: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(par_x), intType())
   ensures isSubtype(typeOf(ret_5), SecondBackingFieldClass())
-  ensures acc(SecondBackingFieldClass_unique(ret_5), write)
+  ensures isSubtype(typeOf(ret_5), SecondBackingFieldClass()) &&
+    (isSubtype(typeOf(ret_5), NoBackingFieldClass()) &&
+    isSubtype(typeOf(ret_5), FirstBackingFieldClass()))
   ensures intFromRef(SecondBackingFieldClass_g_x(ret_5)) ==
     intFromRef(par_x)
 
@@ -74,14 +81,20 @@ method createBFsAndNoBF() returns (v_ret_0: Ref)
   var sbf: Ref
   var sbfx: Ref
   fbf := con_FirstBackingFieldClass()
+  fold acc(FirstBackingFieldClass_unique(fbf), write)
   anon_0 := public_g_x(fbf)
   fbfx := anon_0
   inhale isSubtype(typeOf(fbfx), intType())
   nbf := con_NoBackingFieldClass()
+  fold acc(FirstBackingFieldClass_unique(nbf), write)
+  fold acc(NoBackingFieldClass_unique(nbf), write)
   anon_1 := public_g_x(nbf)
   nbfx := anon_1
   inhale isSubtype(typeOf(nbfx), intType())
   sbf := con_SecondBackingFieldClass(intToRef(10))
+  fold acc(FirstBackingFieldClass_unique(sbf), write)
+  fold acc(NoBackingFieldClass_unique(sbf), write)
+  fold acc(SecondBackingFieldClass_unique(sbf), write)
   sbfx := SecondBackingFieldClass_g_x(sbf)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -101,7 +114,7 @@ function g_a(this: Ref): Ref
 method con(par_a: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_a), intType())
   ensures isSubtype(typeOf(ret_1), Y())
-  ensures acc(Y_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), Y()) && isSubtype(typeOf(ret_1), X())
 
 
 method createY() returns (v_ret_0: Ref)
@@ -110,6 +123,8 @@ method createY() returns (v_ret_0: Ref)
   var y: Ref
   var ya: Ref
   y := con(intToRef(10))
+  fold acc(X_unique(y), write)
+  fold acc(Y_unique(y), write)
   ya := g_a(y)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())

@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.names.PredicateName
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.core.names.asScope
+import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.DomainFunc
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.PermExp
@@ -31,6 +32,10 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
         else -> userClassUniquePredicate()
     }
 
+    /** Whether this class's unique predicate is built from its properties and supertypes. */
+    val hasPropertyPredicate: Boolean
+        get() = this != IntArrayEmbedding.classType && this != StringBuilderEmbedding.classType
+
     context(ctx: TypeResolver)
     private fun userClassUniquePredicate(): Predicate = ClassPredicateBuilder.build(name, uniquePredicateName) {
         addUniquePredicateBody(NestedPredicates.Held)
@@ -43,6 +48,21 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
     context(ctx: TypeResolver)
     fun uniquePredicateBody(subject: ExpEmbedding, nested: NestedPredicates): ExpEmbedding =
         ClassPredicateBuilder.body(name, subject) { addUniquePredicateBody(nested) }
+
+    /**
+     * The bodies of the unique predicates of this class and its superclasses for [subject], the predicates of the
+     * `@Unique` properties named in [omitted] left out. The predicates of interfaces stay folded.
+     */
+    context(ctx: TypeResolver)
+    fun openPredicateChain(subject: ExpEmbedding, omitted: Set<SymbolicName>): ExpEmbedding =
+        uniquePredicateBody(subject, object : NestedPredicates {
+            override fun ofField(step: PathStep, access: TypeInvariantEmbedding) =
+                access.takeUnless { step.name in omitted }
+
+            override fun ofSuperType(type: ClassTypeEmbedding, access: TypeInvariantEmbedding) =
+                if (type == ctx.superClass(this@ClassTypeEmbedding)) TypeInvariantEmbedding { type.openPredicateChain(it, omitted) }
+                else access
+        })
 
     context(ctx: TypeResolver)
     private fun ClassPredicateBuilder.addUniquePredicateBody(nested: NestedPredicates) {

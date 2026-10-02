@@ -37,6 +37,9 @@ sealed interface SourceRole {
             /** A `fold` of the path's predicate. */
             data object Fold : Site
 
+            /** A `fold` of a new object's predicates, which takes those of the arguments stored in it; [path] is the class. */
+            data object Construction : Site
+
             /** The exhale and inhale that havoc what the path holds after a call that may have written through it. */
             data object Havoc : Site
 

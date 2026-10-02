@@ -386,7 +386,6 @@ predicate Foo_unique(this: Ref) {
 method con(par_x: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_x), intType())
   ensures isSubtype(typeOf(ret_1), Foo())
-  ensures acc(Foo_unique(ret_1), write)
   ensures intFromRef(g_x(ret_1)) == intFromRef(par_x)
 
 
@@ -395,6 +394,7 @@ method f() returns (v_ret_0: Ref)
 {
   var foo: Ref
   foo := con(intToRef(0))
+  fold acc(Foo_unique(foo), write)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

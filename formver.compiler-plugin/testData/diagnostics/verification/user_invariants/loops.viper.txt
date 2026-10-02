@@ -137,9 +137,9 @@ function size(this: Ref): Ref
 method con(par_e: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_e), intType())
   ensures isSubtype(typeOf(ret_1), WithVar())
-  ensures acc(WithVar_unique(ret_1), write)
-  ensures (unfolding acc(WithVar_unique(ret_1), write) in
-      intFromRef(ret_1.bf_e) == intFromRef(par_e))
+  ensures isSubtype(typeOf(ret_1), WithVar()) && acc(ret_1.bf_e, write) &&
+    isSubtype(typeOf(ret_1.bf_e), intType())
+  ensures intFromRef(ret_1.bf_e) == intFromRef(par_e)
 
 
 method doSomething(this: Ref) returns (ret_2: Ref)
@@ -154,6 +154,7 @@ method test_boolean_postcondition() returns (v_ret_0: Ref)
   var boolean: Ref
   var anon: Ref
   withVar := con(intToRef(42))
+  fold acc(WithVar_unique(withVar), write)
   boolean := boolToRef(true)
   label cont
     invariant isSubtype(typeOf(withVar), WithVar())
@@ -185,7 +186,6 @@ function size(this: Ref): Ref
 method con(par_field: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_field), intType())
   ensures isSubtype(typeOf(ret_1), ClassWithField())
-  ensures acc(ClassWithField_unique(ret_1), write)
   ensures intFromRef(g_field(ret_1)) == intFromRef(par_field)
 
 
@@ -200,6 +200,7 @@ method test_while(param: Ref) returns (v_ret_0: Ref)
   var cond1: Ref
   var cond2: Ref
   c := con(intToRef(13))
+  fold acc(ClassWithField_unique(c), write)
   initParamField := g_field(param)
   if (intFromRef(initParamField) > 0) {
     iteration := intToRef(0)
@@ -250,7 +251,6 @@ function size(v_this: Ref): Ref
 method con(par_field: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_field), intType())
   ensures isSubtype(typeOf(ret_1), ClassWithField())
-  ensures acc(ClassWithField_unique(ret_1), write)
   ensures intFromRef(g_field(ret_1)) == intFromRef(par_field)
 
 
@@ -275,7 +275,9 @@ method test_while_with_inlining(param: Ref) returns (v_ret_0: Ref)
   var iteration: Ref
   var anon_5: Ref
   local := con(intToRef(13))
+  fold acc(ClassWithField_unique(local), write)
   anon_3 := con(intToRef(42))
+  fold acc(ClassWithField_unique(anon_3), write)
   anon_0 := anon_3
   inhale isSubtype(typeOf(anon_0), nullable(anyType()))
   iteration := intToRef(0)

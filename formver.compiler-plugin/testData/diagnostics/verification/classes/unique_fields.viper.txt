@@ -173,11 +173,12 @@ method con(par_sharedVal: Ref, par_sharedVar: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_sharedVal), intType())
   requires isSubtype(typeOf(par_sharedVar), intType())
   ensures isSubtype(typeOf(ret_1), UniquePrimitiveFields())
-  ensures acc(UniquePrimitiveFields_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), UniquePrimitiveFields()) &&
+    acc(ret_1.bf_sharedVar, write) &&
+    isSubtype(typeOf(ret_1.bf_sharedVar), intType())
   ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
     intFromRef(par_sharedVal)
-  ensures (unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
-      intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar))
+  ensures intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar)
 
 
 method testReferenceFieldSetterUnique(rf: Ref) returns (v_ret_0: Ref)
@@ -189,8 +190,10 @@ method testReferenceFieldSetterUnique(rf: Ref) returns (v_ret_0: Ref)
   var anon_1: Ref
   unfold acc(UniqueReferenceFields_unique(rf), write)
   anon_0 := con(intToRef(5), intToRef(6))
+  fold acc(UniquePrimitiveFields_unique(anon_0), write)
   rf.bf_sharedVar := anon_0
   anon_1 := con(intToRef(9), intToRef(10))
+  fold acc(UniquePrimitiveFields_unique(anon_1), write)
   rf.uniqueVar := anon_1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -220,11 +223,12 @@ method con(par_sharedVal: Ref, par_sharedVar: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_sharedVal), intType())
   requires isSubtype(typeOf(par_sharedVar), intType())
   ensures isSubtype(typeOf(ret_1), UniquePrimitiveFields())
-  ensures acc(UniquePrimitiveFields_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), UniquePrimitiveFields()) &&
+    acc(ret_1.bf_sharedVar, write) &&
+    isSubtype(typeOf(ret_1.bf_sharedVar), intType())
   ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
     intFromRef(par_sharedVal)
-  ensures (unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
-      intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar))
+  ensures intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar)
 
 
 method testReferenceFieldSetterShared(rf: Ref) returns (v_ret_0: Ref)
@@ -234,7 +238,9 @@ method testReferenceFieldSetterShared(rf: Ref) returns (v_ret_0: Ref)
   var anon_0: Ref
   var anon_1: Ref
   anon_0 := con(intToRef(13), intToRef(14))
+  fold acc(UniquePrimitiveFields_unique(anon_0), write)
   anon_1 := con(intToRef(17), intToRef(18))
+  fold acc(UniquePrimitiveFields_unique(anon_1), write)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

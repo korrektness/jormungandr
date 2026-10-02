@@ -71,11 +71,10 @@ predicate Serializable_unique(this: Ref) {
 method con(par_data: Ref, par_next: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_data), intType())
   requires isSubtype(typeOf(par_next), nullable(Link()))
-  requires par_next != nullValue() ==> acc(Link_unique(par_next), write)
   ensures isSubtype(typeOf(ret_1), Link())
-  ensures acc(Link_unique(ret_1), write)
-  ensures (unfolding acc(Link_unique(ret_1), write) in
-      intFromRef(ret_1.bf_data) == intFromRef(par_data))
+  ensures isSubtype(typeOf(ret_1), Link()) && acc(ret_1.bf_data, write) &&
+    isSubtype(typeOf(ret_1.bf_data), intType())
+  ensures intFromRef(ret_1.bf_data) == intFromRef(par_data)
   ensures g_next(ret_1) == par_next
 
 
@@ -89,7 +88,9 @@ method test() returns (v_ret_0: Ref)
   var expr2: Ref
   var anon_2: Ref
   anon_0 := con(intToRef(3), nullValue())
+  fold acc(Link_unique(anon_0), write)
   l := con(intToRef(5), anon_0)
+  fold acc(Link_unique(l), write)
   anon_1 := havoc(intType())
   expr1 := boolToRef(intFromRef(anon_1) == 5)
   assert boolFromRef(expr1)

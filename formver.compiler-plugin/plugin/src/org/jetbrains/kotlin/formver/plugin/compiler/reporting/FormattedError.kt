@@ -142,6 +142,7 @@ class OwnershipError(private val sourceRole: SourceRole.Ownership) : FormattedEr
     fun msg(): Pair<String, String> = when (val site = sourceRole.site) {
         SourceRole.Ownership.Site.Unfold -> sourceRole.path to "to unfold it"
         SourceRole.Ownership.Site.Fold -> sourceRole.path to "to fold it"
+        SourceRole.Ownership.Site.Construction -> "the arguments stored in a new ${sourceRole.path}" to "to fold it"
         SourceRole.Ownership.Site.Havoc -> sourceRole.path to "to havoc it after a call"
         SourceRole.Ownership.Site.LoopHead -> sourceRole.path to "at the loop head"
         is SourceRole.Ownership.Site.Precondition ->

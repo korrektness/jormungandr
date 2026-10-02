@@ -37,7 +37,11 @@ method con(par_size: Ref, par_value: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), CustomList())
   ensures acc(ret_1.p_size, write)
   ensures intFromRef(ret_1.p_size) >= 0
-  ensures acc(CustomList_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), CustomList()) &&
+    (isSubtype(typeOf(ret_1), AbstractList()) &&
+    (isSubtype(typeOf(ret_1), AbstractCollection()) &&
+    acc(Collection_unique(ret_1), write)) &&
+    acc(List_unique(ret_1), write))
   ensures intFromRef(ret_1.p_size) == intFromRef(par_size)
 
 
@@ -73,6 +77,9 @@ method test(n: Ref) returns (v_ret_0: Ref)
   var customList: Ref
   var anon_0: Ref
   customList := con(n, intToRef(0))
+  fold acc(AbstractCollection_unique(customList), write)
+  fold acc(AbstractList_unique(customList), write)
+  fold acc(CustomList_unique(customList), write)
   anon_0 := isEmpty(customList)
   if (!boolFromRef(anon_0)) {
     var anon_1: Ref

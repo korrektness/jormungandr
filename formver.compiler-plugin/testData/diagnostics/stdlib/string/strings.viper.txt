@@ -30,7 +30,6 @@ predicate StringBox_unique(this: Ref) {
 method con(par_str: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_str), stringType())
   ensures isSubtype(typeOf(ret_1), StringBox())
-  ensures acc(StringBox_unique(ret_1), write)
   ensures stringFromRef(g_str(ret_1)) == stringFromRef(par_str)
 
 
@@ -43,8 +42,10 @@ method testType(s: Ref) returns (v_ret_0: Ref)
   var cond2: Ref
   var anon_1: Ref
   anon_0 := con(s)
+  fold acc(StringBox_unique(anon_0), write)
   cond1 := boolToRef(stringFromRef(g_str(anon_0)) == stringFromRef(s))
   anon_1 := con(stringToRef(Seq(115, 116, 114)))
+  fold acc(StringBox_unique(anon_1), write)
   cond2 := boolToRef(stringFromRef(g_str(anon_1)) == Seq(115, 116, 114))
   assert boolFromRef(cond1)
   assert boolFromRef(cond2)
@@ -84,7 +85,6 @@ predicate StringBox_unique(this: Ref) {
 method con(par_str: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_str), stringType())
   ensures isSubtype(typeOf(ret_1), StringBox())
-  ensures acc(StringBox_unique(ret_1), write)
   ensures stringFromRef(g_str(ret_1)) == stringFromRef(par_str)
 
 
@@ -97,6 +97,7 @@ method testLengthField(s: Ref) returns (v_ret_0: Ref)
   var anon: Ref
   len := stringLength(s)
   anon := con(stringToRef(Seq(115, 116, 114)))
+  fold acc(StringBox_unique(anon), write)
   cond1 := boolToRef(|stringFromRef(g_str(anon))| == 3)
   assert boolFromRef(cond1)
   label lbl_ret_0

@@ -690,7 +690,6 @@ function size(v_this: Ref): Ref
 
 method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), CustomClass())
-  ensures acc(CustomClass_unique(ret_1), write)
 
 
 method extensionRun(v_this_extension: Ref, block: Ref) returns (ret_6: Ref)
@@ -721,6 +720,7 @@ method testCustomClass() returns (v_ret_0: Ref)
   var anon_5: Ref
   var v_ret_9: Ref
   custom := con()
+  fold acc(CustomClass_unique(custom), write)
   v_ret_5 := member(custom)
   goto lbl_ret_5
   label lbl_ret_5

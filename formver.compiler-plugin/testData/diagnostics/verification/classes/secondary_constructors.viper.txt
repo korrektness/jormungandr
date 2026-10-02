@@ -42,7 +42,6 @@ method con_c_BothConstructors_args_Boolean(b: Ref) returns (ret_1: Ref)
 method con_c_BothConstructors_args_Int(par_a: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_a), intType())
   ensures isSubtype(typeOf(ret_2), c_BothConstructors())
-  ensures acc(c_BothConstructors_unique(ret_2), write)
   ensures intFromRef(g_a(ret_2)) == intFromRef(par_a)
 
 
@@ -53,6 +52,7 @@ method primaryAndSecondConstructor() returns (v_ret_0: Ref)
   var bc2: Ref
   bc1 := con_c_BothConstructors_args_Boolean(boolToRef(false))
   bc2 := con_c_BothConstructors_args_Int(intToRef(42))
+  fold acc(c_BothConstructors_unique(bc2), write)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

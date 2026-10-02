@@ -223,7 +223,6 @@ predicate T_unique(this: Ref) {
 
 method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), T())
-  ensures acc(T_unique(ret_1), write)
 
 
 method unique_result() returns (v_ret_0: Ref)
@@ -231,6 +230,7 @@ method unique_result() returns (v_ret_0: Ref)
   ensures acc(T_unique(v_ret_0), write)
 {
   v_ret_0 := con()
+  fold acc(T_unique(v_ret_0), write)
   goto lbl_ret_0
   label lbl_ret_0
 }

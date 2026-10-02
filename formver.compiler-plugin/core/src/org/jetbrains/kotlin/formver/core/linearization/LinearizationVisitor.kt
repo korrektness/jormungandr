@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.attributingFailuresTo
 import org.jetbrains.kotlin.formver.core.asPosition
+import org.jetbrains.kotlin.formver.core.conversion.constructedOpen
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.isOf
@@ -26,6 +27,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
+import org.jetbrains.kotlin.formver.core.names.sourceSpelling
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Exp.Companion.toConjunction
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
@@ -158,6 +160,7 @@ data class LinearizationVisitor(
             ctx.addStatement {
                 e.method.toMethodCall(argsViper, result.toLocalVarUse(ctx.source.asPosition), ctx.source.asPosition)
             }
+            e.method.constructedOpen?.let { ctx.foldConstructed(result, it) }
             for ((path, formal) in heldArgs) {
                 when {
                     !formal.isBorrowed -> ctx.foldState?.release(ctx, path)
@@ -944,6 +947,18 @@ private fun LinearizationContext.exposeFor(path: OwnedPath, formal: VariableEmbe
     val state = foldState ?: return
     val cls = state.trackedClass(formal.type) ?: return state.close(this, path)
     state.expose(this, path, cls)
+}
+
+/**
+ * Fold the predicates of [cls] and its superclasses for [obj], which a constructor returned open, the topmost first.
+ * Folding takes the predicates of the arguments the constructor stored in `@Unique` properties.
+ */
+private fun LinearizationContext.foldConstructed(obj: VariableEmbedding, cls: ClassTypeEmbedding) {
+    val exp = obj.toViperExp(this)
+    val info = SourceRole.Ownership("`${cls.name.sourceSpelling}`", SourceRole.Ownership.Site.Construction).asInfo
+    for (chainClass in generateSequence(cls, typeResolver::superClass).toList().asReversed()) {
+        addStatement { Stmt.Fold(hierarchyPredicateAccess(exp, chainClass, source, info), source.asPosition, info) }
+    }
 }
 
 /** Whether [this] produces a value whose unique predicate the caller receives. */

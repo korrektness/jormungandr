@@ -14,7 +14,8 @@ function g_data(this: Ref): Ref
 method con(par_data: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_data), anyType())
   ensures isSubtype(typeOf(ret_1), UniquePred())
-  ensures acc(UniquePred_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), UniquePred()) &&
+    isSubtype(typeOf(ret_1), Predicate())
 
 
 method test(p: Ref) returns (v_ret_0: Ref)
@@ -51,7 +52,8 @@ function g_data(this: Ref): Ref
 method con(par_data: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_data), anyType())
   ensures isSubtype(typeOf(ret_1), UniquePred())
-  ensures acc(UniquePred_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), UniquePred()) &&
+    isSubtype(typeOf(ret_1), Predicate())
 
 
 method contains(tree: Ref, search: Ref) returns (v_ret_0: Ref)
@@ -128,6 +130,7 @@ method combine(par_left: Ref, par_right: Ref) returns (v_ret_0: Ref)
   fold acc(Tree_unique(par_left), write)
   fold acc(Tree_unique(par_right), write)
   res := con_Tree(par_left, par_right, l0_data)
+  fold acc(Tree_unique(res), write)
   v_ret_0 := res
   goto lbl_ret_0
   label lbl_ret_0
@@ -136,21 +139,22 @@ method combine(par_left: Ref, par_right: Ref) returns (v_ret_0: Ref)
 method con_Tree(par_left: Ref, par_right: Ref, par_data: Ref)
   returns (ret_2: Ref)
   requires isSubtype(typeOf(par_left), nullable(Tree()))
-  requires par_left != nullValue() ==> acc(Tree_unique(par_left), write)
   requires isSubtype(typeOf(par_right), nullable(Tree()))
-  requires par_right != nullValue() ==> acc(Tree_unique(par_right), write)
   requires isSubtype(typeOf(par_data), intType())
   ensures isSubtype(typeOf(ret_2), Tree())
-  ensures acc(Tree_unique(ret_2), write)
-  ensures (unfolding acc(Tree_unique(ret_2), write) in
-      ret_2.bf_left == par_left)
-  ensures (unfolding acc(Tree_unique(ret_2), write) in
-      ret_2.bf_right == par_right)
-  ensures (unfolding acc(Tree_unique(ret_2), write) in
-      intFromRef(ret_2.bf_data) == intFromRef(par_data))
+  ensures isSubtype(typeOf(ret_2), Tree()) && acc(ret_2.bf_left, write) &&
+    isSubtype(typeOf(ret_2.bf_left), nullable(Tree())) &&
+    acc(ret_2.bf_right, write) &&
+    isSubtype(typeOf(ret_2.bf_right), nullable(Tree())) &&
+    acc(ret_2.bf_data, write) &&
+    isSubtype(typeOf(ret_2.bf_data), intType())
+  ensures ret_2.bf_left == par_left
+  ensures ret_2.bf_right == par_right
+  ensures intFromRef(ret_2.bf_data) == intFromRef(par_data)
 
 
 method con_UniquePred(par_data: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_data), anyType())
   ensures isSubtype(typeOf(ret_1), UniquePred())
-  ensures acc(UniquePred_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), UniquePred()) &&
+    isSubtype(typeOf(ret_1), Predicate())

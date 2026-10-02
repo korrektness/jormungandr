@@ -1,0 +1,778 @@
+/unique_constructors.kt: info: Generated Viper text for freshNested:
+field bf_inner: Ref
+
+field bf_x: Ref
+
+field bf_y: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.bf_x, write) &&
+  isSubtype(typeOf(this.bf_x), intType())
+}
+
+predicate Outer_unique(this: Ref) {
+  isSubtype(typeOf(this), Outer()) && acc(this.bf_inner, write) &&
+  isSubtype(typeOf(this.bf_inner), Inner()) &&
+  acc(Inner_unique(this.bf_inner), write) &&
+  acc(this.bf_y, write) &&
+  isSubtype(typeOf(this.bf_y), intType())
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+method con_Inner(par_x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_2), Inner())
+  ensures isSubtype(typeOf(ret_2), Inner()) && acc(ret_2.bf_x, write) &&
+    isSubtype(typeOf(ret_2.bf_x), intType())
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
+
+
+method con_Outer(par_inner: Ref, par_y: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_inner), Inner())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(ret_1), Outer())
+  ensures isSubtype(typeOf(ret_1), Outer()) && acc(ret_1.bf_inner, write) &&
+    isSubtype(typeOf(ret_1.bf_inner), Inner()) &&
+    acc(ret_1.bf_y, write) &&
+    isSubtype(typeOf(ret_1.bf_y), intType())
+  ensures ret_1.bf_inner == par_inner
+  ensures intFromRef(ret_1.bf_y) == intFromRef(par_y)
+
+
+method freshNested() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var o: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := con_Inner(intToRef(0))
+  fold acc(Inner_unique(anon_0), write)
+  o := con_Outer(anon_0, intToRef(1))
+  fold acc(Outer_unique(o), write)
+  unfold acc(Outer_unique(o), write)
+  anon_3 := o.bf_inner
+  unfold acc(Inner_unique(o.bf_inner), write)
+  anon_2 := anon_3.bf_x
+  fold acc(Inner_unique(o.bf_inner), write)
+  fold acc(Outer_unique(o), write)
+  if (intFromRef(anon_2) == 0) {
+    var anon_4: Ref
+    unfold acc(Outer_unique(o), write)
+    anon_4 := o.bf_y
+    anon_1 := boolToRef(intFromRef(anon_4) == 1)
+    fold acc(Outer_unique(o), write)
+  } else {
+    anon_1 := boolToRef(false)}
+  assert boolFromRef(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for storedLocal:
+field bf_inner: Ref
+
+field bf_x: Ref
+
+field bf_y: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.bf_x, write) &&
+  isSubtype(typeOf(this.bf_x), intType())
+}
+
+predicate Outer_unique(this: Ref) {
+  isSubtype(typeOf(this), Outer()) && acc(this.bf_inner, write) &&
+  isSubtype(typeOf(this.bf_inner), Inner()) &&
+  acc(Inner_unique(this.bf_inner), write) &&
+  acc(this.bf_y, write) &&
+  isSubtype(typeOf(this.bf_y), intType())
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+method con_Inner(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Inner())
+  ensures isSubtype(typeOf(ret_1), Inner()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+method con_Outer(par_inner: Ref, par_y: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_inner), Inner())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(ret_2), Outer())
+  ensures isSubtype(typeOf(ret_2), Outer()) && acc(ret_2.bf_inner, write) &&
+    isSubtype(typeOf(ret_2.bf_inner), Inner()) &&
+    acc(ret_2.bf_y, write) &&
+    isSubtype(typeOf(ret_2.bf_y), intType())
+  ensures ret_2.bf_inner == par_inner
+  ensures intFromRef(ret_2.bf_y) == intFromRef(par_y)
+
+
+method storedLocal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var o: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  i := con_Inner(intToRef(3))
+  fold acc(Inner_unique(i), write)
+  unfold acc(Inner_unique(i), write)
+  i.bf_x := intToRef(4)
+  fold acc(Inner_unique(i), write)
+  o := con_Outer(i, intToRef(1))
+  fold acc(Outer_unique(o), write)
+  unfold acc(Outer_unique(o), write)
+  anon_1 := o.bf_inner
+  unfold acc(Inner_unique(o.bf_inner), write)
+  anon_0 := anon_1.bf_x
+  assert intFromRef(anon_0) == 4
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for storedBySuperclass:
+field bf_s: Ref
+
+field bf_t: Ref
+
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.x, write) &&
+  isSubtype(typeOf(this.x), intType())
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate Sub_unique(this: Ref) {
+  isSubtype(typeOf(this), Sub()) && acc(this.bf_t, write) &&
+  isSubtype(typeOf(this.bf_t), intType()) &&
+  acc(Sup_unique(this), write)
+}
+
+predicate Sup_unique(this: Ref) {
+  isSubtype(typeOf(this), Sup()) && acc(this.bf_s, write) &&
+  isSubtype(typeOf(this.bf_s), Inner()) &&
+  acc(Inner_unique(this.bf_s), write)
+}
+
+method con(par_s: Ref, par_t: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_s), Inner())
+  requires isSubtype(typeOf(par_t), intType())
+  ensures isSubtype(typeOf(ret_1), Sub())
+  ensures isSubtype(typeOf(ret_1), Sub()) && acc(ret_1.bf_t, write) &&
+    isSubtype(typeOf(ret_1.bf_t), intType()) &&
+    (isSubtype(typeOf(ret_1), Sup()) && acc(ret_1.bf_s, write) &&
+    isSubtype(typeOf(ret_1.bf_s), Inner()))
+  ensures ret_1.bf_s == par_s
+  ensures intFromRef(ret_1.bf_t) == intFromRef(par_t)
+
+
+method storedBySuperclass(i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(i), Inner())
+  requires acc(Inner_unique(i), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var sub: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  unfold acc(Inner_unique(i), write)
+  i.x := intToRef(7)
+  fold acc(Inner_unique(i), write)
+  sub := con(i, intToRef(2))
+  fold acc(Sup_unique(sub), write)
+  fold acc(Sub_unique(sub), write)
+  unfold acc(Sub_unique(sub), write)
+  unfold acc(Sup_unique(sub), write)
+  anon_2 := sub.bf_s
+  unfold acc(Inner_unique(sub.bf_s), write)
+  anon_1 := anon_2.x
+  fold acc(Inner_unique(sub.bf_s), write)
+  fold acc(Sup_unique(sub), write)
+  fold acc(Sub_unique(sub), write)
+  if (intFromRef(anon_1) == 7) {
+    var anon_3: Ref
+    unfold acc(Sub_unique(sub), write)
+    anon_3 := sub.bf_t
+    anon_0 := boolToRef(intFromRef(anon_3) == 2)
+    fold acc(Sub_unique(sub), write)
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for storedBySuperclassProbeEnd:
+field bf_s: Ref
+
+field bf_t: Ref
+
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.x, write) &&
+  isSubtype(typeOf(this.x), intType())
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate Sub_unique(this: Ref) {
+  isSubtype(typeOf(this), Sub()) && acc(this.bf_t, write) &&
+  isSubtype(typeOf(this.bf_t), intType()) &&
+  acc(Sup_unique(this), write)
+}
+
+predicate Sup_unique(this: Ref) {
+  isSubtype(typeOf(this), Sup()) && acc(this.bf_s, write) &&
+  isSubtype(typeOf(this.bf_s), Inner()) &&
+  acc(Inner_unique(this.bf_s), write)
+}
+
+method con(par_s: Ref, par_t: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_s), Inner())
+  requires isSubtype(typeOf(par_t), intType())
+  ensures isSubtype(typeOf(ret_1), Sub())
+  ensures isSubtype(typeOf(ret_1), Sub()) && acc(ret_1.bf_t, write) &&
+    isSubtype(typeOf(ret_1.bf_t), intType()) &&
+    (isSubtype(typeOf(ret_1), Sup()) && acc(ret_1.bf_s, write) &&
+    isSubtype(typeOf(ret_1.bf_s), Inner()))
+  ensures ret_1.bf_s == par_s
+  ensures intFromRef(ret_1.bf_t) == intFromRef(par_t)
+
+
+method storedBySuperclassProbeEnd(i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(i), Inner())
+  requires acc(Inner_unique(i), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var sub: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  sub := con(i, intToRef(2))
+  fold acc(Sup_unique(sub), write)
+  fold acc(Sub_unique(sub), write)
+  unfold acc(Sub_unique(sub), write)
+  unfold acc(Sup_unique(sub), write)
+  anon_1 := sub.bf_s
+  unfold acc(Inner_unique(sub.bf_s), write)
+  anon_0 := anon_1.x
+  anon_3 := sub.bf_s
+  anon_2 := anon_3.x
+  assert intFromRef(anon_0) == intFromRef(anon_2)
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for initializedInBody:
+field bf_y: Ref
+
+field inner: Ref
+
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Holder_unique(this: Ref) {
+  isSubtype(typeOf(this), Holder()) && acc(this.bf_y, write) &&
+  isSubtype(typeOf(this.bf_y), intType()) &&
+  acc(this.inner, write) &&
+  isSubtype(typeOf(this.inner), Inner()) &&
+  acc(Inner_unique(this.inner), write)
+}
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.x, write) &&
+  isSubtype(typeOf(this.x), intType())
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+method con(par_y: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(ret_1), Holder())
+  ensures isSubtype(typeOf(ret_1), Holder()) && acc(ret_1.bf_y, write) &&
+    isSubtype(typeOf(ret_1.bf_y), intType()) &&
+    acc(ret_1.inner, write) &&
+    isSubtype(typeOf(ret_1.inner), Inner()) &&
+    acc(Inner_unique(ret_1.inner), write)
+  ensures intFromRef(ret_1.bf_y) == intFromRef(par_y)
+
+
+method initializedInBody() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var h: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  h := con(intToRef(1))
+  fold acc(Holder_unique(h), write)
+  unfold acc(Holder_unique(h), write)
+  anon_0 := h.inner
+  unfold acc(Inner_unique(h.inner), write)
+  anon_0.x := intToRef(2)
+  anon_2 := h.bf_y
+  fold acc(Inner_unique(h.inner), write)
+  fold acc(Holder_unique(h), write)
+  if (intFromRef(anon_2) == 1) {
+    var anon_3: Ref
+    var anon_4: Ref
+    unfold acc(Holder_unique(h), write)
+    anon_4 := h.inner
+    unfold acc(Inner_unique(h.inner), write)
+    anon_3 := anon_4.x
+    anon_1 := boolToRef(intFromRef(anon_3) == 2)
+    fold acc(Inner_unique(h.inner), write)
+    fold acc(Holder_unique(h), write)
+  } else {
+    anon_1 := boolToRef(false)}
+  assert boolFromRef(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for initializedInBodyUnconstrained:
+field bf_y: Ref
+
+field inner: Ref
+
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Holder_unique(this: Ref) {
+  isSubtype(typeOf(this), Holder()) && acc(this.bf_y, write) &&
+  isSubtype(typeOf(this.bf_y), intType()) &&
+  acc(this.inner, write) &&
+  isSubtype(typeOf(this.inner), Inner()) &&
+  acc(Inner_unique(this.inner), write)
+}
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.x, write) &&
+  isSubtype(typeOf(this.x), intType())
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+method con(par_y: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(ret_1), Holder())
+  ensures isSubtype(typeOf(ret_1), Holder()) && acc(ret_1.bf_y, write) &&
+    isSubtype(typeOf(ret_1.bf_y), intType()) &&
+    acc(ret_1.inner, write) &&
+    isSubtype(typeOf(ret_1.inner), Inner()) &&
+    acc(Inner_unique(ret_1.inner), write)
+  ensures intFromRef(ret_1.bf_y) == intFromRef(par_y)
+
+
+method initializedInBodyUnconstrained() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var h: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  h := con(intToRef(1))
+  fold acc(Holder_unique(h), write)
+  unfold acc(Holder_unique(h), write)
+  anon_1 := h.inner
+  unfold acc(Inner_unique(h.inner), write)
+  anon_0 := anon_1.x
+  assert intFromRef(anon_0) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for twoNodes:
+field bf_next: Ref
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Node_unique(this: Ref) {
+  isSubtype(typeOf(this), Node()) && acc(this.bf_next, write) &&
+  isSubtype(typeOf(this.bf_next), nullable(Node())) &&
+  (this.bf_next != nullValue() ==> acc(Node_unique(this.bf_next), write))
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+method con(par_value: Ref, par_next: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  ensures isSubtype(typeOf(ret_1), Node())
+  ensures isSubtype(typeOf(ret_1), Node()) && acc(ret_1.bf_next, write) &&
+    isSubtype(typeOf(ret_1.bf_next), nullable(Node()))
+  ensures intFromRef(g_value(ret_1)) == intFromRef(par_value)
+  ensures ret_1.bf_next == par_next
+
+
+method twoNodes() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l: Ref
+  var anon_0: Ref
+  var n: Ref
+  var anon_1: Ref
+  anon_0 := con(intToRef(2), nullValue())
+  fold acc(Node_unique(anon_0), write)
+  l := con(intToRef(1), anon_0)
+  fold acc(Node_unique(l), write)
+  unfold acc(Node_unique(l), write)
+  n := l.bf_next
+  if (intFromRef(g_value(l)) == 1) {
+    anon_1 := notBool(boolToRef(n == nullValue()))
+  } else {
+    anon_1 := boolToRef(false)}
+  assert boolFromRef(anon_1)
+  if (!(n == nullValue())) {
+    var anon_2: Ref
+    if (intFromRef(g_value(n)) == 2) {
+      var anon_3: Ref
+      if (n != nullValue()) {
+        unfold acc(Node_unique(n), write)
+      }
+      anon_3 := n.bf_next
+      anon_2 := boolToRef(anon_3 == nullValue())
+      if (n != nullValue()) {
+        fold acc(Node_unique(n), write)
+      }
+    } else {
+      anon_2 := boolToRef(false)}
+    assert boolFromRef(anon_2)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for storedInVal:
+field bf_len: Ref
+
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Buf())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Buf_unique(this: Ref) {
+  isSubtype(typeOf(this), Buf()) &&
+  acc(IntArray_unique(g_data(this)), write) &&
+  acc(this.bf_len, write) &&
+  isSubtype(typeOf(this.bf_len), intType())
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+method con(par_data: Ref, par_len: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires isSubtype(typeOf(par_len), intType())
+  ensures isSubtype(typeOf(ret_2), Buf())
+  ensures isSubtype(typeOf(ret_2), Buf()) && acc(ret_2.bf_len, write) &&
+    isSubtype(typeOf(ret_2.bf_len), intType())
+  ensures g_data(ret_2) == par_data
+  ensures intFromRef(ret_2.bf_len) == intFromRef(par_len)
+
+
+method storedInVal(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires acc(IntArray_unique(a), write)
+  requires arraySize(a) == 3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var b: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  unfold acc(IntArray_unique(a), write)
+  a.contents := a.contents[0 := 5]
+  fold acc(IntArray_unique(a), write)
+  b := con(a, intToRef(1))
+  fold acc(Buf_unique(b), write)
+  if (arraySize(g_data(b)) == 3) {
+    var anon_2: Ref
+    assert 0 >= 0
+    assert 0 < arraySize(g_data(b))
+    unfold acc(Buf_unique(b), write)
+    unfold acc(IntArray_unique(g_data(b)), write)
+    anon_2 := intToRef(g_data(b).contents[0])
+    anon_1 := boolToRef(intFromRef(anon_2) == 5)
+    fold acc(IntArray_unique(g_data(b)), write)
+    fold acc(Buf_unique(b), write)
+  } else {
+    anon_1 := boolToRef(false)}
+  if (boolFromRef(anon_1)) {
+    var anon_3: Ref
+    unfold acc(Buf_unique(b), write)
+    anon_3 := b.bf_len
+    anon_0 := boolToRef(intFromRef(anon_3) == 1)
+    fold acc(Buf_unique(b), write)
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for manualStored:
+field bf_data: Ref
+
+field bf_left: Ref
+
+function exp(this: Ref): Ref
+  requires isSubtype(typeOf(this), Predicate())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), UniquePred())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Permission_unique(this: Ref) {
+  isSubtype(typeOf(this), Permission())
+}
+
+predicate Predicate_unique(this: Ref) {
+  isSubtype(typeOf(this), Predicate())
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate Tree_unique(this: Ref) {
+  isSubtype(typeOf(this), Tree()) && acc(this.bf_left, write) &&
+  isSubtype(typeOf(this.bf_left), nullable(Tree())) &&
+  (this.bf_left != nullValue() ==> acc(Tree_unique(this.bf_left), write)) &&
+  acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), intType())
+}
+
+predicate UniquePred_unique(this: Ref) {
+  isSubtype(typeOf(this), UniquePred()) &&
+  acc(Predicate_unique(this), write)
+}
+
+method con_Tree(par_left: Ref, par_data: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_left), nullable(Tree()))
+  requires isSubtype(typeOf(par_data), intType())
+  ensures isSubtype(typeOf(ret_2), Tree())
+  ensures isSubtype(typeOf(ret_2), Tree()) && acc(ret_2.bf_left, write) &&
+    isSubtype(typeOf(ret_2.bf_left), nullable(Tree())) &&
+    acc(ret_2.bf_data, write) &&
+    isSubtype(typeOf(ret_2.bf_data), intType())
+  ensures ret_2.bf_left == par_left
+  ensures intFromRef(ret_2.bf_data) == intFromRef(par_data)
+
+
+method con_UniquePred(par_data: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_data), anyType())
+  ensures isSubtype(typeOf(ret_1), UniquePred())
+  ensures isSubtype(typeOf(ret_1), UniquePred()) &&
+    isSubtype(typeOf(ret_1), Predicate())
+
+
+method manualStored(l: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), Tree())
+  requires acc(Tree_unique(l), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_t: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_left: Ref
+  unfold acc(Tree_unique(l), write)
+  l.bf_data := intToRef(5)
+  fold acc(Tree_unique(l), write)
+  l0_t := con_Tree(l, intToRef(1))
+  fold acc(Tree_unique(l0_t), write)
+  unfold acc(Tree_unique(l0_t), write)
+  anon_1 := l0_t.bf_data
+  if (intFromRef(anon_1) == 1) {
+    var anon_2: Ref
+    anon_2 := l0_t.bf_left
+    anon_0 := notBool(boolToRef(anon_2 == nullValue()))
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  l0_left := l0_t.bf_left
+  if (!(l0_left == nullValue())) {
+    var anon_3: Ref
+    unfold acc(Tree_unique(l0_left), write)
+    anon_3 := l0_left.bf_data
+    assert intFromRef(anon_3) == 5
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

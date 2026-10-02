@@ -84,13 +84,11 @@ method con(par_data: Ref, par_left: Ref, par_right: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(par_data), intType())
   requires isSubtype(typeOf(par_left), nullable(Node()))
-  requires par_left != nullValue() ==> acc(Node_unique(par_left), write)
   requires isSubtype(typeOf(par_right), nullable(Node()))
-  requires par_right != nullValue() ==> acc(Node_unique(par_right), write)
   ensures isSubtype(typeOf(ret_1), Node())
-  ensures acc(Node_unique(ret_1), write)
-  ensures (unfolding acc(Node_unique(ret_1), write) in
-      intFromRef(ret_1.bf_data) == intFromRef(par_data))
+  ensures isSubtype(typeOf(ret_1), Node()) && acc(ret_1.bf_data, write) &&
+    isSubtype(typeOf(ret_1.bf_data), intType())
+  ensures intFromRef(ret_1.bf_data) == intFromRef(par_data)
   ensures g_left(ret_1) == par_left
   ensures g_right(ret_1) == par_right
 
@@ -108,10 +106,15 @@ method test() returns (v_ret_0: Ref)
   var expr2: Ref
   var anon_5: Ref
   anon_0 := con(intToRef(4), nullValue(), nullValue())
+  fold acc(Node_unique(anon_0), write)
   anon_2 := con(intToRef(2), nullValue(), nullValue())
+  fold acc(Node_unique(anon_2), write)
   anon_3 := con(intToRef(1), nullValue(), nullValue())
+  fold acc(Node_unique(anon_3), write)
   anon_1 := con(intToRef(3), anon_2, anon_3)
+  fold acc(Node_unique(anon_1), write)
   n := con(intToRef(5), anon_0, anon_1)
+  fold acc(Node_unique(n), write)
   anon_4 := havoc(intType())
   expr1 := boolToRef(intFromRef(anon_4) == 5)
   assert boolFromRef(expr1)

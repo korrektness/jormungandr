@@ -70,7 +70,6 @@ method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
   ensures isSubtype(typeOf(ret_3), Node())
-  ensures acc(Node_unique(ret_3), write)
   ensures intFromRef(g_value(ret_3)) == intFromRef(par_value)
   ensures g_next(ret_3) == par_next
 
@@ -93,10 +92,12 @@ method insert(x: Ref, l: Ref) returns (v_ret_0: Ref)
     anon_5 := leInts(x, g_value(l))}
   if (boolFromRef(anon_5)) {
     v_ret_0 := con(x, l)
+    fold acc(Node_unique(v_ret_0), write)
     goto lbl_ret_0
   }
   anon_6 := insert(x, g_next(l))
   v_ret_0 := con(g_value(l), anon_6)
+  fold acc(Node_unique(v_ret_0), write)
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -206,7 +207,6 @@ method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
   ensures isSubtype(typeOf(ret_3), Node())
-  ensures acc(Node_unique(ret_3), write)
   ensures intFromRef(g_value(ret_3)) == intFromRef(par_value)
   ensures g_next(ret_3) == par_next
 
@@ -241,10 +241,12 @@ method insertProbeStart(x: Ref, l: Ref) returns (v_ret_0: Ref)
     anon_5 := leInts(x, g_value(l))}
   if (boolFromRef(anon_5)) {
     v_ret_0 := con(x, l)
+    fold acc(Node_unique(v_ret_0), write)
     goto lbl_ret_0
   }
   anon_6 := insert(x, g_next(l))
   v_ret_0 := con(g_value(l), anon_6)
+  fold acc(Node_unique(v_ret_0), write)
   goto lbl_ret_0
   label lbl_ret_0
 }

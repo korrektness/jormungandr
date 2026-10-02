@@ -75,12 +75,10 @@ method differInNullability(i: Ref) returns (v_ret_0: Ref)
 /function_overloading.kt: info: Generated Viper text for testGlobalScopeOverloading:
 method con_Bar() returns (ret_6: Ref)
   ensures isSubtype(typeOf(ret_6), Bar())
-  ensures acc(Bar_unique(ret_6), write)
 
 
 method con_Foo() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), Foo())
-  ensures acc(Foo_unique(ret_4), write)
 
 
 method f_fakePrint_args_Bar_ret_Unit(b: Ref) returns (ret_5: Ref)
@@ -115,8 +113,10 @@ method testGlobalScopeOverloading() returns (v_ret_0: Ref)
   anon_0 := f_fakePrint_args_Int_ret_Unit(intToRef(42))
   anon_1 := f_fakePrint_args_Boolean_ret_Unit(boolToRef(true))
   anon_3 := con_Foo()
+  fold acc(Foo_unique(anon_3), write)
   anon_2 := f_fakePrint_args_Foo_ret_Unit(anon_3)
   anon_5 := con_Bar()
+  fold acc(Bar_unique(anon_5), write)
   anon_4 := f_fakePrint_args_Bar_ret_Unit(anon_5)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -139,12 +139,10 @@ method c_Bar_f_baz_args_c_Bar_c_Bar_ret_Unit(this: Ref, par_b: Ref)
 
 method con_Foo() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), Foo())
-  ensures acc(Foo_unique(ret_3), write)
 
 
 method con_c_Bar() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), c_Bar())
-  ensures acc(c_Bar_unique(ret_1), write)
 
 
 method testClassFunctionOverloading() returns (v_ret_0: Ref)
@@ -156,9 +154,12 @@ method testClassFunctionOverloading() returns (v_ret_0: Ref)
   var anon_2: Ref
   var anon_3: Ref
   l0_b := con_c_Bar()
+  fold acc(c_Bar_unique(l0_b), write)
   anon_1 := con_Foo()
+  fold acc(Foo_unique(anon_1), write)
   anon_0 := c_Bar_f_baz_args_c_Bar_Foo_ret_Unit(l0_b, anon_1)
   anon_3 := con_c_Bar()
+  fold acc(c_Bar_unique(anon_3), write)
   anon_2 := c_Bar_f_baz_args_c_Bar_c_Bar_ret_Unit(l0_b, anon_3)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())

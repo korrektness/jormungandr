@@ -40,7 +40,6 @@ function bar(this: Ref): Ref
 
 method con() returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), Foo())
-  ensures acc(Foo_unique(ret_2), write)
 
 
 method constructorReturnType() returns (v_ret_0: Ref)
@@ -49,6 +48,7 @@ method constructorReturnType() returns (v_ret_0: Ref)
 {
   var anon: Ref
   anon := con()
+  fold acc(Foo_unique(anon), write)
   v_ret_0 := boolToRef(isSubtype(typeOf(anon), Foo()))
   goto lbl_ret_0
   label lbl_ret_0

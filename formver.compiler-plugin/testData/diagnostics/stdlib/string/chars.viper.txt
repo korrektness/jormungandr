@@ -12,7 +12,6 @@ function size(this: Ref): Ref
 method con(par_char: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_char), charType())
   ensures isSubtype(typeOf(ret_1), CharBox())
-  ensures acc(CharBox_unique(ret_1), write)
   ensures charFromRef(g_char(ret_1)) == charFromRef(par_char)
 
 
@@ -25,6 +24,7 @@ method testChars(c: Ref) returns (v_ret_0: Ref)
   var cond1: Ref
   var charZ: Ref
   box := con(charToRef(97))
+  fold acc(CharBox_unique(box), write)
   charA := charToRef(97)
   cond1 := boolToRef(charFromRef(charA) == charFromRef(g_char(box)))
   assert boolFromRef(cond1)

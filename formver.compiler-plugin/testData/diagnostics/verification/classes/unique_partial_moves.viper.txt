@@ -16,9 +16,9 @@ field bf_value: Ref
 method con(par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_1), Box())
-  ensures acc(Box_unique(ret_1), write)
-  ensures (unfolding acc(Box_unique(ret_1), write) in
-      intFromRef(ret_1.bf_value) == intFromRef(par_value))
+  ensures isSubtype(typeOf(ret_1), Box()) && acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
 method fresh() returns (v_ret_0: Ref)
@@ -27,6 +27,7 @@ method fresh() returns (v_ret_0: Ref)
 {
   var b: Ref
   b := con(intToRef(0))
+  fold acc(Box_unique(b), write)
   v_ret_0 := b
   goto lbl_ret_0
   label lbl_ret_0

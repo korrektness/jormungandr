@@ -702,6 +702,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("unique_constructors.kt")
+      public void testUnique_constructors() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_constructors.kt");
+      }
+
+      @Test
       @TestMetadata("unique_fields.kt")
       public void testUnique_fields() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_fields.kt");

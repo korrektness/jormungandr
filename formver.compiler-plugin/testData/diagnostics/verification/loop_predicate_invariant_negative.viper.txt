@@ -49,4 +49,5 @@ method bump(c: Ref, k: Ref) returns (v_ret_0: Ref)
 method con(par_data: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_data), anyType())
   ensures isSubtype(typeOf(ret_3), UniquePred())
-  ensures acc(UniquePred_unique(ret_3), write)
+  ensures isSubtype(typeOf(ret_3), UniquePred()) &&
+    isSubtype(typeOf(ret_3), Predicate())

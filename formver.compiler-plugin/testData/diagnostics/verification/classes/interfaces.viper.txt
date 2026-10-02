@@ -46,7 +46,9 @@ function Impl_g_number(this: Ref): Ref
 method con(par_number: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_number), intType())
   ensures isSubtype(typeOf(ret_3), Impl())
-  ensures acc(Impl_unique(ret_3), write)
+  ensures isSubtype(typeOf(ret_3), Impl()) &&
+    acc(First_unique(ret_3), write) &&
+    acc(Second_unique(ret_3), write)
   ensures intFromRef(Impl_g_number(ret_3)) == intFromRef(par_number)
 
 
@@ -56,6 +58,7 @@ method createImpl() returns (v_ret_0: Ref)
   var impl: Ref
   var implField: Ref
   impl := con(intToRef(-1))
+  fold acc(Impl_unique(impl), write)
   implField := Impl_g_number(impl)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -160,27 +163,36 @@ function size(this: Ref): Ref
 
 method con_Impl12() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), Impl12())
-  ensures acc(Impl12_unique(ret_3), write)
+  ensures isSubtype(typeOf(ret_3), Impl12()) &&
+    acc(InterfaceWithImplementation1_unique(ret_3), write) &&
+    acc(InterfaceWithoutImplementation2_unique(ret_3), write)
 
 
 method con_Impl14() returns (ret_14: Ref)
   ensures isSubtype(typeOf(ret_14), Impl14())
-  ensures acc(Impl14_unique(ret_14), write)
+  ensures isSubtype(typeOf(ret_14), Impl14()) &&
+    acc(InterfaceWithImplementation1_unique(ret_14), write) &&
+    isSubtype(typeOf(ret_14), AbstractWithOpenImplementation4())
 
 
 method con_Impl23() returns (ret_7: Ref)
   ensures isSubtype(typeOf(ret_7), Impl23())
-  ensures acc(Impl23_unique(ret_7), write)
+  ensures isSubtype(typeOf(ret_7), Impl23()) &&
+    acc(InheritingInterfaceWithoutImplementation6_unique(ret_7), write) &&
+    isSubtype(typeOf(ret_7), AbstractWithFinalImplementation3())
 
 
 method con_Impl24() returns (ret_11: Ref)
   ensures isSubtype(typeOf(ret_11), Impl24())
-  ensures acc(Impl24_unique(ret_11), write)
+  ensures isSubtype(typeOf(ret_11), Impl24()) &&
+    acc(InterfaceWithoutImplementation2_unique(ret_11), write) &&
+    isSubtype(typeOf(ret_11), AbstractWithOpenImplementation4())
 
 
 method con_Impl3() returns (ret_9: Ref)
   ensures isSubtype(typeOf(ret_9), Impl3())
-  ensures acc(Impl3_unique(ret_9), write)
+  ensures isSubtype(typeOf(ret_9), Impl3()) &&
+    isSubtype(typeOf(ret_9), AbstractWithFinalImplementation3())
 
 
 method create6() returns (ret_15: Ref)
@@ -221,19 +233,26 @@ method createImpls() returns (v_ret_0: Ref)
   var cond4: Ref
   var cond5: Ref
   impl12 := con_Impl12()
+  fold acc(Impl12_unique(impl12), write)
   start12 := minusInts(plusInts(Impl12_g_field(impl12), intToRef(1)), intToRef(1))
   anon_0 := take1(impl12)
   anon_1 := take2(impl12)
   impl23 := con_Impl23()
+  fold acc(AbstractWithFinalImplementation3_unique(impl23), write)
+  fold acc(Impl23_unique(impl23), write)
   start23 := minusInts(plusInts(AbstractWithFinalImplementation3_g_field(impl23),
     intToRef(1)), intToRef(1))
   anon_2 := take2(impl23)
   anon_3 := take3(impl23)
   impl3 := con_Impl3()
+  fold acc(AbstractWithFinalImplementation3_unique(impl3), write)
+  fold acc(Impl3_unique(impl3), write)
   start3 := minusInts(plusInts(AbstractWithFinalImplementation3_g_field(impl3),
     intToRef(1)), intToRef(1))
   anon_4 := take3(impl3)
   impl24 := con_Impl24()
+  fold acc(AbstractWithOpenImplementation4_unique(impl24), write)
+  fold acc(Impl24_unique(impl24), write)
   anon_6 := public_g_field(impl24)
   anon_5 := anon_6
   inhale isSubtype(typeOf(anon_5), intType())
@@ -241,6 +260,8 @@ method createImpls() returns (v_ret_0: Ref)
   anon_7 := take2(impl24)
   anon_8 := take4(impl24)
   impl14 := con_Impl14()
+  fold acc(AbstractWithOpenImplementation4_unique(impl14), write)
+  fold acc(Impl14_unique(impl14), write)
   start14 := minusInts(plusInts(Impl14_g_field(impl14), intToRef(1)), intToRef(1))
   anon_9 := take1(impl14)
   anon_10 := take4(impl14)
@@ -295,7 +316,8 @@ method take4(obj: Ref) returns (ret_13: Ref)
 /interfaces.kt: info: Generated Viper text for testDiamond:
 method con() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), D())
-  ensures acc(D_unique(ret_4), write)
+  ensures isSubtype(typeOf(ret_4), D()) && acc(B_unique(ret_4), write) &&
+    (isSubtype(typeOf(ret_4), C()) && acc(A_unique(ret_4), write))
 
 
 method g_field(this: Ref) returns (ret_1: Ref)
@@ -309,6 +331,8 @@ method testDiamond() returns (v_ret_0: Ref)
   var anon_0: Ref
   var anon_1: Ref
   anon_1 := con()
+  fold acc(C_unique(anon_1), write)
+  fold acc(D_unique(anon_1), write)
   anon_0 := g_field(anon_1)
   v_ret_0 := anon_0
   inhale isSubtype(typeOf(v_ret_0), intType())
@@ -319,12 +343,14 @@ method testDiamond() returns (v_ret_0: Ref)
 /interfaces.kt: info: Generated Viper text for testVarVal:
 method con_G() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), G())
-  ensures acc(G_unique(ret_4), write)
+  ensures isSubtype(typeOf(ret_4), G()) && acc(E_unique(ret_4), write) &&
+    isSubtype(typeOf(ret_4), F())
 
 
 method con_I() returns (ret_9: Ref)
   ensures isSubtype(typeOf(ret_9), I())
-  ensures acc(I_unique(ret_9), write)
+  ensures isSubtype(typeOf(ret_9), I()) && acc(E_unique(ret_9), write) &&
+    isSubtype(typeOf(ret_9), H())
 
 
 method g_field(this: Ref) returns (ret_1: Ref)
@@ -350,11 +376,15 @@ method testVarVal() returns (v_ret_0: Ref)
   var anon_4: Ref
   var anon_5: Ref
   g := con_G()
+  fold acc(F_unique(g), write)
+  fold acc(G_unique(g), write)
   anon_1 := g_field(g)
   anon_0 := anon_1
   inhale isSubtype(typeOf(anon_0), intType())
   anon_2 := s_field(g, intToRef(1))
   i := con_I()
+  fold acc(H_unique(i), write)
+  fold acc(I_unique(i), write)
   anon_4 := g_field(i)
   anon_3 := anon_4
   inhale isSubtype(typeOf(anon_3), intType())

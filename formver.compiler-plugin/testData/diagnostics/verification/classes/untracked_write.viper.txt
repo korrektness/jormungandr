@@ -4,15 +4,16 @@ field bf_value: Ref
 method con(par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_1), Node())
-  ensures acc(Node_unique(ret_1), write)
-  ensures (unfolding acc(Node_unique(ret_1), write) in
-      intFromRef(ret_1.bf_value) == intFromRef(par_value))
+  ensures isSubtype(typeOf(ret_1), Node()) && acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
 method sharedNode() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), Node())
 {
   v_ret_0 := con(intToRef(0))
+  fold acc(Node_unique(v_ret_0), write)
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -28,9 +29,9 @@ function size(this: Ref): Ref
 method con(par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_1), Node())
-  ensures acc(Node_unique(ret_1), write)
-  ensures (unfolding acc(Node_unique(ret_1), write) in
-      intFromRef(ret_1.bf_value) == intFromRef(par_value))
+  ensures isSubtype(typeOf(ret_1), Node()) && acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
 method writeThroughConstructedLocal() returns (v_ret_0: Ref)
@@ -39,6 +40,7 @@ method writeThroughConstructedLocal() returns (v_ret_0: Ref)
   var n: Ref
   var x: Ref
   n := con(intToRef(0))
+  fold acc(Node_unique(n), write)
   x := havoc(intType())
   assert intFromRef(x) == 1
   label lbl_ret_0
@@ -114,9 +116,9 @@ method con_IntArray(par_size: Ref) returns (ret_2: Ref)
 method con_Node(par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_1), Node())
-  ensures acc(Node_unique(ret_1), write)
-  ensures (unfolding acc(Node_unique(ret_1), write) in
-      intFromRef(ret_1.bf_value) == intFromRef(par_value))
+  ensures isSubtype(typeOf(ret_1), Node()) && acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
 method writeThroughUniqueLocal() returns (v_ret_0: Ref)
@@ -128,6 +130,7 @@ method writeThroughUniqueLocal() returns (v_ret_0: Ref)
   var y: Ref
   var anon: Ref
   n := con_Node(intToRef(0))
+  fold acc(Node_unique(n), write)
   unfold acc(Node_unique(n), write)
   n.bf_value := intToRef(1)
   a := con_IntArray(intToRef(3))

@@ -32,6 +32,7 @@ method checkMemberAccess() returns (v_ret_0: Ref)
   var anon_7: Ref
   var v_ret_11: Ref
   obj := con(intToRef(42))
+  fold acc(ClassWithMember_unique(obj), write)
   inhale isSubtype(typeOf(obj), nullable(anyType()))
   anon_4 := idFun(obj)
   anon_0 := anon_4
@@ -64,7 +65,6 @@ method checkMemberAccess() returns (v_ret_0: Ref)
 method con(par_member: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_member), intType())
   ensures isSubtype(typeOf(ret_2), ClassWithMember())
-  ensures acc(ClassWithMember_unique(ret_2), write)
   ensures intFromRef(g_member(ret_2)) == intFromRef(par_member)
 
 
@@ -118,6 +118,7 @@ method checkGenericMemberAccess(box: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_4
   label lbl_ret_4
   anon_5 := con(g_wrapped(box))
+  fold acc(Box_unique(anon_5), write)
   anon_1 := anon_5
   inhale isSubtype(typeOf(anon_1), nullable(anyType()))
   inhale isSubtype(typeOf(anon_1), Box())
@@ -138,7 +139,6 @@ method checkGenericMemberAccess(box: Ref) returns (v_ret_0: Ref)
 method con(par_wrapped: Ref) returns (ret_8: Ref)
   requires isSubtype(typeOf(par_wrapped), nullable(anyType()))
   ensures isSubtype(typeOf(ret_8), Box())
-  ensures acc(Box_unique(ret_8), write)
   ensures g_wrapped(ret_8) == par_wrapped
 
 

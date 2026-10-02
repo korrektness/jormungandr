@@ -4,6 +4,11 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.analysis.checkers.isPrimaryConstructor
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.utils.correspondingValueParameterFromPrimaryConstructor
+import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
+import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
+import org.jetbrains.kotlin.fir.references.toResolvedConstructorSymbol
+import org.jetbrains.kotlin.fir.references.toResolvedValueParameterSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
@@ -14,6 +19,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PlaceholderVariableEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FunctionTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.isBorrowed
@@ -39,11 +46,6 @@ data class SignatureWithTarget<out S : FunctionSignature>(
 @OptIn(DirectDeclarationsAccess::class)
 val FirRegularClassSymbol.propertySymbols: List<FirPropertySymbol>
     get() = declarationSymbols.filterIsInstance<FirPropertySymbol>()
-
-private fun <R> FirPropertySymbol.withConstructorParam(action: FirPropertySymbol.(FirValueParameterSymbol) -> R): R? =
-    correspondingValueParameterFromPrimaryConstructor?.let { param ->
-        action(param)
-    }
 
 private val FirFunctionSymbol<*>.containingPropertyOrSelf
     get() = when (this) {
@@ -166,39 +168,82 @@ fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(
 }
 
 
+/**
+ * The class whose object a call of this function returns open: this is a primary constructor of a class whose predicate
+ * is built from its properties. The caller folds the predicates of the object, so that the predicate of each argument
+ * the object stores in a `@Unique` property moves into it intact. `null` for every other function.
+ */
+val NamedFunctionSignature.constructedOpen: ClassTypeEmbedding?
+    get() = (returns.type.pretype as? ClassTypeEmbedding)
+        ?.takeIf { symbol?.isPrimaryConstructor() == true && it.hasPropertyPredicate }
+
+/**
+ * The properties that this primary constructor initializes with each of its parameters: those the parameter declares,
+ * and those it initializes as an argument of the superclass constructor.
+ */
+@OptIn(SymbolInternals::class)
+private fun FirConstructorSymbol.initializedProperties(session: FirSession): Map<FirValueParameterSymbol, List<FirPropertySymbol>> {
+    val declared = resolvedReturnType.toRegularClassSymbol(session)?.propertySymbols.orEmpty().mapNotNull { property ->
+        property.correspondingValueParameterFromPrimaryConstructor?.let { it to property }
+    }
+    val delegation = fir.delegatedConstructor
+    val inherited = delegation?.calleeReference?.toResolvedConstructorSymbol()
+        ?.takeIf { it.isPrimary }?.initializedProperties(session).orEmpty()
+    val passedOn = delegation?.resolvedArgumentMapping.orEmpty().flatMap { (argument, superParameter) ->
+        val parameter = (argument as? FirPropertyAccessExpression)?.calleeReference?.toResolvedValueParameterSymbol()
+            ?: return@flatMap emptyList()
+        inherited[superParameter.symbol].orEmpty().map { parameter to it }
+    }
+    return (declared + passedOn).groupBy({ it.first }, { it.second })
+}
+
+/**
+ * The signature of a primary constructor. It ensures that each property a parameter initializes equals the parameter.
+ * When the class is [constructedOpen], the object is returned with its predicates unfolded, and a `@Unique` parameter
+ * stored in a `@Unique` property keeps its predicate: the caller's fold moves it into the object.
+ */
 context(converter: ProgramConversionContext)
 fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<NonInlineFunctionSignature> =
     refineSignature { current ->
-        val constructedClassSymbol =
-            symbol.resolvedReturnType.toRegularClassSymbol(converter.session) ?: throw SnaktInternalException(
-                symbol.source, "Constructor does not return a regular class"
-            )
-        val parameterMatching = constructedClassSymbol.propertySymbols.mapNotNull { propertySymbol ->
-            val name = propertySymbol.embedMemberPropertyName(converter)
-            propertySymbol.withConstructorParam { paramSymbol ->
-                converter.typeResolver.lookupDefaultBehavingProperties(name)?.let { paramSymbol to it }
-            }
-        }.toMap()
-
-        val fieldPostconditions = current.signature.params.mapNotNull { param ->
+        require(symbol is FirConstructorSymbol) { "Primary constructors are constructor symbols" }
+        val typeResolver = converter.typeResolver
+        val result = returnTarget.variable
+        val constructed = current.signature.constructedOpen
+        val initialized = symbol.initializedProperties(converter.session)
+        val parameterProperties = current.signature.params.flatMap { param ->
             require(param is FirVariableEmbedding) { "Constructor parameters must be represented by FirVariableEmbeddings" }
-            parameterMatching[param.symbol]?.let { property ->
-                EqCmp(property.getter!!.getValueSimple(returnTarget.variable, converter.typeResolver), param)
+            initialized[param.symbol].orEmpty().mapNotNull { property ->
+                typeResolver.lookupDefaultBehavingProperties(property.embedMemberPropertyName(converter))?.let { param to it }
             }
         }
+        val stored = if (constructed == null) emptyList() else parameterProperties.mapNotNull { (param, property) ->
+            property.ownedStep?.takeIf { param.isUnique }?.let { param to it }
+        }
 
-        val contract = current.signature.buildConditions(converter.typeResolver) {
-            userFunctionContract()
+        val fieldPostconditions = parameterProperties.map { (param, property) ->
+            val getter = property.getter!!
+            val value = if (constructed != null && getter is BackingFieldGetter) PrimitiveFieldAccess(result, getter.field)
+            else getter.getValueSimple(result, typeResolver)
+            EqCmp(value, param)
+        }
+
+        val contract = current.signature.buildConditions(typeResolver) {
+            userFunctionPreconditions(consumes = { param -> stored.none { it.first == param } })
+            userFunctionPostcondition(resultFolded = constructed == null)
+            if (constructed != null) {
+                val omitted = stored.mapTo(mutableSetOf()) { it.second.name }
+                addPostconditions(listOf(with(typeResolver) { constructed.openPredicateChain(result, omitted) }))
+            }
             addPostconditions(fieldPostconditions)
-            if (constructedClassSymbol.classId == IntArrayEmbedding.classId) {
+            if (symbol.resolvedReturnType.toRegularClassSymbol(converter.session)?.classId == IntArrayEmbedding.classId) {
                 val size = current.signature.params.single()
-                val array = returnTarget.variable
                 addPreconditions(listOf(OperatorExpEmbeddings.GeIntInt(size, IntLit(0))))
-                addPostconditions(listOf(EqCmp(IntArraySize(array), size), IntArrayAllZero(array)))
+                addPostconditions(listOf(EqCmp(IntArraySize(result), size), IntArrayAllZero(result)))
             }
         }
 
-        NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions, symbol.source)
+        // The open predicate bodies restate the result's type.
+        NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions.distinct(), symbol.source)
     }
 
 /**

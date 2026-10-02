@@ -47,19 +47,21 @@ class FunctionConditionBuilder(
     fun addPreconditions(list: List<ExpEmbedding>) = preconditions.addAll(list)
     fun addPostconditions(list: List<ExpEmbedding>) = postconditions.addAll(list)
 
-    fun userFunctionPreconditions() {
+    /** [consumes] says which `@Unique` parameters the function takes the predicate of. */
+    fun userFunctionPreconditions(consumes: (VariableEmbedding) -> Boolean = { true }) {
         preconditions {
             args {
                 pureInvariants()
                 provenInvariants()
                 accessInvariants()
-                if (variable.isUnique) uniquePredicateInvariants()
+                if (variable.isUnique && consumes(variable)) uniquePredicateInvariants()
             }
             stdLib()
         }
     }
 
-    fun userFunctionPostcondition() {
+    /** A unique result is returned folded when [resultFolded], and otherwise its predicate is left to the caller. */
+    fun userFunctionPostcondition(resultFolded: Boolean = true) {
         postconditions {
             args {
                 accessInvariants()
@@ -71,7 +73,7 @@ class FunctionConditionBuilder(
                 provenInvariants()
                 if (!signature.isPure) {
                     accessInvariants()
-                    if (signature.callableType.returnsUnique) {
+                    if (signature.callableType.returnsUnique && resultFolded) {
                         uniquePredicateInvariants()
                     }
                 }

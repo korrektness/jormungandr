@@ -116,7 +116,6 @@ function x(this: Ref): Ref
 
 method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Baz())
-  ensures acc(Baz_unique(ret_1), write)
 
 
 method nullableReceiverNotNullSafeGet() returns (v_ret_0: Ref)
@@ -127,6 +126,7 @@ method nullableReceiverNotNullSafeGet() returns (v_ret_0: Ref)
   var cond1: Ref
   var anon_1: Ref
   anon_0 := con()
+  fold acc(Baz_unique(anon_0), write)
   f := anon_0
   if (f != nullValue()) {
     anon_1 := x(f)
@@ -179,7 +179,6 @@ function x(this: Ref): Ref
 
 method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Baz())
-  ensures acc(Baz_unique(ret_1), write)
 
 
 method nonNullableReceiverSafeGet() returns (v_ret_0: Ref)
@@ -189,6 +188,7 @@ method nonNullableReceiverSafeGet() returns (v_ret_0: Ref)
   var cond1: Ref
   var anon: Ref
   f := con()
+  fold acc(Baz_unique(f), write)
   if (f != nullValue()) {
     anon := x(f)
   } else {
@@ -231,12 +231,16 @@ method checkPrimary(par_x: Ref, par_y: Ref) returns (v_ret_0: Ref)
   var cond2: Ref
   var anon: Ref
   classI := con_ClassI(par_x, par_y)
+  fold acc(ClassI_unique(classI), write)
   l0_z := con_Z()
+  fold acc(Z_unique(l0_z), write)
   if (!(intFromRef(par_x) == intFromRef(par_y))) {
     cond1 := boolToRef(true)
   } else {
     cond1 := boolToRef(intFromRef(g_x(classI)) == intFromRef(g_y(classI)))}
   anon := con_ClassII(l0_z)
+  fold acc(ClassI_unique(anon), write)
+  fold acc(ClassII_unique(anon), write)
   cond2 := boolToRef(ClassII_g_z(anon) == l0_z)
   assert boolFromRef(cond1)
   assert boolFromRef(cond2)
@@ -248,7 +252,6 @@ method con_ClassI(par_x: Ref, par_y: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_x), intType())
   requires isSubtype(typeOf(par_y), intType())
   ensures isSubtype(typeOf(ret_2), ClassI())
-  ensures acc(ClassI_unique(ret_2), write)
   ensures intFromRef(g_x(ret_2)) == intFromRef(par_x)
   ensures intFromRef(g_y(ret_2)) == intFromRef(par_y)
 
@@ -256,13 +259,13 @@ method con_ClassI(par_x: Ref, par_y: Ref) returns (ret_2: Ref)
 method con_ClassII(par_z: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_z), Z())
   ensures isSubtype(typeOf(ret_4), ClassII())
-  ensures acc(ClassII_unique(ret_4), write)
+  ensures isSubtype(typeOf(ret_4), ClassII()) &&
+    isSubtype(typeOf(ret_4), ClassI())
   ensures ClassII_g_z(ret_4) == par_z
 
 
 method con_Z() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), Z())
-  ensures acc(Z_unique(ret_3), write)
 
 
 method public_g_z(this: Ref) returns (ret_1: Ref)

@@ -68,12 +68,15 @@ function size(this: Ref): Ref
 
 method con_C() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), C())
-  ensures acc(C_unique(ret_3), write)
+  ensures isSubtype(typeOf(ret_3), C()) && acc(ret_3.bf_field, write) &&
+    isSubtype(typeOf(ret_3.bf_field), intType()) &&
+    (isSubtype(typeOf(ret_3), B()) && isSubtype(typeOf(ret_3), A()))
 
 
 method con_D() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), D())
-  ensures acc(D_unique(ret_4), write)
+  ensures isSubtype(typeOf(ret_4), D()) &&
+    (isSubtype(typeOf(ret_4), B()) && isSubtype(typeOf(ret_4), A()))
 
 
 method extractPublic() returns (v_ret_0: Ref)
@@ -85,9 +88,15 @@ method extractPublic() returns (v_ret_0: Ref)
   var cond2: Ref
   var anon_2: Ref
   anon_1 := con_C()
+  fold acc(A_unique(anon_1), write)
+  fold acc(B_unique(anon_1), write)
+  fold acc(C_unique(anon_1), write)
   anon_0 := havoc(intType())
   cond1 := boolToRef(isSubtype(typeOf(anon_0), intType()))
   anon_2 := con_D()
+  fold acc(A_unique(anon_2), write)
+  fold acc(B_unique(anon_2), write)
+  fold acc(D_unique(anon_2), write)
   cond2 := boolToRef(isSubtype(typeOf(D_g_field(anon_2)), intType()))
   assert boolFromRef(cond1)
   assert boolFromRef(cond2)

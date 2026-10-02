@@ -159,7 +159,6 @@ method testCascadingPropertyGetter(rp: Ref) returns (v_ret_0: Ref)
 /property_accessors.kt: info: Generated Viper text for testReferencePropertySetter:
 method con() returns (ret_7: Ref)
   ensures isSubtype(typeOf(ret_7), PrimitiveProperty())
-  ensures acc(PrimitiveProperty_unique(ret_7), write)
 
 
 method g_aProp(this: Ref) returns (ret_2: Ref)
@@ -201,6 +200,7 @@ method testReferencePropertySetter(rp: Ref) returns (v_ret_0: Ref)
   var anon_0: Ref
   var anon_1: Ref
   anon_1 := con()
+  fold acc(PrimitiveProperty_unique(anon_1), write)
   anon_0 := s_ppProp(rp, anon_1)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
