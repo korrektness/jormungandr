@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
-import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.callables.SpecialMethods
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
@@ -19,8 +18,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.toLink
 import org.jetbrains.kotlin.formver.core.embeddings.toViperGoto
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Declaration
 import org.jetbrains.kotlin.formver.viper.ast.Exp
@@ -150,18 +149,13 @@ data class Linearizer(
         }
     }
 
-    override fun addIntArrayRead(array: Exp, index: Exp, arrayPath: OwnedPath?): Exp {
-        val result = freshAnonVar { int() }
-        if (arrayPath == null) {
+    override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp {
+        val result = freshAnonVar(type)
+        if (ownerPath == null) {
             addStatement { SpecialMethods.havocMethod.toMethodCall(listOf(result.type.runtimeType), listOf(result.toLocalVarUse())) }
         } else {
-            foldState?.openOwn(this, arrayPath)
-            addStatement {
-                Stmt.assign(
-                    result.toLocalVarUse(),
-                    RuntimeTypeDomain.intInjection.toRef(IntArrayEmbedding.element(array, index, source.asPosition), pos = source.asPosition),
-                )
-            }
+            foldState?.openOwn(this, ownerPath)
+            addStatement { Stmt.assign(result.toLocalVarUse(), type.injection.toRef(value, pos = source.asPosition)) }
         }
         return result.toViperExp(this)
     }

@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.locality.plugin
 
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isStringBuilderClearReceiver
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
@@ -19,7 +20,7 @@ import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 
 context(context: CheckerContext)
 fun FirReceiverParameterSymbol.resolveLocality(): Locality =
-    if (isReadOnlyBorrowed(context.session)) Locality.Local else resolvedType.locality
+    if (isReadOnlyBorrowed(context.session) || isStringBuilderClearReceiver) Locality.Local else resolvedType.locality
 
 object ReceiverLocalityResolver :
     SymbolTypeFactResolver<Locality, FirReceiverParameterSymbol> {

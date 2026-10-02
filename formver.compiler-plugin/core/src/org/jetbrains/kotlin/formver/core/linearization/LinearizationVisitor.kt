@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.linearization
 
+import org.jetbrains.kotlin.formver.core.embeddings.types.StringBuilderEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.CharTypeEmbedding
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.asPosition
@@ -19,11 +21,13 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.toMethodCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Exp.Companion.toConjunction
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
+import org.jetbrains.kotlin.formver.viper.ast.Type
 import org.jetbrains.kotlin.formver.viper.ast.viperLiteral
 
 data class LinearizationVisitor(
@@ -205,9 +209,10 @@ data class LinearizationVisitor(
 
     override fun visitReturn(e: Return): Linearizable = object : OptionalResultLinearizable(e) {
         override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) {
-            val source = ctx.moveSource(e.returnExp, targetOwned = true)
-            ctx.finishMove(e.returnExp, source, targetOwned = true, OwnedPath(e.target.variable))
-            ctx.addReturn(e.returnExp.linearize(), e.target)
+            val returnExp = runUpdatesOfPath(e.returnExp, ctx)
+            val source = ctx.moveSource(returnExp, targetOwned = true)
+            ctx.finishMove(returnExp, source, targetOwned = true, OwnedPath(e.target.variable))
+            ctx.addReturn(returnExp.linearize(), e.target)
         }
     }
 
@@ -472,16 +477,18 @@ data class LinearizationVisitor(
             val receiverPath = ctx.ownedReceiverPath(e.receiver, e.receiverOwned, isWrite = true)
             if (e.dropsUnownedWrite(ctx.typeResolver) && receiverPath == null) {
                 e.receiver.linearize().toViperUnusedResult(ctx)
-                val source = ctx.moveSource(e.newValue, targetOwned = false)
-                e.newValue.linearize().toViperUnusedResult(ctx)
-                ctx.finishMove(e.newValue, source, targetOwned = false, target = null)
+                val newValue = runUpdatesOfPath(e.newValue, ctx)
+                val source = ctx.moveSource(newValue, targetOwned = false)
+                newValue.linearize().toViperUnusedResult(ctx)
+                ctx.finishMove(newValue, source, targetOwned = false, target = null)
                 return
             }
             val receiverViper = e.receiver.linearize().toViper(ctx)
             receiverPath?.let { ctx.foldState?.open(ctx, it, e.field) }
             val targetOwned = receiverPath != null && e.field.isUnique
-            val source = ctx.moveSource(e.newValue, targetOwned)
-            val newValueViper = e.newValue.linearize().toViper(ctx)
+            val newValue = runUpdatesOfPath(e.newValue, ctx)
+            val source = ctx.moveSource(newValue, targetOwned)
+            val newValueViper = newValue.linearize().toViper(ctx)
             ctx.addStatement {
                 Stmt.FieldAssign(
                     Exp.FieldAccess(receiverViper, e.field.toViper()),
@@ -489,7 +496,7 @@ data class LinearizationVisitor(
                     ctx.source.asPosition
                 )
             }
-            ctx.finishMove(e.newValue, source, targetOwned, receiverPath?.plus(e.field))
+            ctx.finishMove(newValue, source, targetOwned, receiverPath?.plus(e.field))
         }
     }
 
@@ -537,7 +544,8 @@ data class LinearizationVisitor(
             val index = e.index.linearize().toViperBuiltinType(ctx)
             val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = false)
             if (arrayPath != null) ctx.assertInBounds(array, index, e.arraySymbol)
-            return ctx.addIntArrayRead(array, index, arrayPath)
+            val pos = ctx.source.asPosition
+            return ctx.addOwnedRead(IntArrayEmbedding.uniquePredicateAccess(array, pos), IntArrayEmbedding.element(array, index, pos), e.type, arrayPath)
         }
     }
 
@@ -553,11 +561,71 @@ data class LinearizationVisitor(
             val value = e.value.linearize().toViperBuiltinType(ctx)
             ctx.assertInBounds(array, index, e.arraySymbol)
             ctx.foldState?.openOwn(ctx, arrayPath)
-            val contents = array.fieldAccess(IntArrayEmbedding.contentsField, ctx.source.asPosition)
+            val contents = array.fieldAccess(contentsField, ctx.source.asPosition)
             ctx.addStatement {
                 Stmt.FieldAssign(contents, Exp.SeqUpdate(contents, index, value, ctx.source.asPosition), ctx.source.asPosition)
             }
         }
+    }
+
+    override fun visitStringBuilderLength(e: StringBuilderLength): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp =
+            readStringBuilder(e, ctx) { contents -> Exp.SeqLength(contents, ctx.source.asPosition) }
+    }
+
+    override fun visitStringBuilderToString(e: StringBuilderToString): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp = readStringBuilder(e, ctx) { contents -> contents }
+    }
+
+    override fun visitStringBuilderAppend(e: StringBuilderAppend): Linearizable = object : StringBuilderUpdateLinearizable(e) {
+        override fun toViper(ctx: LinearizationContext): Exp {
+            val builder = e.builder.linearize().toViper(ctx)
+            val value = e.value.linearize().toViperBuiltinType(ctx)
+            val appended = if (e.value.type.pretype == CharTypeEmbedding) Exp.ExplicitSeq(listOf(value), ctx.source.asPosition) else value
+            ctx.updateStringBuilder(e, builder) { contents -> Exp.SeqAppend(contents, appended, ctx.source.asPosition) }
+            return builder
+        }
+    }
+
+    override fun visitStringBuilderClear(e: StringBuilderClear): Linearizable = object : StringBuilderUpdateLinearizable(e) {
+        override fun toViper(ctx: LinearizationContext): Exp {
+            val builder = e.builder.linearize().toViper(ctx)
+            ctx.updateStringBuilder(e, builder) { Exp.EmptySeq(Type.Int, ctx.source.asPosition) }
+            return builder
+        }
+    }
+
+    /** An update returns its receiver, and runs whether or not its result is used. */
+    private abstract inner class StringBuilderUpdateLinearizable(e: StringBuilderUpdate) : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            toViper(ctx)
+        }
+    }
+
+    /**
+     * Runs the `StringBuilder` updates that [value] consists of when they act on a path, and returns that path, which
+     * then moves in place of [value]. Any other [value] is returned unchanged. A move folds its source before the
+     * value is evaluated, which would close the path before the updates open it again.
+     */
+    private fun runUpdatesOfPath(value: ExpEmbedding, ctx: LinearizationContext): ExpEmbedding {
+        var root = value.ignoringCastsAndMetaNodes()
+        if (root !is StringBuilderUpdate || root.ownedPath() == null) return value
+        root.linearize().toViperUnusedResult(ctx)
+        while (root is StringBuilderUpdate) root = root.builder.ignoringCastsAndMetaNodes()
+        return root
+    }
+
+    /** The value [read] makes of the contents of [e]'s builder, under the builder's unique predicate. */
+    private fun readStringBuilder(e: StringBuilderOperation, ctx: LinearizationContext, read: (contents: Exp) -> Exp): Exp {
+        val builder = e.builder.linearize().toViper(ctx)
+        val builderPath = ctx.ownedReceiverPath(e.builder, e.receiverOwned, isWrite = false)
+        val pos = ctx.source.asPosition
+        return ctx.addOwnedRead(
+            StringBuilderEmbedding.uniquePredicateAccess(builder, pos),
+            read(StringBuilderEmbedding.contents(builder, pos)),
+            e.type,
+            builderPath,
+        )
     }
 
     // endregion
@@ -566,16 +634,17 @@ data class LinearizationVisitor(
 
     override fun visitAssign(e: Assign): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            val source = ctx.moveSource(e.rhs, e.targetOwned)
-            e.rhs.linearize().toViperStoringIn(LinearizationVariableEmbedding(e.lhs.name, e.lhs.type), ctx)
-            ctx.finishMove(e.rhs, source, e.targetOwned, OwnedPath(e.lhs))
+            val rhs = runUpdatesOfPath(e.rhs, ctx)
+            val source = ctx.moveSource(rhs, e.targetOwned)
+            rhs.linearize().toViperStoringIn(LinearizationVariableEmbedding(e.lhs.name, e.lhs.type), ctx)
+            ctx.finishMove(rhs, source, e.targetOwned, OwnedPath(e.lhs))
         }
     }
 
     override fun visitDeclare(e: Declare): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addDeclaration(e.variable.toLocalVarDecl(ctx.source.asPosition))
-            val initializer = e.initializer ?: return
+            val initializer = e.initializer?.let { runUpdatesOfPath(it, ctx) } ?: return
             val source = ctx.moveSource(initializer, e.targetOwned)
             initializer.linearize().toViperStoringIn(LinearizationVariableEmbedding(e.variable.name, e.variable.type), ctx)
             ctx.finishMove(initializer, source, e.targetOwned, OwnedPath(e.variable))
@@ -744,6 +813,17 @@ private fun LinearizationContext.ownedReceiverPath(
         throw FoldStateException(source, "The receiver is owned, but it is not a path whose permissions are tracked.")
     }
     return path
+}
+
+/**
+ * Sets the contents of [builder], which [e] updates, to [newContents] of the old contents. An update of a builder that
+ * is not owned is dropped.
+ */
+private fun LinearizationContext.updateStringBuilder(e: StringBuilderUpdate, builder: Exp, newContents: (contents: Exp) -> Exp) {
+    val builderPath = ownedReceiverPath(e.builder, e.receiverOwned, isWrite = true) ?: return
+    foldState?.openOwn(this, builderPath)
+    val contents = StringBuilderEmbedding.contents(builder, source.asPosition)
+    addStatement { Stmt.FieldAssign(contents, newContents(contents), source.asPosition) }
 }
 
 /** Assert that [index] is a valid index into [array], reporting a failure as an array bounds error. */

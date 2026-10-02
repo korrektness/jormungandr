@@ -13,13 +13,14 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayGet
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Old
+import org.jetbrains.kotlin.formver.core.embeddings.expression.StringBuilderRead
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.While
 import org.jetbrains.kotlin.formver.core.embeddings.expression.WithPosition
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
 /**
- * Reports the `var` reads and array element reads in [this] read-only context (a pure function body or a
+ * Reports the `var` reads, array element reads and `StringBuilder` reads in [this] read-only context (a pure function body or a
  * specification) that no unique predicate covers: a read through a receiver the uniqueness checker does not find
  * `Unique`, and, outside `old`, a read through a path rooted at one of [consumed].
  */
@@ -29,23 +30,19 @@ fun ExpEmbedding.checkReadOnlyVarReads(
     consumed: Set<SymbolicName> = emptySet(),
 ) {
     val nextSource = (this as? WithPosition)?.source ?: source
-    if (this is FieldAccess && field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS) {
-        when {
-            !receiverOwned -> errors.reportUnsupportedOwnership(nextSource, "Reading this var property needs a @Unique receiver.")
-            receiver.pathRoot()?.name in consumed -> errors.reportUnsupportedOwnership(
-                nextSource,
-                "Reading this var property in a postcondition needs a @Borrowed root; the function consumes this @Unique parameter.",
-            )
-        }
+    fun checkOwnedRead(receiver: ExpEmbedding, receiverOwned: Boolean, read: String, owner: String) = when {
+        !receiverOwned -> errors.reportUnsupportedOwnership(nextSource, "Reading $read needs a @Unique $owner.")
+        receiver.pathRoot()?.name in consumed -> errors.reportUnsupportedOwnership(
+            nextSource,
+            "Reading $read in a postcondition needs a @Borrowed root; the function consumes this @Unique parameter.",
+        )
+        else -> {}
     }
-    if (this is IntArrayGet) {
-        when {
-            !receiverOwned -> errors.reportUnsupportedOwnership(nextSource, "Reading an array element needs a @Unique array.")
-            array.pathRoot()?.name in consumed -> errors.reportUnsupportedOwnership(
-                nextSource,
-                "Reading an array element in a postcondition needs a @Borrowed root; the function consumes this @Unique parameter.",
-            )
-        }
+    when {
+        this is FieldAccess && field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS ->
+            checkOwnedRead(receiver, receiverOwned, "this var property", "receiver")
+        this is IntArrayGet -> checkOwnedRead(array, receiverOwned, "an array element", "array")
+        this is StringBuilderRead -> checkOwnedRead(builder, receiverOwned, "a StringBuilder", "builder")
     }
     val childConsumed = if (this is Old) emptySet() else consumed
     children().forEach { it.checkReadOnlyVarReads(nextSource, errors, childConsumed) }

@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.locality.plugin
 
+import org.jetbrains.kotlin.formver.intrinsics.plugin.aliasedStringBuilderReceiver
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
@@ -32,8 +33,9 @@ import org.jetbrains.kotlin.formver.type.plugin.UnifyingExpressionTypeFactResolv
 
 private object TerminalLocalityResolver : ExpressionTypeFactResolver<Locality> {
     context(context: CheckerContext)
-    override fun resolveTypeFactOf(expression: FirExpression): Locality =
-        when (expression) {
+    override fun resolveTypeFactOf(expression: FirExpression): Locality {
+        expression.aliasedStringBuilderReceiver(context.session)?.let { return it.resolveLocality() }
+        return when (expression) {
             is FirAnonymousFunctionExpression -> {
                 val graph = expression.anonymousFunction.controlFlowGraphReference?.controlFlowGraph
                     ?: return Locality.Global
@@ -54,6 +56,7 @@ private object TerminalLocalityResolver : ExpressionTypeFactResolver<Locality> {
 
             else -> Locality.Global
         }
+    }
 }
 
 class ExpressionLocalityResolver(session: FirSession) :

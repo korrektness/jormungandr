@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderClassIds
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.descriptors.isInterface
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
@@ -158,12 +159,15 @@ class ProgramConverter(
     private val usesIntArray: Boolean
         get() = typeResolver.lookupClassTypeEmbedding(IntArrayEmbedding.classType.name) != null
 
+    private val usesStringBuilder: Boolean
+        get() = typeResolver.lookupClassTypeEmbedding(StringBuilderEmbedding.classType.name) != null
+
     fun buildProgram(): Program = Program(
         domains = listOf(RuntimeTypeDomain(typeResolver)),
         // Public fields with the same name are represented differently at `FieldEmbedding` level
         // but map to the same Viper field, so we deduplicate before emitting.
         fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
-                listOfNotNull(IntArrayEmbedding.contentsField.takeIf { usesIntArray }),
+                listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder }),
         functions = SpecialFunctions.all + linearizedBodyResolver.functions +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray }),
         methods = SpecialMethods.all + linearizedBodyResolver.methods,
@@ -685,6 +689,10 @@ class ProgramConverter(
         if (symbol.classId == IntArrayEmbedding.classId) {
             typeResolver.register(IntArrayEmbedding.classType, isInterface = false)
             return IntArrayEmbedding.classType
+        }
+        if (symbol.classId in stringBuilderClassIds) {
+            typeResolver.register(StringBuilderEmbedding.classType, isInterface = false)
+            return StringBuilderEmbedding.classType
         }
 
         val className = symbol.classId.embedName()

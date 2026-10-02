@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.linearization
 
+import org.jetbrains.kotlin.formver.core.embeddings.expression.StringBuilderUpdate
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
@@ -25,10 +26,12 @@ import org.jetbrains.kotlin.formver.viper.ast.Stmt
 typealias OwnedPath = FoldPath<VariableEmbedding, FieldEmbedding>
 
 /**
- * The owned path this expression reads, or `null` when it is not a variable followed by reads of `@Unique` fields.
+ * The owned path this expression reads, or `null` when it is not a variable followed by reads of `@Unique` fields. A
+ * `StringBuilder` update returns its receiver, so it reads its receiver's path.
  */
 fun ExpEmbedding.ownedPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaNodes()) {
     is VariableEmbedding -> OwnedPath(exp)
+    is StringBuilderUpdate -> exp.builder.ownedPath()
     is FieldAccess -> if (exp.field.isUnique) exp.receiver.ownedPath()?.plus(exp.field) else null
     else -> null
 }

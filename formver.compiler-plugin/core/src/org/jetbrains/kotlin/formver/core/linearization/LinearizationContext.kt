@@ -80,10 +80,11 @@ interface LinearizationContext {
     )
 
     /**
-     * Element [index], an `Int`, of the `IntArray` [array], as a `Ref`. In a body, [arrayPath] is the array's path
-     * when it is owned: the read then unfolds the array's predicate, and otherwise havocks the element.
+     * [value], a read of the contents of a built-in owned object under its unique [predicate], as a `Ref` of [type],
+     * whose injection [value] is in. In a body, [ownerPath] is the object's path when it is owned: the read then
+     * unfolds the predicate, and otherwise havocks the value.
      */
-    fun addIntArrayRead(array: Exp, index: Exp, arrayPath: OwnedPath?): Exp
+    fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp
 
     fun addModifier(mod: StmtModifier)
 

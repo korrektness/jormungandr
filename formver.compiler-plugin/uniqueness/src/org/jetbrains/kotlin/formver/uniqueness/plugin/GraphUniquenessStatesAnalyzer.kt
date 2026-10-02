@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.analysis.cfa.util.ControlFlowInfo
 import org.jetbrains.kotlin.fir.analysis.cfa.util.PathAwareControlFlowGraphVisitor
@@ -93,8 +94,8 @@ fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessSta
  * Default arguments and lambdas called in place are analyzed as part of the enclosing flow; a lambda called in place
  * starts with its own parameters at their declared uniqueness.
  *
- * Calls to `@Pure` functions, element accesses of an `IntArray`, and declarations and calls in [readOnlyContext], move
- * nothing. The `<array>` temporary of a compound index assignment is not tracked: its accesses resolve to its
+ * Calls to `@Pure` functions, element accesses of an `IntArray`, `StringBuilder` intrinsics, and declarations and calls
+ * in [readOnlyContext], move nothing. The `<array>` temporary of a compound index assignment is not tracked: its accesses resolve to its
  * initializer.
  */
 class GraphUniquenessStatesAnalyzer(
@@ -116,7 +117,8 @@ class GraphUniquenessStatesAnalyzer(
         this[Unit] ?: initialState
 
     private val FirFunctionCall.movesArguments: Boolean
-        get() = this !in readOnlyContext && !isPureCall(context.session) && !isIntArrayElementAccess()
+        get() = this !in readOnlyContext && !isPureCall(context.session) && !isIntArrayElementAccess() &&
+                stringBuilderIntrinsic(context.session) == null
 
     override fun visitSubGraph(node: CFGNodeWithSubgraphs<*>, graph: ControlFlowGraph): Boolean {
         return graph.extendsLocalFlow
@@ -201,7 +203,7 @@ class GraphUniquenessStatesAnalyzer(
      */
     context(context: CheckerContext)
     private fun UniquenessState.passReceiversToAccessor(access: FirQualifiedAccessExpression): UniquenessState {
-        if (access in readOnlyContext) return this
+        if (access in readOnlyContext || access.stringBuilderIntrinsic(context.session) != null) return this
         val property = access.accessorCallProperty(context.session) ?: return this
         var newUniquenessState = this
         for (receiver in listOfNotNull(access.dispatchReceiver, access.extensionReceiver)) {

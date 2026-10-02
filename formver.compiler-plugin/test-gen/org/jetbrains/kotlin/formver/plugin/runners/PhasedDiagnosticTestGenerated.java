@@ -181,6 +181,22 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string/strings.kt");
       }
     }
+
+    @Nested
+    @TestMetadata("formver.compiler-plugin/testData/diagnostics/stdlib/string_builder")
+    @TestDataPath("$PROJECT_ROOT")
+    public class String_builder {
+      @Test
+      public void testAllFilesPresentInString_builder() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics/stdlib/string_builder"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      }
+
+      @Test
+      @TestMetadata("string_builder.kt")
+      public void testString_builder() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string_builder/string_builder.kt");
+      }
+    }
   }
 
   @Nested
@@ -376,6 +392,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("return.kt")
     public void testReturn() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/return.kt");
+    }
+
+    @Test
+    @TestMetadata("string_builder.kt")
+    public void testString_builder() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/string_builder.kt");
     }
 
     @Test

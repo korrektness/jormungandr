@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.isO
 import org.jetbrains.kotlin.formver.core.domains.domainVar
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.core.names.DomainAssociatedFuncName
-import org.jetbrains.kotlin.formver.core.names.SpecialFieldName
 import org.jetbrains.kotlin.formver.core.names.embedName
 import org.jetbrains.kotlin.formver.viper.ast.*
 import org.jetbrains.kotlin.formver.viper.ast.Exp.Companion.toConjunction
@@ -19,16 +18,13 @@ import org.jetbrains.kotlin.name.FqName
 /**
  * The built-in embedding of `kotlin.IntArray`.
  *
- * The elements live in the `contents` field, a `Seq[Int]` that the unique predicate owns. The length is the
- * heap-independent function `arraySize`, which the predicate ties to the length of `contents`, so the length can be
- * read without permission.
+ * The elements live in [contentsField], which the unique predicate owns. The length is the heap-independent function
+ * `arraySize`, which the predicate ties to the length of `contents`, so the length can be read without permission.
  */
 object IntArrayEmbedding {
     val classId = ClassId.topLevel(FqName("kotlin.IntArray"))
 
     val classType = ClassTypeEmbedding(classId.embedName())
-
-    val contentsField = Field(SpecialFieldName("contents"), Type.Seq(Type.Int), includeInShortDump = true)
 
     private val receiver = Var(DispatchReceiverName, Type.Ref)
 

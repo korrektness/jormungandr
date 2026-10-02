@@ -52,6 +52,8 @@ internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbed
     override fun visitIntArraySize(e: IntArraySize) = e.allChildrenPure(this)
     override fun visitIntArrayAllZero(e: IntArrayAllZero) = e.allChildrenPure(this)
     override fun visitIntArrayGet(e: IntArrayGet) = e.allChildrenPure(this)
+    override fun visitStringBuilderLength(e: StringBuilderLength) = e.allChildrenPure(this)
+    override fun visitStringBuilderToString(e: StringBuilderToString) = e.allChildrenPure(this)
 
     /* ————— impure nodes ————— */
     override fun visitSafeCast(e: SafeCast) = false
@@ -75,6 +77,8 @@ internal class ExprPurityVisitor(val declaredVariables: MutableSet<VariableEmbed
     override fun visitFold(e: Fold): Boolean = false
     override fun visitUnfold(e: Unfold): Boolean = false
     override fun visitIntArraySet(e: IntArraySet): Boolean = false
+    override fun visitStringBuilderAppend(e: StringBuilderAppend): Boolean = false
+    override fun visitStringBuilderClear(e: StringBuilderClear): Boolean = false
 }
 
 private fun ExpEmbedding.allChildrenPure(v: ExprPurityVisitor): Boolean =

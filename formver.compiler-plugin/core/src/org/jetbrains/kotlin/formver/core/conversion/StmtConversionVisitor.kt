@@ -41,6 +41,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.toLink
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
 import org.jetbrains.kotlin.formver.core.functionCallArguments
+import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isIntArrayElementAccess
 import org.jetbrains.kotlin.types.ConstantValueKind
 
@@ -181,6 +182,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data: StmtConversionContext,
     ): ExpEmbedding {
         propertyAccessExpression.calleeReference.symbol?.let(::indexedArrayAlias)?.let { return data.convert(it) }
+        propertyAccessExpression.stringBuilderIntrinsic(data.session)?.let {
+            return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)
+        }
         val propertyAccess = data.embedPropertyAccess(propertyAccessExpression)
         return propertyAccess.getValue(data)
     }
@@ -293,6 +297,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val symbol = functionCall.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
             ?: throw NotImplementedError("Only functions are expected as callables of function calls, got ${functionCall.toResolvedCallableSymbol()}")
         if (functionCall.isIntArrayElementAccess()) return data.convertIntArrayElementAccess(functionCall)
+        functionCall.stringBuilderIntrinsic(data.session)?.let { return data.convertStringBuilderIntrinsic(functionCall, it) }
 
         val callee = data.embedAnyFunction(symbol)
         return callee.insertCall(

@@ -1,0 +1,278 @@
+/string_builder.kt: info: Generated Viper text for repeatChar:
+field contents: Seq[Int]
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+}
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), StringBuilder())
+  ensures acc(StringBuilder_unique(ret_3), write)
+  ensures (unfolding acc(StringBuilder_unique(ret_3), write) in
+      ret_3.contents == Seq[Int]())
+
+
+method repeatChar(c: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+  ensures |stringFromRef(v_ret_0)| == intFromRef(n)
+{
+  var sb: Ref
+  var i: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  sb := con()
+  i := intToRef(0)
+  label cont
+    invariant acc(StringBuilder_unique(sb), write)
+    invariant isSubtype(typeOf(sb), StringBuilder())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(c), charType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n)
+    invariant (unfolding acc(StringBuilder_unique(sb), write) in
+        |sb.contents| == intFromRef(i))
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    unfold acc(StringBuilder_unique(sb), write)
+    sb.contents := sb.contents ++ Seq(charFromRef(c))
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    fold acc(StringBuilder_unique(sb), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(sb), StringBuilder())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(c), charType())
+  assert isSubtype(typeOf(n), intType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n)
+  assert (unfolding acc(StringBuilder_unique(sb), write) in
+      |sb.contents| == intFromRef(i))
+  unfold acc(StringBuilder_unique(sb), write)
+  anon_2 := stringToRef(sb.contents)
+  v_ret_0 := anon_2
+  fold acc(StringBuilder_unique(sb), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_builder.kt: info: Generated Viper text for literal:
+field contents: Seq[Int]
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+}
+
+method con() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), StringBuilder())
+  ensures acc(StringBuilder_unique(ret_2), write)
+  ensures (unfolding acc(StringBuilder_unique(ret_2), write) in
+      ret_2.contents == Seq[Int]())
+
+
+method literal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+  ensures stringFromRef(v_ret_0) == Seq(97, 98, 99)
+{
+  var sb: Ref
+  var anon: Ref
+  sb := con()
+  unfold acc(StringBuilder_unique(sb), write)
+  sb.contents := sb.contents ++ Seq(97)
+  sb.contents := sb.contents ++ Seq(98, 99)
+  anon := stringToRef(sb.contents)
+  v_ret_0 := anon
+  fold acc(StringBuilder_unique(sb), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_builder.kt: info: Generated Viper text for appendTwice:
+field contents: Seq[Int]
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+}
+
+method appendTwice(sb: Ref, s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sb), StringBuilder())
+  requires acc(StringBuilder_unique(sb), write)
+  requires isSubtype(typeOf(s), stringType())
+  ensures acc(StringBuilder_unique(sb), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(StringBuilder_unique(sb), write) in
+      |sb.contents| ==
+      old((unfolding acc(StringBuilder_unique(sb), write) in |sb.contents|)) +
+      2 * |stringFromRef(s)|)
+  ensures (unfolding acc(StringBuilder_unique(sb), write) in
+      sb.contents ==
+      old((unfolding acc(StringBuilder_unique(sb), write) in sb.contents)) ++
+      stringFromRef(s) ++
+      stringFromRef(s))
+{
+  unfold acc(StringBuilder_unique(sb), write)
+  sb.contents := sb.contents ++ stringFromRef(s)
+  sb.contents := sb.contents ++ stringFromRef(s)
+  label lbl_ret_0
+  fold acc(StringBuilder_unique(sb), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plus(this: Ref, other: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+/string_builder.kt: info: Generated Viper text for clearThenAppend:
+field contents: Seq[Int]
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+}
+
+method clearThenAppend(sb: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sb), StringBuilder())
+  requires acc(StringBuilder_unique(sb), write)
+  ensures acc(StringBuilder_unique(sb), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(StringBuilder_unique(sb), write) in
+      sb.contents == Seq(120))
+{
+  unfold acc(StringBuilder_unique(sb), write)
+  sb.contents := Seq[Int]()
+  sb.contents := sb.contents ++ Seq(120)
+  label lbl_ret_0
+  fold acc(StringBuilder_unique(sb), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/string_builder.kt: info: Generated Viper text for returnAppended:
+field contents: Seq[Int]
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+}
+
+method returnAppended(sb: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sb), StringBuilder())
+  requires acc(StringBuilder_unique(sb), write)
+  ensures isSubtype(typeOf(v_ret_0), StringBuilder())
+  ensures acc(StringBuilder_unique(v_ret_0), write)
+{
+  unfold acc(StringBuilder_unique(sb), write)
+  sb.contents := sb.contents ++ Seq(33)
+  fold acc(StringBuilder_unique(sb), write)
+  v_ret_0 := sb
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/string_builder.kt: info: Generated Viper text for bindAppended:
+field contents: Seq[Int]
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+}
+
+method bindAppended() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  var sb: Ref
+  var l0_t: Ref
+  var anon: Ref
+  sb := con()
+  unfold acc(StringBuilder_unique(sb), write)
+  sb.contents := sb.contents ++ Seq(120)
+  fold acc(StringBuilder_unique(sb), write)
+  l0_t := sb
+  unfold acc(StringBuilder_unique(l0_t), write)
+  l0_t.contents := l0_t.contents ++ Seq(121)
+  anon := intToRef(|l0_t.contents|)
+  v_ret_0 := anon
+  fold acc(StringBuilder_unique(l0_t), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), StringBuilder())
+  ensures acc(StringBuilder_unique(ret_2), write)
+  ensures (unfolding acc(StringBuilder_unique(ret_2), write) in
+      ret_2.contents == Seq[Int]())
+
+
+/string_builder.kt: info: Generated Viper text for wrongLength:
+field contents: Seq[Int]
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray()) &&
+  acc(Cloneable_unique(this), write) &&
+  acc(Serializable_unique(this), write)
+}
+
+predicate Cloneable_unique(this: Ref) {
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_unique(this: Ref) {
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+}
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), StringBuilder())
+  ensures acc(StringBuilder_unique(ret_1), write)
+  ensures (unfolding acc(StringBuilder_unique(ret_1), write) in
+      ret_1.contents == Seq[Int]())
+
+
+method wrongLength() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var sb: Ref
+  var anon: Ref
+  sb := con()
+  unfold acc(StringBuilder_unique(sb), write)
+  sb.contents := sb.contents ++ Seq(97)
+  anon := intToRef(|sb.contents|)
+  assert intFromRef(anon) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/string_builder.kt: info: Generated Viper text for appendShared:
+field contents: Seq[Int]
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+}
+
+method appendShared(sb: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sb), StringBuilder())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var anon: Ref
+  anon := havoc(intType())
+  n := anon
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/string_builder.kt: error: Function 'readSharedInSpec' was not verified because of errors in its declaration
+
+/string_builder.kt: error: Reading a StringBuilder needs a @Unique builder.

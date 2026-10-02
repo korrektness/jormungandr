@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.intrinsics.plugin.aliasedStringBuilderReceiver
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
@@ -20,11 +21,13 @@ import org.jetbrains.kotlin.formver.type.plugin.ExpressionTypeFactResolver
 import org.jetbrains.kotlin.formver.type.plugin.UnifyingExpressionTypeFactResolver
 
 /**
- * Resolves the access-state contributed by [this] when it is the terminal expression of a larger expression.
+ * Resolves the access-state contributed by [this] when it is the terminal expression of a larger expression. A
+ * `StringBuilder` intrinsic that returns its receiver contributes the access-state of its receiver.
  */
 context(context: CheckerContext)
-fun FirExpression.resolveTerminalAccessState(): AccessState =
-    when (this) {
+fun FirExpression.resolveTerminalAccessState(): AccessState {
+    aliasedStringBuilderReceiver(context.session)?.let { return it.resolveAccessState() }
+    return when (this) {
         is FirQualifiedAccessExpression -> {
             when (val symbol = calleeReference.symbol) {
                 is FirReceiverParameterSymbol -> {
@@ -54,6 +57,7 @@ fun FirExpression.resolveTerminalAccessState(): AccessState =
         }
         else -> EmptyAccessState
     }
+}
 
 /**
  * Resolves the access-state of an expression by joining the access-states of its tail subexpressions.

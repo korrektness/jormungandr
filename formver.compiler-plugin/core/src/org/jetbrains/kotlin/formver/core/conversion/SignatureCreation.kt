@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.fir.types.isInt
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.embeddings.callables.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -19,6 +20,7 @@ import org.jetbrains.kotlin.formver.core.isBorrowed
 import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.isUnique
 import org.jetbrains.kotlin.formver.core.names.*
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isStringBuilder
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
 data class SignatureWithTarget<out S : FunctionSignature>(
@@ -150,6 +152,8 @@ context(converter: ProgramConversionContext)
 fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<NonInlineFunctionSignature> =
     when {
         symbol.isPrimaryConstructor() -> this.toConstructorSignature(symbol)
+        symbol is FirConstructorSymbol && symbol.resolvedReturnType.isStringBuilder(converter.session) ->
+            this.toStringBuilderConstructorSignature(symbol)
         else -> this.toNormalSignature(symbol)
     }
 
@@ -194,6 +198,22 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
             }
         }
 
+        NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions, symbol.source)
+    }
+
+/**
+ * The signature of a `StringBuilder` constructor. The builder is empty unless the constructor takes initial contents:
+ * every parameter is an `Int` capacity.
+ */
+context(converter: ProgramConversionContext)
+fun SignatureWithTarget<NonInlineCallable>.toStringBuilderConstructorSignature(symbol: FirConstructorSymbol): SignatureWithTarget<NonInlineFunctionSignature> =
+    refineSignature { current ->
+        val contract = current.signature.buildConditions(converter.typeResolver) {
+            userFunctionContract()
+            if (symbol.valueParameterSymbols.all { it.resolvedReturnType.isInt }) {
+                addPostconditions(listOf(EqCmp(StringBuilderToString(returnTarget.variable, receiverOwned = true), StringLit(""))))
+            }
+        }
         NonInlineFunctionSignature(current.signature, contract.preconditions, contract.postconditions, symbol.source)
     }
 

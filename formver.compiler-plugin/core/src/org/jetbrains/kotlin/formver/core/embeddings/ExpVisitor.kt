@@ -73,6 +73,10 @@ interface ExpVisitor<R> {
     fun visitIntArrayAllZero(e: IntArrayAllZero): R
     fun visitIntArrayGet(e: IntArrayGet): R
     fun visitIntArraySet(e: IntArraySet): R
+    fun visitStringBuilderLength(e: StringBuilderLength): R
+    fun visitStringBuilderToString(e: StringBuilderToString): R
+    fun visitStringBuilderAppend(e: StringBuilderAppend): R
+    fun visitStringBuilderClear(e: StringBuilderClear): R
 }
 
 /**
@@ -139,4 +143,8 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitIntArrayAllZero(e: IntArrayAllZero): R = visitDefault(e)
     override fun visitIntArrayGet(e: IntArrayGet): R = visitDefault(e)
     override fun visitIntArraySet(e: IntArraySet): R = visitDefault(e)
+    override fun visitStringBuilderLength(e: StringBuilderLength): R = visitDefault(e)
+    override fun visitStringBuilderToString(e: StringBuilderToString): R = visitDefault(e)
+    override fun visitStringBuilderAppend(e: StringBuilderAppend): R = visitDefault(e)
+    override fun visitStringBuilderClear(e: StringBuilderClear): R = visitDefault(e)
 }
