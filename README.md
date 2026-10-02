@@ -107,33 +107,19 @@ The plugin accepts a number of command line options which can be passed via
 
 ### Z3
 
-The plugin relies on the SMT solver Z3 which needs to be installed manually.
-To do so, download v4.8.7 from the [Releases page](https://github.com/Z3Prover/z3/releases/tag/z3-4.8.7).
+The plugin verifies with the SMT solver Z3, version 4.8.7, which it runs as an
+external binary. It finds the binary through the `Z3_EXE` environment
+variable: either an absolute path, or a command name looked up on `PATH`.
+When `Z3_EXE` is unset, it looks up `z3` on `PATH`.
 
-Viper gives two ways of interfacing with Z3: text-based (using the `z3` binary)
-or via the API (using a `.jar`).
-At the moment we use the text-based interface, meaning you need to:
+The build's verification test tasks provide Z3 themselves. They use `Z3_EXE`
+when it is an absolute path to a file. Otherwise they download the official
+4.8.7 release for Linux, macOS or Windows (x64), check its SHA-256, and cache
+it under the Gradle user home in `formver/z3`.
 
-- Install the `z3` binary in your path
-- Set the `Z3_EXE` environment variable correctly.
-
-One way to do this is as follows:
-
-```bash
-export Z3_EXE=/usr/bin/z3 # or a different directory in $PATH
-sudo cp z3-4.8.7-*/bin/z3 $Z3_EXE
-echo "export Z3_EXE=$Z3_EXE" >> ~/.profile
-```
-
-Make sure that running `$Z3_EXE --version` gives `Z3 version 4.8.7`.
-Check that this is the case when you open a new shell, too!
-You need to (additionally) set `Z3_EXE` in `~/.xprofile` and/or
-`~/.bash_profile` depending on your shell, window manager, display
-manager, operating system, etc.
-
-The Gradle and Kotlin daemons capture `Z3_EXE` at startup, so changing it
-afterwards has no effect until both are stopped (`./gradlew --stop`, plus
-killing the Kotlin daemon).
+To use the plugin outside the tests, download v4.8.7 from the
+[Releases page](https://github.com/Z3Prover/z3/releases/tag/z3-4.8.7) and put
+its `bin/z3` on `PATH` or point `Z3_EXE` at it.
 
 ## Contributing
 

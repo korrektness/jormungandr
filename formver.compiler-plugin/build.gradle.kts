@@ -100,9 +100,19 @@ fun Test.configureFormverTest() {
     jvmArgs = listOf("-Xss30M", "-Xmx2g", "-XX:MaxMetaspaceSize=512m")
 }
 
+// Silicon reads Z3_EXE as the path of the Z3 binary.
+fun Test.provideZ3() {
+    val gradleUserHome = gradle.gradleUserHomeDir
+    val z3ExeEnv = providers.environmentVariable("Z3_EXE").orNull
+    doFirst {
+        (this as Test).environment("Z3_EXE", Z3Provisioning.z3Exe(gradleUserHome, z3ExeEnv).absolutePath)
+    }
+}
+
 // ./gradlew test — normal mode (full verification)
 tasks.test {
     configureFormverTest()
+    provideZ3()
     systemProperty("formver.testMode", "FULL")
 }
 
@@ -121,6 +131,7 @@ tasks.register<Test>("update") {
     testClassesDirs = tasks.test.get().testClassesDirs
     classpath = tasks.test.get().classpath
     configureFormverTest()
+    provideZ3()
     systemProperty("formver.testMode", "UPDATE")
 }
 
