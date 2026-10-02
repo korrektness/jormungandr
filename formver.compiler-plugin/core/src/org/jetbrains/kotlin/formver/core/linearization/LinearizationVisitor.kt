@@ -613,6 +613,17 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitIntArrayInit(e: IntArrayInit): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp {
+            e.initialization.linearize().toViperUnusedResult(ctx)
+            return e.array.linearize().toViper(ctx)
+        }
+
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            toViper(ctx)
+        }
+    }
+
     override fun visitIntArraySet(e: IntArraySet): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = true)
@@ -667,12 +678,17 @@ data class LinearizationVisitor(
     }
 
     /**
-     * Runs the `StringBuilder` updates that [value] consists of when they act on a path, and returns that path, which
-     * then moves in place of [value]. Any other [value] is returned unchanged. A move folds its source before the
-     * value is evaluated, which would close the path before the updates open it again.
+     * Runs the `StringBuilder` updates that [value] consists of when they act on a path, or the initialization of an
+     * [IntArrayInit], and returns that path, which then moves in place of [value]. Any other [value] is returned
+     * unchanged. A move folds its source before the value is evaluated, which would close the path before the updates
+     * open it again.
      */
     private fun runUpdatesOfPath(value: ExpEmbedding, ctx: LinearizationContext): ExpEmbedding {
         var root = value.ignoringCastsAndMetaNodes()
+        if (root is IntArrayInit) {
+            value.linearize().toViperUnusedResult(ctx)
+            return root.array
+        }
         if (root !is StringBuilderUpdate || root.ownedPath() == null) return value
         root.linearize().toViperUnusedResult(ctx)
         while (root is StringBuilderUpdate) root = root.builder.ignoringCastsAndMetaNodes()

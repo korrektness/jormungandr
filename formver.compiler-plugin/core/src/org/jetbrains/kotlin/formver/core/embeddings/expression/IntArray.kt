@@ -61,3 +61,17 @@ data class IntArraySet(
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(array, index, value)
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitIntArraySet(this)
 }
+
+/**
+ * An `IntArray` created and filled by [initialization], which leaves it in [array] holding its unique predicate. The
+ * value is [array], and a move out of this expression moves [array].
+ */
+data class IntArrayInit(
+    val array: VariableEmbedding,
+    val initialization: ExpEmbedding,
+) : ExpEmbedding {
+    override val type: TypeEmbedding = array.type
+
+    override fun children(): Sequence<ExpEmbedding> = sequenceOf(initialization)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitIntArrayInit(this)
+}

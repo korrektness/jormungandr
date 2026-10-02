@@ -136,6 +136,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testInt_array_elements() {
         runTest("formver.compiler-plugin/testData/diagnostics/stdlib/array/int_array_elements.kt");
       }
+
+      @Test
+      @TestMetadata("int_array_init.kt")
+      public void testInt_array_init() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/array/int_array_init.kt");
+      }
     }
 
     @Nested

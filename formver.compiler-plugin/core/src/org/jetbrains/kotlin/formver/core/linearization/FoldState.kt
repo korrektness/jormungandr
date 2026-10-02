@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
+import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayInit
 import org.jetbrains.kotlin.formver.core.embeddings.expression.UniqueValAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
@@ -41,11 +42,12 @@ typealias OwnedShape = RootShape<VariableEmbedding, PathStep>
 
 /**
  * The owned path this expression reads, or `null` when it is not a variable followed by reads of `@Unique` properties.
- * A `StringBuilder` update returns its receiver, so it reads its receiver's path.
+ * A `StringBuilder` update returns its receiver, so it reads its receiver's path, and an [IntArrayInit] reads its array's.
  */
 fun ExpEmbedding.ownedPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaNodes()) {
     is VariableEmbedding -> OwnedPath(exp)
     is StringBuilderUpdate -> exp.builder.ownedPath()
+    is IntArrayInit -> exp.array.ownedPath()
     is FieldAccess -> if (exp.field.isUnique) exp.receiver.ownedPath()?.plus(exp.field) else null
     is UniqueValAccess -> exp.receiver.ownedPath()?.plus(exp.step)
     else -> null

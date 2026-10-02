@@ -278,6 +278,12 @@ An `IntArray` holds its elements as a sequence.
   write is dropped. In a specification, an element read needs a unique array.
 - `IntArray(n)` creates an array of `n` zeros. As with any constructor call, a
   local holding it owns it only when declared `@Unique IntArray`.
+- `IntArray(n) { init }` runs `init` on each index from `0` to `n - 1` in
+  order, inlined into a loop. When the body of `init` is a single pure
+  expression, every element is known to equal it at its index afterwards;
+  otherwise only the size is known. The loop keeps ownership of the unique
+  data around it, but, as for any loop, facts about the contents of that data
+  are lost.
 
 ```kotlin
 @AlwaysVerify

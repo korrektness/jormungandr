@@ -287,6 +287,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val symbol = functionCall.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
             ?: throw NotImplementedError("Only functions are expected as callables of function calls, got ${functionCall.toResolvedCallableSymbol()}")
         if (functionCall.isIntArrayElementAccess()) return data.convertIntArrayElementAccess(functionCall)
+        if (functionCall.isIntArrayInit()) return data.convertIntArrayInit(functionCall)
         functionCall.stringBuilderIntrinsic(data.session)?.let { return data.convertStringBuilderIntrinsic(functionCall, it) }
 
         val callee = data.embedAnyFunction(symbol)
