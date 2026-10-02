@@ -579,9 +579,19 @@ data class LinearizationVisitor(
 
     override fun visitIntArraySize(e: IntArraySize): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp = RuntimeTypeDomain.intInjection.toRef(
-            IntArrayEmbedding.arraySize(e.array.linearize().toViper(ctx), ctx.source.asPosition),
+            IntArrayEmbedding.arraySize(e.array.withoutOwnerUnfoldings().linearize().toViper(ctx), ctx.source.asPosition),
             pos = ctx.source.asPosition,
         )
+    }
+
+    /**
+     * [this] with each trailing `@Unique` `val` read treated as unowned, so that it is not wrapped in the owner's
+     * `unfolding`: the getter is heap-independent, and so is a consumer such as `arraySize` that reads no further.
+     * Casts and meta nodes above such a read are dropped, since only its value is used.
+     */
+    private fun ExpEmbedding.withoutOwnerUnfoldings(): ExpEmbedding = when (val exp = ignoringCastsAndMetaNodes()) {
+        is UniqueValAccess -> exp.copy(receiver = exp.receiver.withoutOwnerUnfoldings(), receiverOwned = false)
+        else -> this
     }
 
     override fun visitIntArrayAllZero(e: IntArrayAllZero): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {

@@ -88,6 +88,10 @@ class SsaConverter(
         addGuardedAssignment(ssaName, varExp.withAccessInvariants(ssaName))
     }
 
+    /** The predicate accesses that an expression reading through [variable] is wrapped in, outermost first. */
+    fun accessInvariantsOf(variable: Exp.LocalVar): List<Exp.PredicateAccess> =
+        accessInvariants[variable.name].orEmpty()
+
     fun addPhiAssignment(condition: Exp, left: SsaVariableName, right: SsaVariableName, name: SsaVariableName) {
         if (left.baseName != right.baseName) {
             throw SnaktInternalException(

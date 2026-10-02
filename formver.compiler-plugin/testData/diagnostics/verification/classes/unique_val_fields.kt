@@ -69,3 +69,32 @@ fun <!VIPER_TEXT!>pushTwice<!>(b: @Unique @Borrowed Buf) {
     verify(b.data[0] == 7)
     verify(b.data[1] == 8)
 }
+
+class C(var x: Int)
+class B(val c: @Unique C)
+class A(val b: @Unique B)
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>xOf<!>(a: @Unique A): Int = a.b.c.x
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>innerXOf<!>(o: @Unique Outer): Int = o.inner.x
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>firstOrZero<!>(b: @Unique Buf): Int = if (b.data.size > 0) b.data[0] else 0
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>bumpThroughPure<!>(a: @Unique @Borrowed A) {
+    postconditions<Unit> { xOf(a) == old(xOf(a)) + 1 }
+    a.b.c.x = a.b.c.x + 1
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>pushThroughPure<!>(b: @Unique @Borrowed Buf) {
+    preconditions { b.count == 0 && b.data.size >= 1 }
+    push(b, 7)
+    verify(firstOrZero(b) == 7)
+}

@@ -21,8 +21,8 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
  * - at a conjunction, so a conjunct never reads a predicate that an earlier conjunct provides;
  * - at a quantifier whose variables its arguments mention;
  * - below the guard of `==>`, `||` or a conditional when the guard mentions the root of one of its arguments,
- *   except as the argument of `arraySize`, which needs no permission, and unless an equal `unfolding` rises from
- *   the guard itself;
+ *   except within the argument of `arraySize` outside any field read or `unfolding`, which needs no permission, and
+ *   unless an equal `unfolding` rises from the guard itself;
  * - at `old` and `let`, inside which `unfolding`s are placed independently;
  * - at any other expression.
  */
@@ -165,27 +165,38 @@ private fun Exp.withoutUnfoldings(keys: Set<UnfoldingKey?>): Exp {
 }
 
 /**
- * The variables [this] mentions, except as the argument of `arraySize`; `null` when it contains an expression whose
- * variables are not tracked here.
+ * The variables [this] mentions, except as the argument of `arraySize` outside any field read or `unfolding`, which
+ * needs no permission; `null` when it contains an expression whose variables are not tracked here. Inside such an
+ * argument [permissionFree] is set.
  */
-private fun Exp.mentionedVariables(): Set<SymbolicName>? {
+private fun Exp.mentionedVariables(permissionFree: Boolean = false): Set<SymbolicName>? {
+    var childrenPermissionFree = permissionFree
     val children = when (this) {
-        is Exp.LocalVar -> return setOf(name)
-        is Exp.FuncApp -> if (functionName == IntArrayEmbedding.arraySizeFunction.name) return emptySet() else args
+        is Exp.LocalVar -> return if (permissionFree) emptySet() else setOf(name)
+        is Exp.FuncApp -> {
+            if (functionName == IntArrayEmbedding.arraySizeFunction.name) childrenPermissionFree = true
+            args
+        }
         is Exp.IntLit, is Exp.BoolLit, is Exp.NullLit, is Exp.Result -> emptyList()
         is BinaryExp -> listOf(left, right)
         is UnaryExp -> listOf(arg)
         is Exp.DomainFuncApp -> args
-        is Exp.FieldAccess -> listOf(rcv)
+        is Exp.FieldAccess -> {
+            childrenPermissionFree = false
+            listOf(rcv)
+        }
         is Exp.SeqLength -> listOf(seq)
         is Exp.SeqIndex -> listOf(seq, idx)
         is Exp.TernaryExp -> listOf(condExp, thenExp, elseExp)
-        is Exp.Unfolding -> predicateAccess.formalArgs + body
+        is Exp.Unfolding -> {
+            childrenPermissionFree = false
+            predicateAccess.formalArgs + body
+        }
         is Exp.Old -> listOf(exp)
         else -> return null
     }
     return children.fold(emptySet<SymbolicName>() as Set<SymbolicName>?) { acc, child ->
-        val mentioned = child.mentionedVariables()
+        val mentioned = child.mentionedVariables(childrenPermissionFree)
         if (acc == null || mentioned == null) null else acc + mentioned
     }
 }

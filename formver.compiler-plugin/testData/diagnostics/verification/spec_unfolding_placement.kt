@@ -27,3 +27,12 @@ fun <!VIPER_TEXT!>inRange<!>(b: @Unique @Borrowed Box) {
     }
     b.value = 5
 }
+
+class ArrayHolder(var arr: @Unique IntArray)
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>sizeGuardThroughVar<!>(h: @Unique @Borrowed ArrayHolder) {
+    postconditions<Unit> {
+        forAll<Int> { j -> (0 <= j && j < h.arr.size) implies (h.arr[j] == h.arr[j]) }
+    }
+}

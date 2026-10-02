@@ -168,3 +168,46 @@ fun <!VIPER_TEXT!>insertionSortProbeExit<!>(arr: @Unique @Borrowed IntArray) {
     }
     verify(<!VIPER_VERIFICATION_ERROR!>false<!>)
 }
+
+class Sorter(val arr: @Unique IntArray)
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>insertionSortThroughVal<!>(s: @Unique @Borrowed Sorter) {
+    postconditions<Unit> {
+        forAll<Int> { i ->
+            forAll<Int> { j ->
+                (0 <= i && i < j && j < s.arr.size) implies (s.arr[i] <= s.arr[j])
+            }
+        }
+    }
+    var i = 1
+    while (i < s.arr.size) {
+        loopInvariants {
+            1 <= i && (i <= s.arr.size || i == 1)
+            forAll<Int> { a ->
+                forAll<Int> { b ->
+                    (0 <= a && a < b && b < i) implies (s.arr[a] <= s.arr[b])
+                }
+            }
+        }
+        val key = s.arr[i]
+        var j = i - 1
+        while (j >= 0 && s.arr[j] > key) {
+            loopInvariants {
+                -1 <= j && j < i && i < s.arr.size
+                forAll<Int> { a ->
+                    forAll<Int> { b ->
+                        (0 <= a && a < b && b <= i && a != j + 1 && b != j + 1) implies (s.arr[a] <= s.arr[b])
+                    }
+                }
+                forAll<Int> { a ->
+                    (j + 1 < a && a <= i) implies (key < s.arr[a])
+                }
+            }
+            s.arr[j + 1] = s.arr[j]
+            j--
+        }
+        s.arr[j + 1] = key
+        i++
+    }
+}

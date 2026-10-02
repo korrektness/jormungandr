@@ -58,3 +58,28 @@ method inRange(b: Ref) returns (v_ret_0: Ref)
   fold acc(Box_unique(b), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/spec_unfolding_placement.kt: info: Generated Viper text for sizeGuardThroughVar:
+field arr: Ref
+
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method sizeGuardThroughVar(h: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), ArrayHolder())
+  requires acc(ArrayHolder_unique(h), write)
+  ensures acc(ArrayHolder_unique(h), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (forall anon: Int ::0 <= anon &&
+      (unfolding acc(ArrayHolder_unique(h), write) in
+        anon < arraySize(h.arr)) ==>
+      (unfolding acc(ArrayHolder_unique(h), write) in
+        (unfolding acc(IntArray_unique(h.arr), write) in
+          h.arr.contents[anon] == h.arr.contents[anon])))
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

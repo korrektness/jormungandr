@@ -106,11 +106,7 @@ data class PureFunBodyLinearizer(
         result: VariableEmbedding,
         receiverPath: OwnedPath?,
     ) {
-        val viperReceiver = receiver.toViper(this)
-        if (viperReceiver !is Exp.LocalVar) throw SnaktInternalException(
-            source,
-            "Invalid receiver encountered in pure function"
-        )
+        val viperReceiver = localReceiver(receiver)
         val accessInvariants = hierarchyPredicateAccesses(viperReceiver, receiverType, field).toList()
         val primitiveAccess: Exp = Exp.FieldAccess(viperReceiver, field.toViper(), source.asPosition)
         ssaConverter.addAssignment(result.name, primitiveAccess, accessInvariants)
@@ -127,17 +123,34 @@ data class PureFunBodyLinearizer(
         return result.toViperExp(this)
     }
 
-    override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean): Exp =
-        step.valueOf(receiver.toViper(this), source.asPosition)
-
-    override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp {
-        if (predicate.formalArgs.any { it !is Exp.LocalVar }) {
-            throw SnaktInternalException(source, "Invalid owner encountered in pure function")
-        }
-        val result = freshAnonVar(type)
-        ssaConverter.addAssignment(result.name, type.injection.toRef(value, pos = source.asPosition), listOf(predicate))
+    /**
+     * The getter's value is bound to a fresh variable, so that reads below it have a variable receiver. When the
+     * receiver is owned, the binding carries the unfoldings down to the class declaring the getter, which reads
+     * below it need to reach the value's own predicate.
+     */
+    override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean): Exp {
+        val viperReceiver = localReceiver(receiver)
+        val accessInvariants =
+            if (owned) hierarchyPredicateAccesses(viperReceiver, receiverType, step).toList() else emptyList()
+        val result = freshAnonVar(step.type)
+        ssaConverter.addAssignment(result.name, step.valueOf(viperReceiver, source.asPosition), accessInvariants)
         return result.toViperExp(this)
     }
+
+    /** The value is read under the access invariants of the owner's arguments, then the owner's predicate. */
+    override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp {
+        val owners = predicate.formalArgs.map {
+            it as? Exp.LocalVar ?: throw SnaktInternalException(source, "Invalid owner encountered in pure function")
+        }
+        val accessInvariants = (owners.flatMap { ssaConverter.accessInvariantsOf(it) } + predicate).distinct()
+        val result = freshAnonVar(type)
+        ssaConverter.addAssignment(result.name, type.injection.toRef(value, pos = source.asPosition), accessInvariants)
+        return result.toViperExp(this)
+    }
+
+    private fun localReceiver(receiver: Linearizable): Exp.LocalVar =
+        receiver.toViper(this) as? Exp.LocalVar
+            ?: throw SnaktInternalException(source, "Invalid receiver encountered in pure function")
 
     override fun addModifier(mod: StmtModifier) {
         throw PureFunBodyLinearizerMisuseException("addModifier")

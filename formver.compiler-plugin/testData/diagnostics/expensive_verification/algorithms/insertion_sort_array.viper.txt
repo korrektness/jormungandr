@@ -559,3 +559,167 @@ method insertionSortProbeExit(arr: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/insertion_sort_array.kt: info: Generated Viper text for insertionSortThroughVal:
+field contents: Seq[Int]
+
+function arr(this: Ref): Ref
+  requires isSubtype(typeOf(this), Sorter())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method insertionSortThroughVal(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), Sorter())
+  requires acc(Sorter_unique(s), write)
+  ensures acc(Sorter_unique(s), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Sorter_unique(s), write) in
+      (unfolding acc(IntArray_unique(arr(s)), write) in
+        (forall anon_builtin_0: Int ::(forall anon_builtin_1: Int ::0 <=
+            anon_builtin_0 &&
+            anon_builtin_0 < anon_builtin_1 &&
+            anon_builtin_1 < arraySize(arr(s)) ==>
+            arr(s).contents[anon_builtin_0] <=
+            arr(s).contents[anon_builtin_1]))))
+{
+  var i: Ref
+  var anon_2: Ref
+  i := intToRef(1)
+  label cont_0
+    invariant acc(Sorter_unique(s), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(s), Sorter())
+    invariant 1 <= intFromRef(i) &&
+      (intFromRef(i) <= arraySize(arr(s)) || intFromRef(i) == 1)
+    invariant (unfolding acc(Sorter_unique(s), write) in
+        (unfolding acc(IntArray_unique(arr(s)), write) in
+          (forall anon_builtin_2: Int ::(forall anon_builtin_3: Int ::0 <=
+              anon_builtin_2 &&
+              anon_builtin_2 < anon_builtin_3 &&
+              anon_builtin_3 < intFromRef(i) ==>
+              arr(s).contents[anon_builtin_2] <=
+              arr(s).contents[anon_builtin_3]))))
+  anon_2 := ltInts(i, intToRef(arraySize(arr(s))))
+  if (boolFromRef(anon_2)) {
+    var key: Ref
+    var anon_3: Ref
+    var j: Ref
+    var anon_4: Ref
+    var anon_1: Ref
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr(s))
+    unfold acc(Sorter_unique(s), write)
+    unfold acc(IntArray_unique(arr(s)), write)
+    anon_3 := intToRef(arr(s).contents[intFromRef(i)])
+    key := anon_3
+    j := minusInts(i, intToRef(1))
+    fold acc(IntArray_unique(arr(s)), write)
+    fold acc(Sorter_unique(s), write)
+    label cont_1
+      invariant acc(Sorter_unique(s), write)
+      invariant isSubtype(typeOf(key), intType())
+      invariant isSubtype(typeOf(j), intType())
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(s), Sorter())
+      invariant -1 <= intFromRef(j) && intFromRef(j) < intFromRef(i) &&
+        intFromRef(i) < arraySize(arr(s))
+      invariant (unfolding acc(Sorter_unique(s), write) in
+          (unfolding acc(IntArray_unique(arr(s)), write) in
+            (forall anon_builtin_4: Int ::(forall anon_builtin_5: Int ::0 <=
+                anon_builtin_4 &&
+                anon_builtin_4 < anon_builtin_5 &&
+                anon_builtin_5 <= intFromRef(i) &&
+                !(anon_builtin_4 == intFromRef(j) + 1) &&
+                !(anon_builtin_5 == intFromRef(j) + 1) ==>
+                arr(s).contents[anon_builtin_4] <=
+                arr(s).contents[anon_builtin_5]))))
+      invariant (unfolding acc(Sorter_unique(s), write) in
+          (unfolding acc(IntArray_unique(arr(s)), write) in
+            (forall anon_builtin_6: Int ::intFromRef(j) + 1 <
+              anon_builtin_6 &&
+              anon_builtin_6 <= intFromRef(i) ==>
+              intFromRef(key) < arr(s).contents[anon_builtin_6])))
+    if (intFromRef(j) >= 0) {
+      var anon_5: Ref
+      assert intFromRef(j) >= 0
+      assert intFromRef(j) < arraySize(arr(s))
+      unfold acc(Sorter_unique(s), write)
+      unfold acc(IntArray_unique(arr(s)), write)
+      anon_5 := intToRef(arr(s).contents[intFromRef(j)])
+      anon_4 := gtInts(anon_5, key)
+      fold acc(IntArray_unique(arr(s)), write)
+      fold acc(Sorter_unique(s), write)
+    } else {
+      anon_4 := boolToRef(false)}
+    if (boolFromRef(anon_4)) {
+      var anon_6: Ref
+      var anon_0: Ref
+      assert intFromRef(j) >= 0
+      assert intFromRef(j) < arraySize(arr(s))
+      unfold acc(Sorter_unique(s), write)
+      unfold acc(IntArray_unique(arr(s)), write)
+      anon_6 := intToRef(arr(s).contents[intFromRef(j)])
+      assert intFromRef(j) + 1 >= 0
+      assert intFromRef(j) + 1 < arraySize(arr(s))
+      arr(s).contents := arr(s).contents[intFromRef(j) + 1 :=
+        intFromRef(anon_6)]
+      anon_0 := j
+      j := minusInts(anon_0, intToRef(1))
+      fold acc(IntArray_unique(arr(s)), write)
+      fold acc(Sorter_unique(s), write)
+      goto cont_1
+    }
+    label break_1
+    assert isSubtype(typeOf(key), intType())
+    assert isSubtype(typeOf(j), intType())
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(s), Sorter())
+    assert -1 <= intFromRef(j) && intFromRef(j) < intFromRef(i) &&
+      intFromRef(i) < arraySize(arr(s))
+    assert (unfolding acc(Sorter_unique(s), write) in
+        (unfolding acc(IntArray_unique(arr(s)), write) in
+          (forall anon_builtin_4: Int ::(forall anon_builtin_5: Int ::0 <=
+              anon_builtin_4 &&
+              anon_builtin_4 < anon_builtin_5 &&
+              anon_builtin_5 <= intFromRef(i) &&
+              !(anon_builtin_4 == intFromRef(j) + 1) &&
+              !(anon_builtin_5 == intFromRef(j) + 1) ==>
+              arr(s).contents[anon_builtin_4] <=
+              arr(s).contents[anon_builtin_5]))))
+    assert (unfolding acc(Sorter_unique(s), write) in
+        (unfolding acc(IntArray_unique(arr(s)), write) in
+          (forall anon_builtin_6: Int ::intFromRef(j) + 1 < anon_builtin_6 &&
+            anon_builtin_6 <= intFromRef(i) ==>
+            intFromRef(key) < arr(s).contents[anon_builtin_6])))
+    assert intFromRef(j) + 1 >= 0
+    assert intFromRef(j) + 1 < arraySize(arr(s))
+    unfold acc(Sorter_unique(s), write)
+    unfold acc(IntArray_unique(arr(s)), write)
+    arr(s).contents := arr(s).contents[intFromRef(j) + 1 :=
+      intFromRef(key)]
+    anon_1 := i
+    i := plusInts(anon_1, intToRef(1))
+    fold acc(IntArray_unique(arr(s)), write)
+    fold acc(Sorter_unique(s), write)
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(s), Sorter())
+  assert 1 <= intFromRef(i) &&
+    (intFromRef(i) <= arraySize(arr(s)) || intFromRef(i) == 1)
+  assert (unfolding acc(Sorter_unique(s), write) in
+      (unfolding acc(IntArray_unique(arr(s)), write) in
+        (forall anon_builtin_2: Int ::(forall anon_builtin_3: Int ::0 <=
+            anon_builtin_2 &&
+            anon_builtin_2 < anon_builtin_3 &&
+            anon_builtin_3 < intFromRef(i) ==>
+            arr(s).contents[anon_builtin_2] <=
+            arr(s).contents[anon_builtin_3]))))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
