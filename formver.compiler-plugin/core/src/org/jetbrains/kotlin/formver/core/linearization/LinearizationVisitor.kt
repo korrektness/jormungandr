@@ -6,11 +6,14 @@
 package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.isOf
 import org.jetbrains.kotlin.formver.core.embeddings.*
+import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
+import org.jetbrains.kotlin.formver.core.embeddings.asInfo
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toFuncApp
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toMethodCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -529,6 +532,35 @@ data class LinearizationVisitor(
             IntArrayEmbedding.allZero(e.array.linearize().toViper(ctx), ctx.source.asPosition)
     }
 
+    override fun visitIntArrayGet(e: IntArrayGet): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp {
+            val array = e.array.linearize().toViper(ctx)
+            val index = e.index.linearize().toViperBuiltinType(ctx)
+            val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = false)
+            if (arrayPath != null) ctx.assertInBounds(array, index, e.arraySymbol)
+            return ctx.addIntArrayRead(array, index, arrayPath)
+        }
+    }
+
+    override fun visitIntArraySet(e: IntArraySet): Linearizable = object : UnitResultLinearizable(e) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = true)
+            if (arrayPath == null) {
+                e.children().forEach { it.linearize().toViperUnusedResult(ctx) }
+                return
+            }
+            val array = e.array.linearize().toViper(ctx)
+            val index = e.index.linearize().toViperBuiltinType(ctx)
+            val value = e.value.linearize().toViperBuiltinType(ctx)
+            ctx.assertInBounds(array, index, e.arraySymbol)
+            ctx.foldState?.openOwn(ctx, arrayPath)
+            val contents = array.fieldAccess(IntArrayEmbedding.contentsField, ctx.source.asPosition)
+            ctx.addStatement {
+                Stmt.FieldAssign(contents, Exp.SeqUpdate(contents, index, value, ctx.source.asPosition), ctx.source.asPosition)
+            }
+        }
+    }
+
     // endregion
 
     // region Assignment / Declaration
@@ -713,6 +745,16 @@ private fun LinearizationContext.ownedReceiverPath(
         throw FoldStateException(source, "The receiver is owned, but it is not a path whose permissions are tracked.")
     }
     return path
+}
+
+/** Assert that [index] is a valid index into [array], reporting a failure as an array bounds error. */
+private fun LinearizationContext.assertInBounds(array: Exp, index: Exp, arraySymbol: FirBasedSymbol<*>?) {
+    val pos = source.asPosition
+    fun role(bound: SourceRole.ArrayElementAccessCheck.Bound) = SourceRole.ArrayElementAccessCheck(bound, arraySymbol).asInfo
+    addStatement { Stmt.Assert(Exp.GeCmp(index, Exp.IntLit(0), pos, role(SourceRole.ArrayElementAccessCheck.Bound.NEGATIVE)), pos) }
+    addStatement {
+        Stmt.Assert(Exp.LtCmp(index, IntArrayEmbedding.arraySize(array, pos), pos, role(SourceRole.ArrayElementAccessCheck.Bound.NOT_BELOW_SIZE)), pos)
+    }
 }
 
 /** The arguments that are held paths, with the formal parameter each is passed to. */

@@ -81,9 +81,8 @@ method con(par_data: Ref, par_left: Ref, par_right: Ref)
   requires par_right != nullValue() ==> acc(Node_unique(par_right), write)
   ensures isSubtype(typeOf(ret_1), Node())
   ensures acc(Node_unique(ret_1), write)
-  ensures intFromRef((unfolding acc(Node_unique(ret_1), write) in
-      ret_1.bf_data)) ==
-    intFromRef(par_data)
+  ensures (unfolding acc(Node_unique(ret_1), write) in
+      intFromRef(ret_1.bf_data) == intFromRef(par_data))
   ensures g_left(ret_1) == par_left
   ensures g_right(ret_1) == par_right
 

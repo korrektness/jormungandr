@@ -131,6 +131,13 @@ class FoldState {
         reach(ctx, path, field) ?: throw notHeld(ctx)
     }
 
+    /** Unfold the predicate of the static class of [path], and what is needed to reach [path]. */
+    fun openOwn(ctx: LinearizationContext, path: OwnedPath) {
+        if (roots == null) return
+        val (node, place) = locate(ctx, path) ?: throw notHeld(ctx)
+        if (!openChain(ctx, node, place) { listOf(it) }) throw notHeld(ctx)
+    }
+
     /** Fold [path] completely. Its subtree must have no moved-out field. */
     fun close(ctx: LinearizationContext, path: OwnedPath) {
         if (roots == null || ctx.trackedClass(path.type) == null) return
@@ -259,10 +266,10 @@ class FoldState {
     }
 
     /**
-     * The node for [path], opened far enough that [field] is accessible. Ancestors are opened through the fields
-     * on the path. Returns `null` when [path] holds nothing.
+     * The node for [path] and its place, with the ancestors opened through the fields on the path. Returns `null`
+     * when [path] holds nothing.
      */
-    private fun reach(ctx: LinearizationContext, path: OwnedPath, field: FieldEmbedding): Node? {
+    private fun locate(ctx: LinearizationContext, path: OwnedPath): Pair<Node, Place>? {
         var node = roots?.get(path.root.name)?.second ?: return null
         var place = ctx.rootPlace(path.root)
         for (step in path.fields) {
@@ -270,23 +277,41 @@ class FoldState {
             node = node.children.getOrPut(step.name) { step to Node(step.type, Status.Folded) }.second
             place = ctx.fieldPlace(place, step)
         }
+        return node to place
+    }
+
+    /** The node for [path], opened far enough that [field] is accessible, or `null` when [path] holds nothing. */
+    private fun reach(ctx: LinearizationContext, path: OwnedPath, field: FieldEmbedding): Node? {
+        val (node, place) = locate(ctx, path) ?: return null
         return node.takeIf { openThrough(ctx, it, place, field) }
     }
 
     /** Unfold the chain of [node] through the class declaring [field]. Returns false when [node] holds nothing. */
-    private fun openThrough(ctx: LinearizationContext, node: Node, place: Place, field: FieldEmbedding): Boolean {
+    private fun openThrough(ctx: LinearizationContext, node: Node, place: Place, field: FieldEmbedding): Boolean =
+        openChain(ctx, node, place) { ctx.typeResolver.hierarchyPathTo(it, field).toList() }
+
+    /**
+     * Unfold the classes of [chain], applied to the static class of [node], that are not unfolded yet. Returns false
+     * when [node] holds nothing.
+     */
+    private fun openChain(
+        ctx: LinearizationContext,
+        node: Node,
+        place: Place,
+        chain: (ClassTypeEmbedding) -> List<ClassTypeEmbedding>,
+    ): Boolean {
         val opened = when (val status = node.status) {
             Status.Absent -> return false
             Status.Folded -> emptyList()
             is Status.Open -> status.opened
         }
-        if (ctx.trackedClass(node.type) == null) return true
-        val chain = ctx.typeResolver.hierarchyPathTo(node.type.pretype, field).toList()
-        if (chain.size <= opened.size) return true
-        for (cls in chain.drop(opened.size)) {
-            ctx.addGuarded(place) { Stmt.Unfold(hierarchyPredicateAccess(place.exp, cls, source), source.asPosition) }
+        val cls = ctx.trackedClass(node.type) ?: return true
+        val classes = chain(cls)
+        if (classes.size <= opened.size) return true
+        for (next in classes.drop(opened.size)) {
+            ctx.addGuarded(place) { Stmt.Unfold(hierarchyPredicateAccess(place.exp, next, source), source.asPosition) }
         }
-        node.status = Status.Open(chain)
+        node.status = Status.Open(classes)
         return true
     }
 

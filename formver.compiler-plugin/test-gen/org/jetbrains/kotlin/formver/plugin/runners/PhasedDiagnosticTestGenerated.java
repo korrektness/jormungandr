@@ -124,6 +124,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testInt_array() {
         runTest("formver.compiler-plugin/testData/diagnostics/stdlib/array/int_array.kt");
       }
+
+      @Test
+      @TestMetadata("int_array_elements.kt")
+      public void testInt_array_elements() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/array/int_array_elements.kt");
+      }
     }
 
     @Nested
@@ -494,6 +500,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("shadowing.kt")
     public void testShadowing() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/shadowing.kt");
+    }
+
+    @Test
+    @TestMetadata("spec_unfolding_placement.kt")
+    public void testSpec_unfolding_placement() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/spec_unfolding_placement.kt");
     }
 
     @Test

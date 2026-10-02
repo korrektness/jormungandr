@@ -2,8 +2,8 @@
 // USE_STDLIB
 import org.jetbrains.kotlin.formver.plugin.*
 
-<!PURITY_VIOLATION, PURITY_VIOLATION!>@AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) <!EXIT_UNIQUENESS_INCONSISTENCY!>{
+@AlwaysVerify
+fun <!VIPER_TEXT!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
     postconditions<Unit> {
         forAll<Int> { i ->
             forAll<Int> { j ->
@@ -12,7 +12,7 @@ fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) <!
         }
     }
     var i = 1
-    while (i < <!INVALID_MOVED_ACCESS!>arr<!>.size) {
+    <!VIPER_VERIFICATION_ERROR!>while (i < arr.size) {
         loopInvariants {
             1 <= i && i <= arr.size
             forAll<Int> { a ->
@@ -21,9 +21,9 @@ fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) <!
                 }
             }
         }
-        val key = <!INVALID_MOVED_ACCESS!>arr<!>[i]
+        val key = arr[i]
         var j = i - 1
-        while (j >= 0 && <!INVALID_MOVED_ACCESS!>arr<!>[j] > key) {
+        while (j >= 0 && arr[j] > key) {
             loopInvariants {
                 -1 <= j && j < i && i < arr.size
                 forAll<Int> { a ->
@@ -35,10 +35,10 @@ fun <!VERIFICATION_SKIPPED!>insertionSort<!>(arr: @Unique @Borrowed IntArray) <!
                     (j + 1 < a && a <= i) implies (key < arr[a])
                 }
             }
-            <!INVALID_MOVED_ACCESS!>arr<!>.set(j + 1, <!INVALID_MOVED_ACCESS!>arr<!>[j])
+            arr[j + 1] = arr[j]
             j--
         }
-        <!INVALID_MOVED_ACCESS!>arr<!>.set(j + 1, key)
+        arr[j + 1] = key
         i++
-    }
-}<!><!>
+    }<!>
+}

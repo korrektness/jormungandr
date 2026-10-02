@@ -65,24 +65,13 @@ class DefaultError(private val error: VerificationError) : FormattedError {
     fun msg(): String = error.msg
 }
 
-class IndexOutOfBoundError(
-    private val error: VerificationError,
-    private val sourceRole: SourceRole.ListElementAccessCheck
-) :
-    FormattedError {
-
-    private val SourceRole.ListElementAccessCheck.AccessCheckType.asUserFriendlyMessage: String
-        get() = when (this) {
-            SourceRole.ListElementAccessCheck.AccessCheckType.LESS_THAN_ZERO -> "less than zero"
-            SourceRole.ListElementAccessCheck.AccessCheckType.GREATER_THAN_LIST_SIZE -> "greater than the list's size"
-        }
-
+/**
+ * An index that may be out of bounds. [target] names the indexed collection; when it is an inlined expression with no
+ * symbol, it names no variable, since the compiler highlights the sub-expression causing the problem.
+ */
+class IndexOutOfBoundError(private val target: String, private val violation: String) : FormattedError {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun report(source: KtSourceElement?) {
-        /**
-         * When we are dealing with inlined expressions returning a list, we do not have access to any list symbol.
-         * Therefore, we do not report any name since the compiler would highlight the sub-expression causing the problem.
-         */
         val (targetInfo, userFriendlyMessage) = msg()
         reporter.reportOn(
             source,
@@ -92,11 +81,26 @@ class IndexOutOfBoundError(
         )
     }
 
-    fun msg(): Pair<String, String> {
-        val targetListInfo = error.locationNode.asCallable().arg(0).info
-        val targetList = targetListInfo.unwrapOr<SourceRole.FirSymbolHolder> { null }
-        return targetList.formatListMessage() to sourceRole.accessType.asUserFriendlyMessage
+    fun msg(): Pair<String, String> = target to violation
+}
+
+private fun VerificationError.listIndexOutOfBound(sourceRole: SourceRole.ListElementAccessCheck): IndexOutOfBoundError {
+    val targetList = locationNode.asCallable().arg(0).info.unwrapOr<SourceRole.FirSymbolHolder> { null }
+    val violation = when (sourceRole.accessType) {
+        SourceRole.ListElementAccessCheck.AccessCheckType.LESS_THAN_ZERO -> "less than zero"
+        SourceRole.ListElementAccessCheck.AccessCheckType.GREATER_THAN_LIST_SIZE -> "greater than the list's size"
     }
+    return IndexOutOfBoundError(targetList.formatListMessage(), violation)
+}
+
+private fun SourceRole.ArrayElementAccessCheck.indexOutOfBound(): IndexOutOfBoundError {
+    val target = array?.let { "array '${FirDiagnosticRenderers.DECLARATION_NAME.render(it)}'" }
+        ?: "the following array sub-expression"
+    val violation = when (bound) {
+        SourceRole.ArrayElementAccessCheck.Bound.NEGATIVE -> "less than zero"
+        SourceRole.ArrayElementAccessCheck.Bound.NOT_BELOW_SIZE -> "not less than the array's size"
+    }
+    return IndexOutOfBoundError(target, violation)
 }
 
 class InvalidSubListRangeError(
@@ -131,7 +135,8 @@ fun VerificationError.formatUserFriendly(): FormattedError? =
     when (val sourceRole = lookupSourceRole()) {
         is SourceRole.ReturnsEffect -> ReturnsEffectError(sourceRole)
         is SourceRole.ConditionalEffect -> ConditionalEffectError(sourceRole)
-        is SourceRole.ListElementAccessCheck -> IndexOutOfBoundError(this, sourceRole)
+        is SourceRole.ListElementAccessCheck -> listIndexOutOfBound(sourceRole)
+        is SourceRole.ArrayElementAccessCheck -> sourceRole.indexOutOfBound()
         is SourceRole.SubListCreation -> InvalidSubListRangeError(this, sourceRole)
         else -> null
     }

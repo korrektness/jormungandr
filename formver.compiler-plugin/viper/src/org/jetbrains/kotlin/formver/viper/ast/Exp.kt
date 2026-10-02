@@ -595,6 +595,35 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         }
     }
 
+    /** [seq] with the element at [idx] replaced by [elem]: `seq[idx := elem]`. */
+    data class SeqUpdate(
+        val seq: Exp,
+        val idx: Exp,
+        val elem: Exp,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : Exp {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.SeqUpdate =
+            viper.silver.ast.SeqUpdate.apply(
+                seq.toSilver(),
+                idx.toSilver(),
+                elem.toSilver(),
+                pos.toSilver(),
+                info.toSilver(),
+                silverNoTrafos,
+            )
+
+        override val type = seq.type
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() {
+            seq.registerNames()
+            idx.registerNames()
+            elem.registerNames()
+        }
+    }
+
     data class SeqAppend(
         override val left: Exp,
         override val right: Exp,

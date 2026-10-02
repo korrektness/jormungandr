@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
 import org.jetbrains.kotlin.fir.expressions.impl.FirUnitExpression
+import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.references.toResolvedSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
@@ -21,6 +22,7 @@ import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureBehaviour
+import org.jetbrains.kotlin.formver.core.description
 import org.jetbrains.kotlin.formver.core.embeddings.LabelLink
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
@@ -38,8 +40,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 import org.jetbrains.kotlin.formver.core.embeddings.toLink
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
-import org.jetbrains.kotlin.formver.core.description
 import org.jetbrains.kotlin.formver.core.functionCallArguments
+import org.jetbrains.kotlin.formver.uniqueness.plugin.isIntArrayElementAccess
 import org.jetbrains.kotlin.types.ConstantValueKind
 
 /**
@@ -60,6 +62,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     // communicate this.
     override fun visitElement(element: FirElement, data: StmtConversionContext): ExpEmbedding =
         handleUnimplementedElement(element.source, "Not yet implemented for ${element.description}", data)
+
+    /** FIR ends the block of an indexed assignment, such as `a[i] = v` or `a[i] += v`, with a Unit expression. */
+    override fun visitExpression(expression: FirExpression, data: StmtConversionContext): ExpEmbedding =
+        if (expression is FirUnitExpression) UnitLit else visitElement(expression, data)
 
     override fun visitReturnExpression(
         returnExpression: FirReturnExpression,
@@ -174,6 +180,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         propertyAccessExpression: FirPropertyAccessExpression,
         data: StmtConversionContext,
     ): ExpEmbedding {
+        propertyAccessExpression.calleeReference.symbol?.let(::indexedArrayAlias)?.let { return data.convert(it) }
         val propertyAccess = data.embedPropertyAccess(propertyAccessExpression)
         return propertyAccess.getValue(data)
     }
@@ -285,6 +292,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitFunctionCall(functionCall: FirFunctionCall, data: StmtConversionContext): ExpEmbedding {
         val symbol = functionCall.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
             ?: throw NotImplementedError("Only functions are expected as callables of function calls, got ${functionCall.toResolvedCallableSymbol()}")
+        if (functionCall.isIntArrayElementAccess()) return data.convertIntArrayElementAccess(functionCall)
 
         val callee = data.embedAnyFunction(symbol)
         return callee.insertCall(
@@ -321,6 +329,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     override fun visitProperty(property: FirProperty, data: StmtConversionContext): ExpEmbedding {
         val symbol = property.symbol
+        if (indexedArrayAlias(symbol) != null) return UnitLit
         if (!symbol.isLocal) {
             throw SnaktInternalException(
                 property.source,

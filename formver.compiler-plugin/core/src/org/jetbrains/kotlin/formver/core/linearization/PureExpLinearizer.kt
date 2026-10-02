@@ -9,11 +9,13 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.print
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -97,6 +99,15 @@ data class PureExpLinearizer(
             .foldRight(primitiveAccess) { predicateAccess, acc -> Exp.Unfolding(predicateAccess, acc) }
     }
 
+    override fun addIntArrayRead(array: Exp, index: Exp, arrayPath: OwnedPath?): Exp {
+        val element = Exp.Unfolding(
+            IntArrayEmbedding.uniquePredicateAccess(array, source.asPosition),
+            IntArrayEmbedding.element(array, index, source.asPosition),
+            source.asPosition,
+        )
+        return RuntimeTypeDomain.intInjection.toRef(element, pos = source.asPosition)
+    }
+
     override fun addModifier(mod: StmtModifier) {
         throw PureExpLinearizerMisuseException("addModifier")
     }
@@ -109,7 +120,8 @@ fun ExpEmbedding.pureToViper(toBuiltin: Boolean, typeResolver: TypeResolver, sou
     try {
         val linearizer = PureExpLinearizer(source, typeResolver)
         val lin = toLinearizable(source)
-        return if (toBuiltin) lin.toViperBuiltinType(linearizer) else lin.toViper(linearizer)
+        val exp = if (toBuiltin) lin.toViperBuiltinType(linearizer) else lin.toViper(linearizer)
+        return exp.hoistUnfoldings()
     } catch (e: PureExpLinearizerMisuseException) {
         val catchNameResolver = SimpleNameResolver()
         val debugView = with(catchNameResolver) { debugTreeView.print() }

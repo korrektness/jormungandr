@@ -17,6 +17,14 @@ sealed interface SourceRole {
         }
     }
 
+    /** A bound on the index of an array element access; [array] is the variable read as the array, if any. */
+    data class ArrayElementAccessCheck(val bound: Bound, val array: FirBasedSymbol<*>?) : SourceRole {
+        enum class Bound {
+            NEGATIVE,
+            NOT_BELOW_SIZE
+        }
+    }
+
     data class ConditionalEffect(val effect: ReturnsEffect, val condition: Condition) : SourceRole
     data class FirSymbolHolder(val firSymbol: FirBasedSymbol<*>) : SourceRole, Condition
 

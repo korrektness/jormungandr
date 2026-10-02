@@ -93,7 +93,9 @@ fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessSta
  * Default arguments and lambdas called in place are analyzed as part of the enclosing flow; a lambda called in place
  * starts with its own parameters at their declared uniqueness.
  *
- * Calls to `@Pure` functions, and declarations and calls in [readOnlyContext], move nothing.
+ * Calls to `@Pure` functions, element accesses of an `IntArray`, and declarations and calls in [readOnlyContext], move
+ * nothing. The `<array>` temporary of a compound index assignment is not tracked: its accesses resolve to its
+ * initializer.
  */
 class GraphUniquenessStatesAnalyzer(
     private val initialState: UniquenessState,
@@ -114,7 +116,7 @@ class GraphUniquenessStatesAnalyzer(
         this[Unit] ?: initialState
 
     private val FirFunctionCall.movesArguments: Boolean
-        get() = this !in readOnlyContext && !isPureCall(context.session)
+        get() = this !in readOnlyContext && !isPureCall(context.session) && !isIntArrayElementAccess()
 
     override fun visitSubGraph(node: CFGNodeWithSubgraphs<*>, graph: ControlFlowGraph): Boolean {
         return graph.extendsLocalFlow
@@ -143,6 +145,7 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
         val declaration = node.fir
+        if (declaration.symbol.indexedArrayInitializer != null) return visitNode(node, data)
         val initializer = declaration.initializer
         val leftSymbol = declaration.symbol
         val leftAccessState = EmptyAccessState.putChild(

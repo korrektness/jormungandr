@@ -1,0 +1,219 @@
+/int_array_elements.kt: info: Generated Viper text for swap:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method swap(arr: Ref, i: Ref, j: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(j), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < arraySize(arr)
+  requires 0 <= intFromRef(j) && intFromRef(j) < arraySize(arr)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      arr.contents[intFromRef(i)] ==
+      old((unfolding acc(IntArray_unique(arr), write) in
+        arr.contents[intFromRef(j)]))) &&
+    (unfolding acc(IntArray_unique(arr), write) in
+      arr.contents[intFromRef(j)] ==
+      old((unfolding acc(IntArray_unique(arr), write) in
+        arr.contents[intFromRef(i)])))
+{
+  var tmp: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < arraySize(arr)
+  unfold acc(IntArray_unique(arr), write)
+  anon_0 := intToRef(arr.contents[intFromRef(i)])
+  tmp := anon_0
+  assert intFromRef(j) >= 0
+  assert intFromRef(j) < arraySize(arr)
+  anon_1 := intToRef(arr.contents[intFromRef(j)])
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < arraySize(arr)
+  arr.contents := arr.contents[intFromRef(i) := intFromRef(anon_1)]
+  assert intFromRef(j) >= 0
+  assert intFromRef(j) < arraySize(arr)
+  arr.contents := arr.contents[intFromRef(j) := intFromRef(tmp)]
+  label lbl_ret_0
+  fold acc(IntArray_unique(arr), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/int_array_elements.kt: info: Generated Viper text for addTwo:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method addTwo(arr: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < arraySize(arr)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      arr.contents[intFromRef(i)] ==
+      old((unfolding acc(IntArray_unique(arr), write) in
+        arr.contents[intFromRef(i)])) +
+      2)
+{
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_4: Ref
+  anon_0 := i
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) < arraySize(arr)
+  unfold acc(IntArray_unique(arr), write)
+  anon_3 := intToRef(arr.contents[intFromRef(anon_0)])
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) < arraySize(arr)
+  arr.contents := arr.contents[intFromRef(anon_0) :=
+    intFromRef(anon_3) + 1]
+  anon_1 := i
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) < arraySize(arr)
+  anon_4 := intToRef(arr.contents[intFromRef(anon_1)])
+  anon_2 := anon_4
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) < arraySize(arr)
+  arr.contents := arr.contents[intFromRef(anon_1) :=
+    intFromRef(anon_2) + 1]
+  label lbl_ret_0
+  fold acc(IntArray_unique(arr), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/int_array_elements.kt: info: Generated Viper text for fill:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+        anon_builtin_0 < arraySize(arr) ==>
+        arr.contents[anon_builtin_0] == intFromRef(par_v)))
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant isSubtype(typeOf(par_v), intType())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
+    invariant (unfolding acc(IntArray_unique(arr), write) in
+        (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+          anon_builtin_1 < intFromRef(i) ==>
+          arr.contents[anon_builtin_1] == intFromRef(par_v)))
+  anon_1 := ltInts(i, intToRef(arraySize(arr)))
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    arr.contents := arr.contents[intFromRef(i) := intFromRef(par_v)]
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    fold acc(IntArray_unique(arr), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(arr), IntArray())
+  assert isSubtype(typeOf(par_v), intType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
+  assert (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+        anon_builtin_1 < intFromRef(i) ==>
+        arr.contents[anon_builtin_1] == intFromRef(par_v)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/int_array_elements.kt: info: Generated Viper text for readPastEnd:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method readPastEnd(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  assert arraySize(arr) >= 0
+  assert arraySize(arr) < arraySize(arr)
+  unfold acc(IntArray_unique(arr), write)
+  anon := intToRef(arr.contents[arraySize(arr)])
+  v_ret_0 := anon
+  fold acc(IntArray_unique(arr), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/int_array_elements.kt: info: Generated Viper text for writeNegative:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method writeNegative(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert -1 >= 0
+  assert -1 < arraySize(arr)
+  unfold acc(IntArray_unique(arr), write)
+  arr.contents := arr.contents[-1 := 0]
+  label lbl_ret_0
+  fold acc(IntArray_unique(arr), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/int_array_elements.kt: info: Generated Viper text for writeShared:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method writeShared(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var first: Ref
+  var anon: Ref
+  anon := havoc(intType())
+  first := anon
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/int_array_elements.kt: error: Function 'readSharedInSpec' was not verified because of errors in its declaration
+
+/int_array_elements.kt: error: Reading an array element needs a @Unique array.

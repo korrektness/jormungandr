@@ -142,13 +142,12 @@ method con_Tree(par_left: Ref, par_right: Ref, par_data: Ref)
   requires isSubtype(typeOf(par_data), intType())
   ensures isSubtype(typeOf(ret_2), Tree())
   ensures acc(Tree_unique(ret_2), write)
-  ensures (unfolding acc(Tree_unique(ret_2), write) in ret_2.bf_left) ==
-    par_left
-  ensures (unfolding acc(Tree_unique(ret_2), write) in ret_2.bf_right) ==
-    par_right
-  ensures intFromRef((unfolding acc(Tree_unique(ret_2), write) in
-      ret_2.bf_data)) ==
-    intFromRef(par_data)
+  ensures (unfolding acc(Tree_unique(ret_2), write) in
+      ret_2.bf_left == par_left)
+  ensures (unfolding acc(Tree_unique(ret_2), write) in
+      ret_2.bf_right == par_right)
+  ensures (unfolding acc(Tree_unique(ret_2), write) in
+      intFromRef(ret_2.bf_data) == intFromRef(par_data))
 
 
 method con_UniquePred(par_data: Ref) returns (ret_1: Ref)

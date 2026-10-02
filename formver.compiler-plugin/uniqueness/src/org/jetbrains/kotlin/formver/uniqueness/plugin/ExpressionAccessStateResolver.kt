@@ -31,6 +31,7 @@ fun FirExpression.resolveTerminalAccessState(): AccessState =
                     EmptyAccessState.putChild(symbol, AccessState(Access.Terminal))
                 }
                 is FirVariableSymbol<*> -> {
+                    symbol.indexedArrayInitializer?.let { return it.resolveAccessState() }
                     val receiverState = pathReceiver
                         ?.resolveAccessState()
                         ?: EmptyAccessState

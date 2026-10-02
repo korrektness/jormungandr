@@ -40,8 +40,8 @@ method callsShared(b: Ref) returns (v_ret_0: Ref)
 
 method preconditionShared(b: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(b), Box())
-  requires intFromRef((unfolding acc(Box_unique(b), write) in b.content)) >
-    0
+  requires (unfolding acc(Box_unique(b), write) in
+      intFromRef(b.content) > 0)
   ensures isSubtype(typeOf(ret_1), unitType())
 
 
@@ -94,10 +94,10 @@ function value(this: Ref): Ref
 method postconditionBorrowed(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), Node())
   requires acc(Node_unique(n), write)
-  requires (unfolding acc(Node_unique(n), write) in n.next) == nullValue()
+  requires (unfolding acc(Node_unique(n), write) in n.next == nullValue())
   ensures acc(Node_unique(n), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures (unfolding acc(Node_unique(n), write) in n.next) == nullValue()
+  ensures (unfolding acc(Node_unique(n), write) in n.next == nullValue())
 {
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())

@@ -176,9 +176,8 @@ method con(par_sharedVal: Ref, par_sharedVar: Ref) returns (ret_1: Ref)
   ensures acc(UniquePrimitiveFields_unique(ret_1), write)
   ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
     intFromRef(par_sharedVal)
-  ensures intFromRef((unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
-      ret_1.bf_sharedVar)) ==
-    intFromRef(par_sharedVar)
+  ensures (unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
+      intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar))
 
 
 method testReferenceFieldSetterUnique(rf: Ref) returns (v_ret_0: Ref)
@@ -224,9 +223,8 @@ method con(par_sharedVal: Ref, par_sharedVar: Ref) returns (ret_1: Ref)
   ensures acc(UniquePrimitiveFields_unique(ret_1), write)
   ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
     intFromRef(par_sharedVal)
-  ensures intFromRef((unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
-      ret_1.bf_sharedVar)) ==
-    intFromRef(par_sharedVar)
+  ensures (unfolding acc(UniquePrimitiveFields_unique(ret_1), write) in
+      intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar))
 
 
 method testReferenceFieldSetterShared(rf: Ref) returns (v_ret_0: Ref)

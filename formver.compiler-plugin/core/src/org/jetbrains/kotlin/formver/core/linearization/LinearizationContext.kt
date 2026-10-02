@@ -79,6 +79,12 @@ interface LinearizationContext {
         receiverPath: OwnedPath? = null,
     )
 
+    /**
+     * Element [index], an `Int`, of the `IntArray` [array], as a `Ref`. In a body, [arrayPath] is the array's path
+     * when it is owned: the read then unfolds the array's predicate, and otherwise havocks the element.
+     */
+    fun addIntArrayRead(array: Exp, index: Exp, arrayPath: OwnedPath?): Exp
+
     fun addModifier(mod: StmtModifier)
 
     fun resolveVariableName(name: SymbolicName): SymbolicName

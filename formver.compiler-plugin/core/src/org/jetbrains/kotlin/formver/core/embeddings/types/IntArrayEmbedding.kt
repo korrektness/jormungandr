@@ -44,6 +44,13 @@ object IntArrayEmbedding {
     fun arraySize(array: Exp, pos: Position = Position.NoPosition, info: Info = Info.NoInfo): Exp =
         arraySizeFunction.toFuncApp(listOf(array), pos, info)
 
+    fun uniquePredicateAccess(array: Exp, pos: Position = Position.NoPosition): Exp.PredicateAccess =
+        Exp.PredicateAccess(classType.uniquePredicateName, listOf(array), PermExp.FullPerm(), pos)
+
+    /** `array.contents[index]`, which needs the unique predicate of [array] unfolded. */
+    fun element(array: Exp, index: Exp, pos: Position = Position.NoPosition): Exp =
+        Exp.SeqIndex(array.fieldAccess(contentsField, pos), index, pos)
+
     fun uniquePredicate(): Predicate {
         val array = receiver.use()
         return Predicate(
@@ -68,7 +75,7 @@ object IntArrayEmbedding {
             simpleTrigger { Exp.SeqIndex(array.fieldAccess(contentsField), j) } eq Exp.IntLit(0)
         }
         return Exp.Unfolding(
-            Exp.PredicateAccess(classType.uniquePredicateName, listOf(array), PermExp.FullPerm()),
+            uniquePredicateAccess(array),
             body,
             pos,
             info,

@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.formver.core.diagnostics.ErrorCollectionContext
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Assert
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
+import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayGet
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Old
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.While
@@ -18,9 +19,9 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.WithPosition
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
 /**
- * Reports the `var` reads in [this] read-only context (a pure function body or a specification) that no unique
- * predicate covers: a read through a receiver the uniqueness checker does not find `Unique`, and, outside `old`, a
- * read through a path rooted at one of [consumed].
+ * Reports the `var` reads and array element reads in [this] read-only context (a pure function body or a
+ * specification) that no unique predicate covers: a read through a receiver the uniqueness checker does not find
+ * `Unique`, and, outside `old`, a read through a path rooted at one of [consumed].
  */
 fun ExpEmbedding.checkReadOnlyVarReads(
     source: KtSourceElement,
@@ -34,6 +35,15 @@ fun ExpEmbedding.checkReadOnlyVarReads(
             receiver.pathRoot()?.name in consumed -> errors.reportUnsupportedOwnership(
                 nextSource,
                 "Reading this var property in a postcondition needs a @Borrowed root; the function consumes this @Unique parameter.",
+            )
+        }
+    }
+    if (this is IntArrayGet) {
+        when {
+            !receiverOwned -> errors.reportUnsupportedOwnership(nextSource, "Reading an array element needs a @Unique array.")
+            array.pathRoot()?.name in consumed -> errors.reportUnsupportedOwnership(
+                nextSource,
+                "Reading an array element in a postcondition needs a @Borrowed root; the function consumes this @Unique parameter.",
             )
         }
     }

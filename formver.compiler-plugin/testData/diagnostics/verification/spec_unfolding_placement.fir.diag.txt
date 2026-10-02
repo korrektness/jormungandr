@@ -1,0 +1,60 @@
+/spec_unfolding_placement.kt: info: Generated Viper text for boundAll:
+field value: Ref
+
+method boundAll(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Box_unique(b), write) in
+      (forall anon: Int ::0 <= anon && anon < 3 ==>
+        intFromRef(b.value) + anon >= anon))
+{
+  unfold acc(Box_unique(b), write)
+  b.value := intToRef(0)
+  label lbl_ret_0
+  fold acc(Box_unique(b), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/spec_unfolding_placement.kt: info: Generated Viper text for clearIfPresent:
+field value: Ref
+
+method clearIfPresent(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), nullable(Box()))
+  requires b != nullValue() ==> acc(Box_unique(b), write)
+  ensures b != nullValue() ==> acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures b == nullValue() ||
+    (unfolding acc(Box_unique(b), write) in intFromRef(b.value) == 0)
+{
+  if (!(b == nullValue())) {
+    if (b != nullValue()) {
+      unfold acc(Box_unique(b), write)
+    }
+    b.value := intToRef(0)
+    if (b != nullValue()) {
+      fold acc(Box_unique(b), write)
+    }
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/spec_unfolding_placement.kt: info: Generated Viper text for inRange:
+field value: Ref
+
+method inRange(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  ensures acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Box_unique(b), write) in 0 <= intFromRef(b.value)) &&
+    (unfolding acc(Box_unique(b), write) in intFromRef(b.value) <= 10)
+{
+  unfold acc(Box_unique(b), write)
+  b.value := intToRef(5)
+  label lbl_ret_0
+  fold acc(Box_unique(b), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

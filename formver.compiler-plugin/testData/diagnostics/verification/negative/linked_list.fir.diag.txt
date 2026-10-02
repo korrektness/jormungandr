@@ -66,9 +66,8 @@ method con(par_data: Ref, par_next: Ref) returns (ret_1: Ref)
   requires par_next != nullValue() ==> acc(Link_unique(par_next), write)
   ensures isSubtype(typeOf(ret_1), Link())
   ensures acc(Link_unique(ret_1), write)
-  ensures intFromRef((unfolding acc(Link_unique(ret_1), write) in
-      ret_1.bf_data)) ==
-    intFromRef(par_data)
+  ensures (unfolding acc(Link_unique(ret_1), write) in
+      intFromRef(ret_1.bf_data) == intFromRef(par_data))
   ensures g_next(ret_1) == par_next
 
 

@@ -70,9 +70,8 @@ method con(par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_1), Box())
   ensures acc(Box_unique(ret_1), write)
-  ensures intFromRef((unfolding acc(Box_unique(ret_1), write) in
-      ret_1.bf_value)) ==
-    intFromRef(par_value)
+  ensures (unfolding acc(Box_unique(ret_1), write) in
+      intFromRef(ret_1.bf_value) == intFromRef(par_value))
 
 
 method cycle(n: Ref) returns (v_ret_0: Ref)
@@ -179,9 +178,8 @@ method con(par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_1), Box())
   ensures acc(Box_unique(ret_1), write)
-  ensures intFromRef((unfolding acc(Box_unique(ret_1), write) in
-      ret_1.bf_value)) ==
-    intFromRef(par_value)
+  ensures (unfolding acc(Box_unique(ret_1), write) in
+      intFromRef(ret_1.bf_value) == intFromRef(par_value))
 
 
 method movedAtHead(n: Ref) returns (v_ret_0: Ref)

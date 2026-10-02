@@ -11,9 +11,11 @@ import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.FreshEntityProducer
 import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Declaration
@@ -122,6 +124,14 @@ data class PureFunBodyLinearizer(
     ): Exp {
         val result = freshAnonVar(field.type)
         addFieldAccessStoringIn(receiver, receiverType, field, result)
+        return result.toViperExp(this)
+    }
+
+    override fun addIntArrayRead(array: Exp, index: Exp, arrayPath: OwnedPath?): Exp {
+        if (array !is Exp.LocalVar) throw SnaktInternalException(source, "Invalid array encountered in pure function")
+        val result = freshAnonVar { int() }
+        val element = RuntimeTypeDomain.intInjection.toRef(IntArrayEmbedding.element(array, index, source.asPosition), pos = source.asPosition)
+        ssaConverter.addAssignment(result.name, element, listOf(IntArrayEmbedding.uniquePredicateAccess(array, source.asPosition)))
         return result.toViperExp(this)
     }
 

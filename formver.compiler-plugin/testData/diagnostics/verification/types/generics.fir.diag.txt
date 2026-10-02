@@ -18,7 +18,7 @@ method con(par_t: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_t), nullable(anyType()))
   ensures isSubtype(typeOf(ret_1), Box())
   ensures acc(Box_unique(ret_1), write)
-  ensures (unfolding acc(Box_unique(ret_1), write) in ret_1.bf_t) == par_t
+  ensures (unfolding acc(Box_unique(ret_1), write) in ret_1.bf_t == par_t)
 
 
 method createBox() returns (v_ret_0: Ref)
@@ -48,7 +48,7 @@ method con(par_t: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_t), nullable(anyType()))
   ensures isSubtype(typeOf(ret_1), Box())
   ensures acc(Box_unique(ret_1), write)
-  ensures (unfolding acc(Box_unique(ret_1), write) in ret_1.bf_t) == par_t
+  ensures (unfolding acc(Box_unique(ret_1), write) in ret_1.bf_t == par_t)
 
 
 method setGenericField() returns (v_ret_0: Ref)

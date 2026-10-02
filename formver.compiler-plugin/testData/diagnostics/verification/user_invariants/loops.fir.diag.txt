@@ -138,9 +138,8 @@ method con(par_e: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_e), intType())
   ensures isSubtype(typeOf(ret_1), WithVar())
   ensures acc(WithVar_unique(ret_1), write)
-  ensures intFromRef((unfolding acc(WithVar_unique(ret_1), write) in
-      ret_1.bf_e)) ==
-    intFromRef(par_e)
+  ensures (unfolding acc(WithVar_unique(ret_1), write) in
+      intFromRef(ret_1.bf_e) == intFromRef(par_e))
 
 
 method doSomething(this: Ref) returns (ret_2: Ref)

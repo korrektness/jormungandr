@@ -46,9 +46,8 @@ method con(par_value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_2), Node())
   ensures acc(Node_unique(ret_2), write)
-  ensures intFromRef((unfolding acc(Node_unique(ret_2), write) in
-      ret_2.bf_value)) ==
-    intFromRef(par_value)
+  ensures (unfolding acc(Node_unique(ret_2), write) in
+      intFromRef(ret_2.bf_value) == intFromRef(par_value))
 
 
 method consume(n: Ref) returns (ret_1: Ref)
