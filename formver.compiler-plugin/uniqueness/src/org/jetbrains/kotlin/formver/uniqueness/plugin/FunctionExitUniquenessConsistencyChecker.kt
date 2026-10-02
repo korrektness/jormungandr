@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.JumpNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ThrowExceptionNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.render
-import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
@@ -41,7 +40,7 @@ val FirBasedSymbol<*>.locality: Locality
 object FunctionExitUniquenessConsistencyChecker : FirFunctionChecker( MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
-        val graph = declaration.controlFlowGraphReference?.controlFlowGraph ?: return
+        val graph = declaration.uniquenessAnalysisGraph ?: return
         val uniquenessStateFlows = graph.resolveUniquenessStateFlows()
         val pureParameters: Set<FirBasedSymbol<*>> =
             if (declaration.symbol.isPure(context.session)) {

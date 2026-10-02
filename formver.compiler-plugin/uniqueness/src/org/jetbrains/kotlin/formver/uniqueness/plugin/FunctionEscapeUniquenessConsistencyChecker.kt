@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallEnterNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.JumpNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ThrowExceptionNode
-import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.ESCAPE_UNIQUENESS_INCONSISTENCY
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.CONTEXT_ESCAPE_UNIQUENESS_INCONSISTENCY
@@ -71,7 +70,7 @@ private fun reportEscapeUniquenessInconsistency(
 object FunctionEscapeUniquenessConsistencyChecker : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
-        val graph = declaration.controlFlowGraphReference?.controlFlowGraph ?: return
+        val graph = declaration.uniquenessAnalysisGraph ?: return
         val uniquenessStateFlows = graph.resolveUniquenessStateFlows()
 
         for (node in graph.uniquenessAnalysisTargetNodes) {

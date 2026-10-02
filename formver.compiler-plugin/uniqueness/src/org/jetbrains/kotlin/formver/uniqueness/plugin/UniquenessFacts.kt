@@ -26,7 +26,6 @@ import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
-import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -125,8 +124,8 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
 
     context(context: CheckerContext)
     private fun FirFunction.buildAnalysis(): FunctionUniquenessAnalysis {
-        val graph = controlFlowGraphReference?.controlFlowGraph
-            ?: error("Function ${symbol.callableId} has no control-flow graph.")
+        val graph = uniquenessAnalysisGraph
+            ?: error("Function ${symbol.callableId} has no control-flow graph of its own.")
         val flows = graph.resolveUniquenessStateFlows()
 
         val firstNodes = mutableMapOf<FirElement, CFGNode<*>>()

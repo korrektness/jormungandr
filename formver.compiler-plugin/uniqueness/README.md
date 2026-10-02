@@ -66,6 +66,14 @@ The checker tracks two kinds of uniqueness:
 - **Merges**
   - Join incoming states path-wise.
 
+- **Subgraphs**
+  - Default arguments and lambdas called in place (arguments of inline functions, and lambdas with a `callsInPlace`
+    contract) are analyzed as part of the enclosing function's flow. The control-flow graph gives such a lambda a
+    back edge when it may run more than once. A lambda called in place starts with its own parameters at their
+    declared uniqueness.
+  - Other lambdas, anonymous objects and local classes are analyzed as separate functions. The function checkers
+    skip lambdas called in place, since the enclosing function's analysis covers them.
+
 `ReadOnlyContext.kt` defines the read-only contexts.
 
 ### Diagnostics
@@ -108,6 +116,7 @@ Current scenarios include:
 - receiver/context parameter behavior
 - return/throw escape consistency
 - loops, `when`, `try/catch`, nullable flows
+- lambdas called in place
 - constructor/operator cases
 
 ## Current Limitations / Untested Behavior
@@ -128,6 +137,7 @@ Known limitations in current code/tests:
 - **Property path receiver support**
   - `QualifiedAccessPathReceiverResolver.kt` currently handles only property accesses with backing fields through dispatch receiver.
 
-- **Interaction with closures** 
-  - The current `GraphUniquenessStatesAnalyzer.kt` visits the lambda subgraphs as if they were part of the local control flows, which can result in unexpected behavior.
+- **Interaction with closures**
+  - A lambda that is not called in place is analyzed as a separate function in which captured roots have no entry,
+    so they count as `Unique`. Capturing and moving a unique root there is not reported.
   

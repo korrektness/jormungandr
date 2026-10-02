@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ExitSafeCallNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
-import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_MOVED_ACCESS
 
 /**
@@ -32,7 +31,7 @@ private fun CFGNode<*>.resolveAccess(): FirExpression? =
 object FunctionUseAfterMoveChecker : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
-        val graph = declaration.controlFlowGraphReference?.controlFlowGraph ?: return
+        val graph = declaration.uniquenessAnalysisGraph ?: return
         val uniquenessStateFlows = lazy { graph.resolveUniquenessStateFlows() }
 
         for (node in graph.uniquenessAnalysisTargetNodes) {

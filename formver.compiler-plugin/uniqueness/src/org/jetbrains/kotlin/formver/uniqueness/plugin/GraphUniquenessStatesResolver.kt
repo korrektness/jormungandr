@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
+import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.formver.locality.plugin.CallArgumentLocalitiesMapper
 
 /**
@@ -41,29 +42,10 @@ class GraphUniquenessStatesResolver(session: FirSession) : FirExtensionSessionCo
         context: CheckerContext
     ): Map<CFGNode<*>, PathAwareUniquenessStateFlow> {
         val declaration = graph.declaration
-        var initialState = EmptyUniquenessState
-
-        if (declaration is FirFunction) {
-            context(context) {
-                val receiverParameter = declaration.receiverParameter
-
-                if (receiverParameter != null) {
-                    val receiverParameterSymbol = receiverParameter.symbol
-                    initialState = initialState.putChild(
-                        receiverParameter.symbol,
-                        UniquenessState(receiverParameterSymbol.resolveUniqueness())
-                    )
-                }
-
-                for (valueParameter in declaration.valueParameters) {
-                    val valueParameterSymbol = valueParameter.symbol
-                    initialState = initialState.putChild(
-                        valueParameterSymbol,
-                        UniquenessState(valueParameterSymbol.resolveUniqueness())
-                    )
-                }
-
-            }
+        val initialState = if (declaration is FirFunction) {
+            context(context) { EmptyUniquenessState.initializeParametersOf(declaration) }
+        } else {
+            EmptyUniquenessState
         }
 
         val analyzer = GraphUniquenessStatesAnalyzer(
@@ -76,6 +58,13 @@ class GraphUniquenessStatesResolver(session: FirSession) : FirExtensionSessionCo
         return graph.traverseToFixedPoint(analyzer)
     }
 }
+
+/**
+ * The graph whose analysis covers [this] function on its own, or null when the function has no graph or is a lambda
+ * called in place, which is analyzed as part of its enclosing function.
+ */
+val FirFunction.uniquenessAnalysisGraph: ControlFlowGraph?
+    get() = controlFlowGraphReference?.controlFlowGraph?.takeUnless { it.extendsLocalFlow }
 
 private val FirSession.graphUniquenessStatesResolver: GraphUniquenessStatesResolver
         by FirSession.sessionComponentAccessor()

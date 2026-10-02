@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.fir.analysis.cfa.util.PathAwareControlFlowInfo
 import org.jetbrains.kotlin.fir.analysis.cfa.util.merge
 import org.jetbrains.kotlin.fir.analysis.cfa.util.transformValues
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
-import org.jetbrains.kotlin.fir.declarations.FirValueParameter
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
 import org.jetbrains.kotlin.fir.expressions.allReceiverExpressions
@@ -21,10 +21,10 @@ import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNodeWithSubgraphs
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
-import org.jetbrains.kotlin.fir.resolve.dfa.cfg.EnterValueParameterNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ExitDefaultArgumentsNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallEnterNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallExitNode
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionEnterNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.JumpNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ThrowExceptionNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableAssignmentNode
@@ -46,26 +46,47 @@ fun PathAwareUniquenessStateFlow?.joinOverEdgeKinds(): UniquenessState =
         ?.reduceOrNull(UniquenessState::join)
         ?: EmptyUniquenessState
 
-private val CFGNodeWithSubgraphs<*>.extendsLocalFlow: Boolean
-    get() = fir is FirValueParameter
+/**
+ * Whether [this] graph is analyzed as part of the flow of the graph that encloses it: a default argument, or a lambda
+ * called in place. The control-flow graph links such a graph into the enclosing flow, with a back edge when it may
+ * run more than once.
+ */
+val ControlFlowGraph.extendsLocalFlow: Boolean
+    get() = kind == ControlFlowGraph.Kind.DefaultArgument || kind == ControlFlowGraph.Kind.AnonymousFunctionCalledInPlace
 
 /**
- * Returns the nodes of [this] graph that are analyzed by [GraphUniquenessStatesAnalyzer]
+ * Returns the nodes of [this] graph that are analyzed by [GraphUniquenessStatesAnalyzer], including those of the
+ * subgraphs that extend its flow.
  */
 val ControlFlowGraph.uniquenessAnalysisTargetNodes: Sequence<CFGNode<*>>
     get() = nodes.asSequence().flatMap { node ->
-        if (node is EnterValueParameterNode) {
-            node.subGraphs.asSequence().flatMap { subGraph -> subGraph.nodes.asSequence() }
-        } else {
-            sequenceOf(node)
-        }
+        val subGraphs = (node as? CFGNodeWithSubgraphs<*>)?.subGraphs.orEmpty()
+        sequenceOf(node) + subGraphs.asSequence()
+            .filter { it.extendsLocalFlow }
+            .flatMap { it.uniquenessAnalysisTargetNodes }
     }
+
+/**
+ * Initializes the roots for the receiver and value parameters of [function] to their declared uniqueness.
+ */
+context(context: CheckerContext)
+fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessState {
+    var state = this
+    function.receiverParameter?.let { state = state.putChild(it.symbol, UniquenessState(it.symbol.resolveUniqueness())) }
+    for (valueParameter in function.valueParameters) {
+        state = state.putChild(valueParameter.symbol, UniquenessState(valueParameter.symbol.resolveUniqueness()))
+    }
+    return state
+}
 
 /**
  * Data-flow analyzer that tracks the uniqueness state of paths through a CFG.
  *
  * Assignments and declarations initialize their target paths and move their source paths. Function calls move all
  * passed paths on entry, and restore paths whose corresponding parameters are local on exit.
+ *
+ * Default arguments and lambdas called in place are analyzed as part of the enclosing flow; a lambda called in place
+ * starts with its own parameters at their declared uniqueness.
  *
  * Calls to `@Pure` functions, and declarations and calls in [readOnlyContext], move nothing.
  */
@@ -91,7 +112,18 @@ class GraphUniquenessStatesAnalyzer(
         get() = this !in readOnlyContext && !isPureCall(context.session)
 
     override fun visitSubGraph(node: CFGNodeWithSubgraphs<*>, graph: ControlFlowGraph): Boolean {
-        return node.extendsLocalFlow
+        return graph.extendsLocalFlow
+    }
+
+    override fun visitFunctionEnterNode(
+        node: FunctionEnterNode,
+        data: PathAwareUniquenessStateFlow
+    ): PathAwareUniquenessStateFlow {
+        if (node.owner.kind != ControlFlowGraph.Kind.AnonymousFunctionCalledInPlace) return visitNode(node, data)
+
+        return context(context) {
+            data.transformValues { data -> data.put(Unit, data.getOrInitialize().initializeParametersOf(node.fir)) }
+        }
     }
 
     override fun visitNode(
