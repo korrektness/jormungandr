@@ -208,7 +208,7 @@ data class LinearizationVisitor(
         override fun toViper(ctx: LinearizationContext): Exp = e.value
     }
 
-    override fun visitErrorExp(e: ErrorExp): Linearizable = object : UnitResultLinearizable(e) {
+    override fun visitUnreachable(e: Unreachable): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addStatement { Stmt.Inhale(Exp.BoolLit(false, ctx.source.asPosition), ctx.source.asPosition) }
         }

@@ -494,7 +494,21 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     }
 
 
+    /**
+     * The thrown exception may be caught by any enclosing catch of this function, whatever its declared type,
+     * or leave the function, in which case the postcondition does not apply.
+     */
+    override fun visitThrowExpression(throwExpression: FirThrowExpression, data: StmtConversionContext): ExpEmbedding =
+        Block {
+            add(data.convert(throwExpression.exception))
+            data.activeCatchLabels.forEach { add(NonDeterministically(Goto(it.toLink()))) }
+            add(Unreachable)
+        }
+
     override fun visitTryExpression(tryExpression: FirTryExpression, data: StmtConversionContext): ExpEmbedding {
+        if (tryExpression.finallyBlock != null) {
+            return handleUnimplementedElement(tryExpression.source, "Not yet implemented for finally blocks", data)
+        }
         val (catchData, tryBody) = data.withCatches(tryExpression.catches) { catchData ->
             withNewScope {
                 val jumps =
@@ -578,7 +592,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
         UnsupportedFeatureBehaviour.ASSUME_UNREACHABLE -> {
             data.reportMinorInternalError(msg)
-            ErrorExp
+            Unreachable
         }
     }
 }

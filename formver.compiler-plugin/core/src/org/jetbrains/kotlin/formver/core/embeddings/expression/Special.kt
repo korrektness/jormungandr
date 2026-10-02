@@ -22,10 +22,13 @@ data class ExpWrapper(val value: Exp, override val type: TypeEmbedding) : ExpEmb
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitExpWrapper(this)
 }
 
-data object ErrorExp : ExpEmbedding {
+/**
+ * Assumes that control does not reach this point (`inhale false`).
+ */
+data object Unreachable : ExpEmbedding {
     override val type: TypeEmbedding = buildType { nothing() }
 
-    override fun <R> accept(v: ExpVisitor<R>): R = v.visitErrorExp(this)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitUnreachable(this)
 }
 
 data class Assert(val exp: ExpEmbedding) : ExpEmbedding {

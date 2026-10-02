@@ -768,6 +768,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("throw.kt")
+      public void testThrow() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/control_flow/throw.kt");
+      }
+
+      @Test
       @TestMetadata("when.kt")
       public void testWhen() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/control_flow/when.kt");
