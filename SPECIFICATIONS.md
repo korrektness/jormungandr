@@ -80,10 +80,10 @@ Use `forAll<T>` for quantified formulas:
 
 ```kotlin
 @AlwaysVerify
-fun example(arr: IntArray): Unit {
+fun example(arr: @Unique @Borrowed IntArray): Unit {
     preconditions {
         forAll<Int> { j ->
-            (0 <= j && j < arr.size()) implies (arr[j] > 0)
+            (0 <= j && j < arr.size) implies (arr[j] > 0)
         }
     }
     // ...
@@ -109,6 +109,198 @@ forAll<Int> { x ->
 ```
 
 Each argument to `triggers()` becomes a separate trigger. This differs from Viper syntax where you can group multiple expressions in a single trigger; currently SnaKt only supports simple (single-expression) triggers.
+
+## Ownership
+
+SnaKt reasons about mutable heap data through ownership. A value is either
+*unique*, meaning one path owns it, or *shared*. Default `val` properties are
+immutable and need no annotations. A `var` property, or an `IntArray` element,
+is read and written for real only through a unique path.
+
+### Annotations
+
+`@Unique` and `@Borrowed` annotate types, so they are written on the type:
+`n: @Unique Node`, `fun f(): @Unique Node`, `var next: @Unique Node?`,
+`fun @Unique Node.e()`.
+
+| Site | Annotation | Meaning |
+|:-----|:-----------|:--------|
+| parameter or extension receiver | none | Shared. The function owns nothing. |
+| parameter or extension receiver | `@Borrowed` | Shared, and the function may not store, return or capture the value. |
+| parameter or extension receiver | `@Unique` | The caller hands the value over. The argument cannot be used after the call. |
+| parameter or extension receiver | `@Unique @Borrowed` | The function owns the value during the call and gives it back. |
+| function result | `@Unique` | The caller receives ownership of the result. |
+| `var` or `val` property | `@Unique` | The object owns the property's value whenever the object itself is owned. |
+| local | `@Unique`, or inferred | The local owns its value. |
+| dispatch receiver `this` | cannot be annotated | Shared. |
+| class | `@Manual` | Permissions for the class are folded by hand. |
+| `@Pure` function parameter | `@Unique` | Borrowed, as `@Unique @Borrowed`. |
+
+```kotlin
+class Node(val value: Int, var next: @Unique Node?)
+
+fun consume(n: @Unique Node) { }
+fun inspect(n: @Unique @Borrowed Node) { }
+fun make(v: Int): @Unique Node = Node(v, null)
+```
+
+An inferred local is unique exactly when its initializer is a unique path or a
+call to a function returning `@Unique`. A constructor call does not count, so
+a fresh object that should be owned needs the annotation:
+
+```kotlin
+val a = make(1)                   // unique
+val b = Node(2, null)             // shared: writes to b.next are dropped, with a warning
+val c: @Unique Node = Node(3, null)  // unique
+```
+
+`@Unique` on a value type (`Int`, `Boolean`, `Char`, `String`, `Unit`, or their
+nullable forms) is rejected, since such values own nothing.
+
+### Unique and shared paths
+
+Through a unique path, `var` reads and writes are real, and the verifier
+tracks their values. Through a shared path, every `var` read yields an
+arbitrary value and every `var` write is dropped, because other code may hold
+the same object.
+
+```kotlin
+class Counter(var n: Int)
+
+@AlwaysVerify
+fun bump(c: @Unique @Borrowed Counter) {
+    postconditions<Unit> { c.n == old(c.n) + 1 }
+    c.n = c.n + 1                 // verifies
+}
+
+@AlwaysVerify
+fun reset(c: Counter) {
+    c.n = 0
+    val k = c.n
+    verify(k == 0)                // fails: c is shared
+}
+```
+
+After a call that passes an owned value to a `@Borrowed` parameter, the
+caller forgets what it knew about that value's `var` properties, since the
+callee may have written them.
+
+### Moves
+
+Passing a unique path to a `@Unique` parameter, assigning it, or returning it
+moves it. A moved path cannot be used until it is assigned again. Moving a
+property out of an object leaves a hole in it, and the object cannot be
+passed on or returned while the hole is there:
+
+```kotlin
+fun detach(b: @Unique Node): @Unique Node? {
+    val rest = b.next             // moves b.next out of b
+    b.next = null                 // fills the hole
+    consume(b)
+    return rest
+}
+```
+
+### Folding
+
+SnaKt manages permissions to the properties of unique objects automatically:
+reads and writes, calls, loops and returns need no `fold` or `unfold`. On a
+class marked `@Manual`, permissions are managed by hand:
+
+```kotlin
+@Manual
+class Cell(var value: Int)
+
+fun set(c: @Unique @Borrowed Cell) {
+    unfold(UniquePred(c))
+    c.value = 5
+    fold(UniquePred(c))
+}
+```
+
+### `IntArray`
+
+An `IntArray` holds its elements as a sequence.
+
+- `arr.size` needs no ownership and works on any array. It is never negative.
+- `arr[i]`, `arr[i] = v`, `arr.get(i)`, `arr.set(i, v)`, `arr[i] += v` and
+  `arr[i]++` read and write the elements of a unique array. The index must be
+  in bounds; otherwise verification reports a possible index out of bounds.
+  None of them moves the array.
+- On a shared array, an element read yields an arbitrary `Int` and an element
+  write is dropped. In a specification, an element read needs a unique array.
+- `IntArray(n)` creates an array of `n` zeros. As with any constructor call, a
+  local holding it owns it only when declared `@Unique IntArray`.
+
+```kotlin
+@AlwaysVerify
+fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
+    preconditions {
+        0 <= i && i < arr.size
+        0 <= j && j < arr.size
+    }
+    postconditions<Unit> { arr[i] == old(arr[j]) && arr[j] == old(arr[i]) }
+    val tmp = arr[i]
+    arr[i] = arr[j]
+    arr[j] = tmp
+}
+```
+
+### Pure functions and specifications
+
+Specification blocks (`preconditions`, `postconditions`, `loopInvariants`,
+`verify` and their contents) and calls to `@Pure` functions borrow their
+arguments: they move nothing. A `@Pure` function may read `var` properties
+only through its `@Unique` parameters, and specifications may read them only
+through unique paths.
+
+A `@Pure` function cannot return an alias into data its caller still owns. Its
+result cannot be `@Unique`, and when it has a `@Unique` parameter its result
+must be a value type.
+
+```kotlin
+@Pure
+fun isSorted(n: @Unique Node?): Boolean {
+    if (n == null) return true
+    val m = n.next
+    return if (m == null) true else n.value <= m.value && isSorted(m)
+}
+```
+
+In a postcondition, a parameter the function consumed has no readable `var`
+properties. Its default `val` properties and its identity remain readable.
+
+### Rejected constructs
+
+Each of these is a compile error:
+
+- A downcast move: `val s: @Unique Sub = base as Sub`.
+- A lambda, anonymous object, local class or local function that captures an
+  owned root, unless Kotlin inlines it in place:
+  `val f = { consume(n) }`.
+- `@Unique` on a declaration whose type is a type parameter:
+  `class Box<T>(var item: @Unique T)`.
+- An override that does not repeat the `@Unique` and `@Borrowed` annotations
+  of the declaration it overrides, on parameters, receiver and result.
+- `try` in a function that owns anything anywhere: a signature with `@Unique`
+  or `@Borrowed`, or any owned local, in or outside the `try`. Passing a fresh
+  object straight to a call, as in `try { consume(Node(1, null)) }`, is
+  allowed. `try` with `finally` is rejected in every function.
+- Using a unique path after a member or accessor call on it. `this` is always
+  shared, so `n.describe()` consumes `n`. Write code over unique data as
+  top-level or extension functions with an annotated receiver.
+- Using a list after walking it with a cursor. A step `p = p.next` moves the
+  node, so the loop consumes the list:
+
+  ```kotlin
+  var p: @Unique Node? = head
+  while (p != null) { p = p.next }
+  return head                     // error: head was moved
+  ```
+
+Open properties, overriding properties and properties with a custom getter
+or setter are calls, not fields. They carry no stable facts, and reading one
+through an owned path consumes that path.
 
 ## Additional Plugin Options
 

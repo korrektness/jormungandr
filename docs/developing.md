@@ -2,6 +2,15 @@
 
 Publishing a new Silicon build: publish-silicon.md.
 
+## Ownership
+
+SPECIFICATIONS.md, under Ownership, describes what `@Unique`, `@Borrowed` and
+`@Manual` mean to users and which constructs are rejected. A function with a
+uniqueness or locality error, or with a rejected ownership construct
+(`UNSUPPORTED_OWNERSHIP`), is converted but not verified, and reports
+`VERIFICATION_SKIPPED`. A `var` write or array store through a local holding a
+shared constructor result is dropped and reports `UNTRACKED_WRITE`.
+
 ## Tests
 
 We use the test framework built for kotlinc. A test is a `.kt` file under
