@@ -109,10 +109,21 @@ fun Test.provideZ3() {
     }
 }
 
+// Silicon defaults to one parallel verifier, each with its own Z3 process, per core, and every test starts a fresh
+// Silicon. Starting those processes dominates the suite's run time; two verifiers was the fastest setting measured.
+// A single verifier is slower still, as one Z3 instance then accumulates state across a test's methods.
+// Setting SILICON_PARALLEL_VERIFIERS in the environment overrides this.
+fun Test.limitSiliconParallelism() {
+    if (providers.environmentVariable("SILICON_PARALLEL_VERIFIERS").orNull == null) {
+        environment("SILICON_PARALLEL_VERIFIERS", "2")
+    }
+}
+
 // ./gradlew test — normal mode (full verification)
 tasks.test {
     configureFormverTest()
     provideZ3()
+    limitSiliconParallelism()
     systemProperty("formver.testMode", "FULL")
 }
 
@@ -132,6 +143,7 @@ tasks.register<Test>("update") {
     classpath = tasks.test.get().classpath
     configureFormverTest()
     provideZ3()
+    limitSiliconParallelism()
     systemProperty("formver.testMode", "UPDATE")
 }
 
