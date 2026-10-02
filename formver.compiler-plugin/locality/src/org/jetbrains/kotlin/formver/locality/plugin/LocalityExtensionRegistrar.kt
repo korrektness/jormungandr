@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.locality.plugin
 
+import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.formver.locality.contract.plugin.ExpressionLocalityContractResolver
 import org.jetbrains.kotlin.formver.locality.contract.plugin.LocalityContractAdditionalCheckers
@@ -19,6 +20,14 @@ private val defaultLocalityAnnotationId =
         Name.identifier("Borrowed")
     )
 
+/**
+ * The checker extensions that report locality diagnostics.
+ */
+val localityCheckerFactories: List<FirAdditionalCheckersExtension.Factory> = listOf(
+    LocalityAdditionalCheckers.getFactory(),
+    LocalityContractAdditionalCheckers.getFactory(),
+)
+
 class LocalityExtensionRegistrar(
     private val localityAnnotationId: ClassId = defaultLocalityAnnotationId
 ) : FirExtensionRegistrar() {
@@ -31,7 +40,6 @@ class LocalityExtensionRegistrar(
         +GraphDeclaredSymbolsResolver.getFactory()
         +GraphCapturedSymbolsResolver.getFactory()
         +GraphScopeLocalityResolver.getFactory()
-        +LocalityAdditionalCheckers.getFactory()
-        +LocalityContractAdditionalCheckers.getFactory()
+        localityCheckerFactories.forEach { +it }
     }
 }

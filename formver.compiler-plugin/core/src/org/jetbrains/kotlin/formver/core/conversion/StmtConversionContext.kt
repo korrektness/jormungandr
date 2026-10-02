@@ -203,6 +203,7 @@ fun StmtConversionContext.insertInlineFunctionCall(
     val methodCtxFactory = MethodContextFactory(
         calleeSignature,
         InlineParameterResolver(subs, returnTargetName, returnTarget),
+        uniquenessAnalysis = null,
         parent = parentCtx,
     )
 
@@ -231,6 +232,7 @@ internal fun StmtConversionContext.insertQuantifierFunctionCall(
             // TODO: ideally, there shouldn't be a return target since return is prohibited
             defaultResolvedReturnTarget = defaultResolvedReturnTarget,
         ),
+        uniquenessAnalysis = uniquenessAnalysis,
         parent = this,
     )
     return withNoScope {

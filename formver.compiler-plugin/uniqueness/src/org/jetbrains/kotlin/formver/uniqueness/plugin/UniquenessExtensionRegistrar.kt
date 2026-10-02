@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -16,6 +17,13 @@ private val defaultUniquenessAnnotationId =
         Name.identifier("Unique")
     )
 
+/**
+ * The checker extensions that report uniqueness diagnostics.
+ */
+val uniquenessCheckerFactories: List<FirAdditionalCheckersExtension.Factory> = listOf(
+    UniquenessAdditionalCheckers.getFactory(),
+)
+
 class UniquenessExtensionRegistrar(
     private val uniquenessAnnotationId: ClassId = defaultUniquenessAnnotationId
 ) : FirExtensionRegistrar() {
@@ -24,7 +32,8 @@ class UniquenessExtensionRegistrar(
         +ExpressionAccessStateResolver.getFactory()
         +ExpressionUniquenessResolver.getFactory()
         +GraphUniquenessStatesResolver.getFactory()
-        +UniquenessAdditionalCheckers.getFactory()
+        uniquenessCheckerFactories.forEach { +it }
         +UniquenessAttributeExtension.getFactory(uniquenessAnnotationId)
+        +UniquenessFacts.getFactory()
     }
 }

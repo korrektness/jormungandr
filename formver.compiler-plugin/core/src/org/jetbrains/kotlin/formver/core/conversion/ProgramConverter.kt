@@ -7,11 +7,12 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.descriptors.isInterface
-import org.jetbrains.kotlin.diagnostics.DiagnosticContext
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory1
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
@@ -36,6 +37,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.*
 import org.jetbrains.kotlin.formver.core.names.*
 import org.jetbrains.kotlin.formver.core.purity.checkValidity
 import org.jetbrains.kotlin.formver.core.purity.isPure
+import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
+import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessFacts
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Program
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
@@ -50,7 +53,7 @@ import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 class ProgramConverter(
     override val session: FirSession,
     override val config: PluginConfiguration,
-    private val diagnosticContext: DiagnosticContext,
+    private val checkerContext: CheckerContext,
     private val reporter: DiagnosticReporter,
 ) : ProgramConversionContext {
 
@@ -67,7 +70,7 @@ class ProgramConverter(
     private var currentDeclarationSource: KtSourceElement? = null
 
     private fun emit(source: KtSourceElement?, factory: KtDiagnosticFactory1<String>, msg: String) {
-        context(diagnosticContext) {
+        context(checkerContext) {
             reporter.reportOn(source, factory, msg)
         }
         hadConversionError = true
@@ -80,7 +83,7 @@ class ProgramConverter(
         emit(currentDeclarationSource, ConversionErrors.MINOR_INTERNAL_ERROR, msg)
 
     private fun reportVerificationSkipped(source: KtSourceElement?, msg: String) {
-        context(diagnosticContext) {
+        context(checkerContext) {
             reporter.reportOn(source, ConversionErrors.VERIFICATION_SKIPPED, msg)
         }
     }
@@ -98,9 +101,16 @@ class ProgramConverter(
         val declaration: FirSimpleFunction,
         val signature: CompleteFunctionSignature,
         val returnTarget: ReturnTarget,
+        val hasUniquenessErrors: Boolean,
     )
 
     private val registered: MutableList<RegisteredFunction> = mutableListOf()
+
+    /**
+     * Whether a registered function has uniqueness or locality errors. Such a function is converted, but not verified.
+     */
+    val hadUniquenessError: Boolean
+        get() = registered.any { it.hasUniquenessErrors }
 
     override val typeResolver: TypeResolver = TypeResolver()
 
@@ -148,7 +158,8 @@ class ProgramConverter(
     fun register(declaration: FirSimpleFunction) {
         val signature = embedCompleteSignature(declaration.symbol)
         embedFunctionBody(declaration.symbol, signature)
-        registered += RegisteredFunction(declaration, signature.signature, signature.returnTarget)
+        val hasUniquenessErrors = uniquenessOutcomeOf(declaration).hasErrors
+        registered += RegisteredFunction(declaration, signature.signature, signature.returnTarget, hasUniquenessErrors)
     }
 
 
@@ -156,7 +167,9 @@ class ProgramConverter(
      * Walk converted bodies to surface validity / purity errors via the diagnostic reporter. If any
      * conversion error has been reported by the time this returns, emit a [ConversionErrors.VERIFICATION_SKIPPED]
      * summary on every registered declaration so the user sees per-function attribution for the bail-out.
-     * Callers should inspect [hadConversionError] afterwards and skip [linearizeAll] when set.
+     * Otherwise, emit it on every registered declaration with uniqueness or locality errors.
+     * Callers should inspect [hadConversionError] afterwards and skip [linearizeAll] when set, and skip verification
+     * when [hadUniquenessError] is set.
      */
     fun validateAll() {
         convertedBodyResolver.forEachImpure { name, body ->
@@ -175,13 +188,16 @@ class ProgramConverter(
                 condition.checkValidity(source, this)
             }
         }
-        if (hadConversionError) {
-            for (entry in registered) {
-                reportVerificationSkipped(
-                    entry.declaration.source,
-                    "Function '${entry.declaration.name.asString()}' was not verified because of errors in its declaration",
-                )
+        for (entry in registered) {
+            val reason = when {
+                hadConversionError -> "errors in its declaration"
+                entry.hasUniquenessErrors -> "uniqueness or locality errors"
+                else -> continue
             }
+            reportVerificationSkipped(
+                entry.declaration.source,
+                "Function '${entry.declaration.name.asString()}' was not verified because of $reason",
+            )
         }
     }
 
@@ -220,8 +236,29 @@ class ProgramConverter(
 
     // region Conversion Context
 
+    /**
+     * The uniqueness checker's result for one function. [analysis] is `null` when the function has no body or
+     * [hasErrors] is set.
+     */
+    private data class UniquenessOutcome(val analysis: FunctionUniquenessAnalysis?, val hasErrors: Boolean)
+
+    private val uniquenessOutcomes: MutableMap<FirFunctionSymbol<*>, UniquenessOutcome> = mutableMapOf()
+
+    private fun uniquenessOutcomeOf(declaration: FirFunction): UniquenessOutcome =
+        uniquenessOutcomes.getOrPut(declaration.symbol) {
+            // A function without a body, such as a library function, has nothing to analyse.
+            if (declaration.body == null) {
+                UniquenessOutcome(analysis = null, hasErrors = false)
+            } else {
+                val analysis = context(checkerContext) { session.uniquenessFacts.analysis(declaration) }
+                UniquenessOutcome(analysis, hasErrors = analysis == null)
+            }
+        }
+
     private fun createBodyConversionContext(
-        symbol: FirFunctionSymbol<*>, signature: SignatureWithTarget<NamedFunctionSignature>
+        symbol: FirFunctionSymbol<*>,
+        signature: SignatureWithTarget<NamedFunctionSignature>,
+        uniquenessAnalysis: FunctionUniquenessAnalysis?,
     ): StmtConversionContext {
         val paramResolver = RootParameterResolver(
             this@ProgramConverter,
@@ -235,6 +272,7 @@ class ProgramConverter(
             signature.signature,
             paramResolver,
             scopeIndexProducer.getFresh(),
+            uniquenessAnalysis,
         ).statementCtxt()
         return stmtCtx
     }
@@ -244,6 +282,7 @@ class ProgramConverter(
         signature: NamedFunctionSignature,
         firSpec: FirSpecification,
         returnTarget: ReturnTarget,
+        uniquenessAnalysis: FunctionUniquenessAnalysis?,
     ): Pair<StmtConversionContext, StmtConversionContext> {
         val rootResolver = RootParameterResolver(
             this@ProgramConverter,
@@ -261,6 +300,7 @@ class ProgramConverter(
             signature,
             rootResolver,
             ScopeIndex.NoScope,
+            uniquenessAnalysis,
         ).statementCtxt()
 
         val postconditionContext = MethodConverter(
@@ -268,6 +308,7 @@ class ProgramConverter(
             signature,
             wrappedResolver,
             ScopeIndex.NoScope,
+            uniquenessAnalysis,
         ).statementCtxt()
 
         return Pair(preconditionContext, postconditionContext)
@@ -289,7 +330,7 @@ class ProgramConverter(
             symbol.source, "Expected FirSimpleFunction, got unexpected type ${symbol.fir.javaClass.simpleName}"
         )
 
-        val context = createBodyConversionContext(symbol, signature)
+        val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis)
         if (signature.signature.isPure) {
             val body = context.convertPureBody(declaration)
             convertedBodyResolver.storePure(signature.signature.name, body)
@@ -386,7 +427,7 @@ class ProgramConverter(
 
 
         val (preconditionContext, postconditionContext) = createContractConversionContext(
-            symbol, signature, firSpec, returnTarget
+            symbol, signature, firSpec, returnTarget, uniquenessOutcomeOf(declaration).analysis
         )
 
         val preconditions = firSpec.precond?.let { preconditionContext.collectInvariants(it) } ?: emptyList()

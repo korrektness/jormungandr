@@ -415,6 +415,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("uniqueness_errors.kt")
+    public void testUniqueness_errors() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/uniqueness_errors.kt");
+    }
+
+    @Test
     @TestMetadata("unit_return_type.kt")
     public void testUnit_return_type() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/unit_return_type.kt");

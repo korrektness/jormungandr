@@ -86,6 +86,14 @@ Checkers consume the above analyses:
 - `ExpressionArgumentUniquenessCollisionChecker.kt`
   - reports duplicate/overlapping unique arguments in one call
 
+### Facade for the converter
+
+`UniquenessFacts.kt` is the session component through which the core converter reads the analysis.
+`analysis(function)` returns `null` when the uniqueness or locality checkers report an error in the function; it
+decides this by running those checkers over the function against a reporter that only counts errors. Otherwise it
+returns a `FunctionUniquenessAnalysis` that maps FIR elements to the uniqueness state before and after them, and
+resolves the declared uniqueness of symbols.
+
 ## Current Test Coverage
 
 Uniqueness diagnostics are primarily covered by:

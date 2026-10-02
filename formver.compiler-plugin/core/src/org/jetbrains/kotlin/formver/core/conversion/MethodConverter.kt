@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
+import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 
 /**
  * The symbol resolution data for a single method.
@@ -28,6 +29,7 @@ class MethodConverter(
     override val signature: FunctionSignature,
     private val paramResolver: ParameterResolver,
     scopeDepth: ScopeIndex,
+    override val uniquenessAnalysis: FunctionUniquenessAnalysis?,
     private val parent: MethodConversionContext? = null,
 ) : MethodConversionContext, ProgramConversionContext by programCtx {
     private var propertyResolver = PropertyResolver(scopeDepth)
