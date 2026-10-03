@@ -79,6 +79,11 @@ internal class ExprPurityVisitor(
         inlinedReturnLabels.add(e.returnLabel)
         return e.allChildrenPure(this)
     }
+    override fun visitInlineCall(e: InlineCall): Boolean {
+        if (!admitsInlinedCalls) return false
+        declaredVariables.add(e.returnVariable)
+        return e.allChildrenPure(this)
+    }
     override fun visitLambdaExp(e: LambdaExp) = false
     override fun visitInvokeFunctionObject(e: InvokeFunctionObject) = false
     override fun visitInhaleDirect(e: InhaleDirect): Boolean = false

@@ -181,7 +181,20 @@ data class InlineNamedFunction(
             if (callableType.extensionReceiverType != null) add(SubstitutedArgument.ExtensionThis)
             addAll(symbol.valueParameterSymbols.map { SubstitutedArgument.ValueParameter(it) })
         }
-        return ctx.insertInlineFunctionCall(signature, paramNames, args, firBody, signature.labelName)
+        val roots = paramNames.map {
+            when (it) {
+                SubstitutedArgument.DispatchThis -> null
+                SubstitutedArgument.ExtensionThis -> symbol.receiverParameterSymbol
+                is SubstitutedArgument.ValueParameter -> it.symbol
+            }
+        }
+        val analysis = ctx.uniquenessAnalysisOf(symbol)
+        if (analysis == null) {
+            ctx.reportUnsupportedOwnership(
+                ctx.callSite?.source, "The uniqueness checker has no facts for the inline function '${symbol.name}'."
+            )
+        }
+        return ctx.insertInlineFunctionCall(signature, paramNames, roots, args, firBody, signature.labelName, analysis)
     }
 
     override val declarationSource: KtSourceElement?

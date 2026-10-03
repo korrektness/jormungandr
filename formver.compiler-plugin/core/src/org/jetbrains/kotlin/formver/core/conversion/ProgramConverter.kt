@@ -340,6 +340,10 @@ class ProgramConverter(
             }
         }
 
+    @OptIn(SymbolInternals::class)
+    override fun uniquenessAnalysisOf(symbol: FirFunctionSymbol<*>): FunctionUniquenessAnalysis? =
+        uniquenessOutcomeOf(symbol.fir).analysis
+
     /**
      * Runs [check] on the source of [declaration] when it is the registered declaration and the uniqueness checker
      * has a state for it. The callees it embeds are checked when they are registered themselves. Without a state
@@ -368,7 +372,7 @@ class ProgramConverter(
             signature.signature,
             paramResolver,
             scopeIndexProducer.getFresh(),
-            uniquenessAnalysis,
+            OwnershipFrame.root(uniquenessAnalysis),
         ).statementCtxt()
         return stmtCtx
     }
@@ -396,7 +400,7 @@ class ProgramConverter(
             signature,
             rootResolver,
             ScopeIndex.NoScope,
-            uniquenessAnalysis,
+            OwnershipFrame.root(uniquenessAnalysis),
         ).statementCtxt()
 
         val postconditionContext = MethodConverter(
@@ -404,7 +408,7 @@ class ProgramConverter(
             signature,
             wrappedResolver,
             ScopeIndex.NoScope,
-            uniquenessAnalysis,
+            OwnershipFrame.root(uniquenessAnalysis),
         ).statementCtxt()
 
         return Pair(preconditionContext, postconditionContext)

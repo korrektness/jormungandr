@@ -79,15 +79,15 @@ fun <!VIPER_TEXT!>counterPlus<!>(c: @Unique @Borrowed Counter, k: Int = c.x): In
 }
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>inlineDefaultReadsUniqueField<!>(c: @Unique Counter): Int {
+fun <!VIPER_TEXT!>inlineDefaultReadsUniqueField<!>(c: @Unique Counter): Int {
     postconditions<Int> { r -> r == 5 }
     c.x = 4
-    return <!UNSUPPORTED_OWNERSHIP!>withCounter(c) { it + 1 }<!>
+    return withCounter(c) { it + 1 }
 }
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>defaultReadsUniqueField<!>(c: @Unique Counter): Int {
+fun <!VIPER_TEXT!>defaultReadsUniqueField<!>(c: @Unique Counter): Int {
     postconditions<Int> { r -> r == 5 }
     c.x = 4
-    return <!UNSUPPORTED_OWNERSHIP!>counterPlus(c)<!>
+    return counterPlus(c)
 }

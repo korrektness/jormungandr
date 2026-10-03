@@ -90,6 +90,6 @@ class InlineParameterResolver(
     }
 
     override fun retrieveAllParams(): Sequence<VariableEmbedding> = sequence {
-        yieldAll(substitutions.values.asSequence().map { it.underlyingVariable!! })
+        yieldAll(substitutions.values.asSequence().mapNotNull { it.underlyingVariable })
     }
 }

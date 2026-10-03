@@ -18,7 +18,6 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.names.FunctionResultVariableName
 import org.jetbrains.kotlin.formver.core.names.ReturnLabelName
 import org.jetbrains.kotlin.formver.core.names.ReturnVariableName
-import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 
 
 class ReturnTarget private constructor(val variable: VariableEmbedding, val label: LabelEmbedding?) {
@@ -46,11 +45,8 @@ interface MethodConversionContext : ProgramConversionContext {
     val defaultResolvedReturnTarget: ReturnTarget
     val isValidForForAllBlock: Boolean
 
-    /**
-     * Uniqueness facts for the function whose body is being converted. `null` when that function has no body or has
-     * uniqueness or locality errors, and inside the body of an inlined callee.
-     */
-    val uniquenessAnalysis: FunctionUniquenessAnalysis?
+    /** Uniqueness facts for the body being converted. */
+    val ownershipFrame: OwnershipFrame
 
     fun resolveParameter(symbol: FirValueParameterSymbol): ExpEmbedding
     fun resolveLocal(symbol: FirVariableSymbol<*>): VariableEmbedding

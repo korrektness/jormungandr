@@ -145,6 +145,128 @@ method readX(c: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
+/owned_writes.kt: info: Generated Viper text for wrongAfterInlineWrite:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method setX(c: Ref, par_v: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method wrongAfterInlineWrite(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  anon_0 := intToRef(5)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  c.x := anon_0
+  label lbl_ret_2
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  assert intFromRef(anon_1) == 0
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/owned_writes.kt: info: Generated Viper text for wrongAfterInlineBump:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bump(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method wrongAfterInlineBump(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
+  label lbl_ret_2
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  assert intFromRef(anon_1) == 0
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/owned_writes.kt: info: Generated Viper text for wrongAfterInlineReset:
+field x: Ref
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method reset(v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), Counter())
+  requires acc(Counter_unique(v_this_extension), write)
+  ensures acc(Counter_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method wrongAfterInlineReset(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(1)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  label lbl_ret_2
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /owned_writes.kt: info: Generated Viper text for inlineRead:
 field x: Ref
 
@@ -155,7 +277,9 @@ method inlineRead(c: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   var v_ret_2: Ref
-  v_ret_2 := havoc(intType())
+  unfold acc(Counter_unique(c), write)
+  v_ret_2 := c.x
+  fold acc(Counter_unique(c), write)
   goto lbl_ret_2
   label lbl_ret_2
   v_ret_0 := v_ret_2
@@ -168,3 +292,200 @@ method readX(c: Ref) returns (ret_1: Ref)
   requires acc(Counter_unique(c), write)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(ret_1), intType())
+
+
+/owned_writes.kt: info: Generated Viper text for wrongAfterInlineElementWrite:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method setFirst(a: Ref, par_v: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires acc(IntArray_unique(a), write)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures acc(IntArray_unique(a), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method wrongAfterInlineElementWrite(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires acc(IntArray_unique(a), write)
+  ensures acc(IntArray_unique(a), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  if (arraySize(a) < 1) {
+    goto lbl_ret_0
+  }
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  unfold acc(IntArray_unique(a), write)
+  a.contents := a.contents[0 := 0]
+  anon_0 := intToRef(5)
+  fold acc(IntArray_unique(a), write)
+  if (arraySize(a) < 1) {
+    goto lbl_ret_2
+  }
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  unfold acc(IntArray_unique(a), write)
+  a.contents := a.contents[0 := intFromRef(anon_0)]
+  fold acc(IntArray_unique(a), write)
+  label lbl_ret_2
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  unfold acc(IntArray_unique(a), write)
+  anon_1 := intToRef(a.contents[0])
+  assert intFromRef(anon_1) == 0
+  fold acc(IntArray_unique(a), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/owned_writes.kt: info: Generated Viper text for wrongAfterInlineElementBump:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bumpFirst(a: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires acc(IntArray_unique(a), write)
+  ensures acc(IntArray_unique(a), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method wrongAfterInlineElementBump(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires acc(IntArray_unique(a), write)
+  ensures acc(IntArray_unique(a), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  if (arraySize(a) < 1) {
+    goto lbl_ret_0
+  }
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  unfold acc(IntArray_unique(a), write)
+  a.contents := a.contents[0 := 0]
+  fold acc(IntArray_unique(a), write)
+  if (arraySize(a) < 1) {
+    goto lbl_ret_2
+  }
+  anon_0 := intToRef(0)
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) < arraySize(a)
+  unfold acc(IntArray_unique(a), write)
+  anon_1 := intToRef(a.contents[intFromRef(anon_0)])
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) < arraySize(a)
+  a.contents := a.contents[intFromRef(anon_0) := intFromRef(anon_1) + 1]
+  fold acc(IntArray_unique(a), write)
+  label lbl_ret_2
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  unfold acc(IntArray_unique(a), write)
+  anon_2 := intToRef(a.contents[0])
+  assert intFromRef(anon_2) == 0
+  fold acc(IntArray_unique(a), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/owned_writes.kt: info: Generated Viper text for wrongAfterBorrowedWrite:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method setBorrowed(c: Ref, par_v: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method wrongAfterBorrowedWrite(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  anon_0 := intToRef(5)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  c.x := anon_0
+  label lbl_ret_2
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  assert intFromRef(anon_1) == 0
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/owned_writes.kt: info: Generated Viper text for wrongAfterBorrowedReset:
+field x: Ref
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method resetBorrowed(v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), Counter())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method wrongAfterBorrowedReset(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(1)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  label lbl_ret_2
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

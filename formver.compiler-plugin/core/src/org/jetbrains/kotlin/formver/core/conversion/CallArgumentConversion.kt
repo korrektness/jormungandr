@@ -25,7 +25,8 @@ import org.jetbrains.kotlin.utils.addIfNotNull
  *
  * The arguments are evaluated in Kotlin's order: receivers, the explicit arguments as written, then the default of each
  * omitted parameter in parameter order. A default may read the parameters before it, so it is converted with those
- * parameters bound to the arguments already evaluated.
+ * parameters bound to the arguments already evaluated, and with the callee's uniqueness facts, which own a path through
+ * a `@Unique` parameter.
  */
 @OptIn(SymbolInternals::class)
 fun StmtConversionContext.insertCallWithMappedArguments(
@@ -56,7 +57,7 @@ fun StmtConversionContext.insertCallWithMappedArguments(
         }
         bind(SubstitutedArgument.ValueParameter(parameter.symbol), convert(argument))
     }
-    val uniqueRoots = uniqueRootsOf(symbol)
+    val calleeAnalysis = uniquenessAnalysisOf(symbol)
     for (parameterSymbol in symbol.valueParameterSymbols) {
         val parameter = SubstitutedArgument.ValueParameter(parameterSymbol)
         if (parameter in bound) continue
@@ -65,19 +66,18 @@ fun StmtConversionContext.insertCallWithMappedArguments(
         if (defaultValue is FirExpressionStub) {
             throw UnsupportedFeatureException(call.source, "default argument of a function compiled without its source")
         }
-        if (defaultValue.readsThroughRoot(symbol, uniqueRoots)) {
-            reportUnsupportedOwnership(call.source, "A default argument may not read a property of a @Unique parameter.")
-        }
         val defaultCtx = MethodContextFactory(
             signature,
             InlineParameterResolver(bound.toMap(), symbol.name.asString(), defaultResolvedReturnTarget),
-            uniquenessAnalysis = null,
+            ownershipFrame = ownershipFrame.forDefault(
+                calleeAnalysis, call, ownershipFrame.scopeWith(retrievePropertiesAndParameters().toList())
+            ),
             parent = this,
         )
         bind(parameter, withMethodCtx(defaultCtx) { convert(defaultValue) })
     }
 
-    val result = callee.insertCall(parameters.map { bound.getValue(it) }, this, returnType)
+    val result = withCallSite(call) { callee.insertCall(parameters.map { bound.getValue(it) }, this, returnType) }
     return if (declarations.isEmpty()) result else Block {
         addAll(declarations)
         add(result)

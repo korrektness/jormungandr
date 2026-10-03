@@ -1,0 +1,884 @@
+/inline_unique.kt: info: Generated Viper text for probe:
+field x: Ref
+
+method probe(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  unfold acc(Counter_unique(c), write)
+  v_ret_0 := c.x
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/inline_unique.kt: info: Generated Viper text for setX:
+field x: Ref
+
+method setX(c: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(Counter_unique(c), write)
+  c.x := par_v
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for bump:
+field x: Ref
+
+method bump(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  c.x := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for bumpTwice:
+field x: Ref
+
+method bump(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method bumpTwice(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var v_ret_3: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(c), write)
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
+  label lbl_ret_2
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  c.x := plusInts(anon_1, intToRef(1))
+  label lbl_ret_3
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_3), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for reset:
+field x: Ref
+
+method reset(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), Counter())
+  requires acc(Counter_unique(v_this_extension), write)
+  ensures acc(Counter_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(Counter_unique(v_this_extension), write)
+  v_this_extension.x := intToRef(0)
+  label lbl_ret_0
+  fold acc(Counter_unique(v_this_extension), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for consume:
+field x: Ref
+
+method consume(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  unfold acc(Counter_unique(c), write)
+  v_ret_0 := c.x
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/inline_unique.kt: info: Generated Viper text for pass:
+field x: Ref
+
+method pass(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures acc(Counter_unique(v_ret_0), write)
+{
+  v_ret_0 := c
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/inline_unique.kt: info: Generated Viper text for countTo:
+field x: Ref
+
+method countTo(c: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var i: Ref
+  var anon_0: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  i := intToRef(0)
+  fold acc(Counter_unique(c), write)
+  label cont
+    invariant acc(Counter_unique(c), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(c), Counter())
+    invariant isSubtype(typeOf(n), intType())
+    invariant intFromRef(i) >= 0 &&
+      (unfolding acc(Counter_unique(c), write) in
+        intFromRef(c.x) == intFromRef(i))
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    unfold acc(Counter_unique(c), write)
+    anon_1 := c.x
+    c.x := plusInts(anon_1, intToRef(1))
+    i := plusInts(i, intToRef(1))
+    fold acc(Counter_unique(c), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(c), Counter())
+  assert isSubtype(typeOf(n), intType())
+  assert intFromRef(i) >= 0 &&
+    (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) == intFromRef(i))
+  v_ret_0 := i
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/inline_unique.kt: info: Generated Viper text for setShared:
+field x: Ref
+
+method setShared(c: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for setSharedThen:
+field x: Ref
+
+method setSharedThen(c: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for readShared:
+field x: Ref
+
+method readShared(c: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), intType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/inline_unique.kt: info: Generated Viper text for sink:
+field x: Ref
+
+method sink(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for consumeThen:
+field x: Ref
+
+method consumeThen(c: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := sink(c)
+  inhale isSubtype(typeOf(anon_1), intType())
+  v_ret_0 := anon_1
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method sink(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/inline_unique.kt: info: Generated Viper text for readThroughInline:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method probe(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method readThroughInline(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  var v_ret_2: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(3)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  v_ret_2 := c.x
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+  anon := v_ret_2
+  assert intFromRef(anon) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for writeThroughInline:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method setX(c: Ref, par_v: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method writeThroughInline(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  anon_0 := intToRef(5)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  c.x := anon_0
+  label lbl_ret_2
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  assert intFromRef(anon_1) == 5
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for bumpThroughInline:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bump(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method bumpThroughInline(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
+  label lbl_ret_2
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  assert intFromRef(anon_1) == 1
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for nestedInlining:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bump(c: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method bumpTwice(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method nestedInlining(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var v_ret_4: Ref
+  var anon_0: Ref
+  var v_ret_5: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
+  label lbl_ret_4
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_4), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  c.x := plusInts(anon_1, intToRef(1))
+  label lbl_ret_5
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+  label lbl_ret_2
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_2 := c.x
+  assert intFromRef(anon_2) == 2
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for wrongNestedInlining:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bump(c: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method bumpTwice(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method wrongNestedInlining(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var v_ret_4: Ref
+  var anon_0: Ref
+  var v_ret_5: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
+  label lbl_ret_4
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_4), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  c.x := plusInts(anon_1, intToRef(1))
+  label lbl_ret_5
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+  label lbl_ret_2
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_2 := c.x
+  assert intFromRef(anon_2) == 1
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for extensionReceiver:
+field x: Ref
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method extensionReceiver(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(1)
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  label lbl_ret_2
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  assert intFromRef(anon) == 0
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method reset(v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), Counter())
+  requires acc(Counter_unique(v_this_extension), write)
+  ensures acc(Counter_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/inline_unique.kt: info: Generated Viper text for consumedArgument:
+field bf_x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+method consume(c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method consumedArgument() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  var anon: Ref
+  var v_ret_3: Ref
+  l0_v := con(intToRef(3))
+  fold acc(Counter_unique(l0_v), write)
+  unfold acc(Counter_unique(l0_v), write)
+  v_ret_3 := l0_v.bf_x
+  fold acc(Counter_unique(l0_v), write)
+  goto lbl_ret_3
+  label lbl_ret_3
+  anon := v_ret_3
+  assert intFromRef(anon) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for uniqueResultIntoLocal:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method pass(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+method uniqueResultIntoLocal(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var d: Ref
+  var v_ret_2: Ref
+  var anon: Ref
+  v_ret_2 := c
+  goto lbl_ret_2
+  label lbl_ret_2
+  d := v_ret_2
+  unfold acc(Counter_unique(d), write)
+  d.x := intToRef(4)
+  anon := d.x
+  assert intFromRef(anon) == 4
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for loopInInlinedBody:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method countTo(c: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method loopInInlinedBody(c: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var k: Ref
+  var v_ret_2: Ref
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  i := intToRef(0)
+  fold acc(Counter_unique(c), write)
+  label cont
+    invariant acc(Counter_unique(c), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(c), Counter())
+    invariant isSubtype(typeOf(n), intType())
+    invariant intFromRef(i) >= 0 &&
+      (unfolding acc(Counter_unique(c), write) in
+        intFromRef(c.x) == intFromRef(i))
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    unfold acc(Counter_unique(c), write)
+    anon_1 := c.x
+    c.x := plusInts(anon_1, intToRef(1))
+    i := plusInts(i, intToRef(1))
+    fold acc(Counter_unique(c), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(c), Counter())
+  assert isSubtype(typeOf(n), intType())
+  assert intFromRef(i) >= 0 &&
+    (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) == intFromRef(i))
+  v_ret_2 := i
+  goto lbl_ret_2
+  label lbl_ret_2
+  k := v_ret_2
+  unfold acc(Counter_unique(c), write)
+  anon_2 := c.x
+  assert intFromRef(anon_2) == intFromRef(k)
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for inlineCallInPostcondition:
+field x: Ref
+
+method inlineCallInPostcondition(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(v_ret_0) == intFromRef(c.x))
+{
+  unfold acc(Counter_unique(c), write)
+  v_ret_0 := c.x
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method probe(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+/inline_unique.kt: info: Generated Viper text for borrowedWriteToOwnedLocal:
+field bf_x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method borrowedWriteToOwnedLocal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  var v_ret_3: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  l0_v := con(intToRef(0))
+  fold acc(Counter_unique(l0_v), write)
+  anon_0 := intToRef(5)
+  unfold acc(Counter_unique(l0_v), write)
+  l0_v.bf_x := anon_0
+  label lbl_ret_3
+  fold acc(Counter_unique(l0_v), write)
+  inhale isSubtype(typeOf(v_ret_3), unitType())
+  unfold acc(Counter_unique(l0_v), write)
+  anon_1 := l0_v.bf_x
+  assert intFromRef(anon_1) == 5
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+method setShared(c: Ref, par_v: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+/inline_unique.kt: info: Generated Viper text for wrongBorrowedWriteToOwnedLocal:
+field bf_x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+method setShared(c: Ref, par_v: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method wrongBorrowedWriteToOwnedLocal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  var v_ret_3: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  l0_v := con(intToRef(0))
+  fold acc(Counter_unique(l0_v), write)
+  anon_0 := intToRef(5)
+  unfold acc(Counter_unique(l0_v), write)
+  l0_v.bf_x := anon_0
+  label lbl_ret_3
+  fold acc(Counter_unique(l0_v), write)
+  inhale isSubtype(typeOf(v_ret_3), unitType())
+  unfold acc(Counter_unique(l0_v), write)
+  anon_1 := l0_v.bf_x
+  assert intFromRef(anon_1) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for wrongBorrowedWriteSeenByLambda:
+field bf_x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+method setSharedThen(c: Ref, f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method wrongBorrowedWriteSeenByLambda() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  var v_ret_4: Ref
+  var v_ret_5: Ref
+  var anon: Ref
+  l0_v := con(intToRef(0))
+  fold acc(Counter_unique(l0_v), write)
+  unfold acc(Counter_unique(l0_v), write)
+  l0_v.bf_x := intToRef(0)
+  fold acc(Counter_unique(l0_v), write)
+  unfold acc(Counter_unique(l0_v), write)
+  l0_v.bf_x := intToRef(5)
+  anon := l0_v.bf_x
+  assert intFromRef(anon) == 0
+  label lbl_ret_5
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+  label lbl_ret_4
+  fold acc(Counter_unique(l0_v), write)
+  inhale isSubtype(typeOf(v_ret_4), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique.kt: info: Generated Viper text for lambdaReadsArgumentOfPlainParameter:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+method lambdaReadsArgumentOfPlainParameter() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), unitType())
+
+
+method readShared(c: Ref, f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/inline_unique.kt: info: Generated Viper text for lambdaReadsConsumedArgument:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+method consumeThen(c: Ref, f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method lambdaReadsConsumedArgument() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), unitType())
+
+
+method sink(c: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_5), unitType())

@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.expressions.FirCatch
 import org.jetbrains.kotlin.fir.expressions.FirStatement
@@ -34,6 +35,7 @@ data class StmtConverter(
     override val checkedSafeCallSubject: ExpEmbedding? = null,
     private val scopeIndex: ScopeIndex = ScopeIndex.Indexed(0),
     override val activeCatchLabels: List<LabelEmbedding> = listOf(),
+    override val callSite: FirElement? = null,
 ) : StmtConversionContext, MethodConversionContext by methodCtx {
     override fun convert(stmt: FirStatement): ExpEmbedding =
         attributingFailuresTo(stmt.source) { stmt.accept(StmtConversionVisitor, this) }.withPosition(stmt.source)
@@ -43,7 +45,7 @@ data class StmtConverter(
         withNewScopeImpl(needsScope = false, action)
 
     override fun <R> withMethodCtx(factory: MethodContextFactory, action: StmtConversionContext.() -> R): R {
-        return copy(methodCtx = factory.create(this, scopeIndex)).run {
+        return copy(methodCtx = factory.create(this, scopeIndex), callSite = null).run {
             if (scopeIndex is ScopeIndex.Indexed) withNewScope(action)
             else withScopeImpl(ScopeIndex.NoScope) { action() }
         }
@@ -79,6 +81,9 @@ data class StmtConverter(
             label?.let { ctx.addLoopName(it.name) }
             ctx.action()
         }
+
+    override fun <R> withCallSite(call: FirElement, action: StmtConversionContext.() -> R): R =
+        copy(callSite = call).action()
 
     override fun <R> withWhenSubject(subject: VariableEmbedding?, action: StmtConversionContext.() -> R): R =
         copy(whenSubject = subject).action()

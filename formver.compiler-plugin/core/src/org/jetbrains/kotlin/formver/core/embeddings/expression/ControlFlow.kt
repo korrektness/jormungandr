@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
@@ -145,6 +146,52 @@ data class FunctionExp(
 
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(body)
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitFunctionExp(this)
+}
+
+/** How a parameter of an inlined body holds the predicate of its argument while the body runs. */
+enum class BindingMode {
+    /** A `@Unique` parameter: the body takes the predicate, and what it leaves of it is leaked at exit. */
+    Consumed,
+
+    /**
+     * The body owns the argument and hands it back folded: a `@Unique @Borrowed` parameter, or a `@Borrowed` one
+     * whose argument the caller owns.
+     */
+    Borrowed,
+
+    /** The body owns nothing through the parameter, and the caller's predicate, if any, is leaked at entry. */
+    Released,
+}
+
+/**
+ * The parameter [root] of an inlined body, declared as [formal], bound to [variable], which stands for [argument] at
+ * the call. [root] is `null` for a dispatch receiver.
+ */
+data class RootBinding(
+    val root: FirBasedSymbol<*>?,
+    val formal: VariableEmbedding,
+    val variable: VariableEmbedding,
+    val argument: ExpEmbedding,
+    val mode: BindingMode,
+)
+
+/**
+ * A body inlined at a call: [declarations] store the arguments that are not variables, [body] runs with its parameters
+ * bound by [bindings], and the call's value is [result], which reads [returnVariable]. When [returnsUnique], the
+ * caller receives the predicate of [returnVariable].
+ */
+data class InlineCall(
+    val bindings: List<RootBinding>,
+    val declarations: List<Declare>,
+    val body: FunctionExp,
+    val returnVariable: VariableEmbedding,
+    val result: ExpEmbedding,
+    val returnsUnique: Boolean,
+) : ExpEmbedding {
+    override val type: TypeEmbedding = result.type
+
+    override fun children(): Sequence<ExpEmbedding> = declarations.asSequence() + sequenceOf(body, result)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitInlineCall(this)
 }
 
 data class Elvis(val left: ExpEmbedding, val right: ExpEmbedding, override val type: TypeEmbedding) :

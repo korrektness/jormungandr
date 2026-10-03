@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 interface ExpVisitor<R> {
     fun visitBlock(e: Block): R
     fun visitFunctionExp(e: FunctionExp): R
+    fun visitInlineCall(e: InlineCall): R
     fun visitGotoChainNode(e: GotoChainNode): R
     fun visitIf(e: If): R
     fun visitElvis(e: Elvis): R
@@ -96,6 +97,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
   
     override fun visitBlock(e: Block): R = visitDefault(e)
     override fun visitFunctionExp(e: FunctionExp): R = visitDefault(e)
+    override fun visitInlineCall(e: InlineCall): R = visitDefault(e)
     override fun visitGotoChainNode(e: GotoChainNode): R = visitDefault(e)
     override fun visitIf(e: If): R = visitDefault(e)
     override fun visitElvis(e: Elvis): R = visitDefault(e)

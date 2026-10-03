@@ -42,6 +42,7 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
 
         override val functionCheckers: Set<FirFunctionChecker> =
             setOf(
+                DefaultArgumentUniquenessCollisionChecker,
                 FunctionCaptureUniquenessChecker,
                 FunctionEscapeUniquenessConsistencyChecker,
                 FunctionExitUniquenessConsistencyChecker,

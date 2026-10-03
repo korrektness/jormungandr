@@ -37,12 +37,21 @@ class LambdaExp(
         //TODO: can lambdas have dispatch receiver?
         val receiverParamNames =
             if (function.receiverParameter != null) listOf(SubstitutedArgument.ExtensionThis) else emptyList()
+        val roots = listOfNotNull(function.receiverParameter?.symbol) + function.valueParameters.map { it.symbol }
+        // A lambda called in place is analysed as part of the function it is written in.
+        val enclosingAnalysis = parentCtx.ownershipFrame.analysis
+        val analysis = enclosingAnalysis?.takeIf { it.hasState(inlineBody) }
+        if (enclosingAnalysis != null && analysis == null && enclosingAnalysis.ownsAnyPath) {
+            ctx.reportUnsupportedOwnership(inlineBody.source, "The uniqueness checker has no state for this lambda body.")
+        }
         return ctx.insertInlineFunctionCall(
             signature,
             receiverParamNames + nonReceiverParamNames,
+            roots,
             args,
             inlineBody,
             labelName,
+            analysis,
             parentCtx,
         )
     }

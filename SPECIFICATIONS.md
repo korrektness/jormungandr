@@ -299,6 +299,31 @@ fun detach(b: @Unique Node): @Unique Node? {
 }
 ```
 
+### Inline functions and default arguments
+
+An inline function whose body is in the sources being compiled is verified as
+its body inlined at each call, and its parameters keep the meaning of their
+annotations there. Writes through a `@Unique @Borrowed` parameter are real,
+and the caller knows the values written. A `@Borrowed` parameter whose
+argument the caller owns is treated the same way. Passing a property path such
+as `b.next` to a `@Borrowed` parameter of an inline function is reported as
+unsupported ownership, and the calling function is not verified.
+
+```kotlin
+inline fun setN(c: @Unique @Borrowed Counter, v: Int) {
+    c.n = v
+}
+
+@AlwaysVerify
+fun caller(c: @Unique @Borrowed Counter) {
+    setN(c, 5)
+    verify(c.n == 5)              // verifies
+}
+```
+
+A default argument may read `var` properties through a `@Unique` parameter of
+its function, as in `fun show(c: @Unique Counter, k: Int = c.n)`.
+
 ### Folding
 
 SnaKt manages permissions to the properties of unique objects automatically:
@@ -446,6 +471,8 @@ Each of these is a compile error:
   of the declaration it overrides, on parameters, receiver and result.
 - An `actual` declaration that does not repeat the `@Unique` and `@Borrowed`
   annotations of its `expect` declaration, on parameters, receiver and result.
+- A default value that aliases a `@Unique` parameter, or that is itself
+  `@Unique` and aliases another parameter: `fun f(c: @Unique Node, d: Node = c)`.
 - `try` in a function that owns anything anywhere: a signature with `@Unique`
   or `@Borrowed`, or any owned local, in or outside the `try`. Passing a fresh
   object straight to a call, as in `try { consume(Node(1, null)) }`, is

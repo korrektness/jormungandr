@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.FunctionTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.names.CatchLabelName
 import org.jetbrains.kotlin.formver.core.names.TryExitLabelName
+import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.viper.NameResolver
 
 interface ProgramConversionContext : ErrorCollectionContext {
@@ -69,6 +70,12 @@ interface ProgramConversionContext : ErrorCollectionContext {
      * It cannot be overwritten and does not have custom getters or setters
      */
     fun isGuaranteedDefaultProperty(symbol: FirPropertySymbol): Boolean
+
+    /**
+     * The uniqueness checker's facts for the body of [symbol]. `null` when it has no body or has uniqueness or
+     * locality errors.
+     */
+    fun uniquenessAnalysisOf(symbol: FirFunctionSymbol<*>): FunctionUniquenessAnalysis?
 }
 
 fun ProgramConversionContext.freshAnonVar(type: TypeEmbedding): VariableEmbedding = anonVarProducer.getFresh(type)

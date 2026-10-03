@@ -36,24 +36,24 @@ class Counter(var x: Int)
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>readX<!>(c: @Unique @Borrowed Counter): Int = c.x
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>wrongAfterInlineWrite<!>(c: @Unique @Borrowed Counter) {
+fun <!VIPER_TEXT!>wrongAfterInlineWrite<!>(c: @Unique @Borrowed Counter) {
     c.x = 0
-    <!UNSUPPORTED_OWNERSHIP!>setX(c, 5)<!>
-    verify(c.x == 0)
+    setX(c, 5)
+    verify(<!VIPER_VERIFICATION_ERROR!>c.x == 0<!>)
 }
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>wrongAfterInlineBump<!>(c: @Unique @Borrowed Counter) {
+fun <!VIPER_TEXT!>wrongAfterInlineBump<!>(c: @Unique @Borrowed Counter) {
     c.x = 0
-    <!UNSUPPORTED_OWNERSHIP!>bump(c)<!>
-    verify(c.x == 0)
+    bump(c)
+    verify(<!VIPER_VERIFICATION_ERROR!>c.x == 0<!>)
 }
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>wrongAfterInlineReset<!>(c: @Unique @Borrowed Counter) {
+fun <!VIPER_TEXT!>wrongAfterInlineReset<!>(c: @Unique @Borrowed Counter) {
     c.x = 1
-    <!UNSUPPORTED_OWNERSHIP!>c.reset()<!>
-    verify(c.x == 1)
+    c.reset()
+    verify(<!VIPER_VERIFICATION_ERROR!>c.x == 1<!>)
 }
 
 @AlwaysVerify
@@ -62,31 +62,31 @@ fun <!VIPER_TEXT!>inlineRead<!>(c: @Unique @Borrowed Counter): Int {
 }
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>wrongAfterInlineElementWrite<!>(a: @Unique @Borrowed IntArray) {
+fun <!VIPER_TEXT!>wrongAfterInlineElementWrite<!>(a: @Unique @Borrowed IntArray) {
     if (a.size < 1) return
     a[0] = 0
-    <!UNSUPPORTED_OWNERSHIP!>setFirst(a, 5)<!>
-    verify(a[0] == 0)
+    setFirst(a, 5)
+    verify(<!VIPER_VERIFICATION_ERROR!>a[0] == 0<!>)
 }
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>wrongAfterInlineElementBump<!>(a: @Unique @Borrowed IntArray) {
+fun <!VIPER_TEXT!>wrongAfterInlineElementBump<!>(a: @Unique @Borrowed IntArray) {
     if (a.size < 1) return
     a[0] = 0
-    <!UNSUPPORTED_OWNERSHIP!>bumpFirst(a)<!>
-    verify(a[0] == 0)
+    bumpFirst(a)
+    verify(<!VIPER_VERIFICATION_ERROR!>a[0] == 0<!>)
 }
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>wrongAfterBorrowedWrite<!>(c: @Unique @Borrowed Counter) {
+fun <!VIPER_TEXT!>wrongAfterBorrowedWrite<!>(c: @Unique @Borrowed Counter) {
     c.x = 0
-    <!UNSUPPORTED_OWNERSHIP!>setBorrowed(c, 5)<!>
-    verify(c.x == 0)
+    setBorrowed(c, 5)
+    verify(<!VIPER_VERIFICATION_ERROR!>c.x == 0<!>)
 }
 
 @AlwaysVerify
-fun <!VERIFICATION_SKIPPED!>wrongAfterBorrowedReset<!>(c: @Unique @Borrowed Counter) {
+fun <!VIPER_TEXT!>wrongAfterBorrowedReset<!>(c: @Unique @Borrowed Counter) {
     c.x = 1
-    <!UNSUPPORTED_OWNERSHIP!>c.resetBorrowed()<!>
-    verify(c.x == 1)
+    c.resetBorrowed()
+    verify(<!VIPER_VERIFICATION_ERROR!>c.x == 1<!>)
 }

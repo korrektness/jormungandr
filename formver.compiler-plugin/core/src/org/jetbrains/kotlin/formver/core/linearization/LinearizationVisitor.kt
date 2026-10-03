@@ -229,6 +229,45 @@ data class LinearizationVisitor(
         }
     }
 
+    /**
+     * The temporaries for the arguments, the entry operation of each binding, the body, the exit operation of each
+     * binding and the fold of the result when the callee returns it `@Unique`, then the result, as a block.
+     */
+    override fun visitInlineCall(e: InlineCall): Linearizable = object : OptionalResultLinearizable(e) {
+        private val steps: List<Linearizable> = buildList {
+            add(foldOperations(e) { ctx, state -> e.bindings.forEach { ctx.rejectRetainedArgument(it, state) } })
+            add(Declare(e.returnVariable, null).linearize())
+            e.declarations.forEach { add(it.linearize()) }
+            add(foldOperations(e) { ctx, state -> e.bindings.forEach { ctx.enterBinding(it, state) } })
+            add(e.body.linearize())
+            add(foldOperations(e) { ctx, state ->
+                e.bindings.forEach { ctx.exitBinding(it, state) }
+                val returned = OwnedPath(e.returnVariable)
+                if (e.returnsUnique) state.close(ctx, returned) else state.release(ctx, returned)
+            })
+        }
+
+        override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) {
+            steps.forEach { it.toViperUnusedResult(ctx) }
+            e.result.linearize().toViperMaybeStoringIn(result, ctx)
+        }
+
+        private fun value(ctx: LinearizationContext, builtinType: TypeEmbedding?): Exp =
+            ctx.addBlock(steps, e.result.linearize(), e.type, builtinType)
+
+        override fun toViper(ctx: LinearizationContext): Exp = value(ctx, builtinType = null)
+        override fun toViperBuiltinType(ctx: LinearizationContext): Exp = value(ctx, e.type)
+        override fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext): Exp = value(ctx, type)
+    }
+
+    /** A step of [e] that runs [operations] on the fold state, when there is one. */
+    private fun foldOperations(e: ExpEmbedding, operations: (LinearizationContext, FoldState) -> Unit): Linearizable =
+        object : UnitResultLinearizable(e) {
+            override fun toViperUnusedResult(ctx: LinearizationContext) {
+                ctx.foldState?.let { operations(ctx, it) }
+            }
+        }
+
     override fun visitElvis(e: Elvis): Linearizable = object : StoredResultLinearizable(e) {
         private fun conditional(ctx: LinearizationContext): Linearizable {
             val leftWrapped = ExpWrapper(e.left.linearize().toViper(ctx), e.left.type)
@@ -1019,6 +1058,35 @@ private fun LinearizationContext.heldPaths(
     }
 }
 
+/**
+ * Reports a path with fields passed to a `@Borrowed` parameter of an inlined body: the body's temporary would have to
+ * hand the path's predicate back at exit.
+ */
+private fun LinearizationContext.rejectRetainedArgument(binding: RootBinding, state: FoldState) {
+    if (!binding.formal.isBorrowed || binding.argument.underlyingVariable == binding.variable) return
+    val path = binding.argument.ownedPath()?.takeIf { state.holds(it) } ?: return
+    throw FoldStateException(source, "${path.render()} is passed to a @Borrowed parameter of an inline function.")
+}
+
+/** Gives the body of an inline call what [binding] holds for it on entry. */
+private fun LinearizationContext.enterBinding(binding: RootBinding, state: FoldState) {
+    val path = OwnedPath(binding.variable)
+    when (binding.mode) {
+        BindingMode.Consumed, BindingMode.Borrowed -> exposeFor(path, binding.formal)
+        BindingMode.Released -> state.release(this, path)
+    }
+}
+
+/** Takes back from the body of an inline call what [binding] held for it, on exit. */
+private fun LinearizationContext.exitBinding(binding: RootBinding, state: FoldState) {
+    val path = OwnedPath(binding.variable)
+    when (binding.mode) {
+        BindingMode.Consumed -> state.release(this, path)
+        BindingMode.Borrowed -> state.close(this, path)
+        BindingMode.Released -> {}
+    }
+}
+
 /** Make the folded predicate that the `@Unique` parameter [formal] takes held for the argument [path]. */
 private fun LinearizationContext.exposeFor(path: OwnedPath, formal: VariableEmbedding) {
     val state = foldState ?: return
@@ -1048,12 +1116,14 @@ private fun ExpEmbedding.isFreshUnique(): Boolean = when (val exp = ignoringCast
 
 /**
  * Prepares a move out of [value] before it is linearized: when [value] is a held path, folds what can be folded under
- * it, keeping its holes, and returns it.
+ * it, keeping its holes, and returns it. An [InlineCall] returning `@Unique` gives its return variable, which the call
+ * holds folded once it has run.
  * [targetOwned] is `null` when the store is not a move in the source.
  */
 private fun LinearizationContext.moveSource(value: ExpEmbedding, targetOwned: Boolean?): OwnedPath? {
     val state = foldState ?: return null
     if (targetOwned == null) return null
+    if (value.ignoringCastsAndMetaNodes() is InlineCall) return value.ownedPath()
     val path = value.ownedPath()?.takeIf { state.holds(it) } ?: return null
     if (targetOwned) state.tidy(this, path)
     return path

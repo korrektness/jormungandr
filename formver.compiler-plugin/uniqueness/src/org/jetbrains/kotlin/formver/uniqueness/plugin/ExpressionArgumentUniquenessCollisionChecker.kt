@@ -2,9 +2,11 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
-import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirExpressionChecker
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
@@ -45,38 +47,42 @@ private fun extendsThroughUniqueFields(shorter: Path, longer: Path, commonPrefix
     commonPrefixLength == shorter.size &&
             longer.subList(shorter.size, longer.size).resolveDeclaredUniqueness() == Uniqueness.Unique
 
+/**
+ * Reports a collision between the paths [leftPaths], read at [leftSource], and the paths [rightPaths], read at
+ * [rightSource]: two identical paths, or one path that extends the other through `@Unique` fields only. A collision is
+ * reported at [rightSource], and also at [leftSource] when [reportLeft] holds and the sources differ.
+ */
 context(context: CheckerContext, reporter: DiagnosticReporter)
-private fun checkUniquenessCollision(
-    ownerElement: FirElement,
-    leftArgument: FirExpression,
-    rightArgument: FirExpression
+private fun checkPathCollision(
+    leftPaths: List<Path>,
+    leftSource: KtSourceElement?,
+    rightPaths: List<Path>,
+    rightSource: KtSourceElement?,
+    reportLeft: Boolean,
 ) {
-    for (leftPath in leftArgument.resolveAccessState().enumeratePaths()) {
-        for (rightPath in rightArgument.resolveAccessState().enumeratePaths()) {
+    val alsoLeft = reportLeft && leftSource != rightSource
+    for (leftPath in leftPaths) {
+        for (rightPath in rightPaths) {
             val commonPrefixLength = leftPath.computeCommonPrefix(rightPath)
 
             if (commonPrefixLength == 0) continue
 
-            val leftSource = leftArgument.source ?: ownerElement.source
-            val rightSource = rightArgument.source ?: ownerElement.source
-
             if (commonPrefixLength == leftPath.size && commonPrefixLength == rightPath.size) {
-                if (leftSource != rightSource) {
-                    reporter.reportOn(leftSource, INVALID_DUPLICATE_UNIQUE_ARGUMENT, leftPath)
-                }
+                if (alsoLeft) reporter.reportOn(leftSource, INVALID_DUPLICATE_UNIQUE_ARGUMENT, leftPath)
                 reporter.reportOn(rightSource, INVALID_DUPLICATE_UNIQUE_ARGUMENT, rightPath)
             } else if (
                 extendsThroughUniqueFields(leftPath, rightPath, commonPrefixLength) ||
                 extendsThroughUniqueFields(rightPath, leftPath, commonPrefixLength)
             ) {
-                if (leftSource != rightSource) {
-                    reporter.reportOn(leftSource, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, leftPath, rightPath)
-                }
+                if (alsoLeft) reporter.reportOn(leftSource, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, leftPath, rightPath)
                 reporter.reportOn(rightSource, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, rightPath, leftPath)
             }
         }
     }
 }
+
+context(context: CheckerContext)
+private fun FirExpression.accessedPaths(): List<Path> = resolveAccessState().enumeratePaths().toList()
 
 /**
  * Checker for detecting collisions between the arguments of one expression when at least one of them is passed to a
@@ -105,7 +111,13 @@ class ExpressionArgumentUniquenessCollisionChecker<Statement : FirStatement>(
         for ((index, left) in argumentUniquenesses.withIndex()) {
             for (right in argumentUniquenesses.subList(index + 1, argumentUniquenesses.size)) {
                 if (left.second != Uniqueness.Unique && right.second != Uniqueness.Unique) continue
-                checkUniquenessCollision(expression, left.first, right.first)
+                checkPathCollision(
+                    left.first.accessedPaths(),
+                    left.first.source ?: expression.source,
+                    right.first.accessedPaths(),
+                    right.first.source ?: expression.source,
+                    reportLeft = true,
+                )
             }
         }
     }
@@ -140,3 +152,39 @@ val QualifiedAccessArgumentUniquenessCollisionChecker =
         },
         { statement -> statement !is FirFunctionCall }
     )
+
+/**
+ * Checks that no default value of a parameter of a [FirFunction] collides with another parameter or another default
+ * value when at least one of them is unique. A call that evaluates the default passes the object it reads in both
+ * places, as a call passing colliding arguments would.
+ */
+object DefaultArgumentUniquenessCollisionChecker : FirFunctionChecker(MppCheckerKind.Common) {
+    private data class Operand(val paths: List<Path>, val source: KtSourceElement?, val uniqueness: Uniqueness, val isDefault: Boolean)
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(declaration: FirFunction) {
+        if (declaration.valueParameters.none { it.defaultValue != null }) return
+
+        val operands = buildList {
+            declaration.receiverParameter?.let {
+                add(Operand(listOf(listOf(it.symbol)), it.source, it.symbol.resolveUniqueness(), isDefault = false))
+            }
+            for (parameter in declaration.contextParameters + declaration.valueParameters) {
+                val uniqueness = parameter.symbol.resolveUniqueness()
+                add(Operand(listOf(listOf(parameter.symbol)), parameter.source, uniqueness, isDefault = false))
+                parameter.defaultValue?.let {
+                    add(Operand(it.accessedPaths(), it.source ?: parameter.source, uniqueness, isDefault = true))
+                }
+            }
+        }
+
+        for ((index, left) in operands.withIndex()) {
+            for (right in operands.subList(index + 1, operands.size)) {
+                if (!left.isDefault && !right.isDefault) continue
+                if (left.uniqueness != Uniqueness.Unique && right.uniqueness != Uniqueness.Unique) continue
+                val (other, default) = if (right.isDefault) left to right else right to left
+                checkPathCollision(other.paths, other.source, default.paths, default.source, reportLeft = other.isDefault)
+            }
+        }
+    }
+}

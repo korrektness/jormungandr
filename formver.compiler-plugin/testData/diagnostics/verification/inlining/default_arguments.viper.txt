@@ -298,3 +298,67 @@ method counterPlus(c: Ref, k: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/default_arguments.kt: info: Generated Viper text for inlineDefaultReadsUniqueField:
+field x: Ref
+
+method inlineDefaultReadsUniqueField(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 5
+{
+  var anon: Ref
+  var v_ret_4: Ref
+  var v_ret_5: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(4)
+  anon := c.x
+  fold acc(Counter_unique(c), write)
+  v_ret_5 := plusInts(anon, intToRef(1))
+  goto lbl_ret_5
+  label lbl_ret_5
+  v_ret_4 := v_ret_5
+  goto lbl_ret_4
+  label lbl_ret_4
+  v_ret_0 := v_ret_4
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method withCounter(c: Ref, k: Ref, f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(k), intType())
+  requires isSubtype(typeOf(f), functionType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+/default_arguments.kt: info: Generated Viper text for defaultReadsUniqueField:
+field x: Ref
+
+method counterPlus(c: Ref, k: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(k), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == intFromRef(k) + 1
+
+
+method defaultReadsUniqueField(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 5
+{
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(4)
+  anon := c.x
+  fold acc(Counter_unique(c), write)
+  v_ret_0 := counterPlus(c, anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

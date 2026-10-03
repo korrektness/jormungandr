@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirWhileLoop
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallEnterNode
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -44,6 +45,7 @@ class FunctionUniquenessAnalysis internal constructor(
     private val context: CheckerContext,
     private val statesBefore: Map<FirElement, UniquenessState>,
     private val statesAfter: Map<FirElement, UniquenessState>,
+    private val statesInsideCalls: Map<FirElement, UniquenessState>,
 ) {
     /**
      * The state on entry to [element]: the join of the states its first CFG node's predecessors produce.
@@ -56,6 +58,12 @@ class FunctionUniquenessAnalysis internal constructor(
      */
     fun stateAfter(element: FirElement): UniquenessState =
         statesAfter[element] ?: error("No uniqueness state recorded for ${element.render()}.")
+
+    /**
+     * The state inside [call], after the call has taken its arguments: the state its enter node produces. A call with
+     * no enter node of its own takes the state before it.
+     */
+    fun stateInsideCall(call: FirElement): UniquenessState = statesInsideCalls[call] ?: stateBefore(call)
 
     fun declaredUniqueness(symbol: FirBasedSymbol<*>): Uniqueness =
         context(context) { symbol.resolveDeclaredUniqueness() }
@@ -97,9 +105,16 @@ class FunctionUniquenessAnalysis internal constructor(
     fun stateAtLoopHead(loop: FirWhileLoop): UniquenessState = stateBefore(loop.condition)
 
     /**
-     * Whether [path] is `Unique` in [state].
+     * Whether [path] is `Unique` in [state]. With [rootOwned], the root of [path] counts as `Unique` unless [state] has
+     * it `Moved`.
      */
-    fun owns(state: UniquenessState, path: Path): Boolean = state.uniquenessOf(path) == Uniqueness.Unique
+    fun owns(state: UniquenessState, path: Path, rootOwned: Boolean = false): Boolean =
+        state.uniquenessOf(path, rootOwned) == Uniqueness.Unique
+
+    /**
+     * Whether [state] has an entry for the root [symbol].
+     */
+    fun hasRoot(state: UniquenessState, symbol: FirBasedSymbol<*>): Boolean = symbol in state.children
 
     /**
      * The paths below [symbol] that are `Moved` in [state], each given by the symbols after [symbol]. None extends
@@ -117,13 +132,15 @@ class FunctionUniquenessAnalysis internal constructor(
 
     /**
      * The uniqueness of [path]: the join along the path, where a component with no entry has its declared uniqueness.
+     * With [rootOwned], the root contributes `Unique` unless it is `Moved`.
      */
-    private fun UniquenessState.uniquenessOf(path: Path): Uniqueness {
+    private fun UniquenessState.uniquenessOf(path: Path, rootOwned: Boolean): Uniqueness {
         var node: UniquenessState? = this
         var uniqueness = data
-        for (symbol in path) {
+        for ((index, symbol) in path.withIndex()) {
             node = node?.children[symbol]
-            uniqueness = uniqueness.join(node?.data ?: declaredUniqueness(symbol))
+            val own = node?.data ?: declaredUniqueness(symbol)
+            uniqueness = uniqueness.join(if (rootOwned && index == 0 && own != Uniqueness.Moved) Uniqueness.Unique else own)
         }
         return uniqueness
     }
@@ -207,12 +224,16 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
 
         val statesBefore = mutableMapOf<FirElement, UniquenessState>()
         val statesAfter = mutableMapOf<FirElement, UniquenessState>()
+        val statesInsideCalls = mutableMapOf<FirElement, UniquenessState>()
         for ((element, node) in firstNodes) {
             // Only an enter node has no predecessors, and it leaves the state unchanged.
             statesBefore[element] = flows.readInputUniquenessStateOf(node) ?: flows.readOutputUniquenessStateOf(node)
         }
         for ((element, node) in lastNodes) {
             statesAfter[element] = flows.readOutputUniquenessStateOf(node)
+        }
+        for (node in graph.uniquenessAnalysisTargetNodes.filterIsInstance<FunctionCallEnterNode>()) {
+            statesInsideCalls[node.fir] = flows.readOutputUniquenessStateOf(node)
         }
 
         acceptChildren(object : FirVisitorVoid() {
@@ -232,7 +253,7 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
             }
         })
 
-        return FunctionUniquenessAnalysis(context, statesBefore, statesAfter)
+        return FunctionUniquenessAnalysis(context, statesBefore, statesAfter, statesInsideCalls)
     }
 }
 

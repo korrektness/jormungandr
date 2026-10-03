@@ -28,7 +28,6 @@ import org.jetbrains.kotlin.formver.core.description
 import org.jetbrains.kotlin.formver.core.embeddings.LabelLink
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FullySpecialKotlinFunction
-import org.jetbrains.kotlin.formver.core.embeddings.callables.InlineNamedFunction
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.callables.isVerifyFunction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -336,7 +335,6 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         functionCall.stringBuilderIntrinsic(data.session)?.let { return data.convertStringBuilderIntrinsic(functionCall, it) }
 
         val callee = data.embedAnyFunction(symbol)
-        if (callee is InlineNamedFunction) data.rejectInlineWriteThroughOwnedRoot(functionCall, symbol, callee.firBody)
         val returnType = data.embedType(functionCall.resolvedType)
         val mappedParameters = functionCall.resolvedArgumentMapping?.values?.map { it.symbol }
         val passedPositionally = mappedParameters == null || mappedParameters == symbol.valueParameterSymbols ||
@@ -346,11 +344,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (!passedPositionally) {
             return data.insertCallWithMappedArguments(functionCall, symbol, callee, returnType)
         }
-        return callee.insertCall(
-            functionCall.functionCallArguments.withVarargsHandled(data, callee),
-            data,
-            returnType,
-        )
+        val args = functionCall.functionCallArguments.withVarargsHandled(data, callee)
+        return data.withCallSite(functionCall) { callee.insertCall(args, this, returnType) }
     }
 
     override fun visitImplicitInvokeCall(
@@ -368,7 +363,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             is LambdaExp -> {
                 // The lambda is already the receiver, so we do not need to convert it.
                 // TODO: do this more uniformly: convert the receiver, see it is a lambda, use insertCall on it.
-                exp.insertCall(args, data, returnType)
+                data.withCallSite(implicitInvokeCall) { exp.insertCall(args, this, returnType) }
             }
 
             else -> {
@@ -390,8 +385,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         // The declaration stands even when its initializer is unsupported, so later statements can use the name.
         val declaration =
             data.declareLocalProperty(symbol, property.initializer?.let { data.convertReportingUnsupported(it) })
-        val targetOwned = data.uniquenessAnalysis?.ownsAfter(property, listOf(symbol)) ?: return declaration
-        return declaration.copy(targetOwned = targetOwned)
+        val frame = data.ownershipFrame
+        if (frame.analysis == null) return declaration
+        return declaration.copy(targetOwned = frame.ownsAfter(property, listOf(symbol)))
     }
 
     override fun visitWhileLoop(whileLoop: FirWhileLoop, data: StmtConversionContext): ExpEmbedding {
@@ -443,10 +439,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (assignment is FieldModification && assignment.dropsWrite) {
             lValue.dispatchReceiver?.let { data.warnIfUntrackedWrite(variableAssignment, it, assignment.receiverOwned) }
         }
-        val analysis = data.uniquenessAnalysis
-        if (assignment !is Assign || analysis == null) return assignment
-        val lValuePath = analysis.pathOf(lValue) ?: return assignment
-        return assignment.copy(targetOwned = analysis.ownsAfter(variableAssignment, lValuePath))
+        if (assignment !is Assign) return assignment
+        val lValuePath = data.ownershipFrame.pathOf(lValue) ?: return assignment
+        return assignment.copy(targetOwned = data.ownershipFrame.ownsAfter(variableAssignment, lValuePath))
     }
 
     override fun visitSmartCastExpression(

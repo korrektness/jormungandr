@@ -10,6 +10,7 @@ fun consume(x: @Unique Any) {}
 
 class Node {
     var child: @Unique Any = Any()
+    var count: Int = 0
 }
 
 fun `assign unique default argument from constructor call`(
@@ -22,7 +23,7 @@ fun `assign shared default argument for unique parameter`(
 
 fun `assign shared parameter as unique default argument`(
     x: Any,
-    y: @Unique Any = <!UNIQUENESS_MISMATCH!>x<!>
+    y: @Unique Any = <!INVALID_DUPLICATE_UNIQUE_ARGUMENT, UNIQUENESS_MISMATCH!>x<!>
 ) {
     val z = x
 }
@@ -37,15 +38,15 @@ class `assign shared default argument in constructor`(
 
 fun `assign unique argument as unique default argument`(
     x: @Unique Any,
-    y: @Unique Any = x
+    y: @Unique Any = <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>x<!>
 ) {
     val z = <!INVALID_MOVED_ACCESS!>x<!>
 }
 
 fun `chain assign unique argument as unique default argument`(
     x: @Unique Any,
-    y: @Unique Any = x,
-    z: @Unique Any = <!INVALID_MOVED_ACCESS!>x<!>
+    y: @Unique Any = <!INVALID_DUPLICATE_UNIQUE_ARGUMENT, INVALID_DUPLICATE_UNIQUE_ARGUMENT!>x<!>,
+    z: @Unique Any = <!INVALID_DUPLICATE_UNIQUE_ARGUMENT, INVALID_DUPLICATE_UNIQUE_ARGUMENT, INVALID_MOVED_ACCESS!>x<!>
 ) {
     val z = x
 }
@@ -86,16 +87,40 @@ fun `reuse shared constructor default across multiple defaults`(
 
 fun `escape inconsistent parameter in function default argument`(
     b: @Unique Node,
-    moved: @Unique Any = b.child,
+    moved: @Unique Any = <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>b.child<!>,
     escaped: Unit = consume(<!ESCAPE_UNIQUENESS_INCONSISTENCY!>b<!>),
 ) {}
 
 class EscapeFromConstructorDefaultArgument(
     b: @Unique Node,
-    moved: @Unique Any = b.child,
+    moved: @Unique Any = <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>b.child<!>,
     escaped: Unit = consume(<!ESCAPE_UNIQUENESS_INCONSISTENCY!>b<!>),
 )
 
 fun `assign shared default argument for borrowed parameter`(
     x: @Borrowed Any = sharedValue,
+) {}
+
+fun `share unique parameter as default argument`(
+    x: @Unique Any,
+    y: Any = <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>x<!>,
+) {}
+
+fun `share unique field of unique parameter as default argument`(
+    b: @Unique Node,
+    c: Any = <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>b.child<!>,
+) {}
+
+fun `read value field of unique parameter as default argument`(
+    b: @Unique Node,
+    n: Int = b.count,
+) {}
+
+fun `share shared parameter as default argument`(
+    x: Any,
+    y: Any = x,
+) {}
+
+fun @Unique Node.`share unique field of unique receiver as default argument`(
+    c: Any = <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>child<!>,
 ) {}

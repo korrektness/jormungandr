@@ -90,10 +90,10 @@ fun StmtConversionContext.convertIntArrayInit(call: FirFunctionCall): ExpEmbeddi
         }
     }
     // The array is fresh, so it is owned with no holes throughout the loop.
-    val shapes = uniquenessAnalysis?.let { ownedShapes(it, it.stateBefore(call), inScope) }.orEmpty() +
+    val shapes = ownedShapes({ it.stateBefore(call) }, inScope) +
             OwnedShape(array, emptyList())
     val fill = withFreshWhile(label = null) {
-        val write = IntArraySet(array, index, init.insertCall(listOf(index), this), receiverOwned = true)
+        val write = IntArraySet(array, index, withCallSite(call) { init.insertCall(listOf(index), this) }, receiverOwned = true)
         val step = Assign(index, OperatorExpEmbeddings.AddIntInt(index, IntLit(1)))
         While(
             OperatorExpEmbeddings.LtIntInt(index, size),
@@ -105,7 +105,7 @@ fun StmtConversionContext.convertIntArrayInit(call: FirFunctionCall): ExpEmbeddi
             shapes,
         )
     }
-    val construct = embedAnyFunction(sizedConstructor).insertCall(listOf(size), this, array.type)
+    val construct = withCallSite(call) { embedAnyFunction(sizedConstructor).insertCall(listOf(size), this, array.type) }
     return IntArrayInit(
         array,
         blockOf(
@@ -137,7 +137,7 @@ private fun StmtConversionContext.initValueAt(init: LambdaExp): Pair<VariableEmb
             labelName = null,
             defaultResolvedReturnTarget = defaultResolvedReturnTarget,
         ),
-        uniquenessAnalysis = uniquenessAnalysis,
+        ownershipFrame = ownershipFrame,
         parent = this,
     )
     val value = withNoScope { withMethodCtx(methodCtxFactory) { convert(result) } }

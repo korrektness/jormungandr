@@ -6,16 +6,15 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
-import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 
 class MethodContextFactory(
     private val signature: FunctionSignature,
     private val paramResolver: ParameterResolver,
-    private val uniquenessAnalysis: FunctionUniquenessAnalysis?,
+    private val ownershipFrame: OwnershipFrame,
     private val parent: MethodConversionContext? = null,
 ) {
     fun create(
         programCtx: ProgramConversionContext,
         scopeDepth: ScopeIndex,
-    ): MethodConversionContext = MethodConverter(programCtx, signature, paramResolver, scopeDepth, uniquenessAnalysis, parent)
+    ): MethodConversionContext = MethodConverter(programCtx, signature, paramResolver, scopeDepth, ownershipFrame, parent)
 }

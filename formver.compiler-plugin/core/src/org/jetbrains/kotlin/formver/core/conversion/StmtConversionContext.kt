@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.expressions.FirOperation
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.fir.references.symbol
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.isBoolean
 import org.jetbrains.kotlin.fir.types.isUnit
@@ -62,6 +63,9 @@ interface StmtConversionContext : MethodConversionContext {
     val checkedSafeCallSubject: ExpEmbedding?
     val activeCatchLabels: List<LabelEmbedding>
 
+    /** The call being inserted, once its arguments are converted. Bodies inlined at it are bound there. */
+    val callSite: FirElement?
+
     fun continueLabelName(targetName: String? = null): SymbolicName
     fun breakLabelName(targetName: String? = null): SymbolicName
 
@@ -77,6 +81,7 @@ interface StmtConversionContext : MethodConversionContext {
     fun <R> withMethodCtx(factory: MethodContextFactory, action: StmtConversionContext.() -> R): R
 
     fun <R> withFreshWhile(label: FirLabel?, action: StmtConversionContext.() -> R): R
+    fun <R> withCallSite(call: FirElement, action: StmtConversionContext.() -> R): R
     fun <R> withWhenSubject(subject: VariableEmbedding?, action: StmtConversionContext.() -> R): R
     fun <R> withCheckedSafeCallSubject(subject: ExpEmbedding?, action: StmtConversionContext.() -> R): R
     fun <R> withCatches(
@@ -175,10 +180,9 @@ fun StmtConversionContext.embedPropertyAccess(
  * subject of a safe call denotes the path of the safe call's receiver.
  */
 fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpression): Boolean {
-    val analysis = uniquenessAnalysis ?: return false
     val denoted = (expression as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: expression
-    val path = analysis.pathOf(denoted) ?: return false
-    return analysis.ownsBefore(element, path)
+    val path = ownershipFrame.pathOf(denoted) ?: return false
+    return ownershipFrame.ownsBefore(element, path)
 }
 
 /**
@@ -227,7 +231,7 @@ private fun FirExpression.readsConstructedLocal(): Boolean {
 fun StmtConversionContext.holdsOwnership(): Boolean {
     val annotatedSignature = signature.formalArgs.any { it.isUnique || it.isBorrowed } ||
             signature.callableType.returnsUnique
-    return annotatedSignature || uniquenessAnalysis?.sharesEveryPath == false
+    return annotatedSignature || ownershipFrame.analysis?.sharesEveryPath == false
 }
 
 fun StmtConversionContext.argumentDeclaration(
@@ -252,58 +256,73 @@ fun StmtConversionContext.argumentDeclaration(
         }
     }
 
-fun StmtConversionContext.getInlineFunctionCallArgs(
-    args: List<ExpEmbedding>,
-    formalArgTypes: List<TypeEmbedding>,
-): Pair<List<Declare>, List<ExpEmbedding>> {
-    val declarations = mutableListOf<Declare>()
-    val storedArgs = args.zip(formalArgTypes).map { (arg, callType) ->
-        argumentDeclaration(arg, callType).let { (declaration, usage) ->
-            declarations.addIfNotNull(declaration)
-            usage
-        }
-    }
-    return Pair(declarations, storedArgs)
-}
-
+/**
+ * Inlines [body] at [callSite], with the parameters [paramNames] bound to [args]. [roots] are the symbols at which the
+ * body's paths start for each parameter, `null` for a dispatch receiver, and [analysis] holds the uniqueness facts for
+ * the body. [parentCtx] is the context the body is written in, for a lambda.
+ */
 fun StmtConversionContext.insertInlineFunctionCall(
     calleeSignature: FunctionSignature,
     paramNames: List<SubstitutedArgument>,
+    roots: List<FirBasedSymbol<*>?>,
     args: List<ExpEmbedding>,
     body: FirBlock,
     returnTargetName: String?,
+    analysis: FunctionUniquenessAnalysis?,
     parentCtx: MethodConversionContext? = null,
 ): ExpEmbedding {
+    val call = callSite ?: throw SnaktInternalException(body.source, "An inline body is inserted outside a call.")
     // TODO: It seems like it may be possible to avoid creating a local here, but it is not clear how.
     val returnTarget = returnTargetProducer.getFresh(calleeSignature.callableType.returnType)
     assert(returnTarget.label != null) {
         "Return target label not found for function ${calleeSignature.callableType.name}"
     }
-    val (declarations, callArgs) = getInlineFunctionCallArgs(args, calleeSignature.callableType.formalArgTypes)
-    val subs = paramNames.zip(callArgs).toMap()
-    // A lambda called in place is analysed as part of the function containing it; an inline function is not.
-    val enclosingAnalysis = parentCtx?.uniquenessAnalysis
-    val bodyAnalysis = enclosingAnalysis?.takeIf { it.hasState(body) }
-    if (enclosingAnalysis != null && bodyAnalysis == null && enclosingAnalysis.ownsAnyPath) {
-        reportUnsupportedOwnership(body.source, "The uniqueness checker has no state for this lambda body.")
+    val declarations = mutableListOf<Declare>()
+    val callArgs = args.indices.map { index ->
+        val (declaration, usage) = argumentDeclaration(args[index], calleeSignature.callableType.formalArgTypes[index])
+        // A temporary for a `@Unique` parameter takes the predicate of a fresh value.
+        declarations.addIfNotNull(declaration?.copy(targetOwned = true.takeIf { calleeSignature.formalArgs[index].isUnique }))
+        usage
     }
+    val subs = paramNames.zip(callArgs).toMap()
+    val bindings = calleeSignature.formalArgs.indices.mapNotNull { index ->
+        val variable = callArgs[index].underlyingVariable ?: return@mapNotNull null
+        val formal = calleeSignature.formalArgs[index]
+        RootBinding(roots[index], formal, variable, args[index], bindingMode(call, formal, variable))
+    }
+    val frame = ownershipFrame.inlined(analysis, call, bindings, ownershipFrame.scopeWith(retrievePropertiesAndParameters().toList()))
     val methodCtxFactory = MethodContextFactory(
         calleeSignature,
         InlineParameterResolver(subs, returnTargetName, returnTarget),
-        uniquenessAnalysis = bodyAnalysis,
+        ownershipFrame = frame,
         parent = parentCtx,
     )
 
     return withMethodCtx(methodCtxFactory) {
-        Block {
-            add(Declare(returnTarget.variable, null))
-            addAll(declarations)
-            add(FunctionExp(null, convert(body), returnTarget.label!!))
+        InlineCall(
+            bindings,
+            declarations,
+            FunctionExp(null, convert(body), returnTarget.label!!),
+            returnTarget.variable,
             // if unit is what we return we might not guarantee it yet
-            add(returnTarget.variable.withIsUnitInvariantIfUnit(typeResolver))
-        }
+            returnTarget.variable.withIsUnitInvariantIfUnit(typeResolver),
+            calleeSignature.callableType.returnsUnique,
+        )
     }
 }
+
+/**
+ * How [formal] holds [variable] in a body inlined at [call]: a `@Borrowed` parameter holds what the caller owns, and a
+ * plain one holds nothing.
+ */
+private fun StmtConversionContext.bindingMode(call: FirElement, formal: VariableEmbedding, variable: VariableEmbedding) =
+    when {
+        formal.isUnique && formal.isBorrowed -> BindingMode.Borrowed
+        formal.isUnique -> BindingMode.Consumed
+        formal.isBorrowed && ownershipFrame.movedBelowOwned(variable) { it.stateBefore(call) } != null ->
+            BindingMode.Borrowed
+        else -> BindingMode.Released
+    }
 
 internal fun StmtConversionContext.insertQuantifierFunctionCall(
     symbol: FirValueParameterSymbol,
@@ -319,7 +338,7 @@ internal fun StmtConversionContext.insertQuantifierFunctionCall(
             // TODO: ideally, there shouldn't be a return target since return is prohibited
             defaultResolvedReturnTarget = defaultResolvedReturnTarget,
         ),
-        uniquenessAnalysis = uniquenessAnalysis,
+        ownershipFrame = ownershipFrame,
         parent = this,
     )
     return withNoScope {
@@ -490,9 +509,8 @@ fun StmtConversionContext.convertLoop(
             addAll(withScopeImpl(ScopeIndex.NoScope) { collectInvariants(it) })
         }
     }
-    val analysis = uniquenessAnalysis
-    val headShapes = analysis?.let { ownedShapes(it, it.stateAtLoopHead(loop), inScope) }.orEmpty()
-    val exitShapes = analysis?.let { ownedShapes(it, it.stateAfter(loop), inScope) }.orEmpty()
+    val headShapes = ownedShapes({ it.stateAtLoopHead(loop) }, inScope)
+    val exitShapes = ownedShapes({ it.stateAfter(loop) }, inScope)
     return withFreshWhile(loop.label) {
         val convertedBody = body()
         While(condition, convertedBody, breakLabelName(), headLabelName(), invariants, headShapes, exitShapes)
@@ -500,23 +518,22 @@ fun StmtConversionContext.convertLoop(
 }
 
 /**
- * The shapes of the roots among [roots] that [state] has `Unique`, with a hole at each path below them that [state]
- * has `Moved`.
+ * The shapes of the variables among [roots], and of the variables in scope at the calls that run this body, that are
+ * owned at the point [point] gives, with a hole at each path below them that is `Moved` there. See
+ * [OwnershipFrame.movedBelowOwned] for which frame answers for a variable.
  *
  * A moved path that does not run through tracked `@Unique` properties alone is left out: the fold state tracks no
  * move of it either, so the root's predicate is not opened for it.
  */
 fun StmtConversionContext.ownedShapes(
-    analysis: FunctionUniquenessAnalysis,
-    state: UniquenessState,
+    point: (FunctionUniquenessAnalysis) -> UniquenessState,
     roots: List<VariableEmbedding>,
-): List<OwnedShape> = roots.filterIsInstance<FirVariableEmbedding>()
-    .filter { analysis.owns(state, listOf(it.symbol)) }
-    .map { root ->
-        OwnedShape(root, analysis.movedBelow(state, root.symbol).mapNotNull { path ->
-            path.map { symbol ->
-                val property = symbol as? FirPropertySymbol ?: return@mapNotNull null
-                embedProperty(property).ownedStep ?: return@mapNotNull null
-            }
-        })
-    }
+): List<OwnedShape> = ownershipFrame.scopeWith(roots).mapNotNull { root ->
+    val moved = ownershipFrame.movedBelowOwned(root, point) ?: return@mapNotNull null
+    OwnedShape(root, moved.mapNotNull { path ->
+        path.map { symbol ->
+            val property = symbol as? FirPropertySymbol ?: return@mapNotNull null
+            embedProperty(property).ownedStep ?: return@mapNotNull null
+        }
+    })
+}
