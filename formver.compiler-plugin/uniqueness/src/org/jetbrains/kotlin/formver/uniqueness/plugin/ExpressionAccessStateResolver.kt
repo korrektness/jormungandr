@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.intrinsics.plugin.aliasedStringBuilderReceiver
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -34,7 +35,7 @@ fun FirExpression.resolveTerminalAccessState(): AccessState {
                     EmptyAccessState.putChild(symbol, AccessState(Access.Terminal))
                 }
                 is FirVariableSymbol<*> -> {
-                    symbol.indexedArrayInitializer?.let { return it.resolveAccessState() }
+                    symbol.receiverTemporaryInitializer?.let { return it.resolveAccessState() }
                     val receiverState = pathReceiver
                         ?.resolveAccessState()
                         ?: EmptyAccessState

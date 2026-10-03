@@ -1,0 +1,254 @@
+/unique_compound_assignment.kt: info: Generated Viper text for plusAssign:
+field x: Ref
+
+method plusAssign(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) ==
+      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) + 1)
+{
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  c.x := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for minusAssign:
+field x: Ref
+
+method minusAssign(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) ==
+      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) - 1)
+{
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  c.x := minusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for postIncrement:
+field x: Ref
+
+method postIncrement(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) ==
+      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) + 1)
+{
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  c.x := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for preIncrement:
+field x: Ref
+
+method preIncrement(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) ==
+      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) + 1)
+{
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  c.x := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for postIncrementValue:
+field x: Ref
+
+method postIncrementValue(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) &&
+    (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) ==
+      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) + 1)
+{
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  c.x := plusInts(anon, intToRef(1))
+  v_ret_0 := anon
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for preDecrementValue:
+field x: Ref
+
+method preDecrementValue(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) - 1 &&
+    (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) ==
+      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) - 1)
+{
+  var anon: Ref
+  unfold acc(Counter_unique(c), write)
+  anon := c.x
+  c.x := minusInts(anon, intToRef(1))
+  v_ret_0 := c.x
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for fieldPathPlusAssign:
+field x: Ref
+
+function inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Counter())
+
+
+method fieldPathPlusAssign(h: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  ensures acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Holder_unique(h), write) in
+      (unfolding acc(Counter_unique(inner(h)), write) in
+        intFromRef(inner(h).x) ==
+        old((unfolding acc(Holder_unique(h), write) in
+          (unfolding acc(Counter_unique(inner(h)), write) in
+            intFromRef(inner(h).x)))) +
+        1))
+{
+  var anon: Ref
+  unfold acc(Holder_unique(h), write)
+  unfold acc(Counter_unique(inner(h)), write)
+  anon := inner(h).x
+  inner(h).x := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Counter_unique(inner(h)), write)
+  fold acc(Holder_unique(h), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for fieldPathIncrement:
+field x: Ref
+
+function inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Counter())
+
+
+method fieldPathIncrement(h: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  ensures acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Holder_unique(h), write) in
+      (unfolding acc(Counter_unique(inner(h)), write) in
+        intFromRef(inner(h).x) ==
+        old((unfolding acc(Holder_unique(h), write) in
+          (unfolding acc(Counter_unique(inner(h)), write) in
+            intFromRef(inner(h).x)))) +
+        1))
+{
+  var anon: Ref
+  unfold acc(Holder_unique(h), write)
+  unfold acc(Counter_unique(inner(h)), write)
+  anon := inner(h).x
+  inner(h).x := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Counter_unique(inner(h)), write)
+  fold acc(Holder_unique(h), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for localPlusAssign:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_2), Counter())
+  ensures isSubtype(typeOf(ret_2), Counter()) && acc(ret_2.bf_x, write) &&
+    isSubtype(typeOf(ret_2.bf_x), intType())
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
+
+
+method localPlusAssign() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var c: Ref
+  var anon: Ref
+  c := con(intToRef(0))
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  anon := c.bf_x
+  c.bf_x := plusInts(anon, intToRef(1))
+  v_ret_0 := c.bf_x
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for localIncrement:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_2), Counter())
+  ensures isSubtype(typeOf(ret_2), Counter()) && acc(ret_2.bf_x, write) &&
+    isSubtype(typeOf(ret_2.bf_x), intType())
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
+
+
+method localIncrement() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  var c: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  c := con(intToRef(0))
+  fold acc(Counter_unique(c), write)
+  unfold acc(Counter_unique(c), write)
+  anon_0 := c.bf_x
+  c.bf_x := plusInts(anon_0, intToRef(1))
+  anon_1 := c.bf_x
+  c.bf_x := plusInts(anon_1, intToRef(1))
+  v_ret_0 := c.bf_x
+  fold acc(Counter_unique(c), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

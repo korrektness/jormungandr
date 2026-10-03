@@ -197,7 +197,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         propertyAccessExpression: FirPropertyAccessExpression,
         data: StmtConversionContext,
     ): ExpEmbedding {
-        propertyAccessExpression.calleeReference.symbol?.let(::indexedArrayAlias)?.let { return data.convert(it) }
+        propertyAccessExpression.calleeReference.symbol?.let(::receiverTemporaryAlias)?.let { return data.convert(it) }
         propertyAccessExpression.stringBuilderIntrinsic(data.session)?.let {
             return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)
         }
@@ -379,7 +379,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     override fun visitProperty(property: FirProperty, data: StmtConversionContext): ExpEmbedding {
         val symbol = property.symbol
-        if (indexedArrayAlias(symbol) != null) return UnitLit
+        if (receiverTemporaryAlias(symbol) != null) return UnitLit
         if (!symbol.isLocal) {
             throw SnaktInternalException(
                 property.source,

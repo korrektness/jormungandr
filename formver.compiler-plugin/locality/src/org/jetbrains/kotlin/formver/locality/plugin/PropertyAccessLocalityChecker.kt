@@ -44,6 +44,8 @@ object PropertyAccessLocalityChecker : FirPropertyAccessExpressionChecker(MppChe
         if (expression.resolveLocality() == Locality.Global) return
 
         val capturedSymbol = expression.calleeReference.symbol ?: return
+        // A receiver temporary may have no declaration node in the graph; its initializer is checked in its place.
+        if (capturedSymbol.receiverTemporaryInitializer != null) return
 
         for (parentSymbol in context.containingDeclarations.asReversed()) {
             if (!parentSymbol.isBoundary) continue

@@ -796,6 +796,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("unique_compound_assignment.kt")
+      public void testUnique_compound_assignment() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_compound_assignment.kt");
+      }
+
+      @Test
       @TestMetadata("unique_constructors.kt")
       public void testUnique_constructors() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_constructors.kt");

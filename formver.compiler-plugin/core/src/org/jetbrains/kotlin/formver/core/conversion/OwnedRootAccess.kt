@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.core.isBorrowed
 import org.jetbrains.kotlin.formver.core.isUnique
-import org.jetbrains.kotlin.formver.uniqueness.plugin.indexedArrayInitializer
+import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.uniqueness.plugin.intArraySetId
 
 /*
@@ -100,13 +100,13 @@ private fun FirBasedSymbol<*>?.forFunction(function: FirFunctionSymbol<*>): FirB
     if (this == function) function.receiverParameterSymbol else this
 
 /**
- * The parameter, receiver or local at the root of the property path this expression denotes. The `<array>` temporary
- * of a compound index assignment stands for its initializer.
+ * The parameter, receiver or local at the root of the property path this expression denotes. A receiver temporary
+ * (see [receiverTemporaryInitializer]) stands for its initializer.
  */
 private fun FirExpression.rootSymbol(): FirBasedSymbol<*>? = when (this) {
     is FirSmartCastExpression -> originalExpression.rootSymbol()
     is FirThisReceiverExpression -> calleeReference.boundSymbol as FirBasedSymbol<*>?
     is FirPropertyAccessExpression -> (dispatchReceiver ?: extensionReceiver)?.rootSymbol()
-        ?: calleeReference.symbol?.let { symbol -> symbol.indexedArrayInitializer?.rootSymbol() ?: symbol }
+        ?: calleeReference.symbol?.let { symbol -> symbol.receiverTemporaryInitializer?.rootSymbol() ?: symbol }
     else -> null
 }

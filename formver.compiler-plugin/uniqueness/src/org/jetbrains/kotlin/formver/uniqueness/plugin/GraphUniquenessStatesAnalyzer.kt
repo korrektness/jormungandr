@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.analysis.cfa.util.ControlFlowInfo
@@ -95,8 +96,8 @@ fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessSta
  * starts with its own parameters at their declared uniqueness.
  *
  * Calls to `@Pure` functions, element accesses of an `IntArray`, `StringBuilder` intrinsics, and declarations and calls
- * in [readOnlyContext], move nothing. The `<array>` temporary of a compound index assignment is not tracked: its accesses resolve to its
- * initializer.
+ * in [readOnlyContext], move nothing. A receiver temporary of a compound assignment or an increment (see
+ * [receiverTemporaryInitializer]) is not tracked: its accesses resolve to its initializer.
  *
  * A join truncates its result to [maxPathLength] components (see [truncate]). An assignment places the source's
  * subtree under the target, so a loop such as `cur.next = acc; acc = cur` would otherwise deepen the state at its head
@@ -152,7 +153,7 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
         val declaration = node.fir
-        if (declaration.symbol.indexedArrayInitializer != null) return visitNode(node, data)
+        if (declaration.symbol.receiverTemporaryInitializer != null) return visitNode(node, data)
         val initializer = declaration.initializer
         val leftSymbol = declaration.symbol
         val leftAccessState = EmptyAccessState.putChild(

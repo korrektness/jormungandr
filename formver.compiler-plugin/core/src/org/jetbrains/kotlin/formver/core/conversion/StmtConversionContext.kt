@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.asPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
-import org.jetbrains.kotlin.formver.uniqueness.plugin.indexedArrayInitializer
+import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isCustom
@@ -215,7 +215,7 @@ fun StmtConversionContext.warnIfUntrackedWrite(write: FirElement, receiver: FirE
 private fun FirExpression.readsConstructedLocal(): Boolean {
     val access = (this as? FirSmartCastExpression)?.originalExpression ?: this
     val symbol = (access as? FirPropertyAccessExpression)?.calleeReference?.symbol as? FirPropertySymbol ?: return false
-    symbol.indexedArrayInitializer?.let { return it.readsConstructedLocal() }
+    symbol.receiverTemporaryInitializer?.let { return it.readsConstructedLocal() }
     val initializer = symbol.resolvedInitializer as? FirFunctionCall ?: return false
     return symbol.isLocal && initializer.calleeReference.symbol is FirConstructorSymbol
 }
