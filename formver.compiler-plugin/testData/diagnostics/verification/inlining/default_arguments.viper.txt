@@ -263,3 +263,38 @@ method doubled(this: Ref, k: Ref, f: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(k), intType())
   requires isSubtype(typeOf(f), functionType())
   ensures isSubtype(typeOf(ret_2), intType())
+
+
+/default_arguments.kt: info: Generated Viper text for withCounter:
+field x: Ref
+
+method withCounter(c: Ref, k: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(k), intType())
+  requires isSubtype(typeOf(f), functionType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), intType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/default_arguments.kt: info: Generated Viper text for counterPlus:
+field x: Ref
+
+method counterPlus(c: Ref, k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(k), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(k) + 1
+{
+  v_ret_0 := plusInts(k, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}

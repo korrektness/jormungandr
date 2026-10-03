@@ -68,3 +68,26 @@ fun <!VIPER_TEXT!>defaultReadsReceiver<!>(n: Int): Int {
     postconditions<Int> { r -> r == n * 2 }
     return n.doubled { it }
 }
+
+class Counter(var x: Int)
+
+inline fun <!VIPER_TEXT!>withCounter<!>(c: @Unique @Borrowed Counter, k: Int = c.x, f: (Int) -> Int): Int = f(k)
+
+fun <!VIPER_TEXT!>counterPlus<!>(c: @Unique @Borrowed Counter, k: Int = c.x): Int {
+    postconditions<Int> { r -> r == k + 1 }
+    return k + 1
+}
+
+@AlwaysVerify
+fun <!VERIFICATION_SKIPPED!>inlineDefaultReadsUniqueField<!>(c: @Unique Counter): Int {
+    postconditions<Int> { r -> r == 5 }
+    c.x = 4
+    return <!UNSUPPORTED_OWNERSHIP!>withCounter(c) { it + 1 }<!>
+}
+
+@AlwaysVerify
+fun <!VERIFICATION_SKIPPED!>defaultReadsUniqueField<!>(c: @Unique Counter): Int {
+    postconditions<Int> { r -> r == 5 }
+    c.x = 4
+    return <!UNSUPPORTED_OWNERSHIP!>counterPlus(c)<!>
+}

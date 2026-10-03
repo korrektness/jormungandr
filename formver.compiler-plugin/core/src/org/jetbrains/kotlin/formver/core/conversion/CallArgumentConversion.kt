@@ -5,13 +5,22 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
+import org.jetbrains.kotlin.fir.expressions.FirSmartCastExpression
+import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.expressions.impl.FirExpressionStub
 import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
+import org.jetbrains.kotlin.fir.references.symbol
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
+import org.jetbrains.kotlin.formver.core.isUnique
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Block
@@ -56,6 +65,9 @@ fun StmtConversionContext.insertCallWithMappedArguments(
         }
         bind(SubstitutedArgument.ValueParameter(parameter.symbol), convert(argument))
     }
+    val uniqueRoots = context(checkerContext) {
+        (symbol.valueParameterSymbols + listOfNotNull(symbol.receiverParameterSymbol)).filter { it.isUnique() }
+    }
     for (parameterSymbol in symbol.valueParameterSymbols) {
         val parameter = SubstitutedArgument.ValueParameter(parameterSymbol)
         if (parameter in bound) continue
@@ -63,6 +75,9 @@ fun StmtConversionContext.insertCallWithMappedArguments(
             ?: throw UnsupportedFeatureException(call.source, "omitted vararg argument")
         if (defaultValue is FirExpressionStub) {
             throw UnsupportedFeatureException(call.source, "default argument of a function compiled without its source")
+        }
+        if (defaultValue.readsThroughRoot(symbol, uniqueRoots)) {
+            reportUnsupportedOwnership(call.source, "A default argument may not read a property of a @Unique parameter.")
         }
         val defaultCtx = MethodContextFactory(
             signature,
@@ -78,4 +93,37 @@ fun StmtConversionContext.insertCallWithMappedArguments(
         addAll(declarations)
         add(result)
     }
+}
+
+/**
+ * Whether this default of a parameter of [function] reads a property through one of [roots], parameters or the
+ * receiver of [function]. A default is converted without the uniqueness checker's state, so a read through a `@Unique`
+ * root would be havoced.
+ */
+private fun FirExpression.readsThroughRoot(function: FirFunctionSymbol<*>, roots: List<FirBasedSymbol<*>>): Boolean {
+    if (roots.isEmpty()) return false
+    var found = false
+    accept(object : FirVisitorVoid() {
+        override fun visitElement(element: FirElement) {
+            if (found) return
+            if (element is FirPropertyAccessExpression) {
+                val receiver = element.dispatchReceiver ?: element.extensionReceiver
+                val root = receiver?.rootSymbol()?.let { if (it == function) function.receiverParameterSymbol else it }
+                if (root in roots) {
+                    found = true
+                    return
+                }
+            }
+            element.acceptChildren(this)
+        }
+    })
+    return found
+}
+
+/** The parameter, receiver or local at the root of the property path this expression denotes. */
+private fun FirExpression.rootSymbol(): FirBasedSymbol<*>? = when (this) {
+    is FirSmartCastExpression -> originalExpression.rootSymbol()
+    is FirThisReceiverExpression -> calleeReference.boundSymbol as FirBasedSymbol<*>?
+    is FirPropertyAccessExpression -> (dispatchReceiver ?: extensionReceiver)?.rootSymbol() ?: calleeReference.symbol
+    else -> null
 }
