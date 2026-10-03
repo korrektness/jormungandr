@@ -851,3 +851,161 @@ method oneNodeSum(par_v: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/unique_recursion.kt: info: Generated Viper text for prependUnrolled:
+field bf_next: Ref
+
+field bf_value: Ref
+
+function sum(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_0_0 ==
+        (n.bf_value) in
+        (let anon_1_0 ==
+          (n.bf_next) in
+          plusInts(anon_0_0, sum(anon_1_0))))))
+}
+
+method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  ensures isSubtype(typeOf(ret_2), Node())
+  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
+    isSubtype(typeOf(ret_2.bf_value), intType()) &&
+    acc(ret_2.bf_next, write) &&
+    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
+  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
+  ensures ret_2.bf_next == par_next
+
+
+method prependUnrolled(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), nullable(Node()))
+  requires l != nullValue() ==> acc(Node_unique(l), write)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures acc(Node_unique(v_ret_0), write)
+  ensures intFromRef(sum(v_ret_0)) ==
+    (unfolding acc(Node_unique(v_ret_0), write) in
+      intFromRef(v_ret_0.bf_value) + intFromRef(sum(v_ret_0.bf_next)))
+{
+  v_ret_0 := con(par_v, l)
+  fold acc(Node_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_recursion.kt: info: Generated Viper text for sumPlusValue:
+field next: Ref
+
+field value: Ref
+
+function sum(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_0_0 ==
+        (n.value) in
+        (let anon_1_0 ==
+          (n.next) in
+          plusInts(anon_0_0, sum(anon_1_0))))))
+}
+
+method sumPlusValue(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  ensures acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    intFromRef(sum(n)) +
+    (unfolding acc(Node_unique(n), write) in intFromRef(n.value))
+  ensures (unfolding acc(Node_unique(n), write) in
+      intFromRef(v_ret_0) - intFromRef(n.value)) ==
+    intFromRef(((unfolding acc(Node_unique(n), write) in
+      intFromRef(n.value) > 0) ?
+      sum(n) :
+      sum(n)))
+{
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_2 := sum(n)
+  unfold acc(Node_unique(n), write)
+  anon_3 := n.value
+  v_ret_0 := plusInts(anon_2, anon_3)
+  fold acc(Node_unique(n), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_recursion.kt: info: Generated Viper text for sumAndValue:
+field next: Ref
+
+field value: Ref
+
+function sum(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_1_0 ==
+        (n.value) in
+        (let anon_2_0 ==
+          (n.next) in
+          plusInts(anon_1_0, sum(anon_2_0))))))
+}
+
+function sumAndValue(n: Ref): Ref
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((unfolding acc(Node_unique(n), write) in n.value)) in
+    plusInts(sum(n), anon_0_0))
+}
+
+/unique_recursion.kt: info: Generated Viper text for valueThenSum:
+field next: Ref
+
+field value: Ref
+
+function sum(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_0_0 ==
+        (n.value) in
+        (let anon_1_0 ==
+          (n.next) in
+          plusInts(anon_0_0, sum(anon_1_0))))))
+}
+
+function valueThenSum(n: Ref): Ref
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let v_0 ==
+    ((unfolding acc(Node_unique(n), write) in n.value)) in
+    plusInts(v_0, sum(n)))
+}

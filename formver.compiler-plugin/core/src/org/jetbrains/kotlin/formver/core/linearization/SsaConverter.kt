@@ -23,6 +23,12 @@ class SsaConverter(
      */
     private val aliases: MutableMap<SymbolicName, SymbolicName> = mutableMapOf()
 
+    private val predicateParameters: MutableSet<PredicateParameter> = mutableSetOf()
+
+    fun addPredicateParameter(parameter: PredicateParameter) {
+        predicateParameters.add(parameter)
+    }
+
     // Produce new ssa names for a source variable name
     private val ssaNameProducers: MutableMap<SymbolicName, FreshEntityProducer<SsaVariableName, SymbolicName>> =
         mutableMapOf()
@@ -74,7 +80,7 @@ class SsaConverter(
             )
         }
         return ssaAssignments.foldRight(bodyExp) { assignment, innerScope -> innerScope.bind(assignment) }
-            .hoistUnfoldings()
+            .hoistUnfoldings(predicateParameters)
     }
 
     /** [value] is evaluated where [guard] holds; elsewhere the variable is [default]. */

@@ -41,6 +41,8 @@ data class PureExpLinearizer(
     override val typeResolver: TypeResolver,
     /** The scope of the innermost enclosing block; `null` outside every block. */
     private val scope: LetScope? = null,
+    /** Shared by the copies made for nested scopes and positions. */
+    private val predicateParameters: MutableSet<PredicateParameter> = mutableSetOf(),
 ) : LinearizationContext {
 
     override val logicOperatorPolicy: LogicOperatorPolicy
@@ -171,13 +173,19 @@ data class PureExpLinearizer(
 
     override fun resolveVariableName(name: SymbolicName): SymbolicName =
         name
+
+    override fun addPredicateParameter(parameter: PredicateParameter) {
+        predicateParameters.add(parameter)
+    }
+
+    fun hoistUnfoldings(exp: Exp): Exp = exp.hoistUnfoldings(predicateParameters)
 }
 
 fun ExpEmbedding.pureToViper(toBuiltin: Boolean, typeResolver: TypeResolver, source: KtSourceElement? = null): Exp {
     val linearizer = PureExpLinearizer(source, typeResolver)
     val lin = toLinearizable(source)
     val exp = if (toBuiltin) lin.toViperBuiltinType(linearizer) else lin.toViper(linearizer)
-    return exp.hoistUnfoldings()
+    return linearizer.hoistUnfoldings(exp)
 }
 
 fun List<ExpEmbedding>.pureToViper(

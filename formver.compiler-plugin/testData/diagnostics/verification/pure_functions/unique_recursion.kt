@@ -162,3 +162,29 @@ fun <!VIPER_TEXT!>oneNodeSum<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> sumFrom(r, 3) == v + 6 }
     return Node(v, null)
 }
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>prependUnrolled<!>(l: @Unique Node?, v: Int): @Unique Node {
+    postconditions<Node> { r -> sum(r) == r.value + sum(r.next) }
+    return Node(v, l)
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>sumPlusValue<!>(n: @Unique @Borrowed Node): Int {
+    postconditions<Int> { r ->
+        r == sum(n) + n.value
+        r - n.value == if (n.value > 0) sum(n) else sum(n)
+    }
+    return sum(n) + n.value
+}
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>sumAndValue<!>(n: @Unique Node): Int = sum(n) + n.value
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>valueThenSum<!>(n: @Unique Node): Int {
+    val v = n.value
+    return v + sum(n)
+}

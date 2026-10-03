@@ -159,5 +159,7 @@ data class PureFunBodyLinearizer(
     override fun resolveVariableName(name: SymbolicName): SymbolicName =
         ssaConverter.resolveVariableName(name)
 
+    override fun addPredicateParameter(parameter: PredicateParameter) = ssaConverter.addPredicateParameter(parameter)
+
     fun constructExpression(): Exp = ssaConverter.constructExpression()
 }

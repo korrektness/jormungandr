@@ -26,9 +26,15 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
  * - at a `let` whose variable is the root of one of its arguments, or whose value mentions such a root, unless an
  *   equal `unfolding` rises from the value;
  * - at `old`, inside which `unfolding`s are placed independently;
+ * - below an operand when another operand of the same expression applies a function to the predicate's argument
+ *   at one of [predicateParameters]: inside the `unfolding` that predicate is not available folded;
  * - at any other expression.
  */
-fun Exp.hoistUnfoldings(): Exp = hoist().wrapped()
+fun Exp.hoistUnfoldings(predicateParameters: Set<PredicateParameter>): Exp =
+    with(predicateParameters) { hoist().wrapped() }
+
+/** A parameter of [function] whose argument's predicate the function's preconditions take. */
+data class PredicateParameter(val function: SymbolicName, val index: Int)
 
 /** [body] under the `unfolding`s of [pending], outermost first, which are free to rise further. */
 private class Hoisted(val body: Exp, val pending: List<Exp.Unfolding>) {
@@ -43,10 +49,12 @@ private fun Exp.Unfolding.key(): UnfoldingKey? {
     return predicateAccess.predicateName to args
 }
 
-private fun Exp.pathKey(): List<Any>? = when (this) {
+/** [this] as a path; with [throughUnfoldings], `unfolding`s around its parts are skipped. */
+private fun Exp.pathKey(throughUnfoldings: Boolean = false): List<Any>? = when (this) {
     is Exp.LocalVar -> listOf(name)
-    is Exp.FieldAccess -> rcv.pathKey()?.plus(field.name)
-    is Exp.FuncApp -> args.singleOrNull()?.pathKey()?.plus(functionName)
+    is Exp.FieldAccess -> rcv.pathKey(throughUnfoldings)?.plus(field.name)
+    is Exp.FuncApp -> args.singleOrNull()?.pathKey(throughUnfoldings)?.plus(functionName)
+    is Exp.Unfolding -> if (throughUnfoldings) body.pathKey(throughUnfoldings) else null
     else -> null
 }
 
@@ -59,6 +67,7 @@ private fun wrap(body: Exp, unfoldings: List<Exp.Unfolding>): Exp =
 private fun merge(lists: List<List<Exp.Unfolding>>): List<Exp.Unfolding> =
     lists.flatten().distinctBy { it.key() }
 
+context(predicateParameters: Set<PredicateParameter>)
 private fun Exp.hoist(): Hoisted = when (this) {
     is Exp.Unfolding -> {
         val args = predicateAccess.formalArgs.map { it.hoist() }
@@ -85,7 +94,7 @@ private fun Exp.hoist(): Hoisted = when (this) {
         copy(triggers = triggers, exp = body)
     }
 
-    is Exp.Old -> Hoisted(copy(exp = exp.hoistUnfoldings()), emptyList())
+    is Exp.Old -> Hoisted(copy(exp = exp.hoistUnfoldings(predicateParameters)), emptyList())
     is Exp.LetBinding -> bound()
 
     is Exp.Not -> transparent(listOf(arg)) { (arg) -> copy(arg = arg) }
@@ -108,6 +117,7 @@ private fun Exp.hoist(): Hoisted = when (this) {
 }
 
 /** [hoist] for sequence and multiset operations, which are all transparent; `null` for any other expression. */
+context(predicateParameters: Set<PredicateParameter>)
 private fun Exp.hoistCollection(): Hoisted? = when (this) {
     is Exp.SeqAppend -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
     is Exp.SeqLength -> transparent(listOf(seq)) { (seq) -> copy(seq = seq) }
@@ -123,10 +133,34 @@ private fun Exp.hoistCollection(): Hoisted? = when (this) {
     else -> null
 }
 
+context(predicateParameters: Set<PredicateParameter>)
 private fun transparent(children: List<Exp>, rebuild: (List<Exp>) -> Exp): Hoisted {
-    val hoisted = children.map { it.hoist() }
+    val hoisted = settle(children.map { it.hoist() })
     return Hoisted(rebuild(hoisted.map { it.body }), merge(hoisted.map { it.pending }))
 }
+
+/**
+ * [operands] of one expression, each keeping below it the `unfolding`s that another operand needs folded, together
+ * with the `unfolding`s after them, whose predicates they may provide.
+ */
+context(predicateParameters: Set<PredicateParameter>)
+private fun settle(operands: List<Hoisted>): List<Hoisted> = operands.mapIndexed { index, operand ->
+    val others = operands.filterIndexed { other, _ -> other != index }.map { it.body }
+    val firstStaying = operand.pending.indexOfFirst { unfolding -> others.any { it.takesPredicateOf(unfolding) } }
+    if (firstStaying < 0) operand
+    else Hoisted(wrap(operand.body, operand.pending.drop(firstStaying)), operand.pending.take(firstStaying))
+}
+
+/** Whether [this] applies a function to an argument of [unfolding] at a parameter that takes its predicate. */
+context(predicateParameters: Set<PredicateParameter>)
+private fun Exp.takesPredicateOf(unfolding: Exp.Unfolding): Boolean =
+    takesPredicateAt(unfolding.predicateAccess.formalArgs.map { it.pathKey() }.toSet())
+
+context(predicateParameters: Set<PredicateParameter>)
+private fun Exp.takesPredicateAt(paths: Set<List<Any>?>): Boolean =
+    this is Exp.FuncApp && args.withIndex().any { (index, arg) ->
+        PredicateParameter(functionName, index) in predicateParameters && arg.pathKey(throughUnfoldings = true) in paths
+    } || subExps().any { it.takesPredicateAt(paths) }
 
 /**
  * [guard] decides whether [branches] are evaluated. An `unfolding` from a branch stays in that branch when the guard
@@ -134,12 +168,13 @@ private fun transparent(children: List<Exp>, rebuild: (List<Exp>) -> Exp): Hoist
  * evaluated under it, and keeping the branch's copy would nest an `unfolding` inside an equal one, which has no
  * predicate left to unfold.
  */
+context(predicateParameters: Set<PredicateParameter>)
 private fun guarded(guard: Exp, branches: List<Exp>, rebuild: (Exp, List<Exp>) -> Exp): Hoisted {
-    val hoistedGuard = guard.hoist()
+    val settled = settle((listOf(guard) + branches).map { it.hoist() })
+    val hoistedGuard = settled.first()
     val mentioned = guard.mentionedVariables()
     val guardKeys = hoistedGuard.pending.map { it.key() }.toSet()
-    val hoistedBranches = branches.map { branch ->
-        val hoisted = branch.hoist()
+    val hoistedBranches = settled.drop(1).map { hoisted ->
         val (rising, staying) = hoisted.pending.partition { unfolding ->
             unfolding.key() in guardKeys || mentioned != null && unfolding.roots().none { it in mentioned }
         }
@@ -155,9 +190,9 @@ private fun guarded(guard: Exp, branches: List<Exp>, rebuild: (Exp, List<Exp>) -
  * An `unfolding` from the body rises unless the bound variable is the root of one of its arguments, or the value
  * mentions such a root and no equal `unfolding` rises from the value.
  */
+context(predicateParameters: Set<PredicateParameter>)
 private fun Exp.LetBinding.bound(): Hoisted {
-    val value = varExp.hoist()
-    val inner = body.hoist()
+    val (value, inner) = settle(listOf(varExp.hoist(), body.hoist()))
     val mentioned = varExp.mentionedVariables()
     val valueKeys = value.pending.map { it.key() }.toSet()
     val (rising, staying) = inner.pending.partition { unfolding ->
@@ -172,6 +207,7 @@ private fun Exp.LetBinding.bound(): Hoisted {
  * An `unfolding` from [body] that mentions none of [bound] rises above the quantifier, and is removed from the
  * triggers too, since a trigger matches terms of the body.
  */
+context(predicateParameters: Set<PredicateParameter>)
 private fun quantified(
     bound: Set<SymbolicName>,
     triggers: List<Exp.Trigger>,
@@ -187,6 +223,7 @@ private fun quantified(
     return Hoisted(rebuild(newTriggers, wrap(hoisted.body, staying)), rising)
 }
 
+context(predicateParameters: Set<PredicateParameter>)
 private fun Exp.withoutUnfoldings(keys: Set<UnfoldingKey?>): Exp {
     val hoisted = hoist()
     return wrap(hoisted.body, hoisted.pending.filter { it.key() !in keys })

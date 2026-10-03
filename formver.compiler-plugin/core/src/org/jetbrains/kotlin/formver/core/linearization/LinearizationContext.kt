@@ -124,6 +124,12 @@ interface LinearizationContext {
 
     fun addModifier(mod: StmtModifier)
 
+    /**
+     * Records [parameter] of a function applied in the linearized code. A context that places `unfolding`s inside
+     * expressions keeps them clear of the application; one that unfolds in statements needs nothing.
+     */
+    fun addPredicateParameter(parameter: PredicateParameter) {}
+
     fun addLabel(label: Label) {
         foldState?.arriveAt(this, label.name)
         addDeclaration(label.toDecl())
