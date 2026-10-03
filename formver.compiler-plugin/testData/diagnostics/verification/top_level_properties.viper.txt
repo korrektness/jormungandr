@@ -1,0 +1,45 @@
+/top_level_properties.kt: info: Generated Viper text for constChar:
+method constChar(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := boolToRef(charFromRef(c) == 117)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/top_level_properties.kt: info: Generated Viper text for constInt:
+method constInt() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 4
+{
+  v_ret_0 := intToRef(4)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/top_level_properties.kt: info: Generated Viper text for constInWhen:
+method constInWhen(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  anon := c
+  if (charFromRef(anon) == 117) {
+    v_ret_0 := intToRef(1)
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/top_level_properties.kt: info: Generated Viper text for nonConst:
+method nonConst() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), intType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}

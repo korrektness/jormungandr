@@ -613,6 +613,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("top_level_properties.kt")
+    public void testTop_level_properties() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/top_level_properties.kt");
+    }
+
+    @Test
     @TestMetadata("uniqueness_errors.kt")
     public void testUniqueness_errors() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/uniqueness_errors.kt");

@@ -199,8 +199,28 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         propertyAccessExpression.stringBuilderIntrinsic(data.session)?.let {
             return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)
         }
+        propertyAccessExpression.topLevelPropertySymbol()?.let { return data.convertTopLevelPropertyRead(it) }
         val propertyAccess = data.embedPropertyAccess(propertyAccessExpression)
         return propertyAccess.getValue(data)
+    }
+
+    private fun FirPropertyAccessExpression.topLevelPropertySymbol(): FirPropertySymbol? =
+        (calleeReference.symbol as? FirPropertySymbol)?.takeIf {
+            !it.isLocal && dispatchReceiver == null && extensionReceiver == null
+        }
+
+    /**
+     * A `const val` reads as the literal of its initializer. Any other property without a receiver is read as an
+     * unconstrained value of its type.
+     */
+    private fun StmtConversionContext.convertTopLevelPropertyRead(symbol: FirPropertySymbol): ExpEmbedding {
+        if (symbol.resolvedStatus.isConst) return convert(symbol.resolvedInitializer!!)
+        val declaration = declareAnonVar(embedType(symbol.resolvedReturnType), null)
+        val value = declaration.variable.withInvariants(typeResolver) {
+            proven = true
+            access = true
+        }
+        return blockOf(declaration, value)
     }
 
     override fun visitEqualityOperatorCall(
