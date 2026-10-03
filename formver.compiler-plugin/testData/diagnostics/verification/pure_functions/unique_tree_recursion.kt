@@ -26,3 +26,18 @@ fun <!VIPER_TEXT!>leaf<!>(v: Int): @Unique Tree {
     postconditions<Tree> { r -> size(r) == 1 }
     return Tree(v, null, null)
 }
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>rotateLeft<!>(t: @Unique Tree): @Unique Tree {
+    postconditions<Tree> { r -> size(r) == old(size(t)) }
+    val right: @Unique Tree? = t.r
+    if (right == null) {
+        t.r = right
+        return t
+    }
+    verify(size(right) == 1 + size(right.l) + size(right.r))
+    t.r = right.l
+    verify(size(t) == 1 + size(t.l) + size(t.r))
+    right.l = t
+    return right
+}

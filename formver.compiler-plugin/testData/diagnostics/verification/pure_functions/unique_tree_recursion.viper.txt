@@ -158,3 +158,91 @@ method leaf(par_v: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/unique_tree_recursion.kt: info: Generated Viper text for rotateLeft:
+field bf_r: Ref
+
+field l: Ref
+
+function f_size(par_t: Ref): Ref
+  requires isSubtype(typeOf(par_t), nullable(Tree()))
+  requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures par_t == nullValue() ==> result == intToRef(0)
+{
+  (par_t == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Tree_unique(par_t), write) in
+      (let anon_3_0 ==
+        (par_t.l) in
+        (let anon_4_0 ==
+          (par_t.bf_r) in
+          plusInts(plusInts(intToRef(1), f_size(anon_3_0)), f_size(anon_4_0))))))
+}
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Tree())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method rotateLeft(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), Tree())
+  requires acc(Tree_unique(par_t), write)
+  ensures isSubtype(typeOf(v_ret_0), Tree())
+  ensures acc(Tree_unique(v_ret_0), write)
+  ensures intFromRef(f_size(v_ret_0)) == old(intFromRef(f_size(par_t)))
+{
+  var right: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  var anon_9: Ref
+  var anon_10: Ref
+  var anon_11: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_14: Ref
+  var anon_15: Ref
+  unfold acc(Tree_unique(par_t), write)
+  right := par_t.bf_r
+  if (right == nullValue()) {
+    par_t.bf_r := right
+    fold acc(Tree_unique(par_t), write)
+    v_ret_0 := par_t
+    goto lbl_ret_0
+  }
+  anon_5 := f_size(right)
+  if (right != nullValue()) {
+    unfold acc(Tree_unique(right), write)
+  }
+  anon_6 := right.l
+  anon_7 := f_size(anon_6)
+  anon_8 := right.bf_r
+  anon_9 := f_size(anon_8)
+  assert intFromRef(anon_5) == 1 + intFromRef(anon_7) + intFromRef(anon_9)
+  anon_10 := right.l
+  par_t.bf_r := anon_10
+  fold acc(Tree_unique(par_t), write)
+  anon_11 := f_size(par_t)
+  unfold acc(Tree_unique(par_t), write)
+  anon_12 := par_t.l
+  anon_13 := f_size(anon_12)
+  anon_14 := par_t.bf_r
+  anon_15 := f_size(anon_14)
+  assert intFromRef(anon_11) ==
+    1 + intFromRef(anon_13) + intFromRef(anon_15)
+  fold acc(Tree_unique(par_t), write)
+  right.l := par_t
+  if (right != nullValue()) {
+    fold acc(Tree_unique(right), write)
+  }
+  v_ret_0 := right
+  goto lbl_ret_0
+  label lbl_ret_0
+}

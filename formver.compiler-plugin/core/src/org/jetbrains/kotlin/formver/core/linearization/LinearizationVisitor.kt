@@ -184,10 +184,15 @@ data class LinearizationVisitor(
     override fun visitFunctionCall(e: FunctionCall): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp {
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
-            for ((path, formal) in ctx.heldPaths(e.args, e.function.formalArgs)) {
-                if (formal.isUnique) ctx.exposeFor(path, formal)
-            }
-            return e.function.toFuncApp(argsViper, ctx.source.asPosition)
+            val exposed = ctx.heldPaths(e.args, e.function.formalArgs).filter { (_, formal) -> formal.isUnique }
+            for ((path, formal) in exposed) ctx.exposeFor(path, formal)
+            val app = e.function.toFuncApp(argsViper, ctx.source.asPosition)
+            if (exposed.isEmpty()) return app
+            // The application is evaluated here, where the predicates its preconditions take are folded: a later
+            // operand of the enclosing expression may unfold them.
+            val result = ctx.freshAnonVar(e.type)
+            ctx.addStatement { Stmt.assign(result.toViperExp(this), app, source.asPosition) }
+            return result.toViperExp(ctx)
         }
     }
 

@@ -561,8 +561,10 @@ method pushThroughPure(b: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var anon_6: Ref
+  var anon_7: Ref
   anon_6 := push(b, intToRef(7))
-  assert intFromRef(firstOrZero(b)) == 7
+  anon_7 := firstOrZero(b)
+  assert intFromRef(anon_7) == 7
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
