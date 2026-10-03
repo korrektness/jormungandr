@@ -50,7 +50,7 @@ private object TerminalLocalityResolver : ExpressionTypeFactResolver<Locality> {
                         when (val symbol = expression.calleeReference.symbol) {
                             is FirCallableSymbol<*> -> symbol.resolveLocality()
                             is FirReceiverParameterSymbol -> symbol.resolveLocality()
-                            else -> if (symbol?.isUnderConstruction() == true) Locality.Local else Locality.Global
+                            else -> Locality.Global
                         }
                     else -> Locality.Global
                 }

@@ -859,7 +859,7 @@ class ProgramConverter(
             }
         }
         withReturnType { embedTypeWithBuilder(symbol.resolvedReturnType) }
-        returnsUnique = symbol.returnsUnique()
+        returnsUnique = context(checkerContext) { symbol.returnsUnique() }
     }
 
     private fun unimplementedTypeEmbedding(type: ConeKotlinType): Nothing =

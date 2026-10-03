@@ -333,6 +333,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("construction_escape.kt")
+    public void testConstruction_escape() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/construction_escape.kt");
+    }
+
+    @Test
     @TestMetadata("constructor.kt")
     public void testConstructor() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/constructor.kt");
@@ -504,6 +510,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("type_parameter_rejected.kt")
     public void testType_parameter_rejected() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/type_parameter_rejected.kt");
+    }
+
+    @Test
+    @TestMetadata("unannotated_classes.kt")
+    public void testUnannotated_classes() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/unannotated_classes.kt");
     }
 
     @Test

@@ -39,10 +39,15 @@ fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =
 
 /**
  * Resolves the uniqueness of the result of [this] function as its declaration states it. A constructor's result is
- * a fresh object and so always unique.
+ * a fresh object, unique unless the construction lets it escape.
  */
+context(context: CheckerContext)
 fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
-    if (this is FirConstructorSymbol) Uniqueness.Unique else resolvedReturnType.scopeUniqueness
+    if (this is FirConstructorSymbol) resolveConstructorResultUniqueness() else resolvedReturnType.scopeUniqueness
+
+context(context: CheckerContext)
+fun FirConstructorSymbol.resolveConstructorResultUniqueness(): Uniqueness =
+    if (resolveConstructionEscape(context.session) == null) Uniqueness.Unique else Uniqueness.Shared
 
 context(context: CheckerContext)
 fun FirVariableSymbol<*>.resolveUniqueness(): Uniqueness {

@@ -97,6 +97,7 @@ fun FirBasedSymbol<*>.isBorrowed(): Boolean =
 /**
  * Whether calls to [this] function return a unique object, as the uniqueness checker reads it.
  */
+context(context: CheckerContext)
 fun FirFunctionSymbol<*>.returnsUnique(): Boolean = resolveResultUniqueness() == Uniqueness.Unique
 
 fun FirBasedSymbol<*>.isPure(session: FirSession) = hasAnnotation(annotationId("Pure"), session)

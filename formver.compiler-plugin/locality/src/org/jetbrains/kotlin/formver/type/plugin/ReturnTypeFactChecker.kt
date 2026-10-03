@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
  * @param expressionTypeFactResolver the resolver for resolving the actual type fact of the return value.
  * @param returnResultTypeFactResolver the resolver for resolving the expected type fact of the return expression.
  * @param diagnosticFactory the diagnostic factory to use for reporting type-fact mismatch.
+ * @param mismatchExplainer reports a mismatch whose cause it knows, in place of the checker's own diagnostic.
  */
 class ReturnTypeFactChecker<TypeFact>(
     kind: MppCheckerKind,
@@ -28,6 +29,7 @@ class ReturnTypeFactChecker<TypeFact>(
     private val expressionTypeFactResolver: ExpressionTypeFactResolver<TypeFact>,
     private val returnResultTypeFactResolver: ReturnResultTypeFactResolver<TypeFact>,
     private val diagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
+    private val mismatchExplainer: TypeFactMismatchExplainer<TypeFact>? = null,
 ) : FirReturnExpressionChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirReturnExpression) {
@@ -35,6 +37,10 @@ class ReturnTypeFactChecker<TypeFact>(
         val actualTypeFact = expressionTypeFactResolver.resolveTypeFactOf(expression.result)
 
         if (typeFactJudgment.satisfies(requiredTypeFact, actualTypeFact)) return
+        if (mismatchExplainer?.reportExplained(
+                expression.result.source, "Return", expression.result, requiredTypeFact, actualTypeFact
+            ) == true
+        ) return
 
         reporter.reportOn(
             expression.result.source,

@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
  * @param expressionTypeFactResolver the resolver for resolving the type fact of the initializer.
  * @param variableTypeFactResolver the resolver for resolving the type fact of the property.
  * @param diagnosticFactory the diagnostic factory to use for reporting type-fact mismatch.
+ * @param mismatchExplainer reports a mismatch whose cause it knows, in place of the checker's own diagnostic.
  */
 class PropertyTypeFactChecker<TypeFact>(
     kind: MppCheckerKind,
@@ -29,6 +30,7 @@ class PropertyTypeFactChecker<TypeFact>(
     private val expressionTypeFactResolver: ExpressionTypeFactResolver<TypeFact>,
     private val variableTypeFactResolver: SymbolTypeFactResolver<TypeFact, FirVariableSymbol<*>>,
     private val diagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
+    private val mismatchExplainer: TypeFactMismatchExplainer<TypeFact>? = null,
 ) : FirPropertyChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirProperty) {
@@ -38,6 +40,10 @@ class PropertyTypeFactChecker<TypeFact>(
         val actualTypeFact = expressionTypeFactResolver.resolveTypeFactOf(initializer)
 
         if (typeFactJudgment.satisfies(requiredTypeFact, actualTypeFact)) return
+        if (mismatchExplainer?.reportExplained(
+                initializer.source, "Initializer", initializer, requiredTypeFact, actualTypeFact
+            ) == true
+        ) return
 
         reporter.reportOn(
             initializer.source,

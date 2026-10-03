@@ -84,6 +84,8 @@ Checkers consume the above analyses:
 
 - Type-compatibility checkers (`UniquenessTypeCheckers.kt`)
   - assignment/call/qualified-access/return/throw mismatches
+  - a mismatch at a constructor call whose construction lets `this` escape names how it escapes
+    (`ConstructionEscape.kt`)
 - `FunctionUseAfterMoveChecker.kt`
   - reports `INVALID_MOVED_ACCESS`
 - `FunctionEscapeUniquenessConsistencyChecker.kt`

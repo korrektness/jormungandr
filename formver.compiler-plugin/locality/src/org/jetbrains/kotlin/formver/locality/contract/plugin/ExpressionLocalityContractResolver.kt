@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.resolvedType
@@ -32,7 +32,7 @@ private object TerminalLocalityContractResolver : ExpressionTypeFactResolver<Loc
         when (expression) {
             is FirQualifiedAccessExpression ->
                 when (val symbol = expression.calleeReference.symbol) {
-                    is FirNamedFunctionSymbol -> expression.resolvedType.resolveLocalityContract(context.session)
+                    is FirFunctionSymbol<*> -> expression.resolvedType.resolveLocalityContract(context.session)
                     is FirCallableSymbol -> symbol.resolveLocalityContract()
                     is FirReceiverParameterSymbol -> symbol.resolveLocalityContract()
                     else -> null

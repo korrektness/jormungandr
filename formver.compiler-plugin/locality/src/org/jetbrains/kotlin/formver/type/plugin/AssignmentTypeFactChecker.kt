@@ -21,13 +21,15 @@ import org.jetbrains.kotlin.fir.expressions.FirVariableAssignment
  * @param expressionTypeFactResolver the resolver for resolving the type facts of both the left and right-hand
  *  expressions of the assignment.
  * @param diagnosticFactory the diagnostic factory to use for reporting type-fact incompatibility.
+ * @param mismatchExplainer reports a mismatch whose cause it knows, in place of the checker's own diagnostic.
  */
 class AssignmentTypeFactChecker<TypeFact>(
     kind: MppCheckerKind,
     private val typeFactJudgment: TypeFactJudgment<TypeFact>,
     private val expressionTypeFactResolver: ExpressionTypeFactResolver<TypeFact>,
     private val leftTypeFactResolver: ExpressionTypeFactResolver<TypeFact> = expressionTypeFactResolver,
-    private val diagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>
+    private val diagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
+    private val mismatchExplainer: TypeFactMismatchExplainer<TypeFact>? = null,
 ) : FirVariableAssignmentChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirVariableAssignment) {
@@ -35,6 +37,10 @@ class AssignmentTypeFactChecker<TypeFact>(
         val actualTypeFact = expressionTypeFactResolver.resolveTypeFactOf(expression.rValue)
 
         if (typeFactJudgment.satisfies(requiredTypeFact, actualTypeFact)) return
+        if (mismatchExplainer?.reportExplained(
+                expression.rValue.source, "Assignment", expression.rValue, requiredTypeFact, actualTypeFact
+            ) == true
+        ) return
 
         reporter.reportOn(
             expression.rValue.source,

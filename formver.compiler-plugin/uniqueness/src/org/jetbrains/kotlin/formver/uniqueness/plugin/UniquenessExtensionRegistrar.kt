@@ -24,6 +24,7 @@ class UniquenessExtensionRegistrar : FirExtensionRegistrar() {
         registerDiagnosticContainers(UniquenessErrors)
         +ExpressionAccessStateResolver.getFactory()
         +ExpressionUniquenessResolver.getFactory()
+        +ConstructionEscapeResolver.getFactory()
         +GraphUniquenessStatesResolver.getFactory()
         uniquenessCheckerFactories.forEach { +it }
         +UniquenessFacts.getFactory()

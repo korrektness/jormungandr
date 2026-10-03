@@ -32,6 +32,7 @@ import org.jetbrains.kotlin.fir.types.resolvedType
  * @param receiverDiagnosticFactory the diagnostic factory to use for reporting a type-fact mismatch in the receiver.
  * @param contextArgumentDiagnosticFactory the diagnostic factory to use for reporting type-fact mismatch in the context
  *  arguments.
+ * @param mismatchExplainer reports a mismatch whose cause it knows, in place of the checker's own diagnostic.
  */
 class QualifiedAccessTypeFactChecker<TypeFact>(
     kind: MppCheckerKind,
@@ -40,6 +41,7 @@ class QualifiedAccessTypeFactChecker<TypeFact>(
     private val qualifiedAccessArgumentTypeFactMapper: QualifiedAccessArgumentTypeFactMapper<TypeFact>,
     private val receiverDiagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
     private val contextArgumentDiagnosticFactory: KtDiagnosticFactory3<ConeKotlinType, TypeFact, TypeFact>,
+    private val mismatchExplainer: TypeFactMismatchExplainer<TypeFact>? = null,
 ) : FirQualifiedAccessExpressionChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirQualifiedAccessExpression) {
@@ -58,7 +60,10 @@ class QualifiedAccessTypeFactChecker<TypeFact>(
                     requiredTypeFact,
                     actualTypeFact
                 )
-            } else {
+            } else if (mismatchExplainer?.reportExplained(
+                    argument.source ?: expression.source, "Receiver", argument, requiredTypeFact, actualTypeFact
+                ) != true
+            ) {
                 reporter.reportOn(
                     argument.source ?: expression.source,
                     receiverDiagnosticFactory,

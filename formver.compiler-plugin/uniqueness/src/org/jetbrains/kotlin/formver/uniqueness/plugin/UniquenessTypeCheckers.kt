@@ -5,20 +5,32 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
+import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.expressions.FirExpression
+import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.unwrapExpression
+import org.jetbrains.kotlin.fir.references.symbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.formver.type.plugin.AssignmentTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.CallTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.PropertyTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.QualifiedAccessTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.ReturnTypeFactChecker
 import org.jetbrains.kotlin.formver.type.plugin.ThrowTypeFactChecker
+import org.jetbrains.kotlin.formver.type.plugin.TypeFactMismatchExplainer
 import org.jetbrains.kotlin.formver.type.plugin.ValueParameterTypeFactChecker
+import org.jetbrains.kotlin.formver.type.plugin.removeCast
 
 val AssignmentUniquenessChecker = AssignmentTypeFactChecker(
     kind = MppCheckerKind.Common,
     typeFactJudgment = UniquenessJudgment,
     expressionTypeFactResolver = ExpressionUniquenessResolver,
     diagnosticFactory = UniquenessErrors.UNIQUENESS_MISMATCH,
+    mismatchExplainer = SharedConstructionExplainer,
 )
 
 val CallUniquenessChecker = CallTypeFactChecker(
@@ -28,6 +40,7 @@ val CallUniquenessChecker = CallTypeFactChecker(
     callArgumentTypeFactsMapper = CallArgumentUniquenessesMapper,
     argumentDiagnosticFactory = UniquenessErrors.UNIQUENESS_MISMATCH,
     contextDiagnosticFactory = UniquenessErrors.CONTEXT_UNIQUENESS_MISMATCH,
+    mismatchExplainer = SharedConstructionExplainer,
 )
 
 val PropertyUniquenessChecker = PropertyTypeFactChecker(
@@ -36,6 +49,7 @@ val PropertyUniquenessChecker = PropertyTypeFactChecker(
     expressionTypeFactResolver = ExpressionUniquenessResolver,
     variableTypeFactResolver = VariableUniquenessResolver,
     diagnosticFactory = UniquenessErrors.UNIQUENESS_MISMATCH,
+    mismatchExplainer = SharedConstructionExplainer,
 )
 
 val QualifiedAccessUniquenessChecker = QualifiedAccessTypeFactChecker(
@@ -45,6 +59,7 @@ val QualifiedAccessUniquenessChecker = QualifiedAccessTypeFactChecker(
     qualifiedAccessArgumentTypeFactMapper = QualifiedAccessArgumentUniquenessMapper,
     receiverDiagnosticFactory = UniquenessErrors.UNIQUENESS_MISMATCH,
     contextArgumentDiagnosticFactory = UniquenessErrors.CONTEXT_UNIQUENESS_MISMATCH,
+    mismatchExplainer = SharedConstructionExplainer,
 )
 
 val ReturnUniquenessChecker = ReturnTypeFactChecker(
@@ -53,6 +68,7 @@ val ReturnUniquenessChecker = ReturnTypeFactChecker(
     expressionTypeFactResolver = ExpressionUniquenessResolver,
     returnResultTypeFactResolver = { expression -> expression.resolveResultUniqueness() },
     diagnosticFactory = UniquenessErrors.UNIQUENESS_MISMATCH,
+    mismatchExplainer = SharedConstructionExplainer,
 )
 
 val ThrowUniquenessChecker = ThrowTypeFactChecker(
@@ -68,5 +84,27 @@ val ValueParameterUniquenessChecker = ValueParameterTypeFactChecker(
     typeFactJudgment = UniquenessJudgment,
     expressionTypeFactResolver = ExpressionUniquenessResolver,
     parameterDeclaredTypeFactResolver = ParameterUniquenessResolver,
-    diagnosticFactory = UniquenessErrors.UNIQUENESS_MISMATCH
+    diagnosticFactory = UniquenessErrors.UNIQUENESS_MISMATCH,
+    mismatchExplainer = SharedConstructionExplainer,
 )
+
+/**
+ * Explains a uniqueness mismatch at a constructor call whose class lets the object under construction escape.
+ */
+object SharedConstructionExplainer : TypeFactMismatchExplainer<Uniqueness> {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun reportExplained(
+        source: KtSourceElement?,
+        position: String,
+        expression: FirExpression,
+        requiredTypeFact: Uniqueness,
+        actualTypeFact: Uniqueness,
+    ): Boolean {
+        if (requiredTypeFact != Uniqueness.Unique) return false
+        val call = expression.unwrapExpression().removeCast() as? FirFunctionCall ?: return false
+        val constructor = call.calleeReference.symbol as? FirConstructorSymbol ?: return false
+        val escape = constructor.resolveConstructionEscape(context.session) ?: return false
+        reporter.reportOn(source, UniquenessErrors.SHARED_CONSTRUCTION_MISMATCH, position, escape)
+        return true
+    }
+}

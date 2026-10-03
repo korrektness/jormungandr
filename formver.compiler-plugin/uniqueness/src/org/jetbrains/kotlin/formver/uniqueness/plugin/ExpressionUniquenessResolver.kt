@@ -54,7 +54,7 @@ fun FirExpression.resolveTerminalUniqueness(): Uniqueness {
             if (aliasedReceiver != null) {
                 aliasedReceiver.resolveUniqueness()
             } else if (calleeReference.symbol is FirConstructorSymbol) {
-                Uniqueness.Unique
+                (calleeReference.symbol as FirConstructorSymbol).resolveConstructorResultUniqueness()
             } else {
                 resolvedType.scopeUniqueness
             }

@@ -16,6 +16,7 @@ object UniquenessErrors : KtDiagnosticsContainer() {
     // Checking uniqueness type
     val UNIQUENESS_MISMATCH by error3<PsiElement, String, Uniqueness, Uniqueness>()
     val CONTEXT_UNIQUENESS_MISMATCH by error3<PsiElement, ConeKotlinType, Uniqueness, Uniqueness>()
+    val SHARED_CONSTRUCTION_MISMATCH by error2<PsiElement, String, ConstructionEscape>()
 
     // Checking uniqueness consistency
     val ESCAPE_UNIQUENESS_INCONSISTENCY by error1<PsiElement, Path>()

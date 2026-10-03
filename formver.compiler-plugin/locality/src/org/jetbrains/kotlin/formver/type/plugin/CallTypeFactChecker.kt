@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.fir.types.resolvedType
  * @param callArgumentTypeFactsMapper for resolving the type-facts of the call's parameters.
  * @param contextDiagnosticFactory the diagnostic factory to use for reporting type-fact incompatibility in context
  *  parameters.
+ * @param mismatchExplainer reports a mismatch whose cause it knows, in place of the checker's own diagnostic.
  */
 class CallTypeFactChecker<TypeFact>(
     kind: MppCheckerKind,
@@ -33,7 +34,8 @@ class CallTypeFactChecker<TypeFact>(
     private val expressionTypeFactResolver: ExpressionTypeFactResolver<TypeFact>,
     private val callArgumentTypeFactsMapper: CallArgumentTypeFactsMapper<TypeFact>,
     private val argumentDiagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
-    private val contextDiagnosticFactory: KtDiagnosticFactory3<ConeKotlinType, TypeFact, TypeFact>
+    private val contextDiagnosticFactory: KtDiagnosticFactory3<ConeKotlinType, TypeFact, TypeFact>,
+    private val mismatchExplainer: TypeFactMismatchExplainer<TypeFact>? = null,
 ) : FirCallChecker(kind) {
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -56,7 +58,11 @@ class CallTypeFactChecker<TypeFact>(
                         requiredTypeFact,
                         actualTypeFact
                     )
-                } else {
+                } else if (mismatchExplainer?.reportExplained(
+                        effectiveArgument.source ?: argument.source, "Argument", effectiveArgument,
+                        requiredTypeFact, actualTypeFact
+                    ) != true
+                ) {
                     reporter.reportOn(
                         effectiveArgument.source ?: argument.source,
                         argumentDiagnosticFactory,

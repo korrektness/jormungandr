@@ -21,6 +21,12 @@ object UniquenessErrorMessages : BaseDiagnosticRendererFactory() {
                     UniquenessRenderer,
                 )
                 map.put(
+                    UniquenessErrors.SHARED_CONSTRUCTION_MISMATCH,
+                    "{0} uniqueness mismatch: expected ''unique'', actual ''shared'', because {1}.",
+                    CommonRenderers.STRING,
+                    ConstructionEscapeRenderer,
+                )
+                map.put(
                     UniquenessErrors.CONTEXT_UNIQUENESS_MISMATCH,
                     "Uniqueness mismatch for context parameter of type ''{0}'': expected ''{1}'', actual ''{2}''.",
                     FirDiagnosticRenderers.RENDER_TYPE,

@@ -234,6 +234,24 @@ val b = Node(2, null)             // shared: writes to b.next are dropped, with 
 val c: @Unique Node = Node(3, null)  // unique
 ```
 
+A constructor call gives a shared object when the class lets `this` escape
+while it is constructed. That happens when a constructor body, an `init` block
+or a property initializer, of the class or of a superclass, uses `this` other
+than to read or write a field or to pass it to a `@Borrowed` parameter: for
+example, it calls a member function, reads an open property or one with a
+custom getter, stores `this`, or captures it in a lambda that is not inlined.
+Such a class compiles as usual, but its objects cannot be owned:
+
+```kotlin
+class Parser(first: String) {
+    private var depth = 0
+    init { track(first) }        // member call on `this`
+    private fun track(s: String) { depth += s.length }
+}
+
+val p: @Unique Parser = Parser("x")  // error: the construction of 'Parser' calls member 'track' on 'this'
+```
+
 `@Unique` on a value type (`Int`, `Boolean`, `Char`, `String`, `Unit`, or their
 nullable forms) is rejected, since such values own nothing.
 
