@@ -54,21 +54,21 @@ assert_eq "first_failure: passing run reports nothing" \
 
 assert_eq "first_failure: <failure> is reported" \
     "$(printf '%s\n%s\n%s' \
-        "org.opentest4j.AssertionFailedError" \
+        "golden" \
         "verification.BasicTest.testAssign_local: expected: <1> but was: <2>" \
         "    at verification.BasicTest.testAssign_local(BasicTest.java:10)")" 0 \
     -- python3 "$LIB_DIR/junit_first_failure.py" "$FIXTURES/failure.xml"
 
 assert_eq "first_failure: <error> is reported" \
     "$(printf '%s\n%s\n%s' \
-        "java.lang.RuntimeException" \
+        "other" \
         "verification.BasicTest.testNon_local_returns: boom" \
         "    at verification.BasicTest.testNon_local_returns(BasicTest.java:20)")" 0 \
     -- python3 "$LIB_DIR/junit_first_failure.py" "$FIXTURES/error.xml"
 
 assert_eq "first_failure: malformed XML is skipped, real failure still found" \
     "$(printf '%s\n%s\n%s' \
-        "org.opentest4j.AssertionFailedError" \
+        "golden" \
         "verification.BasicTest.testAssign_local: expected: <1> but was: <2>" \
         "    at verification.BasicTest.testAssign_local(BasicTest.java:10)")" 0 \
     -- python3 "$LIB_DIR/junit_first_failure.py" "$FIXTURES/malformed.xml" "$FIXTURES/failure.xml"
@@ -130,17 +130,9 @@ assert_eq "gradle_filter: bare names beginning with test are not mistaken for me
     "Test_helpers" 0 \
     -- gradle_filter "test_helpers"
 
-assert_eq "assertion types: opentest4j failures carry a golden diff" \
-    "" 0 \
-    -- is_assertion_failure_type "org.opentest4j.AssertionFailedError"
-
-assert_eq "assertion types: any ComparisonFailure carries a golden diff" \
-    "" 0 \
-    -- is_assertion_failure_type "com.intellij.rt.execution.junit.ComparisonFailure"
-
-assert_eq "assertion types: ordinary exceptions do not carry a golden diff" \
-    "" 1 \
-    -- is_assertion_failure_type "java.lang.IllegalStateException"
+assert_eq "first_failure: a failure with several golden causes is a golden failure" \
+    "golden" 0 \
+    -- sh -c 'python3 "$1" "$2" | head -1' sh "$LIB_DIR/junit_first_failure.py" "$FIXTURES/multi-failure.xml"
 
 assert_eq "identity hashes: a default toString rendering is found" \
     "$FIXTURES/identity-hash.diag.txt:2:/identity-hash.kt:(10,20): error: Not yet implemented for org.jetbrains.kotlin.fir.expressions.impl.FirUnitExpression@1b2c3d4e" 0 \

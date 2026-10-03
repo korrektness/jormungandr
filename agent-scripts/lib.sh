@@ -43,17 +43,6 @@ gradle_filter() {
     fi
 }
 
-# True if a JUnit "type" attribute names a golden-file mismatch rather than a
-# thrown exception: assertEqualsToFile raises opentest4j's AssertionFailedError,
-# and *ComparisonFailure covers both org.junit's and com.intellij's. Only these
-# carry expected/actual values for render_dump_diffs to recover.
-is_assertion_failure_type() {
-    case "$1" in
-        org.opentest4j.AssertionFailedError|*ComparisonFailure) return 0 ;;
-        *) return 1 ;;
-    esac
-}
-
 # Print the JUnit XML files of both modules written since marker file $1, one
 # per line. Returns 1 if there are none.
 #
@@ -91,8 +80,9 @@ over_fresh_xml() {
     python3 "$LIB_DIR/$script" "${files[@]}"
 }
 
-# Print the first failing <testcase> from JUnit XML newer than $1: failure
-# "type" on the first line, then "classname.name: message", then stack trace.
+# Print the first failing <testcase> from JUnit XML newer than $1: "golden" if
+# it failed only golden-file assertions (the ones render_dump_diffs can recover
+# values for) and "other" if not, on the first line, then "classname.name: message", then stack trace.
 # Prints nothing and returns non-zero if none of the fresh XML holds a failure,
 # or there is no fresh XML at all.
 report_first_xml_failure() {

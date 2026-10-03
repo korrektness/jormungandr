@@ -109,7 +109,7 @@ report_compiler_failure() {
         # The task died before any test ran; Gradle's error output above says why.
         return
     fi
-    if is_assertion_failure_type "$(head -1 <<<"$failure_info")"; then
+    if [[ "$(head -1 <<<"$failure_info")" == golden ]]; then
         echo
         echo "FAILED. Recovering the assertion diff:"
         render_dump_diffs "$DUMP_DIR" || true
@@ -128,12 +128,13 @@ report_locality_failure() {
     echo "  formver.compiler-plugin/locality/build/reports/tests/test/index.html"
 }
 
+# Returns 1 when the module's counts could not be established.
 tally() {
     local module="$1" counts status ran rewritten failed skipped unreadable
     counts="$(count_xml_results "$2" "$MARKER")" && status=0 || status=$?
     case "$status" in
-        1) no_results+=("$module"); return ;;
-        2) unreadable_results+=("$module"); return ;;
+        1) no_results+=("$module"); return 1 ;;
+        2) unreadable_results+=("$module"); return 1 ;;
     esac
     read -r ran rewritten failed skipped unreadable <<<"$counts"
     total_tests=$((total_tests + ran))
@@ -143,8 +144,14 @@ tally() {
     total_unreadable=$((total_unreadable + unreadable))
 }
 
+# Gradle's closing advice is about Gradle, not about the failure.
+print_task_output() {
+    echo "$TASK_OUT" | grep -v '^\* Try:\|^> Run with \|^> Get more help ' || true
+}
+
 # In --update-goldens mode a matching test is expected to fail: assertEqualsToFile
-# writes the golden and then fails. Only "no tests found" means anything there.
+# writes the golden and then fails. Only "no tests found" means anything there,
+# and a failed task that left no results, which is a build failure.
 run_module() {
     local module="$1" task="$2" results_dir="$3" on_failure="$4"
     run_task "$task"
@@ -152,13 +159,21 @@ run_module() {
         return
     fi
     matched=1
-    tally "$module" "$results_dir"
-    if [[ "$MODE" == update || "$TASK_STATUS" -eq 0 ]]; then
+    local tallied=0
+    tally "$module" "$results_dir" || tallied=1
+    if [[ "$MODE" == update ]]; then
+        if [[ "$TASK_STATUS" -ne 0 && "$tallied" -eq 1 ]]; then
+            overall_status=1
+            echo
+            print_task_output
+        fi
+        return
+    fi
+    if [[ "$TASK_STATUS" -eq 0 ]]; then
         return
     fi
     overall_status=1
-    # Gradle's closing advice is about Gradle, not about the failure.
-    echo "$TASK_OUT" | grep -v '^\* Try:\|^> Run with \|^> Get more help ' || true
+    print_task_output
     "$on_failure"
 }
 
@@ -212,7 +227,7 @@ summary() {
 echo
 summary
 
-if [[ "$MODE" != update ]]; then
+if [[ "$MODE" != update || "$overall_status" -ne 0 ]]; then
     exit "$overall_status"
 fi
 
