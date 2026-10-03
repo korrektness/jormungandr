@@ -12,6 +12,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.GtIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Implies
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.LeIntInt
+import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Or
+import org.jetbrains.kotlin.formver.core.embeddings.types.IntTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Not
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.SubIntInt
 import org.jetbrains.kotlin.formver.core.names.NameMatcher
@@ -65,6 +67,18 @@ data object NoInterface : StdLibReceiverInterface {
         }
 }
 
+data object ComparisonsInterface : StdLibReceiverInterface {
+    override fun match(function: NamedFunctionSignature, ctx: TypeResolver): Boolean =
+        NameMatcher.matchClassScope(function.name) {
+            ifInComparisonsPkg {
+                ifNoReceiver {
+                    return true
+                }
+            }
+            return false
+        }
+}
+
 sealed interface StdLibCondition {
     val stdLibInterface: StdLibReceiverInterface
     val functionName: String
@@ -94,7 +108,9 @@ sealed interface StdLibPostcondition : StdLibCondition {
             IsEmptyPostcondition,
             GetPostcondition,
             SubListPostcondition,
-            AddPostcondition
+            AddPostcondition,
+            MinOfPostcondition,
+            MaxOfPostcondition,
         )
     }
 
@@ -209,6 +225,39 @@ data object AddPostcondition : StdLibPostcondition {
 
     override val stdLibInterface = MutableListInterface
     override val functionName = "add"
+}
+
+/**
+ * The result of `minOf`/`maxOf` on `Int` arguments is one of the arguments and is ordered against each of them
+ * by [bound]. Overloads on other types get no specification.
+ */
+private fun NamedFunctionSignature.extremumPostconditions(
+    returnVariable: VariableEmbedding,
+    bound: (ExpEmbedding, ExpEmbedding) -> ExpEmbedding,
+): List<ExpEmbedding> {
+    if (formalArgs.any { it.type.pretype != IntTypeEmbedding }) return listOf()
+    val isOneOfArgs = formalArgs.map<_, ExpEmbedding> { EqCmp(returnVariable, it) }.reduce { acc, eq -> Or(acc, eq) }
+    return listOf(isOneOfArgs) + formalArgs.map { bound(returnVariable, it) }
+}
+
+data object MinOfPostcondition : StdLibPostcondition {
+    override fun getEmbeddings(
+        returnVariable: VariableEmbedding,
+        function: NamedFunctionSignature
+    ): List<ExpEmbedding> = function.extremumPostconditions(returnVariable) { r, a -> LeIntInt(r, a) }
+
+    override val stdLibInterface = ComparisonsInterface
+    override val functionName = "minOf"
+}
+
+data object MaxOfPostcondition : StdLibPostcondition {
+    override fun getEmbeddings(
+        returnVariable: VariableEmbedding,
+        function: NamedFunctionSignature
+    ): List<ExpEmbedding> = function.extremumPostconditions(returnVariable) { r, a -> GeIntInt(r, a) }
+
+    override val stdLibInterface = ComparisonsInterface
+    override val functionName = "maxOf"
 }
 
 fun NamedFunctionSignature.stdLibPreconditions(ctx: TypeResolver): List<ExpEmbedding> {

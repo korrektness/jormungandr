@@ -163,6 +163,22 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Nested
+    @TestMetadata("formver.compiler-plugin/testData/diagnostics/stdlib/comparisons")
+    @TestDataPath("$PROJECT_ROOT")
+    public class Comparisons {
+      @Test
+      public void testAllFilesPresentInComparisons() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics/stdlib/comparisons"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      }
+
+      @Test
+      @TestMetadata("min_max_of.kt")
+      public void testMin_max_of() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/comparisons/min_max_of.kt");
+      }
+    }
+
+    @Nested
     @TestMetadata("formver.compiler-plugin/testData/diagnostics/stdlib/list")
     @TestDataPath("$PROJECT_ROOT")
     public class List {

@@ -33,6 +33,10 @@ internal sealed class NameMatcher(val name: SymbolicName) {
         ifPackageName(SpecialPackages.collections) { this.action() }
     }
 
+    inline fun ifInComparisonsPkg(action: NameMatcher.() -> Unit) {
+        ifPackageName(SpecialPackages.comparisons) { this.action() }
+    }
+
     inline fun ifClassName(vararg segments: String, action: NameMatcher.() -> Unit) {
         if (className == ClassKotlinName(segments.toList()))
             this.action()

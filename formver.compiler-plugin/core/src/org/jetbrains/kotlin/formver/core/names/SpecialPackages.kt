@@ -10,4 +10,5 @@ object SpecialPackages {
     val contracts = listOf("kotlin", "contracts")
     val kotlin = listOf("kotlin")
     val collections = listOf("kotlin", "collections")
+    val comparisons = listOf("kotlin", "comparisons")
 }
