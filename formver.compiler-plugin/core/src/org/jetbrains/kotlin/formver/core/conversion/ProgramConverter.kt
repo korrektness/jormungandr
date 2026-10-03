@@ -265,11 +265,16 @@ class ProgramConverter(
     }
 
 
+    /** The functions that encode Kotlin's built-in operators, which take values and read no heap. */
+    private val operatorFunctions: Set<SymbolicName> by lazy {
+        (SpecialFunctions.all + SpecialFunctions.multiset).map { it.name }.toSet()
+    }
+
     private fun linearizePure(name: SymbolicName, signature: CompleteFunctionSignature) {
         val converted = convertedBodyResolver.lookupPure(name)
         val linearized = converted?.let { linearizePureBody(signature.declarationSource, it) }
         val baseCases = linearized?.let { body ->
-            signature.formalArgs.filter { it.isUnique && it.type.isNullable }.mapNotNull { body.nullBaseCase(it.name) }
+            signature.formalArgs.filter { it.isUnique && it.type.isNullable }.mapNotNull { body.nullBaseCase(it.name, operatorFunctions) }
         }.orEmpty()
         linearizedBodyResolver.storeFunction(name, signature.toViperFunction(typeResolver, linearized, baseCases))
     }

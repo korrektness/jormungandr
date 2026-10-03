@@ -138,3 +138,27 @@ fun <!VIPER_TEXT!>oneNodeWhen<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> lengthWhen(r) == 1 }
     return Node(v, null)
 }
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>lengthPlus<!>(n: @Unique Node?, k: Int): Int = if (n == null) k + 1 else 1 + lengthPlus(n.next, k)
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>oneNodePlus<!>(v: Int, k: Int): @Unique Node {
+    postconditions<Node> { r -> lengthPlus(r, k) == k + 2 }
+    return Node(v, null)
+}
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>sumFrom<!>(n: @Unique Node?, k: Int): Int {
+    val base = k * 2
+    if (n == null) return base
+    return n.value + sumFrom(n.next, k)
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>oneNodeSum<!>(v: Int): @Unique Node {
+    postconditions<Node> { r -> sumFrom(r, 3) == v + 6 }
+    return Node(v, null)
+}

@@ -13,15 +13,16 @@ import org.jetbrains.kotlin.formver.viper.ast.Type
 
 /**
  * `parameter == null ==> result == base`, where `base` is the pure function body [this] with every condition that
- * tests [parameter] against `null` decided; `null` when `base` reads the heap.
+ * tests [parameter] against `null` decided; `null` when `base` reads the heap. Applications of [heapFreeFunctions]
+ * do not read it.
  *
  * Silicon unrolls a function's definition only at applications it meets directly, so the recursive application on a
  * `null` field of a folded value stays opaque; this postcondition states it for every application. It is an
  * optimisation: a body whose `null` case reads the heap gets no postcondition.
  */
-fun Exp.nullBaseCase(parameter: SymbolicName): Exp? {
+fun Exp.nullBaseCase(parameter: SymbolicName, heapFreeFunctions: Set<SymbolicName>): Exp? {
     val base = atNull(parameter)
-    if (!base.isHeapFree()) return null
+    if (!base.isHeapFree(heapFreeFunctions)) return null
     val isNull = Exp.EqCmp(Exp.LocalVar(parameter, Type.Ref), RuntimeTypeDomain.nullValue())
     return Exp.Implies(isNull, Exp.EqCmp(Exp.Result(Type.Ref), base))
 }
@@ -70,9 +71,10 @@ private fun Exp.isParameter(parameter: SymbolicName) = this is Exp.LocalVar && n
 
 private fun Exp.isNullValue() = this is Exp.DomainFuncApp && function.name == RuntimeTypeDomain.nullValue.name
 
-private fun Exp.isHeapFree(): Boolean = when (this) {
-    is Exp.FieldAccess, is Exp.FuncApp, is Exp.Unfolding, is Exp.PredicateAccess, is Exp.Acc,
-    is AccessPredicate.FieldAccessPredicate, is Exp.Old -> false
+private fun Exp.isHeapFree(heapFreeFunctions: Set<SymbolicName>): Boolean = when (this) {
+    is Exp.FuncApp -> functionName in heapFreeFunctions && args.all { it.isHeapFree(heapFreeFunctions) }
+    is Exp.FieldAccess, is Exp.Unfolding, is Exp.PredicateAccess, is Exp.Acc, is AccessPredicate.FieldAccessPredicate,
+    is Exp.Old -> false
 
-    else -> subExps().all { it.isHeapFree() }
+    else -> subExps().all { it.isHeapFree(heapFreeFunctions) }
 }
