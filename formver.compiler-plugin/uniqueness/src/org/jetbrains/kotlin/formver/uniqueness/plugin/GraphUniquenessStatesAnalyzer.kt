@@ -256,11 +256,11 @@ class GraphUniquenessStatesAnalyzer(
         with(context) {
             return data.transformValues { data ->
                 var newUniquenessState = data.getOrInitialize()
-                val explicitReceiver = call.explicitReceiver
+                val extensionReceiver = call.extensionReceiver
                 val receiverParameterSymbol = call.toResolvedCallableSymbol()?.receiverParameterSymbol
 
-                if (receiverParameterSymbol != null && explicitReceiver != null && receiverParameterSymbol.resolveLocality() == Locality.Local) {
-                    newUniquenessState = explicitReceiver.resolveAccessState().initialize(newUniquenessState)
+                if (receiverParameterSymbol != null && extensionReceiver != null && receiverParameterSymbol.resolveLocality() == Locality.Local) {
+                    newUniquenessState = extensionReceiver.resolveAccessState().initialize(newUniquenessState)
                 }
 
                 for ((argument, requiredLocality) in callArgumentLocalitiesMapper.mapArgumentTypeFactsOf(call)) {

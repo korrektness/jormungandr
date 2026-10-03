@@ -1,0 +1,118 @@
+/implicit_receiver.kt: info: Generated Viper text for addX:
+field contents: Seq[Int]
+
+method addX(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), StringBuilder())
+  requires acc(StringBuilder_unique(v_this_extension), write)
+  ensures acc(StringBuilder_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(StringBuilder_unique(v_this_extension), write)
+  v_this_extension.contents := v_this_extension.contents ++ Seq(120)
+  label lbl_ret_0
+  fold acc(StringBuilder_unique(v_this_extension), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/implicit_receiver.kt: info: Generated Viper text for implicitReceiver:
+field contents: Seq[Int]
+
+method addX(v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), StringBuilder())
+  requires acc(StringBuilder_unique(v_this_extension), write)
+  ensures acc(StringBuilder_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method implicitReceiver(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), StringBuilder())
+  requires acc(StringBuilder_unique(v_this_extension), write)
+  ensures acc(StringBuilder_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := addX(v_this_extension)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/implicit_receiver.kt: info: Generated Viper text for explicitReceiver:
+field contents: Seq[Int]
+
+method addX(v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), StringBuilder())
+  requires acc(StringBuilder_unique(v_this_extension), write)
+  ensures acc(StringBuilder_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method explicitReceiver(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), StringBuilder())
+  requires acc(StringBuilder_unique(v_this_extension), write)
+  ensures acc(StringBuilder_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := addX(v_this_extension)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/implicit_receiver.kt: info: Generated Viper text for viaParameter:
+field contents: Seq[Int]
+
+method addX(v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), StringBuilder())
+  requires acc(StringBuilder_unique(v_this_extension), write)
+  ensures acc(StringBuilder_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method viaParameter(sb: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sb), StringBuilder())
+  requires acc(StringBuilder_unique(sb), write)
+  ensures acc(StringBuilder_unique(sb), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := addX(sb)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/implicit_receiver.kt: info: Generated Viper text for throwsAfter:
+field contents: Seq[Int]
+
+method cause(v_this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures acc(IllegalArgumentException_unique(ret_3), write)
+
+
+method message(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method throwsAfter(v_this_extension: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), StringBuilder())
+  requires acc(StringBuilder_unique(v_this_extension), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(StringBuilder_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (intFromRef(n) < 0) {
+    var anon: Ref
+    anon := con()
+    inhale false
+  }
+  unfold acc(StringBuilder_unique(v_this_extension), write)
+  v_this_extension.contents := v_this_extension.contents ++ Seq(121)
+  label lbl_ret_0
+  fold acc(StringBuilder_unique(v_this_extension), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

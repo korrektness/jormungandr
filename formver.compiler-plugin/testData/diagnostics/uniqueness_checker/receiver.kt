@@ -85,6 +85,23 @@ fun (@Unique A).`consume implicit then explicit this`() {
     consume(this)
 }
 
+fun (@Unique @Borrowed A).borrowUniqueReceiver() {}
+
+fun (@Unique @Borrowed A).`borrow unique implicit receiver`() {
+    borrowUniqueReceiver()
+    borrowUniqueReceiver()
+}
+
+fun (@Unique @Borrowed A).`borrow unique explicit receiver`() {
+    this.borrowUniqueReceiver()
+    this.borrowUniqueReceiver()
+}
+
+fun (@Unique A).`borrow implicit receiver then consume this`() {
+    borrowReceiver()
+    consume(this)
+}
+
 // Mixing receiver and argument in same call
 
 fun (@Borrowed A).borrowSelfAndArg(other: @Borrowed A) {}

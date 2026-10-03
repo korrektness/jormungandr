@@ -238,6 +238,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("implicit_receiver.kt")
+      public void testImplicit_receiver() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string_builder/implicit_receiver.kt");
+      }
+
+      @Test
       @TestMetadata("string_builder.kt")
       public void testString_builder() {
         runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string_builder/string_builder.kt");
