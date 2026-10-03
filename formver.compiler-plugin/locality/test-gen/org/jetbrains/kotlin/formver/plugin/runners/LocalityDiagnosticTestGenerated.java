@@ -199,6 +199,12 @@ public class LocalityDiagnosticTestGenerated extends AbstractLocalityDiagnosticT
     }
 
     @Test
+    @TestMetadata("pass_property_reference.kt")
+    public void testPass_property_reference() {
+      runTest("formver.compiler-plugin/locality/testData/diagnostics/contract/pass_property_reference.kt");
+    }
+
+    @Test
     @TestMetadata("return.kt")
     public void testReturn() {
       runTest("formver.compiler-plugin/locality/testData/diagnostics/contract/return.kt");
