@@ -748,6 +748,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("override_spec_of.kt")
+      public void testOverride_spec_of() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/override_spec_of.kt");
+      }
+
+      @Test
       @TestMetadata("ownership_not_established.kt")
       public void testOwnership_not_established() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/ownership_not_established.kt");

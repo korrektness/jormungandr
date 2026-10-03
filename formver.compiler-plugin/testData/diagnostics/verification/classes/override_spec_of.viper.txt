@@ -1,0 +1,176 @@
+/override_spec_of.kt: info: Generated Viper text for step:
+method step(this: Ref, n: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) > intFromRef(n)
+
+
+/override_spec_of.kt: info: Generated Viper text for step:
+method Counter_f_step(this: Ref, n: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) > intFromRef(n)
+
+
+method Incrementer_f_step(this: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Incrementer())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= -1
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(n) + 1
+{
+  v_ret_0 := plusInts(n, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  requires isSubtype(typeOf(this), Incrementer())
+{
+  ret_3 := Incrementer_f_step(this, n)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(ret_3) > intFromRef(n)
+}
+
+/override_spec_of.kt: info: Generated Viper text for step:
+method Counter_f_step(this: Ref, n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) > intFromRef(n)
+
+
+method Identity_f_step(this: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Identity())
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(n)
+{
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  requires isSubtype(typeOf(this), Identity())
+{
+  ret_2 := Identity_f_step(this, n)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) > intFromRef(n)
+}
+
+/override_spec_of.kt: info: Generated Viper text for step:
+method Counter_f_step(this: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) > intFromRef(n)
+
+
+method Inheriting_f_step(this: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Inheriting())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > intFromRef(n)
+{
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  requires isSubtype(typeOf(this), Inheriting())
+{
+  ret_1 := Inheriting_f_step(this, n)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) > intFromRef(n)
+}
+
+/override_spec_of.kt: info: Generated Viper text for size:
+method size(this: Ref, limit: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(limit) > 0
+  ensures isSubtype(typeOf(ret), intType())
+  ensures 0 <= intFromRef(ret) && intFromRef(ret) <= intFromRef(limit)
+
+
+/override_spec_of.kt: info: Generated Viper text for size:
+method Halving_f_size(this: Ref, limit: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Halving())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(limit) > 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(limit) \ 2
+{
+  v_ret_0 := divInts(limit, intToRef(2))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method Measure_f_size(this: Ref, limit: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(limit) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures 0 <= intFromRef(ret_1) && intFromRef(ret_1) <= intFromRef(limit)
+
+
+method refines_Measure_f_size(this: Ref, limit: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(limit) > 0
+  requires isSubtype(typeOf(this), Halving())
+{
+  ret_1 := Halving_f_size(this, limit)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert 0 <= intFromRef(ret_1) && intFromRef(ret_1) <= intFromRef(limit)
+}
+
+/override_spec_of.kt: info: Generated Viper text for size:
+method Measure_f_size(this: Ref, limit: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(limit) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures 0 <= intFromRef(ret_1) && intFromRef(ret_1) <= intFromRef(limit)
+
+
+method Positive_f_size(this: Ref, limit: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(limit) > 1
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Measure_f_size(this: Ref, limit: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(limit) > 0
+  requires isSubtype(typeOf(this), Positive())
+{
+  ret_1 := Positive_f_size(this, limit)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert 0 <= intFromRef(ret_1) && intFromRef(ret_1) <= intFromRef(limit)
+}
