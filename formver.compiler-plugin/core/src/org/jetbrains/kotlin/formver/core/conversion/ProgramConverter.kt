@@ -654,6 +654,7 @@ class ProgramConverter(
                     returns {
                         provenInvariants()
                     }
+                    stdLib()
                 }
             }
     }.also {

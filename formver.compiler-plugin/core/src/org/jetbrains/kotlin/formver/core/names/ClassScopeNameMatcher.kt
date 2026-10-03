@@ -66,6 +66,12 @@ internal class ClassScopeNameMatcher(name: SymbolicName) : NameMatcher(name) {
             this.action()
     }
 
+    inline fun ifExtensionGetterName(name: String, action: ClassScopeNameMatcher.() -> Unit) {
+        val getterName = scopedName?.name as? ExtensionGetterKotlinName
+        if (getterName?.name == Name.identifier(name))
+            this.action()
+    }
+
     inline fun ifBackingFieldName(name: String, action: ClassScopeNameMatcher.() -> Unit) {
         if (scopedName?.name == BackingFieldKotlinName(Name.identifier(name)))
             this.action()

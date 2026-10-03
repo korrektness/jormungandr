@@ -10,8 +10,10 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.embedClassTypeFunc
 import org.jetbrains.kotlin.formver.core.names.DomainName
 import org.jetbrains.kotlin.formver.core.names.QualifiedDomainFuncName
 import org.jetbrains.kotlin.formver.core.names.UnqualifiedDomainFuncName
+import org.jetbrains.kotlin.formver.core.names.embedName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.*
+import org.jetbrains.kotlin.name.StandardClassIds
 
 
 const val RUNTIME_TYPE_DOMAIN_NAME = "rt"
@@ -193,6 +195,8 @@ const val RUNTIME_TYPE_DOMAIN_NAME = "rt"
  *
  *  // same for bool2ref and ref2bool
  *
+ *  // isSubtype(stringType(), *Type()) for CharSequence and Comparable, when they are user types
+ *
  *  // isSubtype(*Type(), *Type()) for each pair of user type and its supertype()
  * }
  *
@@ -284,6 +288,9 @@ class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(R
         val nullValue = createDomainFunc(UnqualifiedDomainFuncName("nullValue"), emptyList(), Ref)
         val unitValue = createDomainFunc(UnqualifiedDomainFuncName("unitValue"), emptyList(), Ref)
     }
+
+    // The interfaces `String` implements. They are class types, in the domain only when the program refers to them.
+    private val stringSuperTypeNames = setOf(StandardClassIds.CharSequence.embedName(), StandardClassIds.Comparable.embedName())
 
     private val usesMultiset = typeResolver.usesMultiset
     private val allInjections: List<Injection> =
@@ -408,6 +415,11 @@ class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(R
         }
         allInjections.forEach {
             it.apply { injectionAxioms() }
+        }
+        typeResolver.classTypeEmbeddings().filter { it.name in stringSuperTypeNames }.forEach { superType ->
+            axiom {
+                stringType() subtype superType.runtimeType
+            }
         }
         typeResolver.classTypeEmbeddings().forEach { type ->
             typeResolver.lookupSuperTypes(type.name).forEach { superType ->

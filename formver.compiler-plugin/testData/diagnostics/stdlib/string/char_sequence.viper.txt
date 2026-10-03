@@ -1,0 +1,134 @@
+/char_sequence.kt: info: Generated Viper text for stringIsEmpty:
+method isEmpty(v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  ensures isSubtype(typeOf(ret_2), boolType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    boolFromRef(ret_2) == (|stringFromRef(v_this_extension)| == 0)
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method stringIsEmpty(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := isEmpty(s)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/char_sequence.kt: info: Generated Viper text for stringIsNotEmpty:
+method isNotEmpty(v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  ensures isSubtype(typeOf(ret_2), boolType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    boolFromRef(ret_2) == |stringFromRef(v_this_extension)| > 0
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method stringIsNotEmpty(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := isNotEmpty(s)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/char_sequence.kt: info: Generated Viper text for lastIndexBound:
+method lastIndex(v_this_extension: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    isSubtype(typeOf(ret_3), intType()) &&
+    intFromRef(ret_3) == |stringFromRef(v_this_extension)| - 1
+
+
+method lastIndexBound(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires |stringFromRef(s)| > 0
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := lastIndex(s)
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), intType())
+  v_ret_0 := stringGet(s, anon_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method length(v_this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/char_sequence.kt: info: Generated Viper text for repeatLength:
+method length(v_this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method repeat(v_this_extension: Ref, n: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(ret_4), stringType())
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    intFromRef(n) >= 0 ==>
+    |stringFromRef(ret_4)| ==
+    |stringFromRef(v_this_extension)| * intFromRef(n)
+
+
+method repeatLength(s: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+  ensures |stringFromRef(v_ret_0)| == |stringFromRef(s)| * intFromRef(n)
+{
+  v_ret_0 := repeat(s, n)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/char_sequence.kt: info: Generated Viper text for takesCharSequence:
+method length(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method takesCharSequence(cs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cs), CharSequence())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/char_sequence.kt: info: Generated Viper text for passStringAsCharSequence:
+method length(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method passStringAsCharSequence(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := takesCharSequence(s)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method takesCharSequence(cs: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(cs), CharSequence())
+  ensures isSubtype(typeOf(ret_2), unitType())

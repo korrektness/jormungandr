@@ -216,6 +216,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("char_sequence.kt")
+      public void testChar_sequence() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string/char_sequence.kt");
+      }
+
+      @Test
       @TestMetadata("chars.kt")
       public void testChars() {
         runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string/chars.kt");

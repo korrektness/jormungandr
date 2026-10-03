@@ -6,20 +6,38 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
+import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
+import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.And
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.GeIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.GtIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Implies
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.LeIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Or
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.MulIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Not
+import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.StringLength
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.SubIntInt
+import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.names.NameMatcher
+import org.jetbrains.kotlin.formver.core.names.SpecialPackages
 
 private fun VariableEmbedding.sameSize(): ExpEmbedding =
     EqCmp(FieldAccess(this, CollectionSizeFieldEmbedding), Old(FieldAccess(this, CollectionSizeFieldEmbedding)))
+
+private val stringType = buildType { string() }
+private val intType = buildType { int() }
+
+/**
+ * The `kotlin.text` extensions take any `CharSequence`, but only a `String` has a length in Viper,
+ * so their postconditions apply when the receiver is a `String`.
+ */
+private fun FunctionSignature.ifStringReceiver(property: (ExpEmbedding) -> ExpEmbedding): ExpEmbedding {
+    val receiver = extensionReceiver!!
+    return Implies(Is(receiver, stringType), property(StringLength(receiver.withType(stringType))))
+}
 
 private fun VariableEmbedding.increasedSize(amount: Int): ExpEmbedding =
     EqCmp(
@@ -53,6 +71,16 @@ data object ListInterface : PresentInterface {
 
 data object MutableListInterface : PresentInterface {
     override val interfaceName = "MutableList"
+}
+
+data object TextPackage : StdLibReceiverInterface {
+    override fun match(function: NamedFunctionSignature, ctx: TypeResolver): Boolean =
+        NameMatcher.matchClassScope(function.name) {
+            ifPackageName(SpecialPackages.text) {
+                return true
+            }
+            return false
+        }
 }
 
 data object NoInterface : StdLibReceiverInterface {
@@ -111,6 +139,10 @@ sealed interface StdLibPostcondition : StdLibCondition {
             AddPostcondition,
             MinOfPostcondition,
             MaxOfPostcondition,
+            CharSequenceIsEmptyPostcondition,
+            CharSequenceIsNotEmptyPostcondition,
+            CharSequenceLastIndexPostcondition,
+            CharSequenceRepeatPostcondition,
         )
     }
 
@@ -258,6 +290,69 @@ data object MaxOfPostcondition : StdLibPostcondition {
 
     override val stdLibInterface = ComparisonsInterface
     override val functionName = "maxOf"
+}
+
+data object CharSequenceIsEmptyPostcondition : StdLibPostcondition {
+    override fun getEmbeddings(
+        returnVariable: VariableEmbedding,
+        function: NamedFunctionSignature
+    ): List<ExpEmbedding> = listOf(function.ifStringReceiver { length -> EqCmp(returnVariable, EqCmp(length, IntLit(0))) })
+
+    override val stdLibInterface = TextPackage
+    override val functionName = "isEmpty"
+}
+
+data object CharSequenceIsNotEmptyPostcondition : StdLibPostcondition {
+    override fun getEmbeddings(
+        returnVariable: VariableEmbedding,
+        function: NamedFunctionSignature
+    ): List<ExpEmbedding> = listOf(function.ifStringReceiver { length -> EqCmp(returnVariable, GtIntInt(length, IntLit(0))) })
+
+    override val stdLibInterface = TextPackage
+    override val functionName = "isNotEmpty"
+}
+
+/** The getter of the extension property `lastIndex`, whose embedding returns `Any?`. */
+data object CharSequenceLastIndexPostcondition : StdLibPostcondition {
+    override fun match(function: NamedFunctionSignature): Boolean {
+        NameMatcher.matchClassScope(function.name) {
+            ifExtensionGetterName(functionName) {
+                return true
+            }
+            return false
+        }
+    }
+
+    override fun getEmbeddings(
+        returnVariable: VariableEmbedding,
+        function: NamedFunctionSignature
+    ): List<ExpEmbedding> = listOf(function.ifStringReceiver { length ->
+        And(
+            Is(returnVariable, intType),
+            EqCmp(returnVariable.withType(intType), SubIntInt(length, IntLit(1))),
+        )
+    })
+
+    override val stdLibInterface = TextPackage
+    override val functionName = "lastIndex"
+}
+
+data object CharSequenceRepeatPostcondition : StdLibPostcondition {
+    override fun getEmbeddings(
+        returnVariable: VariableEmbedding,
+        function: NamedFunctionSignature
+    ): List<ExpEmbedding> {
+        val countArg = function.params[0]
+        return listOf(function.ifStringReceiver { length ->
+            Implies(
+                GeIntInt(countArg, IntLit(0)),
+                EqCmp(StringLength(returnVariable), MulIntInt(length, countArg)),
+            )
+        })
+    }
+
+    override val stdLibInterface = TextPackage
+    override val functionName = "repeat"
 }
 
 fun NamedFunctionSignature.stdLibPreconditions(ctx: TypeResolver): List<ExpEmbedding> {
