@@ -700,6 +700,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("override_contracts.kt")
+      public void testOverride_contracts() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/override_contracts.kt");
+      }
+
+      @Test
+      @TestMetadata("override_contracts_negative.kt")
+      public void testOverride_contracts_negative() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/override_contracts_negative.kt");
+      }
+
+      @Test
       @TestMetadata("override_properties_types.kt")
       public void testOverride_properties_types() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/override_properties_types.kt");
@@ -1185,6 +1197,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("pure_function_with_heap_dependent_expressions.kt")
       public void testPure_function_with_heap_dependent_expressions() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/pure_function_with_heap_dependent_expressions.kt");
+      }
+
+      @Test
+      @TestMetadata("pure_open.kt")
+      public void testPure_open() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/pure_open.kt");
       }
 
       @Test

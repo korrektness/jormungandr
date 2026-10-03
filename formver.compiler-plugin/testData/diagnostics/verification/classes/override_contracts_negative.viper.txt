@@ -1,0 +1,111 @@
+/override_contracts_negative.kt: info: Generated Viper text for positive:
+method positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/override_contracts_negative.kt: info: Generated Viper text for positive:
+method Base_f_positive(this: Ref, x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) > 0
+
+
+method StrongerPrecondition_f_positive(this: Ref, x: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), StrongerPrecondition())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 1
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Base_f_positive(this: Ref, x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  requires isSubtype(typeOf(this), StrongerPrecondition())
+{
+  ret_3 := StrongerPrecondition_f_positive(this, x)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(ret_3) > 0
+}
+
+/override_contracts_negative.kt: info: Generated Viper text for positive:
+method Base_f_positive(this: Ref, x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) > 0
+
+
+method WeakerPostcondition_f_positive(this: Ref, x: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), WeakerPostcondition())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= 0
+{
+  v_ret_0 := minusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Base_f_positive(this: Ref, x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  requires isSubtype(typeOf(this), WeakerPostcondition())
+{
+  ret_3 := WeakerPostcondition_f_positive(this, x)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(ret_3) > 0
+}
+
+/override_contracts_negative.kt: info: Generated Viper text for positive:
+method Base_f_positive(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) > 0
+
+
+method InheritedViolated_f_positive(this: Ref, x: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), InheritedViolated())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := minusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Base_f_positive(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  requires isSubtype(typeOf(this), InheritedViolated())
+{
+  ret_1 := InheritedViolated_f_positive(this, x)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) > 0
+}

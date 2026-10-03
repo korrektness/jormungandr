@@ -73,6 +73,12 @@ object FormalVerificationPluginErrorMessages : BaseDiagnosticRendererFactory() {
             CommonRenderers.STRING,
         )
         map.put(
+            VerificationErrors.OVERRIDE_NOT_REFINING,
+            "This override may not satisfy the contract of ''{0}'': {1}.",
+            CommonRenderers.STRING,
+            CommonRenderers.STRING,
+        )
+        map.put(
             PluginErrors.UNIQUENESS_VIOLATION,
             "{0}",
             CommonRenderers.STRING,

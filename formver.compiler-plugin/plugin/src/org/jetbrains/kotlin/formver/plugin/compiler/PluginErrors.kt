@@ -37,6 +37,7 @@ object VerificationErrors : KtDiagnosticsContainer() {
     val UNEXPECTED_RETURNED_VALUE by warning1<PsiElement, String>()
     val INVALID_SUBLIST_RANGE by warning2<PsiElement, String, String>()
     val OWNERSHIP_NOT_ESTABLISHED by warning2<PsiElement, String, String>()
+    val OVERRIDE_NOT_REFINING by warning2<PsiElement, String, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
     val CONSISTENCY by error1<PsiElement, String>()
     override fun getRendererFactory() = FormalVerificationPluginErrorMessages
     fun tags() = listOf(
@@ -46,6 +47,7 @@ object VerificationErrors : KtDiagnosticsContainer() {
         UNEXPECTED_RETURNED_VALUE.name,
         INVALID_SUBLIST_RANGE.name,
         OWNERSHIP_NOT_ESTABLISHED.name,
+        OVERRIDE_NOT_REFINING.name,
         CONSISTENCY.name
     )
 }

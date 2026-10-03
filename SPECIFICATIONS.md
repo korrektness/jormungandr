@@ -54,6 +54,39 @@ with the lambdas passed to them. Inside such a lambda, a local can be declared a
 unsupported construct: loops, assignments to other variables, an `if` or `when` whose value is unused, and calls
 to other functions. The standard library's compiled inline functions, such as `let`, count as other functions.
 
+### Overrides
+
+A call to an open member is verified against the contract of the member the call names. Each override is checked
+against the contract of every declaration it directly overrides: the overridden precondition must imply the
+override's precondition, and the override's postcondition must imply the overridden postcondition. `old` in the
+overridden postcondition refers to the state when the override is called. A failure is reported on the override,
+naming the declaration whose contract it may not satisfy.
+
+```kotlin
+open class Base {
+    open fun positive(x: Int): Int {
+        preconditions { x > 0 }
+        postconditions<Int> { result -> result > 0 }
+        return x
+    }
+}
+
+class Refining : Base() {
+    override fun positive(x: Int): Int {
+        preconditions { x >= 0 }                       // weaker: accepted
+        postconditions<Int> { result -> result > 1 }   // stronger: accepted
+        return x + 2
+    }
+}
+```
+
+An override without a specification of its own has the specification of the declaration it overrides, and its body
+is verified against it. When several declarations it overrides have one, it has none and must write its own.
+
+The check runs when the override is converted. Members without a body, such as abstract and interface members,
+have no specification. A `@Pure` function cannot be open or override another; such a function, and a call to it,
+is reported as an unsupported construct.
+
 ## Loop Invariants
 
 ```kotlin

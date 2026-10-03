@@ -207,6 +207,10 @@ class NameGraphRenderer(val shortNameResolver: ShortNameResolver) {
                 link(entity.baseName, Relation.IS_PART_OF, entity)
             }
 
+            is RefinementName -> {
+                link(entity.overridden, Relation.IS_PART_OF, entity)
+            }
+
             // No else branch, because FreshName is sealed. When adding a new name, the compiler will complain here.
             FunctionResultVariableName, ExtensionReceiverName, DispatchReceiverName,
             is AnonymousBuiltinName, is AnonymousName, is PlaceholderArgumentName,

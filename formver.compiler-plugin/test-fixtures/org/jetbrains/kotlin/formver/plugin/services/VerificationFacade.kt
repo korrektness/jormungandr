@@ -134,6 +134,15 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                 )
             }
 
+            is OverrideRefinementError -> {
+                val msg = formattedError.msg()
+                VerificationErrors.OVERRIDE_NOT_REFINING.on(
+                    source, msg.first, msg.second,
+                    positioningStrategy = SourceElementPositioningStrategies.DECLARATION_NAME,
+                    languageVersionSettings = module.languageVersionSettings
+                )
+            }
+
             is DefaultError -> {
                 val msg = formattedError.msg()
                 VerificationErrors.VIPER_VERIFICATION_ERROR.on(

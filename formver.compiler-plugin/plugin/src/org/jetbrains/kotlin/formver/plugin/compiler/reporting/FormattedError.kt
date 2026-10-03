@@ -151,6 +151,20 @@ class OwnershipError(private val sourceRole: SourceRole.Ownership) : FormattedEr
     }
 }
 
+/** An override whose contract may not refine the contract of the declaration it overrides. */
+class OverrideRefinementError(private val sourceRole: SourceRole.OverrideRefinement) : FormattedError {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun report(source: KtSourceElement?) {
+        val (overridden, reason) = msg()
+        reporter.reportOn(source, VerificationErrors.OVERRIDE_NOT_REFINING, overridden, reason)
+    }
+
+    fun msg(): Pair<String, String> = sourceRole.overridden to when (sourceRole.clause) {
+        SourceRole.OverrideRefinement.Clause.PRECONDITION -> "its precondition may not follow from the overridden one"
+        SourceRole.OverrideRefinement.Clause.POSTCONDITION -> "its postcondition may not establish the overridden one"
+    }
+}
+
 fun VerificationError.formatUserFriendly(): FormattedError? =
     when (val sourceRole = lookupSourceRole()) {
         is SourceRole.ReturnsEffect -> ReturnsEffectError(sourceRole)
@@ -159,6 +173,7 @@ fun VerificationError.formatUserFriendly(): FormattedError? =
         is SourceRole.ArrayElementAccessCheck -> sourceRole.indexOutOfBound()
         is SourceRole.SubListCreation -> InvalidSubListRangeError(this, sourceRole)
         is SourceRole.Ownership -> OwnershipError(sourceRole)
+        is SourceRole.OverrideRefinement -> OverrideRefinementError(sourceRole)
         else -> null
     }
 

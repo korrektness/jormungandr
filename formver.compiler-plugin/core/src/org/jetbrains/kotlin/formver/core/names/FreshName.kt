@@ -180,6 +180,21 @@ data class SsaVariableName(override val n: Int, val baseName: SymbolicName) : Nu
     override val children: List<AnyName> = listOf(nameType, baseName)
 }
 
+/** The method that checks that an override refines the contract of the method named [overridden]. */
+data class RefinementName(val overridden: SymbolicName) : FreshName {
+    override val inViper: Boolean = true
+    override val nameType: NameType = NameType.Base.Function
+
+    override val candidates: List<CandidateName> = buildCandidates {
+        candidate {
+            +"refines"
+            +overridden
+        }
+    }
+
+    override val children: List<AnyName> = listOf(nameType, overridden)
+}
+
 data class PredicateName(val name: String) : FreshName {
     override val inViper: Boolean = false
     override val nameType: NameType = NameType.Base.Predicate

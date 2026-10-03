@@ -13,12 +13,14 @@ import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory1
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirEnumEntrySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.*
@@ -120,6 +122,9 @@ class ProgramConverter(
 
     private val registered: MutableList<RegisteredFunction> = mutableListOf()
 
+    private val refinements: MutableList<Refinement> = mutableListOf()
+
+
     /**
      * Whether a registered function has uniqueness or locality errors. Such a function is converted, but not verified.
      */
@@ -198,7 +203,27 @@ class ProgramConverter(
         embedFunctionBody(declaration.symbol, signature)
         val hasUniquenessErrors = uniquenessOutcomeOf(declaration).hasErrors
         registered += RegisteredFunction(declaration, signature.signature, signature.returnTarget, hasUniquenessErrors)
+        registerRefinements(declaration, signature.signature)
     }
+
+    /**
+     * Records a refinement check of [declaration] against each declaration it directly overrides that has a
+     * specification, its own or inherited.
+     */
+    private fun registerRefinements(declaration: FirSimpleFunction, signature: CompleteFunctionSignature) {
+        val overriddenWithSpec = context(checkerContext) { declaration.symbol.directOverriddenSymbolsSafe() }
+            .filterIsInstance<FirNamedFunctionSymbol>()
+            .filter { context(checkerContext) { it.specificationOwner() } != null }
+        if (overriddenWithSpec.isEmpty()) return
+        val override = signature as? NonInlineFunctionSignature ?: throw UnsupportedFeatureException(
+            declaration.source, "an inline override of a function with a specification"
+        )
+        for (overridden in overriddenWithSpec) {
+            val overriddenSignature = embedCompleteSignature(overridden).signature
+            refinements += Refinement(override, overriddenSignature, overridden.refinementSpelling, declaration.source)
+        }
+    }
+
 
 
     /**
@@ -284,6 +309,7 @@ class ProgramConverter(
         val (pure, impure) = fullSignatures.entries.partition { it.value.isPure }
         pure.forEach { linearizePure(it.key, it.value) }
         impure.forEach { linearizeImpure(it.key, it.value) }
+        refinements.map { it.toMethod(typeResolver) }.forEach { linearizedBodyResolver.storeMethod(it.name, it) }
     }
 
     // endregion
@@ -413,6 +439,11 @@ class ProgramConverter(
      * Embeds the full function signature (with pre+post conditions).
      */
     private fun embedCompleteSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<CompleteFunctionSignature> {
+        if (symbol.isOpenOrOverride && symbol.isPure(session)) {
+            // A call to such a function is reported at the call.
+            val source = symbol.source.takeIf { symbol == registeredSymbol }
+            throw UnsupportedFeatureException(source, "a `@Pure` function that is open or overrides another")
+        }
         val callable = with(this) {
             val namedSignature = symbol.toFunctionSignature().toNamedSignature(symbol)
             if (symbol.shouldBeInlined) {
@@ -491,11 +522,13 @@ class ProgramConverter(
             return Pair(emptyList(), emptyList())
         }
 
-        val firSpec = extractFirSpecification(body, declaration.symbol.resolvedReturnType)
+        val owner = context(checkerContext) { declaration.symbol.specificationOwner() } ?: return Pair(emptyList(), emptyList())
+        @OptIn(SymbolInternals::class) val ownerDeclaration = owner.fir
+        val firSpec = ownerDeclaration.specification() ?: return Pair(emptyList(), emptyList())
 
-
+        // The owner's parameters resolve to this function's parameters by position.
         val (preconditionContext, postconditionContext) = createContractConversionContext(
-            symbol, signature, firSpec, returnTarget, uniquenessOutcomeOf(declaration).analysis
+            owner, signature, firSpec, returnTarget, uniquenessOutcomeOf(ownerDeclaration).analysis
         )
 
         val preconditions = firSpec.precond?.let { preconditionContext.collectInvariants(it) } ?: emptyList()

@@ -1,0 +1,235 @@
+/override_contracts.kt: info: Generated Viper text for positive:
+method positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/override_contracts.kt: info: Generated Viper text for bump:
+field value: Ref
+
+method bump(this: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) >
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
+{
+  var anon: Ref
+  unfold acc(Cell_unique(c), write)
+  anon := c.value
+  c.value := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Cell_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/override_contracts.kt: info: Generated Viper text for positive:
+method positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), AtLeastOne())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= 1
+{
+  v_ret_0 := plusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/override_contracts.kt: info: Generated Viper text for positive:
+method AtLeastOne_f_positive(this: Ref, x: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), AtLeastOne())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(ret_4) >= 1
+
+
+method Base_f_positive(this: Ref, x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) > 0
+
+
+method Refining_f_positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Refining())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 1
+{
+  v_ret_0 := plusInts(x, intToRef(2))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_AtLeastOne_f_positive(this: Ref, x: Ref)
+  returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), AtLeastOne())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  requires isSubtype(typeOf(this), Refining())
+{
+  ret_4 := Refining_f_positive(this, x)
+  assert isSubtype(typeOf(ret_4), intType())
+  assert intFromRef(ret_4) >= 1
+}
+
+method refines_Base_f_positive(this: Ref, x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  requires isSubtype(typeOf(this), Refining())
+{
+  ret_3 := Refining_f_positive(this, x)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(ret_3) > 0
+}
+
+/override_contracts.kt: info: Generated Viper text for bump:
+field value: Ref
+
+method Base_f_bump(this: Ref, c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) >
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
+
+
+method Refining_f_bump(this: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Refining())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) ==
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))) +
+      2)
+{
+  var anon: Ref
+  unfold acc(Cell_unique(c), write)
+  anon := c.value
+  c.value := plusInts(anon, intToRef(2))
+  label lbl_ret_0
+  fold acc(Cell_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method refines_Base_f_bump(this: Ref, c: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  requires isSubtype(typeOf(this), Refining())
+{
+  ret_2 := Refining_f_bump(this, c)
+  assert acc(Cell_unique(c), write)
+  assert isSubtype(typeOf(ret_2), unitType())
+  assert (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) >
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
+}
+
+/override_contracts.kt: info: Generated Viper text for positive:
+method Base_f_positive(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) > 0
+
+
+method Inheriting_f_positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Inheriting())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := plusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Base_f_positive(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  requires isSubtype(typeOf(this), Inheriting())
+{
+  ret_1 := Inheriting_f_positive(this, x)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) > 0
+}
+
+/override_contracts.kt: info: Generated Viper text for positive:
+method Deeper_f_positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Deeper())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(x)
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method Inheriting_f_positive(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Inheriting())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) > 0
+
+
+method refines_Inheriting_f_positive(this: Ref, x: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Inheriting())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  requires isSubtype(typeOf(this), Deeper())
+{
+  ret_2 := Deeper_f_positive(this, x)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) > 0
+}
+
+/override_contracts.kt: info: Generated Viper text for callThroughBase:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method callThroughBase(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), Base())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  l0_r := positive(b, intToRef(3))
+  assert intFromRef(l0_r) > 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method positive(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) > 0

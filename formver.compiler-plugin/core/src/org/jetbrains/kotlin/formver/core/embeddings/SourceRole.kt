@@ -54,6 +54,20 @@ sealed interface SourceRole {
         }
     }
 
+    /**
+     * A check that an override refines the contract of the declaration it overrides, which [overridden] names as the
+     * Kotlin source spells it.
+     */
+    data class OverrideRefinement(val overridden: String, val clause: Clause) : SourceRole {
+        enum class Clause {
+            /** The override's precondition must follow from the overridden precondition. */
+            PRECONDITION,
+
+            /** The override's postcondition must establish the overridden postcondition. */
+            POSTCONDITION
+        }
+    }
+
     data class ConditionalEffect(val effect: ReturnsEffect, val condition: Condition) : SourceRole
     data class FirSymbolHolder(val firSymbol: FirBasedSymbol<*>) : SourceRole, Condition
 
