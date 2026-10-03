@@ -1,0 +1,418 @@
+/member_this_contracts.kt: info: Generated Viper text for advance:
+field reading: Ref
+
+method advance(this: Ref, by: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(Meter_unique(this), write)
+  requires isSubtype(typeOf(by), intType())
+  requires intFromRef(by) >= 0
+  ensures acc(Meter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) ==
+      old((unfolding acc(Meter_unique(this), write) in
+        intFromRef(this.reading))) +
+      intFromRef(by))
+{
+  var anon: Ref
+  unfold acc(Meter_unique(this), write)
+  anon := this.reading
+  this.reading := plusInts(anon, by)
+  label lbl_ret_0
+  fold acc(Meter_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_contracts.kt: info: Generated Viper text for advanceTwice:
+field reading: Ref
+
+method advance(this: Ref, by: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(Meter_unique(this), write)
+  requires isSubtype(typeOf(by), intType())
+  requires intFromRef(by) >= 0
+  ensures acc(Meter_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) ==
+      old((unfolding acc(Meter_unique(this), write) in
+        intFromRef(this.reading))) +
+      intFromRef(by))
+
+
+method advanceTwice(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(Meter_unique(this), write)
+  ensures acc(Meter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) ==
+      old((unfolding acc(Meter_unique(this), write) in
+        intFromRef(this.reading))) +
+      3)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := advance(this, intToRef(1))
+  anon_1 := advance(this, intToRef(2))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_contracts.kt: info: Generated Viper text for current:
+field reading: Ref
+
+function current(this: Ref): Ref
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Meter_unique(this), write) in this.reading)
+}
+
+/member_this_contracts.kt: info: Generated Viper text for advanceFromZero:
+field reading: Ref
+
+function current(this: Ref): Ref
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Meter_unique(this), write) in this.reading)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method advance(this: Ref, by: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(Meter_unique(this), write)
+  requires isSubtype(typeOf(by), intType())
+  requires intFromRef(by) >= 0
+  ensures acc(Meter_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) ==
+      old((unfolding acc(Meter_unique(this), write) in
+        intFromRef(this.reading))) +
+      intFromRef(by))
+
+
+method advanceFromZero(m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), Meter())
+  requires acc(Meter_unique(m), write)
+  ensures acc(Meter_unique(m), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  unfold acc(Meter_unique(m), write)
+  m.reading := intToRef(0)
+  fold acc(Meter_unique(m), write)
+  anon_1 := advance(m, intToRef(1))
+  anon_2 := advance(m, intToRef(2))
+  anon_3 := current(m)
+  assert intFromRef(anon_3) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_contracts.kt: info: Generated Viper text for staleAfterAdvance:
+field reading: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method advanceTwice(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(Meter_unique(this), write)
+  ensures acc(Meter_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) ==
+      old((unfolding acc(Meter_unique(this), write) in
+        intFromRef(this.reading))) +
+      3)
+
+
+method staleAfterAdvance(m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), Meter())
+  requires acc(Meter_unique(m), write)
+  ensures acc(Meter_unique(m), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Meter_unique(m), write)
+  m.reading := intToRef(0)
+  fold acc(Meter_unique(m), write)
+  anon_0 := advanceTwice(m)
+  unfold acc(Meter_unique(m), write)
+  anon_1 := m.reading
+  assert intFromRef(anon_1) == 0
+  label lbl_ret_0
+  fold acc(Meter_unique(m), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_contracts.kt: info: Generated Viper text for tick:
+field level: Ref
+
+method tick(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  ensures acc(Gauge_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Gauge_unique(this), write) in
+      intFromRef(this.level) ==
+      old((unfolding acc(Gauge_unique(this), write) in
+        intFromRef(this.level))))
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_contracts.kt: info: Generated Viper text for tickKeepsLevel:
+field level: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method tick(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  ensures acc(Gauge_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(Gauge_unique(this), write) in
+      intFromRef(this.level) ==
+      old((unfolding acc(Gauge_unique(this), write) in
+        intFromRef(this.level))))
+
+
+method tickKeepsLevel(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  ensures acc(Gauge_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Gauge_unique(this), write)
+  this.level := intToRef(3)
+  fold acc(Gauge_unique(this), write)
+  anon_0 := tick(this)
+  unfold acc(Gauge_unique(this), write)
+  anon_1 := this.level
+  assert intFromRef(anon_1) == 3
+  label lbl_ret_0
+  fold acc(Gauge_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_contracts.kt: info: Generated Viper text for tick:
+field level: Ref
+
+field ticks: Ref
+
+method CountingGauge_f_tick(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), CountingGauge())
+  requires acc(CountingGauge_unique(this), write)
+  ensures acc(CountingGauge_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(CountingGauge_unique(this), write) in
+      (unfolding acc(Gauge_unique(this), write) in
+        intFromRef(this.level) ==
+        old((unfolding acc(CountingGauge_unique(this), write) in
+          (unfolding acc(Gauge_unique(this), write) in
+            intFromRef(this.level))))))
+{
+  var anon: Ref
+  unfold acc(CountingGauge_unique(this), write)
+  anon := this.ticks
+  this.ticks := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(CountingGauge_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method Gauge_f_tick(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  ensures acc(Gauge_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(Gauge_unique(this), write) in
+      intFromRef(this.level) ==
+      old((unfolding acc(Gauge_unique(this), write) in
+        intFromRef(this.level))))
+
+
+method refines_Gauge_f_tick(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  requires isSubtype(typeOf(this), CountingGauge())
+{
+  inhale isSubtype(typeOf(this), CountingGauge()) && acc(this.ticks, write) &&
+    isSubtype(typeOf(this.ticks), intType())
+  fold acc(CountingGauge_unique(this), write)
+  ret_1 := CountingGauge_f_tick(this)
+  unfold acc(CountingGauge_unique(this), write)
+  assert acc(Gauge_unique(this), write)
+  assert isSubtype(typeOf(ret_1), unitType())
+  assert (unfolding acc(Gauge_unique(this), write) in
+      intFromRef(this.level) ==
+      old((unfolding acc(Gauge_unique(this), write) in
+        intFromRef(this.level))))
+}
+
+/member_this_contracts.kt: info: Generated Viper text for tick:
+field level: Ref
+
+method DriftingGauge_f_tick(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), DriftingGauge())
+  requires acc(DriftingGauge_unique(this), write)
+  ensures acc(DriftingGauge_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures true
+{
+  var anon: Ref
+  unfold acc(DriftingGauge_unique(this), write)
+  unfold acc(Gauge_unique(this), write)
+  anon := this.level
+  this.level := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Gauge_unique(this), write)
+  fold acc(DriftingGauge_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method Gauge_f_tick(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  ensures acc(Gauge_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Gauge_unique(this), write) in
+      intFromRef(this.level) ==
+      old((unfolding acc(Gauge_unique(this), write) in
+        intFromRef(this.level))))
+
+
+method refines_Gauge_f_tick(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  requires isSubtype(typeOf(this), DriftingGauge())
+{
+  inhale isSubtype(typeOf(this), DriftingGauge())
+  fold acc(DriftingGauge_unique(this), write)
+  ret_2 := DriftingGauge_f_tick(this)
+  unfold acc(DriftingGauge_unique(this), write)
+  assert acc(Gauge_unique(this), write)
+  assert isSubtype(typeOf(ret_2), unitType())
+  assert (unfolding acc(Gauge_unique(this), write) in
+      intFromRef(this.level) ==
+      old((unfolding acc(Gauge_unique(this), write) in
+        intFromRef(this.level))))
+}
+
+/member_this_contracts.kt: info: Generated Viper text for tick:
+field flagged: Ref
+
+field level: Ref
+
+method FlaggingGauge_f_tick(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), FlaggingGauge())
+  requires acc(FlaggingGauge_unique(this), write)
+  ensures acc(FlaggingGauge_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(FlaggingGauge_unique(this), write) in
+      (unfolding acc(PlainGauge_unique(this), write) in
+        (unfolding acc(Gauge_unique(this), write) in
+          intFromRef(this.level) ==
+          old((unfolding acc(FlaggingGauge_unique(this), write) in
+            (unfolding acc(PlainGauge_unique(this), write) in
+              (unfolding acc(Gauge_unique(this), write) in
+                intFromRef(this.level))))))))
+{
+  unfold acc(FlaggingGauge_unique(this), write)
+  this.flagged := boolToRef(true)
+  label lbl_ret_0
+  fold acc(FlaggingGauge_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method Gauge_f_tick(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  ensures acc(Gauge_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(Gauge_unique(this), write) in
+      intFromRef(this.level) ==
+      old((unfolding acc(Gauge_unique(this), write) in
+        intFromRef(this.level))))
+
+
+method refines_Gauge_f_tick(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  requires isSubtype(typeOf(this), FlaggingGauge())
+{
+  inhale isSubtype(typeOf(this), PlainGauge())
+  fold acc(PlainGauge_unique(this), write)
+  inhale isSubtype(typeOf(this), FlaggingGauge()) &&
+    acc(this.flagged, write) &&
+    isSubtype(typeOf(this.flagged), boolType())
+  fold acc(FlaggingGauge_unique(this), write)
+  ret_1 := FlaggingGauge_f_tick(this)
+  unfold acc(FlaggingGauge_unique(this), write)
+  unfold acc(PlainGauge_unique(this), write)
+  assert acc(Gauge_unique(this), write)
+  assert isSubtype(typeOf(ret_1), unitType())
+  assert (unfolding acc(Gauge_unique(this), write) in
+      intFromRef(this.level) ==
+      old((unfolding acc(Gauge_unique(this), write) in
+        intFromRef(this.level))))
+}
+
+/member_this_contracts.kt: info: Generated Viper text for staleAfterTick:
+field level: Ref
+
+field ticks: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method staleAfterTick(g: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(g), CountingGauge())
+  requires acc(CountingGauge_unique(g), write)
+  ensures acc(CountingGauge_unique(g), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(CountingGauge_unique(g), write)
+  g.ticks := intToRef(0)
+  anon_0 := tickKeepsLevel(g)
+  exhale isSubtype(typeOf(g), CountingGauge()) && acc(g.ticks, write) &&
+    isSubtype(typeOf(g.ticks), intType())
+  inhale isSubtype(typeOf(g), CountingGauge()) && acc(g.ticks, write) &&
+    isSubtype(typeOf(g.ticks), intType())
+  anon_1 := g.ticks
+  assert intFromRef(anon_1) == 0
+  label lbl_ret_0
+  fold acc(CountingGauge_unique(g), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method tickKeepsLevel(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  ensures acc(Gauge_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())

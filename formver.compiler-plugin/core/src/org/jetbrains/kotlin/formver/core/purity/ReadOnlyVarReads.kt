@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.UniqueValAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.While
 import org.jetbrains.kotlin.formver.core.embeddings.expression.WithPosition
+import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
 /**
@@ -38,7 +39,7 @@ fun ExpEmbedding.checkReadOnlyVarReads(
         !receiverOwned -> errors.reportUnsupportedOwnership(nextSource, "Reading $read needs a @Unique $owner.")
         receiver.pathRoot()?.name in consumed -> errors.reportUnsupportedOwnership(
             nextSource,
-            "Reading $read in a postcondition needs a @Borrowed root; the function consumes this @Unique parameter.",
+            "Reading $read in a postcondition needs a @Borrowed root; the function consumes ${receiver.pathRoot()!!.consumedSpelling}.",
         )
         else -> {}
     }
@@ -75,6 +76,10 @@ fun ExpEmbedding.checkSpecificationVarReads(source: KtSourceElement, errors: Err
         }
     }
 }
+
+/** This consumed root as a diagnostic names it. */
+private val VariableEmbedding.consumedSpelling: String
+    get() = if (name == DispatchReceiverName) "`this`" else "this @Unique parameter"
 
 private fun ExpEmbedding.pathRoot(): VariableEmbedding? = when (val exp = ignoringCastsAndMetaNodes()) {
     is VariableEmbedding -> exp
