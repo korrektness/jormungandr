@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
+import org.jetbrains.kotlin.fir.symbols.impl.FirEnumEntrySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
@@ -659,6 +660,23 @@ class ProgramConverter(
         fullSignatures.putIfAbsent(it.signature.name, it.signature)
     }.signature
 
+    override fun embedEnumEntry(symbol: FirEnumEntrySymbol): ExpEmbedding {
+        val functionType = buildFunctionPretype {
+            withReturnType(embedType(symbol.resolvedReturnType))
+        }
+        val name = symbol.callableId.embedMemberGetterName(MemberEmbeddingPolicy.FUNCTION)
+        val signature = functionType.toGenericAccessorSignature(isPure = true).toNamedSignature(name)
+            .toNonInlineSignature(symbol = null).toCompleteSignature(symbol.source) {
+                postconditions {
+                    returns {
+                        provenInvariants()
+                    }
+                }
+            }
+        fullSignatures.putIfAbsent(signature.signature.name, signature.signature)
+        return signature.signature.insertCall(emptyList())
+    }
+
     private fun embedExtensionProperty(symbol: FirPropertySymbol): PropertyEmbedding {
         val getterType = buildFunctionPretype {
             withExtensionReceiver { nullableAny() }
@@ -723,7 +741,8 @@ class ProgramConverter(
 
             classEmbedding
         }
-        symbol.propertySymbols.forEach {
+        // A static property, such as an enum's `entries`, is not a property of the class's instances.
+        symbol.propertySymbols.filter { it.dispatchReceiverType != null }.forEach {
             embedProperty(it)
         }
         return embedding

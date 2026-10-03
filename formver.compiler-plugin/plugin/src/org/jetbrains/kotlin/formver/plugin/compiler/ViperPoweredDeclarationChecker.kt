@@ -5,6 +5,10 @@
 
 package org.jetbrains.kotlin.formver.plugin.compiler
 
+import org.jetbrains.kotlin.KtFakeSourceElementKind
+import org.jetbrains.kotlin.KtLightSourceElement
+import org.jetbrains.kotlin.KtPsiSourceElement
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
@@ -128,7 +132,7 @@ class ViperPoweredDeclarationChecker(
             }
 
         } catch (e: UnsupportedFeatureException) {
-            reporter.reportOn(e.source ?: declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, e.message)
+            reporter.reportOn(reportingSource(e.source, declaration), ConversionErrors.UNSUPPORTED_FEATURE, e.message)
         } catch (e: SnaktInternalException) {
             reportInternalError(e, declaration)
         } catch (e: Exception) {
@@ -140,8 +144,27 @@ class ViperPoweredDeclarationChecker(
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun reportInternalError(e: SnaktInternalException, declaration: FirSimpleFunction) {
-        reporter.reportOn(e.source ?: declaration.source, PluginErrors.INTERNAL_ERROR, e.message)
+        reporter.reportOn(reportingSource(e.source, declaration), PluginErrors.INTERNAL_ERROR, e.message)
         config.messageCollector.report(CompilerMessageSeverity.LOGGING, e.stackTraceToString())
+    }
+
+    /**
+     * Where to report an error that stopped the conversion of [declaration]. The error may come from a callee, a class or
+     * a library declaration that the conversion embeds; it is reported at [source] only when that lies inside
+     * [declaration], so that the function whose conversion stopped always carries it.
+     */
+    private fun reportingSource(source: KtSourceElement?, declaration: FirSimpleFunction): KtSourceElement? {
+        val outer = declaration.source ?: return source
+        return source?.takeIf { it.isWithin(outer) } ?: outer
+    }
+
+    private fun KtSourceElement.isWithin(outer: KtSourceElement): Boolean {
+        val sameFile = when {
+            this is KtPsiSourceElement && outer is KtPsiSourceElement -> psi.containingFile == outer.psi.containingFile
+            this is KtLightSourceElement && outer is KtLightSourceElement -> treeStructure === outer.treeStructure
+            else -> false
+        }
+        return sameFile && startOffset >= outer.startOffset && endOffset <= outer.endOffset
     }
 
     private fun getProgramForLogging(program: Program): Program? = when (config.logLevel) {
@@ -162,6 +185,8 @@ class ViperPoweredDeclarationChecker(
     private fun PluginConfiguration.shouldConvert(declaration: FirSimpleFunction): Boolean = when {
         // Prevent compiler-derived or library functions from being verified
         declaration.origin != FirDeclarationOrigin.Source -> false
+        // An enum's `values` and `valueOf` have no body to convert.
+        declaration.source?.kind == KtFakeSourceElementKind.EnumGeneratedDeclaration -> false
         declaration.hasAnnotation(neverConvertId, session) -> false
         declaration.hasAnnotation(alwaysVerifyId, session) -> true
         else -> conversionSelection.applicable(declaration)

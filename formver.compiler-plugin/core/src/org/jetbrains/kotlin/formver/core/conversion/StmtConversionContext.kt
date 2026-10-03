@@ -143,6 +143,7 @@ fun StmtConversionContext.embedPropertyAccess(
 ): PropertyAccessEmbedding =
     when (val calleeSymbol = accessExpression.calleeReference.symbol) {
         is FirValueParameterSymbol -> embedParameter(calleeSymbol).asPropertyAccess()
+        is FirEnumEntrySymbol -> embedEnumEntry(calleeSymbol).asPropertyAccess()
         is FirPropertySymbol -> {
             val type = embedType(calleeSymbol.resolvedReturnType)
             when {

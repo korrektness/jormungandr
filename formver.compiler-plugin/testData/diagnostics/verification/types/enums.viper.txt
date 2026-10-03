@@ -1,0 +1,101 @@
+/enums.kt: info: Generated Viper text for isControl:
+function CONTROL(): Ref
+  ensures isSubtype(typeOf(result), CharCategory())
+
+
+function code(this: Ref): Ref
+  requires isSubtype(typeOf(this), CharCategory())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CharCategory())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method contains(this: Ref, char: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CharCategory())
+  requires isSubtype(typeOf(char), charType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+
+
+method isControl(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := contains(CONTROL(), c)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/enums.kt: info: Generated Viper text for callsIsControl:
+method callsIsControl(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := isControl(c)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method isControl(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), charType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+
+
+/enums.kt: info: Generated Viper text for north:
+function NORTH(): Ref
+  ensures isSubtype(typeOf(result), Direction())
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method north() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Direction())
+{
+  v_ret_0 := NORTH()
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/enums.kt: info: Generated Viper text for isNorth:
+function NORTH(): Ref
+  ensures isSubtype(typeOf(result), Direction())
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method isNorth(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), Direction())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := boolToRef(d == NORTH())
+  goto lbl_ret_0
+  label lbl_ret_0
+}

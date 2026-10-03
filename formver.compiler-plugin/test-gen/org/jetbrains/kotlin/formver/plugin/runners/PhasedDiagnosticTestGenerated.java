@@ -1244,6 +1244,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("enums.kt")
+      public void testEnums() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/types/enums.kt");
+      }
+
+      @Test
       @TestMetadata("generics.kt")
       public void testGenerics() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/types/generics.kt");
