@@ -172,11 +172,9 @@ function aliasAndReassign(node: Ref): Ref
   requires isSubtype(typeOf(node), Node())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let alias1_0 ==
-    (node) in
-    (let alias2_0 ==
-      (next(alias1_0)) in
-      (!(alias2_0 == nullValue()) ? value(alias2_0) : intToRef(-1))))
+  (let alias2_0 ==
+    (next(node)) in
+    (!(alias2_0 == nullValue()) ? value(alias2_0) : intToRef(-1)))
 }
 
 function next(this: Ref): Ref

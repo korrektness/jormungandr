@@ -144,9 +144,7 @@ function whenAssignment(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let anon_0_0 ==
-    (a) in
-    (intFromRef(anon_0_0) == 1 ?
-      (boolFromRef(b) ? intToRef(2) : intToRef(3)) :
-      (intFromRef(anon_0_0) == 2 ? intToRef(4) : intToRef(5))))
+  (intFromRef(a) == 1 ?
+    (boolFromRef(b) ? intToRef(2) : intToRef(3)) :
+    (intFromRef(a) == 2 ? intToRef(4) : intToRef(5)))
 }

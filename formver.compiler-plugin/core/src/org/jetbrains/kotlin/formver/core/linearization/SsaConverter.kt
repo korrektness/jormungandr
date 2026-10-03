@@ -17,6 +17,12 @@ class SsaConverter(
     private val returnExpressions: MutableList<Pair<Exp, Exp>> = mutableListOf()
     private val accessInvariants: MutableMap<SsaVariableName, List<Exp.PredicateAccess>> = mutableMapOf()
 
+    /**
+     * The variable each SSA name assigned just a variable stands for. Every name here is assigned once, so a read of
+     * the SSA name reads that variable instead, and a condition on it is seen to test that variable.
+     */
+    private val aliases: MutableMap<SymbolicName, SymbolicName> = mutableMapOf()
+
     // Produce new ssa names for a source variable name
     private val ssaNameProducers: MutableMap<SymbolicName, FreshEntityProducer<SsaVariableName, SymbolicName>> =
         mutableMapOf()
@@ -79,9 +85,11 @@ class SsaConverter(
      * through the values and bodies of let bindings, or around [this] when there is no such arm. [known] are the
      * conditions of the arms entered on the way; when they imply the guard, the value is bound unguarded, so the
      * binding and its uses can share one `unfolding`. When [this] is just the variable, the value replaces it: Silicon
-     * does not relate a recursive application inside such a `let` to the function's unrolled definition.
+     * does not relate a recursive application inside such a `let` to the function's unrolled definition. An alias that
+     * [this] does not use is not bound: reading a variable has no precondition.
      */
     private fun Exp.bind(assignment: Assignment, known: Set<Exp> = emptySet()): Exp {
+        if (assignment.name in aliases && !mentions(assignment.name)) return this
         bindInArm(assignment, known)?.let { return it }
         val value = with(assignment) {
             if (known.containsAll(guard.conjuncts())) value else Exp.TernaryExp(guard, value, default)
@@ -141,6 +149,7 @@ class SsaConverter(
         newVarAccessInvariants: List<Exp.PredicateAccess> = emptyList()
     ) {
         val ssaName = head.updateLatestName(name)
+        if (varExp is Exp.LocalVar) aliases[ssaName] = varExp.name
         accessInvariants[ssaName] = newVarAccessInvariants
         varExp.propagateAccessInvariants(ssaName)
         addGuardedAssignment(ssaName, varExp.withAccessInvariants(ssaName))
@@ -172,9 +181,8 @@ class SsaConverter(
         head = head.generateUnreachableBlockNodeFromThisNode()
     }
 
-    fun resolveVariableName(name: SymbolicName): SymbolicName {
-        return head.resolveVariableName(name)
-    }
+    fun resolveVariableName(name: SymbolicName): SymbolicName =
+        head.resolveVariableName(name).let { aliases[it] ?: it }
 
     private fun addGuardedAssignment(name: SsaVariableName, varExp: Exp) {
         val defaultExpression = varExp.type.defaultExpression() ?: throw SnaktInternalException(

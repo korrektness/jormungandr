@@ -125,3 +125,16 @@ fun <!VIPER_TEXT!>headValue<!>(n: @Unique Node?): Int {
     preconditions { n != null }
     return if (n == null) -1 else n.value
 }
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>lengthWhen<!>(n: @Unique Node?): Int = when (n) {
+    null -> 0
+    else -> 1 + lengthWhen(n.next)
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>oneNodeWhen<!>(v: Int): @Unique Node {
+    postconditions<Node> { r -> lengthWhen(r) == 1 }
+    return Node(v, null)
+}

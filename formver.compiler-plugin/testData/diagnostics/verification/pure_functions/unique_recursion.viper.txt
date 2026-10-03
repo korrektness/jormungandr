@@ -655,3 +655,65 @@ function headValue(n: Ref): Ref
     intToRef(-1) :
     (unfolding acc(Node_unique(n), write) in n.value))
 }
+
+/unique_recursion.kt: info: Generated Viper text for lengthWhen:
+field next: Ref
+
+field value: Ref
+
+function lengthWhen(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_4_0 ==
+        (n.next) in
+        plusInts(intToRef(1), lengthWhen(anon_4_0)))))
+}
+
+/unique_recursion.kt: info: Generated Viper text for oneNodeWhen:
+field bf_next: Ref
+
+field bf_value: Ref
+
+function lengthWhen(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_4_0 ==
+        (n.bf_next) in
+        plusInts(intToRef(1), lengthWhen(anon_4_0)))))
+}
+
+method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  ensures isSubtype(typeOf(ret_2), Node())
+  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
+    isSubtype(typeOf(ret_2.bf_value), intType()) &&
+    acc(ret_2.bf_next, write) &&
+    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
+  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
+  ensures ret_2.bf_next == par_next
+
+
+method oneNodeWhen(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures acc(Node_unique(v_ret_0), write)
+  ensures intFromRef(lengthWhen(v_ret_0)) == 1
+{
+  v_ret_0 := con(par_v, nullValue())
+  fold acc(Node_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
