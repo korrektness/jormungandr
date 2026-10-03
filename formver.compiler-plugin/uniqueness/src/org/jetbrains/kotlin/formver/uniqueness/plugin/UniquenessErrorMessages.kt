@@ -56,6 +56,10 @@ object UniquenessErrorMessages : BaseDiagnosticRendererFactory() {
                     "Uniqueness or borrowing annotations differ from those of the overridden declaration.",
                 )
                 map.put(
+                    UniquenessErrors.ACTUAL_UNIQUENESS_MISMATCH,
+                    "Uniqueness or borrowing annotations differ from those of the expect declaration.",
+                )
+                map.put(
                     UniquenessErrors.INVALID_UNIQUENESS_CAPTURE,
                     "Unique or borrowed reference ''{0}'' is captured by a declaration that is not called in place.",
                     PathRenderer

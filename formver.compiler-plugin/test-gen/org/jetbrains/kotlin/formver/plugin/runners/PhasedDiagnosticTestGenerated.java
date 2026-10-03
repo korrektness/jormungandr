@@ -363,6 +363,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("expect_actual.kt")
+    public void testExpect_actual() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/expect_actual.kt");
+    }
+
+    @Test
     @TestMetadata("ghost.kt")
     public void testGhost() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/ghost.kt");

@@ -369,6 +369,8 @@ Each of these is a compile error:
   `class Box<T>(var item: @Unique T)`.
 - An override that does not repeat the `@Unique` and `@Borrowed` annotations
   of the declaration it overrides, on parameters, receiver and result.
+- An `actual` declaration that does not repeat the `@Unique` and `@Borrowed`
+  annotations of its `expect` declaration, on parameters, receiver and result.
 - `try` in a function that owns anything anywhere: a signature with `@Unique`
   or `@Borrowed`, or any owned local, in or outside the `try`. Passing a fresh
   object straight to a call, as in `try { consume(Node(1, null)) }`, is

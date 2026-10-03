@@ -25,7 +25,7 @@ class AfterConversionHandler(testServices: TestServices) : FirAnalysisHandler(te
         val frontendDiagnosticsPerFile =
             FirDiagnosticCollectorService(testServices).getFrontendDiagnosticsForModule(info)
 
-        module.files.forEach { file ->
+        for (file in info.partsForDependsOnModules.flatMap { it.module.files }) {
             val testFile = info.allFirFiles[file]!!
             val diagnostics = frontendDiagnosticsPerFile[testFile]
             val simpleDiagnostics = diagnostics.map { it.diagnostic }

@@ -34,8 +34,9 @@ object UniquenessErrors : KtDiagnosticsContainer() {
     val INVALID_TYPE_PARAMETER_UNIQUENESS by error0<PsiElement>()
     val INVALID_VALUE_TYPE_UNIQUENESS by error0<PsiElement>()
 
-    // Checking overrides
+    // Checking overrides and actual declarations
     val OVERRIDE_UNIQUENESS_MISMATCH by error0<PsiElement>()
+    val ACTUAL_UNIQUENESS_MISMATCH by error0<PsiElement>()
 
     // Checking captures
     val INVALID_UNIQUENESS_CAPTURE by error1<PsiElement, Path>()

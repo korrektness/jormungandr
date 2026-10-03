@@ -33,6 +33,7 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> =
             setOf(
                 OverrideUniquenessChecker,
+                ActualUniquenessChecker,
                 DeclaredTypeUniquenessChecker,
             )
 
