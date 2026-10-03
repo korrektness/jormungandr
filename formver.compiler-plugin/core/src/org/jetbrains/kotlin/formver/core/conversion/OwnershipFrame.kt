@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.FirExpression
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.expression.BindingMode
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.RootBinding
@@ -23,6 +24,8 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
  * An inlined body's parameters are bound to the variables that stand for them at the call by [bindings]. [parent] is
  * the frame of the body containing the call, which is the body that runs the inlined one: for a lambda, the body that
  * invokes it, not the one it is written in. [analysis] is `null` when there are no facts, and then nothing is owned.
+ *
+ * [receiver] is the extension receiver of a function's own body, with the symbol [analysis] roots its paths at.
  */
 class OwnershipFrame private constructor(
     val analysis: FunctionUniquenessAnalysis?,
@@ -30,6 +33,7 @@ class OwnershipFrame private constructor(
     private val stateInParent: (FunctionUniquenessAnalysis) -> UniquenessState,
     val bindings: List<RootBinding>,
     private val outerScope: List<VariableEmbedding>,
+    private val receiver: Pair<VariableEmbedding, FirBasedSymbol<*>>?,
 ) {
     /**
      * A frame for a body inlined at [callSite], which runs while the call holds its arguments. [outerScope] are the
@@ -40,15 +44,18 @@ class OwnershipFrame private constructor(
         callSite: FirElement,
         bindings: List<RootBinding>,
         outerScope: List<VariableEmbedding>,
-    ) = OwnershipFrame(analysis, this, { it.stateInsideCall(callSite) }, bindings, outerScope)
+    ) = OwnershipFrame(analysis, this, { it.stateInsideCall(callSite) }, bindings, outerScope, null)
 
     /** A frame for a default argument of the function called at [callSite], evaluated before the call takes anything. */
     fun forDefault(analysis: FunctionUniquenessAnalysis?, callSite: FirElement, outerScope: List<VariableEmbedding>) =
-        OwnershipFrame(analysis, this, { it.stateBefore(callSite) }, emptyList(), outerScope)
+        OwnershipFrame(analysis, this, { it.stateBefore(callSite) }, emptyList(), outerScope, null)
 
-    /** The variables in scope at the calls that run this body, besides [ownScope], the variables of the body itself. */
+    /**
+     * The variables in scope at the calls that run this body, besides [ownScope], the variables of the body itself,
+     * and the function's own extension receiver.
+     */
     fun scopeWith(ownScope: List<VariableEmbedding>): List<VariableEmbedding> =
-        (ownScope + outerScope).distinctBy { it.name }
+        (ownScope + outerScope + listOfNotNull(receiver?.first)).distinctBy { it.name }
 
     fun pathOf(expression: FirExpression): Path? = analysis?.pathOf(expression)
 
@@ -87,7 +94,9 @@ class OwnershipFrame private constructor(
             val ownedView = binding.mode == BindingMode.Borrowed && !binding.formal.isUnique
             return if (analysis.owns(state, listOf(root), ownedView)) analysis.movedBelow(state, root) else null
         }
-        val symbol = (variable as? FirVariableEmbedding)?.symbol ?: return null
+        val symbol = (variable as? FirVariableEmbedding)?.symbol
+            ?: chain.last().first.receiver?.takeIf { it.first.name == variable.name }?.second
+            ?: return null
         for ((frame, state) in chain) {
             val analysis = frame.analysis ?: continue
             if (state == null || !analysis.hasRoot(state, symbol)) continue
@@ -97,8 +106,11 @@ class OwnershipFrame private constructor(
     }
 
     companion object {
-        /** The frame of a function's own body. */
-        fun root(analysis: FunctionUniquenessAnalysis?) =
-            OwnershipFrame(analysis, null, { error("A function's own body has no caller.") }, emptyList(), emptyList())
+        /** The frame of a function's own body, whose extension receiver is [receiver], rooted at [receiverRoot]. */
+        fun root(analysis: FunctionUniquenessAnalysis?, receiver: VariableEmbedding?, receiverRoot: FirBasedSymbol<*>?) =
+            OwnershipFrame(
+                analysis, null, { error("A function's own body has no caller.") }, emptyList(), emptyList(),
+                receiver?.let { variable -> receiverRoot?.let { variable to it } },
+            )
     }
 }

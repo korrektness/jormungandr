@@ -844,6 +844,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("unique_receiver_loop.kt")
+      public void testUnique_receiver_loop() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_receiver_loop.kt");
+      }
+
+      @Test
       @TestMetadata("unique_try.kt")
       public void testUnique_try() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_try.kt");

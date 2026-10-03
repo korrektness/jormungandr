@@ -1,0 +1,178 @@
+/unique_receiver_loop.kt: info: Generated Viper text for countUp:
+field value: Ref
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method countUp(v_this_extension: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), Box())
+  requires acc(Box_unique(v_this_extension), write)
+  requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(n)
+  ensures acc(Box_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  i := intToRef(0)
+  unfold acc(Box_unique(v_this_extension), write)
+  v_this_extension.value := intToRef(0)
+  fold acc(Box_unique(v_this_extension), write)
+  label cont
+    invariant acc(Box_unique(v_this_extension), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+      (unfolding acc(Box_unique(v_this_extension), write) in
+        intFromRef(v_this_extension.value) == intFromRef(i))
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_0: Ref
+    unfold acc(Box_unique(v_this_extension), write)
+    anon_2 := v_this_extension.value
+    v_this_extension.value := plusInts(anon_2, intToRef(1))
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    fold acc(Box_unique(v_this_extension), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+    (unfolding acc(Box_unique(v_this_extension), write) in
+      intFromRef(v_this_extension.value) == intFromRef(i))
+  unfold acc(Box_unique(v_this_extension), write)
+  anon_3 := v_this_extension.value
+  assert intFromRef(anon_3) == intFromRef(n)
+  label lbl_ret_0
+  fold acc(Box_unique(v_this_extension), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_receiver_loop.kt: info: Generated Viper text for countUpEndProbe:
+field value: Ref
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method countUpEndProbe(v_this_extension: Ref, n: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), Box())
+  requires acc(Box_unique(v_this_extension), write)
+  requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(n)
+  ensures acc(Box_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  i := intToRef(0)
+  unfold acc(Box_unique(v_this_extension), write)
+  v_this_extension.value := intToRef(0)
+  fold acc(Box_unique(v_this_extension), write)
+  label cont
+    invariant acc(Box_unique(v_this_extension), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+      (unfolding acc(Box_unique(v_this_extension), write) in
+        intFromRef(v_this_extension.value) == intFromRef(i))
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_0: Ref
+    unfold acc(Box_unique(v_this_extension), write)
+    anon_2 := v_this_extension.value
+    v_this_extension.value := plusInts(anon_2, intToRef(1))
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    fold acc(Box_unique(v_this_extension), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+    (unfolding acc(Box_unique(v_this_extension), write) in
+      intFromRef(v_this_extension.value) == intFromRef(i))
+  unfold acc(Box_unique(v_this_extension), write)
+  anon_3 := v_this_extension.value
+  assert intFromRef(anon_3) == intFromRef(n) + 1
+  label lbl_ret_0
+  fold acc(Box_unique(v_this_extension), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_receiver_loop.kt: info: Generated Viper text for countIntoParameter:
+field value: Ref
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method countIntoParameter(v_this_extension: Ref, b: Ref, n: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), Box())
+  requires acc(Box_unique(v_this_extension), write)
+  requires isSubtype(typeOf(b), Box())
+  requires acc(Box_unique(b), write)
+  requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(n)
+  ensures acc(Box_unique(v_this_extension), write)
+  ensures acc(Box_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  i := intToRef(0)
+  unfold acc(Box_unique(b), write)
+  b.value := intToRef(0)
+  unfold acc(Box_unique(v_this_extension), write)
+  v_this_extension.value := intToRef(7)
+  fold acc(Box_unique(b), write)
+  fold acc(Box_unique(v_this_extension), write)
+  label cont
+    invariant acc(Box_unique(b), write)
+    invariant acc(Box_unique(v_this_extension), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(b), Box())
+    invariant isSubtype(typeOf(n), intType())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+      (unfolding acc(Box_unique(b), write) in
+        intFromRef(b.value) == intFromRef(i))
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_0: Ref
+    unfold acc(Box_unique(b), write)
+    anon_2 := b.value
+    b.value := plusInts(anon_2, intToRef(1))
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    fold acc(Box_unique(b), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(b), Box())
+  assert isSubtype(typeOf(n), intType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+    (unfolding acc(Box_unique(b), write) in
+      intFromRef(b.value) == intFromRef(i))
+  unfold acc(Box_unique(b), write)
+  anon_3 := b.value
+  assert intFromRef(anon_3) == intFromRef(n)
+  label lbl_ret_0
+  fold acc(Box_unique(b), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

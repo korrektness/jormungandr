@@ -372,7 +372,7 @@ class ProgramConverter(
             signature.signature,
             paramResolver,
             scopeIndexProducer.getFresh(),
-            OwnershipFrame.root(uniquenessAnalysis),
+            OwnershipFrame.root(uniquenessAnalysis, signature.signature.extensionReceiver, symbol.receiverParameterSymbol),
         ).statementCtxt()
         return stmtCtx
     }
@@ -400,7 +400,7 @@ class ProgramConverter(
             signature,
             rootResolver,
             ScopeIndex.NoScope,
-            OwnershipFrame.root(uniquenessAnalysis),
+            OwnershipFrame.root(uniquenessAnalysis, signature.extensionReceiver, symbol.receiverParameterSymbol),
         ).statementCtxt()
 
         val postconditionContext = MethodConverter(
@@ -408,7 +408,7 @@ class ProgramConverter(
             signature,
             wrappedResolver,
             ScopeIndex.NoScope,
-            OwnershipFrame.root(uniquenessAnalysis),
+            OwnershipFrame.root(uniquenessAnalysis, signature.extensionReceiver, symbol.receiverParameterSymbol),
         ).statementCtxt()
 
         return Pair(preconditionContext, postconditionContext)
