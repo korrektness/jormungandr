@@ -736,6 +736,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("member_this_receiver.kt")
+      public void testMember_this_receiver() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/member_this_receiver.kt");
+      }
+
+      @Test
       @TestMetadata("override_contracts.kt")
       public void testOverride_contracts() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/override_contracts.kt");

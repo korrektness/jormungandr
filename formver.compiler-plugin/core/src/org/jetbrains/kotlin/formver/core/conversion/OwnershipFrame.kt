@@ -8,7 +8,6 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.expression.BindingMode
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.RootBinding
@@ -26,7 +25,8 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
  * the frame of the body containing the call, which is the body that runs the inlined one: for a lambda, the body that
  * invokes it, not the one it is written in. [analysis] is `null` when there are no facts, and then nothing is owned.
  *
- * [receiver] is the extension receiver of a function's own body, with the symbol [analysis] roots its paths at.
+ * [receivers] are the dispatch and extension receivers of a function's own body, each with the symbol [analysis] roots
+ * its paths at.
  */
 class OwnershipFrame private constructor(
     val analysis: FunctionUniquenessAnalysis?,
@@ -34,7 +34,7 @@ class OwnershipFrame private constructor(
     private val stateInParent: (FunctionUniquenessAnalysis) -> UniquenessState,
     val bindings: List<RootBinding>,
     private val outerScope: List<VariableEmbedding>,
-    private val receiver: Pair<VariableEmbedding, FirBasedSymbol<*>>?,
+    private val receivers: List<Pair<VariableEmbedding, FirBasedSymbol<*>>>,
 ) {
     /**
      * A frame for a body inlined at [callSite], which runs while the call holds its arguments. [outerScope] are the
@@ -45,25 +45,21 @@ class OwnershipFrame private constructor(
         callSite: FirElement,
         bindings: List<RootBinding>,
         outerScope: List<VariableEmbedding>,
-    ) = OwnershipFrame(analysis, this, { it.stateInsideCall(callSite) }, bindings, outerScope, null)
+    ) = OwnershipFrame(analysis, this, { it.stateInsideCall(callSite) }, bindings, outerScope, emptyList())
 
     /** A frame for a default argument of the function called at [callSite], evaluated before the call takes anything. */
     fun forDefault(analysis: FunctionUniquenessAnalysis?, callSite: FirElement, outerScope: List<VariableEmbedding>) =
-        OwnershipFrame(analysis, this, { it.stateBefore(callSite) }, emptyList(), outerScope, null)
+        OwnershipFrame(analysis, this, { it.stateBefore(callSite) }, emptyList(), outerScope, emptyList())
 
     /**
      * The variables in scope at the calls that run this body, besides [ownScope], the variables of the body itself,
-     * and the function's own extension receiver.
+     * and the function's own receivers.
      */
     fun scopeWith(ownScope: List<VariableEmbedding>): List<VariableEmbedding> =
-        (ownScope + outerScope + listOfNotNull(receiver?.first)).distinctBy { it.name }
+        (ownScope + outerScope + receivers.map { it.first }).distinctBy { it.name }
 
-    /**
-     * The path [expression] denotes. A path through the dispatch receiver `this` denotes none: a signature gives the
-     * function no permission to `this`, so nothing reached through it is owned.
-     */
-    fun pathOf(expression: FirExpression): Path? =
-        analysis?.pathOf(expression)?.takeUnless { it.first() is FirClassSymbol<*> }
+    /** The path [expression] denotes. */
+    fun pathOf(expression: FirExpression): Path? = analysis?.pathOf(expression)
 
     /** Whether [path] is `Unique` on entry to [element]. */
     fun ownsBefore(element: FirElement, path: Path): Boolean =
@@ -105,7 +101,7 @@ class OwnershipFrame private constructor(
             return if (analysis.owns(state, listOf(root), ownedView)) analysis.movedBelow(state, root) else null
         }
         val symbol = (variable as? FirVariableEmbedding)?.symbol
-            ?: chain.last().first.receiver?.takeIf { it.first.name == variable.name }?.second
+            ?: chain.last().first.receivers.firstOrNull { it.first.name == variable.name }?.second
             ?: return null
         for ((frame, state) in chain) {
             val analysis = frame.analysis ?: continue
@@ -116,11 +112,8 @@ class OwnershipFrame private constructor(
     }
 
     companion object {
-        /** The frame of a function's own body, whose extension receiver is [receiver], rooted at [receiverRoot]. */
-        fun root(analysis: FunctionUniquenessAnalysis?, receiver: VariableEmbedding?, receiverRoot: FirBasedSymbol<*>?) =
-            OwnershipFrame(
-                analysis, null, { error("A function's own body has no caller.") }, emptyList(), emptyList(),
-                receiver?.let { variable -> receiverRoot?.let { variable to it } },
-            )
+        /** The frame of a function's own body, whose [receivers] are paired with the symbols they are rooted at. */
+        fun root(analysis: FunctionUniquenessAnalysis?, receivers: List<Pair<VariableEmbedding, FirBasedSymbol<*>>>) =
+            OwnershipFrame(analysis, null, { error("A function's own body has no caller.") }, emptyList(), emptyList(), receivers)
     }
 }

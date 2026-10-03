@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
 import org.jetbrains.kotlin.formver.core.conversion.SubstitutedArgument
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
+import org.jetbrains.kotlin.formver.core.conversion.dispatchReceiverRoot
 import org.jetbrains.kotlin.formver.core.conversion.insertInlineFunctionCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionCall
@@ -183,7 +184,7 @@ data class InlineNamedFunction(
         }
         val roots = paramNames.map {
             when (it) {
-                SubstitutedArgument.DispatchThis -> null
+                SubstitutedArgument.DispatchThis -> with(ctx) { symbol.dispatchReceiverRoot }
                 SubstitutedArgument.ExtensionThis -> symbol.receiverParameterSymbol
                 is SubstitutedArgument.ValueParameter -> it.symbol
             }

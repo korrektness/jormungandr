@@ -1,0 +1,327 @@
+/member_this_receiver.kt: info: Generated Viper text for trackMultilineString:
+field isInMultilineBasic: Ref
+
+field isInMultilineLiteral: Ref
+
+function isNextThreeQuotes(this: Ref, line: Ref, index: Ref, quote: Ref): Ref
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  requires isSubtype(typeOf(line), stringType())
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(quote), charType())
+  requires 0 <= intFromRef(index) &&
+    intFromRef(index) + 2 < |stringFromRef(line)|
+  ensures isSubtype(typeOf(result), boolType())
+{
+  andBools(andBools(boolToRef(stringFromRef(line)[intFromRef(index)] ==
+  charFromRef(quote)), boolToRef(stringFromRef(line)[intFromRef(index) + 1] ==
+  charFromRef(quote))), boolToRef(stringFromRef(line)[intFromRef(index) + 2] ==
+  charFromRef(quote)))
+}
+
+function isStringType(this: Ref): Ref
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+method trackMultilineString(this: Ref, line: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  requires acc(TomlMultilineString_unique(this), write)
+  requires isSubtype(typeOf(line), stringType())
+  requires !((unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineBasic)) &&
+    (unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineLiteral)))
+  ensures acc(TomlMultilineString_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures !((unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineBasic)) &&
+    (unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineLiteral)))
+{
+  var i: Ref
+  var anon_1: Ref
+  if (boolFromRef(isStringType(this))) {
+    goto lbl_ret_0
+  }
+  i := intToRef(0)
+  label cont
+    invariant acc(TomlMultilineString_unique(this), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(line), stringType())
+    invariant isSubtype(typeOf(this), TomlMultilineString())
+    invariant 0 <= intFromRef(i) &&
+      !((unfolding acc(TomlMultilineString_unique(this), write) in
+        boolFromRef(this.isInMultilineBasic)) &&
+      (unfolding acc(TomlMultilineString_unique(this), write) in
+        boolFromRef(this.isInMultilineLiteral)))
+  anon_1 := leInts(i, minusInts(stringLength(line), intToRef(3)))
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    var anon_6: Ref
+    var anon_7: Ref
+    var anon_0: Ref
+    unfold acc(TomlMultilineString_unique(this), write)
+    anon_4 := this.isInMultilineBasic
+    fold acc(TomlMultilineString_unique(this), write)
+    if (!boolFromRef(anon_4)) {
+      var anon_5: Ref
+      unfold acc(TomlMultilineString_unique(this), write)
+      anon_5 := this.isInMultilineLiteral
+      anon_3 := notBool(anon_5)
+      fold acc(TomlMultilineString_unique(this), write)
+    } else {
+      anon_3 := boolToRef(false)}
+    if (boolFromRef(anon_3)) {
+      anon_2 := boolToRef(stringFromRef(line)[intFromRef(i)] == 35)
+    } else {
+      anon_2 := boolToRef(false)}
+    if (boolFromRef(anon_2)) {
+      goto break
+    }
+    unfold acc(TomlMultilineString_unique(this), write)
+    anon_7 := this.isInMultilineLiteral
+    fold acc(TomlMultilineString_unique(this), write)
+    if (!boolFromRef(anon_7)) {
+      anon_6 := isNextThreeQuotes(this, line, i, charToRef(34))
+    } else {
+      anon_6 := boolToRef(false)}
+    if (boolFromRef(anon_6)) {
+      var anon_8: Ref
+      unfold acc(TomlMultilineString_unique(this), write)
+      anon_8 := this.isInMultilineBasic
+      this.isInMultilineBasic := notBool(anon_8)
+      fold acc(TomlMultilineString_unique(this), write)
+    } else {
+      var anon_9: Ref
+      var anon_10: Ref
+      unfold acc(TomlMultilineString_unique(this), write)
+      anon_10 := this.isInMultilineBasic
+      fold acc(TomlMultilineString_unique(this), write)
+      if (!boolFromRef(anon_10)) {
+        anon_9 := isNextThreeQuotes(this, line, i, charToRef(39))
+      } else {
+        anon_9 := boolToRef(false)}
+      if (boolFromRef(anon_9)) {
+        var anon_11: Ref
+        unfold acc(TomlMultilineString_unique(this), write)
+        anon_11 := this.isInMultilineLiteral
+        this.isInMultilineLiteral := notBool(anon_11)
+        fold acc(TomlMultilineString_unique(this), write)
+      }
+    }
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(line), stringType())
+  assert isSubtype(typeOf(this), TomlMultilineString())
+  assert 0 <= intFromRef(i) &&
+    !((unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineBasic)) &&
+    (unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineLiteral)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_receiver.kt: info: Generated Viper text for reachesLoopEnd:
+field isInMultilineBasic: Ref
+
+field isInMultilineLiteral: Ref
+
+function isStringType(this: Ref): Ref
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method reachesLoopEnd(this: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  requires acc(TomlMultilineString_unique(this), write)
+  requires isSubtype(typeOf(n), intType())
+  requires !((unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineBasic)) &&
+    (unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineLiteral)))
+  ensures acc(TomlMultilineString_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant acc(TomlMultilineString_unique(this), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(this), TomlMultilineString())
+    invariant !((unfolding acc(TomlMultilineString_unique(this), write) in
+        boolFromRef(this.isInMultilineBasic)) &&
+      (unfolding acc(TomlMultilineString_unique(this), write) in
+        boolFromRef(this.isInMultilineLiteral)))
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    var anon_0: Ref
+    unfold acc(TomlMultilineString_unique(this), write)
+    anon_3 := this.isInMultilineLiteral
+    fold acc(TomlMultilineString_unique(this), write)
+    if (!boolFromRef(anon_3)) {
+      var anon_4: Ref
+      unfold acc(TomlMultilineString_unique(this), write)
+      anon_4 := this.isInMultilineBasic
+      anon_2 := notBool(anon_4)
+      fold acc(TomlMultilineString_unique(this), write)
+    } else {
+      anon_2 := boolToRef(false)}
+    unfold acc(TomlMultilineString_unique(this), write)
+    this.isInMultilineBasic := anon_2
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    assert false
+    fold acc(TomlMultilineString_unique(this), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(this), TomlMultilineString())
+  assert !((unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineBasic)) &&
+    (unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineLiteral)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_receiver.kt: info: Generated Viper text for reachesLoopExit:
+field isInMultilineBasic: Ref
+
+field isInMultilineLiteral: Ref
+
+function isStringType(this: Ref): Ref
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method reachesLoopExit(this: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  requires acc(TomlMultilineString_unique(this), write)
+  requires isSubtype(typeOf(n), intType())
+  requires !((unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineBasic)) &&
+    (unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineLiteral)))
+  ensures acc(TomlMultilineString_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant acc(TomlMultilineString_unique(this), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(this), TomlMultilineString())
+    invariant !((unfolding acc(TomlMultilineString_unique(this), write) in
+        boolFromRef(this.isInMultilineBasic)) &&
+      (unfolding acc(TomlMultilineString_unique(this), write) in
+        boolFromRef(this.isInMultilineLiteral)))
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    var anon_0: Ref
+    unfold acc(TomlMultilineString_unique(this), write)
+    anon_3 := this.isInMultilineLiteral
+    fold acc(TomlMultilineString_unique(this), write)
+    if (!boolFromRef(anon_3)) {
+      var anon_4: Ref
+      unfold acc(TomlMultilineString_unique(this), write)
+      anon_4 := this.isInMultilineBasic
+      anon_2 := notBool(anon_4)
+      fold acc(TomlMultilineString_unique(this), write)
+    } else {
+      anon_2 := boolToRef(false)}
+    unfold acc(TomlMultilineString_unique(this), write)
+    this.isInMultilineBasic := anon_2
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    fold acc(TomlMultilineString_unique(this), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(this), TomlMultilineString())
+  assert !((unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineBasic)) &&
+    (unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineLiteral)))
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_receiver.kt: info: Generated Viper text for writeThroughShared:
+field isInMultilineBasic: Ref
+
+field isInMultilineLiteral: Ref
+
+function isStringType(this: Ref): Ref
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method writeThroughShared(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var basic: Ref
+  basic := havoc(boolType())
+  assert boolFromRef(basic)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_receiver.kt: info: Generated Viper text for isNextThreeQuotes:
+field isInMultilineBasic: Ref
+
+field isInMultilineLiteral: Ref
+
+function isNextThreeQuotes(this: Ref, line: Ref, index: Ref, quote: Ref): Ref
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  requires isSubtype(typeOf(line), stringType())
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(quote), charType())
+  requires 0 <= intFromRef(index) &&
+    intFromRef(index) + 2 < |stringFromRef(line)|
+  ensures isSubtype(typeOf(result), boolType())
+{
+  andBools(andBools(boolToRef(stringFromRef(line)[intFromRef(index)] ==
+  charFromRef(quote)), boolToRef(stringFromRef(line)[intFromRef(index) + 1] ==
+  charFromRef(quote))), boolToRef(stringFromRef(line)[intFromRef(index) + 2] ==
+  charFromRef(quote)))
+}
+
+function isStringType(this: Ref): Ref
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  ensures isSubtype(typeOf(result), boolType())

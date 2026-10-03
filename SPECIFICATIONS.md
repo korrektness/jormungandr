@@ -228,7 +228,8 @@ is read and written for real only through a unique path.
 
 `@Unique` and `@Borrowed` annotate types, so they are written on the type:
 `n: @Unique Node`, `fun f(): @Unique Node`, `var next: @Unique Node?`,
-`fun @Unique Node.e()`.
+`fun @Unique Node.e()`. On a member function they describe the dispatch
+receiver `this`: `@Unique @Borrowed fun track(line: String)`.
 
 | Site | Annotation | Meaning |
 |:-----|:-----------|:--------|
@@ -239,9 +240,9 @@ is read and written for real only through a unique path.
 | function result | `@Unique` | The caller receives ownership of the result. |
 | `var` or `val` property | `@Unique` | The object owns the property's value whenever the object itself is owned. |
 | local | `@Unique`, or inferred | The local owns its value. |
-| dispatch receiver `this` | cannot be annotated | Shared. |
+| dispatch receiver `this` | on the member function: none, `@Borrowed`, `@Unique` or `@Unique @Borrowed` | As for a parameter. |
 | class | `@Manual` | Permissions for the class are folded by hand. |
-| `@Pure` function parameter | `@Unique` | Borrowed, as `@Unique @Borrowed`. |
+| `@Pure` function parameter or `this` | `@Unique` | Borrowed, as `@Unique @Borrowed`. |
 
 ```kotlin
 class Node(val value: Int, var next: @Unique Node?)
@@ -499,7 +500,7 @@ Each of these is a compile error:
 - `@Unique` on a declaration whose type is a type parameter:
   `class Box<T>(var item: @Unique T)`.
 - An override that does not repeat the `@Unique` and `@Borrowed` annotations
-  of the declaration it overrides, on parameters, receiver and result.
+  of the declaration it overrides, on parameters, receivers and result.
 - An `actual` declaration that does not repeat the `@Unique` and `@Borrowed`
   annotations of its `expect` declaration, on parameters, receiver and result.
 - A default value that aliases a `@Unique` parameter, or that is itself
@@ -508,9 +509,10 @@ Each of these is a compile error:
   or `@Borrowed`, or any owned local, in or outside the `try`. Passing a fresh
   object straight to a call, as in `try { consume(Node(1, null)) }`, is
   allowed. `try` with `finally` is rejected in every function.
-- Using a unique path after a member or accessor call on it. `this` is always
-  shared, so `n.describe()` consumes `n`. Write code over unique data as
-  top-level or extension functions with an annotated receiver.
+- Using a unique path after an accessor call on it, or after a call to a
+  member that does not borrow `this`: `n.describe()` consumes `n` unless
+  `describe` is `@Borrowed`, with or without `@Unique`.
+- `@Unique` or `@Borrowed` on a function without a dispatch receiver.
 - Using a list after walking it with a cursor. A step `p = p.next` moves the
   node, so the loop consumes the list:
 

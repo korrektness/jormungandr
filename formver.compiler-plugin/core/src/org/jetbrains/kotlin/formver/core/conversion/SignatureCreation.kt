@@ -9,7 +9,9 @@ import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
 import org.jetbrains.kotlin.fir.references.toResolvedConstructorSymbol
 import org.jetbrains.kotlin.fir.references.toResolvedValueParameterSymbol
+import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
@@ -28,6 +30,8 @@ import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.isUnique
 import org.jetbrains.kotlin.formver.core.names.*
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isStringBuilder
+import org.jetbrains.kotlin.formver.locality.plugin.borrowsDispatchReceiver
+import org.jetbrains.kotlin.formver.locality.plugin.ownsDispatchReceiver
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
 data class SignatureWithTarget<out S : FunctionSignature>(
@@ -59,6 +63,19 @@ val FirFunctionSymbol<*>.receiverType: ConeKotlinType?
 val FirFunctionSymbol<*>.extensionReceiverType: ConeKotlinType?
     get() = containingPropertyOrSelf.resolvedReceiverTypeRef?.coneType
 
+/** The symbol at which the uniqueness analysis of this function roots paths through `this`. */
+context(converter: ProgramConversionContext)
+val FirFunctionSymbol<*>.dispatchReceiverRoot: FirClassSymbol<*>?
+    get() = dispatchReceiverType?.toClassSymbol(converter.session)
+
+/** The receivers of [signature], this function's signature, each with the symbol its paths are rooted at. */
+context(converter: ProgramConversionContext)
+fun FirFunctionSymbol<*>.receiverRoots(signature: FunctionSignature): List<Pair<VariableEmbedding, FirBasedSymbol<*>>> =
+    listOfNotNull(
+        signature.dispatchReceiver?.let { variable -> dispatchReceiverRoot?.let { variable to it } },
+        signature.extensionReceiver?.let { variable -> receiverParameterSymbol?.let { variable to it } },
+    )
+
 context(converter: ProgramConversionContext)
 fun FirFunctionSymbol<*>.toFunctionSignature(): SignatureWithTarget<FunctionSignature> {
     val dispatchReceiverType = this.receiverType
@@ -75,8 +92,8 @@ fun FirFunctionSymbol<*>.toFunctionSignature(): SignatureWithTarget<FunctionSign
         PlaceholderVariableEmbedding(
             DispatchReceiverName,
             converter.embedType(it),
-            isUnique = false,
-            isBorrowed = false,
+            ownsDispatchReceiver(converter.session),
+            borrowsDispatchReceiver(converter.session),
         )
     }
     val extensionVariable = extensionReceiverType?.let {
