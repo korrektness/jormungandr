@@ -357,6 +357,30 @@ fun isSorted(n: @Unique Node?): Boolean {
 In a postcondition, a parameter the function consumed has no readable `var`
 properties. Its default `val` properties and its identity remain readable.
 
+The verifier expands a recursive `@Pure` function's definition one level at
+each application it sees. When a proof needs a deeper level, the body must
+mention that application itself. Here `size(r) == old(size(t))` verifies only
+because the body names `size(right)` before the move and `size(t)` after it:
+
+```kotlin
+@Pure
+fun size(t: @Unique Tree?): Int = if (t == null) 0 else 1 + size(t.l) + size(t.r)
+
+fun rotateLeft(t: @Unique Tree): @Unique Tree {
+    postconditions<Tree> { r -> size(r) == old(size(t)) }
+    val right: @Unique Tree? = t.r
+    if (right == null) {
+        t.r = right
+        return t
+    }
+    val sr = size(right)
+    t.r = right.l
+    val st = size(t)
+    right.l = t
+    return right
+}
+```
+
 ### Rejected constructs
 
 Each of these is a compile error:
