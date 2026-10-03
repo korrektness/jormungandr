@@ -63,7 +63,8 @@ object LocalityErrorMessages : BaseDiagnosticRendererFactory() {
                 )
                 map.put(
                     LocalityErrors.INVALID_LOCALITY_TYPE_TARGET,
-                    "Locality can only be specified on types of function parameters, extension receivers, or local variables.",
+                    "Locality can only be specified on types of function parameters, extension receivers, or local variables, " +
+                            "and on member functions, where it describes `this`.",
                 )
             }
 }

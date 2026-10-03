@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.expressions.FirSafeCallExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.references.symbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.type.plugin.ExpressionTypeFactResolver
@@ -34,6 +35,11 @@ fun FirExpression.resolveTerminalAccessState(): AccessState {
                 is FirReceiverParameterSymbol -> {
                     EmptyAccessState.putChild(symbol, AccessState(Access.Terminal))
                 }
+                // `this` is a path only where it is not shared, so that a shared `this` leaves the paths through it
+                // as they are outside member functions.
+                is FirClassSymbol<*> ->
+                    if (symbol.resolveReceiverUniqueness() == Uniqueness.Shared) EmptyAccessState
+                    else EmptyAccessState.putChild(symbol, AccessState(Access.Terminal))
                 is FirVariableSymbol<*> -> {
                     symbol.receiverTemporaryInitializer?.let { return it.resolveAccessState() }
                     val receiverState = pathReceiver

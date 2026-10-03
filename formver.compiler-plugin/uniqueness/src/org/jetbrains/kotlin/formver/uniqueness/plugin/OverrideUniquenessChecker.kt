@@ -23,14 +23,16 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.formver.locality.plugin.borrowsDispatchReceiver
 import org.jetbrains.kotlin.formver.locality.plugin.locality
+import org.jetbrains.kotlin.formver.locality.plugin.ownsDispatchReceiver
 import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.ACTUAL_UNIQUENESS_MISMATCH
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.OVERRIDE_UNIQUENESS_MISMATCH
 
 /**
  * Checks that an override repeats the `@Unique` and `@Borrowed` annotations of every declaration it directly overrides,
- * on its value parameters, extension receiver and result.
+ * on its value parameters, extension receiver and result, and on the function itself for its dispatch receiver.
  */
 object OverrideUniquenessChecker : FirCallableDeclarationChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -55,7 +57,7 @@ object ActualUniquenessChecker : FirCallableDeclarationChecker(MppCheckerKind.Pl
 
 /**
  * Reports [factory] on each type of [declaration] whose ownership annotations differ from the corresponding type of
- * one of [counterparts].
+ * one of [counterparts], and on [declaration] when its dispatch receiver annotations differ from one of theirs.
  */
 context(context: CheckerContext, reporter: DiagnosticReporter)
 private fun checkMatchingOwnership(
@@ -79,6 +81,16 @@ private fun checkMatchingOwnership(
                 compare(parameter.returnTypeRef, counterpartParameter.resolvedReturnType)
             }
         }
+    }
+
+    val session = context.session
+    val dispatchReceiverOwnership = { symbol: FirCallableSymbol<*> ->
+        Pair(symbol.ownsDispatchReceiver(session), symbol.borrowsDispatchReceiver(session))
+    }
+    if (declaration.dispatchReceiverType != null &&
+        counterparts.any { dispatchReceiverOwnership(it) != dispatchReceiverOwnership(declaration.symbol) }
+    ) {
+        reporter.reportOn(declaration.source, factory)
     }
 
     for (typeRef in mismatchingTypeRefs) {

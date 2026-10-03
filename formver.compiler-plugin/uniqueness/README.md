@@ -32,6 +32,8 @@ The checker tracks two kinds of uniqueness:
 - `Uniqueness.kt` defines the actual uniqueness lattice:
   - `Unique < Unknown < Shared < Moved`
 - `TypeRefUniquenessAttributeChecker.kt` restricts valid annotation targets to local variables and function parameters.
+- On a function, `@Unique` and `@Borrowed` describe its dispatch receiver; `DispatchReceiverAnnotationPlacementChecker`
+  rejects them on a function that has none.
 
 ### Path models
 
@@ -40,13 +42,19 @@ The checker tracks two kinds of uniqueness:
   - `AccessState = PathTrie<Access>`
   - `UniquenessState = PathTrie<Uniqueness>`
 - `ExpressionAccessStateResolver.kt` extracts the paths touched by each expression.
+- The dispatch receiver `this` of a member function is a path rooted at its class symbol, so `this.f` and an
+  implicit `f` are `[C, f]`. It is a path only where it is not shared: in a member function annotated `@Unique`
+  (`this` is `Unique`) or `@Borrowed` alone (`Unknown`, and local). Elsewhere, including under construction, `this`
+  is no path. `DispatchReceiverOwnership.kt` in the locality module reads the function-level annotations and finds
+  the member that binds `this`. Conversion treats a path through `this` as not owned.
 
 ### CFG uniqueness state analysis
 
 `GraphUniquenessStatesAnalyzer.kt` computes a fixed point over the following CFG nodes:
 
 - **Initialization**
-  - The initial state contains the uniqueness information of the function's parameters.
+  - The initial state contains the uniqueness information of the function's parameters and of a dispatch receiver
+    that is not shared.
 
 - **Variable declaration/assignment**
   - Project RHS' uniqueness substate into LHS' path.
@@ -60,7 +68,8 @@ The checker tracks two kinds of uniqueness:
   - Calls to `@Pure` functions and calls in a read-only context move nothing.
 
 - **Function-call exit**
-  - Re-initialize arguments/receiver whose required locality is local (`@Borrowed`).
+  - Re-initialize arguments/receiver whose required locality is local (`@Borrowed`), and the dispatch receiver of a
+    callee annotated `@Borrowed` or `@Unique @Pure`.
 
 - **Return / throw**
   - Move the escaped expression paths.

@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.locality.plugin
 
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckers
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirPropertyChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirValueParameterChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
@@ -33,6 +34,9 @@ class LocalityAdditionalCheckers(session: FirSession) : FirAdditionalCheckersExt
 
         override val valueParameterCheckers: Set<FirValueParameterChecker> =
             setOf(ValueParameterLocalityChecker)
+
+        override val functionCheckers: Set<FirFunctionChecker> =
+            setOf(BorrowedPlacementChecker)
     }
 
     override val expressionCheckers: ExpressionCheckers = object : ExpressionCheckers() {

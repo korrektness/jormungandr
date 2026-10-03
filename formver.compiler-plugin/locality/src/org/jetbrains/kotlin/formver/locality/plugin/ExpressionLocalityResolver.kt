@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.formver.locality.contract.plugin.resolveLocalityContract
 import org.jetbrains.kotlin.formver.readonly.plugin.isInSpecification
@@ -50,6 +51,7 @@ private object TerminalLocalityResolver : ExpressionTypeFactResolver<Locality> {
                         when (val symbol = expression.calleeReference.symbol) {
                             is FirCallableSymbol<*> -> symbol.resolveLocality()
                             is FirReceiverParameterSymbol -> symbol.resolveLocality()
+                            is FirClassSymbol<*> -> symbol.resolveReceiverLocality()
                             else -> Locality.Global
                         }
                     else -> Locality.Global
@@ -112,5 +114,6 @@ val CallArgumentLocalitiesMapper = CallArgumentTypeFactsMapper(
 
 val QualifiedAccessArgumentLocalitiesMapper = QualifiedAccessArgumentTypeFactMapper(
     ReceiverLocalityResolver,
-    VariableLocalityResolver
+    VariableLocalityResolver,
+    DispatchReceiverLocalityResolver,
 )

@@ -15,5 +15,6 @@ val CallArgumentUniquenessesMapper = CallArgumentTypeFactsMapper(
 
 val QualifiedAccessArgumentUniquenessMapper = QualifiedAccessArgumentTypeFactMapper(
     { symbol -> symbol.resolveUniqueness() },
-    { symbol -> symbol.resolveUniqueness() }
+    { symbol -> symbol.resolveUniqueness() },
+    { symbol -> if (symbol.resolveDispatchReceiverUniqueness() == Uniqueness.Unique) Uniqueness.Unique else Uniqueness.Shared },
 )

@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.expression.BindingMode
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.RootBinding
@@ -57,7 +58,12 @@ class OwnershipFrame private constructor(
     fun scopeWith(ownScope: List<VariableEmbedding>): List<VariableEmbedding> =
         (ownScope + outerScope + listOfNotNull(receiver?.first)).distinctBy { it.name }
 
-    fun pathOf(expression: FirExpression): Path? = analysis?.pathOf(expression)
+    /**
+     * The path [expression] denotes. A path through the dispatch receiver `this` denotes none: a signature gives the
+     * function no permission to `this`, so nothing reached through it is owned.
+     */
+    fun pathOf(expression: FirExpression): Path? =
+        analysis?.pathOf(expression)?.takeUnless { it.first() is FirClassSymbol<*> }
 
     /** Whether [path] is `Unique` on entry to [element]. */
     fun ownsBefore(element: FirElement, path: Path): Boolean =

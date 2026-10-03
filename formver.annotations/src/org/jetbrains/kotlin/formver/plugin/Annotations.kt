@@ -12,14 +12,18 @@ annotation class DumpExpEmbeddings
 
 /**
  * Marks values of the annotated type as uniquely referenced, as in `x: @Unique Node` or `fun f(): @Unique Node`.
+ *
+ * On a member function, marks its dispatch receiver `this` as uniquely referenced, as in `@Unique fun reset()`.
  */
-@Target(AnnotationTarget.TYPE)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
 annotation class Unique
 
 /**
  * Marks values of the annotated type as borrowed for the duration of a call, as in `x: @Borrowed @Unique Node`.
+ *
+ * On a member function, marks its dispatch receiver `this` as borrowed, as in `@Borrowed @Unique fun size()`.
  */
-@Target(AnnotationTarget.TYPE)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
 annotation class Borrowed
 
 @Target(AnnotationTarget.FUNCTION)

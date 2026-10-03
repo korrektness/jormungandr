@@ -7,6 +7,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirExpression
+import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
+import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ExitSafeCallNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
@@ -28,6 +30,12 @@ private fun CFGNode<*>.resolveAccess(): FirExpression? =
 
 private fun UniquenessState?.isMovedAt(path: Path): Boolean =
     this?.find(path)?.data == Uniqueness.Moved
+
+/**
+ * Whether [this] access goes through an implicit `this`, which has no CFG node of its own to report a moved `this` at.
+ */
+private val FirExpression.hasImplicitThisReceiver: Boolean
+    get() = ((this as? FirQualifiedAccessExpression)?.dispatchReceiver as? FirThisReceiverExpression)?.isImplicit == true
 
 /**
  * Renders the source text of [sites] in source order, with each run of whitespace collapsed to one space.
@@ -62,8 +70,10 @@ object FunctionUseAfterMoveChecker : FirFunctionChecker(MppCheckerKind.Common) {
             val accessState = accessExpression.resolveAccessState()
             val uniquenessState = uniquenessStateFlows.readInputUniquenessStateOf(node)
 
-            for (path in accessState.enumeratePaths()) {
-                if (!uniquenessState.isMovedAt(path)) continue
+            for (accessedPath in accessState.enumeratePaths()) {
+                val path = accessedPath.takeIf { uniquenessState.isMovedAt(it) }
+                    ?: accessedPath.take(1).takeIf { accessExpression.hasImplicitThisReceiver && uniquenessState.isMovedAt(it) }
+                    ?: continue
                 val sites = moveSites.readInputMoveSitesOf(node, path)
                 if (reported.add(path to sites)) {
                     reporter.reportOn(accessExpression.source, INVALID_MOVED_ACCESS, path, renderMoveSites(sites))

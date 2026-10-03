@@ -13,7 +13,7 @@ fun `reject borrowed on a parameter`(<!WRONG_ANNOTATION_TARGET!>@Borrowed<!> box
 
 fun <!WRONG_ANNOTATION_TARGET_WITH_USE_SITE_TARGET!>@receiver:Unique<!> Box.`reject unique on an extension receiver`() {}
 
-<!WRONG_ANNOTATION_TARGET!>@Unique<!>
+<!INVALID_UNIQUENESS_TYPE_TARGET!>@Unique<!>
 fun `reject unique on a function`(): Box = Box()
 
 fun `reject unique on a local variable`() {

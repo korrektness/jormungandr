@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
 import org.jetbrains.kotlin.fir.expressions.FirExpression
@@ -20,6 +21,8 @@ import org.jetbrains.kotlin.fir.expressions.unwrapExpression
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
@@ -29,6 +32,9 @@ import org.jetbrains.kotlin.fir.types.ConeErrorType
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
+import org.jetbrains.kotlin.formver.locality.plugin.borrowsDispatchReceiver
+import org.jetbrains.kotlin.formver.locality.plugin.ownsDispatchReceiver
+import org.jetbrains.kotlin.formver.locality.plugin.receiverOwner
 import org.jetbrains.kotlin.formver.readonly.plugin.postconditionsId
 import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 import org.jetbrains.kotlin.formver.type.plugin.collectTails
@@ -131,10 +137,33 @@ object VariableUniquenessResolver : SymbolTypeFactResolver<Uniqueness, FirVariab
         symbol.resolveUniqueness()
 }
 
+/**
+ * Resolves the uniqueness [this] member function declares for its dispatch receiver: unique when it owns it, unknown
+ * when it only borrows it, as for a parameter.
+ */
+context(context: CheckerContext)
+fun FirCallableSymbol<*>.resolveDispatchReceiverUniqueness(): Uniqueness =
+    when {
+        ownsDispatchReceiver(context.session) -> Uniqueness.Unique
+        borrowsDispatchReceiver(context.session) -> Uniqueness.Unknown
+        else -> Uniqueness.Shared
+    }
+
+/**
+ * Resolves the uniqueness of `this` of [this] class from the member function that binds it. `this` is shared outside
+ * member functions, as under construction.
+ */
+context(context: CheckerContext)
+fun FirClassSymbol<*>.resolveReceiverUniqueness(): Uniqueness {
+    val owner = receiverOwner() as? FirFunction ?: return Uniqueness.Shared
+    return if (owner is FirConstructor) Uniqueness.Shared else owner.symbol.resolveDispatchReceiverUniqueness()
+}
+
 context(context: CheckerContext)
 fun FirBasedSymbol<*>.resolveDeclaredUniqueness(): Uniqueness =
     when (this) {
         is FirVariableSymbol<*> -> resolveUniqueness()
         is FirReceiverParameterSymbol -> resolveUniqueness()
+        is FirClassSymbol<*> -> resolveReceiverUniqueness()
         else -> Uniqueness.Shared
     }

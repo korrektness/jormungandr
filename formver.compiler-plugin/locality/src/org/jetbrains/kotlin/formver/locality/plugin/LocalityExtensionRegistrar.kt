@@ -15,13 +15,13 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
-private val defaultLocalityAnnotationId =
+val defaultLocalityAnnotationId =
     ClassId(
         FqName("org.jetbrains.kotlin.formver.plugin"),
         Name.identifier("Borrowed")
     )
 
-private val defaultUniquenessAnnotationId =
+val defaultUniquenessAnnotationId =
     ClassId(
         FqName("org.jetbrains.kotlin.formver.plugin"),
         Name.identifier("Unique")

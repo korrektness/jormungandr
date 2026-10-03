@@ -47,7 +47,8 @@ object UniquenessErrorMessages : BaseDiagnosticRendererFactory() {
                 )
                 map.put(
                     UniquenessErrors.INVALID_UNIQUENESS_TYPE_TARGET,
-                    "Uniqueness can only be specified on values, properties, functions, and compatible type positions.",
+                    "Uniqueness can only be specified on values, properties, functions, and compatible type positions, " +
+                            "and on member functions, where it describes `this`.",
                 )
                 map.put(
                     UniquenessErrors.INVALID_TYPE_PARAMETER_UNIQUENESS,

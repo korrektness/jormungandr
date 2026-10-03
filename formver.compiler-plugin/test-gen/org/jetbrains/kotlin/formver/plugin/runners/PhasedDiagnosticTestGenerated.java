@@ -489,6 +489,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("this_receiver.kt")
+    public void testThis_receiver() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/this_receiver.kt");
+    }
+
+    @Test
     @TestMetadata("throw.kt")
     public void testThrow() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/throw.kt");

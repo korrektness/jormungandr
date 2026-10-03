@@ -124,19 +124,12 @@ class ExpressionArgumentUniquenessCollisionChecker<Statement : FirStatement>(
 }
 
 /**
- * Maps the dispatch receiver of [expression] to `Shared`: a dispatch receiver cannot be annotated.
- */
-private fun dispatchReceiverUniquenessOf(expression: FirQualifiedAccessExpression): List<Pair<FirExpression, Uniqueness>> =
-    listOfNotNull(expression.dispatchReceiver?.let { it to Uniqueness.Shared })
-
-/**
  * Checks collisions between value arguments, receivers, and context arguments of [FirFunctionCall]s.
  */
 val FunctionCallArgumentUniquenessCollisionChecker =
     ExpressionArgumentUniquenessCollisionChecker<FirFunctionCall>(
         { expression ->
-            dispatchReceiverUniquenessOf(expression) +
-                    QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(expression) +
+            QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(expression) +
                     CallArgumentUniquenessesMapper.mapArgumentTypeFactsOf(expression)
         }
     )
@@ -147,8 +140,7 @@ val FunctionCallArgumentUniquenessCollisionChecker =
 val QualifiedAccessArgumentUniquenessCollisionChecker =
     ExpressionArgumentUniquenessCollisionChecker<FirQualifiedAccessExpression>(
         { expression ->
-            dispatchReceiverUniquenessOf(expression) +
-                    QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(expression)
+            QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(expression)
         },
         { statement -> statement !is FirFunctionCall }
     )

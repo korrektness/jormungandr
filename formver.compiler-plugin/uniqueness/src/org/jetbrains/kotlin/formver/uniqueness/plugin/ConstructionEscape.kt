@@ -45,6 +45,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.locality.plugin.Locality
+import org.jetbrains.kotlin.formver.locality.plugin.borrowsDispatchReceiver
 import org.jetbrains.kotlin.formver.locality.plugin.locality
 
 /**
@@ -99,7 +100,7 @@ class ConstructionEscapeResolver(session: FirSession) : FirExtensionSessionCompo
             resolve(superClass)?.let { return it }
         }
 
-        val finder = EscapeFinder(this)
+        val finder = EscapeFinder(this, session)
         for (declaration in fir.declarations) {
             when (declaration) {
                 is FirConstructor -> {
@@ -131,7 +132,10 @@ fun FirConstructorSymbol.resolveConstructionEscape(session: FirSession): Constru
     return session.constructionEscapeResolver.resolve(classSymbol)
 }
 
-private class EscapeFinder(private val classSymbol: FirRegularClassSymbol) : FirVisitorVoid() {
+private class EscapeFinder(
+    private val classSymbol: FirRegularClassSymbol,
+    private val session: FirSession,
+) : FirVisitorVoid() {
     var escape: ConstructionEscape? = null
 
     private fun FirExpression.isThis(): Boolean =
@@ -173,7 +177,10 @@ private class EscapeFinder(private val classSymbol: FirRegularClassSymbol) : Fir
         val dispatchReceiver = access.dispatchReceiver
         if (dispatchReceiver != null && dispatchReceiver.isThis()) {
             val callee = access.toResolvedCallableSymbol()
-            if (callee !is FirPropertySymbol || !callee.isField) escape(ConstructionEscape.Kind.MemberCall, callee)
+            val callsMember = callee !is FirPropertySymbol || !callee.isField
+            if (callsMember && callee?.borrowsDispatchReceiver(session) != true) {
+                escape(ConstructionEscape.Kind.MemberCall, callee)
+            }
         } else {
             dispatchReceiver?.accept(this)
         }

@@ -136,6 +136,12 @@ public class LocalityDiagnosticTestGenerated extends AbstractLocalityDiagnosticT
   }
 
   @Test
+  @TestMetadata("this_borrowed.kt")
+  public void testThis_borrowed() {
+    runTest("formver.compiler-plugin/locality/testData/diagnostics/this_borrowed.kt");
+  }
+
+  @Test
   @TestMetadata("throw.kt")
   public void testThrow() {
     runTest("formver.compiler-plugin/locality/testData/diagnostics/throw.kt");

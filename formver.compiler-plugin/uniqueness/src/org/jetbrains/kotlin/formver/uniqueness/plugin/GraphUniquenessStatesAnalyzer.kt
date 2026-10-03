@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.analysis.cfa.util.PathAwareControlFlowInfo
 import org.jetbrains.kotlin.fir.analysis.cfa.util.merge
 import org.jetbrains.kotlin.fir.analysis.cfa.util.transformValues
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
@@ -33,7 +34,9 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ThrowExceptionNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableAssignmentNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableDeclarationNode
+import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.formver.locality.plugin.Locality
+import org.jetbrains.kotlin.formver.locality.plugin.borrowsDispatchReceiver
 import org.jetbrains.kotlin.formver.locality.plugin.resolveLocality
 import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
 import org.jetbrains.kotlin.formver.readonly.plugin.isPureCall
@@ -73,11 +76,17 @@ val ControlFlowGraph.uniquenessAnalysisTargetNodes: Sequence<CFGNode<*>>
     }
 
 /**
- * Initializes the roots for the receiver and value parameters of [function] to their declared uniqueness.
+ * Initializes the roots for the receivers and value parameters of [function] to their declared uniqueness. The root of
+ * a dispatch receiver is the class, and only a receiver that is not shared is a path.
  */
 context(context: CheckerContext)
 fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessState {
     var state = this
+    val receiverClass = function.dispatchReceiverType?.toClassSymbol(context.session)
+    val receiverUniqueness = function.symbol.resolveDispatchReceiverUniqueness()
+    if (receiverClass != null && function !is FirConstructor && receiverUniqueness != Uniqueness.Shared) {
+        state = state.putChild(receiverClass, UniquenessState(receiverUniqueness))
+    }
     function.receiverParameter?.let { state = state.putChild(it.symbol, UniquenessState(it.symbol.resolveUniqueness())) }
     for (valueParameter in function.valueParameters) {
         state = state.putChild(valueParameter.symbol, UniquenessState(valueParameter.symbol.resolveUniqueness()))
@@ -262,6 +271,11 @@ class GraphUniquenessStatesAnalyzer(
 
                 if (receiverParameterSymbol != null && extensionReceiver != null && receiverParameterSymbol.resolveLocality() == Locality.Local) {
                     newUniquenessState = extensionReceiver.resolveAccessState().initialize(newUniquenessState)
+                }
+
+                val dispatchReceiver = call.dispatchReceiver
+                if (dispatchReceiver != null && call.toResolvedCallableSymbol()?.borrowsDispatchReceiver(context.session) == true) {
+                    newUniquenessState = dispatchReceiver.resolveAccessState().initialize(newUniquenessState)
                 }
 
                 for ((argument, requiredLocality) in callArgumentLocalitiesMapper.mapArgumentTypeFactsOf(call)) {

@@ -21,6 +21,9 @@ import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirVariableAssignme
 import org.jetbrains.kotlin.fir.analysis.checkers.type.FirResolvedTypeRefChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.type.TypeCheckers
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
+import org.jetbrains.kotlin.formver.locality.plugin.DispatchReceiverAnnotationPlacementChecker
+import org.jetbrains.kotlin.formver.locality.plugin.defaultUniquenessAnnotationId
+import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_UNIQUENESS_TYPE_TARGET
 
 class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersExtension(session) {
     companion object {
@@ -48,6 +51,7 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
                 FunctionExitUniquenessConsistencyChecker,
                 FunctionUseAfterMoveChecker,
                 PureFunctionResultChecker,
+                DispatchReceiverAnnotationPlacementChecker(defaultUniquenessAnnotationId, INVALID_UNIQUENESS_TYPE_TARGET),
             )
 
         override val valueParameterCheckers: Set<FirValueParameterChecker> =

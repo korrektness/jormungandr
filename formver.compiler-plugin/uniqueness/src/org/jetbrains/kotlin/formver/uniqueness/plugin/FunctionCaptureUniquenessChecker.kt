@@ -7,12 +7,18 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
+import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNodeWithSubgraphs
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.locality.plugin.resolveCapturedSymbols
 import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_UNIQUENESS_CAPTURE
@@ -24,6 +30,22 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_U
  *
  * Lambdas in specifications are exempt: they are never run.
  */
+/**
+ * The classes whose `this` the declaration of [this] graph references, explicitly or as an implicit receiver.
+ */
+private fun ControlFlowGraph.capturedReceivers(): Set<FirBasedSymbol<*>> {
+    val receivers = mutableSetOf<FirBasedSymbol<*>>()
+    declaration?.accept(object : FirVisitorVoid() {
+        override fun visitElement(element: FirElement) {
+            if (element is FirThisReceiverExpression) {
+                (element.calleeReference.symbol as? FirClassSymbol<*>)?.let { receivers.add(it) }
+            }
+            element.acceptChildren(this)
+        }
+    })
+    return receivers
+}
+
 object FunctionCaptureUniquenessChecker : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
@@ -47,7 +69,7 @@ object FunctionCaptureUniquenessChecker : FirFunctionChecker(MppCheckerKind.Comm
             .toSet()
 
         for (separateGraph in separateGraphs) {
-            for (symbol in separateGraph.resolveCapturedSymbols()) {
+            for (symbol in separateGraph.resolveCapturedSymbols() + separateGraph.capturedReceivers()) {
                 if (symbol !in ownedRoots) continue
 
                 reporter.reportOn(
