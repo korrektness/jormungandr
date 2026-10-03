@@ -57,3 +57,20 @@ fun `store local in a specification`(x: @Borrowed A) {
         true
     }
 }
+
+<!NOTHING_TO_INLINE!>inline<!> fun `mention own parameter in a loop invariant`(n: Int, x: A): Int {
+    var i = 0
+    while (i < n) {
+        loopInvariants { i <= n && x.apply1 { it.size } > 0 }
+        i++
+    }
+    return i
+}
+
+<!NOTHING_TO_INLINE!>inline<!> fun `share own borrowed parameter in a loop invariant`(n: Int, x: @Borrowed A) {
+    var i = 0
+    while (i < n) {
+        loopInvariants { share(<!LOCALITY_MISMATCH!>x<!>) }
+        i++
+    }
+}

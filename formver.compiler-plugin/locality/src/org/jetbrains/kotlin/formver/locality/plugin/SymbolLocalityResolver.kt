@@ -23,11 +23,13 @@ import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
 
 /**
  * Whether [function] is an inline function called from a specification. The call is inlined into an expression,
- * which reads its arguments and stores none of them.
+ * which reads its arguments and stores none of them. A specification inside [function]'s own body is not such a
+ * call: there its parameters keep their declared locality.
  */
 context(context: CheckerContext)
 private fun isInlinedIntoSpecification(function: FirBasedSymbol<*>?): Boolean =
-    function is FirFunctionSymbol<*> && function.isInline && context.isInSpecification()
+    function is FirFunctionSymbol<*> && function.isInline && context.isInSpecification() &&
+        function !in context.containingDeclarations
 
 context(context: CheckerContext)
 fun FirReceiverParameterSymbol.resolveLocality(): Locality =
