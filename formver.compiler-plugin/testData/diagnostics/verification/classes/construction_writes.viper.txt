@@ -1,0 +1,163 @@
+/construction_writes.kt: info: Generated Viper text for clear:
+field a: Ref
+
+function b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lending())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method clear(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Lending())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_writes.kt: info: Generated Viper text for keepsParameters:
+field bf_a: Ref
+
+field sum: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Checked())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(ret_1), Checked())
+  ensures isSubtype(typeOf(ret_1), Checked()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType()) &&
+    acc(ret_1.sum, write) &&
+    isSubtype(typeOf(ret_1.sum), intType())
+  ensures intFromRef(ret_1.bf_a) == intFromRef(par_a)
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
+
+
+method keepsParameters() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var anon: Ref
+  c := con(intToRef(1), intToRef(2))
+  fold acc(Checked_unique(c), write)
+  unfold acc(Checked_unique(c), write)
+  anon := c.bf_a
+  assert intFromRef(anon) == 1
+  assert intFromRef(g_b(c)) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_writes.kt: info: Generated Viper text for initAssigns:
+field bf_a: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Reset())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(ret_1), Reset())
+  ensures isSubtype(typeOf(ret_1), Reset()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType())
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
+
+
+method initAssigns() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon: Ref
+  l0_r := con(intToRef(1), intToRef(2))
+  fold acc(Reset_unique(l0_r), write)
+  assert intFromRef(g_b(l0_r)) == 2
+  unfold acc(Reset_unique(l0_r), write)
+  anon := l0_r.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_writes.kt: info: Generated Viper text for initLendsThis:
+field bf_a: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lending())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(ret_1), Lending())
+  ensures isSubtype(typeOf(ret_1), Lending()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType())
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
+
+
+method initLendsThis() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l: Ref
+  var anon: Ref
+  l := con(intToRef(1), intToRef(2))
+  fold acc(Lending_unique(l), write)
+  assert intFromRef(g_b(l)) == 2
+  unfold acc(Lending_unique(l), write)
+  anon := l.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_writes.kt: info: Generated Viper text for subclassInitAssigns:
+field bf_a: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(ret_1), Derived())
+  ensures isSubtype(typeOf(ret_1), Derived()) &&
+    (isSubtype(typeOf(ret_1), Base()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType()))
+
+
+method subclassInitAssigns() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var d: Ref
+  var anon: Ref
+  d := con(intToRef(1))
+  fold acc(Base_unique(d), write)
+  fold acc(Derived_unique(d), write)
+  unfold acc(Derived_unique(d), write)
+  unfold acc(Base_unique(d), write)
+  anon := d.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

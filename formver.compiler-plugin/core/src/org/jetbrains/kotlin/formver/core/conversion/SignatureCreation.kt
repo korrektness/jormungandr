@@ -215,7 +215,8 @@ private fun FirConstructorSymbol.initializedProperties(session: FirSession): Map
 }
 
 /**
- * The signature of a primary constructor. It ensures that each property a parameter initializes equals the parameter.
+ * The signature of a primary constructor. It ensures that each property a parameter initializes equals the parameter,
+ * unless the rest of the construction may change the property.
  * When the class is [constructedOpen], the object is returned with its predicates unfolded, and a `@Unique` parameter
  * stored in a `@Unique` property keeps its predicate: the caller's fold moves it into the object.
  */
@@ -227,17 +228,23 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
         val result = returnTarget.variable
         val constructed = current.signature.constructedOpen
         val initialized = symbol.initializedProperties(converter.session)
+        val writes = (symbol.resolvedReturnType.toRegularClassSymbol(converter.session)
+            ?: throw SnaktInternalException(symbol.source, "A primary constructor does not construct a class."))
+            .constructionWrites(converter.session)
         val parameterProperties = current.signature.params.flatMap { param ->
             require(param is FirVariableEmbedding) { "Constructor parameters must be represented by FirVariableEmbeddings" }
             initialized[param.symbol].orEmpty().mapNotNull { property ->
-                typeResolver.lookupDefaultBehavingProperties(property.embedMemberPropertyName(converter))?.let { param to it }
+                typeResolver.lookupDefaultBehavingProperties(property.embedMemberPropertyName(converter))
+                    ?.let { Triple(param, it, property) }
             }
         }
-        val stored = if (constructed == null) emptyList() else parameterProperties.mapNotNull { (param, property) ->
+        val stored = if (constructed == null) emptyList() else parameterProperties.mapNotNull { (param, property, _) ->
             property.ownedStep?.takeIf { param.isUnique }?.let { param to it }
         }
 
-        val fieldPostconditions = parameterProperties.map { (param, property) ->
+        val fieldPostconditions = parameterProperties.filter { (_, _, firProperty) ->
+            !writes.mayChange(firProperty)
+        }.map { (param, property, _) ->
             val getter = property.getter!!
             val value = if (constructed != null && getter is BackingFieldGetter) PrimitiveFieldAccess(result, getter.field)
             else getter.getValueSimple(result, typeResolver)
