@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.formver.core.description
 import org.jetbrains.kotlin.formver.core.embeddings.LabelLink
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FullySpecialKotlinFunction
+import org.jetbrains.kotlin.formver.core.embeddings.callables.InlineNamedFunction
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.callables.isVerifyFunction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -335,6 +336,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         functionCall.stringBuilderIntrinsic(data.session)?.let { return data.convertStringBuilderIntrinsic(functionCall, it) }
 
         val callee = data.embedAnyFunction(symbol)
+        if (callee is InlineNamedFunction) data.rejectInlineWriteThroughOwnedRoot(functionCall, symbol, callee.firBody)
         val returnType = data.embedType(functionCall.resolvedType)
         val mappedParameters = functionCall.resolvedArgumentMapping?.values?.map { it.symbol }
         val passedPositionally = mappedParameters == null || mappedParameters == symbol.valueParameterSymbols ||

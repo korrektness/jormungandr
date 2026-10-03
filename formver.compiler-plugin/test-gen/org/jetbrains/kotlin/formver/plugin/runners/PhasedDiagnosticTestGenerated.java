@@ -1086,6 +1086,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("owned_writes.kt")
+      public void testOwned_writes() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/owned_writes.kt");
+      }
+
+      @Test
       @TestMetadata("scoped_receivers.kt")
       public void testScoped_receivers() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/scoped_receivers.kt");
