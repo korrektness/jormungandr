@@ -327,6 +327,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("conditional_fresh.kt")
+    public void testConditional_fresh() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/conditional_fresh.kt");
+    }
+
+    @Test
     @TestMetadata("consistency.kt")
     public void testConsistency() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/consistency.kt");
@@ -823,6 +829,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("unique_compound_assignment.kt")
       public void testUnique_compound_assignment() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_compound_assignment.kt");
+      }
+
+      @Test
+      @TestMetadata("unique_conditional_values.kt")
+      public void testUnique_conditional_values() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_conditional_values.kt");
       }
 
       @Test

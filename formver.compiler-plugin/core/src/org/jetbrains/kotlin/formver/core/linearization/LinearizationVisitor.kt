@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.toMethodCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
@@ -803,13 +804,19 @@ data class LinearizationVisitor(
 
     /**
      * Runs the `StringBuilder` updates that [value] consists of when they act on a path, the initialization of an
-     * [IntArrayInit], or an [InlineCall] whose callee returns `@Unique`, and returns the path or the call's result,
-     * which then moves in place of [value]. Any other [value] is returned unchanged. A move folds its source before the
-     * value is evaluated, which would close the path before the updates open it again, and the result of an inline
-     * call is held only once the call has run.
+     * [IntArrayInit], an [InlineCall] whose callee returns `@Unique`, or a conditional or block that yields a fresh
+     * unique value on every path, and returns the path, the call's result or the temporary that each path moves its
+     * value into, which then moves in place of [value]. Any other [value] is returned unchanged. A move folds its
+     * source before the value is evaluated, which would close the path before the updates open it again, and the
+     * result of an inline call is held only once the call has run.
      */
     private fun runUpdatesOfPath(value: ExpEmbedding, ctx: LinearizationContext): ExpEmbedding {
         var root = value.ignoringCastsAndMetaNodes()
+        if ((root is If || root is Block) && root.yieldsFreshUnique()) {
+            val temporary = ctx.freshAnonVar(value.type)
+            root.movedInto(temporary).linearize().toViperUnusedResult(ctx)
+            return temporary
+        }
         if (root is IntArrayInit) {
             value.linearize().toViperUnusedResult(ctx)
             return root.array
@@ -1149,6 +1156,24 @@ private fun ExpEmbedding.isFreshUnique(): Boolean = when (val exp = ignoringCast
     is FunctionCall -> exp.function.callableType.returnsUnique
     is NullLit -> true
     else -> false
+}
+
+/**
+ * Whether [this] yields a fresh unique value on every path: a fresh unique value itself, the result of an inline call
+ * whose callee returns `@Unique`, or a block or conditional ending in such values.
+ */
+private fun ExpEmbedding.yieldsFreshUnique(): Boolean = when (val exp = ignoringCastsAndMetaNodes()) {
+    is If -> exp.thenBranch.yieldsFreshUnique() && exp.elseBranch.yieldsFreshUnique()
+    is Block -> exp.exps.lastOrNull()?.yieldsFreshUnique() ?: false
+    is InlineCall -> exp.returnsUnique
+    else -> exp.isFreshUnique()
+}
+
+/** [this], which [yieldsFreshUnique], with each value it yields moved into [target]. */
+private fun ExpEmbedding.movedInto(target: VariableEmbedding): ExpEmbedding = when (val exp = ignoringCastsAndMetaNodes()) {
+    is If -> If(exp.condition, exp.thenBranch.movedInto(target), exp.elseBranch.movedInto(target), buildType { unit() })
+    is Block -> Block { addAll(exp.exps.dropLast(1)); add(exp.exps.last().movedInto(target)) }
+    else -> Assign(target, this, targetOwned = true)
 }
 
 /**
