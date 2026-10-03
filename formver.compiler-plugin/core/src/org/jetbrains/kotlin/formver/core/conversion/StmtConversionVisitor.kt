@@ -12,6 +12,9 @@ import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
 import org.jetbrains.kotlin.fir.expressions.impl.FirUnitExpression
 import org.jetbrains.kotlin.fir.references.symbol
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
+import org.jetbrains.kotlin.fir.scopes.getFunctions
+import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
 import org.jetbrains.kotlin.fir.references.toResolvedSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
@@ -38,11 +41,14 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Not
 import org.jetbrains.kotlin.formver.core.embeddings.toLink
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
 import org.jetbrains.kotlin.formver.core.functionCallArguments
 import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isIntArrayElementAccess
+import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.types.ConstantValueKind
+import org.jetbrains.kotlin.util.OperatorNameConventions
 
 /**
  * Convert a statement, emitting the resulting Viper statements and
@@ -106,19 +112,35 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         )
     }
 
-    private val FirLiteralExpression.stringValue: String
-        get() = value.toString()
-
+    /**
+     * Converts a string template to a chain of `String.plus` calls, one per part, merging adjacent literal parts.
+     * The chain starts from the leading literal, or from `""` when the template starts with an expression.
+     */
     override fun visitStringConcatenationCall(
         stringConcatenationCall: FirStringConcatenationCall, data: StmtConversionContext
     ): ExpEmbedding {
-        val combinedLiteral = stringConcatenationCall.arguments.joinToString("") { arg ->
-            if (arg !is FirLiteralExpression) {
-                throw UnsupportedFeatureException(arg.source, "${arg.description} in a string template")
+        val stringClass = data.session.symbolProvider.getClassLikeSymbolByClassId(StandardClassIds.String) as FirClassSymbol<*>
+        val plus = stringClass.declaredMemberScope(data.session, memberRequiredPhase = null)
+            .getFunctions(OperatorNameConventions.PLUS).single()
+        val plusEmbedding = data.embedAnyFunction(plus)
+        val parts = buildList {
+            val literal = StringBuilder()
+            for (arg in stringConcatenationCall.arguments) {
+                if (arg is FirLiteralExpression) {
+                    literal.append(arg.value.toString())
+                    continue
+                }
+                if (literal.isNotEmpty()) add(StringLit(literal.toString()))
+                literal.clear()
+                add(data.convert(arg))
             }
-            arg.stringValue
+            if (literal.isNotEmpty()) add(StringLit(literal.toString()))
         }
-        return StringLit(combinedLiteral)
+        val start = parts.firstOrNull() as? StringLit
+        val stringType = buildType { string() }
+        return (if (start == null) parts else parts.drop(1)).fold<ExpEmbedding, ExpEmbedding>(start ?: StringLit("")) { acc, part ->
+            plusEmbedding.insertCall(listOf(acc, part), data, stringType)
+        }
     }
 
     override fun visitIntegerLiteralOperatorCall(

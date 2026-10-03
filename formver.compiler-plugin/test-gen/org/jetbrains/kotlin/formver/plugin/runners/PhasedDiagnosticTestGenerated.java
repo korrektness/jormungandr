@@ -226,6 +226,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testStrings() {
         runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string/strings.kt");
       }
+
+      @Test
+      @TestMetadata("templates.kt")
+      public void testTemplates() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string/templates.kt");
+      }
     }
 
     @Nested

@@ -1,0 +1,90 @@
+/templates.kt: info: Generated Viper text for templateInThrow:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con(p0: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures acc(IllegalArgumentException_unique(ret_4), write)
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method plus(this: Ref, other: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_5), stringType())
+
+
+method templateInThrow(x: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(c), charType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= 0
+{
+  if (intFromRef(x) < 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_1 := plus(stringToRef(Seq(98, 97, 100, 32)), x)
+    anon_0 := con(addStringChar(addStrings(anon_1, stringToRef(Seq(32, 97, 116,
+      32))), c))
+    inhale false
+  }
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/templates.kt: info: Generated Viper text for templateOfStringsAndChars:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method plus(this: Ref, other: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+method templateOfStringsAndChars(s: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(c), charType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert Seq(60) ++ stringFromRef(s) ++ Seq(62) ==
+    Seq(60) ++ stringFromRef(s) ++ Seq(62)
+  assert Seq[Int]() ++ Seq(charFromRef(c)) ++ Seq(charFromRef(c)) ==
+    Seq[Int]() ++ Seq(charFromRef(c)) ++ Seq(charFromRef(c))
+  assert |Seq[Int]() ++ stringFromRef(s) ++ Seq(120)| ==
+    |stringFromRef(s)| + 1
+  assert (Seq[Int]() ++ stringFromRef(s) ++ Seq(charFromRef(c)))[|stringFromRef(s)|] ==
+    charFromRef(c)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/templates.kt: info: Generated Viper text for templateOfLiterals:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method plus(this: Ref, other: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+method templateOfLiterals() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert Seq(97, 98, 49) == Seq(97, 98, 49)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
