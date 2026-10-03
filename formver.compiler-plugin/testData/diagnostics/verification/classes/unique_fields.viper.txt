@@ -188,9 +188,9 @@ method testReferenceFieldSetterUnique(rf: Ref) returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_1: Ref
-  unfold acc(UniqueReferenceFields_unique(rf), write)
   anon_0 := con(intToRef(5), intToRef(6))
   fold acc(UniquePrimitiveFields_unique(anon_0), write)
+  unfold acc(UniqueReferenceFields_unique(rf), write)
   rf.bf_sharedVar := anon_0
   anon_1 := con(intToRef(9), intToRef(10))
   fold acc(UniquePrimitiveFields_unique(anon_1), write)

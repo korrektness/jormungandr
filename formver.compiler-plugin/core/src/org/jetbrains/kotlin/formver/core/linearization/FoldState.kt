@@ -87,6 +87,7 @@ private fun Absence<VariableEmbedding, PathStep, KtSourceElement?>.render(): Str
     is Absence.Released -> "was consumed" + (renderSite(site)?.let { " by $it" } ?: "")
     is Absence.Moved -> "was moved to ${target.render()}" + (renderSite(site)?.let { " by $it" } ?: "")
     is Absence.Forgotten -> "was dropped where control flow joins" + (renderSite(site)?.let { " at $it" } ?: "")
+    is Absence.Framed -> "is kept outside the loop" + (renderSite(site)?.let { " at $it" } ?: "")
 }
 
 /** A message naming the path a failure needs and why the fold state does not hold it. */
@@ -174,15 +175,38 @@ class FoldState(private val typeResolver: TypeResolver) {
 
     fun join(ctx: LinearizationContext, a: FoldSnapshot, b: FoldSnapshot) = trie.join(a, b, ctx.source)
 
-    fun jumpTo(ctx: LinearizationContext, label: SymbolicName) = trie.jumpTo(ctx.foldSink(), label)
+    /** A construct a jump can leave: [labels] are placed inside it, and [leave] runs on the state of a jump out of it. */
+    private data class Scope(val labels: Set<SymbolicName>, val leave: (LinearizationContext) -> Unit)
+
+    /** The scopes the code being linearized is in, innermost last. */
+    private val scopes = ArrayDeque<Scope>()
+
+    /** Runs [action] inside a scope whose labels are [labels], so that a jump to another label first runs [leave]. */
+    fun <T> withinScope(labels: Set<SymbolicName>, leave: (LinearizationContext) -> Unit, action: () -> T): T {
+        scopes.addLast(Scope(labels, leave))
+        try {
+            return action()
+        } finally {
+            scopes.removeLast()
+        }
+    }
+
+    /** Jumps to [label], leaving the scopes that do not contain it, innermost first. */
+    fun jumpTo(ctx: LinearizationContext, label: SymbolicName) {
+        scopes.asReversed().takeWhile { label !in it.labels }.forEach { it.leave(ctx) }
+        trie.jumpTo(ctx.foldSink(), label)
+    }
 
     fun enterLoop(
         ctx: LinearizationContext,
         headLabel: SymbolicName,
         head: List<OwnedShape>,
+        framed: List<OwnedShape>,
         exitLabel: SymbolicName,
         exit: List<OwnedShape>,
-    ): List<OwnedShape> = trie.enterLoop(ctx.foldSink(), headLabel, head, exitLabel, exit)
+    ): List<OwnedShape> = trie.enterLoop(ctx.foldSink(), headLabel, head, framed, exitLabel, exit)
+
+    fun leaveLoop(exitLabel: SymbolicName) = trie.leaveLoop(exitLabel)
 
     fun arriveAt(ctx: LinearizationContext, label: SymbolicName) = trie.arriveAt(ctx.foldSink(), label)
 

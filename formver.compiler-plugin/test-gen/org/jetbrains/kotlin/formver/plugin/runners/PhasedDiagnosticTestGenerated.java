@@ -850,6 +850,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("unique_loop_framing.kt")
+      public void testUnique_loop_framing() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_loop_framing.kt");
+      }
+
+      @Test
       @TestMetadata("unique_loop_heads.kt")
       public void testUnique_loop_heads() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_loop_heads.kt");
@@ -1137,6 +1143,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("inline_unique_arguments.kt")
       public void testInline_unique_arguments() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/inline_unique_arguments.kt");
+      }
+
+      @Test
+      @TestMetadata("inline_unique_jumps.kt")
+      public void testInline_unique_jumps() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/inline_unique_jumps.kt");
       }
 
       @Test

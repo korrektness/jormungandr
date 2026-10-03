@@ -97,13 +97,12 @@ fun StmtConversionContext.convertStdlibHof(call: FirFunctionCall): ExpEmbedding?
     }
 
     val inScope = ownershipFrame.scopeWith(retrievePropertiesAndParameters().toList())
+    val typeInvariants = (inScope + listOfNotNull(receiver, index, count)).flatMap { it.provenInvariants() }
     val invariants = buildList {
-        (inScope + listOfNotNull(receiver, index, count)).forEach { addAll(it.provenInvariants()) }
         add(GeIntInt(index, IntLit(0)))
         // `repeat` with a negative count runs no iteration.
         add(if (receiver != null) LeIntInt(index, bound) else Or(LeIntInt(index, bound), EqCmp(index, IntLit(0))))
         count?.let { add(And(GeIntInt(it, IntLit(0)), LeIntInt(it, index))) }
-        addAll(retainedPathInvariants())
         lambda.function.body?.statements?.let(::extractLoopInvariants)?.let { block ->
             addAll(convertHoistedInvariants(block, indexParameter, index, elementParameter))
         }
@@ -121,11 +120,11 @@ fun StmtConversionContext.convertStdlibHof(call: FirFunctionCall): ExpEmbedding?
             else -> If(invocation, Assign(count, AddIntInt(count, IntLit(1))), UnitLit, buildType { unit() })
         }
         val step = Assign(index, AddIntInt(index, IntLit(1)))
-        While(
+        loopOverUsedRoots(
             LtIntInt(index, bound),
             blockOf(body, step),
-            breakLabelName(),
             continueLabelName(),
+            typeInvariants,
             invariants,
             headShapes,
             exitShapes,

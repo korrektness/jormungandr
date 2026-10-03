@@ -639,15 +639,10 @@ method loopWithPathToBorrowed(h: Ref, n: Ref) returns (v_ret_0: Ref)
   fold acc(Counter_unique(anon_0), write)
   label cont
     invariant acc(Counter_unique(anon_0), write)
-    invariant isSubtype(typeOf(h), Holder()) && acc(h.inner, write) &&
-      isSubtype(typeOf(h.inner), Counter()) &&
-      acc(h.count, write) &&
-      isSubtype(typeOf(h.count), intType())
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(anon_0), Counter())
     invariant isSubtype(typeOf(n), intType())
     invariant isSubtype(typeOf(h), Holder())
-    invariant h.inner == anon_0
     invariant intFromRef(i) >= 0 &&
       (unfolding acc(Counter_unique(anon_0), write) in
         intFromRef(anon_0.x) == intFromRef(i))
@@ -666,7 +661,6 @@ method loopWithPathToBorrowed(h: Ref, n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(anon_0), Counter())
   assert isSubtype(typeOf(n), intType())
   assert isSubtype(typeOf(h), Holder())
-  assert h.inner == anon_0
   assert intFromRef(i) >= 0 &&
     (unfolding acc(Counter_unique(anon_0), write) in
       intFromRef(anon_0.x) == intFromRef(i))
@@ -713,15 +707,10 @@ method loopWithPathToSharedBorrowed(h: Ref, n: Ref) returns (v_ret_0: Ref)
   i := intToRef(0)
   label cont
     invariant acc(Counter_unique(anon_0), write)
-    invariant isSubtype(typeOf(h), Holder()) && acc(h.inner, write) &&
-      isSubtype(typeOf(h.inner), Counter()) &&
-      acc(h.count, write) &&
-      isSubtype(typeOf(h.count), intType())
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(anon_0), Counter())
     invariant isSubtype(typeOf(n), intType())
     invariant isSubtype(typeOf(h), Holder())
-    invariant h.inner == anon_0
   anon_1 := ltInts(i, n)
   if (boolFromRef(anon_1)) {
     unfold acc(Counter_unique(anon_0), write)
@@ -735,7 +724,6 @@ method loopWithPathToSharedBorrowed(h: Ref, n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(anon_0), Counter())
   assert isSubtype(typeOf(n), intType())
   assert isSubtype(typeOf(h), Holder())
-  assert h.inner == anon_0
   label lbl_ret_2
   inhale isSubtype(typeOf(v_ret_2), unitType())
   label lbl_ret_0
@@ -955,3 +943,268 @@ method successor(c: Ref) returns (ret_2: Ref)
   requires acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(ret_2), Counter())
   ensures acc(Counter_unique(ret_2), write)
+
+
+/inline_unique_arguments.kt: info: Generated Viper text for make:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+method make(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures acc(Counter_unique(v_ret_0), write)
+{
+  v_ret_0 := con(par_v)
+  fold acc(Counter_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/inline_unique_arguments.kt: info: Generated Viper text for plusOne:
+method plusOne(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := plusInts(par_v, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/inline_unique_arguments.kt: info: Generated Viper text for resultIntoPath:
+field bf_x: Ref
+
+field count: Ref
+
+field inner: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_3), Counter())
+  ensures isSubtype(typeOf(ret_3), Counter()) && acc(ret_3.bf_x, write) &&
+    isSubtype(typeOf(ret_3.bf_x), intType())
+  ensures intFromRef(ret_3.bf_x) == intFromRef(par_x)
+
+
+method make(par_v: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures acc(Counter_unique(ret_1), write)
+
+
+method resultIntoPath(h: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  ensures acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := intToRef(3)
+  v_ret_2 := con(anon_0)
+  fold acc(Counter_unique(v_ret_2), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+  unfold acc(Holder_unique(h), write)
+  h.inner := v_ret_2
+  anon_2 := h.inner
+  unfold acc(Counter_unique(h.inner), write)
+  anon_1 := anon_2.bf_x
+  assert intFromRef(anon_1) == 3
+  label lbl_ret_0
+  fold acc(Counter_unique(h.inner), write)
+  fold acc(Holder_unique(h), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique_arguments.kt: info: Generated Viper text for resultIntoLocalPath:
+field bf_count: Ref
+
+field bf_inner: Ref
+
+field bf_x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_Counter(par_x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_2), Counter())
+  ensures isSubtype(typeOf(ret_2), Counter()) && acc(ret_2.bf_x, write) &&
+    isSubtype(typeOf(ret_2.bf_x), intType())
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
+
+
+method con_Holder(par_inner: Ref, par_count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_inner), Counter())
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(ret_1), Holder())
+  ensures isSubtype(typeOf(ret_1), Holder()) && acc(ret_1.bf_inner, write) &&
+    isSubtype(typeOf(ret_1.bf_inner), Counter()) &&
+    acc(ret_1.bf_count, write) &&
+    isSubtype(typeOf(ret_1.bf_count), intType())
+  ensures ret_1.bf_inner == par_inner
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+
+
+method make(par_v: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(ret_3), Counter())
+  ensures acc(Counter_unique(ret_3), write)
+
+
+method resultIntoLocalPath() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var h: Ref
+  var anon_1: Ref
+  var v_ret_4: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_1 := con_Counter(intToRef(0))
+  fold acc(Counter_unique(anon_1), write)
+  h := con_Holder(anon_1, intToRef(0))
+  fold acc(Holder_unique(h), write)
+  anon_0 := intToRef(3)
+  v_ret_4 := con_Counter(anon_0)
+  fold acc(Counter_unique(v_ret_4), write)
+  goto lbl_ret_4
+  label lbl_ret_4
+  unfold acc(Holder_unique(h), write)
+  h.bf_inner := v_ret_4
+  anon_3 := h.bf_inner
+  unfold acc(Counter_unique(h.bf_inner), write)
+  anon_2 := anon_3.bf_x
+  assert intFromRef(anon_2) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/inline_unique_arguments.kt: info: Generated Viper text for plainResultIntoPathField:
+field count: Ref
+
+field inner: Ref
+
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method plainResultIntoPathField(h: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  ensures acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_2: Ref
+  var anon_3: Ref
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_4: Ref
+  var v_ret_3: Ref
+  var anon_1: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  unfold acc(Holder_unique(h), write)
+  anon_2 := h.inner
+  anon_0 := intToRef(2)
+  v_ret_2 := plusInts(anon_0, intToRef(1))
+  fold acc(Holder_unique(h), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+  anon_3 := v_ret_2
+  unfold acc(Holder_unique(h), write)
+  unfold acc(Counter_unique(h.inner), write)
+  anon_2.x := anon_3
+  anon_1 := intToRef(1)
+  v_ret_3 := plusInts(anon_1, intToRef(1))
+  fold acc(Counter_unique(h.inner), write)
+  fold acc(Holder_unique(h), write)
+  goto lbl_ret_3
+  label lbl_ret_3
+  anon_4 := v_ret_3
+  unfold acc(Holder_unique(h), write)
+  h.count := anon_4
+  anon_7 := h.inner
+  unfold acc(Counter_unique(h.inner), write)
+  anon_6 := anon_7.x
+  fold acc(Counter_unique(h.inner), write)
+  fold acc(Holder_unique(h), write)
+  if (intFromRef(anon_6) == 3) {
+    var anon_8: Ref
+    unfold acc(Holder_unique(h), write)
+    anon_8 := h.count
+    anon_5 := boolToRef(intFromRef(anon_8) == 2)
+    fold acc(Holder_unique(h), write)
+  } else {
+    anon_5 := boolToRef(false)}
+  assert boolFromRef(anon_5)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plusOne(par_v: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+/inline_unique_arguments.kt: info: Generated Viper text for conditionalIntoPathField:
+field count: Ref
+
+field inner: Ref
+
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method conditionalIntoPathField(h: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  requires isSubtype(typeOf(b), boolType())
+  ensures acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  unfold acc(Holder_unique(h), write)
+  anon_0 := h.inner
+  fold acc(Holder_unique(h), write)
+  if (boolFromRef(b)) {
+    anon_1 := intToRef(1)
+  } else {
+    anon_1 := intToRef(2)}
+  unfold acc(Holder_unique(h), write)
+  unfold acc(Counter_unique(h.inner), write)
+  anon_0.x := anon_1
+  anon_3 := h.inner
+  anon_2 := anon_3.x
+  assert intFromRef(anon_2) >= 1
+  label lbl_ret_0
+  fold acc(Counter_unique(h.inner), write)
+  fold acc(Holder_unique(h), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

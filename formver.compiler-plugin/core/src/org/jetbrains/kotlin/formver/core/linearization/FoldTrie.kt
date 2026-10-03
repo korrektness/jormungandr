@@ -88,6 +88,9 @@ sealed interface Absence<out R, out F, out S> {
 
     /** The predicate was forgotten where control flow joins at [site], since another edge into it does not hold it. */
     data class Forgotten<S>(val site: S) : Absence<Nothing, Nothing, S>
+
+    /** The predicate is set aside while the loop at [site] runs, since the loop does not use its root. */
+    data class Framed<S>(val site: S) : Absence<Nothing, Nothing, S>
 }
 
 /** Why the trie cannot do what the code needs. */
@@ -157,6 +160,9 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
 
     /** Labels whose shape is fixed in advance: every edge into one of them is brought to that shape. */
     private val labelShapes: MutableMap<Any, List<RootShape<R, F>>> = mutableMapOf()
+
+    /** The roots set aside by the loop whose break label is the key, with their state at the loop's entry. */
+    private val framedRoots: MutableMap<Any, Map<Any, Pair<R, FoldNode<R, F, C, S>>>> = mutableMapOf()
 
     private fun classOf(path: FoldPath<R, F>): C? =
         if (path.fields.isEmpty()) hierarchy.rootClass(path.root) else hierarchy.fieldClass(path.fields.last())
@@ -377,9 +383,11 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
     }
 
     /**
-     * Enter a loop: [head] are the shapes of the roots the uniqueness checker finds `Unique` at the head, whose
-     * continue label is [headLabel], and [exit] those after the loop, whose break label is [exitLabel]. The state is
-     * brought to [head], and every edge into either label is brought to its shapes.
+     * Enter a loop: [head] are the shapes of the roots the uniqueness checker finds `Unique` at the head that the loop
+     * uses, whose continue label is [headLabel], [framed] those of the roots it does not use, and [exit] the shapes of
+     * the roots the loop uses after the loop, whose break label is [exitLabel]. The state is brought to [head] and
+     * [framed], the roots of [framed] are set aside until the loop is left, and every edge into either label is
+     * brought to its shapes. A root of [framed] that an enclosing loop has set aside stays aside.
      *
      * Returns the tracked shapes of [head]: the loop invariant holds their permissions.
      */
@@ -387,24 +395,50 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
         sink: FoldSink<R, F, C, S>,
         headLabel: Any,
         head: List<RootShape<R, F>>,
+        framed: List<RootShape<R, F>>,
         exitLabel: Any,
         exit: List<RootShape<R, F>>,
     ): List<RootShape<R, F>> {
         val tracked = head.filter { hierarchy.rootClass(it.root) != null }
+        val trackedFramed = framed.filter {
+            hierarchy.rootClass(it.root) != null && absentRoots[hierarchy.rootKey(it.root)] !is Absence.Framed
+        }
         labelShapes[headLabel] = tracked
         labelShapes[exitLabel] = exit
         val live = roots
-        tracked.firstOrNull { live != null && hierarchy.rootKey(it.root) !in live }?.let { notHeld(sink, FoldPath(it.root)) }
-        normalizeTo(sink, tracked)
+        (tracked + trackedFramed).firstOrNull { live != null && hierarchy.rootKey(it.root) !in live }
+            ?.let { notHeld(sink, FoldPath(it.root)) }
+        normalizeTo(sink, tracked + trackedFramed)
+        if (live != null) {
+            val keys = trackedFramed.map { hierarchy.rootKey(it.root) }
+            framedRoots[exitLabel] = keys.associateWith { live.getValue(it) }
+            keys.forEach {
+                live.remove(it)
+                absentRoots[it] = Absence.Framed(sink.site)
+            }
+        }
         return tracked
     }
 
+    /** Take back the roots set aside by the loop whose break label is [exitLabel], as they were at its entry. */
+    fun leaveLoop(exitLabel: Any) {
+        val live = roots ?: return
+        framedRoots[exitLabel]?.forEach { (key, entry) ->
+            live[key] = entry.first to entry.second.deepCopy()
+            absentRoots.remove(key)
+        }
+    }
+
     /**
-     * Arrive at [label] falling through. At a label whose shape is fixed the state is brought to that shape; otherwise
-     * the states of jumps to [label] are joined into the current one.
+     * Arrive at [label] falling through. At a label whose shape is fixed the state is brought to that shape, and at the
+     * break label of a loop the roots the loop set aside are taken back; otherwise the states of jumps to [label] are
+     * joined into the current one.
      */
     fun arriveAt(sink: FoldSink<R, F, C, S>, label: Any) {
-        labelShapes[label]?.let { return normalizeTo(sink, it) }
+        labelShapes[label]?.let {
+            normalizeTo(sink, it)
+            return leaveLoop(label)
+        }
         val jumps = pendingJumps.remove(label) ?: return
         normalize(sink)
         restore(join(snapshot(), jumps, sink.site))

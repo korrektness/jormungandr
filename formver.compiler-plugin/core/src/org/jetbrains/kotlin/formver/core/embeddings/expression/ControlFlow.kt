@@ -51,8 +51,9 @@ data class If(
 }
 
 /**
- * [headShapes] are the shapes of the variables in scope that the uniqueness checker finds `Unique` at the loop head,
- * and [exitShapes] those after the loop.
+ * [headShapes] are the shapes of the variables in scope that the uniqueness checker finds `Unique` at the loop head and
+ * that the loop uses, [framedShapes] those of the ones it does not use, which are kept outside the loop, and
+ * [exitShapes] the shapes after the loop of the ones it uses.
  */
 data class While(
     val condition: ExpEmbedding,
@@ -61,6 +62,7 @@ data class While(
     val continueLabelName: SymbolicName,
     val invariants: List<ExpEmbedding>,
     val headShapes: List<OwnedShape> = emptyList(),
+    val framedShapes: List<OwnedShape> = emptyList(),
     val exitShapes: List<OwnedShape> = emptyList(),
 ) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
@@ -71,6 +73,40 @@ data class While(
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(condition, body)
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitWhile(this)
 }
+
+/**
+ * This expression and every expression in it, including the expressions whose invariants are inhaled, which
+ * [ExpEmbedding.children] leaves out. The invariants of loops are not included.
+ */
+fun ExpEmbedding.subtree(): Sequence<ExpEmbedding> = sequence {
+    val exp = this@subtree
+    yield(exp)
+    val leftOut = if (exp is InhaleInvariants) sequenceOf(exp.exp) else emptySequence()
+    (leftOut + exp.children()).forEach { yieldAll(it.subtree()) }
+}
+
+/** The names of the labels placed in this expression. */
+fun ExpEmbedding.placedLabels(): Set<SymbolicName> = subtree().flatMap {
+    when (it) {
+        is While -> sequenceOf(it.continueLabelName, it.breakLabelName)
+        is LabelExp -> sequenceOf(it.label.name)
+        is GotoChainNode -> listOfNotNull(it.label?.name).asSequence()
+        is FunctionExp -> sequenceOf(it.returnLabel.name)
+        else -> emptySequence()
+    }
+}.toSet()
+
+/**
+ * The names of the variables this expression uses. A loop in it uses the owned roots it holds, which include those its
+ * invariants read.
+ */
+fun ExpEmbedding.usedVariableNames(): Set<SymbolicName> = subtree().flatMap {
+    when (it) {
+        is VariableEmbedding -> sequenceOf(it.name)
+        is While -> it.headShapes.asSequence().map { shape -> shape.root.name }
+        else -> emptySequence()
+    }
+}.toSet()
 
 data class Goto(val target: LabelLink) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { nothing() }

@@ -1,0 +1,549 @@
+/unique_loop_framing.kt: info: Generated Viper text for countTo:
+field x: Ref
+
+method countTo(c: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var i: Ref
+  var anon_0: Ref
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  i := intToRef(0)
+  fold acc(Counter_unique(c), write)
+  label cont
+    invariant acc(Counter_unique(c), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(c), Counter())
+    invariant isSubtype(typeOf(n), intType())
+    invariant intFromRef(i) >= 0 &&
+      (unfolding acc(Counter_unique(c), write) in
+        intFromRef(c.x) == intFromRef(i))
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    unfold acc(Counter_unique(c), write)
+    anon_1 := c.x
+    c.x := plusInts(anon_1, intToRef(1))
+    i := plusInts(i, intToRef(1))
+    fold acc(Counter_unique(c), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(c), Counter())
+  assert isSubtype(typeOf(n), intType())
+  assert intFromRef(i) >= 0 &&
+    (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) == intFromRef(i))
+  v_ret_0 := i
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/unique_loop_framing.kt: info: Generated Viper text for repeat:
+method repeat(n: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(f), functionType())
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    inhale isSubtype(typeOf(anon_1), unitType())
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(f), functionType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_loop_framing.kt: info: Generated Viper text for loopKeepsOtherRoot:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method loopKeepsOtherRoot(a: Ref, c: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Counter())
+  requires acc(Counter_unique(a), write)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(a), write)
+  a.x := intToRef(1)
+  i := intToRef(0)
+  fold acc(Counter_unique(a), write)
+  label cont
+    invariant acc(Counter_unique(c), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(a), Counter())
+    invariant isSubtype(typeOf(c), Counter())
+    invariant isSubtype(typeOf(n), intType())
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    unfold acc(Counter_unique(c), write)
+    c.x := i
+    i := plusInts(i, intToRef(1))
+    fold acc(Counter_unique(c), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(a), Counter())
+  assert isSubtype(typeOf(c), Counter())
+  assert isSubtype(typeOf(n), intType())
+  unfold acc(Counter_unique(a), write)
+  anon_1 := a.x
+  assert intFromRef(anon_1) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_loop_framing.kt: info: Generated Viper text for returnFromLoopKeepsOtherRoot:
+field x: Ref
+
+method returnFromLoopKeepsOtherRoot(a: Ref, c: Ref, n: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Counter())
+  requires acc(Counter_unique(a), write)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(Counter_unique(a), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Counter_unique(a), write) in intFromRef(a.x) == 1)
+{
+  var i: Ref
+  var anon: Ref
+  unfold acc(Counter_unique(a), write)
+  a.x := intToRef(1)
+  i := intToRef(0)
+  fold acc(Counter_unique(a), write)
+  label cont
+    invariant acc(Counter_unique(c), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(a), Counter())
+    invariant isSubtype(typeOf(c), Counter())
+    invariant isSubtype(typeOf(n), intType())
+  anon := ltInts(i, n)
+  if (boolFromRef(anon)) {
+    unfold acc(Counter_unique(c), write)
+    c.x := i
+    fold acc(Counter_unique(c), write)
+    if (intFromRef(i) == 2) {
+      goto lbl_ret_0
+    }
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(a), Counter())
+  assert isSubtype(typeOf(c), Counter())
+  assert isSubtype(typeOf(n), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_loop_framing.kt: info: Generated Viper text for breakFromNestedLoopKeepsOtherRoot:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method breakFromNestedLoopKeepsOtherRoot(a: Ref, c: Ref, n: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Counter())
+  requires acc(Counter_unique(a), write)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  unfold acc(Counter_unique(a), write)
+  a.x := intToRef(1)
+  i := intToRef(0)
+  fold acc(Counter_unique(a), write)
+  label cont_0
+    invariant acc(Counter_unique(c), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(a), Counter())
+    invariant isSubtype(typeOf(c), Counter())
+    invariant isSubtype(typeOf(n), intType())
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var j: Ref
+    var anon_1: Ref
+    j := intToRef(0)
+    label cont_1
+      invariant acc(Counter_unique(c), write)
+      invariant isSubtype(typeOf(j), intType())
+      invariant isSubtype(typeOf(i), intType())
+      invariant isSubtype(typeOf(a), Counter())
+      invariant isSubtype(typeOf(c), Counter())
+      invariant isSubtype(typeOf(n), intType())
+    anon_1 := ltInts(j, n)
+    if (boolFromRef(anon_1)) {
+      unfold acc(Counter_unique(c), write)
+      c.x := j
+      fold acc(Counter_unique(c), write)
+      if (intFromRef(j) == 2) {
+        goto break_0
+      }
+      j := plusInts(j, intToRef(1))
+      goto cont_1
+    }
+    label break_1
+    assert isSubtype(typeOf(j), intType())
+    assert isSubtype(typeOf(i), intType())
+    assert isSubtype(typeOf(a), Counter())
+    assert isSubtype(typeOf(c), Counter())
+    assert isSubtype(typeOf(n), intType())
+    i := plusInts(i, intToRef(1))
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(a), Counter())
+  assert isSubtype(typeOf(c), Counter())
+  assert isSubtype(typeOf(n), intType())
+  unfold acc(Counter_unique(a), write)
+  anon_2 := a.x
+  assert intFromRef(anon_2) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_loop_framing.kt: info: Generated Viper text for loopWritingRootForgetsIt:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method loopWritingRootForgetsIt(a: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Counter())
+  requires acc(Counter_unique(a), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(a), write)
+  a.x := intToRef(1)
+  i := intToRef(0)
+  fold acc(Counter_unique(a), write)
+  label cont
+    invariant acc(Counter_unique(a), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(a), Counter())
+    invariant isSubtype(typeOf(n), intType())
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    unfold acc(Counter_unique(a), write)
+    a.x := i
+    i := plusInts(i, intToRef(1))
+    fold acc(Counter_unique(a), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(a), Counter())
+  assert isSubtype(typeOf(n), intType())
+  unfold acc(Counter_unique(a), write)
+  anon_1 := a.x
+  assert intFromRef(anon_1) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_loop_framing.kt: info: Generated Viper text for invariantNamesRoot:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invariantNamesRoot(a: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Counter())
+  requires acc(Counter_unique(a), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(a), write)
+  a.x := intToRef(1)
+  i := intToRef(0)
+  fold acc(Counter_unique(a), write)
+  label cont
+    invariant acc(Counter_unique(a), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(a), Counter())
+    invariant isSubtype(typeOf(n), intType())
+    invariant (unfolding acc(Counter_unique(a), write) in
+        intFromRef(a.x) == 1)
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(a), Counter())
+  assert isSubtype(typeOf(n), intType())
+  assert (unfolding acc(Counter_unique(a), write) in intFromRef(a.x) == 1)
+  unfold acc(Counter_unique(a), write)
+  anon_1 := a.x
+  assert intFromRef(anon_1) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_loop_framing.kt: info: Generated Viper text for inlinedLoopKeepsOtherRoot:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method countTo(c: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method inlinedLoopKeepsOtherRoot(a: Ref, c: Ref, n: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Counter())
+  requires acc(Counter_unique(a), write)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var i: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  unfold acc(Counter_unique(a), write)
+  a.x := intToRef(1)
+  unfold acc(Counter_unique(c), write)
+  c.x := intToRef(0)
+  i := intToRef(0)
+  fold acc(Counter_unique(c), write)
+  fold acc(Counter_unique(a), write)
+  label cont
+    invariant acc(Counter_unique(c), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(c), Counter())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(a), Counter())
+    invariant intFromRef(i) >= 0 &&
+      (unfolding acc(Counter_unique(c), write) in
+        intFromRef(c.x) == intFromRef(i))
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var anon_1: Ref
+    unfold acc(Counter_unique(c), write)
+    anon_1 := c.x
+    c.x := plusInts(anon_1, intToRef(1))
+    i := plusInts(i, intToRef(1))
+    fold acc(Counter_unique(c), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(c), Counter())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(a), Counter())
+  assert intFromRef(i) >= 0 &&
+    (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) == intFromRef(i))
+  v_ret_2 := i
+  goto lbl_ret_2
+  label lbl_ret_2
+  unfold acc(Counter_unique(a), write)
+  anon_2 := a.x
+  assert intFromRef(anon_2) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_loop_framing.kt: info: Generated Viper text for inlinedLoopKeepsSiblingField:
+field count: Ref
+
+field inner: Ref
+
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method countTo(c: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  requires acc(Counter_unique(c), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(Counter_unique(c), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method inlinedLoopKeepsSiblingField(h: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  unfold acc(Holder_unique(h), write)
+  h.count := intToRef(2)
+  anon_0 := h.inner
+  unfold acc(Counter_unique(anon_0), write)
+  anon_0.x := intToRef(0)
+  i := intToRef(0)
+  fold acc(Counter_unique(anon_0), write)
+  label cont
+    invariant acc(Counter_unique(anon_0), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(anon_0), Counter())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(h), Holder())
+    invariant intFromRef(i) >= 0 &&
+      (unfolding acc(Counter_unique(anon_0), write) in
+        intFromRef(anon_0.x) == intFromRef(i))
+  anon_1 := ltInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    unfold acc(Counter_unique(anon_0), write)
+    anon_2 := anon_0.x
+    anon_0.x := plusInts(anon_2, intToRef(1))
+    i := plusInts(i, intToRef(1))
+    fold acc(Counter_unique(anon_0), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(anon_0), Counter())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(h), Holder())
+  assert intFromRef(i) >= 0 &&
+    (unfolding acc(Counter_unique(anon_0), write) in
+      intFromRef(anon_0.x) == intFromRef(i))
+  v_ret_2 := i
+  goto lbl_ret_2
+  label lbl_ret_2
+  anon_4 := h.count
+  fold acc(Holder_unique(h), write)
+  if (intFromRef(anon_4) == 2) {
+    var anon_5: Ref
+    var anon_6: Ref
+    unfold acc(Holder_unique(h), write)
+    anon_6 := h.inner
+    unfold acc(Counter_unique(h.inner), write)
+    anon_5 := anon_6.x
+    anon_3 := geInts(anon_5, intToRef(0))
+    fold acc(Counter_unique(h.inner), write)
+    fold acc(Holder_unique(h), write)
+  } else {
+    anon_3 := boolToRef(false)}
+  assert boolFromRef(anon_3)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_loop_framing.kt: info: Generated Viper text for lambdaInLoopReachesRoot:
+field x: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lambdaInLoopReachesRoot(a: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Counter())
+  requires acc(Counter_unique(a), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_3: Ref
+  var i: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(a), write)
+  a.x := intToRef(1)
+  i := intToRef(0)
+  fold acc(Counter_unique(a), write)
+  label cont
+    invariant acc(Counter_unique(a), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(a), Counter())
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
+    var v_ret_4: Ref
+    unfold acc(Counter_unique(a), write)
+    a.x := intToRef(2)
+    label lbl_ret_4
+    inhale isSubtype(typeOf(v_ret_4), unitType())
+    i := plusInts(i, intToRef(1))
+    fold acc(Counter_unique(a), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(a), Counter())
+  label lbl_ret_3
+  inhale isSubtype(typeOf(v_ret_3), unitType())
+  unfold acc(Counter_unique(a), write)
+  anon_1 := a.x
+  assert intFromRef(anon_1) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method repeat(n: Ref, f: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())

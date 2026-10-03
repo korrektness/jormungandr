@@ -137,6 +137,9 @@ The rules are as follows:
 - Loop invariant must hold after each iteration.
 - Loop invariant must hold when the loop is exited.
 - Code after the loop may assume the condition fails.
+- Of the properties of unique objects the loop reads or writes, including through functions and lambdas inlined into
+  it, code after the loop knows only what the invariant says. What was known about the other unique objects still
+  holds.
 
 A `for` loop over an `Int` progression written with `until`, `..<`, `..` or `downTo`, optionally followed by
 `step`, puts its `loopInvariants` at the start of its body:
@@ -386,8 +389,8 @@ An `IntArray` holds its elements as a sequence.
   order, inlined into a loop. When the body of `init` is a single pure
   expression, every element is known to equal it at its index afterwards;
   otherwise only the size is known. The loop keeps ownership of the unique
-  data around it, but, as for any loop, facts about the contents of that data
-  are lost.
+  data around it, and keeps facts about that data as any loop does (see Loop
+  Invariants).
 
 ```kotlin
 @AlwaysVerify

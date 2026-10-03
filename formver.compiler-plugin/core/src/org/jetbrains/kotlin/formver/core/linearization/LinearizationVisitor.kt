@@ -31,6 +31,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.core.names.sourceSpelling
+import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Exp.Companion.toConjunction
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
@@ -97,23 +98,25 @@ data class LinearizationVisitor(
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             val foldState = ctx.foldState
             val headShapes = foldState?.enterLoop(
-                ctx, e.continueLabel.name, e.headShapes, e.breakLabel.name, e.exitShapes,
+                ctx, e.continueLabel.name, e.headShapes, e.framedShapes, e.breakLabel.name, e.exitShapes,
             ).orEmpty()
             ctx.requireFoldedReads(e.invariants, headShapes + e.exitShapes)
             // The permissions come first, since the user's invariants may read through them.
             val headPermissions = headShapes.mapNotNull { foldState?.permission(it) }
             ctx.addLabel(e.continueLabel.copy(invariants = headPermissions + e.continueLabel.invariants).toViper(ctx))
-            val condVar = ctx.freshAnonVar { boolean() }
-            e.condition.linearize().toViperStoringIn(condVar, ctx)
-            ctx.addStatement {
-                ctx.foldState?.normalize(ctx)
-                val bodyBlock = ctx.withFoldStateRestored {
-                    asBlock {
-                        e.body.linearize().toViperUnusedResult(this)
-                        addStatement { e.continueLabel.toLink().toViperGoto(this) }
+            withinScope(ctx, e.placedLabels(), leave = { _, state -> state.leaveLoop(e.breakLabel.name) }) {
+                val condVar = ctx.freshAnonVar { boolean() }
+                e.condition.linearize().toViperStoringIn(condVar, ctx)
+                ctx.addStatement {
+                    ctx.foldState?.normalize(ctx)
+                    val bodyBlock = ctx.withFoldStateRestored {
+                        asBlock {
+                            e.body.linearize().toViperUnusedResult(this)
+                            addStatement { e.continueLabel.toLink().toViperGoto(this) }
+                        }
                     }
+                    Stmt.If(condVar.linearize().toViperBuiltinType(ctx), bodyBlock, els = Stmt.Seqn(), ctx.source.asPosition)
                 }
-                Stmt.If(condVar.linearize().toViperBuiltinType(ctx), bodyBlock, els = Stmt.Seqn(), ctx.source.asPosition)
             }
             ctx.addLabel(e.breakLabel.toViper(ctx))
 
@@ -242,7 +245,13 @@ data class LinearizationVisitor(
             add(Declare(e.returnVariable, null).linearize())
             e.declarations.forEach { add(it.linearize()) }
             add(foldOperations(e) { ctx, state -> e.bindings.forEach { ctx.enterBinding(it, state) } })
-            add(e.body.linearize())
+            add(object : UnitResultLinearizable(e) {
+                override fun toViperUnusedResult(ctx: LinearizationContext) {
+                    withinScope(ctx, e.body.placedLabels(), leave = { jumpCtx, state ->
+                        e.bindings.forEach { jumpCtx.exitBinding(it, state) }
+                    }) { e.body.linearize().toViperUnusedResult(ctx) }
+                }
+            })
             add(foldOperations(e) { ctx, state ->
                 e.bindings.forEach { ctx.exitBinding(it, state) }
                 val returned = OwnedPath(e.returnVariable)
@@ -261,6 +270,20 @@ data class LinearizationVisitor(
         override fun toViper(ctx: LinearizationContext): Exp = value(ctx, builtinType = null)
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp = value(ctx, e.type)
         override fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext): Exp = value(ctx, type)
+    }
+
+    /**
+     * Runs [action] inside a scope whose labels are [labels], when there is a fold state: a jump to another label first
+     * runs [leave] with the jump's context and the fold state.
+     */
+    private fun withinScope(
+        ctx: LinearizationContext,
+        labels: Set<SymbolicName>,
+        leave: (LinearizationContext, FoldState) -> Unit,
+        action: () -> Unit,
+    ) {
+        val state = ctx.foldState ?: return action()
+        state.withinScope(labels, { leave(it, state) }, action)
     }
 
     /** A step of [e] that runs [operations] on the fold state, when there is one. */
@@ -600,11 +623,12 @@ data class LinearizationVisitor(
                 return
             }
             val receiverViper = e.receiver.linearize().toViper(ctx)
-            receiverPath?.let { ctx.foldState?.open(ctx, it, e.field) }
             val targetOwned = receiverPath != null && e.field.isUnique
             val newValue = runUpdatesOfPath(e.newValue, ctx)
             val source = ctx.moveSource(newValue, targetOwned)
             val newValueViper = newValue.linearize().toViper(ctx)
+            // The value is evaluated before the target is opened, since control flow in it may fold the target again.
+            receiverPath?.let { ctx.foldState?.open(ctx, it, e.field) }
             ctx.addStatement {
                 Stmt.FieldAssign(
                     Exp.FieldAccess(receiverViper, e.field.toViper()),

@@ -166,3 +166,33 @@ fun <!VIPER_TEXT!>returnInlineResult<!>(c: @Unique Counter): @Unique Counter {
     postconditions<Counter> { r -> r.x == old(c.x) + 1 }
     return successor(c)
 }
+
+<!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>make<!>(v: Int): @Unique Counter = Counter(v)
+
+<!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>plusOne<!>(v: Int): Int = v + 1
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>resultIntoPath<!>(h: @Unique @Borrowed Holder) {
+    h.inner = make(3)
+    verify(h.inner.x == 3)
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>resultIntoLocalPath<!>() {
+    val h: @Unique Holder = Holder(Counter(0), 0)
+    h.inner = make(3)
+    verify(h.inner.x == 3)
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>plainResultIntoPathField<!>(h: @Unique @Borrowed Holder) {
+    h.inner.x = plusOne(2)
+    h.count = plusOne(1)
+    verify(h.inner.x == 3 && h.count == 2)
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>conditionalIntoPathField<!>(h: @Unique @Borrowed Holder, b: Boolean) {
+    h.inner.x = if (b) 1 else 2
+    verify(h.inner.x >= 1)
+}

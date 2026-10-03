@@ -75,13 +75,11 @@ fun StmtConversionContext.convertIntArrayInit(call: FirFunctionCall): ExpEmbeddi
     val index = freshAnonVar(intType)
 
     val inScope = retrievePropertiesAndParameters().toList()
+    val typeInvariants = (inScope + index).flatMap { it.provenInvariants() }
     val invariants = buildList {
-        inScope.forEach { addAll(it.provenInvariants()) }
-        addAll(index.provenInvariants())
         add(OperatorExpEmbeddings.GeIntInt(index, IntLit(0)))
         add(OperatorExpEmbeddings.LeIntInt(index, size))
         add(EqCmp(IntArraySize(array), size))
-        addAll(retainedPathInvariants())
         initValueAt(init)?.let { (j, value) ->
             val written = OperatorExpEmbeddings.And(
                 OperatorExpEmbeddings.GeIntInt(j, IntLit(0)),
@@ -96,11 +94,11 @@ fun StmtConversionContext.convertIntArrayInit(call: FirFunctionCall): ExpEmbeddi
     val fill = withFreshWhile(label = null) {
         val write = IntArraySet(array, index, withCallSite(call) { init.insertCall(listOf(index), this) }, receiverOwned = true)
         val step = Assign(index, OperatorExpEmbeddings.AddIntInt(index, IntLit(1)))
-        While(
+        loopOverUsedRoots(
             OperatorExpEmbeddings.LtIntInt(index, size),
             blockOf(write, step),
-            breakLabelName(),
             continueLabelName(),
+            typeInvariants,
             invariants,
             shapes,
             shapes,

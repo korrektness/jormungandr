@@ -518,8 +518,9 @@ fun StmtConversionContext.exceptionalExit(): ExpEmbedding = Block {
 
 /**
  * A loop whose head carries the proven invariants of the variables in scope, including those of the calls that run an
- * inlined body, then [boundInvariants], then the invariants of the paths retained by inlined calls in progress, then
- * the user's [userInvariants]. The body is converted in the loop's own context; [headLabelName] names the head there.
+ * inlined body, then [boundInvariants], then the user's [userInvariants], then the invariants of the paths retained
+ * by inlined calls in progress, as [loopOverUsedRoots] builds it. The body is converted in the loop's own context;
+ * [headLabelName] names the head there.
  */
 fun StmtConversionContext.convertLoop(
     loop: FirWhileLoop,
@@ -530,12 +531,9 @@ fun StmtConversionContext.convertLoop(
     body: StmtConversionContext.() -> ExpEmbedding,
 ): ExpEmbedding {
     val inScope = ownershipFrame.scopeWith(retrievePropertiesAndParameters().toList())
+    val typeInvariants = inScope.flatMap { it.provenInvariants() }
     val invariants = buildList {
-        inScope.forEach {
-            addAll(it.provenInvariants())
-        }
         addAll(boundInvariants)
-        addAll(retainedPathInvariants())
         userInvariants?.let {
             addAll(withScopeImpl(ScopeIndex.NoScope) { collectInvariants(it) })
         }
@@ -543,19 +541,49 @@ fun StmtConversionContext.convertLoop(
     val headShapes = ownedShapes({ it.stateAtLoopHead(loop) }, inScope)
     val exitShapes = ownedShapes({ it.stateAfter(loop) }, inScope)
     return withFreshWhile(loop.label) {
-        val convertedBody = body()
-        While(condition, convertedBody, breakLabelName(), headLabelName(), invariants, headShapes, exitShapes)
+        loopOverUsedRoots(condition, body(), headLabelName(), typeInvariants, invariants, headShapes, exitShapes)
     }
 }
 
 /**
- * That each path retained by an inlined call in progress still reads the temporary holding it. The loop holds the
- * permission to the path's last field, so without this the field's value is unknown after the loop, and the
- * temporary's predicate could not be handed back to the path.
+ * A loop that holds only the owned roots it uses: those that [condition], [body] or [invariants] name. [headShapes]
+ * are the shapes at the head of the roots in scope that are owned there, and [exitShapes] those after the loop. The
+ * roots the loop does not use are left out of its invariant, so Viper keeps their permissions and the values below
+ * them across the loop. [typeInvariants] are facts about the types of variables; they need no permission and are not
+ * uses. For each path retained by an inlined call in progress whose root the loop uses, an invariant says that the
+ * path still reads its temporary.
  */
-fun StmtConversionContext.retainedPathInvariants(): List<ExpEmbedding> =
+fun StmtConversionContext.loopOverUsedRoots(
+    condition: ExpEmbedding,
+    body: ExpEmbedding,
+    headLabelName: SymbolicName,
+    typeInvariants: List<ExpEmbedding>,
+    invariants: List<ExpEmbedding>,
+    headShapes: List<OwnedShape>,
+    exitShapes: List<OwnedShape>,
+): While {
+    val used = (listOf(condition, body) + invariants).flatMapTo(mutableSetOf()) { it.usedVariableNames() }
+    val (held, framed) = headShapes.partition { it.root.name in used }
+    return While(
+        condition,
+        body,
+        breakLabelName(),
+        headLabelName,
+        typeInvariants + invariants + retainedPathInvariants(used),
+        held,
+        framed,
+        exitShapes.filter { it.root.name in used },
+    )
+}
+
+/**
+ * That each path retained by an inlined call in progress whose root is in [used] still reads the temporary holding
+ * it. The loop holds the permission to the path's last field, so without this the field's value is unknown after the
+ * loop, and the temporary's predicate could not be handed back to the path.
+ */
+private fun StmtConversionContext.retainedPathInvariants(used: Set<SymbolicName>): List<ExpEmbedding> =
     ownershipFrame.activeBindings.mapNotNull { binding ->
-        val path = binding.retainedPath ?: return@mapNotNull null
+        val path = binding.retainedPath?.takeIf { it.root.name in used } ?: return@mapNotNull null
         EqCmp(path.fields.fold(path.root as ExpEmbedding) { receiver, step -> step.valueOf(receiver) }, binding.variable)
     }.toList()
 
