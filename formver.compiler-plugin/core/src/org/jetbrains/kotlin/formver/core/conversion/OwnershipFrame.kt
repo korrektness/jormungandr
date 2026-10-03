@@ -67,6 +67,10 @@ class OwnershipFrame private constructor(
     fun ownsAfter(element: FirElement, path: Path): Boolean =
         analysis?.let { it.owns(it.stateAfter(element), path, ownedView(path)) } ?: false
 
+    /** The bindings of this frame and of the frames that run it: those of the inlined calls in progress. */
+    val activeBindings: Sequence<RootBinding>
+        get() = generateSequence(this) { it.parent }.flatMap { it.bindings }
+
     /** Whether some root is `Unique` somewhere in the body's function. */
     val ownsAnyPath: Boolean
         get() = analysis?.ownsAnyPath == true

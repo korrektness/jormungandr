@@ -278,18 +278,17 @@ fun StmtConversionContext.insertInlineFunctionCall(
         "Return target label not found for function ${calleeSignature.callableType.name}"
     }
     val declarations = mutableListOf<Declare>()
+    val bindings = mutableListOf<RootBinding>()
     val callArgs = args.indices.map { index ->
-        val (declaration, usage) = argumentDeclaration(args[index], calleeSignature.callableType.formalArgTypes[index])
-        // A temporary for a `@Unique` parameter takes the predicate of a fresh value.
-        declarations.addIfNotNull(declaration?.copy(targetOwned = true.takeIf { calleeSignature.formalArgs[index].isUnique }))
+        val formal = calleeSignature.formalArgs[index]
+        val mode = bindingMode(call, formal, args[index])
+        val (declaration, usage) =
+            inlineArgumentDeclaration(args[index], calleeSignature.callableType.formalArgTypes[index], mode)
+        declarations.addIfNotNull(declaration)
+        usage.underlyingVariable?.let { bindings.add(RootBinding(roots[index], formal, it, args[index], mode)) }
         usage
     }
     val subs = paramNames.zip(callArgs).toMap()
-    val bindings = calleeSignature.formalArgs.indices.mapNotNull { index ->
-        val variable = callArgs[index].underlyingVariable ?: return@mapNotNull null
-        val formal = calleeSignature.formalArgs[index]
-        RootBinding(roots[index], formal, variable, args[index], bindingMode(call, formal, variable))
-    }
     val frame = ownershipFrame.inlined(analysis, call, bindings, ownershipFrame.scopeWith(retrievePropertiesAndParameters().toList()))
     val methodCtxFactory = MethodContextFactory(
         calleeSignature,
@@ -312,17 +311,47 @@ fun StmtConversionContext.insertInlineFunctionCall(
 }
 
 /**
- * How [formal] holds [variable] in a body inlined at [call]: a `@Borrowed` parameter holds what the caller owns, and a
+ * The temporary that stores [arg] for a parameter of type [formalType] bound in [mode], when [arg] is not a variable,
+ * and the expression the inlined body reads for the parameter. A temporary for a parameter that holds its argument
+ * takes the argument's predicate, or the predicate of a fresh value. A path is stored at its own type, so that the
+ * temporary takes its predicate whole, including what belongs to a subclass of [formalType].
+ */
+private fun StmtConversionContext.inlineArgumentDeclaration(
+    arg: ExpEmbedding,
+    formalType: TypeEmbedding,
+    mode: BindingMode,
+): Pair<Declare?, ExpEmbedding> {
+    val holds = mode != BindingMode.Released
+    if (holds && arg.underlyingVariable == null && arg.ownedPath() != null) {
+        val declaration = declareAnonVar(arg.type, arg).copy(targetOwned = true)
+        return declaration to declaration.variable.withNewTypeInvariants(formalType, typeResolver) {
+            proven = true
+            access = true
+        }
+    }
+    val (declaration, usage) = argumentDeclaration(arg, formalType)
+    return declaration?.copy(targetOwned = true.takeIf { holds }) to usage
+}
+
+/**
+ * How [formal] holds [arg] in a body inlined at [call]: a `@Borrowed` parameter holds what the caller owns, and a
  * plain one holds nothing.
  */
-private fun StmtConversionContext.bindingMode(call: FirElement, formal: VariableEmbedding, variable: VariableEmbedding) =
+private fun StmtConversionContext.bindingMode(call: FirElement, formal: VariableEmbedding, arg: ExpEmbedding) =
     when {
         formal.isUnique && formal.isBorrowed -> BindingMode.Borrowed
         formal.isUnique -> BindingMode.Consumed
-        formal.isBorrowed && ownershipFrame.movedBelowOwned(variable) { it.stateBefore(call) } != null ->
-            BindingMode.Borrowed
+        formal.isBorrowed && callerOwns(call, arg) -> BindingMode.Borrowed
         else -> BindingMode.Released
     }
+
+/** Whether the caller owns the path [arg] reads on entry to [call]. */
+private fun StmtConversionContext.callerOwns(call: FirElement, arg: ExpEmbedding): Boolean {
+    val path = arg.ownedPath() ?: return false
+    val holes = ownershipFrame.movedBelowOwned(path.root) { it.stateBefore(call) } ?: return false
+    val fields = path.fields.map { it.symbol ?: return false }
+    return holes.none { hole -> fields.take(hole.size) == hole }
+}
 
 internal fun StmtConversionContext.insertQuantifierFunctionCall(
     symbol: FirValueParameterSymbol,
@@ -489,7 +518,8 @@ fun StmtConversionContext.exceptionalExit(): ExpEmbedding = Block {
 
 /**
  * A loop whose head carries the proven invariants of the variables in scope, then [boundInvariants], then the
- * user's [userInvariants]. The body is converted in the loop's own context; [headLabelName] names the head there.
+ * invariants of the paths retained by inlined calls in progress, then the user's [userInvariants]. The body is
+ * converted in the loop's own context; [headLabelName] names the head there.
  */
 fun StmtConversionContext.convertLoop(
     loop: FirWhileLoop,
@@ -505,6 +535,7 @@ fun StmtConversionContext.convertLoop(
             addAll(it.provenInvariants())
         }
         addAll(boundInvariants)
+        addAll(retainedPathInvariants())
         userInvariants?.let {
             addAll(withScopeImpl(ScopeIndex.NoScope) { collectInvariants(it) })
         }
@@ -516,6 +547,17 @@ fun StmtConversionContext.convertLoop(
         While(condition, convertedBody, breakLabelName(), headLabelName(), invariants, headShapes, exitShapes)
     }
 }
+
+/**
+ * That each path retained by an inlined call in progress still reads the temporary holding it. The loop holds the
+ * permission to the path's last field, so without this the field's value is unknown after the loop, and the
+ * temporary's predicate could not be handed back to the path.
+ */
+fun StmtConversionContext.retainedPathInvariants(): List<ExpEmbedding> =
+    ownershipFrame.activeBindings.mapNotNull { binding ->
+        val path = binding.retainedPath ?: return@mapNotNull null
+        EqCmp(path.fields.fold(path.root as ExpEmbedding) { receiver, step -> step.valueOf(receiver) }, binding.variable)
+    }.toList()
 
 /**
  * The shapes of the variables among [roots], and of the variables in scope at the calls that run this body, that are

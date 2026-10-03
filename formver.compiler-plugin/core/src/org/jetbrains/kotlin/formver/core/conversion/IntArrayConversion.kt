@@ -81,6 +81,7 @@ fun StmtConversionContext.convertIntArrayInit(call: FirFunctionCall): ExpEmbeddi
         add(OperatorExpEmbeddings.GeIntInt(index, IntLit(0)))
         add(OperatorExpEmbeddings.LeIntInt(index, size))
         add(EqCmp(IntArraySize(array), size))
+        addAll(retainedPathInvariants())
         initValueAt(init)?.let { (j, value) ->
             val written = OperatorExpEmbeddings.And(
                 OperatorExpEmbeddings.GeIntInt(j, IntLit(0)),

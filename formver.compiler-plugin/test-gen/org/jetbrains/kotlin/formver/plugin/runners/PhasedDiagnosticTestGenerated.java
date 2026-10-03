@@ -1104,6 +1104,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("inline_unique_arguments.kt")
+      public void testInline_unique_arguments() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/inline_unique_arguments.kt");
+      }
+
+      @Test
       @TestMetadata("lambdas.kt")
       public void testLambdas() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/lambdas.kt");

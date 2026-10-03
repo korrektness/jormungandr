@@ -14,7 +14,9 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSigna
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineCallable
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
+import org.jetbrains.kotlin.formver.core.linearization.OwnedPath
 import org.jetbrains.kotlin.formver.core.linearization.OwnedShape
+import org.jetbrains.kotlin.formver.core.linearization.ownedPath
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
 private data class BlockImpl(override val exps: List<ExpEmbedding>) : Block
@@ -173,7 +175,11 @@ data class RootBinding(
     val variable: VariableEmbedding,
     val argument: ExpEmbedding,
     val mode: BindingMode,
-)
+) {
+    /** The caller's path with fields that [variable] takes from the caller for a borrowing body and hands back on exit. */
+    val retainedPath: OwnedPath?
+        get() = argument.ownedPath()?.takeIf { mode == BindingMode.Borrowed && it.fields.isNotEmpty() }
+}
 
 /**
  * A body inlined at a call: [declarations] store the arguments that are not variables, [body] runs with its parameters

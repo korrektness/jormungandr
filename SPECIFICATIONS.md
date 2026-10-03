@@ -305,9 +305,13 @@ An inline function whose body is in the sources being compiled is verified as
 its body inlined at each call, and its parameters keep the meaning of their
 annotations there. Writes through a `@Unique @Borrowed` parameter are real,
 and the caller knows the values written. A `@Borrowed` parameter whose
-argument the caller owns is treated the same way. Passing a property path such
-as `b.next` to a `@Borrowed` parameter of an inline function is reported as
-unsupported ownership, and the calling function is not verified.
+argument the caller owns, a variable or a property path such as `b.next`, is
+treated the same way. A lambda the inline function invokes must not assign a
+path the function borrows; that is reported as unsupported ownership.
+
+A lambda passed to an inline function owns a parameter it annotates, as in
+`{ c: @Unique Counter -> ... }`. A parameter without annotations is shared,
+whatever the inline function passes to it.
 
 ```kotlin
 inline fun setN(c: @Unique @Borrowed Counter, v: Int) {
