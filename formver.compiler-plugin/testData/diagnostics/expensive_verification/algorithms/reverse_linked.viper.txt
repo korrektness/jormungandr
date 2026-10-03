@@ -7,19 +7,14 @@ function length(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
 {
-  (let anon_0_0 ==
-    ((n == nullValue() ?
-      (let anon_1_0 ==
-        (intToRef(0)) in
-        anon_1_0) :
-      (unfolding acc(Node_unique(n), write) in
-        (let anon_3_0 ==
-          (n.next) in
-          (let anon_2_0 ==
-            (plusInts(intToRef(1), length(anon_3_0))) in
-            anon_2_0))))) in
-    anon_0_0)
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_3_0 ==
+        (n.next) in
+        plusInts(intToRef(1), length(anon_3_0)))))
 }
 
 /reverse_linked.kt: info: Generated Viper text for reverse:
@@ -31,19 +26,14 @@ function length(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
 {
-  (let anon_0_0 ==
-    ((n == nullValue() ?
-      (let anon_1_0 ==
-        (intToRef(0)) in
-        anon_1_0) :
-      (unfolding acc(Node_unique(n), write) in
-        (let anon_3_0 ==
-          (n.next) in
-          (let anon_2_0 ==
-            (plusInts(intToRef(1), length(anon_3_0))) in
-            anon_2_0))))) in
-    anon_0_0)
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_3_0 ==
+        (n.next) in
+        plusInts(intToRef(1), length(anon_3_0)))))
 }
 
 method reverse(head: Ref) returns (v_ret_0: Ref)

@@ -5,21 +5,16 @@ function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures n == nullValue() ==> result == boolToRef(true)
 {
   (n == nullValue() ?
     boolToRef(true) :
     (unfolding acc(Node_unique(n), write) in
       (let m_0 ==
         (n.next) in
-        (let anon_0_0 ==
-          ((m_0 == nullValue() ?
-            (let anon_1_0 ==
-              (boolToRef(true)) in
-              anon_1_0) :
-            (let anon_2_0 ==
-              (andBools(leInts(value(n), value(m_0)), isSorted(m_0))) in
-              anon_2_0))) in
-          anon_0_0))))
+        (m_0 == nullValue() ?
+          boolToRef(true) :
+          andBools(leInts(value(n), value(m_0)), isSorted(m_0))))))
 }
 
 function value(this: Ref): Ref
@@ -34,21 +29,16 @@ function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures n == nullValue() ==> result == boolToRef(true)
 {
   (n == nullValue() ?
     boolToRef(true) :
     (unfolding acc(Node_unique(n), write) in
       (let m_0 ==
         (n.next) in
-        (let anon_0_0 ==
-          ((m_0 == nullValue() ?
-            (let anon_1_0 ==
-              (boolToRef(true)) in
-              anon_1_0) :
-            (let anon_2_0 ==
-              (andBools(leInts(value(n), value(m_0)), isSorted(m_0))) in
-              anon_2_0))) in
-          anon_0_0))))
+        (m_0 == nullValue() ?
+          boolToRef(true) :
+          andBools(leInts(value(n), value(m_0)), isSorted(m_0))))))
 }
 
 function value(this: Ref): Ref
@@ -76,21 +66,16 @@ function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures n == nullValue() ==> result == boolToRef(true)
 {
   (n == nullValue() ?
     boolToRef(true) :
     (unfolding acc(Node_unique(n), write) in
       (let m_0 ==
         (n.next) in
-        (let anon_0_0 ==
-          ((m_0 == nullValue() ?
-            (let anon_1_0 ==
-              (boolToRef(true)) in
-              anon_1_0) :
-            (let anon_2_0 ==
-              (andBools(leInts(value(n), value(m_0)), isSorted(m_0))) in
-              anon_2_0))) in
-          anon_0_0))))
+        (m_0 == nullValue() ?
+          boolToRef(true) :
+          andBools(leInts(value(n), value(m_0)), isSorted(m_0))))))
 }
 
 function value(this: Ref): Ref
@@ -123,10 +108,7 @@ function f_content(h: Ref): Ref
   (unfolding acc(Holder_unique(h), write) in
     (let anon_1_0 ==
       (h.cell) in
-      (unfolding acc(Cell_unique(anon_1_0), write) in
-        (let anon_0_0 ==
-          (anon_1_0.bf_content) in
-          anon_0_0))))
+      (unfolding acc(Cell_unique(anon_1_0), write) in anon_1_0.bf_content)))
 }
 
 /unique_receivers.kt: info: Generated Viper text for sum:

@@ -20,3 +20,9 @@ fun <!VIPER_TEXT!>insert<!>(t: @Unique Tree?, v: Int): @Unique Tree {
     }
     return t
 }
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>leaf<!>(v: Int): @Unique Tree {
+    postconditions<Tree> { r -> size(r) == 1 }
+    return Tree(v, null, null)
+}

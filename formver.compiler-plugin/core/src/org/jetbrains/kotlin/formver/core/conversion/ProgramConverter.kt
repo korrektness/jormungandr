@@ -46,6 +46,7 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.isGuaranteedDefault
 import org.jetbrains.kotlin.formver.uniqueness.plugin.multisetClassId
 import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessFacts
 import org.jetbrains.kotlin.formver.core.linearization.FoldStateException
+import org.jetbrains.kotlin.formver.core.linearization.nullBaseCase
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Program
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
@@ -242,7 +243,10 @@ class ProgramConverter(
     private fun linearizePure(name: SymbolicName, signature: CompleteFunctionSignature) {
         val converted = convertedBodyResolver.lookupPure(name)
         val linearized = converted?.let { linearizePureBody(signature.declarationSource, it) }
-        linearizedBodyResolver.storeFunction(name, signature.toViperFunction(typeResolver, linearized))
+        val baseCases = linearized?.let { body ->
+            signature.formalArgs.filter { it.isUnique && it.type.isNullable }.mapNotNull { body.nullBaseCase(it.name) }
+        }.orEmpty()
+        linearizedBodyResolver.storeFunction(name, signature.toViperFunction(typeResolver, linearized, baseCases))
     }
 
     private fun linearizeImpure(name: SymbolicName, signature: CompleteFunctionSignature) {

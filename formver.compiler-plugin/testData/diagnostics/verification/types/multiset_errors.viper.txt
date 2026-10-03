@@ -5,19 +5,14 @@ function contents(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), multisetType())
+  ensures n == nullValue() ==> result == multisetToRef(Multiset[Int]())
 {
-  (let anon_0_0 ==
-    ((n == nullValue() ?
-      (let anon_1_0 ==
-        (multisetToRef(Multiset[Int]())) in
-        anon_1_0) :
-      (unfolding acc(Node_unique(n), write) in
-        (let anon_3_0 ==
-          (n.next) in
-          (let anon_2_0 ==
-            (unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_3_0))) in
-            anon_2_0))))) in
-    anon_0_0)
+  (n == nullValue() ?
+    multisetToRef(Multiset[Int]()) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_3_0 ==
+        (n.next) in
+        unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_3_0)))))
 }
 
 function value(this: Ref): Ref
@@ -32,19 +27,14 @@ function contents(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), multisetType())
+  ensures n == nullValue() ==> result == multisetToRef(Multiset[Int]())
 {
-  (let anon_0_0 ==
-    ((n == nullValue() ?
-      (let anon_1_0 ==
-        (multisetToRef(Multiset[Int]())) in
-        anon_1_0) :
-      (unfolding acc(Node_unique(n), write) in
-        (let anon_3_0 ==
-          (n.next) in
-          (let anon_2_0 ==
-            (unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_3_0))) in
-            anon_2_0))))) in
-    anon_0_0)
+  (n == nullValue() ?
+    multisetToRef(Multiset[Int]()) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_3_0 ==
+        (n.next) in
+        unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(anon_3_0)))))
 }
 
 function value(this: Ref): Ref

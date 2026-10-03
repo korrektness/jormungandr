@@ -2,9 +2,7 @@
 function returnNumberVal(): Ref
   ensures isSubtype(typeOf(result), intType())
 {
-  (let x_0 ==
-    (intToRef(42)) in
-    x_0)
+  intToRef(42)
 }
 
 /local_variables.kt: info: Generated Viper text for multipleAssignmentsOfDifferentType:
@@ -45,9 +43,7 @@ function laterInitializersCanRelyOnPrevious(): Ref
     (intToRef(40)) in
     (let b_0 ==
       (plusInts(a_0, intToRef(2))) in
-      (let c_0 ==
-        (timesInts(b_0, intToRef(2))) in
-        c_0)))
+      timesInts(b_0, intToRef(2))))
 }
 
 /local_variables.kt: info: Generated Viper text for initializersCanRelyOnParameters:
@@ -60,9 +56,7 @@ function initializersCanRelyOnParameters(x: Ref, y: Ref): Ref
     (plusInts(x, y)) in
     (let diff_0 ==
       (minusInts(x, y)) in
-      (let res_0 ==
-        (timesInts(sum_0, diff_0)) in
-        res_0)))
+      timesInts(sum_0, diff_0)))
 }
 
 /local_variables.kt: info: Generated Viper text for doubleIncrement:
@@ -73,9 +67,7 @@ function doubleIncrement(): Ref
     (intToRef(1)) in
     (let x_1 ==
       (plusInts(x_0, intToRef(1))) in
-      (let x_2 ==
-        (plusInts(x_1, intToRef(1))) in
-        x_2)))
+      plusInts(x_1, intToRef(1))))
 }
 
 /local_variables.kt: info: Generated Viper text for updateThenReadIntoOther:
@@ -86,9 +78,7 @@ function updateThenReadIntoOther(): Ref
     (intToRef(3)) in
     (let x_1 ==
       (plusInts(x_0, intToRef(4))) in
-      (let y_0 ==
-        (plusInts(x_1, intToRef(1))) in
-        y_0)))
+      plusInts(x_1, intToRef(1))))
 }
 
 /local_variables.kt: info: Generated Viper text for readOldValueBeforeUpdate:
@@ -101,9 +91,7 @@ function readOldValueBeforeUpdate(): Ref
       (plusInts(x_0, intToRef(1))) in
       (let x_1 ==
         (plusInts(x_0, intToRef(5))) in
-        (let x_2 ==
-          (plusInts(y_0, x_1)) in
-          x_2))))
+        plusInts(y_0, x_1))))
 }
 
 /local_variables.kt: info: Generated Viper text for chainThroughTemp:
@@ -114,9 +102,7 @@ function chainThroughTemp(): Ref
     (intToRef(2)) in
     (let t_0 ==
       (plusInts(x_0, intToRef(3))) in
-      (let x_1 ==
-        (plusInts(t_0, intToRef(4))) in
-        x_1)))
+      plusInts(t_0, intToRef(4))))
 }
 
 /local_variables.kt: info: Generated Viper text for overwriteNotSelfReferential:
@@ -125,9 +111,7 @@ function overwriteNotSelfReferential(): Ref
 {
   (let x_0 ==
     (intToRef(7)) in
-    (let x_1 ==
-      (intToRef(100)) in
-      x_1))
+    intToRef(100))
 }
 
 /local_variables.kt: info: Generated Viper text for nestedConditionalAssignment:
@@ -136,27 +120,9 @@ function nestedConditionalAssignment(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let x_0 ==
-    ((boolFromRef(a) ?
-      (let anon_0_0 ==
-        ((boolFromRef(b) ?
-          (let anon_1_0 ==
-            (intToRef(4)) in
-            anon_1_0) :
-          (let anon_2_0 ==
-            (intToRef(3)) in
-            anon_2_0))) in
-        anon_0_0) :
-      (let anon_3_0 ==
-        ((boolFromRef(b) ?
-          (let anon_4_0 ==
-            (intToRef(2)) in
-            anon_4_0) :
-          (let anon_5_0 ==
-            (intToRef(1)) in
-            anon_5_0))) in
-        anon_3_0))) in
-    x_0)
+  (boolFromRef(a) ?
+    (boolFromRef(b) ? intToRef(4) : intToRef(3)) :
+    (boolFromRef(b) ? intToRef(2) : intToRef(1)))
 }
 
 /local_variables.kt: info: Generated Viper text for blockConditionalAssignment:
@@ -165,23 +131,11 @@ function blockConditionalAssignment(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (let x_0 ==
-    ((boolFromRef(a) ?
-      (let y_0 ==
-        ((boolFromRef(b) ?
-          (let anon_1_0 ==
-            (intToRef(10)) in
-            anon_1_0) :
-          (let anon_2_0 ==
-            (intToRef(20)) in
-            anon_2_0))) in
-        (let anon_0_0 ==
-          (plusInts(y_0, intToRef(1))) in
-          anon_0_0)) :
-      (let anon_3_0 ==
-        (intToRef(30)) in
-        anon_3_0))) in
-    x_0)
+  (boolFromRef(a) ?
+    (let y_0 ==
+      ((boolFromRef(b) ? intToRef(10) : intToRef(20))) in
+      plusInts(y_0, intToRef(1))) :
+    intToRef(30))
 }
 
 /local_variables.kt: info: Generated Viper text for whenAssignment:
@@ -192,25 +146,7 @@ function whenAssignment(a: Ref, b: Ref): Ref
 {
   (let anon_0_0 ==
     (a) in
-    (let x_0 ==
-      ((intFromRef(anon_0_0) == 1 ?
-        (let anon_1_0 ==
-          ((boolFromRef(b) ?
-            (let anon_2_0 ==
-              (intToRef(2)) in
-              anon_2_0) :
-            (let anon_3_0 ==
-              (intToRef(3)) in
-              anon_3_0))) in
-          anon_1_0) :
-        (let anon_4_0 ==
-          ((intFromRef(anon_0_0) == 2 ?
-            (let anon_5_0 ==
-              (intToRef(4)) in
-              anon_5_0) :
-            (let anon_6_0 ==
-              (intToRef(5)) in
-              anon_6_0))) in
-          anon_4_0))) in
-      x_0))
+    (intFromRef(anon_0_0) == 1 ?
+      (boolFromRef(b) ? intToRef(2) : intToRef(3)) :
+      (intFromRef(anon_0_0) == 2 ? intToRef(4) : intToRef(5))))
 }

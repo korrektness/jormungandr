@@ -45,11 +45,11 @@ fun <!VIPER_TEXT!>prepend<!>(l: @Unique Node?, v: Int): @Unique Node {
     return Node(v, l)
 }
 
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
+@AlwaysVerify
 fun <!VIPER_TEXT!>twoNodes<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> length(r) == 2 }
     return Node(v, Node(v, null))
-}<!>
+}
 
 // `m` joins the two branches of a condition on `n`: it is bound outside the `unfolding` that reads `n.next`, and
 // carries no access invariants for the call.
@@ -77,4 +77,51 @@ fun <!VIPER_TEXT!>vTail<!>(l: @Unique VNode, n: Int): @Unique VNode? {
     preconditions { vLength(l) == n }
     postconditions<VNode?> { r -> vLength(r) == n - 1 }
     return l.next
+}
+
+// The `null` case of `n` reads `d`, so `valueOr` gets no postcondition for it.
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>valueOr<!>(n: @Unique Node?, d: @Unique Node): Int = if (n == null) d.value else n.value
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>oneNode<!>(v: Int): @Unique Node {
+    postconditions<Node> { r -> length(r) == 1 }
+    return Node(v, null)
+}
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>sum<!>(n: @Unique Node?): Int {
+    if (n == null) return 0
+    return n.value + sum(n.next)
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>oneSum<!>(v: Int): @Unique Node {
+    postconditions<Node> { r -> sum(r) == v }
+    return Node(v, null)
+}
+
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>lengthFrom<!>(k: Int, n: @Unique Node?): Int = if (n == null) k else lengthFrom(k + 1, n.next)
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>oneFrom<!>(v: Int): @Unique Node {
+    postconditions<Node> { r -> lengthFrom(0, r) == 1 }
+    return Node(v, null)
+}
+
+// The `null` case of `a` calls `length(b)`, which reads the heap, so `lengthOf` gets no postcondition for `a`.
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>lengthOf<!>(a: @Unique Node?, b: @Unique Node?): Int = if (a == null) length(b) else length(a)
+
+// The precondition excludes the `null` case of `n`.
+@Pure
+@AlwaysVerify
+fun <!VIPER_TEXT!>headValue<!>(n: @Unique Node?): Int {
+    preconditions { n != null }
+    return if (n == null) -1 else n.value
 }

@@ -143,9 +143,11 @@ fun CompleteFunctionSignature.toViperMethod(ctx: TypeResolver, body: Stmt.Seqn?)
     )
 }
 
+/** [extraPostconditions] are added to the postconditions of the signature. */
 fun CompleteFunctionSignature.toViperFunction(
     ctx: TypeResolver,
     body: Exp?,
+    extraPostconditions: List<Exp> = emptyList(),
 ): UserFunction {
     require(isPure) {
         "Impure functions should not be converted to functions"
@@ -156,7 +158,7 @@ fun CompleteFunctionSignature.toViperFunction(
         // TODO: Be explicit about the return types of functions instead of boxing them into a Ref
         Type.Ref,
         preconditions.pureToViper(toBuiltin = true, ctx),
-        postconditions.pureToViper(toBuiltin = true, ctx),
+        postconditions.pureToViper(toBuiltin = true, ctx) + extraPostconditions,
         body,
         declarationSource.asPosition
     )

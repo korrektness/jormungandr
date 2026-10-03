@@ -78,13 +78,15 @@ class SsaConverter(
      * [this] with [assignment] bound in the innermost arm of its conditionals that holds every use of it, reached
      * through the values and bodies of let bindings, or around [this] when there is no such arm. [known] are the
      * conditions of the arms entered on the way; when they imply the guard, the value is bound unguarded, so the
-     * binding and its uses can share one `unfolding`.
+     * binding and its uses can share one `unfolding`. When [this] is just the variable, the value replaces it: Silicon
+     * does not relate a recursive application inside such a `let` to the function's unrolled definition.
      */
     private fun Exp.bind(assignment: Assignment, known: Set<Exp> = emptySet()): Exp {
         bindInArm(assignment, known)?.let { return it }
         val value = with(assignment) {
             if (known.containsAll(guard.conjuncts())) value else Exp.TernaryExp(guard, value, default)
         }
+        if (this is Exp.LocalVar && name == assignment.name) return value
         return Exp.LetBinding(Declaration.LocalVarDecl(assignment.name, Type.Ref), value, this)
     }
 

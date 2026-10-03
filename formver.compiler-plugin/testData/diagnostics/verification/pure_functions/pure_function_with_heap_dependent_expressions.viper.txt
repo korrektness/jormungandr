@@ -23,9 +23,7 @@ function getSafeNextValue(node: Ref): Ref
 {
   (let anon_0_0 ==
     ((next(node) != nullValue() ? value(next(node)) : nullValue())) in
-    (let anon_1_0 ==
-      ((anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1))) in
-      anon_1_0))
+    (anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1)))
 }
 
 function next(this: Ref): Ref
@@ -47,9 +45,7 @@ function getSafeNextNextValue(node: Ref): Ref
     ((next(node) != nullValue() ? next(next(node)) : nullValue())) in
     (let anon_0_0 ==
       ((anon_1_0 != nullValue() ? value(anon_1_0) : nullValue())) in
-      (let anon_2_0 ==
-        ((anon_0_0 != nullValue() ? anon_0_0 : intToRef(0))) in
-        anon_2_0)))
+      (anon_0_0 != nullValue() ? anon_0_0 : intToRef(0))))
 }
 
 function next(this: Ref): Ref
@@ -74,15 +70,9 @@ function sumFirstTwoNodes(node: Ref): Ref
 {
   (let nextNode_0 ==
     (next(node)) in
-    (let anon_0_0 ==
-      ((!(nextNode_0 == nullValue()) ?
-        (let anon_1_0 ==
-          (plusInts(value(node), value(nextNode_0))) in
-          anon_1_0) :
-        (let anon_2_0 ==
-          (value(node)) in
-          anon_2_0))) in
-      anon_0_0))
+    (!(nextNode_0 == nullValue()) ?
+      plusInts(value(node), value(nextNode_0)) :
+      value(node)))
 }
 
 function value(this: Ref): Ref
@@ -115,15 +105,9 @@ function length(node: Ref): Ref
 {
   (let nextNode_0 ==
     (next(node)) in
-    (let anon_0_0 ==
-      ((nextNode_0 == nullValue() ?
-        (let anon_1_0 ==
-          (intToRef(1)) in
-          anon_1_0) :
-        (let anon_2_0 ==
-          (plusInts(intToRef(1), length(nextNode_0))) in
-          anon_2_0))) in
-      anon_0_0))
+    (nextNode_0 == nullValue() ?
+      intToRef(1) :
+      plusInts(intToRef(1), length(nextNode_0))))
 }
 
 function next(this: Ref): Ref
@@ -148,15 +132,9 @@ function sumAllNodes(node: Ref): Ref
 {
   (let nextNode_0 ==
     (next(node)) in
-    (let anon_0_0 ==
-      ((nextNode_0 == nullValue() ?
-        (let anon_1_0 ==
-          (value(node)) in
-          anon_1_0) :
-        (let anon_2_0 ==
-          (plusInts(value(node), sumAllNodes(nextNode_0))) in
-          anon_2_0))) in
-      anon_0_0))
+    (nextNode_0 == nullValue() ?
+      value(node) :
+      plusInts(value(node), sumAllNodes(nextNode_0))))
 }
 
 function value(this: Ref): Ref
@@ -174,15 +152,9 @@ function containsValue(node: Ref, target: Ref): Ref
     boolToRef(true) :
     (let nextNode_0 ==
       (next(node)) in
-      (let anon_0_0 ==
-        ((!(nextNode_0 == nullValue()) ?
-          (let anon_1_0 ==
-            (containsValue(nextNode_0, target)) in
-            anon_1_0) :
-          (let anon_2_0 ==
-            (boolToRef(false)) in
-            anon_2_0))) in
-        anon_0_0)))
+      (!(nextNode_0 == nullValue()) ?
+        containsValue(nextNode_0, target) :
+        boolToRef(false))))
 }
 
 function next(this: Ref): Ref
@@ -204,15 +176,7 @@ function aliasAndReassign(node: Ref): Ref
     (node) in
     (let alias2_0 ==
       (next(alias1_0)) in
-      (let fallbackValue_2 ==
-        ((!(alias2_0 == nullValue()) ?
-          (let fallbackValue_1 ==
-            (value(alias2_0)) in
-            fallbackValue_1) :
-          (let fallbackValue_0 ==
-            (intToRef(-1)) in
-            fallbackValue_0))) in
-        fallbackValue_2)))
+      (!(alias2_0 == nullValue()) ? value(alias2_0) : intToRef(-1))))
 }
 
 function next(this: Ref): Ref
@@ -264,9 +228,7 @@ function useIdentityFunction(node: Ref): Ref
     (id(node)) in
     (let anon_0_0 ==
       ((sameNode_0 != nullValue() ? value(sameNode_0) : nullValue())) in
-      (let anon_1_0 ==
-        ((anon_0_0 != nullValue() ? anon_0_0 : intToRef(0))) in
-        anon_1_0)))
+      (anon_0_0 != nullValue() ? anon_0_0 : intToRef(0))))
 }
 
 function value(this: Ref): Ref
@@ -281,15 +243,7 @@ function getNextValueUsingId(node: Ref): Ref
 {
   (let nextNode_0 ==
     (id(next(node))) in
-    (let anon_0_0 ==
-      ((nextNode_0 == nullValue() ?
-        (let anon_1_0 ==
-          (intToRef(0)) in
-          anon_1_0) :
-        (let anon_2_0 ==
-          (value(nextNode_0)) in
-          anon_2_0))) in
-      anon_0_0))
+    (nextNode_0 == nullValue() ? intToRef(0) : value(nextNode_0)))
 }
 
 function id(node: Ref): Ref
