@@ -9,20 +9,23 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.diagnostics.rendering.Renderer
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.FirCache
 import org.jetbrains.kotlin.fir.caches.createCache
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
+import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousInitializer
 import org.jetbrains.kotlin.fir.declarations.FirClass
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
-import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.InlineStatus
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyGetter
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertySetter
+import org.jetbrains.kotlin.fir.declarations.utils.hasBackingField
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.declarations.utils.memberDeclarationNameOrNull
@@ -47,6 +50,7 @@ import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.locality.plugin.Locality
 import org.jetbrains.kotlin.formver.locality.plugin.borrowsDispatchReceiver
 import org.jetbrains.kotlin.formver.locality.plugin.locality
+import org.jetbrains.kotlin.formver.locality.plugin.receiverOwner
 
 /**
  * How the construction of [escapingClass] lets the object under construction escape. Its constructors then return
@@ -130,6 +134,35 @@ private val FirSession.constructionEscapeResolver: ConstructionEscapeResolver
 fun FirConstructorSymbol.resolveConstructionEscape(session: FirSession): ConstructionEscape? {
     val classSymbol = resolvedReturnType.toRegularClassSymbol(session) ?: return null
     return session.constructionEscapeResolver.resolve(classSymbol)
+}
+
+/**
+ * Whether [this] receiver of a call to [callee] is `this` of a class under construction that the call may lend as
+ * owned. Nobody else holds the object, since its construction does not let `this` escape. [callee] borrows `this`, so
+ * it cannot keep the object, and nothing overrides it, so no override sees subclass fields that are not yet
+ * initialized. Every field of the class is initialized before the declaration that makes the call.
+ */
+context(context: CheckerContext)
+fun FirExpression.isLendableConstructionReceiver(callee: FirCallableSymbol<*>): Boolean {
+    val classSymbol = (this as? FirThisReceiverExpression)?.calleeReference?.symbol as? FirRegularClassSymbol ?: return false
+    val owner = classSymbol.receiverOwner() ?: return false
+    if (owner is FirFunction && owner !is FirConstructor) return false
+    if (!callee.borrowsDispatchReceiver(context.session) || !callee.isFinal) return false
+    if (context.session.constructionEscapeResolver.resolve(classSymbol) != null) return false
+    return classSymbol.initializesEveryFieldBefore(owner)
+}
+
+/**
+ * Whether every field of [this] class is initialized when [owner] runs: a constructor body runs after every
+ * initializer, and an `init` block or a property initializer runs after those declared above it.
+ */
+@OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
+private fun FirRegularClassSymbol.initializesEveryFieldBefore(owner: FirDeclaration): Boolean {
+    val ownerIndex = if (owner is FirConstructor) fir.declarations.size else fir.declarations.indexOf(owner)
+    return fir.declarations.withIndex().all { (index, declaration) ->
+        declaration !is FirProperty || !(declaration.hasBackingField || declaration.delegate != null) ||
+                index < ownerIndex && (declaration.initializer != null || declaration.delegate != null)
+    }
 }
 
 private class EscapeFinder(

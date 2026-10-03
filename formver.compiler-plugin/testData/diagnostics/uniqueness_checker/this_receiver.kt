@@ -124,6 +124,79 @@ class Sub(count: Int, node: @Unique Node) : Counter(count, node) {
     <!OVERRIDE_UNIQUENESS_MISMATCH!>@Unique override fun open() {}<!>
 }
 
+class Constructed(var count: Int) {
+    var size = 0
+
+    init {
+        reset()
+        pureRead()
+    }
+
+    constructor(count: Int, extra: Int) : this(count) {
+        reset()
+    }
+
+    @Unique @Borrowed
+    fun reset() {
+        count = 0
+    }
+
+    @Unique @Pure
+    fun pureRead(): Int = count
+}
+
+class ConstructedEarly(var count: Int) {
+    init {
+        <!UNIQUENESS_MISMATCH!>reset()<!>
+    }
+
+    var size = 0
+
+    @Unique @Borrowed
+    fun reset() {
+        count = 0
+    }
+}
+
+class ConstructedInInitializer(var count: Int) {
+    val first = <!UNIQUENESS_MISMATCH!>next()<!>
+
+    @Unique @Borrowed
+    fun next(): Int = count
+}
+
+open class ConstructedOpen(var count: Int) {
+    init {
+        <!UNIQUENESS_MISMATCH!>reset()<!>
+    }
+
+    @Unique @Borrowed
+    open fun reset() {
+        count = 0
+    }
+}
+
+class ConstructedEscaping(var count: Int) {
+    init {
+        share(this)
+        <!UNIQUENESS_MISMATCH!>reset()<!>
+    }
+
+    @Unique @Borrowed
+    fun reset() {
+        count = 0
+    }
+}
+
+class ConstructedConsuming(var count: Int) {
+    init {
+        <!UNIQUENESS_MISMATCH!>consumeThis()<!>
+    }
+
+    @Unique
+    fun consumeThis() {}
+}
+
 object Registry {
     var size = 0
 

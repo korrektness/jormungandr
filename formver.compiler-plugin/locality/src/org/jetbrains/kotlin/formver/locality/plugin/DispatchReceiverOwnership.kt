@@ -23,13 +23,14 @@ import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
+import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.types.classLikeLookupTagIfAny
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure
-import org.jetbrains.kotlin.formver.type.plugin.SymbolTypeFactResolver
+import org.jetbrains.kotlin.formver.type.plugin.DispatchReceiverTypeFactResolver
 import org.jetbrains.kotlin.name.ClassId
 
 private val FirBasedSymbol<*>.declared: FirBasedSymbol<*>
@@ -84,12 +85,12 @@ fun FirClassSymbol<*>.resolveReceiverLocality(): Locality {
 /**
  * The locality a callee requires of its dispatch receiver, or null when it declares none.
  */
-object DispatchReceiverLocalityResolver : SymbolTypeFactResolver<Locality?, FirCallableSymbol<*>> {
+object DispatchReceiverLocalityResolver : DispatchReceiverTypeFactResolver<Locality> {
     context(context: CheckerContext)
-    override fun resolveTypeFactOf(symbol: FirCallableSymbol<*>): Locality? =
+    override fun resolveTypeFactOf(access: FirQualifiedAccessExpression, callee: FirCallableSymbol<*>): Locality? =
         when {
-            symbol.borrowsDispatchReceiver(context.session) -> Locality.Local
-            symbol.ownsDispatchReceiver(context.session) -> Locality.Global
+            callee.borrowsDispatchReceiver(context.session) -> Locality.Local
+            callee.ownsDispatchReceiver(context.session) -> Locality.Global
             else -> null
         }
 }

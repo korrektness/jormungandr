@@ -8,10 +8,18 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 
+/**
+ * Resolves the type fact that [access] to [callee] requires of its dispatch receiver, or null when it requires none.
+ */
+fun interface DispatchReceiverTypeFactResolver<TypeFact> {
+    context(context: CheckerContext)
+    fun resolveTypeFactOf(access: FirQualifiedAccessExpression, callee: FirCallableSymbol<*>): TypeFact?
+}
+
 class QualifiedAccessArgumentTypeFactMapper<TypeFact>(
     private val receiverSymbolTypeFactResolver: SymbolTypeFactResolver<TypeFact, FirReceiverParameterSymbol>,
     private val contextSymbolTypeFactResolver: SymbolTypeFactResolver<TypeFact, FirVariableSymbol<*>>,
-    private val dispatchReceiverTypeFactResolver: SymbolTypeFactResolver<TypeFact?, FirCallableSymbol<*>>? = null,
+    private val dispatchReceiverTypeFactResolver: DispatchReceiverTypeFactResolver<TypeFact>? = null,
 ) {
     context(_: CheckerContext)
     fun mapArgumentTypeFactsOf(expression: FirQualifiedAccessExpression): List<Pair<FirExpression, TypeFact>> {
@@ -20,7 +28,7 @@ class QualifiedAccessArgumentTypeFactMapper<TypeFact>(
 
         val dispatchReceiver = expression.dispatchReceiver
         if (dispatchReceiver != null && dispatchReceiverTypeFactResolver != null) {
-            dispatchReceiverTypeFactResolver.resolveTypeFactOf(callableSymbol)?.let { result += dispatchReceiver to it }
+            dispatchReceiverTypeFactResolver.resolveTypeFactOf(expression, callableSymbol)?.let { result += dispatchReceiver to it }
         }
 
         val receiver = expression.extensionReceiver

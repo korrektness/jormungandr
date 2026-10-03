@@ -14,6 +14,57 @@ method clear(this: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/construction_writes.kt: info: Generated Viper text for reset:
+field a: Ref
+
+field c: Ref
+
+function b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Resetting())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method reset(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Resetting())
+  requires acc(Resetting_unique(this), write)
+  ensures acc(Resetting_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Resetting_unique(this), write) in
+      intFromRef(this.a) == 0) &&
+    (unfolding acc(Resetting_unique(this), write) in
+      intFromRef(this.c) == 0)
+{
+  unfold acc(Resetting_unique(this), write)
+  this.a := intToRef(0)
+  this.c := intToRef(0)
+  label lbl_ret_0
+  fold acc(Resetting_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_writes.kt: info: Generated Viper text for clearChild:
+field value: Ref
+
+function child(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Node())
+
+
+method clearChild(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Holder())
+  requires acc(Holder_unique(this), write)
+  ensures acc(Holder_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(Holder_unique(this), write)
+  unfold acc(Node_unique(child(this)), write)
+  child(this).value := intToRef(0)
+  label lbl_ret_0
+  fold acc(Node_unique(child(this)), write)
+  fold acc(Holder_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /construction_writes.kt: info: Generated Viper text for keepsParameters:
 field bf_a: Ref
 
@@ -130,6 +181,47 @@ method initLendsThis() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/construction_writes.kt: info: Generated Viper text for initOwnsThis:
+field bf_a: Ref
+
+field c: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Resetting())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(ret_1), Resetting())
+  ensures isSubtype(typeOf(ret_1), Resetting()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType()) &&
+    acc(ret_1.c, write) &&
+    isSubtype(typeOf(ret_1.c), intType())
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
+
+
+method initOwnsThis() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon: Ref
+  l0_r := con(intToRef(1), intToRef(2))
+  fold acc(Resetting_unique(l0_r), write)
+  assert intFromRef(g_b(l0_r)) == 2
+  unfold acc(Resetting_unique(l0_r), write)
+  anon := l0_r.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /construction_writes.kt: info: Generated Viper text for subclassInitAssigns:
 field bf_a: Ref
 
@@ -157,6 +249,129 @@ method subclassInitAssigns() returns (v_ret_0: Ref)
   unfold acc(Derived_unique(d), write)
   unfold acc(Base_unique(d), write)
   anon := d.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_writes.kt: info: Generated Viper text for memberChangesChild:
+field value: Ref
+
+function g_child(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Node())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_child: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_child), Node())
+  requires acc(Node_unique(par_child), write)
+  ensures isSubtype(typeOf(ret_1), Holder())
+  ensures isSubtype(typeOf(ret_1), Holder()) &&
+    acc(Node_unique(g_child(ret_1)), write)
+  ensures g_child(ret_1) == par_child
+
+
+method memberChangesChild(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var h: Ref
+  var anon: Ref
+  unfold acc(Node_unique(n), write)
+  n.value := intToRef(1)
+  fold acc(Node_unique(n), write)
+  h := con(n)
+  fold acc(Holder_unique(h), write)
+  unfold acc(Holder_unique(h), write)
+  unfold acc(Node_unique(g_child(h)), write)
+  anon := g_child(h).value
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_writes.kt: info: Generated Viper text for initChangesChild:
+field value: Ref
+
+function g_child(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectHolder())
+  ensures isSubtype(typeOf(result), Node())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_child: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_child), Node())
+  requires acc(Node_unique(par_child), write)
+  ensures isSubtype(typeOf(ret_1), DirectHolder())
+  ensures isSubtype(typeOf(ret_1), DirectHolder()) &&
+    acc(Node_unique(g_child(ret_1)), write)
+  ensures g_child(ret_1) == par_child
+
+
+method initChangesChild(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var h: Ref
+  var anon: Ref
+  unfold acc(Node_unique(n), write)
+  n.value := intToRef(1)
+  fold acc(Node_unique(n), write)
+  h := con(n)
+  fold acc(DirectHolder_unique(h), write)
+  unfold acc(DirectHolder_unique(h), write)
+  unfold acc(Node_unique(g_child(h)), write)
+  anon := g_child(h).value
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_writes.kt: info: Generated Viper text for keepsChild:
+field value: Ref
+
+function g_child(this: Ref): Ref
+  requires isSubtype(typeOf(this), QuietHolder())
+  ensures isSubtype(typeOf(result), Node())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_child: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_child), Node())
+  ensures isSubtype(typeOf(ret_1), QuietHolder())
+  ensures g_child(ret_1) == par_child
+
+
+method keepsChild(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var h: Ref
+  var anon: Ref
+  unfold acc(Node_unique(n), write)
+  n.value := intToRef(1)
+  fold acc(Node_unique(n), write)
+  h := con(n)
+  fold acc(QuietHolder_unique(h), write)
+  unfold acc(QuietHolder_unique(h), write)
+  unfold acc(Node_unique(g_child(h)), write)
+  anon := g_child(h).value
   assert intFromRef(anon) == 1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())

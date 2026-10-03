@@ -218,7 +218,9 @@ private fun FirConstructorSymbol.initializedProperties(session: FirSession): Map
  * The signature of a primary constructor. It ensures that each property a parameter initializes equals the parameter,
  * unless the rest of the construction may change the property.
  * When the class is [constructedOpen], the object is returned with its predicates unfolded, and a `@Unique` parameter
- * stored in a `@Unique` property keeps its predicate: the caller's fold moves it into the object.
+ * stored in a `@Unique` property keeps its predicate: the caller's fold moves it into the object. When the rest of the
+ * construction may reach the property, the constructor consumes the parameter's predicate and returns a fresh one for
+ * the property instead, since the stored value may have changed.
  */
 context(converter: ProgramConversionContext)
 fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<NonInlineFunctionSignature> =
@@ -238,8 +240,8 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
                     ?.let { Triple(param, it, property) }
             }
         }
-        val stored = if (constructed == null) emptyList() else parameterProperties.mapNotNull { (param, property, _) ->
-            property.ownedStep?.takeIf { param.isUnique }?.let { param to it }
+        val stored = if (constructed == null) emptyList() else parameterProperties.mapNotNull { (param, property, firProperty) ->
+            property.ownedStep?.takeIf { param.isUnique && !writes.mayReach(firProperty) }?.let { param to it }
         }
 
         val fieldPostconditions = parameterProperties.filter { (_, _, firProperty) ->

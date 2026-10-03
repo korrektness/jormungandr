@@ -46,7 +46,8 @@ The checker tracks two kinds of uniqueness:
   implicit `f` are `[C, f]`. It is a path only where it is not shared: in a member function annotated `@Unique`
   (`this` is `Unique`) or `@Borrowed` alone (`Unknown`, and local). Elsewhere, including under construction, `this`
   is no path. `DispatchReceiverOwnership.kt` in the locality module reads the function-level annotations and finds
-  the member that binds `this`. Conversion treats a path through `this` as not owned.
+  the member that binds `this`. A call from construction code may still pass `this` to a member that owns it, when
+  `isLendableConstructionReceiver` in `ConstructionEscape.kt` allows it.
 
 ### CFG uniqueness state analysis
 

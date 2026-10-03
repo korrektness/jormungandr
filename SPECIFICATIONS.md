@@ -265,10 +265,12 @@ val c: @Unique Node = Node(3, null)  // unique
 A constructor call gives a shared object when the class lets `this` escape
 while it is constructed. That happens when a constructor body, an `init` block
 or a property initializer, of the class or of a superclass, uses `this` other
-than to read or write a field or to pass it to a `@Borrowed` parameter: for
-example, it calls a member function, reads an open property or one with a
-custom getter, stores `this`, or captures it in a lambda that is not inlined.
-Such a class compiles as usual, but its objects cannot be owned:
+than to read or write a field, to pass it to a `@Borrowed` parameter, or to
+call a member that borrows `this` (`@Borrowed`, `@Unique @Borrowed` or
+`@Unique @Pure`): for example, it calls an unannotated member function, reads
+an open property or one with a custom getter, stores `this`, or captures it in
+a lambda that is not inlined. Such a class compiles as usual, but its objects
+cannot be owned:
 
 ```kotlin
 class Parser(first: String) {
@@ -279,6 +281,22 @@ class Parser(first: String) {
 
 val p: @Unique Parser = Parser("x")  // error: the construction of 'Parser' calls member 'track' on 'this'
 ```
+
+During construction `this` is shared, so a member that owns `this` needs the
+object handed over. Construction code may call a `@Unique @Borrowed` or
+`@Unique @Pure` member on `this` when the class does not let `this` escape,
+the member is final, and every field of the class is initialized at the call:
+every property of the class with a backing field or delegate has an
+initializer, and when the call is in an `init` block, is declared above it.
+Other calls to a member that owns `this` are rejected.
+
+Construction code itself is not verified. A constructor call gives the type
+facts of every field. It also gives the value a parameter stores in a property,
+unless construction code assigns that property or, for a `var`, uses `this`
+other than to read or write a field. An argument stored in a `@Unique`
+property keeps what the caller knew about it only when construction code
+neither reads nor assigns that property and uses `this` only to read or write
+fields.
 
 `@Unique` on a value type (`Int`, `Boolean`, `Char`, `String`, `Unit`, or their
 nullable forms) is rejected, since such values own nothing.

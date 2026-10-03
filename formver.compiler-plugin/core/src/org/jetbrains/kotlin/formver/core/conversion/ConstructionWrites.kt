@@ -28,13 +28,21 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 
 /**
- * Which properties of the object under construction the property initializers and `init` blocks of [this] class and
- * its superclasses may change after a primary constructor stores its parameters: those they assign, and every `var`
- * when they use `this` other than to read or assign a field, since a member, an accessor or a borrowing callee may
- * write any field.
+ * What the property initializers and `init` blocks of [this] class and its superclasses may do to the object under
+ * construction after a primary constructor stores its parameters. They assign the properties in [assigned], read or
+ * assign those in [accessed], and when [usesThis], use `this` other than to read or assign a field, so that a member,
+ * an accessor or a borrowing callee may read or write any field.
  */
-class ConstructionWrites(val assigned: Set<FirPropertySymbol>, val usesThis: Boolean) {
+class ConstructionWrites(
+    val assigned: Set<FirPropertySymbol>,
+    val accessed: Set<FirPropertySymbol>,
+    val usesThis: Boolean,
+) {
+    /** Whether [property] may hold another value once construction ends. */
     fun mayChange(property: FirPropertySymbol): Boolean = property in assigned || (usesThis && property.isVar)
+
+    /** Whether construction code may reach the value [property] holds, and so change what that value refers to. */
+    fun mayReach(property: FirPropertySymbol): Boolean = property in accessed || usesThis
 }
 
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
@@ -58,13 +66,14 @@ fun FirRegularClassSymbol.constructionWrites(session: FirSession): ConstructionW
         }
         classSymbol.resolvedSuperTypes.mapNotNullTo(pending) { it.toRegularClassSymbol(session) }
     }
-    return ConstructionWrites(finder.assigned, finder.usesThis)
+    return ConstructionWrites(finder.assigned, finder.accessed, finder.usesThis)
 }
 
 /** [constructedIsFinal]: whether the class whose construction is searched is final, so no override replaces its accessors. */
 private class ConstructionWriteFinder(private val constructedIsFinal: Boolean) : FirVisitorVoid() {
     lateinit var classSymbol: FirRegularClassSymbol
     val assigned = mutableSetOf<FirPropertySymbol>()
+    val accessed = mutableSetOf<FirPropertySymbol>()
     var usesThis = false
 
     private fun FirElement.isThis(): Boolean =
@@ -89,8 +98,10 @@ private class ConstructionWriteFinder(private val constructedIsFinal: Boolean) :
                 if (target != null && target.accessesField) assigned.add(target.toResolvedCallableSymbol() as FirPropertySymbol)
                 element.acceptChildren(this)
             }
-            element is FirPropertyAccessExpression && element.accessesField ->
+            element is FirPropertyAccessExpression && element.accessesField -> {
+                accessed.add(element.toResolvedCallableSymbol() as FirPropertySymbol)
                 element.extensionReceiver?.takeIf { it !== element.dispatchReceiver }?.accept(this)
+            }
             element.isThis() -> usesThis = true
             else -> element.acceptChildren(this)
         }
