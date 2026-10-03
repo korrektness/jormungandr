@@ -133,7 +133,7 @@ class GraphUniquenessStatesAnalyzer(
 
     private val FirFunctionCall.movesArguments: Boolean
         get() = this !in readOnlyContext && !isPureCall(context.session) && !isIntArrayElementAccess() &&
-                stringBuilderIntrinsic(context.session) == null
+                !isIntArrayLoop(context.session) && stringBuilderIntrinsic(context.session) == null
 
     override fun visitSubGraph(node: CFGNodeWithSubgraphs<*>, graph: ControlFlowGraph): Boolean {
         return graph.extendsLocalFlow

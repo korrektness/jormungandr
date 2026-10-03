@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.fir.scopes.getDeclaredConstructors
 import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
@@ -121,18 +122,29 @@ fun StmtConversionContext.convertIntArrayInit(call: FirFunctionCall): ExpEmbeddi
  * expression; `null` otherwise.
  */
 private fun StmtConversionContext.initValueAt(init: LambdaExp): Pair<VariableEmbedding, ExpEmbedding>? {
-    val statement = init.function.body?.statements?.singleOrNull() ?: return null
+    val parameter = init.function.valueParameters.single().symbol
+    val j = freshAnonBuiltinVar(embedType(parameter.resolvedReturnType))
+    return pureLambdaValue(init, mapOf(parameter to j))?.let { j to it }
+}
+
+/**
+ * The body of [lambda] converted with each of its parameters replaced by the expression [arguments] maps it to, when
+ * the body is a single expression and that conversion is pure; `null` otherwise.
+ */
+fun StmtConversionContext.pureLambdaValue(
+    lambda: LambdaExp,
+    arguments: Map<FirValueParameterSymbol, ExpEmbedding>,
+): ExpEmbedding? {
+    val statement = lambda.function.body?.statements?.singleOrNull() ?: return null
     val result = when (statement) {
-        is FirReturnExpression -> statement.result.takeIf { statement.target.labeledElement == init.function }
+        is FirReturnExpression -> statement.result.takeIf { statement.target.labeledElement == lambda.function }
         is FirExpression -> statement
         else -> null
     } ?: return null
-    val parameter = init.function.valueParameters.single().symbol
-    val j = freshAnonBuiltinVar(embedType(parameter.resolvedReturnType))
     val methodCtxFactory = MethodContextFactory(
         signature,
         InlineParameterResolver(
-            substitutions = mapOf(SubstitutedArgument.ValueParameter(parameter) to j),
+            substitutions = arguments.mapKeys { SubstitutedArgument.ValueParameter(it.key) },
             labelName = null,
             defaultResolvedReturnTarget = defaultResolvedReturnTarget,
         ),
@@ -140,7 +152,7 @@ private fun StmtConversionContext.initValueAt(init: LambdaExp): Pair<VariableEmb
         parent = this,
     )
     val value = withNoScope { withMethodCtx(methodCtxFactory) { convert(result) } }
-    return if (value.isPure()) j to value else null
+    return value.takeIf { it.isPure() }
 }
 
 /** The variable or property that [this] array expression reads, for naming it in a bounds error. */

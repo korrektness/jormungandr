@@ -1200,6 +1200,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("stdlib_hof_predicates.kt")
+      public void testStdlib_hof_predicates() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/stdlib_hof_predicates.kt");
+      }
+
+      @Test
       @TestMetadata("viper_casts_while_inlining.kt")
       public void testViper_casts_while_inlining() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/viper_casts_while_inlining.kt");

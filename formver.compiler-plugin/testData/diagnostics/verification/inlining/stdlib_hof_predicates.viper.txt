@@ -1,0 +1,1542 @@
+/stdlib_hof_predicates.kt: info: Generated Viper text for anyWitness:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method anyWitness(s: Ref, k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(k), intType())
+  requires 0 <= intFromRef(k) && intFromRef(k) < |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_4: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_5: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= -1 &&
+      intFromRef(anon_2) < intFromRef(anon_1)
+    invariant intFromRef(anon_2) >= 0 ==>
+      stringFromRef(anon_0)[intFromRef(anon_2)] == 97
+    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
+        anon_builtin < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+        !(stringFromRef(anon_0)[anon_builtin] == 97))
+  anon_5 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var v_ret_3: Ref
+    var anon_3: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    v_ret_3 := boolToRef(charFromRef(anon_3) == 97)
+    goto lbl_ret_3
+    label lbl_ret_3
+    anon_6 := v_ret_3
+    if (boolFromRef(anon_6)) {
+      anon_2 := anon_1
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= -1 &&
+    intFromRef(anon_2) < intFromRef(anon_1)
+  assert intFromRef(anon_2) >= 0 ==>
+    stringFromRef(anon_0)[intFromRef(anon_2)] == 97
+  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
+      anon_builtin < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+      !(stringFromRef(anon_0)[anon_builtin] == 97))
+  anon_4 := geInts(anon_2, intToRef(0))
+  if (boolFromRef(anon_4)) {
+    assert |stringFromRef(s)| > 0
+  } else {
+    assert !(stringFromRef(s)[intFromRef(k)] == 97)}
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for allDigits:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method allDigits(s: Ref, k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(k), intType())
+  requires 0 <= intFromRef(k) && intFromRef(k) < |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_4: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_5: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= -1 &&
+      intFromRef(anon_2) < intFromRef(anon_1)
+    invariant intFromRef(anon_2) >= 0 ==>
+      !(stringFromRef(anon_0)[intFromRef(anon_2)] >= 48 &&
+      stringFromRef(anon_0)[intFromRef(anon_2)] <= 57)
+    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
+        anon_builtin < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+        !!(stringFromRef(anon_0)[anon_builtin] >= 48 &&
+        stringFromRef(anon_0)[anon_builtin] <= 57))
+  anon_5 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var v_ret_3: Ref
+    var anon_3: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    if (charFromRef(anon_3) >= 48) {
+      v_ret_3 := leChars(anon_3, charToRef(57))
+    } else {
+      v_ret_3 := boolToRef(false)}
+    goto lbl_ret_3
+    label lbl_ret_3
+    anon_6 := v_ret_3
+    if (!boolFromRef(anon_6)) {
+      anon_2 := anon_1
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= -1 &&
+    intFromRef(anon_2) < intFromRef(anon_1)
+  assert intFromRef(anon_2) >= 0 ==>
+    !(stringFromRef(anon_0)[intFromRef(anon_2)] >= 48 &&
+    stringFromRef(anon_0)[intFromRef(anon_2)] <= 57)
+  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
+      anon_builtin < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+      !!(stringFromRef(anon_0)[anon_builtin] >= 48 &&
+      stringFromRef(anon_0)[anon_builtin] <= 57))
+  anon_4 := ltInts(anon_2, intToRef(0))
+  if (boolFromRef(anon_4)) {
+    assert stringFromRef(s)[intFromRef(k)] >= 48
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for noneSpace:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method noneSpace(s: Ref, k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(k), intType())
+  requires 0 <= intFromRef(k) && intFromRef(k) < |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_4: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_5: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= -1 &&
+      intFromRef(anon_2) < intFromRef(anon_1)
+    invariant intFromRef(anon_2) >= 0 ==>
+      stringFromRef(anon_0)[intFromRef(anon_2)] == 32
+    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
+        anon_builtin < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+        !(stringFromRef(anon_0)[anon_builtin] == 32))
+  anon_5 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var v_ret_3: Ref
+    var anon_3: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    v_ret_3 := boolToRef(charFromRef(anon_3) == 32)
+    goto lbl_ret_3
+    label lbl_ret_3
+    anon_6 := v_ret_3
+    if (boolFromRef(anon_6)) {
+      anon_2 := anon_1
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= -1 &&
+    intFromRef(anon_2) < intFromRef(anon_1)
+  assert intFromRef(anon_2) >= 0 ==>
+    stringFromRef(anon_0)[intFromRef(anon_2)] == 32
+  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
+      anon_builtin < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+      !(stringFromRef(anon_0)[anon_builtin] == 32))
+  anon_4 := ltInts(anon_2, intToRef(0))
+  if (boolFromRef(anon_4)) {
+    assert !(stringFromRef(s)[intFromRef(k)] == 32)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for firstIndex:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method firstIndex(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures -1 <= intFromRef(v_ret_0) &&
+    intFromRef(v_ret_0) < |stringFromRef(s)|
+{
+  var l0_r: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_4: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= -1 &&
+      intFromRef(anon_2) < intFromRef(anon_1)
+    invariant intFromRef(anon_2) >= 0 ==>
+      stringFromRef(anon_0)[intFromRef(anon_2)] == 61
+    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
+        anon_builtin < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+        !(stringFromRef(anon_0)[anon_builtin] == 61))
+  anon_4 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var v_ret_3: Ref
+    var anon_3: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    v_ret_3 := boolToRef(charFromRef(anon_3) == 61)
+    goto lbl_ret_3
+    label lbl_ret_3
+    anon_5 := v_ret_3
+    if (boolFromRef(anon_5)) {
+      anon_2 := anon_1
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= -1 &&
+    intFromRef(anon_2) < intFromRef(anon_1)
+  assert intFromRef(anon_2) >= 0 ==>
+    stringFromRef(anon_0)[intFromRef(anon_2)] == 61
+  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
+      anon_builtin < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+      !(stringFromRef(anon_0)[anon_builtin] == 61))
+  l0_r := anon_2
+  if (intFromRef(l0_r) >= 0) {
+    assert stringFromRef(s)[intFromRef(l0_r)] == 61
+  }
+  v_ret_0 := l0_r
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for firstIndexIsFirst:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method firstIndexIsFirst(s: Ref, k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(k), intType())
+  requires 0 <= intFromRef(k) && intFromRef(k) < |stringFromRef(s)| &&
+    stringFromRef(s)[intFromRef(k)] == 61
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_4: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= -1 &&
+      intFromRef(anon_2) < intFromRef(anon_1)
+    invariant intFromRef(anon_2) >= 0 ==>
+      stringFromRef(anon_0)[intFromRef(anon_2)] == 61
+    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
+        anon_builtin < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+        !(stringFromRef(anon_0)[anon_builtin] == 61))
+  anon_4 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var v_ret_3: Ref
+    var anon_3: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    v_ret_3 := boolToRef(charFromRef(anon_3) == 61)
+    goto lbl_ret_3
+    label lbl_ret_3
+    anon_5 := v_ret_3
+    if (boolFromRef(anon_5)) {
+      anon_2 := anon_1
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= -1 &&
+    intFromRef(anon_2) < intFromRef(anon_1)
+  assert intFromRef(anon_2) >= 0 ==>
+    stringFromRef(anon_0)[intFromRef(anon_2)] == 61
+  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
+      anon_builtin < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+      !(stringFromRef(anon_0)[anon_builtin] == 61))
+  l0_r := anon_2
+  assert 0 <= intFromRef(l0_r)
+  assert intFromRef(l0_r) <= intFromRef(k)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for firstMatch:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method firstMatch(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_4: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= -1 &&
+      intFromRef(anon_2) < intFromRef(anon_1)
+    invariant intFromRef(anon_2) >= 0 ==>
+      stringFromRef(anon_0)[intFromRef(anon_2)] == 120 ||
+      stringFromRef(anon_0)[intFromRef(anon_2)] == 121
+    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
+        anon_builtin < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+        !(stringFromRef(anon_0)[anon_builtin] == 120 ||
+        stringFromRef(anon_0)[anon_builtin] == 121))
+  anon_4 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var v_ret_2: Ref
+    var anon_3: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    if (charFromRef(anon_3) == 120) {
+      v_ret_2 := boolToRef(true)
+    } else {
+      v_ret_2 := boolToRef(charFromRef(anon_3) == 121)}
+    goto lbl_ret_2
+    label lbl_ret_2
+    anon_5 := v_ret_2
+    if (boolFromRef(anon_5)) {
+      anon_2 := anon_1
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= -1 &&
+    intFromRef(anon_2) < intFromRef(anon_1)
+  assert intFromRef(anon_2) >= 0 ==>
+    stringFromRef(anon_0)[intFromRef(anon_2)] == 120 ||
+    stringFromRef(anon_0)[intFromRef(anon_2)] == 121
+  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
+      anon_builtin < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+      !(stringFromRef(anon_0)[anon_builtin] == 120 ||
+      stringFromRef(anon_0)[anon_builtin] == 121))
+  if (intFromRef(anon_2) >= 0) {
+    c := stringGet(anon_0, anon_2)
+  } else {
+    c := nullValue()}
+  if (!(c == nullValue())) {
+    var anon_6: Ref
+    if (charFromRef(c) == 120) {
+      anon_6 := boolToRef(true)
+    } else {
+      anon_6 := boolToRef(charFromRef(c) == 121)}
+    assert boolFromRef(anon_6)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for labeledReturnPredicate:
+method labeledReturnPredicate(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_4: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= -1 &&
+      intFromRef(anon_2) < intFromRef(anon_1)
+    invariant intFromRef(anon_2) >= 0 ==>
+      stringFromRef(anon_0)[intFromRef(anon_2)] == 113
+    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
+        anon_builtin < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+        !(stringFromRef(anon_0)[anon_builtin] == 113))
+  anon_4 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var v_ret_2: Ref
+    var anon_3: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    v_ret_2 := boolToRef(charFromRef(anon_3) == 113)
+    goto lbl_ret_2
+    label lbl_ret_2
+    anon_5 := v_ret_2
+    if (boolFromRef(anon_5)) {
+      anon_2 := anon_1
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= -1 &&
+    intFromRef(anon_2) < intFromRef(anon_1)
+  assert intFromRef(anon_2) >= 0 ==>
+    stringFromRef(anon_0)[intFromRef(anon_2)] == 113
+  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
+      anon_builtin < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
+      !(stringFromRef(anon_0)[anon_builtin] == 113))
+  v_ret_0 := geInts(anon_2, intToRef(0))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for impureLambdaBounds:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method impureLambdaBounds(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var calls: Ref
+  var l0_r: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_5: Ref
+  calls := intToRef(0)
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(calls), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= -1 &&
+      intFromRef(anon_2) < intFromRef(anon_1)
+    invariant intFromRef(calls) >= 0
+  anon_5 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var v_ret_2: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    anon_4 := calls
+    calls := plusInts(anon_4, intToRef(1))
+    v_ret_2 := boolToRef(charFromRef(anon_3) == 122)
+    goto lbl_ret_2
+    label lbl_ret_2
+    anon_6 := v_ret_2
+    if (boolFromRef(anon_6)) {
+      anon_2 := anon_1
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(calls), intType())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= -1 &&
+    intFromRef(anon_2) < intFromRef(anon_1)
+  assert intFromRef(calls) >= 0
+  l0_r := anon_2
+  assert -1 <= intFromRef(l0_r)
+  assert intFromRef(l0_r) < |stringFromRef(s)|
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for impureLambdaNoFacts:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method impureLambdaNoFacts(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var calls: Ref
+  var l0_r: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_5: Ref
+  calls := intToRef(0)
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(calls), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= -1 &&
+      intFromRef(anon_2) < intFromRef(anon_1)
+  anon_5 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var v_ret_2: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    anon_4 := calls
+    calls := plusInts(anon_4, intToRef(1))
+    v_ret_2 := boolToRef(charFromRef(anon_3) == 122)
+    goto lbl_ret_2
+    label lbl_ret_2
+    anon_6 := v_ret_2
+    if (boolFromRef(anon_6)) {
+      anon_2 := anon_1
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(calls), intType())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= -1 &&
+    intFromRef(anon_2) < intFromRef(anon_1)
+  l0_r := anon_2
+  if (intFromRef(l0_r) >= 0) {
+    assert stringFromRef(s)[intFromRef(l0_r)] == 122
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for ownedArraySearch:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_size: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_4), IntArray())
+  ensures acc(IntArray_unique(ret_4), write)
+  ensures arraySize(ret_4) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_4), write) in
+      (forall j: Int ::
+        { ret_4.contents[j] }
+        j >= 0 && j < arraySize(ret_4) ==> ret_4.contents[j] == 0))
+
+
+method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(k), intType())
+  requires 0 <= intFromRef(k) && intFromRef(k) < intFromRef(n)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var a: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_19: Ref
+  var anon_21: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_22: Ref
+  var l0_r: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var anon_26: Ref
+  var f: Ref
+  var anon_9: Ref
+  var anon_10: Ref
+  var anon_30: Ref
+  var sum: Ref
+  var anon_12: Ref
+  var anon_34: Ref
+  var anon_14: Ref
+  var anon_36: Ref
+  var anon_38: Ref
+  var anon_16: Ref
+  var anon_17: Ref
+  var anon_39: Ref
+  anon_0 := n
+  anon_1 := con(anon_0)
+  anon_2 := intToRef(0)
+  label cont_0
+    invariant acc(IntArray_unique(anon_1), write)
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_2) >= 0
+    invariant intFromRef(anon_2) <= intFromRef(anon_0)
+    invariant arraySize(anon_1) == intFromRef(anon_0)
+    invariant (unfolding acc(IntArray_unique(anon_1), write) in
+        (forall anon_builtin_0: Int ::anon_builtin_0 >= 0 &&
+          anon_builtin_0 < intFromRef(anon_2) ==>
+          anon_1.contents[anon_builtin_0] == anon_builtin_0))
+  anon_19 := ltInts(anon_2, anon_0)
+  if (boolFromRef(anon_19)) {
+    var anon_20: Ref
+    var v_ret_3: Ref
+    v_ret_3 := anon_2
+    goto lbl_ret_3
+    label lbl_ret_3
+    anon_20 := v_ret_3
+    assert intFromRef(anon_2) >= 0
+    assert intFromRef(anon_2) < arraySize(anon_1)
+    unfold acc(IntArray_unique(anon_1), write)
+    anon_1.contents := anon_1.contents[intFromRef(anon_2) :=
+      intFromRef(anon_20)]
+    anon_2 := plusInts(anon_2, intToRef(1))
+    fold acc(IntArray_unique(anon_1), write)
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_2) >= 0
+  assert intFromRef(anon_2) <= intFromRef(anon_0)
+  assert arraySize(anon_1) == intFromRef(anon_0)
+  assert (unfolding acc(IntArray_unique(anon_1), write) in
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= 0 &&
+        anon_builtin_0 < intFromRef(anon_2) ==>
+        anon_1.contents[anon_builtin_0] == anon_builtin_0))
+  a := anon_1
+  anon_3 := intToRef(0)
+  anon_4 := intToRef(-1)
+  label cont_1
+    invariant acc(IntArray_unique(a), write)
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_3), intType())
+    invariant isSubtype(typeOf(anon_4), intType())
+    invariant intFromRef(anon_3) >= 0
+    invariant intFromRef(anon_3) <= arraySize(a)
+    invariant intFromRef(anon_4) >= -1 &&
+      intFromRef(anon_4) < intFromRef(anon_3)
+    invariant (unfolding acc(IntArray_unique(a), write) in
+        intFromRef(anon_4) >= 0 ==> !(a.contents[intFromRef(anon_4)] >= 0))
+    invariant (unfolding acc(IntArray_unique(a), write) in
+        (forall anon_builtin_1: Int ::anon_builtin_1 >= 0 &&
+          anon_builtin_1 < intFromRef(anon_3) &&
+          (intFromRef(anon_4) < 0 || anon_builtin_1 < intFromRef(anon_4)) ==>
+          !!(a.contents[anon_builtin_1] >= 0)))
+  anon_22 := andBools(ltInts(anon_3, intToRef(arraySize(a))), ltInts(anon_4,
+    intToRef(0)))
+  if (boolFromRef(anon_22)) {
+    var anon_23: Ref
+    var v_ret_6: Ref
+    var anon_5: Ref
+    var anon_24: Ref
+    assert intFromRef(anon_3) >= 0
+    assert intFromRef(anon_3) < arraySize(a)
+    unfold acc(IntArray_unique(a), write)
+    anon_24 := intToRef(a.contents[intFromRef(anon_3)])
+    anon_5 := anon_24
+    v_ret_6 := geInts(anon_5, intToRef(0))
+    fold acc(IntArray_unique(a), write)
+    goto lbl_ret_6
+    label lbl_ret_6
+    anon_23 := v_ret_6
+    if (!boolFromRef(anon_23)) {
+      anon_4 := anon_3
+    }
+    anon_3 := plusInts(anon_3, intToRef(1))
+    goto cont_1
+  }
+  label break_1
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_3), intType())
+  assert isSubtype(typeOf(anon_4), intType())
+  assert intFromRef(anon_3) >= 0
+  assert intFromRef(anon_3) <= arraySize(a)
+  assert intFromRef(anon_4) >= -1 &&
+    intFromRef(anon_4) < intFromRef(anon_3)
+  assert (unfolding acc(IntArray_unique(a), write) in
+      intFromRef(anon_4) >= 0 ==> !(a.contents[intFromRef(anon_4)] >= 0))
+  assert (unfolding acc(IntArray_unique(a), write) in
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= 0 &&
+        anon_builtin_1 < intFromRef(anon_3) &&
+        (intFromRef(anon_4) < 0 || anon_builtin_1 < intFromRef(anon_4)) ==>
+        !!(a.contents[anon_builtin_1] >= 0)))
+  anon_21 := ltInts(anon_4, intToRef(0))
+  if (boolFromRef(anon_21)) {
+    var anon_25: Ref
+    assert intFromRef(k) >= 0
+    assert intFromRef(k) < arraySize(a)
+    unfold acc(IntArray_unique(a), write)
+    anon_25 := intToRef(a.contents[intFromRef(k)])
+    assert intFromRef(anon_25) >= 0
+    fold acc(IntArray_unique(a), write)
+  }
+  anon_6 := intToRef(0)
+  anon_7 := intToRef(-1)
+  label cont_2
+    invariant acc(IntArray_unique(a), write)
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_6), intType())
+    invariant isSubtype(typeOf(anon_7), intType())
+    invariant intFromRef(anon_6) >= 0
+    invariant intFromRef(anon_6) <= arraySize(a)
+    invariant intFromRef(anon_7) >= -1 &&
+      intFromRef(anon_7) < intFromRef(anon_6)
+    invariant (unfolding acc(IntArray_unique(a), write) in
+        intFromRef(anon_7) >= 0 ==> a.contents[intFromRef(anon_7)] == 5)
+    invariant (unfolding acc(IntArray_unique(a), write) in
+        (forall anon_builtin_2: Int ::anon_builtin_2 >= 0 &&
+          anon_builtin_2 < intFromRef(anon_6) &&
+          (intFromRef(anon_7) < 0 || anon_builtin_2 < intFromRef(anon_7)) ==>
+          !(a.contents[anon_builtin_2] == 5)))
+  anon_26 := andBools(ltInts(anon_6, intToRef(arraySize(a))), ltInts(anon_7,
+    intToRef(0)))
+  if (boolFromRef(anon_26)) {
+    var anon_27: Ref
+    var v_ret_8: Ref
+    var anon_8: Ref
+    var anon_28: Ref
+    assert intFromRef(anon_6) >= 0
+    assert intFromRef(anon_6) < arraySize(a)
+    unfold acc(IntArray_unique(a), write)
+    anon_28 := intToRef(a.contents[intFromRef(anon_6)])
+    anon_8 := anon_28
+    v_ret_8 := boolToRef(intFromRef(anon_8) == 5)
+    fold acc(IntArray_unique(a), write)
+    goto lbl_ret_8
+    label lbl_ret_8
+    anon_27 := v_ret_8
+    if (boolFromRef(anon_27)) {
+      anon_7 := anon_6
+    }
+    anon_6 := plusInts(anon_6, intToRef(1))
+    goto cont_2
+  }
+  label break_2
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_6), intType())
+  assert isSubtype(typeOf(anon_7), intType())
+  assert intFromRef(anon_6) >= 0
+  assert intFromRef(anon_6) <= arraySize(a)
+  assert intFromRef(anon_7) >= -1 &&
+    intFromRef(anon_7) < intFromRef(anon_6)
+  assert (unfolding acc(IntArray_unique(a), write) in
+      intFromRef(anon_7) >= 0 ==> a.contents[intFromRef(anon_7)] == 5)
+  assert (unfolding acc(IntArray_unique(a), write) in
+      (forall anon_builtin_2: Int ::anon_builtin_2 >= 0 &&
+        anon_builtin_2 < intFromRef(anon_6) &&
+        (intFromRef(anon_7) < 0 || anon_builtin_2 < intFromRef(anon_7)) ==>
+        !(a.contents[anon_builtin_2] == 5)))
+  l0_r := anon_7
+  if (intFromRef(l0_r) >= 0) {
+    var anon_29: Ref
+    assert intFromRef(l0_r) >= 0
+    assert intFromRef(l0_r) < arraySize(a)
+    unfold acc(IntArray_unique(a), write)
+    anon_29 := intToRef(a.contents[intFromRef(l0_r)])
+    assert intFromRef(anon_29) == 5
+    fold acc(IntArray_unique(a), write)
+  }
+  anon_9 := intToRef(0)
+  anon_10 := intToRef(-1)
+  label cont_3
+    invariant acc(IntArray_unique(a), write)
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(l0_r), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_9), intType())
+    invariant isSubtype(typeOf(anon_10), intType())
+    invariant intFromRef(anon_9) >= 0
+    invariant intFromRef(anon_9) <= arraySize(a)
+    invariant intFromRef(anon_10) >= -1 &&
+      intFromRef(anon_10) < intFromRef(anon_9)
+    invariant (unfolding acc(IntArray_unique(a), write) in
+        intFromRef(anon_10) >= 0 ==> a.contents[intFromRef(anon_10)] > 3)
+    invariant (unfolding acc(IntArray_unique(a), write) in
+        (forall anon_builtin_3: Int ::anon_builtin_3 >= 0 &&
+          anon_builtin_3 < intFromRef(anon_9) &&
+          (intFromRef(anon_10) < 0 || anon_builtin_3 < intFromRef(anon_10)) ==>
+          !(a.contents[anon_builtin_3] > 3)))
+  anon_30 := andBools(ltInts(anon_9, intToRef(arraySize(a))), ltInts(anon_10,
+    intToRef(0)))
+  if (boolFromRef(anon_30)) {
+    var anon_31: Ref
+    var v_ret_10: Ref
+    var anon_11: Ref
+    var anon_32: Ref
+    assert intFromRef(anon_9) >= 0
+    assert intFromRef(anon_9) < arraySize(a)
+    unfold acc(IntArray_unique(a), write)
+    anon_32 := intToRef(a.contents[intFromRef(anon_9)])
+    anon_11 := anon_32
+    v_ret_10 := gtInts(anon_11, intToRef(3))
+    fold acc(IntArray_unique(a), write)
+    goto lbl_ret_10
+    label lbl_ret_10
+    anon_31 := v_ret_10
+    if (boolFromRef(anon_31)) {
+      anon_10 := anon_9
+    }
+    anon_9 := plusInts(anon_9, intToRef(1))
+    goto cont_3
+  }
+  label break_3
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(l0_r), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_9), intType())
+  assert isSubtype(typeOf(anon_10), intType())
+  assert intFromRef(anon_9) >= 0
+  assert intFromRef(anon_9) <= arraySize(a)
+  assert intFromRef(anon_10) >= -1 &&
+    intFromRef(anon_10) < intFromRef(anon_9)
+  assert (unfolding acc(IntArray_unique(a), write) in
+      intFromRef(anon_10) >= 0 ==> a.contents[intFromRef(anon_10)] > 3)
+  assert (unfolding acc(IntArray_unique(a), write) in
+      (forall anon_builtin_3: Int ::anon_builtin_3 >= 0 &&
+        anon_builtin_3 < intFromRef(anon_9) &&
+        (intFromRef(anon_10) < 0 || anon_builtin_3 < intFromRef(anon_10)) ==>
+        !(a.contents[anon_builtin_3] > 3)))
+  if (intFromRef(anon_10) >= 0) {
+    var anon_33: Ref
+    assert intFromRef(anon_10) >= 0
+    assert intFromRef(anon_10) < arraySize(a)
+    unfold acc(IntArray_unique(a), write)
+    anon_33 := intToRef(a.contents[intFromRef(anon_10)])
+    f := anon_33
+    fold acc(IntArray_unique(a), write)
+  } else {
+    f := nullValue()}
+  if (!(f == nullValue())) {
+    assert intFromRef(f) > 3
+  }
+  sum := intToRef(0)
+  anon_12 := intToRef(0)
+  label cont_4
+    invariant acc(IntArray_unique(a), write)
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(l0_r), intType())
+    invariant isSubtype(typeOf(f), nullable(intType()))
+    invariant isSubtype(typeOf(sum), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_12), intType())
+    invariant intFromRef(anon_12) >= 0
+    invariant intFromRef(anon_12) <= arraySize(a)
+    invariant intFromRef(sum) >= 0
+  anon_34 := ltInts(anon_12, intToRef(arraySize(a)))
+  if (boolFromRef(anon_34)) {
+    var v_ret_12: Ref
+    var anon_13: Ref
+    var anon_35: Ref
+    assert intFromRef(anon_12) >= 0
+    assert intFromRef(anon_12) < arraySize(a)
+    unfold acc(IntArray_unique(a), write)
+    anon_35 := intToRef(a.contents[intFromRef(anon_12)])
+    anon_13 := anon_35
+    fold acc(IntArray_unique(a), write)
+    if (intFromRef(anon_13) > 0) {
+      sum := plusInts(sum, anon_13)
+    }
+    label lbl_ret_12
+    inhale isSubtype(typeOf(v_ret_12), unitType())
+    anon_12 := plusInts(anon_12, intToRef(1))
+    goto cont_4
+  }
+  label break_4
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(l0_r), intType())
+  assert isSubtype(typeOf(f), nullable(intType()))
+  assert isSubtype(typeOf(sum), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_12), intType())
+  assert intFromRef(anon_12) >= 0
+  assert intFromRef(anon_12) <= arraySize(a)
+  assert intFromRef(sum) >= 0
+  anon_14 := intToRef(0)
+  label cont_5
+    invariant acc(IntArray_unique(a), write)
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(l0_r), intType())
+    invariant isSubtype(typeOf(f), nullable(intType()))
+    invariant isSubtype(typeOf(sum), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_14), intType())
+    invariant intFromRef(anon_14) >= 0
+    invariant intFromRef(anon_14) <= arraySize(a)
+  anon_36 := ltInts(anon_14, intToRef(arraySize(a)))
+  if (boolFromRef(anon_36)) {
+    var v_ret_15: Ref
+    var anon_15: Ref
+    var anon_37: Ref
+    assert intFromRef(anon_14) >= 0
+    assert intFromRef(anon_14) < arraySize(a)
+    unfold acc(IntArray_unique(a), write)
+    anon_37 := intToRef(a.contents[intFromRef(anon_14)])
+    anon_15 := anon_37
+    assert intFromRef(anon_14) >= 0
+    assert intFromRef(anon_14) < arraySize(a)
+    a.contents := a.contents[intFromRef(anon_14) := 0]
+    label lbl_ret_15
+    inhale isSubtype(typeOf(v_ret_15), unitType())
+    anon_14 := plusInts(anon_14, intToRef(1))
+    fold acc(IntArray_unique(a), write)
+    goto cont_5
+  }
+  label break_5
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(l0_r), intType())
+  assert isSubtype(typeOf(f), nullable(intType()))
+  assert isSubtype(typeOf(sum), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_14), intType())
+  assert intFromRef(anon_14) >= 0
+  assert intFromRef(anon_14) <= arraySize(a)
+  anon_16 := intToRef(0)
+  anon_17 := intToRef(0)
+  label cont_6
+    invariant acc(IntArray_unique(a), write)
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(l0_r), intType())
+    invariant isSubtype(typeOf(f), nullable(intType()))
+    invariant isSubtype(typeOf(sum), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(k), intType())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_16), intType())
+    invariant isSubtype(typeOf(anon_17), intType())
+    invariant intFromRef(anon_16) >= 0
+    invariant intFromRef(anon_16) <= arraySize(a)
+    invariant intFromRef(anon_17) >= 0 &&
+      intFromRef(anon_17) <= intFromRef(anon_16)
+  anon_39 := ltInts(anon_16, intToRef(arraySize(a)))
+  if (boolFromRef(anon_39)) {
+    var anon_40: Ref
+    var v_ret_17: Ref
+    var anon_18: Ref
+    var anon_41: Ref
+    assert intFromRef(anon_16) >= 0
+    assert intFromRef(anon_16) < arraySize(a)
+    unfold acc(IntArray_unique(a), write)
+    anon_41 := intToRef(a.contents[intFromRef(anon_16)])
+    anon_18 := anon_41
+    v_ret_17 := gtInts(anon_18, intToRef(0))
+    fold acc(IntArray_unique(a), write)
+    goto lbl_ret_17
+    label lbl_ret_17
+    anon_40 := v_ret_17
+    if (boolFromRef(anon_40)) {
+      anon_17 := plusInts(anon_17, intToRef(1))
+    }
+    anon_16 := plusInts(anon_16, intToRef(1))
+    goto cont_6
+  }
+  label break_6
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(l0_r), intType())
+  assert isSubtype(typeOf(f), nullable(intType()))
+  assert isSubtype(typeOf(sum), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(k), intType())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_16), intType())
+  assert isSubtype(typeOf(anon_17), intType())
+  assert intFromRef(anon_16) >= 0
+  assert intFromRef(anon_16) <= arraySize(a)
+  assert intFromRef(anon_17) >= 0 &&
+    intFromRef(anon_17) <= intFromRef(anon_16)
+  anon_38 := anon_17
+  v_ret_0 := plusInts(anon_38, sum)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for sharedArraySearch:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method sharedArraySearch(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var l0_r: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_6: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_9: Ref
+  anon_0 := intToRef(0)
+  anon_1 := intToRef(-1)
+  label cont_0
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_0), intType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_0) >= 0
+    invariant intFromRef(anon_0) <= arraySize(a)
+    invariant intFromRef(anon_1) >= -1 &&
+      intFromRef(anon_1) < intFromRef(anon_0)
+  anon_6 := andBools(ltInts(anon_0, intToRef(arraySize(a))), ltInts(anon_1,
+    intToRef(0)))
+  if (boolFromRef(anon_6)) {
+    var anon_7: Ref
+    var v_ret_2: Ref
+    var anon_2: Ref
+    var anon_8: Ref
+    anon_8 := havoc(intType())
+    anon_2 := anon_8
+    v_ret_2 := boolToRef(intFromRef(anon_2) == 0)
+    goto lbl_ret_2
+    label lbl_ret_2
+    anon_7 := v_ret_2
+    if (boolFromRef(anon_7)) {
+      anon_1 := anon_0
+    }
+    anon_0 := plusInts(anon_0, intToRef(1))
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_0), intType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) <= arraySize(a)
+  assert intFromRef(anon_1) >= -1 &&
+    intFromRef(anon_1) < intFromRef(anon_0)
+  l0_r := anon_1
+  assert -1 <= intFromRef(l0_r)
+  assert intFromRef(l0_r) < arraySize(a)
+  anon_3 := intToRef(0)
+  anon_4 := intToRef(-1)
+  label cont_1
+    invariant isSubtype(typeOf(l0_r), intType())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_3), intType())
+    invariant isSubtype(typeOf(anon_4), intType())
+    invariant intFromRef(anon_3) >= 0
+    invariant intFromRef(anon_3) <= arraySize(a)
+    invariant intFromRef(anon_4) >= -1 &&
+      intFromRef(anon_4) < intFromRef(anon_3)
+  anon_9 := andBools(ltInts(anon_3, intToRef(arraySize(a))), ltInts(anon_4,
+    intToRef(0)))
+  if (boolFromRef(anon_9)) {
+    var anon_10: Ref
+    var v_ret_4: Ref
+    var anon_5: Ref
+    var anon_11: Ref
+    anon_11 := havoc(intType())
+    anon_5 := anon_11
+    v_ret_4 := ltInts(anon_5, intToRef(0))
+    goto lbl_ret_4
+    label lbl_ret_4
+    anon_10 := v_ret_4
+    if (boolFromRef(anon_10)) {
+      anon_4 := anon_3
+    }
+    anon_3 := plusInts(anon_3, intToRef(1))
+    goto cont_1
+  }
+  label break_1
+  assert isSubtype(typeOf(l0_r), intType())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_3), intType())
+  assert isSubtype(typeOf(anon_4), intType())
+  assert intFromRef(anon_3) >= 0
+  assert intFromRef(anon_3) <= arraySize(a)
+  assert intFromRef(anon_4) >= -1 &&
+    intFromRef(anon_4) < intFromRef(anon_3)
+  v_ret_0 := ltInts(anon_4, intToRef(0))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for sharedArrayNoFacts:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method sharedArrayNoFacts(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_6: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_7: Ref
+  anon_0 := intToRef(0)
+  anon_1 := intToRef(-1)
+  label cont_0
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_0), intType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_0) >= 0
+    invariant intFromRef(anon_0) <= arraySize(a)
+    invariant intFromRef(anon_1) >= -1 &&
+      intFromRef(anon_1) < intFromRef(anon_0)
+  anon_7 := andBools(ltInts(anon_0, intToRef(arraySize(a))), ltInts(anon_1,
+    intToRef(0)))
+  if (boolFromRef(anon_7)) {
+    var anon_8: Ref
+    var v_ret_2: Ref
+    var anon_2: Ref
+    var anon_9: Ref
+    anon_9 := havoc(intType())
+    anon_2 := anon_9
+    v_ret_2 := boolToRef(intFromRef(anon_2) == 7)
+    goto lbl_ret_2
+    label lbl_ret_2
+    anon_8 := v_ret_2
+    if (!boolFromRef(anon_8)) {
+      anon_1 := anon_0
+    }
+    anon_0 := plusInts(anon_0, intToRef(1))
+    goto cont_0
+  }
+  label break_0
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_0), intType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) <= arraySize(a)
+  assert intFromRef(anon_1) >= -1 &&
+    intFromRef(anon_1) < intFromRef(anon_0)
+  anon_6 := ltInts(anon_1, intToRef(0))
+  if (boolFromRef(anon_6)) {
+    var l4_none: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    var anon_10: Ref
+    anon_3 := intToRef(0)
+    anon_4 := intToRef(-1)
+    label cont_1
+      invariant isSubtype(typeOf(a), IntArray())
+      invariant isSubtype(typeOf(a), IntArray())
+      invariant isSubtype(typeOf(anon_3), intType())
+      invariant isSubtype(typeOf(anon_4), intType())
+      invariant intFromRef(anon_3) >= 0
+      invariant intFromRef(anon_3) <= arraySize(a)
+      invariant intFromRef(anon_4) >= -1 &&
+        intFromRef(anon_4) < intFromRef(anon_3)
+    anon_10 := andBools(ltInts(anon_3, intToRef(arraySize(a))), ltInts(anon_4,
+      intToRef(0)))
+    if (boolFromRef(anon_10)) {
+      var anon_11: Ref
+      var v_ret_4: Ref
+      var anon_5: Ref
+      var anon_12: Ref
+      anon_12 := havoc(intType())
+      anon_5 := anon_12
+      v_ret_4 := notBool(boolToRef(intFromRef(anon_5) == 7))
+      goto lbl_ret_4
+      label lbl_ret_4
+      anon_11 := v_ret_4
+      if (boolFromRef(anon_11)) {
+        anon_4 := anon_3
+      }
+      anon_3 := plusInts(anon_3, intToRef(1))
+      goto cont_1
+    }
+    label break_1
+    assert isSubtype(typeOf(a), IntArray())
+    assert isSubtype(typeOf(a), IntArray())
+    assert isSubtype(typeOf(anon_3), intType())
+    assert isSubtype(typeOf(anon_4), intType())
+    assert intFromRef(anon_3) >= 0
+    assert intFromRef(anon_3) <= arraySize(a)
+    assert intFromRef(anon_4) >= -1 &&
+      intFromRef(anon_4) < intFromRef(anon_3)
+    l4_none := ltInts(anon_4, intToRef(0))
+    assert boolFromRef(l4_none)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for listCallsWithFunctionValues:
+field size: Ref
+
+method any(v_this_extension: Ref, par_predicate: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), Iterable())
+  requires isSubtype(typeOf(par_predicate), functionType())
+  ensures isSubtype(typeOf(ret_2), boolType())
+
+
+method count(v_this_extension: Ref, par_predicate: Ref)
+  returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this_extension), Iterable())
+  requires isSubtype(typeOf(par_predicate), functionType())
+  ensures isSubtype(typeOf(ret_3), intType())
+
+
+method forEach(v_this_extension: Ref, action: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), Iterable())
+  requires isSubtype(typeOf(action), functionType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method listCallsWithFunctionValues(xs: Ref, p: Ref, f: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(xs), List())
+  requires acc(xs.size, write)
+  requires intFromRef(xs.size) >= 0
+  requires isSubtype(typeOf(p), functionType())
+  requires isSubtype(typeOf(f), functionType())
+  ensures acc(xs.size, write)
+  ensures intFromRef(xs.size) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := forEach(xs, f)
+  anon_1 := any(xs, p)
+  if (boolFromRef(anon_1)) {
+    v_ret_0 := count(xs, p)
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for arrayAndStringCallsWithFunctionValues:
+field contents: Seq[Int]
+
+function arraySize(v_this: Ref): Int
+  ensures result >= 0
+
+
+method arrayAndStringCallsWithFunctionValues(a: Ref, s: Ref, p: Ref, q: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(p), functionType())
+  requires isSubtype(typeOf(q), functionType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var anon: Ref
+  anon := f_any_args_IntArray_Boolean_ret_Boolean(a, p)
+  if (boolFromRef(anon)) {
+    v_ret_0 := f_any_args_CharSequence_Boolean_ret_Boolean(s, q)
+  } else {
+    v_ret_0 := boolToRef(false)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method f_any_args_CharSequence_Boolean_ret_Boolean(v_this_extension: Ref, par_predicate: Ref)
+  returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(par_predicate), functionType())
+  ensures isSubtype(typeOf(ret_3), boolType())
+
+
+method f_any_args_IntArray_Boolean_ret_Boolean(v_this_extension: Ref, par_predicate: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), IntArray())
+  requires isSubtype(typeOf(par_predicate), functionType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+
+
+method length(v_this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for anyOf:
+field contents: Seq[Int]
+
+function arraySize(v_this: Ref): Int
+  ensures result >= 0
+
+
+method any(v_this_extension: Ref, par_predicate: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), IntArray())
+  requires isSubtype(typeOf(par_predicate), functionType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+
+
+method anyOf(a: Ref, p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires isSubtype(typeOf(p), functionType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := any(a, p)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_predicates.kt: info: Generated Viper text for inlineParameterSearch:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+method anyOf(a: Ref, p: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires isSubtype(typeOf(p), functionType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+
+
+method inlineParameterSearch(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var v_ret_3: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  anon_0 := intToRef(0)
+  anon_1 := intToRef(-1)
+  label cont
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(a), IntArray())
+    invariant isSubtype(typeOf(anon_0), intType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_0) >= 0
+    invariant intFromRef(anon_0) <= arraySize(a)
+    invariant intFromRef(anon_1) >= -1 &&
+      intFromRef(anon_1) < intFromRef(anon_0)
+  anon_3 := andBools(ltInts(anon_0, intToRef(arraySize(a))), ltInts(anon_1,
+    intToRef(0)))
+  if (boolFromRef(anon_3)) {
+    var anon_4: Ref
+    var v_ret_4: Ref
+    var anon_2: Ref
+    var anon_5: Ref
+    anon_5 := havoc(intType())
+    anon_2 := anon_5
+    v_ret_4 := boolToRef(intFromRef(anon_2) == 3)
+    goto lbl_ret_4
+    label lbl_ret_4
+    anon_4 := v_ret_4
+    if (boolFromRef(anon_4)) {
+      anon_1 := anon_0
+    }
+    anon_0 := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(a), IntArray())
+  assert isSubtype(typeOf(anon_0), intType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) <= arraySize(a)
+  assert intFromRef(anon_1) >= -1 &&
+    intFromRef(anon_1) < intFromRef(anon_0)
+  v_ret_3 := geInts(anon_1, intToRef(0))
+  goto lbl_ret_3
+  label lbl_ret_3
+  v_ret_0 := v_ret_3
+  goto lbl_ret_0
+  label lbl_ret_0
+}
