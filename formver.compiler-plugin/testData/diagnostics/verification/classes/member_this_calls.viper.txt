@@ -1,0 +1,556 @@
+/member_this_calls.kt: info: Generated Viper text for plain:
+field count: Ref
+
+method plain(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for peek:
+field count: Ref
+
+method peek(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for bump:
+field count: Ref
+
+method bump(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Counter_unique(this), write) in
+      intFromRef(this.count) ==
+      old((unfolding acc(Counter_unique(this), write) in
+        intFromRef(this.count))) +
+      1)
+{
+  var anon: Ref
+  unfold acc(Counter_unique(this), write)
+  anon := this.count
+  this.count := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Counter_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for touch:
+field count: Ref
+
+method touch(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(Counter_unique(this), write)
+  anon := this.count
+  this.count := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Counter_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for value:
+field count: Ref
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Counter_unique(this), write) in this.count)
+}
+
+/member_this_calls.kt: info: Generated Viper text for finish:
+field count: Ref
+
+method finish(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for consumeByPlain:
+field count: Ref
+
+method consumeByPlain(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(Counter_unique(this), write)
+  this.count := intToRef(1)
+  anon := plain(this)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plain(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/member_this_calls.kt: info: Generated Viper text for keepAfterPeek:
+field count: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method keepAfterPeek(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := peek(this)
+  exhale acc(Counter_unique(this), write)
+  inhale acc(Counter_unique(this), write)
+  unfold acc(Counter_unique(this), write)
+  this.count := intToRef(2)
+  anon_1 := this.count
+  assert intFromRef(anon_1) == 2
+  label lbl_ret_0
+  fold acc(Counter_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method peek(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/member_this_calls.kt: info: Generated Viper text for staleAfterPeek:
+field count: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method peek(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method staleAfterPeek(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(this), write)
+  this.count := intToRef(2)
+  fold acc(Counter_unique(this), write)
+  anon_0 := peek(this)
+  exhale acc(Counter_unique(this), write)
+  inhale acc(Counter_unique(this), write)
+  unfold acc(Counter_unique(this), write)
+  anon_1 := this.count
+  assert intFromRef(anon_1) == 2
+  label lbl_ret_0
+  fold acc(Counter_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for restatedByBump:
+field count: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bump(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(Counter_unique(this), write) in
+      intFromRef(this.count) ==
+      old((unfolding acc(Counter_unique(this), write) in
+        intFromRef(this.count))) +
+      1)
+
+
+method restatedByBump(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(this), write)
+  this.count := intToRef(2)
+  fold acc(Counter_unique(this), write)
+  anon_0 := bump(this)
+  unfold acc(Counter_unique(this), write)
+  anon_1 := this.count
+  assert intFromRef(anon_1) == 3
+  label lbl_ret_0
+  fold acc(Counter_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for staleAfterTouch:
+field count: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method staleAfterTouch(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Counter_unique(this), write)
+  this.count := intToRef(2)
+  fold acc(Counter_unique(this), write)
+  anon_0 := touch(this)
+  unfold acc(Counter_unique(this), write)
+  anon_1 := this.count
+  assert intFromRef(anon_1) == 2
+  label lbl_ret_0
+  fold acc(Counter_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method touch(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/member_this_calls.kt: info: Generated Viper text for keepAfterValue:
+field count: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Counter_unique(this), write) in this.count)
+}
+
+method keepAfterValue(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  unfold acc(Counter_unique(this), write)
+  this.count := intToRef(2)
+  fold acc(Counter_unique(this), write)
+  anon_1 := value(this)
+  l0_v := anon_1
+  assert intFromRef(l0_v) == 2
+  unfold acc(Counter_unique(this), write)
+  anon_2 := this.count
+  assert intFromRef(anon_2) == 2
+  label lbl_ret_0
+  fold acc(Counter_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for wrongValue:
+field count: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Counter_unique(this), write) in this.count)
+}
+
+method wrongValue(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(Counter_unique(this), write)
+  this.count := intToRef(2)
+  fold acc(Counter_unique(this), write)
+  anon := value(this)
+  assert intFromRef(anon) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for consumeByFinish:
+field count: Ref
+
+method consumeByFinish(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(Counter_unique(this), write)
+  this.count := intToRef(1)
+  fold acc(Counter_unique(this), write)
+  anon := finish(this)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method finish(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/member_this_calls.kt: info: Generated Viper text for bumpInBase:
+field count: Ref
+
+field total: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bump(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(Counter_unique(this), write) in
+      intFromRef(this.count) ==
+      old((unfolding acc(Counter_unique(this), write) in
+        intFromRef(this.count))) +
+      1)
+
+
+method bumpInBase(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), write)
+  ensures acc(Tally_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Tally_unique(this), write)
+  unfold acc(Counter_unique(this), write)
+  this.count := intToRef(2)
+  fold acc(Counter_unique(this), write)
+  anon_0 := bump(this)
+  exhale isSubtype(typeOf(this), Tally()) && acc(this.total, write) &&
+    isSubtype(typeOf(this.total), intType())
+  inhale isSubtype(typeOf(this), Tally()) && acc(this.total, write) &&
+    isSubtype(typeOf(this.total), intType())
+  unfold acc(Counter_unique(this), write)
+  anon_1 := this.count
+  assert intFromRef(anon_1) == 3
+  label lbl_ret_0
+  fold acc(Counter_unique(this), write)
+  fold acc(Tally_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for subclassFieldsLost:
+field count: Ref
+
+field total: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bump(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(Counter_unique(this), write) in
+      intFromRef(this.count) ==
+      old((unfolding acc(Counter_unique(this), write) in
+        intFromRef(this.count))) +
+      1)
+
+
+method subclassFieldsLost(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), write)
+  ensures acc(Tally_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Tally_unique(this), write)
+  this.total := intToRef(5)
+  anon_0 := bump(this)
+  exhale isSubtype(typeOf(this), Tally()) && acc(this.total, write) &&
+    isSubtype(typeOf(this.total), intType())
+  inhale isSubtype(typeOf(this), Tally()) && acc(this.total, write) &&
+    isSubtype(typeOf(this.total), intType())
+  anon_1 := this.total
+  assert intFromRef(anon_1) == 5
+  label lbl_ret_0
+  fold acc(Tally_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for reset:
+field a: Ref
+
+field b: Ref
+
+function tag(this: Ref): Ref
+  requires isSubtype(typeOf(this), Built())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method reset(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Built())
+  requires acc(Built_unique(this), write)
+  ensures acc(Built_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Built_unique(this), write) in
+      intFromRef(this.a) == 0) &&
+    (unfolding acc(Built_unique(this), write) in intFromRef(this.b) == 0)
+{
+  unfold acc(Built_unique(this), write)
+  this.a := intToRef(0)
+  this.b := intToRef(0)
+  label lbl_ret_0
+  fold acc(Built_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for peek:
+field a: Ref
+
+field b: Ref
+
+function tag(this: Ref): Ref
+  requires isSubtype(typeOf(this), Built())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method peek(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Built())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/member_this_calls.kt: info: Generated Viper text for builtKeepsTag:
+field b: Ref
+
+field bf_a: Ref
+
+function g_tag(this: Ref): Ref
+  requires isSubtype(typeOf(this), Built())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method builtKeepsTag() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  x := con(intToRef(1), intToRef(2))
+  fold acc(Built_unique(x), write)
+  assert intFromRef(g_tag(x)) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_a: Ref, par_tag: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_tag), intType())
+  ensures isSubtype(typeOf(ret_1), Built())
+  ensures isSubtype(typeOf(ret_1), Built()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType()) &&
+    acc(ret_1.b, write) &&
+    isSubtype(typeOf(ret_1.b), intType())
+  ensures intFromRef(g_tag(ret_1)) == intFromRef(par_tag)
+
+
+/member_this_calls.kt: info: Generated Viper text for builtKeepsA:
+field b: Ref
+
+field bf_a: Ref
+
+function g_tag(this: Ref): Ref
+  requires isSubtype(typeOf(this), Built())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method builtKeepsA() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon: Ref
+  x := con(intToRef(1), intToRef(2))
+  fold acc(Built_unique(x), write)
+  unfold acc(Built_unique(x), write)
+  anon := x.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_a: Ref, par_tag: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_tag), intType())
+  ensures isSubtype(typeOf(ret_1), Built())
+  ensures isSubtype(typeOf(ret_1), Built()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType()) &&
+    acc(ret_1.b, write) &&
+    isSubtype(typeOf(ret_1.b), intType())
+  ensures intFromRef(g_tag(ret_1)) == intFromRef(par_tag)

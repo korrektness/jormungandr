@@ -742,6 +742,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("member_this_calls.kt")
+      public void testMember_this_calls() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/member_this_calls.kt");
+      }
+
+      @Test
       @TestMetadata("member_this_contracts.kt")
       public void testMember_this_contracts() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/member_this_contracts.kt");
