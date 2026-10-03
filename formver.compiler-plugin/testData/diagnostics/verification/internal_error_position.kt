@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
-fun anonymousFunction(): Int {
-    val y = 1
-    val f = <!INTERNAL_ERROR!>fun(x: Int): Int { return x }<!>
-    return y
+fun localClassProperty(): Int {
+    <!UNSUPPORTED_FEATURE!>class L(<!INTERNAL_ERROR!>val x: Int<!>)<!>
+    return L(1).x
 }

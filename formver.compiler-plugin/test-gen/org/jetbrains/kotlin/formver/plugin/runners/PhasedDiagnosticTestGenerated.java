@@ -583,6 +583,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("lambda_values.kt")
+    public void testLambda_values() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/lambda_values.kt");
+    }
+
+    @Test
     @TestMetadata("loop_predicate_invariant.kt")
     public void testLoop_predicate_invariant() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/loop_predicate_invariant.kt");

@@ -18,8 +18,8 @@ fun <!VIPER_TEXT!>isNorth<!>(d: Direction): Boolean = d == Direction.NORTH
 
 @Pure
 fun crashes(x: Int): Int {
-    val f = <!INTERNAL_ERROR!>fun(y: Int): Int { return y }<!>
-    return x
+    <!UNSUPPORTED_FEATURE, UNSUPPORTED_FEATURE!>class L(<!INTERNAL_ERROR!>val y: Int<!>)<!>
+    return L(x).y
 }
 
 <!INTERNAL_ERROR!>@AlwaysVerify

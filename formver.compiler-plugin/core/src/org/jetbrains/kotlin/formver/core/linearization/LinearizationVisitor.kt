@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.CharTypeEmbedding
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.attributingFailuresTo
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.constructedOpen
@@ -962,9 +963,10 @@ data class LinearizationVisitor(
 
     // region Lambda
 
+    // A lambda that is invoked in place is inlined at its invocation and never linearized as a value.
     override fun visitLambdaExp(e: LambdaExp): Linearizable = object : StoredResultLinearizable(e) {
         override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
-            TODO("create new function object with counter, duplicable (requires toViper restructuring)")
+            throw UnsupportedFeatureException(e.function.source, "a lambda that is not invoked in place")
         }
     }
 
