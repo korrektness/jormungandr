@@ -16,11 +16,11 @@ fun <!VIPER_TEXT!>north<!>(): Direction = Direction.NORTH
 @AlwaysVerify
 fun <!VIPER_TEXT!>isNorth<!>(d: Direction): Boolean = d == Direction.NORTH
 
+@NeverConvert
+inline fun applyTo(x: Int, f: (Int) -> Int): Int = f(x)
+
 @Pure
-fun crashes(x: Int): Int {
-    <!UNSUPPORTED_FEATURE, UNSUPPORTED_FEATURE!>class L(<!INTERNAL_ERROR!>val y: Int<!>)<!>
-    return L(x).y
-}
+fun crashes(x: Int): Int = applyTo(x, fun(y: Int): Int { <!INTERNAL_ERROR!>return y<!> })
 
 <!INTERNAL_ERROR!>@AlwaysVerify
 fun callsCrashing(x: Int): Int = crashes(x)<!>

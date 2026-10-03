@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.names
 
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.conversion.ClassPropertyPair
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConversionContext
 import org.jetbrains.kotlin.formver.core.conversion.PropertyKotlinName
@@ -146,6 +147,7 @@ fun FirPropertySymbol.embedSetterName(ctx: ProgramConversionContext): ScopedName
  */
 fun FirPropertySymbol.embedMemberPropertyName(ctx: ProgramConversionContext): ClassPropertyPair {
     val callable = callableId
+    if (callable?.isLocal == true) throw UnsupportedFeatureException(source, "property of a local class")
     val className =
         callable?.classId?.embedName() ?: throw SnaktInternalException(source, "Property is not part of a class")
     val propertyName = callable.embedMemberPropertyName(scopePolicy(this, ctx))

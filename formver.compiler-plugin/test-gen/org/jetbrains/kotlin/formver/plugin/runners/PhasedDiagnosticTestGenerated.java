@@ -589,6 +589,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("local_class.kt")
+    public void testLocal_class() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/local_class.kt");
+    }
+
+    @Test
     @TestMetadata("loop_predicate_invariant.kt")
     public void testLoop_predicate_invariant() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/loop_predicate_invariant.kt");

@@ -1,6 +1,9 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
-fun localClassProperty(): Int {
-    <!UNSUPPORTED_FEATURE!>class L(<!INTERNAL_ERROR!>val x: Int<!>)<!>
-    return L(1).x
+@NeverConvert
+inline fun applyToOne(f: (Int) -> Int): Int = f(1)
+
+fun anonymousFunctionArgument(): Int {
+    val y = applyToOne(fun(x: Int): Int { <!INTERNAL_ERROR!>return x<!> })
+    return y
 }
