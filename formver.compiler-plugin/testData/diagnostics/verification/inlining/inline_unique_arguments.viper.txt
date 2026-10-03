@@ -646,6 +646,7 @@ method loopWithPathToBorrowed(h: Ref, n: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(anon_0), Counter())
     invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(h), Holder())
     invariant h.inner == anon_0
     invariant intFromRef(i) >= 0 &&
       (unfolding acc(Counter_unique(anon_0), write) in
@@ -664,6 +665,7 @@ method loopWithPathToBorrowed(h: Ref, n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(anon_0), Counter())
   assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(h), Holder())
   assert h.inner == anon_0
   assert intFromRef(i) >= 0 &&
     (unfolding acc(Counter_unique(anon_0), write) in
@@ -718,6 +720,7 @@ method loopWithPathToSharedBorrowed(h: Ref, n: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(anon_0), Counter())
     invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(h), Holder())
     invariant h.inner == anon_0
   anon_1 := ltInts(i, n)
   if (boolFromRef(anon_1)) {
@@ -731,6 +734,7 @@ method loopWithPathToSharedBorrowed(h: Ref, n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(anon_0), Counter())
   assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(h), Holder())
   assert h.inner == anon_0
   label lbl_ret_2
   inhale isSubtype(typeOf(v_ret_2), unitType())

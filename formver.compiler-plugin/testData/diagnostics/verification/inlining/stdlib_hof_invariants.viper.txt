@@ -1,0 +1,589 @@
+/stdlib_hof_invariants.kt: info: Generated Viper text for hoistedInvariants:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method hoistedInvariants(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  n := intToRef(0)
+  anon_0 := s
+  anon_1 := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(n) >= 0
+    invariant intFromRef(n) <= intFromRef(anon_1)
+  anon_4 := ltInts(anon_1, stringLength(anon_0))
+  if (boolFromRef(anon_4)) {
+    var v_ret_2: Ref
+    var anon_2: Ref
+    anon_2 := stringGet(anon_0, anon_1)
+    if (charFromRef(anon_2) == 97) {
+      var anon_3: Ref
+      anon_3 := n
+      n := plusInts(anon_3, intToRef(1))
+    }
+    label lbl_ret_2
+    inhale isSubtype(typeOf(v_ret_2), unitType())
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(n) >= 0
+  assert intFromRef(n) <= intFromRef(anon_1)
+  assert intFromRef(n) <= |stringFromRef(s)|
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for indexFacts:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method indexFacts(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var last: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  last := intToRef(-1)
+  anon_0 := s
+  anon_1 := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(last), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(last) < intFromRef(anon_1)
+  anon_3 := ltInts(anon_1, stringLength(anon_0))
+  if (boolFromRef(anon_3)) {
+    var v_ret_2: Ref
+    var anon_2: Ref
+    anon_2 := stringGet(anon_0, anon_1)
+    assert 0 <= intFromRef(anon_1)
+    assert intFromRef(anon_1) < |stringFromRef(s)|
+    last := anon_1
+    label lbl_ret_2
+    inhale isSubtype(typeOf(v_ret_2), unitType())
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(last), intType())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(last) < intFromRef(anon_1)
+  v_ret_0 := last
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for previousCharacter:
+method previousCharacter(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var escaped: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  escaped := intToRef(0)
+  anon_0 := s
+  anon_1 := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(escaped), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  anon_4 := ltInts(anon_1, stringLength(anon_0))
+  if (boolFromRef(anon_4)) {
+    var v_ret_2: Ref
+    var anon_2: Ref
+    var anon_5: Ref
+    anon_2 := stringGet(anon_0, anon_1)
+    if (charFromRef(anon_2) == 34) {
+      if (intFromRef(anon_1) == 0) {
+        anon_5 := boolToRef(true)
+      } else {
+        anon_5 := notBool(boolToRef(stringFromRef(s)[intFromRef(anon_1) - 1] ==
+          92))}
+    } else {
+      anon_5 := boolToRef(false)}
+    if (boolFromRef(anon_5)) {
+      var anon_3: Ref
+      anon_3 := escaped
+      escaped := plusInts(anon_3, intToRef(1))
+    }
+    label lbl_ret_2
+    inhale isSubtype(typeOf(v_ret_2), unitType())
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(escaped), intType())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  v_ret_0 := escaped
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for countBounds:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method countBounds(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_4: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= 0 &&
+      intFromRef(anon_2) <= intFromRef(anon_1)
+  anon_4 := ltInts(anon_1, stringLength(anon_0))
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var v_ret_2: Ref
+    var anon_3: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    v_ret_2 := boolToRef(charFromRef(anon_3) == 97)
+    goto lbl_ret_2
+    label lbl_ret_2
+    anon_5 := v_ret_2
+    if (boolFromRef(anon_5)) {
+      anon_2 := plusInts(anon_2, intToRef(1))
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= 0 &&
+    intFromRef(anon_2) <= intFromRef(anon_1)
+  n := anon_2
+  assert 0 <= intFromRef(n)
+  assert intFromRef(n) <= |stringFromRef(s)|
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for countIsNotExact:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method countIsNotExact(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires |stringFromRef(s)| > 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_4: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  anon_2 := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant isSubtype(typeOf(anon_2), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(anon_2) >= 0 &&
+      intFromRef(anon_2) <= intFromRef(anon_1)
+  anon_4 := ltInts(anon_1, stringLength(anon_0))
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var v_ret_3: Ref
+    var anon_3: Ref
+    anon_3 := stringGet(anon_0, anon_1)
+    v_ret_3 := boolToRef(true)
+    goto lbl_ret_3
+    label lbl_ret_3
+    anon_5 := v_ret_3
+    if (boolFromRef(anon_5)) {
+      anon_2 := plusInts(anon_2, intToRef(1))
+    }
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert isSubtype(typeOf(anon_2), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(anon_2) >= 0 &&
+    intFromRef(anon_2) <= intFromRef(anon_1)
+  n := anon_2
+  assert intFromRef(n) == |stringFromRef(s)|
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for labeledReturn:
+method labeledReturn(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var n: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  n := intToRef(0)
+  anon_0 := s
+  anon_1 := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant intFromRef(n) >= 0
+  anon_4 := ltInts(anon_1, stringLength(anon_0))
+  if (boolFromRef(anon_4)) {
+    var v_ret_2: Ref
+    var anon_2: Ref
+    var anon_3: Ref
+    anon_2 := stringGet(anon_0, anon_1)
+    if (charFromRef(anon_2) == 32) {
+      goto lbl_ret_2
+    }
+    anon_3 := n
+    n := plusInts(anon_3, intToRef(1))
+    label lbl_ret_2
+    inhale isSubtype(typeOf(v_ret_2), unitType())
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert intFromRef(n) >= 0
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for throwInside:
+method cause(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method con() returns (ret_5: Ref)
+  ensures isSubtype(typeOf(ret_5), IllegalArgumentException())
+  ensures acc(IllegalArgumentException_unique(ret_5), write)
+
+
+method message(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method throwInside(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  anon_0 := s
+  anon_1 := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  anon_3 := ltInts(anon_1, stringLength(anon_0))
+  if (boolFromRef(anon_3)) {
+    var v_ret_2: Ref
+    var anon_2: Ref
+    anon_2 := stringGet(anon_0, anon_1)
+    if (charFromRef(anon_2) == 10) {
+      var anon_4: Ref
+      anon_4 := con()
+      inhale false
+    }
+    label lbl_ret_2
+    inhale isSubtype(typeOf(v_ret_2), unitType())
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for repeatIndex:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method repeatIndex(times: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(times), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var sum: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  sum := intToRef(0)
+  anon_0 := times
+  anon_1 := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(sum), intType())
+    invariant isSubtype(typeOf(times), intType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= intFromRef(anon_0) ||
+      intFromRef(anon_1) == 0
+    invariant intFromRef(sum) >= 0
+  anon_2 := ltInts(anon_1, anon_0)
+  if (boolFromRef(anon_2)) {
+    var v_ret_2: Ref
+    assert intFromRef(anon_1) >= 0
+    sum := plusInts(sum, anon_1)
+    label lbl_ret_2
+    inhale isSubtype(typeOf(v_ret_2), unitType())
+    anon_1 := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(sum), intType())
+  assert isSubtype(typeOf(times), intType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= intFromRef(anon_0) ||
+    intFromRef(anon_1) == 0
+  assert intFromRef(sum) >= 0
+  v_ret_0 := sum
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for fillOwnedBuilder:
+field contents: Seq[Int]
+
+method con() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), StringBuilder())
+  ensures acc(StringBuilder_unique(ret_2), write)
+  ensures (unfolding acc(StringBuilder_unique(ret_2), write) in
+      ret_2.contents == Seq[Int]())
+
+
+method fillOwnedBuilder(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+  ensures |stringFromRef(v_ret_0)| == |stringFromRef(s)|
+{
+  var sb: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  sb := con()
+  anon_0 := s
+  anon_1 := intToRef(0)
+  label cont
+    invariant acc(StringBuilder_unique(sb), write)
+    invariant isSubtype(typeOf(sb), StringBuilder())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(anon_0), stringType())
+    invariant isSubtype(typeOf(anon_1), intType())
+    invariant intFromRef(anon_1) >= 0
+    invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant (unfolding acc(StringBuilder_unique(sb), write) in
+        |sb.contents| == intFromRef(anon_1))
+  anon_3 := ltInts(anon_1, stringLength(anon_0))
+  if (boolFromRef(anon_3)) {
+    var v_ret_4: Ref
+    var anon_2: Ref
+    anon_2 := stringGet(anon_0, anon_1)
+    unfold acc(StringBuilder_unique(sb), write)
+    sb.contents := sb.contents ++ Seq(charFromRef(anon_2))
+    label lbl_ret_4
+    inhale isSubtype(typeOf(v_ret_4), unitType())
+    anon_1 := plusInts(anon_1, intToRef(1))
+    fold acc(StringBuilder_unique(sb), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(sb), StringBuilder())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(anon_0), stringType())
+  assert isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert (unfolding acc(StringBuilder_unique(sb), write) in
+      |sb.contents| == intFromRef(anon_1))
+  unfold acc(StringBuilder_unique(sb), write)
+  anon_4 := stringToRef(sb.contents)
+  v_ret_0 := anon_4
+  fold acc(StringBuilder_unique(sb), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for myEach:
+method myEach(s: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(f), functionType())
+    invariant intFromRef(i) >= 0
+  anon_1 := ltInts(i, stringLength(s))
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_0: Ref
+    inhale isSubtype(typeOf(anon_2), unitType())
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(f), functionType())
+  assert intFromRef(i) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_hof_invariants.kt: info: Generated Viper text for myEachOwnedBuilder:
+field contents: Seq[Int]
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), StringBuilder())
+  ensures acc(StringBuilder_unique(ret_1), write)
+  ensures (unfolding acc(StringBuilder_unique(ret_1), write) in
+      ret_1.contents == Seq[Int]())
+
+
+method myEach(s: Ref, f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(f), functionType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method myEachOwnedBuilder(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var sb: Ref
+  var v_ret_4: Ref
+  var i: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  sb := con()
+  i := intToRef(0)
+  label cont
+    invariant acc(StringBuilder_unique(sb), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(sb), StringBuilder())
+    invariant intFromRef(i) >= 0
+  anon_2 := ltInts(i, stringLength(s))
+  if (boolFromRef(anon_2)) {
+    var v_ret_6: Ref
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_0 := stringGet(s, i)
+    unfold acc(StringBuilder_unique(sb), write)
+    sb.contents := sb.contents ++ Seq(charFromRef(anon_0))
+    label lbl_ret_6
+    inhale isSubtype(typeOf(v_ret_6), unitType())
+    anon_1 := i
+    i := plusInts(anon_1, intToRef(1))
+    fold acc(StringBuilder_unique(sb), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(sb), StringBuilder())
+  assert intFromRef(i) >= 0
+  label lbl_ret_4
+  inhale isSubtype(typeOf(v_ret_4), unitType())
+  unfold acc(StringBuilder_unique(sb), write)
+  anon_3 := stringToRef(sb.contents)
+  v_ret_0 := anon_3
+  fold acc(StringBuilder_unique(sb), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

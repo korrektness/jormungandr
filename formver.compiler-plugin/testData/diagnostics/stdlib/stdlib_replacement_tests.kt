@@ -9,8 +9,6 @@ fun <!VIPER_TEXT!>useChecks<!>(): Unit {
     check(true) { "Lazy message" }
 }
 
-// TODO: add test for `repeat` (we actually have a bug there because we require unsatisfied precondition in loops)
-
 fun <!VIPER_TEXT!>useRuns<!>(x: Int): Unit {
     val cond1 = run { x + 1 } == 1 + x
     val cond2 = x.run { plus(1) } == 1 + x

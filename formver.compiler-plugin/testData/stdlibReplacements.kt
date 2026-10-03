@@ -27,15 +27,6 @@ inline fun <T, R> with(receiver: T, block: T.() -> R): R = receiver.block()
 @NeverConvert
 inline fun <T> T.takeIf(predicate: (T) -> Boolean): T? = if (predicate(this)) this else null
 
-@NeverConvert
-inline fun repeat(times: Int, action: (Int) -> Unit) {
-    var counter: Int = 0
-    while (counter < times) {
-        action(counter)
-        counter = counter + 1
-    }
-}
-
 // `check`s are intended for runtime, we have our own `verify` to check static properties
 @NeverConvert
 inline fun check(value: Boolean) {

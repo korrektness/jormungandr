@@ -1146,6 +1146,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("stdlib_hof_invariants.kt")
+      public void testStdlib_hof_invariants() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/stdlib_hof_invariants.kt");
+      }
+
+      @Test
+      @TestMetadata("stdlib_hof_lambdas.kt")
+      public void testStdlib_hof_lambdas() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/stdlib_hof_lambdas.kt");
+      }
+
+      @Test
       @TestMetadata("viper_casts_while_inlining.kt")
       public void testViper_casts_while_inlining() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/viper_casts_while_inlining.kt");

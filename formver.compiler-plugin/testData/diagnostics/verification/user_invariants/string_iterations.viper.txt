@@ -17,6 +17,7 @@ method firstAtLeast(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
   label cont
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(c), charType())
+    invariant isSubtype(typeOf(v_this_extension), stringType())
     invariant 0 <= intFromRef(i) &&
       intFromRef(i) <= |stringFromRef(v_this_extension)|
     invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
@@ -33,6 +34,7 @@ method firstAtLeast(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
   label break
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(c), charType())
+  assert isSubtype(typeOf(v_this_extension), stringType())
   assert 0 <= intFromRef(i) &&
     intFromRef(i) <= |stringFromRef(v_this_extension)|
   assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
@@ -63,6 +65,7 @@ method lastLess(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
   label cont
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(c), charType())
+    invariant isSubtype(typeOf(v_this_extension), stringType())
     invariant -1 <= intFromRef(i) &&
       intFromRef(i) < |stringFromRef(v_this_extension)|
     invariant (forall anon_builtin_1: Int ::intFromRef(i) < anon_builtin_1 &&
@@ -79,6 +82,7 @@ method lastLess(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
   label break
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(c), charType())
+  assert isSubtype(typeOf(v_this_extension), stringType())
   assert -1 <= intFromRef(i) &&
     intFromRef(i) < |stringFromRef(v_this_extension)|
   assert (forall anon_builtin_1: Int ::intFromRef(i) < anon_builtin_1 &&

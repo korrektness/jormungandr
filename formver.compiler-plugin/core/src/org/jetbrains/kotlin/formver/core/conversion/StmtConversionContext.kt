@@ -517,9 +517,9 @@ fun StmtConversionContext.exceptionalExit(): ExpEmbedding = Block {
 }
 
 /**
- * A loop whose head carries the proven invariants of the variables in scope, then [boundInvariants], then the
- * invariants of the paths retained by inlined calls in progress, then the user's [userInvariants]. The body is
- * converted in the loop's own context; [headLabelName] names the head there.
+ * A loop whose head carries the proven invariants of the variables in scope, including those of the calls that run an
+ * inlined body, then [boundInvariants], then the invariants of the paths retained by inlined calls in progress, then
+ * the user's [userInvariants]. The body is converted in the loop's own context; [headLabelName] names the head there.
  */
 fun StmtConversionContext.convertLoop(
     loop: FirWhileLoop,
@@ -529,7 +529,7 @@ fun StmtConversionContext.convertLoop(
     headLabelName: StmtConversionContext.() -> SymbolicName = { continueLabelName() },
     body: StmtConversionContext.() -> ExpEmbedding,
 ): ExpEmbedding {
-    val inScope = retrievePropertiesAndParameters().toList()
+    val inScope = ownershipFrame.scopeWith(retrievePropertiesAndParameters().toList())
     val invariants = buildList {
         inScope.forEach {
             addAll(it.provenInvariants())
