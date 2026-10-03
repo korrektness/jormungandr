@@ -11,8 +11,11 @@ them.
   full pipeline, `--verify-changed` for `./gradlew update` (convert everything,
   verify only where conversion output changed), `--update-goldens` to regenerate
   goldens and report what they now say.
-- `check-all.sh` — `check`, `pre-commit` and the testData checks together.
+- `check-all.sh` — `check`, the Gradle consumer check, `pre-commit` and the testData checks together.
   `--rerun` re-executes tests Gradle considers current.
+- `check-gradle-consumer.sh` — publishes the plugin to a private Maven repository and
+  compiles a tiny Gradle project with it, so a defect that only the shadow jar has
+  (an unrelocated dependency) fails. Needs network access.
 - `check-testdata.sh` — golden files with no source, and empty golden files.
 
 `test.sh` and `check-all.sh` take `--help`, and need `python3` on PATH because
@@ -21,7 +24,7 @@ a checkout.
 
 ## Exit codes
 
-`check-all.sh` reports each of its three checks as passed, failed or skipped. A
+`check-all.sh` reports each of its four checks as passed, failed or skipped. A
 skip means the run covered less than the command promises, and the gap is in the
 setup rather than in the code, so it gets its own exit code rather than being
 folded into either 0 or 1.

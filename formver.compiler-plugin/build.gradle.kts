@@ -185,6 +185,9 @@ fun Test.setLibraryProperty(propName: String, jarName: String) {
 
 tasks.shadowJar {
     archiveClassifier.set("")
+    // The embeddable compiler that Gradle runs relocates its own copy under this prefix and hands the plugin
+    // instances of that copy.
+    relocate("kotlinx.collections.immutable", "org.jetbrains.kotlin.kotlinx.collections.immutable")
 }
 
 publishing {

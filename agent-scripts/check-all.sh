@@ -28,6 +28,10 @@ gradle_result=passed
 # detekt, apiCheck and every module's test task.
 ./gradlew check --no-daemon "${args[@]}" || gradle_result=failed
 
+consumer_result=passed
+# The published shadow jar run by a Gradle build, which no unit test exercises.
+./agent-scripts/check-gradle-consumer.sh || consumer_result=failed
+
 testdata_result=passed
 # Called directly as well as through pre-commit, so it runs even when
 # pre-commit is missing.
@@ -44,6 +48,7 @@ fi
 echo
 echo "Summary:"
 printf '  %-18s %s\n' "gradle check:" "$gradle_result"
+printf '  %-18s %s\n' "gradle consumer:" "$consumer_result"
 printf '  %-18s %s\n' "check-testdata.sh:" "$testdata_result"
 if [[ "$precommit_result" == skipped ]]; then
     printf '  %-18s %s (install: pip install pre-commit)\n' "pre-commit:" "$precommit_result"
@@ -53,7 +58,7 @@ fi
 
 failed=0
 skipped=0
-for result in "$gradle_result" "$testdata_result" "$precommit_result"; do
+for result in "$gradle_result" "$consumer_result" "$testdata_result" "$precommit_result"; do
     [[ "$result" == failed ]] && failed=1
     [[ "$result" == skipped ]] && skipped=1
 done
