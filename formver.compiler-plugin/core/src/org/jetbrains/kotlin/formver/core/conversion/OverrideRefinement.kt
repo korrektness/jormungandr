@@ -8,7 +8,6 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
-import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.declarations.utils.isOverride
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -73,21 +72,14 @@ internal val FirNamedFunctionSymbol.refinementSpelling: String
 internal val FirFunctionSymbol<*>.isOpenOrOverride: Boolean
     get() = this is FirNamedFunctionSymbol && (isOverride || !isFinal)
 
-/** The specification written in this function's body, or `null` when it has none. */
-internal fun FirSimpleFunction.specification(): FirSpecification? {
-    val body = body ?: return null
-    return extractFirSpecification(body, symbol.resolvedReturnType)
-        .takeIf { it.precond != null || it.postcond != null }
-}
-
 /**
- * The function whose specification this function has: itself when it writes one, and otherwise the declaration
+ * The function whose specification this function has: itself when it has one, and otherwise the declaration
  * it inherits one from, when exactly one declaration it overrides has a specification.
  */
 context(checkerContext: CheckerContext)
 @OptIn(SymbolInternals::class)
 internal fun FirNamedFunctionSymbol.specificationOwner(): FirNamedFunctionSymbol? {
-    if (fir.specification() != null) return this
+    if (fir.userSpecification(checkerContext.session) != null) return this
     return directOverriddenSymbolsSafe()
         .filterIsInstance<FirNamedFunctionSymbol>()
         .mapNotNull { it.specificationOwner() }

@@ -36,12 +36,26 @@ data class FirSpecification(val precond: FirBlock?, val postcond: FirBlock?, val
 private fun FirAnonymousFunction.extractFormverReturnVar(returnType: ConeKotlinType): FirValueParameterSymbol {
     val param = valueParameters.first()
     // Type annotations such as `@Unique` live in attributes; they do not make the types different.
-    if (param.symbol.resolvedReturnType.withoutAttributes() != returnType.withoutAttributes())
+    if (!param.symbol.resolvedReturnType.sameUpToAttributes(returnType))
         error("Expected type ${returnType} based on signature, got ${param.symbol.resolvedReturnType}")
     return param.symbol
 }
 
 private fun ConeKotlinType.withoutAttributes(): ConeKotlinType = withAttributes(ConeAttributes.Empty)
+
+/** Whether the two types are the same, ignoring type annotations such as `@Unique`. */
+fun ConeKotlinType.sameUpToAttributes(other: ConeKotlinType): Boolean = withoutAttributes() == other.withoutAttributes()
+
+/**
+ * The type of the result parameter of the `postconditions` block among this block's leading specification blocks,
+ * or `null` when there is no such block.
+ */
+fun FirBlock.postconditionsResultType(): ConeKotlinType? {
+    val pre = statements.firstOrNull()?.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }
+    val post = statements.getOrNull(if (pre != null) 1 else 0)
+        ?.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }
+    return post?.valueParameters?.firstOrNull()?.symbol?.resolvedReturnType
+}
 
 fun extractFirSpecification(parentBlock: FirBlock, returnType: ConeKotlinType): FirSpecification {
     val firstStmt = parentBlock.statements.firstOrNull() ?: return FirSpecification()

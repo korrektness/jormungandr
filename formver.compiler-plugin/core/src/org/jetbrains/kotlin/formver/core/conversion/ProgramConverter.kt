@@ -345,14 +345,19 @@ class ProgramConverter(
         uniquenessOutcomeOf(symbol.fir).analysis
 
     /**
-     * Runs [check] on the source of [declaration] when it is the registered declaration and the uniqueness checker
-     * has a state for it. The callees it embeds are checked when they are registered themselves. Without a state
-     * every receiver counts as not owned, and the function is not verified anyway.
+     * Runs [check] on the source of [declaration] when it is the registered declaration and [analysis], the
+     * uniqueness analysis the checked code was converted with, exists. The callees it embeds are checked when they
+     * are registered themselves. Without an analysis every receiver counts as not owned, and the function is not
+     * verified anyway.
      */
-    private fun checkVarReads(declaration: FirFunction, check: (KtSourceElement) -> Unit) {
+    private fun checkVarReads(
+        declaration: FirFunction,
+        analysis: FunctionUniquenessAnalysis? = uniquenessOutcomeOf(declaration).analysis,
+        check: (KtSourceElement) -> Unit,
+    ) {
         if (declaration.symbol != registeredSymbol) return
         val source = declaration.source ?: return
-        if (uniquenessOutcomeOf(declaration).analysis != null) check(source)
+        if (analysis != null) check(source)
     }
 
     private fun createBodyConversionContext(
@@ -520,30 +525,24 @@ class ProgramConverter(
         symbol: FirFunctionSymbol<*>, signature: NamedFunctionSignature, returnTarget: ReturnTarget
     ): Pair<List<ExpEmbedding>, List<ExpEmbedding>> {
         @OptIn(SymbolInternals::class) val declaration = symbol.fir
-        val body = declaration.body
 
-        /** Specifications are only allowed inside simple functions.
-         * We are also unable to retrieve them when body is not visible,
-         * although ideally we should be able to see preconditions and postconditions
-         * from other modules.
-         */
-        if (declaration !is FirSimpleFunction || body == null) {
-            return Pair(emptyList(), emptyList())
-        }
+        // Specifications are only allowed on simple functions.
+        if (declaration !is FirSimpleFunction) return Pair(emptyList(), emptyList())
 
         val owner = context(checkerContext) { declaration.symbol.specificationOwner() } ?: return Pair(emptyList(), emptyList())
         @OptIn(SymbolInternals::class) val ownerDeclaration = owner.fir
-        val firSpec = ownerDeclaration.specification() ?: return Pair(emptyList(), emptyList())
+        val (holder, firSpec) = ownerDeclaration.userSpecification(session) ?: return Pair(emptyList(), emptyList())
+        val holderAnalysis = uniquenessOutcomeOf(holder).analysis
 
-        // The owner's parameters resolve to this function's parameters by position.
+        // The holder's parameters resolve to this function's parameters by position.
         val (preconditionContext, postconditionContext) = createContractConversionContext(
-            owner, signature, firSpec, returnTarget, uniquenessOutcomeOf(ownerDeclaration).analysis
+            holder.symbol, signature, firSpec, returnTarget, holderAnalysis
         )
 
         val preconditions = firSpec.precond?.let { preconditionContext.collectInvariants(it) } ?: emptyList()
         val postconditions = firSpec.postcond?.let { postconditionContext.collectInvariants(it) } ?: emptyList()
 
-        checkVarReads(declaration) { source ->
+        checkVarReads(declaration, holderAnalysis) { source ->
             val consumed = if (signature.isPure) emptySet() else
                 signature.formalArgs.filter { it.isUnique && !it.isBorrowed }.map { it.name }.toSet()
             preconditions.forEach { it.checkReadOnlyVarReads(source, this) }

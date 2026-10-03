@@ -16,6 +16,7 @@ object PluginErrors : KtDiagnosticsContainer() {
     val UNIQUENESS_VIOLATION by error1<PsiElement, String>()
     val UNIQUENESS_CFG by info1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
     val ADT_VIOLATION by error1<PsiElement, String>()
+    val INVALID_SPEC_OF by error1<PsiElement, String>()
     override fun getRendererFactory() = FormalVerificationPluginErrorMessages
 
     fun tags() = listOf(
@@ -25,7 +26,8 @@ object PluginErrors : KtDiagnosticsContainer() {
         VERIFIER_UNAVAILABLE.name,
         UNIQUENESS_VIOLATION.name,
         UNIQUENESS_CFG.name,
-        ADT_VIOLATION.name
+        ADT_VIOLATION.name,
+        INVALID_SPEC_OF.name
     )
 }
 

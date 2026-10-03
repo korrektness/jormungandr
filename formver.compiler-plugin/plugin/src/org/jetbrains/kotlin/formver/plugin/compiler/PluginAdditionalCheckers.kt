@@ -9,6 +9,8 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.cfa.FirControlFlowChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
+import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
@@ -24,7 +26,12 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
         override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker> = setOf(
             ViperPoweredDeclarationChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
-            FunctionUniquenessStateRenderingChecker(config)
+            FunctionUniquenessStateRenderingChecker(config),
+            SpecOfDeclarationChecker(session),
         )
+    }
+
+    override val expressionCheckers: ExpressionCheckers = object : ExpressionCheckers() {
+        override val functionCallCheckers: Set<FirFunctionCallChecker> = setOf(SpecOfCallChecker(session))
     }
 }

@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.asInternalErrorAt
 import org.jetbrains.kotlin.formver.common.TargetsSelection
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
+import org.jetbrains.kotlin.formver.core.conversion.specOfId
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.print
 import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
@@ -188,6 +189,7 @@ class ViperPoweredDeclarationChecker(
         // An enum's `values` and `valueOf` have no body to convert.
         declaration.source?.kind == KtFakeSourceElementKind.EnumGeneratedDeclaration -> false
         declaration.hasAnnotation(neverConvertId, session) -> false
+        declaration.hasAnnotation(specOfId, session) -> false
         declaration.hasAnnotation(alwaysVerifyId, session) -> true
         else -> conversionSelection.applicable(declaration)
     }

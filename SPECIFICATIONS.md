@@ -54,6 +54,31 @@ with the lambdas passed to them. Inside such a lambda, a local can be declared a
 unsupported construct: loops, assignments to other variables, an `if` or `when` whose value is unused, and calls
 to other functions. The standard library's compiled inline functions, such as `let`, count as other functions.
 
+### Specifications beside a member
+
+A member without a body, such as an abstract or interface member, takes its specification from a sibling function
+annotated `@SpecOf` with the member's name. Any member may be specified this way instead of in its body.
+
+```kotlin
+interface Measure {
+    @SpecOf("size")
+    fun sizeSpec(limit: Int) {
+        preconditions { limit > 0 }
+        postconditions<Int> { r -> 0 <= r && r <= limit }
+    }
+
+    fun size(limit: Int): Int
+}
+```
+
+The `@SpecOf` function is declared in the same class or interface as the member and has the member's value
+parameter types, ownership annotations included, and type parameters; this picks the overload it specifies. It
+returns `Unit`, has no extension receiver, and its body holds only a `preconditions` block followed by a
+`postconditions` block, whose type is the member's return type. Its parameters stand for the member's parameters
+by position. It is never converted, verified or called. A member has at most one `@SpecOf` function, none if its
+body has a specification, and none if it is `@Pure`. Each violation, and a call to a `@SpecOf` function, is
+reported as `INVALID_SPEC_OF`.
+
 ### Overrides
 
 A call to an open member is verified against the contract of the member the call names. Each override is checked
@@ -83,8 +108,7 @@ class Refining : Base() {
 An override without a specification of its own has the specification of the declaration it overrides, and its body
 is verified against it. When several declarations it overrides have one, it has none and must write its own.
 
-The check runs when the override is converted. Members without a body, such as abstract and interface members,
-have no specification. A `@Pure` function cannot be open or override another; such a function, and a call to it,
+The check runs when the override is converted. A `@Pure` function cannot be open or override another; such a function, and a call to it,
 is reported as an unsupported construct.
 
 ## Loop Invariants

@@ -1,0 +1,135 @@
+/spec_of.kt: info: Generated Viper text for step:
+method step(this: Ref, n: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) > intFromRef(n)
+
+
+/spec_of.kt: info: Generated Viper text for step:
+method step(this: Ref, n: Ref, m: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(m), intType())
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) >= intFromRef(n) + intFromRef(m)
+
+
+/spec_of.kt: info: Generated Viper text for size:
+method size(this: Ref, limit: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(limit) > 0
+  ensures isSubtype(typeOf(ret), intType())
+  ensures 0 <= intFromRef(ret) && intFromRef(ret) <= intFromRef(limit)
+
+
+/spec_of.kt: info: Generated Viper text for twice:
+method twice(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Doubler())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2 * intFromRef(x)
+{
+  v_ret_0 := plusInts(x, x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/spec_of.kt: info: Generated Viper text for stepRelies:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method step(this: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) > intFromRef(n)
+
+
+method stepRelies(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l0_r: Ref
+  l0_r := step(c, intToRef(3))
+  assert intFromRef(l0_r) > 3
+  v_ret_0 := l0_r
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/spec_of.kt: info: Generated Viper text for stepBreaksPrecondition:
+method step(this: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) > intFromRef(n)
+
+
+method stepBreaksPrecondition(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Counter())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := step(c, intToRef(-1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/spec_of.kt: info: Generated Viper text for sizeRelies:
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method f_size(this: Ref, limit: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(limit) > 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures 0 <= intFromRef(ret_1) && intFromRef(ret_1) <= intFromRef(limit)
+
+
+method sizeRelies(m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), Measure())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l0_r: Ref
+  l0_r := f_size(m, intToRef(10))
+  assert intFromRef(l0_r) <= 10
+  v_ret_0 := l0_r
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/spec_of.kt: info: Generated Viper text for twiceRelies:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method twice(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Doubler())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == 2 * intFromRef(x)
+
+
+method twiceRelies(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), Doubler())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l0_r: Ref
+  l0_r := twice(d, intToRef(4))
+  assert intFromRef(l0_r) == 8
+  v_ret_0 := l0_r
+  goto lbl_ret_0
+  label lbl_ret_0
+}

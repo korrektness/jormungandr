@@ -33,3 +33,7 @@ annotation class Pure
  */
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 annotation class Manual
+
+/** Gives the member [name] the specification in this function; see "Specifications beside a member" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.FUNCTION)
+annotation class SpecOf(val name: String)

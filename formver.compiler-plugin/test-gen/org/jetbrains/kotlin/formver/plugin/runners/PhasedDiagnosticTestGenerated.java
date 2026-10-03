@@ -947,6 +947,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("spec_of_errors.kt")
+        public void testSpec_of_errors() {
+          runTest("formver.compiler-plugin/testData/diagnostics/verification/contracts/negative/spec_of_errors.kt");
+        }
+
+        @Test
         @TestMetadata("viper_verify.kt")
         public void testViper_verify() {
           runTest("formver.compiler-plugin/testData/diagnostics/verification/contracts/negative/viper_verify.kt");
@@ -996,6 +1002,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         @TestMetadata("simple.kt")
         public void testSimple() {
           runTest("formver.compiler-plugin/testData/diagnostics/verification/contracts/positive/simple.kt");
+        }
+
+        @Test
+        @TestMetadata("spec_of.kt")
+        public void testSpec_of() {
+          runTest("formver.compiler-plugin/testData/diagnostics/verification/contracts/positive/spec_of.kt");
         }
       }
     }
