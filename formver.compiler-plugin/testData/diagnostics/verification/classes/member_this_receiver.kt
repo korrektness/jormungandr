@@ -10,6 +10,7 @@ class TomlMultilineString(private val isStringType: Boolean) {
     fun <!VIPER_TEXT!>trackMultilineString<!>(line: String) {
         preconditions { !(isInMultilineBasic && isInMultilineLiteral) }
         postconditions<Unit> { !(isInMultilineBasic && isInMultilineLiteral) }
+        refute(false)
         if (isStringType) {
             return
         }
@@ -27,33 +28,9 @@ class TomlMultilineString(private val isStringType: Boolean) {
                 isInMultilineLiteral = !isInMultilineLiteral
             }
             i++
+            refute(false)
         }
-    }
-
-    // The end of the loop body is reachable.
-    @AlwaysVerify @Unique @Borrowed
-    fun <!VIPER_TEXT!>reachesLoopEnd<!>(n: Int) {
-        preconditions { !(isInMultilineBasic && isInMultilineLiteral) }
-        var i = 0
-        while (i < n) {
-            loopInvariants { !(isInMultilineBasic && isInMultilineLiteral) }
-            isInMultilineBasic = !isInMultilineLiteral && !isInMultilineBasic
-            i++
-            verify(<!VIPER_VERIFICATION_ERROR!>false<!>)
-        }
-    }
-
-    // The code after the loop is reachable.
-    @AlwaysVerify @Unique @Borrowed
-    fun <!VIPER_TEXT!>reachesLoopExit<!>(n: Int) {
-        preconditions { !(isInMultilineBasic && isInMultilineLiteral) }
-        var i = 0
-        while (i < n) {
-            loopInvariants { !(isInMultilineBasic && isInMultilineLiteral) }
-            isInMultilineBasic = !isInMultilineLiteral && !isInMultilineBasic
-            i++
-        }
-        verify(<!VIPER_VERIFICATION_ERROR!>false<!>)
+        refute(false)
     }
 
     // A shared `this` gives no permission: the write is dropped and the read is unknown.

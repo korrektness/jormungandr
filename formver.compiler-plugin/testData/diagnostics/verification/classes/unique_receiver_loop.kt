@@ -7,13 +7,16 @@ class Box(var value: Int)
 @AlwaysVerify
 fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUp<!>(n: Int) {
     preconditions { 0 <= n }
+    refute(false)
     var i = 0
     value = 0
     while (i < n) {
         loopInvariants { 0 <= i && i <= n && value == i }
         value = value + 1
         i++
+        refute(false)
     }
+    refute(false)
     verify(value == n)
 }
 
@@ -34,6 +37,7 @@ fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUpEndProbe<!>(n: Int) {
 @AlwaysVerify
 fun @Unique @Borrowed Box.<!VIPER_TEXT!>countIntoParameter<!>(b: @Unique @Borrowed Box, n: Int) {
     preconditions { 0 <= n }
+    refute(false)
     var i = 0
     b.value = 0
     value = 7
@@ -41,6 +45,8 @@ fun @Unique @Borrowed Box.<!VIPER_TEXT!>countIntoParameter<!>(b: @Unique @Borrow
         loopInvariants { 0 <= i && i <= n && b.value == i }
         b.value = b.value + 1
         i++
+        refute(false)
     }
+    refute(false)
     verify(b.value == n)
 }

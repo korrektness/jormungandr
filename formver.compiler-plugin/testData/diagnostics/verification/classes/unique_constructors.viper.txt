@@ -257,87 +257,7 @@ method storedBySuperclass(i: Ref) returns (v_ret_0: Ref)
   } else {
     anon_0 := boolToRef(false)}
   assert boolFromRef(anon_0)
-  label lbl_ret_0
-  inhale isSubtype(typeOf(v_ret_0), unitType())
-}
-
-/unique_constructors.kt: info: Generated Viper text for storedBySuperclassProbeEnd:
-field bf_s: Ref
-
-field bf_t: Ref
-
-field x: Ref
-
-function size(this: Ref): Ref
-  requires isSubtype(typeOf(this), BooleanArray())
-  ensures isSubtype(typeOf(result), intType())
-
-
-predicate BooleanArray_unique(this: Ref) {
-  isSubtype(typeOf(this), BooleanArray()) &&
-  acc(Cloneable_unique(this), write) &&
-  acc(Serializable_unique(this), write)
-}
-
-predicate Cloneable_unique(this: Ref) {
-  isSubtype(typeOf(this), Cloneable())
-}
-
-predicate Inner_unique(this: Ref) {
-  isSubtype(typeOf(this), Inner()) && acc(this.x, write) &&
-  isSubtype(typeOf(this.x), intType())
-}
-
-predicate Serializable_unique(this: Ref) {
-  isSubtype(typeOf(this), Serializable())
-}
-
-predicate Sub_unique(this: Ref) {
-  isSubtype(typeOf(this), Sub()) && acc(this.bf_t, write) &&
-  isSubtype(typeOf(this.bf_t), intType()) &&
-  acc(Sup_unique(this), write)
-}
-
-predicate Sup_unique(this: Ref) {
-  isSubtype(typeOf(this), Sup()) && acc(this.bf_s, write) &&
-  isSubtype(typeOf(this.bf_s), Inner()) &&
-  acc(Inner_unique(this.bf_s), write)
-}
-
-method con(par_s: Ref, par_t: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(par_s), Inner())
-  requires isSubtype(typeOf(par_t), intType())
-  ensures isSubtype(typeOf(ret_1), Sub())
-  ensures isSubtype(typeOf(ret_1), Sub()) && acc(ret_1.bf_t, write) &&
-    isSubtype(typeOf(ret_1.bf_t), intType()) &&
-    (isSubtype(typeOf(ret_1), Sup()) && acc(ret_1.bf_s, write) &&
-    isSubtype(typeOf(ret_1.bf_s), Inner()))
-  ensures ret_1.bf_s == par_s
-  ensures intFromRef(ret_1.bf_t) == intFromRef(par_t)
-
-
-method storedBySuperclassProbeEnd(i: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(i), Inner())
-  requires acc(Inner_unique(i), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
-{
-  var sub: Ref
-  var anon_0: Ref
-  var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
-  sub := con(i, intToRef(2))
-  fold acc(Sup_unique(sub), write)
-  fold acc(Sub_unique(sub), write)
-  unfold acc(Sub_unique(sub), write)
-  unfold acc(Sup_unique(sub), write)
-  anon_1 := sub.bf_s
-  unfold acc(Inner_unique(sub.bf_s), write)
-  anon_0 := anon_1.x
-  anon_3 := sub.bf_s
-  anon_2 := anon_3.x
-  assert intFromRef(anon_0) == intFromRef(anon_2)
-  assert false
+  refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -637,6 +557,7 @@ method storedInVal(a: Ref) returns (v_ret_0: Ref)
   var b: Ref
   var anon_0: Ref
   var anon_1: Ref
+  refute false
   assert 0 >= 0
   assert 0 < arraySize(a)
   unfold acc(IntArray_unique(a), write)

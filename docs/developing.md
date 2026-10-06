@@ -52,12 +52,12 @@ file and over the same classes:
 
 - A sibling that breaks one thing the verified function relies on, such as
   writing through a shared root instead of an owned one.
-- A vacuity probe for each function with a precondition or a loop invariant: a
-  copy named `<function>Probe<Point>` that adds `verify(false)` at one point.
-  Probes go at the start of a function with a precondition, at the end of every
-  loop body, and after the last loop of a function. If a probe verifies, the
-  specifications or the permissions the plugin adds are inconsistent there, and
-  whatever verifies past that point proves nothing.
+- Vacuity probes inside positive impure functions: put `refute(false)` after
+  the specification blocks when there is a precondition, at the end of every
+  loop body, and after the last loop. An unreachable point or inconsistent
+  assumptions make the probe fail; success is a reachability check in the
+  verifier's state, not a proof of concrete execution. The builtin's public
+  contract is in `formver.annotations/src/org/jetbrains/kotlin/formver/plugin/Builtins.kt`.
 
 ### Directives
 

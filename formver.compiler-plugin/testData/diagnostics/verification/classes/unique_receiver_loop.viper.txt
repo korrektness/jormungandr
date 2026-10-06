@@ -17,6 +17,7 @@ method countUp(v_this_extension: Ref, n: Ref) returns (v_ret_0: Ref)
   var i: Ref
   var anon_1: Ref
   var anon_3: Ref
+  refute false
   i := intToRef(0)
   unfold acc(Box_unique(v_this_extension), write)
   v_this_extension.value := intToRef(0)
@@ -38,6 +39,7 @@ method countUp(v_this_extension: Ref, n: Ref) returns (v_ret_0: Ref)
     v_this_extension.value := plusInts(anon_2, intToRef(1))
     anon_0 := i
     i := plusInts(anon_0, intToRef(1))
+    refute false
     fold acc(Box_unique(v_this_extension), write)
     goto cont
   }
@@ -48,6 +50,7 @@ method countUp(v_this_extension: Ref, n: Ref) returns (v_ret_0: Ref)
   assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
     (unfolding acc(Box_unique(v_this_extension), write) in
       intFromRef(v_this_extension.value) == intFromRef(i))
+  refute false
   unfold acc(Box_unique(v_this_extension), write)
   anon_3 := v_this_extension.value
   assert intFromRef(anon_3) == intFromRef(n)
@@ -138,6 +141,7 @@ method countIntoParameter(v_this_extension: Ref, b: Ref, n: Ref)
   var i: Ref
   var anon_1: Ref
   var anon_3: Ref
+  refute false
   i := intToRef(0)
   unfold acc(Box_unique(b), write)
   b.value := intToRef(0)
@@ -163,6 +167,7 @@ method countIntoParameter(v_this_extension: Ref, b: Ref, n: Ref)
     b.value := plusInts(anon_2, intToRef(1))
     anon_0 := i
     i := plusInts(anon_0, intToRef(1))
+    refute false
     fold acc(Box_unique(b), write)
     goto cont
   }
@@ -174,6 +179,7 @@ method countIntoParameter(v_this_extension: Ref, b: Ref, n: Ref)
   assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
     (unfolding acc(Box_unique(b), write) in
       intFromRef(b.value) == intFromRef(i))
+  refute false
   unfold acc(Box_unique(b), write)
   anon_3 := b.value
   assert intFromRef(anon_3) == intFromRef(n)

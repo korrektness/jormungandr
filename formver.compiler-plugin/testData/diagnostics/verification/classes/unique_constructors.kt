@@ -30,13 +30,7 @@ fun <!VIPER_TEXT!>storedBySuperclass<!>(i: @Unique Inner) {
     i.x = 7
     val sub: @Unique Sub = Sub(i, 2)
     verify(sub.s.x == 7 && sub.t == 2)
-}
-
-@AlwaysVerify
-fun <!VIPER_TEXT!>storedBySuperclassProbeEnd<!>(i: @Unique Inner) {
-    val sub: @Unique Sub = Sub(i, 2)
-    verify(sub.s.x == sub.s.x)
-    verify(<!VIPER_VERIFICATION_ERROR!>false<!>)
+    refute(false)
 }
 
 class Holder(var y: Int) {
@@ -73,6 +67,7 @@ class Buf(val data: @Unique IntArray, var len: Int)
 @AlwaysVerify
 fun <!VIPER_TEXT!>storedInVal<!>(a: @Unique IntArray) {
     preconditions { a.size == 3 }
+    refute(false)
     a[0] = 5
     val b: @Unique Buf = Buf(a, 1)
     verify(b.data.size == 3 && b.data[0] == 5 && b.len == 1)
