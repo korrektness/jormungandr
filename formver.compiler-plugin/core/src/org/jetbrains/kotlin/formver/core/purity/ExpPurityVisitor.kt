@@ -89,6 +89,7 @@ internal class ExprPurityVisitor(
     override fun visitInhaleDirect(e: InhaleDirect): Boolean = false
     override fun visitUnreachable(e: Unreachable) = false
     override fun visitAssert(e: Assert): Boolean = false
+    override fun visitRefute(e: Refute): Boolean = false
     override fun visitFieldModification(e: FieldModification): Boolean = false
     override fun visitGoto(e: Goto): Boolean = false
     override fun visitGotoChainNode(e: GotoChainNode): Boolean = false

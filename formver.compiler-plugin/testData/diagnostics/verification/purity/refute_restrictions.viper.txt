@@ -1,0 +1,15 @@
+/refute_restrictions.kt: info: Generated Viper text for ownedRead:
+field value: Ref
+
+method ownedRead(box: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(box), RefuteBox())
+  requires acc(RefuteBox_unique(box), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(RefuteBox_unique(box), write)
+  anon := box.value
+  refute intFromRef(anon) > 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

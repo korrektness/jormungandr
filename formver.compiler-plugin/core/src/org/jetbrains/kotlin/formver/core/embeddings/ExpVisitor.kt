@@ -32,6 +32,7 @@ interface ExpVisitor<R> {
     fun visitSafeCast(e: SafeCast): R
     fun visitShared(e: Shared): R
     fun visitAssert(e: Assert): R
+    fun visitRefute(e: Refute): R
     fun visitDeclare(e: Declare): R
     fun visitEqCmp(e: EqCmp): R
     fun visitNeCmp(e: NeCmp): R
@@ -108,6 +109,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitSafeCast(e: SafeCast): R = visitDefault(e)
     override fun visitShared(e: Shared): R = visitDefault(e)
     override fun visitAssert(e: Assert): R = visitDefault(e)
+    override fun visitRefute(e: Refute): R = visitDefault(e)
     override fun visitDeclare(e: Declare): R = visitDefault(e)
     override fun visitEqCmp(e: EqCmp): R = visitDefault(e)
     override fun visitNeCmp(e: NeCmp): R = visitDefault(e)

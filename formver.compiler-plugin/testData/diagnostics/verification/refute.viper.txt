@@ -1,0 +1,119 @@
+/refute.kt: info: Generated Viper text for reachable:
+method reachable() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/refute.kt: info: Generated Viper text for inconsistentPreconditions:
+method inconsistentPreconditions(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  requires intFromRef(x) < 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/refute.kt: info: Generated Viper text for inconsistentLoopAssumptions:
+method inconsistentLoopAssumptions() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant intFromRef(i) >= 0
+  anon_1 := ltInts(i, intToRef(0))
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    refute false
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert intFromRef(i) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/refute.kt: info: Generated Viper text for unknownPredicate:
+method unknownPredicate(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  refute intFromRef(x) > 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/refute.kt: info: Generated Viper text for knownPredicate:
+method knownPredicate(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  refute intFromRef(x) > 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/refute.kt: info: Generated Viper text for multipleProbes:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method multipleProbes(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  refute false
+  refute intFromRef(x) > 0
+  refute intFromRef(x) <= 0
+  assert true
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/refute.kt: info: Generated Viper text for mixedProbes:
+method mixedProbes() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  refute false
+  refute true
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/refute.kt: info: Generated Viper text for assertionAfterRefutation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method assertionAfterRefutation() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  refute false
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/refute.kt: info: Generated Viper text for specificationPredicate:
+method specificationPredicate() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  refute (1 in Multiset(1)) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

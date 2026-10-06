@@ -210,6 +210,14 @@ object SpecialKotlinFunctions {
             args.map { Assert(it) }.toBlock()
         }
 
+        val refuteCallableType = buildFunctionPretype {
+            withParam { boolean() }
+            withReturnType { unit() }
+        }
+        addFunction(refuteCallableType, SpecialPackages.formver, name = "refute") { args, _ ->
+            Refute(args.single())
+        }
+
         val quantifierCallableType = buildFunctionPretype {
             withParam {
                 function {

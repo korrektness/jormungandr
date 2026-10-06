@@ -15,6 +15,12 @@ private class FormverFunctionCalledInRuntimeException(offendingFunction: String)
  */
 fun verify(@Suppress("UNUSED_PARAMETER") vararg predicates: Boolean) = Unit
 
+/**
+ * Requests that Viper cannot prove [predicate] at this point. The predicate follows the
+ * specification restrictions of [verify]. At runtime this function does nothing.
+ */
+fun refute(@Suppress("UNUSED_PARAMETER") predicate: Boolean) = Unit
+
 infix fun Boolean.implies(other: Boolean) = !this || other
 
 fun loopInvariants(@Suppress("UNUSED_PARAMETER") body: () -> Unit) = Unit

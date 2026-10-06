@@ -643,6 +643,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("refute.kt")
+    public void testRefute() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/refute.kt");
+    }
+
+    @Test
     @TestMetadata("shadowing.kt")
     public void testShadowing() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/shadowing.kt");
@@ -1387,6 +1393,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("assert_statements.kt")
       public void testAssert_statements() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/purity/assert_statements.kt");
+      }
+
+      @Test
+      @TestMetadata("refute_restrictions.kt")
+      public void testRefute_restrictions() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/purity/refute_restrictions.kt");
       }
 
       @Test

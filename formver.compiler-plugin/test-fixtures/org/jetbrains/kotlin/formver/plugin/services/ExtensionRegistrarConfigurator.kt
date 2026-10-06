@@ -84,6 +84,10 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
 }
 
 object FormVerDirectives : SimpleDirectivesContainer() {
+    val DIAGNOSTIC_KINDS by directive(
+        description = "Record diagnostic kinds instead of rendered messages"
+    )
+
     val RENDER_PREDICATES by directive(
         description = "Outputs class predicates in diagnostic"
     )

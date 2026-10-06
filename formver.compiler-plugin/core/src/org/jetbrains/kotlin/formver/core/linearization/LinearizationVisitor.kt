@@ -366,6 +366,12 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitRefute(e: Refute): Linearizable = object : UnitResultLinearizable(e) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            ctx.addStatement { Stmt.Refute(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition) }
+        }
+    }
+
     override fun visitInhaleDirect(e: InhaleDirect): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addStatement { Stmt.Inhale(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition) }

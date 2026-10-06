@@ -40,7 +40,16 @@ fun getTestMode(): TestMode {
     }
 }
 
-class ConversionDiagnosticsCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
+abstract class KindOrMessageDiagnosticsCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
+    override fun renderMessage(diagnostic: KtDiagnostic): String =
+        if (testServices.moduleStructure.modules.any { FormVerDirectives.DIAGNOSTIC_KINDS in it.directives }) {
+            diagnostic.factory.name
+        } else {
+            super.renderMessage(diagnostic)
+        }
+}
+
+class ConversionDiagnosticsCollector(testServices: TestServices) : KindOrMessageDiagnosticsCollector(testServices) {
     override val fileExtension: String = ".fir.diag.txt"
     override fun records(diagnostic: KtDiagnostic): Boolean = diagnostic.factory != PluginErrors.VIPER_TEXT
 }
@@ -53,7 +62,7 @@ class ViperTextCollector(testServices: TestServices) : DiagnosticsCollector(test
     override fun records(diagnostic: KtDiagnostic): Boolean = diagnostic.factory == PluginErrors.VIPER_TEXT
 }
 
-class VerificationDiagnosticsCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
+class VerificationDiagnosticsCollector(testServices: TestServices) : KindOrMessageDiagnosticsCollector(testServices) {
     override val fileExtension: String = ".viper.diag.txt"
 }
 

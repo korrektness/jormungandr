@@ -52,6 +52,17 @@ data class Assert(val exp: ExpEmbedding) : ExpEmbedding {
     }
 }
 
+data class Refute(val exp: ExpEmbedding) : ExpEmbedding {
+    override val type: TypeEmbedding = buildType { unit() }
+
+    override fun children(): Sequence<ExpEmbedding> = sequenceOf(exp)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitRefute(this)
+
+    override fun isValid(ctx: PurityContext): Boolean = exp.isPure(admitsInlinedCalls = true).also {
+        if (!it) ctx.addPurityError(exp, "Refute condition is impure")
+    }
+}
+
 /**
  * Immediately performs an unconditional inhale of the statement.
  *

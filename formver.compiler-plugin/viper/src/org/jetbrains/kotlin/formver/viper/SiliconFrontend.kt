@@ -75,6 +75,9 @@ class SiliconFrontend(z3Exe: String, commandLineArgs: List<String> = emptyList()
 
     /** Consistency-checks and verifies [viperProgram], calling [onFailure] for each error found. */
     fun verify(viperProgram: viper.silver.ast.Program, onFailure: (VerifierError) -> Unit) {
+        // The AST API runs ConsistencyCheck and Verification. SilFrontend.verification invokes
+        // the default plugins' beforeVerify and mapVerificationResult hooks, including RefutePlugin.
+        // Its isolated assertion branch leaves the continuation available for further checks.
         val result = siliconApi.verify(viperProgram)
         if (result is viper.silver.verifier.Failure) {
             for (error in result.errors()) {

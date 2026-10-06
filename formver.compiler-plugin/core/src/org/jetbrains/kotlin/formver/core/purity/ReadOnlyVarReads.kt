@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.diagnostics.ErrorCollectionContext
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Assert
+import org.jetbrains.kotlin.formver.core.embeddings.expression.Refute
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionCall
@@ -64,7 +65,7 @@ fun ExpEmbedding.checkReadOnlyVarReads(
 }
 
 /**
- * Applies [checkReadOnlyVarReads] to the loop invariants and `verify` conditions of [this] impure body.
+ * Applies [checkReadOnlyVarReads] to the loop invariants and verification probe conditions of [this] impure body.
  */
 fun ExpEmbedding.checkSpecificationVarReads(source: KtSourceElement, errors: ErrorCollectionContext) {
     preorder(source).forEach { (embedding, embeddingSource) ->
@@ -72,6 +73,7 @@ fun ExpEmbedding.checkSpecificationVarReads(source: KtSourceElement, errors: Err
         when (embedding) {
             is While -> embedding.invariants.forEach { it.checkReadOnlyVarReads(specSource, errors) }
             is Assert -> embedding.exp.checkReadOnlyVarReads(specSource, errors)
+            is Refute -> embedding.exp.checkReadOnlyVarReads(specSource, errors)
             else -> {}
         }
     }

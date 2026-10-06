@@ -32,6 +32,8 @@ abstract class DiagnosticsCollector(val testServices: TestServices) : TestServic
      */
     protected open fun records(diagnostic: KtDiagnostic): Boolean = true
 
+    protected open fun renderMessage(diagnostic: KtDiagnostic): String = diagnostic.renderMessage()
+
     private val diagnostics: MutableList<KtDiagnostic> = mutableListOf()
 
     private fun render(): String? {
@@ -49,7 +51,7 @@ abstract class DiagnosticsCollector(val testServices: TestServices) : TestServic
                     },
                     severity = AnalyzerWithCompilerReport.convertSeverity(it.severity).toString()
                         .toLowerCaseAsciiOnly(),
-                    message = it.renderMessage()
+                    message = renderMessage(it)
                 )
             }
             .sortedWith(compareBy<DiagnosticData> { it.textRanges.first().startOffset }.thenBy { it.message })

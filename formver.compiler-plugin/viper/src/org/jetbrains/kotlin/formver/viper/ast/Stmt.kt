@@ -164,6 +164,25 @@ sealed interface Stmt : WithSilverMetadata, IntoSilver<viper.silver.ast.Stmt> {
         }
     }
 
+    data class Refute(
+        val exp: Exp,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : Stmt {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.plugin.standard.refute.Refute = viper.silver.plugin.standard.refute.Refute(
+            exp.toSilver(),
+            pos.toSilver(),
+            info.toSilver(),
+            silverNoTrafos
+        )
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() {
+            exp.registerNames()
+        }
+    }
+
     data class Seqn(
         val stmts: List<Stmt> = listOf(),
         val scopedSeqnDeclarations: List<Declaration> = listOf(),
