@@ -150,14 +150,47 @@ class FoldState(private val typeResolver: TypeResolver) {
 
     fun refresh(ctx: LinearizationContext, path: OwnedPath) = trie.refresh(ctx.foldSink(), path)
 
-    fun expose(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding) =
-        trie.expose(ctx.foldSink(), path, cls)
+    fun expose(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding, borrowed: Boolean = false) {
+        val own = trackedClass(path.fields.lastOrNull()?.type ?: path.root.type) ?: return
+        if (own != cls && typeResolver.isInterface(cls)) {
+            if (borrowed) throw FoldStateException(ctx.source, "Borrowed interface upcasts are unsupported.")
+            close(ctx, path)
+            transferFamily(ctx, own, cls, path)
+            release(ctx, path)
+        } else {
+            trie.expose(ctx.foldSink(), path, cls)
+        }
+    }
 
     fun refreshRetained(ctx: LinearizationContext, path: OwnedPath) = trie.refreshRetained(ctx.foldSink(), path)
 
     fun tidy(ctx: LinearizationContext, path: OwnedPath) = trie.tidy(ctx.foldSink(), path)
 
-    fun transfer(ctx: LinearizationContext, src: OwnedPath, dst: OwnedPath) = trie.transfer(ctx.foldSink(), src, dst)
+    fun transfer(ctx: LinearizationContext, src: OwnedPath, dst: OwnedPath) {
+        val from = trackedClass(src.fields.lastOrNull()?.type ?: src.root.type)
+        val to = trackedClass(dst.fields.lastOrNull()?.type ?: dst.root.type)
+        val changesPresentation = from != to && to?.let(typeResolver::isInterface) == true
+        if (from != null && to != null && changesPresentation) {
+            close(ctx, src)
+            transferFamily(ctx, from, to, dst)
+            release(ctx, src)
+            acquire(ctx, dst)
+        } else {
+            trie.transfer(ctx.foldSink(), src, dst)
+        }
+    }
+
+    fun transferFamily(
+        ctx: LinearizationContext,
+        from: ClassTypeEmbedding,
+        to: ClassTypeEmbedding,
+        value: OwnedPath,
+    ) {
+        if (!typeResolver.isSubtype(from, to)) throw FoldStateException(ctx.source, "Ownership cannot be downcast to `${to.name.sourceSpelling}`.")
+        val method = typeResolver.familyTransfer(from, to).method
+        val place = ctx.placeOf(value)
+        ctx.addGuarded(place) { method.toMethodCall(listOf(place.exp), emptyList(), ctx.source.asPosition) }
+    }
 
     fun normalize(ctx: LinearizationContext) = trie.normalize(ctx.foldSink())
 

@@ -192,7 +192,7 @@ fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(
  */
 val NamedFunctionSignature.constructedOpen: ClassTypeEmbedding?
     get() = (returns.type.pretype as? ClassTypeEmbedding)
-        ?.takeIf { symbol?.isPrimaryConstructor() == true && it.hasPropertyPredicate }
+        ?.takeIf { symbol?.isPrimaryConstructor() == true && !it.hasBuiltinPredicate }
 
 /**
  * The properties that this primary constructor initializes with each of its parameters: those the parameter declares,

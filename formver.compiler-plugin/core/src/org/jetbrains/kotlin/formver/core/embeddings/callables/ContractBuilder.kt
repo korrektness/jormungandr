@@ -10,6 +10,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PredicateAccessPermissions
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.PredicateAccessTypeInvariantEmbedding
+import org.jetbrains.kotlin.formver.viper.ast.PermExp
 import org.jetbrains.kotlin.formver.core.embeddings.types.withAccessRole
 import org.jetbrains.kotlin.formver.core.linearization.OwnedPath
 import org.jetbrains.kotlin.formver.core.linearization.render
@@ -54,7 +56,11 @@ class FunctionConditionBuilder(
                 pureInvariants()
                 provenInvariants()
                 accessInvariants()
-                if (variable.isUnique && consumes(variable)) uniquePredicateInvariants()
+                val receiverClass = variable.type.pretype as? ClassTypeEmbedding
+                val observerReceiver = signature.isPure && variable == signature.dispatchReceiver
+                if (observerReceiver && receiverClass?.let(typeResolver::isInterface) == true) {
+                    uniquePredicateInvariants(PermExp.WildcardPerm())
+                } else if (variable.isUnique && consumes(variable)) uniquePredicateInvariants()
             }
             stdLib()
         }
@@ -134,8 +140,10 @@ class VariableScope(
     fun accessInvariants() = list.addAll(variable.accessInvariants(typeResolver))
     fun provenInvariants() = list.addAll(variable.provenInvariants())
 
-    fun uniquePredicateInvariants() {
-        val invariant = variable.type.uniquePredicateAccessInvariant(typeResolver)
+    fun uniquePredicateInvariants(permission: PermExp = PermExp.FullPerm()) {
+        val cls = variable.type.pretype as? ClassTypeEmbedding
+        val invariant = if (cls == null) variable.type.uniquePredicateAccessInvariant(typeResolver)
+        else variable.type.flags.adjustOptionalInvariant(PredicateAccessTypeInvariantEmbedding(cls.uniquePredicateName, permission))
         // The predicates of `@Manual` classes are folded by the user, so a failure to hold one is the user's error.
         val manual = with(typeResolver) { (variable.type.pretype as? ClassTypeEmbedding)?.isManual } != false
         val role = SourceRole.Ownership(OwnedPath(variable).render(), site).takeUnless { manual }

@@ -77,7 +77,7 @@ fun Program.registerAllNames() {
     predicates.forEach { predicate ->
         nameResolver.register(predicate.name)
         predicate.formalArgs.forEach { arg -> nameResolver.register(arg.name) }
-        predicate.body.registerNames()
+        predicate.body?.registerNames()
     }
 
     methods.forEach { method ->

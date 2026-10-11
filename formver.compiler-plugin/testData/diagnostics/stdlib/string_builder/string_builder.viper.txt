@@ -216,18 +216,12 @@ function size(this: Ref): Ref
 
 
 predicate BooleanArray_unique(this: Ref) {
-  isSubtype(typeOf(this), BooleanArray()) &&
-  acc(Cloneable_unique(this), write) &&
-  acc(Serializable_unique(this), write)
+  isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref) {
-  isSubtype(typeOf(this), Cloneable())
-}
+predicate Cloneable_unique(this: Ref)
 
-predicate Serializable_unique(this: Ref) {
-  isSubtype(typeOf(this), Serializable())
-}
+predicate Serializable_unique(this: Ref)
 
 predicate StringBuilder_unique(this: Ref) {
   isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)

@@ -718,6 +718,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("interface_family.kt")
+      public void testInterface_family() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_family.kt");
+      }
+
+      @Test
+      @TestMetadata("interface_family_downcast.kt")
+      public void testInterface_family_downcast() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_family_downcast.kt");
+      }
+
+      @Test
       @TestMetadata("interfaces.kt")
       public void testInterfaces() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interfaces.kt");

@@ -46,9 +46,6 @@ function Impl_g_number(this: Ref): Ref
 method con(par_number: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_number), intType())
   ensures isSubtype(typeOf(ret_3), Impl())
-  ensures isSubtype(typeOf(ret_3), Impl()) &&
-    acc(First_unique(ret_3), write) &&
-    acc(Second_unique(ret_3), write)
   ensures intFromRef(Impl_g_number(ret_3)) == intFromRef(par_number)
 
 
@@ -163,29 +160,23 @@ function size(this: Ref): Ref
 
 method con_Impl12() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), Impl12())
-  ensures isSubtype(typeOf(ret_3), Impl12()) &&
-    acc(InterfaceWithImplementation1_unique(ret_3), write) &&
-    acc(InterfaceWithoutImplementation2_unique(ret_3), write)
 
 
 method con_Impl14() returns (ret_14: Ref)
   ensures isSubtype(typeOf(ret_14), Impl14())
   ensures isSubtype(typeOf(ret_14), Impl14()) &&
-    acc(InterfaceWithImplementation1_unique(ret_14), write) &&
     isSubtype(typeOf(ret_14), AbstractWithOpenImplementation4())
 
 
 method con_Impl23() returns (ret_7: Ref)
   ensures isSubtype(typeOf(ret_7), Impl23())
   ensures isSubtype(typeOf(ret_7), Impl23()) &&
-    acc(InheritingInterfaceWithoutImplementation6_unique(ret_7), write) &&
     isSubtype(typeOf(ret_7), AbstractWithFinalImplementation3())
 
 
 method con_Impl24() returns (ret_11: Ref)
   ensures isSubtype(typeOf(ret_11), Impl24())
   ensures isSubtype(typeOf(ret_11), Impl24()) &&
-    acc(InterfaceWithoutImplementation2_unique(ret_11), write) &&
     isSubtype(typeOf(ret_11), AbstractWithOpenImplementation4())
 
 
@@ -316,8 +307,7 @@ method take4(obj: Ref) returns (ret_13: Ref)
 /interfaces.kt: info: Generated Viper text for testDiamond:
 method con() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), D())
-  ensures isSubtype(typeOf(ret_4), D()) && acc(B_unique(ret_4), write) &&
-    (isSubtype(typeOf(ret_4), C()) && acc(A_unique(ret_4), write))
+  ensures isSubtype(typeOf(ret_4), D()) && isSubtype(typeOf(ret_4), C())
 
 
 method g_field(this: Ref) returns (ret_1: Ref)
@@ -343,14 +333,12 @@ method testDiamond() returns (v_ret_0: Ref)
 /interfaces.kt: info: Generated Viper text for testVarVal:
 method con_G() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), G())
-  ensures isSubtype(typeOf(ret_4), G()) && acc(E_unique(ret_4), write) &&
-    isSubtype(typeOf(ret_4), F())
+  ensures isSubtype(typeOf(ret_4), G()) && isSubtype(typeOf(ret_4), F())
 
 
 method con_I() returns (ret_9: Ref)
   ensures isSubtype(typeOf(ret_9), I())
-  ensures isSubtype(typeOf(ret_9), I()) && acc(E_unique(ret_9), write) &&
-    isSubtype(typeOf(ret_9), H())
+  ensures isSubtype(typeOf(ret_9), I()) && isSubtype(typeOf(ret_9), H())
 
 
 method g_field(this: Ref) returns (ret_1: Ref)

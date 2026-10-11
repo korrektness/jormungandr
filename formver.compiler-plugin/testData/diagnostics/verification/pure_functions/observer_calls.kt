@@ -31,7 +31,7 @@ class Fixed(var value: Int) : Measure {
 }
 
 @AlwaysVerify
-fun <!VIPER_TEXT!>interfaceCall<!>(m: Measure, cell: @Unique @Borrowed Cell): Int {
+fun <!VIPER_TEXT!>interfaceCall<!>(m: @Unique @Borrowed Measure, cell: @Unique @Borrowed Cell): Int {
     postconditions<Int> { r -> r == m.scaled(3) + m.read(cell) }
     return m.scaled(3) + m.read(cell)
 }
@@ -43,7 +43,7 @@ fun <!VIPER_TEXT!>classCall<!>(m: Fixed, cell: @Unique @Borrowed Cell): Int {
 }
 
 @AlwaysVerify
-fun <!VIPER_TEXT!>bothCallShapes<!>(m: Fixed, i: Measure): Int {
+fun <!VIPER_TEXT!>bothCallShapes<!>(m: Fixed, i: @Unique @Borrowed Measure): Int {
     postconditions<Int> { r -> r == 6 + i.scaled(3) }
     return m.scaled(3) + i.scaled(3)
 }
@@ -60,9 +60,9 @@ fun <!VIPER_TEXT!>ownedClassCall<!>(m: @Unique @Borrowed Fixed): Int {
     return m.amount()
 }
 
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
+@AlwaysVerify
 fun <!VIPER_TEXT!>unboundInterfaceCall<!>(m: Fixed): Int {
     postconditions<Int> { r -> r == 6 }
     val abstract: Measure = m
-    return abstract.scaled(3)
-}<!>
+    return <!OWNERSHIP_NOT_ESTABLISHED!>abstract.scaled(3)<!>
+}

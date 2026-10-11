@@ -39,9 +39,7 @@ method con(par_size: Ref, par_value: Ref) returns (ret_1: Ref)
   ensures intFromRef(ret_1.p_size) >= 0
   ensures isSubtype(typeOf(ret_1), CustomList()) &&
     (isSubtype(typeOf(ret_1), AbstractList()) &&
-    (isSubtype(typeOf(ret_1), AbstractCollection()) &&
-    acc(Collection_unique(ret_1), write)) &&
-    acc(List_unique(ret_1), write))
+    isSubtype(typeOf(ret_1), AbstractCollection()))
   ensures intFromRef(ret_1.p_size) == intFromRef(par_size)
 
 

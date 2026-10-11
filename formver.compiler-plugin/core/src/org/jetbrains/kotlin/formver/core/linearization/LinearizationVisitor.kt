@@ -163,8 +163,14 @@ data class LinearizationVisitor(
 
     override fun visitMethodCall(e: MethodCall): Linearizable = object : StoredResultLinearizable(e) {
         override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
-            val argsViper = e.args.map { it.linearize().toViper(ctx) }
-            val heldArgs = ctx.heldPaths(e.args, e.method.formalArgs)
+            val args = mutableListOf<ExpEmbedding>()
+            val argsViper = e.args.map {
+                val value = runUpdatesOfPath(it, ctx)
+                args += value
+                value.linearize().toViper(ctx)
+            }
+            ctx.coerceFreshArguments(args, e.method.formalArgs, argsViper)
+            val heldArgs = ctx.heldPaths(args, e.method.formalArgs)
             for ((path, formal) in heldArgs) {
                 when {
                     formal.isUnique -> ctx.exposeFor(path, formal)
@@ -190,7 +196,7 @@ data class LinearizationVisitor(
         override fun toViper(ctx: LinearizationContext): Exp {
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
             val exposed = ctx.heldPaths(e.args, e.function.formalArgs).filter { (_, formal) -> formal.isUnique }
-            for ((path, formal) in exposed) ctx.exposeFor(path, formal)
+            for ((path, formal) in exposed) ctx.exposeFor(path, formal, borrowed = true)
             val app = e.function.toFuncApp(argsViper, ctx.source.asPosition)
             if (app is Exp.FuncApp) e.function.formalArgs.forEachIndexed { index, formal ->
                 if (formal.isUnique) ctx.addPredicateParameter(PredicateParameter(app.functionName, index))
@@ -312,8 +318,13 @@ data class LinearizationVisitor(
         override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) {
             val returnExp = runUpdatesOfPath(e.returnExp, ctx)
             val source = ctx.moveSource(returnExp, targetOwned = true)
-            ctx.finishMove(returnExp, source, targetOwned = true, OwnedPath(e.target.variable))
-            ctx.addReturn(returnExp.linearize(), e.target)
+            val value = returnExp.linearize()
+            ctx.addReturn(object : Linearizable by value {
+                override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
+                    value.toViperStoringIn(result, ctx)
+                    ctx.finishMove(returnExp, source, targetOwned = true, OwnedPath(e.target.variable))
+                }
+            }, e.target)
         }
     }
 
@@ -1137,11 +1148,36 @@ private fun LinearizationContext.exitBinding(binding: RootBinding, state: FoldSt
     }
 }
 
+/** Transfer fresh concrete arguments directly into their consuming interface presentation. */
+private fun LinearizationContext.coerceFreshArguments(
+    args: List<ExpEmbedding>,
+    formals: List<VariableEmbedding>,
+    values: List<Exp>,
+) {
+    if (foldState == null) return
+    args.zip(formals).forEachIndexed { index, (arg, formal) ->
+        if (!formal.isUnique || !arg.isFreshUnique()) return@forEachIndexed
+        val from = arg.ignoringCastsAndMetaNodes().type.pretype as? ClassTypeEmbedding ?: return@forEachIndexed
+        val to = formal.type.pretype as? ClassTypeEmbedding ?: return@forEachIndexed
+        if (from == to || !typeResolver.isInterface(to)) return@forEachIndexed
+        if (formal.isBorrowed) throw FoldStateException(source, "Borrowed interface upcasts are unsupported.")
+        if (!typeResolver.isSubtype(from, to)) throw FoldStateException(source, "Ownership cannot be downcast to `${to.name.sourceSpelling}`.")
+        val method = typeResolver.familyTransfer(from, to).method
+        val call = method.toMethodCall(listOf(values[index]), emptyList(), source.asPosition)
+        addStatement {
+            if (arg.type.isNullable) Stmt.If(
+                Exp.NeCmp(values[index], RuntimeTypeDomain.nullValue(pos = source.asPosition), source.asPosition),
+                Stmt.Seqn(listOf(call)), Stmt.Seqn(), source.asPosition,
+            ) else call
+        }
+    }
+}
+
 /** Make the folded predicate that the `@Unique` parameter [formal] takes held for the argument [path]. */
-private fun LinearizationContext.exposeFor(path: OwnedPath, formal: VariableEmbedding) {
+private fun LinearizationContext.exposeFor(path: OwnedPath, formal: VariableEmbedding, borrowed: Boolean = formal.isBorrowed) {
     val state = foldState ?: return
     val cls = state.trackedClass(formal.type) ?: return state.close(this, path)
-    state.expose(this, path, cls)
+    state.expose(this, path, cls, borrowed)
 }
 
 /**
@@ -1209,7 +1245,15 @@ private fun LinearizationContext.finishMove(
     when {
         targetOwned != true || target == null -> source?.let { state.release(this, it) }
         source != null -> state.transfer(this, source, target)
-        value.isFreshUnique() -> state.acquire(this, target)
+        value.isFreshUnique() -> {
+            val from = state.trackedClass(value.ignoringCastsAndMetaNodes().type)
+            val to = state.trackedClass(target.fields.lastOrNull()?.type ?: target.root.type)
+            val changesPresentation = from != to && to?.let(typeResolver::isInterface) == true
+            if (from != null && to != null && changesPresentation) {
+                state.transferFamily(this, from, to, target)
+            }
+            state.acquire(this, target)
+        }
         else -> state.release(this, target)
     }
 }

@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.formver.viper.*
 class Predicate(
     val name: SymbolicName,
     val formalArgs: List<Declaration.LocalVarDecl>,
-    val body: Exp,
+    val body: Exp?,
     val includeInDumpPolicy: IncludeInDumpPolicy = IncludeInDumpPolicy.PREDICATE_DUMP,
     val pos: Position = Position.NoPosition,
     val info: Info = Info.NoInfo,
@@ -20,7 +20,7 @@ class Predicate(
         viper.silver.ast.Predicate(
             name.mangled,
             formalArgs.map { it.toSilver() }.toScalaSeq(),
-            body.toSilver().toScalaOption(),
+            body?.toSilver().toScalaOption(),
             pos.toSilver(),
             info.toSilver(),
             silverNoTrafos

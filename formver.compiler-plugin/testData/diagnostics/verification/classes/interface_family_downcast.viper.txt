@@ -1,0 +1,8 @@
+/interface_family_downcast.kt: info: Generated Viper text for downcast:
+field bf_value: Ref
+
+method downcast(par_value: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(par_value), Family())
+  requires acc(Family_unique(par_value), write)
+  ensures isSubtype(typeOf(ret), Representation())
+  ensures acc(Representation_unique(ret), write)

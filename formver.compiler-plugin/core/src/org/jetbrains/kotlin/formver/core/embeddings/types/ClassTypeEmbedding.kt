@@ -9,14 +9,17 @@ import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
+import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.core.names.PredicateName
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.core.names.asScope
 import org.jetbrains.kotlin.formver.viper.SymbolicName
+import org.jetbrains.kotlin.formver.viper.ast.Declaration
 import org.jetbrains.kotlin.formver.viper.ast.DomainFunc
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.PermExp
 import org.jetbrains.kotlin.formver.viper.ast.Predicate
+import org.jetbrains.kotlin.formver.viper.ast.Type
 
 // TODO: incorporate generic parameters.
 data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding {
@@ -29,12 +32,14 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
     fun uniquePredicate(): Predicate = when (this) {
         IntArrayEmbedding.classType -> IntArrayEmbedding.uniquePredicate()
         StringBuilderEmbedding.classType -> StringBuilderEmbedding.uniquePredicate()
-        else -> userClassUniquePredicate()
+        else -> if (ctx.isInterface(this)) {
+            Predicate(uniquePredicateName, listOf(Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref)), body = null)
+        } else userClassUniquePredicate()
     }
 
-    /** Whether this class's unique predicate is built from its properties and supertypes. */
-    val hasPropertyPredicate: Boolean
-        get() = this != IntArrayEmbedding.classType && this != StringBuilderEmbedding.classType
+    /** Whether this type's unique predicate has a built-in representation. */
+    val hasBuiltinPredicate: Boolean
+        get() = this == IntArrayEmbedding.classType || this == StringBuilderEmbedding.classType
 
     context(ctx: TypeResolver)
     private fun userClassUniquePredicate(): Predicate = ClassPredicateBuilder.build(name, uniquePredicateName) {
@@ -51,7 +56,7 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
 
     /**
      * The bodies of the unique predicates of this class and its superclasses for [subject], the predicates of the
-     * `@Unique` properties named in [omitted] left out. The predicates of interfaces stay folded.
+     * `@Unique` properties named in [omitted] left out.
      */
     context(ctx: TypeResolver)
     fun openPredicateChain(subject: ExpEmbedding, omitted: Set<SymbolicName>): ExpEmbedding =
@@ -86,6 +91,7 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
         }
         forEachSuperType {
             val superType = type.pretype as ClassTypeEmbedding
+            if (ctx.isInterface(superType)) return@forEachSuperType
             addAccessToUniquePredicate { access -> nested.ofSuperType(superType, access) }
         }
     }

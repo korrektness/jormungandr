@@ -60,14 +60,10 @@ function size(this: Ref): Ref
 
 
 predicate BooleanArray_unique(this: Ref) {
-  isSubtype(typeOf(this), BooleanArray()) &&
-  acc(Cloneable_unique(this), write) &&
-  acc(Serializable_unique(this), write)
+  isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref) {
-  isSubtype(typeOf(this), Cloneable())
-}
+predicate Cloneable_unique(this: Ref)
 
 predicate Node_unique(this: Ref) {
   isSubtype(typeOf(this), Node()) && acc(this.bf_data, write) &&
@@ -76,9 +72,7 @@ predicate Node_unique(this: Ref) {
   (g_right(this) != nullValue() ==> acc(Node_unique(g_right(this)), write))
 }
 
-predicate Serializable_unique(this: Ref) {
-  isSubtype(typeOf(this), Serializable())
-}
+predicate Serializable_unique(this: Ref)
 
 method con(par_data: Ref, par_left: Ref, par_right: Ref)
   returns (ret_1: Ref)

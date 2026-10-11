@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.FamilyTransfer
 import org.jetbrains.kotlin.formver.core.embeddings.types.PretypeEmbedding
 import org.jetbrains.kotlin.formver.core.names.NameMatcher
 import org.jetbrains.kotlin.formver.core.names.NameScope
@@ -71,6 +72,23 @@ class TypeResolver {
     private fun toBackingField(property: PropertyEmbedding): FieldEmbedding? =
         (property.getter as? BackingFieldGetter)?.field
 
+
+    fun isInterface(type: ClassTypeEmbedding): Boolean = type.name in interfaceEmbedding
+
+    fun isSubtype(subtype: ClassTypeEmbedding, supertype: ClassTypeEmbedding): Boolean {
+        fun reaches(name: SymbolicName): Boolean =
+            name == supertype.name || superTypes[name].orEmpty().any { reaches(it) }
+        return reaches(subtype.name)
+    }
+
+    private val familyTransfers = linkedMapOf<Pair<ClassTypeEmbedding, ClassTypeEmbedding>, FamilyTransfer>()
+
+    fun familyTransfer(from: ClassTypeEmbedding, to: ClassTypeEmbedding): FamilyTransfer {
+        require(isInterface(to) && isSubtype(from, to) && from != to)
+        return familyTransfers.getOrPut(from to to) { FamilyTransfer(from, to) }
+    }
+
+    fun familyTransferMethods() = familyTransfers.values.map { it.method }
 
     fun classTypeEmbeddings() = (classEmbedding.values.toList() + interfaceEmbedding.values.toList()).distinctBy { it.name }
 

@@ -1,0 +1,691 @@
+/interface_family.kt: info: Generated Viper text for observe:
+function observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), Family())
+  requires acc(Family_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Family_unique(this: Ref)
+
+/interface_family.kt: info: Generated Viper text for observe:
+field value: Ref
+
+function observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), Representation())
+  requires acc(Representation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Representation_unique(this), write) in this.value)
+}
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate Family_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+/interface_family.kt: info: Generated Viper text for observe:
+field other: Ref
+
+function observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), OtherRepresentation())
+  requires acc(OtherRepresentation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(OtherRepresentation_unique(this), write) in this.other)
+}
+
+predicate Family_unique(this: Ref)
+
+predicate OtherRepresentation_unique(this: Ref) {
+  isSubtype(typeOf(this), OtherRepresentation()) && acc(this.other, write) &&
+  isSubtype(typeOf(this.other), intType())
+}
+
+/interface_family.kt: info: Generated Viper text for arrayFamily:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate c_Serializable_unique(this: Ref)
+
+method IntArray_c_Serializable_upcast(this: Ref)
+  requires acc(IntArray_unique(this), write)
+  ensures acc(c_Serializable_unique(this), write)
+
+
+method arrayFamily(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), IntArray())
+  requires acc(IntArray_unique(value), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  refute false
+  IntArray_c_Serializable_upcast(value)
+  anon := consumeSerializable(value)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method consumeSerializable(value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), c_Serializable())
+  requires acc(c_Serializable_unique(value), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/interface_family.kt: info: Generated Viper text for builderFamily:
+field contents: Seq[Int]
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+}
+
+predicate c_Appendable_unique(this: Ref)
+
+method StringBuilder_c_Appendable_upcast(this: Ref)
+  requires acc(StringBuilder_unique(this), write)
+  ensures acc(c_Appendable_unique(this), write)
+
+
+method builderFamily(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), StringBuilder())
+  requires acc(StringBuilder_unique(value), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  refute false
+  StringBuilder_c_Appendable_upcast(value)
+  anon := consumeAppendable(value)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method consumeAppendable(value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), c_Appendable())
+  requires acc(c_Appendable_unique(value), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/interface_family.kt: info: Generated Viper text for passOwned:
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method consume(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), c_Family())
+  requires acc(c_Family_unique(par_value), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method passOwned(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), Representation())
+  requires acc(Representation_unique(par_value), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  refute false
+  Representation_c_Family_upcast(par_value)
+  anon := consume(par_value)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_family.kt: info: Generated Viper text for passFresh:
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method con(par_value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_2), Representation())
+  ensures isSubtype(typeOf(ret_2), Representation()) &&
+    acc(ret_2.bf_value, write) &&
+    isSubtype(typeOf(ret_2.bf_value), intType())
+  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
+
+
+method consume(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), c_Family())
+  requires acc(c_Family_unique(par_value), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method passFresh() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  refute false
+  anon_1 := con(intToRef(1))
+  fold acc(Representation_unique(anon_1), write)
+  Representation_c_Family_upcast(anon_1)
+  anon_0 := consume(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_family.kt: info: Generated Viper text for passConditional:
+field bf_other: Ref
+
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate OtherRepresentation_unique(this: Ref) {
+  isSubtype(typeOf(this), OtherRepresentation()) &&
+  acc(this.bf_other, write) &&
+  isSubtype(typeOf(this.bf_other), intType())
+}
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method OtherRepresentation_c_Family_upcast(this: Ref)
+  requires acc(OtherRepresentation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method con_OtherRepresentation(par_other: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_other), intType())
+  ensures isSubtype(typeOf(ret_3), OtherRepresentation())
+  ensures isSubtype(typeOf(ret_3), OtherRepresentation()) &&
+    acc(ret_3.bf_other, write) &&
+    isSubtype(typeOf(ret_3.bf_other), intType())
+  ensures intFromRef(ret_3.bf_other) == intFromRef(par_other)
+
+
+method con_Representation(par_value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_2), Representation())
+  ensures isSubtype(typeOf(ret_2), Representation()) &&
+    acc(ret_2.bf_value, write) &&
+    isSubtype(typeOf(ret_2.bf_value), intType())
+  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
+
+
+method consume(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), c_Family())
+  requires acc(c_Family_unique(par_value), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method passConditional(choose: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(choose), boolType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  refute false
+  if (boolFromRef(choose)) {
+    anon_1 := con_Representation(intToRef(1))
+    fold acc(Representation_unique(anon_1), write)
+    Representation_c_Family_upcast(anon_1)
+  } else {
+    anon_1 := con_OtherRepresentation(intToRef(2))
+    fold acc(OtherRepresentation_unique(anon_1), write)
+    OtherRepresentation_c_Family_upcast(anon_1)
+  }
+  anon_0 := consume(anon_1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_family.kt: info: Generated Viper text for localFresh:
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method con(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_1), Representation())
+  ensures isSubtype(typeOf(ret_1), Representation()) &&
+    acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+
+
+method consume(par_value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_value), c_Family())
+  requires acc(c_Family_unique(par_value), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method localFresh() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var view: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := con(intToRef(3))
+  fold acc(Representation_unique(anon_0), write)
+  view := anon_0
+  Representation_c_Family_upcast(view)
+  refute false
+  anon_1 := consume(view)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_family.kt: info: Generated Viper text for localOwned:
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method consume(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), c_Family())
+  requires acc(c_Family_unique(par_value), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method localOwned(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), Representation())
+  requires acc(Representation_unique(par_value), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var view: Ref
+  var anon: Ref
+  view := par_value
+  Representation_c_Family_upcast(view)
+  refute false
+  anon := consume(view)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_family.kt: info: Generated Viper text for assignOwned:
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method assignOwned(par_value: Ref, initial: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), Representation())
+  requires acc(Representation_unique(par_value), write)
+  requires isSubtype(typeOf(initial), c_Family())
+  requires acc(c_Family_unique(initial), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var view: Ref
+  var anon: Ref
+  view := initial
+  view := par_value
+  Representation_c_Family_upcast(view)
+  refute false
+  anon := consume(view)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method consume(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), c_Family())
+  requires acc(c_Family_unique(par_value), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/interface_family.kt: info: Generated Viper text for returnOwned:
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method returnOwned(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), Representation())
+  requires acc(Representation_unique(par_value), write)
+  ensures isSubtype(typeOf(v_ret_0), c_Family())
+  ensures acc(c_Family_unique(v_ret_0), write)
+{
+  refute false
+  v_ret_0 := par_value
+  Representation_c_Family_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/interface_family.kt: info: Generated Viper text for returnFresh:
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method con(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_1), Representation())
+  ensures isSubtype(typeOf(ret_1), Representation()) &&
+    acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+
+
+method returnFresh() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_Family())
+  ensures acc(c_Family_unique(v_ret_0), write)
+{
+  var anon: Ref
+  refute false
+  anon := con(intToRef(2))
+  fold acc(Representation_unique(anon), write)
+  v_ret_0 := anon
+  Representation_c_Family_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/interface_family.kt: info: Generated Viper text for returnConditional:
+field bf_other: Ref
+
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate OtherRepresentation_unique(this: Ref) {
+  isSubtype(typeOf(this), OtherRepresentation()) &&
+  acc(this.bf_other, write) &&
+  isSubtype(typeOf(this.bf_other), intType())
+}
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method OtherRepresentation_c_Family_upcast(this: Ref)
+  requires acc(OtherRepresentation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method con_OtherRepresentation(par_other: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_other), intType())
+  ensures isSubtype(typeOf(ret_2), OtherRepresentation())
+  ensures isSubtype(typeOf(ret_2), OtherRepresentation()) &&
+    acc(ret_2.bf_other, write) &&
+    isSubtype(typeOf(ret_2.bf_other), intType())
+  ensures intFromRef(ret_2.bf_other) == intFromRef(par_other)
+
+
+method con_Representation(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_1), Representation())
+  ensures isSubtype(typeOf(ret_1), Representation()) &&
+    acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+
+
+method returnConditional(choose: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(choose), boolType())
+  ensures isSubtype(typeOf(v_ret_0), c_Family())
+  ensures acc(c_Family_unique(v_ret_0), write)
+{
+  var anon: Ref
+  refute false
+  if (boolFromRef(choose)) {
+    anon := con_Representation(intToRef(1))
+    fold acc(Representation_unique(anon), write)
+    Representation_c_Family_upcast(anon)
+  } else {
+    anon := con_OtherRepresentation(intToRef(2))
+    fold acc(OtherRepresentation_unique(anon), write)
+    OtherRepresentation_c_Family_upcast(anon)
+  }
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/interface_family.kt: info: Generated Viper text for diamondOwned:
+field bf_value: Ref
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_DiamondFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method Representation_c_DiamondFamily_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_DiamondFamily_unique(this), write)
+
+
+method c_DiamondFamily_c_Family_upcast(this: Ref)
+  requires acc(c_DiamondFamily_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method consume(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), c_Family())
+  requires acc(c_Family_unique(par_value), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method diamondOwned(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), Representation())
+  requires acc(Representation_unique(par_value), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var view: Ref
+  var ancestor: Ref
+  var anon: Ref
+  view := par_value
+  Representation_c_DiamondFamily_upcast(view)
+  ancestor := view
+  c_DiamondFamily_c_Family_upcast(ancestor)
+  refute false
+  anon := consume(ancestor)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_family.kt: info: Generated Viper text for nullableOwned:
+field bf_value: Ref
+
+predicate DiamondFamily_unique(this: Ref)
+
+predicate LeftFamily_unique(this: Ref)
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_unique(this: Ref)
+
+predicate c_Family_unique(this: Ref)
+
+method Representation_c_Family_upcast(this: Ref)
+  requires acc(Representation_unique(this), write)
+  ensures acc(c_Family_unique(this), write)
+
+
+method nullableOwned(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), nullable(Representation()))
+  requires par_value != nullValue() ==>
+    acc(Representation_unique(par_value), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(c_Family()))
+  ensures v_ret_0 != nullValue() ==> acc(c_Family_unique(v_ret_0), write)
+{
+  refute false
+  v_ret_0 := par_value
+  if (v_ret_0 != nullValue()) {
+    Representation_c_Family_upcast(v_ret_0)
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/interface_family.kt: info: Generated Viper text for observeFamily:
+function observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), Family())
+  requires acc(Family_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Family_unique(this: Ref)
+
+method observeFamily(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), Family())
+  requires acc(Family_unique(value), write)
+  ensures acc(Family_unique(value), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(observe(value))
+{
+  var anon: Ref
+  refute false
+  anon := observe(value)
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}

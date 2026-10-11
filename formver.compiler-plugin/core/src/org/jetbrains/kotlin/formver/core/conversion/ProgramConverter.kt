@@ -179,7 +179,7 @@ class ProgramConverter(
         functions = SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
                 linearizedBodyResolver.functions +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray }),
-        methods = SpecialMethods.all + linearizedBodyResolver.methods,
+        methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods(),
         predicates = typeResolver.classTypeEmbeddings().map {
             with(typeResolver) {
                 it.uniquePredicate()
@@ -763,11 +763,11 @@ class ProgramConverter(
      */
     private fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
         if (symbol.classId == IntArrayEmbedding.classId) {
-            typeResolver.register(IntArrayEmbedding.classType, isInterface = false)
+            registerBuiltinHierarchy(symbol, IntArrayEmbedding.classType)
             return IntArrayEmbedding.classType
         }
         if (symbol.classId in stringBuilderClassIds) {
-            typeResolver.register(StringBuilderEmbedding.classType, isInterface = false)
+            registerBuiltinHierarchy(symbol, StringBuilderEmbedding.classType)
             return StringBuilderEmbedding.classType
         }
 
@@ -796,6 +796,23 @@ class ProgramConverter(
             embedProperty(it)
         }
         return embedding
+    }
+
+    /** Record built-in subtyping without embedding its library representation fields. */
+    private fun registerBuiltinHierarchy(symbol: FirRegularClassSymbol, embedding: ClassTypeEmbedding) {
+        if (typeResolver.lookupClassTypeEmbedding(embedding.name) != null) return
+        typeResolver.register(embedding, isInterface = false)
+        val visited = mutableSetOf<SymbolicName>()
+        fun visit(current: FirRegularClassSymbol, name: SymbolicName) {
+            if (!visited.add(name)) return
+            for (type in current.resolvedSuperTypes) {
+                val parent = type.toClassSymbol(session) as? FirRegularClassSymbol ?: continue
+                val parentName = parent.classId.embedName()
+                typeResolver.addSubtypeRelation(name, parentName)
+                visit(parent, parentName)
+            }
+        }
+        visit(symbol, embedding.name)
     }
 
     // Note: keep in mind that this function is necessary to resolve the name of the function!
