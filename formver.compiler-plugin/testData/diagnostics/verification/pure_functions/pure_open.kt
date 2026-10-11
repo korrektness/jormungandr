@@ -6,7 +6,7 @@ open class Shape {
 }
 
 class Square : Shape() {
-    <!UNSUPPORTED_FEATURE!>@Pure
+    <!INVALID_OBSERVER, UNSUPPORTED_FEATURE!>@Pure
     override fun sides(): Int = 4<!>
 }
 

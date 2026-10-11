@@ -111,6 +111,41 @@ is verified against it. When several declarations it overrides have one, it has 
 The check runs when the override is converted. A `@Pure` function cannot be open or override another; such a function, and a call to it,
 is reported as an unsupported construct.
 
+### Observers
+
+An observer is an abstract `@Pure` member of an interface: a function or a `val` property. A class implements it with a
+`@Pure` override that has a body.
+
+```kotlin
+interface Measure {
+    @Pure
+    fun scaled(factor: Int): Int
+
+    @Pure
+    val size: Int
+}
+
+class Fixed : Measure {
+    @Pure
+    override fun scaled(factor: Int): Int = factor * 2
+
+    @Pure
+    override val size: Int
+        get() = 3
+}
+```
+
+These are reported as `INVALID_OBSERVER`:
+
+- an override of an observer that is not `@Pure`;
+- an override of an observer in a class that has no body, including one the class implements by delegation;
+- a class that implements an observer by inheriting a member that is not `@Pure` from a superclass;
+- a `@Pure` override of a member that is neither an observer nor an override of one;
+- a `@Pure` property that is a `var`, or is neither an observer nor an override of one.
+
+The verifier does not support observer functions: an override of one, and a call to one or to its override, is reported
+as an unsupported construct.
+
 ## Loop Invariants
 
 ```kotlin

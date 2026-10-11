@@ -26,7 +26,8 @@ annotation class Unique
 @Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
 annotation class Borrowed
 
-@Target(AnnotationTarget.FUNCTION)
+/** Marks a pure function or observer; see "Pure functions and specifications" and "Observers" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 annotation class Pure
 
 /**
