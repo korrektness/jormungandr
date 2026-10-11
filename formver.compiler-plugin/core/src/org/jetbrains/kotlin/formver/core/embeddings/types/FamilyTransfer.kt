@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.types
 
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.core.names.PredicateName
 import org.jetbrains.kotlin.formver.core.names.ScopedName
@@ -23,5 +24,19 @@ class FamilyTransfer(from: ClassTypeEmbedding, to: ClassTypeEmbedding) {
         private val receiver = Exp.LocalVar(DispatchReceiverName, Type.Ref)
         override val pres = listOf(Exp.PredicateAccess(from.uniquePredicateName, listOf(receiver), PermExp.FullPerm()))
         override val posts = listOf(Exp.PredicateAccess(to.uniquePredicateName, listOf(receiver), PermExp.FullPerm()))
+    }
+
+    /** Restores a concrete presentation only for an object known to have that runtime type. */
+    val restore: Method by lazy {
+        object : Method(ScopedName(from.name.asScope(), ScopedName(to.name.asScope(), PredicateName("restore")))) {
+            override val formalArgs = listOf(Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref))
+            override val formalReturns = emptyList<Declaration.LocalVarDecl>()
+            private val receiver = Exp.LocalVar(DispatchReceiverName, Type.Ref)
+            override val pres = listOf(
+                Exp.PredicateAccess(to.uniquePredicateName, listOf(receiver), PermExp.FullPerm()),
+                RuntimeTypeDomain.isSubtype(RuntimeTypeDomain.typeOf(receiver), from.runtimeType),
+            )
+            override val posts = listOf(Exp.PredicateAccess(from.uniquePredicateName, listOf(receiver), PermExp.FullPerm()))
+        }
     }
 }

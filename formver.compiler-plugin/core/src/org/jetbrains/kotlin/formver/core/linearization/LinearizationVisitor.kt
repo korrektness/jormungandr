@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.core.names.sourceSpelling
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.viper.ast.Method
 import org.jetbrains.kotlin.formver.viper.ast.Exp.Companion.toConjunction
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
 import org.jetbrains.kotlin.formver.viper.ast.Type
@@ -169,7 +170,7 @@ data class LinearizationVisitor(
                 args += value
                 value.linearize().toViper(ctx)
             }
-            ctx.coerceFreshArguments(args, e.method.formalArgs, argsViper)
+            val freshLoans = ctx.coerceFreshArguments(args, e.method.formalArgs, argsViper)
             val heldArgs = ctx.heldPaths(args, e.method.formalArgs)
             for ((path, formal) in heldArgs) {
                 when {
@@ -180,13 +181,17 @@ data class LinearizationVisitor(
             ctx.addStatement {
                 e.method.toMethodCall(argsViper, result.toLocalVarUse(ctx.source.asPosition), ctx.source.asPosition)
             }
+            freshLoans.forEach { (index, from, to) ->
+                val restore = ctx.typeResolver.familyRestore(from, to)
+                ctx.addFamilyCall(argsViper[index], args[index].type.isNullable, restore)
+            }
             e.method.constructedOpen?.let { ctx.foldConstructed(result, it) }
             for ((path, formal) in heldArgs) {
                 when {
                     !formal.isBorrowed -> ctx.foldState?.release(ctx, path)
                     // The callee may write through its shared view of the argument, so the caller's values are stale.
                     !formal.isUnique -> ctx.foldState?.refresh(ctx, path)
-                    else -> ctx.foldState?.refreshRetained(ctx, path)
+                    else -> ctx.foldState?.restoreBorrowed(ctx, path, ctx.foldState?.trackedClass(formal.type))
                 }
             }
         }
@@ -196,7 +201,7 @@ data class LinearizationVisitor(
         override fun toViper(ctx: LinearizationContext): Exp {
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
             val exposed = ctx.heldPaths(e.args, e.function.formalArgs).filter { (_, formal) -> formal.isUnique }
-            for ((path, formal) in exposed) ctx.exposeFor(path, formal, borrowed = true)
+            for ((path, formal) in exposed) ctx.exposeFor(path, formal)
             val app = e.function.toFuncApp(argsViper, ctx.source.asPosition)
             if (app is Exp.FuncApp) e.function.formalArgs.forEachIndexed { index, formal ->
                 if (formal.isUnique) ctx.addPredicateParameter(PredicateParameter(app.functionName, index))
@@ -206,6 +211,12 @@ data class LinearizationVisitor(
             // operand of the enclosing expression may unfold them.
             val result = ctx.freshAnonVar(e.type)
             ctx.addStatement { Stmt.assign(result.toViperExp(this), app, source.asPosition) }
+            for ((path, formal) in exposed) {
+                val state = ctx.foldState ?: continue
+                val cls = state.trackedClass(formal.type) ?: continue
+                val own = state.trackedClass(path.fields.lastOrNull()?.type ?: path.root.type)
+                if (own != cls && ctx.typeResolver.isInterface(cls)) state.restoreBorrowed(ctx, path, cls)
+            }
             return result.toViperExp(ctx)
         }
     }
@@ -1119,7 +1130,12 @@ private fun LinearizationContext.heldPaths(
 private fun LinearizationContext.enterBinding(binding: RootBinding, state: FoldState) {
     val path = OwnedPath(binding.variable)
     when (binding.mode) {
-        BindingMode.Consumed, BindingMode.Borrowed -> exposeFor(path, binding.formal)
+        BindingMode.Borrowed -> {
+            val retained = binding.retainedPath
+            if (binding.familyUpcast && retained != null) state.transfer(this, retained, path)
+            else exposeFor(path, binding.formal)
+        }
+        BindingMode.Consumed -> exposeFor(path, binding.formal)
         BindingMode.Released -> state.release(this, path)
     }
 }
@@ -1142,42 +1158,54 @@ private fun LinearizationContext.exitBinding(binding: RootBinding, state: FoldSt
                         "cannot be handed back.",
                 )
             }
-            state.transfer(this, path, retained)
+            if (binding.familyUpcast) {
+                val own = state.trackedClass(retained.fields.lastOrNull()?.type ?: retained.root.type)!!
+                val family = state.trackedClass(binding.formal.type)!!
+                state.restoreFamily(this, own, family, path)
+                state.release(this, path)
+                state.acquire(this, retained)
+            } else state.transfer(this, path, retained)
         }
         BindingMode.Released -> {}
     }
 }
 
-/** Transfer fresh concrete arguments directly into their consuming interface presentation. */
+/** Transfer fresh concrete arguments into their interface presentation, recording the ones lent to the callee. */
 private fun LinearizationContext.coerceFreshArguments(
     args: List<ExpEmbedding>,
     formals: List<VariableEmbedding>,
     values: List<Exp>,
-) {
-    if (foldState == null) return
+): List<Triple<Int, ClassTypeEmbedding, ClassTypeEmbedding>> {
+    if (foldState == null) return emptyList()
+    val loans = mutableListOf<Triple<Int, ClassTypeEmbedding, ClassTypeEmbedding>>()
     args.zip(formals).forEachIndexed { index, (arg, formal) ->
         if (!formal.isUnique || !arg.isFreshUnique()) return@forEachIndexed
         val from = arg.ignoringCastsAndMetaNodes().type.pretype as? ClassTypeEmbedding ?: return@forEachIndexed
         val to = formal.type.pretype as? ClassTypeEmbedding ?: return@forEachIndexed
         if (from == to || !typeResolver.isInterface(to)) return@forEachIndexed
-        if (formal.isBorrowed) throw FoldStateException(source, "Borrowed interface upcasts are unsupported.")
         if (!typeResolver.isSubtype(from, to)) throw FoldStateException(source, "Ownership cannot be downcast to `${to.name.sourceSpelling}`.")
         val method = typeResolver.familyTransfer(from, to).method
-        val call = method.toMethodCall(listOf(values[index]), emptyList(), source.asPosition)
-        addStatement {
-            if (arg.type.isNullable) Stmt.If(
-                Exp.NeCmp(values[index], RuntimeTypeDomain.nullValue(pos = source.asPosition), source.asPosition),
-                Stmt.Seqn(listOf(call)), Stmt.Seqn(), source.asPosition,
-            ) else call
-        }
+        addFamilyCall(values[index], arg.type.isNullable, method)
+        if (formal.isBorrowed) loans += Triple(index, from, to)
+    }
+    return loans
+}
+
+private fun LinearizationContext.addFamilyCall(value: Exp, nullable: Boolean, method: Method) {
+    val call = method.toMethodCall(listOf(value), emptyList(), source.asPosition)
+    addStatement {
+        if (nullable) Stmt.If(
+            Exp.NeCmp(value, RuntimeTypeDomain.nullValue(pos = source.asPosition), source.asPosition),
+            Stmt.Seqn(listOf(call)), Stmt.Seqn(), source.asPosition,
+        ) else call
     }
 }
 
 /** Make the folded predicate that the `@Unique` parameter [formal] takes held for the argument [path]. */
-private fun LinearizationContext.exposeFor(path: OwnedPath, formal: VariableEmbedding, borrowed: Boolean = formal.isBorrowed) {
+private fun LinearizationContext.exposeFor(path: OwnedPath, formal: VariableEmbedding) {
     val state = foldState ?: return
     val cls = state.trackedClass(formal.type) ?: return state.close(this, path)
-    state.expose(this, path, cls, borrowed)
+    state.expose(this, path, cls)
 }
 
 /**

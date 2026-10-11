@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.formver.core.names.NameMatcher
 import org.jetbrains.kotlin.formver.core.names.NameScope
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
+import org.jetbrains.kotlin.formver.viper.ast.Method
 import org.jetbrains.kotlin.name.Name
 
 /**
@@ -88,7 +89,16 @@ class TypeResolver {
         return familyTransfers.getOrPut(from to to) { FamilyTransfer(from, to) }
     }
 
-    fun familyTransferMethods() = familyTransfers.values.map { it.method }
+    private val familyRestores = linkedSetOf<Pair<ClassTypeEmbedding, ClassTypeEmbedding>>()
+
+    fun familyRestore(from: ClassTypeEmbedding, to: ClassTypeEmbedding): Method {
+        val transfer = familyTransfer(from, to)
+        familyRestores += from to to
+        return transfer.restore
+    }
+
+    fun familyTransferMethods() = familyTransfers.values.map { it.method } +
+        familyRestores.map { familyTransfers.getValue(it).restore }
 
     fun classTypeEmbeddings() = (classEmbedding.values.toList() + interfaceEmbedding.values.toList()).distinctBy { it.name }
 

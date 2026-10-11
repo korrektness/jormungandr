@@ -150,11 +150,10 @@ class FoldState(private val typeResolver: TypeResolver) {
 
     fun refresh(ctx: LinearizationContext, path: OwnedPath) = trie.refresh(ctx.foldSink(), path)
 
-    fun expose(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding, borrowed: Boolean = false) {
+    fun expose(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding) {
         val own = trackedClass(path.fields.lastOrNull()?.type ?: path.root.type) ?: return
         if (own != cls && typeResolver.isInterface(cls)) {
-            if (borrowed) throw FoldStateException(ctx.source, "Borrowed interface upcasts are unsupported.")
-            close(ctx, path)
+            trie.expose(ctx.foldSink(), path, own)
             transferFamily(ctx, own, cls, path)
             release(ctx, path)
         } else {
@@ -164,6 +163,21 @@ class FoldState(private val typeResolver: TypeResolver) {
 
     fun refreshRetained(ctx: LinearizationContext, path: OwnedPath) = trie.refreshRetained(ctx.foldSink(), path)
 
+    /** Returns the presentation lent to [cls], forgetting the concrete footprint across the call. */
+    fun restoreBorrowed(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding?) {
+        val own = trackedClass(path.fields.lastOrNull()?.type ?: path.root.type) ?: return
+        if (cls != null && own != cls && typeResolver.isInterface(cls)) {
+            restoreFamily(ctx, own, cls, path)
+            acquire(ctx, path)
+        } else refreshRetained(ctx, path)
+    }
+
+    fun restoreFamily(ctx: LinearizationContext, own: ClassTypeEmbedding, family: ClassTypeEmbedding, value: OwnedPath) {
+        val method = typeResolver.familyRestore(own, family)
+        val place = ctx.placeOf(value)
+        ctx.addGuarded(place) { method.toMethodCall(listOf(place.exp), emptyList(), ctx.source.asPosition) }
+    }
+
     fun tidy(ctx: LinearizationContext, path: OwnedPath) = trie.tidy(ctx.foldSink(), path)
 
     fun transfer(ctx: LinearizationContext, src: OwnedPath, dst: OwnedPath) {
@@ -171,7 +185,7 @@ class FoldState(private val typeResolver: TypeResolver) {
         val to = trackedClass(dst.fields.lastOrNull()?.type ?: dst.root.type)
         val changesPresentation = from != to && to?.let(typeResolver::isInterface) == true
         if (from != null && to != null && changesPresentation) {
-            close(ctx, src)
+            trie.expose(ctx.foldSink(), src, from)
             transferFamily(ctx, from, to, dst)
             release(ctx, src)
             acquire(ctx, dst)

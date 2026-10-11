@@ -1,0 +1,830 @@
+/interface_borrowed_upcast.kt: info: Generated Viper text for observe:
+function observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), BorrowedView())
+  requires acc(BorrowedView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BorrowedView_unique(this: Ref)
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for touch:
+predicate BorrowedView_unique(this: Ref)
+
+method touch(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), BorrowedView())
+  requires acc(BorrowedView_unique(this), write)
+  ensures acc(BorrowedView_unique(this), write)
+  ensures isSubtype(typeOf(ret), unitType())
+
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for observe:
+field value: Ref
+
+function observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), BorrowedCell())
+  requires acc(BorrowedCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BorrowedCell_unique(this), write) in this.value)
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate BorrowedView_unique(this: Ref)
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for touch:
+field value: Ref
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate BorrowedView_unique(this: Ref)
+
+method touch(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(BorrowedCell_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(BorrowedCell_unique(this), write)
+  this.value := intToRef(0)
+  label lbl_ret_0
+  fold acc(BorrowedCell_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for throughThis:
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method throughThis(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(BorrowedCell_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(this), c_BorrowedView())
+  BorrowedCell_c_BorrowedView_upcast(this)
+  anon_0 := touch(this)
+  BorrowedCell_c_BorrowedView_restore(this)
+  unfold acc(BorrowedCell_unique(this), write)
+  this.value := intToRef(7)
+  anon_1 := this.value
+  assert intFromRef(anon_1) == 7
+  refute false
+  label lbl_ret_0
+  fold acc(BorrowedCell_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method touch(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for borrowedParameter:
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method borrowedParameter(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), BorrowedCell())
+  requires acc(BorrowedCell_unique(cell), write)
+  ensures acc(BorrowedCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_result: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  BorrowedCell_c_BorrowedView_upcast(cell)
+  l0_result := lend(cell, intToRef(4))
+  BorrowedCell_c_BorrowedView_restore(cell)
+  assert intFromRef(l0_result) == 5
+  unfold acc(BorrowedCell_unique(cell), write)
+  cell.value := intToRef(9)
+  anon_0 := cell.value
+  assert intFromRef(anon_0) == 9
+  fold acc(BorrowedCell_unique(cell), write)
+  BorrowedCell_c_BorrowedView_upcast(cell)
+  anon_1 := lend(cell, intToRef(10))
+  BorrowedCell_c_BorrowedView_restore(cell)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(cell), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(c_BorrowedView_unique(cell), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(n) + 1
+
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for ownedLocal:
+field bf_value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method con(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_1), BorrowedCell())
+  ensures isSubtype(typeOf(ret_1), BorrowedCell()) &&
+    acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+
+
+method lend(par_cell: Ref, n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(par_cell), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(c_BorrowedView_unique(par_cell), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == intFromRef(n) + 1
+
+
+method ownedLocal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_cell: Ref
+  var l0_result: Ref
+  var anon: Ref
+  l0_cell := con(intToRef(1))
+  fold acc(BorrowedCell_unique(l0_cell), write)
+  BorrowedCell_c_BorrowedView_upcast(l0_cell)
+  l0_result := lend(l0_cell, intToRef(5))
+  BorrowedCell_c_BorrowedView_restore(l0_cell)
+  assert intFromRef(l0_result) == 6
+  unfold acc(BorrowedCell_unique(l0_cell), write)
+  l0_cell.bf_value := intToRef(9)
+  anon := l0_cell.bf_value
+  assert intFromRef(anon) == 9
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for lostField:
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(cell), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(c_BorrowedView_unique(cell), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(n) + 1
+
+
+method lostField(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), BorrowedCell())
+  requires acc(BorrowedCell_unique(cell), write)
+  ensures acc(BorrowedCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(BorrowedCell_unique(cell), write)
+  cell.value := intToRef(2)
+  fold acc(BorrowedCell_unique(cell), write)
+  BorrowedCell_c_BorrowedView_upcast(cell)
+  anon_0 := lend(cell, intToRef(6))
+  BorrowedCell_c_BorrowedView_restore(cell)
+  unfold acc(BorrowedCell_unique(cell), write)
+  anon_1 := cell.value
+  assert intFromRef(anon_1) == 2
+  label lbl_ret_0
+  fold acc(BorrowedCell_unique(cell), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for inlineLend:
+predicate BorrowedView_unique(this: Ref)
+
+method inlineLend(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), BorrowedView())
+  requires acc(BorrowedView_unique(cell), write)
+  ensures acc(BorrowedView_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := touch(cell)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method touch(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), BorrowedView())
+  requires acc(BorrowedView_unique(this), write)
+  ensures acc(BorrowedView_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for inlineBorrow:
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method inlineBorrow(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), BorrowedCell())
+  requires acc(BorrowedCell_unique(cell), write)
+  ensures acc(BorrowedCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := cell
+  BorrowedCell_c_BorrowedView_upcast(anon_0)
+  anon_1 := touch(anon_0)
+  label lbl_ret_2
+  BorrowedCell_c_BorrowedView_restore(anon_0)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(BorrowedCell_unique(cell), write)
+  cell.value := intToRef(9)
+  anon_2 := cell.value
+  assert intFromRef(anon_2) == 9
+  fold acc(BorrowedCell_unique(cell), write)
+  BorrowedCell_c_BorrowedView_upcast(cell)
+  anon_3 := lend(cell, intToRef(10))
+  BorrowedCell_c_BorrowedView_restore(cell)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method inlineLend(cell: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(cell), write)
+  ensures acc(c_BorrowedView_unique(cell), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method lend(cell: Ref, n: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(cell), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(c_BorrowedView_unique(cell), write)
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(ret_4) == intFromRef(n) + 1
+
+
+method touch(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for inlineLostField:
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method inlineLend(cell: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(cell), write)
+  ensures acc(c_BorrowedView_unique(cell), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method inlineLostField(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), BorrowedCell())
+  requires acc(BorrowedCell_unique(cell), write)
+  ensures acc(BorrowedCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  unfold acc(BorrowedCell_unique(cell), write)
+  cell.value := intToRef(2)
+  anon_0 := cell
+  fold acc(BorrowedCell_unique(cell), write)
+  BorrowedCell_c_BorrowedView_upcast(anon_0)
+  anon_1 := touch(anon_0)
+  label lbl_ret_2
+  BorrowedCell_c_BorrowedView_restore(anon_0)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(BorrowedCell_unique(cell), write)
+  anon_2 := cell.value
+  assert intFromRef(anon_2) == 2
+  label lbl_ret_0
+  fold acc(BorrowedCell_unique(cell), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method touch(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for pureViewCall:
+field value: Ref
+
+function observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(cell), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(c_BorrowedView_unique(cell), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(n) + 1
+
+
+method pureViewCall(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), BorrowedCell())
+  requires acc(BorrowedCell_unique(cell), write)
+  ensures acc(BorrowedCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(cell), c_BorrowedView())
+  unfold acc(BorrowedCell_unique(cell), write)
+  cell.value := intToRef(9)
+  anon_0 := cell.value
+  assert intFromRef(anon_0) == 9
+  fold acc(BorrowedCell_unique(cell), write)
+  BorrowedCell_c_BorrowedView_upcast(cell)
+  anon_1 := lend(cell, intToRef(10))
+  BorrowedCell_c_BorrowedView_restore(cell)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for nullableBorrow:
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method nullableBorrow(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), nullable(BorrowedCell()))
+  requires cell != nullValue() ==> acc(BorrowedCell_unique(cell), write)
+  ensures cell != nullValue() ==> acc(BorrowedCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_2: Ref
+  if (cell != nullValue()) {
+    BorrowedCell_c_BorrowedView_upcast(cell)
+  }
+  anon_0 := nullableLend(cell)
+  if (cell != nullValue()) {
+    BorrowedCell_c_BorrowedView_restore(cell)
+  }
+  if (!(cell == nullValue())) {
+    var anon_1: Ref
+    if (cell != nullValue()) {
+      unfold acc(BorrowedCell_unique(cell), write)
+    }
+    cell.value := intToRef(9)
+    anon_1 := cell.value
+    assert intFromRef(anon_1) == 9
+    if (cell != nullValue()) {
+      fold acc(BorrowedCell_unique(cell), write)
+    }
+  }
+  if (cell != nullValue()) {
+    BorrowedCell_c_BorrowedView_upcast(cell)
+  }
+  anon_2 := nullableLend(cell)
+  if (cell != nullValue()) {
+    BorrowedCell_c_BorrowedView_restore(cell)
+  }
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method nullableLend(cell: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(cell), nullable(c_BorrowedView()))
+  requires cell != nullValue() ==> acc(c_BorrowedView_unique(cell), write)
+  ensures cell != nullValue() ==> acc(c_BorrowedView_unique(cell), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for freshBorrow:
+field bf_value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method con(par_value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_2), BorrowedCell())
+  ensures isSubtype(typeOf(ret_2), BorrowedCell()) &&
+    acc(ret_2.bf_value, write) &&
+    isSubtype(typeOf(ret_2.bf_value), intType())
+  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
+
+
+method freshBorrow() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_result: Ref
+  var anon: Ref
+  anon := con(intToRef(1))
+  fold acc(BorrowedCell_unique(anon), write)
+  BorrowedCell_c_BorrowedView_upcast(anon)
+  l0_result := lend(anon, intToRef(3))
+  BorrowedCell_c_BorrowedView_restore(anon)
+  assert intFromRef(l0_result) == 4
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(cell), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(c_BorrowedView_unique(cell), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(n) + 1
+
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for inlineFieldBorrow:
+field value: Ref
+
+function g_cell(this: Ref): Ref
+  requires isSubtype(typeOf(this), CellHolder())
+  ensures isSubtype(typeOf(result), BorrowedCell())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate CellHolder_unique(this: Ref) {
+  isSubtype(typeOf(this), CellHolder()) &&
+  acc(BorrowedCell_unique(g_cell(this)), write)
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref)
+
+method BorrowedCell_c_BorrowedView_restore(this: Ref)
+  requires acc(c_BorrowedView_unique(this), write)
+  requires isSubtype(typeOf(this), BorrowedCell())
+  ensures acc(BorrowedCell_unique(this), write)
+
+
+method BorrowedCell_c_BorrowedView_upcast(this: Ref)
+  requires acc(BorrowedCell_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+
+
+method inlineFieldBorrow(holder: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(holder), CellHolder())
+  requires acc(CellHolder_unique(holder), write)
+  ensures acc(CellHolder_unique(holder), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := g_cell(holder)
+  unfold acc(CellHolder_unique(holder), write)
+  BorrowedCell_c_BorrowedView_upcast(anon_0)
+  anon_1 := touch(anon_0)
+  label lbl_ret_2
+  BorrowedCell_c_BorrowedView_restore(anon_0)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  unfold acc(BorrowedCell_unique(g_cell(holder)), write)
+  g_cell(holder).value := intToRef(9)
+  anon_2 := g_cell(holder).value
+  assert intFromRef(anon_2) == 9
+  fold acc(BorrowedCell_unique(g_cell(holder)), write)
+  BorrowedCell_c_BorrowedView_upcast(g_cell(holder))
+  anon_3 := lend(g_cell(holder), intToRef(10))
+  BorrowedCell_c_BorrowedView_restore(g_cell(holder))
+  refute false
+  label lbl_ret_0
+  fold acc(CellHolder_unique(holder), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method inlineLend(par_cell: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(par_cell), write)
+  ensures acc(c_BorrowedView_unique(par_cell), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method lend(par_cell: Ref, n: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_cell), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(par_cell), write)
+  requires isSubtype(typeOf(n), intType())
+  ensures acc(c_BorrowedView_unique(par_cell), write)
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(ret_4) == intFromRef(n) + 1
+
+
+method touch(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_BorrowedView())
+  requires acc(c_BorrowedView_unique(this), write)
+  ensures acc(c_BorrowedView_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), unitType())

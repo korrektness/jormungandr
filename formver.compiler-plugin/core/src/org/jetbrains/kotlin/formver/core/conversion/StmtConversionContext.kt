@@ -282,10 +282,16 @@ fun StmtConversionContext.insertInlineFunctionCall(
     val callArgs = args.indices.map { index ->
         val formal = calleeSignature.formalArgs[index]
         val mode = bindingMode(call, formal, args[index])
-        val (declaration, usage) =
-            inlineArgumentDeclaration(args[index], calleeSignature.callableType.formalArgTypes[index], mode)
+        val arg = args[index]
+        val from = arg.ownedPath()?.let { it.fields.lastOrNull()?.type ?: it.root.type }?.pretype as? ClassTypeEmbedding
+        val to = formal.type.pretype as? ClassTypeEmbedding
+        val familyUpcast = mode == BindingMode.Borrowed && from != null && to != null && from != to && typeResolver.isInterface(to)
+        val (declaration, usage) = if (familyUpcast) {
+            val temporary = declareAnonVar(formal.type, arg).copy(targetOwned = null)
+            temporary to temporary.variable
+        } else inlineArgumentDeclaration(arg, calleeSignature.callableType.formalArgTypes[index], mode)
         declarations.addIfNotNull(declaration)
-        usage.underlyingVariable?.let { bindings.add(RootBinding(roots[index], formal, it, args[index], mode)) }
+        usage.underlyingVariable?.let { bindings.add(RootBinding(roots[index], formal, it, arg, mode, familyUpcast)) }
         usage
     }
     val subs = paramNames.zip(callArgs).toMap()

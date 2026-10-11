@@ -211,10 +211,11 @@ data class RootBinding(
     val variable: VariableEmbedding,
     val argument: ExpEmbedding,
     val mode: BindingMode,
+    val familyUpcast: Boolean = false,
 ) {
-    /** The caller's path with fields that [variable] takes from the caller for a borrowing body and hands back on exit. */
+    /** The caller's path that [variable] takes from the caller for a borrowing body and hands back on exit. */
     val retainedPath: OwnedPath?
-        get() = argument.ownedPath()?.takeIf { mode == BindingMode.Borrowed && it.fields.isNotEmpty() }
+        get() = argument.ownedPath()?.takeIf { mode == BindingMode.Borrowed && (it.fields.isNotEmpty() || familyUpcast) }
 }
 
 /**

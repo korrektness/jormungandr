@@ -718,6 +718,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("interface_borrowed_upcast.kt")
+      public void testInterface_borrowed_upcast() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_borrowed_upcast.kt");
+      }
+
+      @Test
       @TestMetadata("interface_family.kt")
       public void testInterface_family() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_family.kt");
