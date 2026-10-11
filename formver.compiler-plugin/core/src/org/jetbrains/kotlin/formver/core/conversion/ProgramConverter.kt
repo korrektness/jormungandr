@@ -435,6 +435,9 @@ class ProgramConverter(
             symbol.source, "Expected FirSimpleFunction, got unexpected type ${symbol.fir.javaClass.simpleName}"
         )
 
+        if (signature.signature.isPure && declaration.body == null &&
+            context(checkerContext) { symbol.isObserver() }) return
+
         val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis)
         if (signature.signature.isPure) {
             val body = context.convertPureBody(declaration)
@@ -453,7 +456,8 @@ class ProgramConverter(
      * Embeds the full function signature (with pre+post conditions).
      */
     private fun embedCompleteSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<CompleteFunctionSignature> {
-        if (symbol.isOpenOrOverride && symbol.isPure(session)) {
+        if (symbol.isOpenOrOverride && symbol.isPure(session) &&
+            !context(checkerContext) { symbol.isObserverOrOverride() }) {
             // A call to such a function is reported at the call.
             val source = symbol.source.takeIf { symbol == registeredSymbol }
             throw UnsupportedFeatureException(source, "a `@Pure` function that is open or overrides another")

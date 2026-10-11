@@ -33,23 +33,11 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.isPure
-
-/**
- * Whether this member is an observer: an abstract `@Pure` function or `val` property declared in an interface.
- */
-context(context: CheckerContext)
-private fun FirCallableSymbol<*>.isObserver(): Boolean =
-    isAbstract && isPure(context.session) &&
-            (this is FirNamedFunctionSymbol || (this is FirPropertySymbol && !isVar)) &&
-            isInInterface
+import org.jetbrains.kotlin.formver.core.isObserver
+import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 
 private val FirCallableSymbol<*>.isInInterface: Boolean
     get() = (getContainingClassSymbol() as? FirClassSymbol<*>)?.classKind?.isInterface == true
-
-/** Whether this member is an observer or overrides one, directly or through other overrides. */
-context(context: CheckerContext)
-private fun FirCallableSymbol<*>.isObserverOrOverride(): Boolean =
-    isObserver() || directOverriddenSymbolsSafe().any { it.isObserverOrOverride() }
 
 /** The Kotlin spelling of this member's name in a diagnostic. */
 private val FirCallableSymbol<*>.spelling: String

@@ -1332,6 +1332,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("observer_calls.kt")
+      public void testObserver_calls() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/observer_calls.kt");
+      }
+
+      @Test
       @TestMetadata("observer_errors.kt")
       public void testObserver_errors() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/observer_errors.kt");

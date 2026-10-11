@@ -1,0 +1,222 @@
+/observer_calls.kt: info: Generated Viper text for scaled:
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/observer_calls.kt: info: Generated Viper text for read:
+field value: Ref
+
+function read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/observer_calls.kt: info: Generated Viper text for amount:
+function amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/observer_calls.kt: info: Generated Viper text for scaled:
+field value: Ref
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  timesInts(factor, intToRef(2))
+}
+
+/observer_calls.kt: info: Generated Viper text for read:
+field value: Ref
+
+function read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Cell_unique(cell), write) in cell.value)
+}
+
+/observer_calls.kt: info: Generated Viper text for amount:
+field value: Ref
+
+function amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires acc(Fixed_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Fixed_unique(this), write) in this.value)
+}
+
+/observer_calls.kt: info: Generated Viper text for interfaceCall:
+field value: Ref
+
+function read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method interfaceCall(m: Ref, cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), Measure())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    intFromRef(scaled(m, intToRef(3))) + intFromRef(read(m, cell))
+{
+  var anon: Ref
+  anon := read(m, cell)
+  v_ret_0 := plusInts(scaled(m, intToRef(3)), anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/observer_calls.kt: info: Generated Viper text for classCall:
+field value: Ref
+
+function read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Cell_unique(cell), write) in cell.value)
+}
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  timesInts(factor, intToRef(2))
+}
+
+method classCall(m: Ref, cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), Fixed())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures (unfolding acc(Cell_unique(cell), write) in
+      intFromRef(v_ret_0) == 6 + intFromRef(cell.value))
+{
+  var anon: Ref
+  anon := read(m, cell)
+  v_ret_0 := plusInts(scaled(m, intToRef(3)), anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/observer_calls.kt: info: Generated Viper text for bothCallShapes:
+field value: Ref
+
+function Fixed_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  timesInts(factor, intToRef(2))
+}
+
+function Measure_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bothCallShapes(m: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), Fixed())
+  requires isSubtype(typeOf(i), Measure())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    6 + intFromRef(Measure_f_scaled(i, intToRef(3)))
+{
+  v_ret_0 := plusInts(Fixed_f_scaled(m, intToRef(3)), Measure_f_scaled(i, intToRef(3)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/observer_calls.kt: info: Generated Viper text for ownedInterfaceCall:
+function amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method ownedInterfaceCall(m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), Measure())
+  requires acc(Measure_unique(m), write)
+  ensures acc(Measure_unique(m), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(amount(m))
+{
+  var anon: Ref
+  anon := amount(m)
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/observer_calls.kt: info: Generated Viper text for ownedClassCall:
+field value: Ref
+
+function amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires acc(Fixed_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Fixed_unique(this), write) in this.value)
+}
+
+method ownedClassCall(m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), Fixed())
+  requires acc(Fixed_unique(m), write)
+  ensures acc(Fixed_unique(m), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures (unfolding acc(Fixed_unique(m), write) in
+      intFromRef(v_ret_0) == intFromRef(m.value))
+{
+  var anon: Ref
+  anon := amount(m)
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/observer_calls.kt: info: Generated Viper text for unboundInterfaceCall:
+field value: Ref
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method unboundInterfaceCall(m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), Fixed())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 6
+{
+  var abstract: Ref
+  abstract := m
+  v_ret_0 := scaled(abstract, intToRef(3))
+  goto lbl_ret_0
+  label lbl_ret_0
+}

@@ -143,8 +143,10 @@ These are reported as `INVALID_OBSERVER`:
 - a `@Pure` override of a member that is neither an observer nor an override of one;
 - a `@Pure` property that is a `var`, or is neither an observer nor an override of one.
 
-The verifier does not support observer functions: an override of one, and a call to one or to its override, is reported
-as an unsupported construct.
+An observer function is encoded as a bodiless Viper function; a class override is encoded with its pure body.
+Calls select the function of the receiver's static type. Permissions follow the `@Pure` encoding described in
+[Pure functions and specifications](#pure-functions-and-specifications). On a shared interface receiver the result
+is arbitrary. The interface predicate contains no binding between an observer and its implementations.
 
 ## Loop Invariants
 
