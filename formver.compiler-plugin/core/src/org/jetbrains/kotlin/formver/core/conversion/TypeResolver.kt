@@ -90,6 +90,9 @@ class TypeResolver {
         observerBindings.getOrPut(type.name) { linkedMapOf() }[observer.name] = ObserverBinding(type, binding, this)
     }
 
+    fun observerBinding(view: ClassTypeEmbedding, observer: SymbolicName): ObserverBinding? =
+        observerBindings[view.name]?.get(observer)
+
     fun observerBindings(from: ClassTypeEmbedding, to: ClassTypeEmbedding) =
         observerBindings[to.name].orEmpty().map { (observer, target) ->
             val source = observerBindings[from.name]?.get(observer)

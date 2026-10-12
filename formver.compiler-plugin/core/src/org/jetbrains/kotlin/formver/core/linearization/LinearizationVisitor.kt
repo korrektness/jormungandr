@@ -200,6 +200,17 @@ data class LinearizationVisitor(
     override fun visitFunctionCall(e: FunctionCall): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp {
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
+            if (ctx is PureExpLinearizer) {
+                val view = e.args.firstOrNull()?.type?.pretype as? ClassTypeEmbedding
+                val binding = view?.let { ctx.typeResolver.observerBinding(it, e.function.name) }
+                if (binding != null) {
+                    val trigger = binding.trigger(argsViper)
+                    binding.signature.formalArgs.forEachIndexed { index, formal ->
+                        if (formal.isUnique) ctx.addPredicateParameter(PredicateParameter(trigger.functionName, index))
+                    }
+                    return binding.application(argsViper, ctx.source.asPosition)
+                }
+            }
             val exposed = ctx.heldPaths(e.args, e.function.formalArgs).filter { (_, formal) -> formal.isUnique }
             for ((path, formal) in exposed) ctx.exposeFor(path, formal)
             val app = e.function.toFuncApp(argsViper, ctx.source.asPosition)

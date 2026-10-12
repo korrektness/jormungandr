@@ -18,13 +18,13 @@ class ObserverBinding(val view: ClassTypeEmbedding, val signature: NonInlineFunc
     private val inheritedInterface = resolver.isInterface(view) && view != declaringType
     private val name = if (inheritedInterface) ScopedName(view.name.asScope(), signature.name) else signature.name
 
-    fun trigger(args: List<Exp>): Exp = Exp.FuncApp(name, args, Type.Ref)
+    fun trigger(args: List<Exp>, position: Position = Position.NoPosition): Exp.FuncApp = Exp.FuncApp(name, args, Type.Ref, position)
 
-    fun application(args: List<Exp>): Exp {
-        if (inheritedInterface) return trigger(args)
+    fun application(args: List<Exp>, position: Position = Position.NoPosition): Exp {
+        if (inheritedInterface) return trigger(args, position)
         val path = generateSequence(view, resolver::superClass).takeWhile { it != declaringType }.toList()
-        return path.foldRight(trigger(args)) { type, body ->
-            Exp.Unfolding(Exp.PredicateAccess(type.uniquePredicateName, listOf(args.first()), PermExp.FullPerm()), body)
+        return path.foldRight<ClassTypeEmbedding, Exp>(trigger(args, position)) { type, body ->
+            Exp.Unfolding(Exp.PredicateAccess(type.uniquePredicateName, listOf(args.first()), PermExp.FullPerm()), body, position)
         }
     }
 
