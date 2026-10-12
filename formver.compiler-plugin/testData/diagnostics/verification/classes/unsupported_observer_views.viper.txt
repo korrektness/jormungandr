@@ -1,0 +1,45 @@
+/unsupported_observer_views.kt: info: Generated Viper text for count:
+function count(this: Ref): Ref
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/unsupported_observer_views.kt: info: Generated Viper text for inc:
+function count(this: Ref): Ref
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inc(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), write)
+  ensures acc(Tally_unique(this), write)
+  ensures isSubtype(typeOf(ret), unitType())
+  ensures intFromRef(count(this)) == old(intFromRef(count(this))) + 1
+
+
+/unsupported_observer_views.kt: info: Generated Viper text for count:
+field bf_v: Ref
+
+function count(this: Ref): Ref
+  requires isSubtype(typeOf(this), TallyBase())
+  requires acc(TallyBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(TallyBase_unique(this), write) in this.bf_v)
+}
+
+/unsupported_observer_views.kt: info: Generated Viper text for inc:
+field bf_v: Ref
+
+method inc(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), TallyBase())
+  requires acc(TallyBase_unique(this), write)
+  ensures acc(TallyBase_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

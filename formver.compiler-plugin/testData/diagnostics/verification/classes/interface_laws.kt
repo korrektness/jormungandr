@@ -22,7 +22,7 @@ interface SizedLawDiamond : SizedLawLeft, SizedLawRight {
 
 open <!VIPER_TEXT!>class GoodSizedLaw<!> : SizedLawDiamond {
     @Pure @Unique
-    override fun <!VIPER_TEXT!>size<!>(): Int = 3
+    final override fun <!VIPER_TEXT!>size<!>(): Int = 3
 }
 
 <!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BrokenSizedLaw<!> : SizedLawDiamond {

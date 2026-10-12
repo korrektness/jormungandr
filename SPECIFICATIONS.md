@@ -108,30 +108,27 @@ class Refining : Base() {
 An override without a specification of its own has the specification of the declaration it overrides, and its body
 is verified against it. When several declarations it overrides have one, it has none and must write its own.
 
-The check runs when the override is converted. A `@Pure` function cannot be open or override another; such a function, and a call to it,
+The check runs when the override is converted. Unselected implementations are trusted under the configured
+per-function conversion and verification selection, including `@NeverVerify`; interface-law harnesses do not certify
+these method bodies. A class inheriting an implementation of a contract-bearing member is rejected with
+`INVALID_OBSERVER`, because no refinement check runs under that class's bindings.
+A `@Pure` function outside the observer mechanism cannot be open or override another; such a function, and a call to it,
 is reported as an unsupported construct.
 
 ### Observers
 
-An observer is an abstract `@Pure` member of an interface: a function or a `val` property. A class implements it with a
-`@Pure` override that has a body.
+An observer is an abstract `@Pure` function of an interface. A class implements it with a
+`@Pure` override that has a body and fixed dispatch (see [Class laws](#class-laws)).
 
 ```kotlin
 interface Measure {
     @Pure
     fun scaled(factor: Int): Int
-
-    @Pure
-    val size: Int
 }
 
 class Fixed : Measure {
     @Pure
     override fun scaled(factor: Int): Int = factor * 2
-
-    @Pure
-    override val size: Int
-        get() = 3
 }
 ```
 
@@ -141,7 +138,8 @@ These are reported as `INVALID_OBSERVER`:
 - an override of an observer in a class that has no body, including one the class implements by delegation;
 - a class that implements an observer by inheriting a member that is not `@Pure` from a superclass;
 - a `@Pure` override of a member that is neither an observer nor an override of one;
-- a `@Pure` property that is a `var`, or is neither an observer nor an override of one.
+- an observer implementation with overridable dispatch;
+- a `@Pure` property.
 
 An observer function is encoded as a bodiless Viper function; a class override is encoded with its pure body.
 Calls select the function of the receiver's static type. Permissions follow the `@Pure` encoding described in

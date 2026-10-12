@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.isPure
+
 import org.jetbrains.kotlin.contracts.description.LogicOperationKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.FirProperty
@@ -208,6 +210,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                     expansion.initializedField(symbol)?.let { return it }
                 } else return expansion.call(symbol, listOf(data.convert(propertyAccessExpression.dispatchReceiver!!)))
             }
+        }
+        val propertySymbol = propertyAccessExpression.toResolvedCallableSymbol() as? FirPropertySymbol
+        if (propertySymbol?.isPure(data.session) == true) {
+            throw UnsupportedFeatureException(propertyAccessExpression.source, "a property observer")
         }
         val propertyAccess = data.embedPropertyAccess(propertyAccessExpression)
         return propertyAccess.getValue(data)

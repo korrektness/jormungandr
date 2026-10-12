@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.declarations.utils.isOverride
@@ -33,7 +34,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.isPure
-import org.jetbrains.kotlin.formver.core.isObserver
+import org.jetbrains.kotlin.formver.core.conversion.inheritedContractImplementation
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 
 private val FirCallableSymbol<*>.isInInterface: Boolean
@@ -45,8 +46,8 @@ private val FirCallableSymbol<*>.spelling: String
 
 /**
  * Reports a member declaration that breaks a rule on observers: an override of an observer is `@Pure`, and in a class it
- * has a body; a `@Pure` override overrides only observers and their overrides; a `@Pure` property is an observer or an
- * override of one.
+ * has a body and fixed dispatch; a `@Pure` override overrides only observers and their overrides.
+ * Property observers are unsupported.
  */
 object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -56,24 +57,27 @@ object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind
     }
 
     context(context: CheckerContext)
+    @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
     private fun violation(declaration: FirCallableDeclaration): String? {
         val symbol = declaration.symbol
         val isPure = symbol.isPure(context.session)
         val overridden = if (declaration.isOverride) symbol.directOverriddenSymbolsSafe() else emptyList()
         val overridesObserver = overridden.any { it.isObserverOrOverride() }
         val isPureProperty = declaration is FirProperty && isPure
-        if (isPureProperty && declaration.isVar) return "Invalid @Pure property: var."
+        if (isPureProperty) return "Invalid @Pure property: unsupported observer property."
         if (overridesObserver && !isPure) return "Invalid observer override: not @Pure."
         if (isPure) {
             overridden.firstOrNull { !it.isObserverOrOverride() }?.let {
                 return "Invalid @Pure override: '${it.spelling}' is not an observer."
             }
         }
+        val owner = symbol.getContainingClassSymbol() as? FirClassSymbol<*>
+        val dispatchIsFixed = declaration.isFinal || owner?.fir?.isFinal == true
+        if (overridesObserver && !symbol.isInInterface && !dispatchIsFixed) {
+            return "Invalid observer override: open implementation."
+        }
         if (overridesObserver && declaration.isAbstract && !symbol.isInInterface) {
             return "Invalid observer override: no body."
-        }
-        if (isPureProperty && !symbol.isObserver() && !overridesObserver) {
-            return "Invalid @Pure property: not an observer or an override of one."
         }
         return null
     }
@@ -82,6 +86,7 @@ object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind
 /**
  * Reports a class that implements an observer without declaring the implementation: by delegation, which gives the
  * implementation no body, or by inheriting a member that is not `@Pure` from a superclass.
+ * Inherited contract implementations are rejected because their refinements require the receiving class's bindings.
  */
 object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
     // Each member's overrides are read right after the scope processes the member by name.
@@ -93,6 +98,9 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
         val violations = mutableListOf<String>()
         for (name in scope.getCallableNames()) {
             scope.processFunctionsByName(name) {
+                if (it.inheritedContractImplementation(declaration.symbol)) {
+                    violations += "Inherited contract implementation: '${it.spelling}'."
+                }
                 violation(declaration, it, scope.getDirectOverriddenFunctions(it))?.let(violations::add)
             }
             scope.processPropertiesByName(name) { property ->

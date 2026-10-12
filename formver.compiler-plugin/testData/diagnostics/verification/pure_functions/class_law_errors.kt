@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 interface Observation {
     @Pure fun size(): Int
-    @Pure val amount: Int
+    <!INVALID_OBSERVER!>@Pure val amount: Int<!>
 }
 
 abstract class AbstractObservation : Observation {
@@ -13,8 +13,8 @@ abstract class AbstractObservation : Observation {
 }
 
 open class InheritedObservation : Observation {
-    @Pure override fun size(): Int = 1
-    @Pure override val amount: Int = 1
+    <!INVALID_OBSERVER!>@Pure override fun size(): Int = 1<!>
+    <!INVALID_OBSERVER!>@Pure override val amount: Int = 1<!>
 }
 
 class InheritedInvariant : InheritedObservation() {
@@ -23,8 +23,8 @@ class InheritedInvariant : InheritedObservation() {
 }
 
 open class OpenObservation : Observation {
-    @Pure override fun size(): Int = 1
-    @Pure override val amount: Int get() = 1
+    <!INVALID_OBSERVER!>@Pure override fun size(): Int = 1<!>
+    <!INVALID_OBSERVER!>@Pure override val amount: Int get() = 1<!>
     @Law @Pure fun invariant(): Boolean = <!INVALID_LAW!>size()<!> >= 0
     @Law @Pure fun propertyInvariant(): Boolean = <!INVALID_LAW!>amount<!> >= 0
 }
@@ -32,14 +32,14 @@ open class OpenObservation : Observation {
 class RecursiveObservation : Observation {
     @Pure override fun size(): Int = again()
     @Pure fun again(): Int = size()
-    @Pure override val amount: Int get() = amount
+    <!INVALID_OBSERVER!>@Pure override val amount: Int get() = amount<!>
     @Law @Pure fun invariant(): Boolean = <!INVALID_LAW!>size()<!> >= 0
     @Law @Pure fun propertyInvariant(): Boolean = <!INVALID_LAW!>amount<!> >= 0
 }
 
 open class FinalObservation : Observation {
     @Pure final override fun size(): Int = 1
-    @Pure final override val amount: Int get() = 1
+    <!INVALID_OBSERVER!>@Pure final override val amount: Int get() = 1<!>
     @Law @Pure fun invariant(): Boolean = size() >= 0 && amount >= 0
 }
 

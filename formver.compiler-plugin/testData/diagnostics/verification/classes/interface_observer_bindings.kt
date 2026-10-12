@@ -17,13 +17,13 @@ interface BindingView {
 
 open class BindingCell(var contents: Int) : BindingView {
     @Pure @Unique @AlwaysVerify
-    override fun <!VIPER_TEXT!>value<!>(): Int = contents
+    final override fun <!VIPER_TEXT!>value<!>(): Int = contents
 
     @Pure @Unique @AlwaysVerify
-    override fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int = contents * factor
+    final override fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int = contents * factor
 
     @Pure @Unique @AlwaysVerify
-    override fun <!VIPER_TEXT!>read<!>(argument: @Unique BindingArgument): Int = contents + argument.number
+    final override fun <!VIPER_TEXT!>read<!>(argument: @Unique BindingArgument): Int = contents + argument.number
 }
 
 class InheritedBindingCell(contents: Int) : BindingCell(contents)

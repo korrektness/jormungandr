@@ -994,6 +994,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("unsupported_observer_views.kt")
+      public void testUnsupported_observer_views() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unsupported_observer_views.kt");
+      }
+
+      @Test
       @TestMetadata("untracked_write.kt")
       public void testUntracked_write() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/untracked_write.kt");
@@ -1413,6 +1419,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("observer_calls.kt")
       public void testObserver_calls() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/observer_calls.kt");
+      }
+
+      @Test
+      @TestMetadata("observer_dispatch_errors.kt")
+      public void testObserver_dispatch_errors() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/observer_dispatch_errors.kt");
       }
 
       @Test

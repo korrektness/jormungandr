@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.analysis.checkers.unsubstitutedScope
 import org.jetbrains.kotlin.fir.scopes.ScopeFunctionRequiresPrewarm
@@ -14,6 +15,7 @@ import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedCallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.isObserver
+import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 import org.jetbrains.kotlin.formver.core.names.embedName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -35,6 +37,18 @@ class ObserverBindingRegistry {
             val type = ctx.typeResolver.lookupClassTypeEmbedding(entry.key)!!
             context(ctx.checkerContext) {
                 val scope = entry.value.unsubstitutedScope()
+                for (name in scope.getCallableNames()) {
+                    scope.processPropertiesByName(name) { property ->
+                        if (property.isPure(ctx.session)) {
+                            throw UnsupportedFeatureException(entry.value.source, "a property observer")
+                        }
+                    }
+                    scope.processFunctionsByName(name) { member ->
+                        if (member.inheritedContractImplementation(entry.value)) {
+                            throw UnsupportedFeatureException(entry.value.source, "an inherited contract implementation")
+                        }
+                    }
+                }
                 for (name in scope.getCallableNames()) {
                     scope.processFunctionsByName(name) { member ->
                         if (!member.isObserverOrOverride()) return@processFunctionsByName
