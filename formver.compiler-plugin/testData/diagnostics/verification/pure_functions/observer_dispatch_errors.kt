@@ -41,8 +41,8 @@ class ExplicitDefaultOverride : DefaultMeter {
 }
 
 interface PropertyMeter {
-    <!INVALID_OBSERVER!>@Pure val size: Int<!>
+    @Pure val size: Int
 }
 class FixedSize : PropertyMeter {
-    <!INVALID_OBSERVER!>@Pure override val size: Int get() = 3<!>
+    @Pure override val size: Int get() = 3
 }

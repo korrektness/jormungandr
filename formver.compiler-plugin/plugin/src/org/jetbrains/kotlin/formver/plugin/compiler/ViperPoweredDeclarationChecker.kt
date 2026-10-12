@@ -15,7 +15,10 @@ import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
-import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
+import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
+import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
@@ -62,11 +65,18 @@ class ViperPoweredDeclarationChecker(
     private val config: PluginConfiguration,
     private val verifierLocator: VerifierLocator,
     private val reportedErrors: ReportedVerifierErrors,
-) : FirSimpleFunctionChecker(MppCheckerKind.Common) {
+) : FirFunctionChecker(MppCheckerKind.Common) {
     private val processedLambdas = mutableSetOf<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol>()
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun check(declaration: FirSimpleFunction) {
+    override fun check(declaration: FirFunction) {
+        when (declaration) {
+            is FirSimpleFunction -> {}
+            is FirPropertyAccessor -> {
+                if (!declaration.isGetter || declaration.body == null || !declaration.symbol.isPure(session)) return
+            }
+            else -> return
+        }
         if (!config.shouldConvert(declaration)) return
         declaration.lambdaPrograms = emptyList()
         val root = ProgramConverter(session, config, context, reporter)
@@ -84,7 +94,7 @@ class ViperPoweredDeclarationChecker(
             }
         }
         if (dumps.isNotEmpty()) {
-            reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.name.asString(), dumps.joinToString("\n\n"))
+            reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.verificationName, dumps.joinToString("\n\n"))
         }
     }
 
@@ -111,6 +121,7 @@ class ViperPoweredDeclarationChecker(
     private val FirDeclaration.verificationName: String
         get() = when (this) {
             is FirSimpleFunction -> name.asString()
+            is FirPropertyAccessor -> symbol.propertySymbol.name.asString()
             is FirRegularClass -> name.asString()
             is FirProperty -> name.asString()
             else -> error("Unexpected verification owner: ${this::class.simpleName}")
@@ -212,7 +223,7 @@ class ViperPoweredDeclarationChecker(
     private val neverVerifyId: ClassId = getAnnotationId("NeverVerify")
     private val dumpExpEmbeddingsId: ClassId = getAnnotationId("DumpExpEmbeddings")
 
-    private fun PluginConfiguration.shouldConvert(declaration: FirSimpleFunction): Boolean = when {
+    private fun PluginConfiguration.shouldConvert(declaration: FirFunction): Boolean = when {
         // Prevent compiler-derived or library functions from being verified
         declaration.origin != FirDeclarationOrigin.Source -> false
         // An enum's `values` and `valueOf` have no body to convert.

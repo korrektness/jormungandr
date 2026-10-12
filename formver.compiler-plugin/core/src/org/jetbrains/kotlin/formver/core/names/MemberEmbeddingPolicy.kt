@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.declarations.utils.visibility
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConversionContext
+import org.jetbrains.kotlin.formver.core.isPure
 
 enum class MemberEmbeddingPolicy {
     FUNCTION,
@@ -24,6 +25,7 @@ fun scopePolicy(property: FirPropertySymbol, ctx: ProgramConversionContext): Mem
     val isMutable = property.isVar
 
     return when {
+        property.isPure(ctx.session) -> MemberEmbeddingPolicy.FUNCTION
         wellBehaved && isMutable && isPrivate -> MemberEmbeddingPolicy.PRIVATE_BACKING_FIELD
         wellBehaved && isMutable -> MemberEmbeddingPolicy.BACKING_FIELD
         wellBehaved && !isMutable -> MemberEmbeddingPolicy.FUNCTION

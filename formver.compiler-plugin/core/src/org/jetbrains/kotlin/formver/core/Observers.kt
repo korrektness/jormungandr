@@ -16,10 +16,12 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
 
 /** Whether this member is a pure abstract member or ghost observer declared in an interface. */
 context(context: CheckerContext)
 fun FirCallableSymbol<*>.isObserver(): Boolean =
+    if (this is FirPropertyAccessorSymbol) propertySymbol.isObserver() else
     (isAbstract || isGhostObserver(context.session)) && isPure(context.session) &&
             (this is FirNamedFunctionSymbol || (this is FirPropertySymbol && !isVar)) &&
             (getContainingClassSymbol() as? FirClassSymbol<*>)?.classKind?.isInterface == true
@@ -27,6 +29,7 @@ fun FirCallableSymbol<*>.isObserver(): Boolean =
 /** Whether this member is an observer or overrides one, directly or through other overrides. */
 context(context: CheckerContext)
 fun FirCallableSymbol<*>.isObserverOrOverride(): Boolean =
+    if (this is FirPropertyAccessorSymbol) propertySymbol.isObserverOrOverride() else
     isObserver() || directOverriddenSymbolsSafe().any { it.isObserverOrOverride() }
 
 /** Observer snapshots refer to declarations independently of call-site type arguments. */

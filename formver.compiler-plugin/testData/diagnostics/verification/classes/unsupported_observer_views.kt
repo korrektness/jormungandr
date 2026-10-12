@@ -15,12 +15,3 @@ open class TallyBase(var v: Int) {
 }
 <!INVALID_OBSERVER!>class InheritedTally : TallyBase(0), Tally<!>
 <!UNSUPPORTED_FEATURE!>fun useInherited(t: @Unique InheritedTally): @Unique Tally = t<!>
-
-interface SizedProperty {
-    <!INVALID_OBSERVER!>@Pure val size: Int<!>
-    @Law @Pure fun nonnegative(): Boolean = size >= 0
-}
-<!UNSUPPORTED_FEATURE!>class FixedProperty : SizedProperty {
-    <!INVALID_OBSERVER!>@Pure override val size: Int get() = 3<!>
-}<!>
-<!UNSUPPORTED_FEATURE!>fun propertyClient(s: @Unique @Borrowed SizedProperty) { verify(<!UNSUPPORTED_FEATURE!>s.size<!> == 3) }<!>

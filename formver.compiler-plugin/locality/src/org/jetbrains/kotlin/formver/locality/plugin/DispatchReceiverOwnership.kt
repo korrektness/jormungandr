@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
 import org.jetbrains.kotlin.fir.types.classLikeLookupTagIfAny
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure
@@ -62,7 +63,9 @@ fun FirClassSymbol<*>.receiverOwner(): FirDeclaration? {
             is FirAnonymousFunction -> {}
             is FirConstructor -> if (element.symbol.containingClassLookupTag() == toLookupTag()) return element
             is FirFunction, is FirProperty ->
-                if ((element as FirCallableDeclaration).dispatchReceiverType?.classLikeLookupTagIfAny == toLookupTag()) {
+                if (((element as? FirFunction)?.symbol as? FirPropertyAccessorSymbol)?.propertySymbol?.dispatchReceiverType
+                        ?.classLikeLookupTagIfAny == toLookupTag() ||
+                    (element as FirCallableDeclaration).dispatchReceiverType?.classLikeLookupTagIfAny == toLookupTag()) {
                     return element
                 }
             is FirAnonymousInitializer -> if (element.containingDeclarationSymbol == this) return element
@@ -105,7 +108,9 @@ class DispatchReceiverAnnotationPlacementChecker(
 ) : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
-        if (declaration.dispatchReceiverType != null) return
+        val symbol = declaration.symbol
+        if (declaration.dispatchReceiverType != null ||
+            (symbol is FirPropertyAccessorSymbol && symbol.propertySymbol.dispatchReceiverType != null)) return
         val annotation = declaration.getAnnotationByClassId(annotationId, context.session) ?: return
         reporter.reportOn(annotation.source, factory)
     }

@@ -7,8 +7,8 @@ interface Measure {
     @Pure
     fun scaled(factor: Int): Int
 
-    <!INVALID_OBSERVER!>@Pure
-    val size: Int<!>
+    @Pure
+    val size: Int
 
     fun plain(x: Int): Int
 
@@ -27,9 +27,9 @@ class Accepted : Measure {
     @Pure
     override fun scaled(factor: Int): Int = factor * 2
 
-    <!INVALID_OBSERVER!>@Pure
+    @Pure
     override val size: Int
-        get() = 3<!>
+        get() = 3
 
     override fun plain(x: Int): Int = x
 
@@ -56,8 +56,8 @@ abstract class Bodiless : Measure {
 }
 
 interface Sized {
-    <!INVALID_OBSERVER!>@Pure
-    val size: Int<!>
+    @Pure
+    val size: Int
 
     fun grow(): Int
 }
@@ -82,6 +82,6 @@ open class Base {
 class InheritingChild : Inheriting()
 
 class Holder {
-    <!INVALID_OBSERVER!>@Pure
-    val value: Int = 0<!>
+    @Pure
+    val value: Int = 0
 }

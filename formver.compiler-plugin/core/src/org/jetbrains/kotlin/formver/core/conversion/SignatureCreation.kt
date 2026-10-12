@@ -66,7 +66,7 @@ val FirFunctionSymbol<*>.extensionReceiverType: ConeKotlinType?
 /** The symbol at which the uniqueness analysis of this function roots paths through `this`. */
 context(converter: ProgramConversionContext)
 val FirFunctionSymbol<*>.dispatchReceiverRoot: FirClassSymbol<*>?
-    get() = dispatchReceiverType?.toClassSymbol(converter.session)
+    get() = receiverType?.toClassSymbol(converter.session)
 
 /** The receivers of [signature], this function's signature, each with the symbol its paths are rooted at. */
 context(converter: ProgramConversionContext)

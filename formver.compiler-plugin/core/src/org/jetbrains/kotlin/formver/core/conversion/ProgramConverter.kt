@@ -221,13 +221,16 @@ class ProgramConverter(
     }
 
     /** Embeds the signature and, unless `@NeverVerify`, the body of [declaration]. */
-    fun register(declaration: FirSimpleFunction) {
+    fun register(declaration: FirFunction) {
         registeredSymbol = declaration.symbol
         val signature = embedCompleteSignature(declaration.symbol)
-        if (!declaration.symbol.neverVerify(session)) embedFunctionBody(declaration.symbol, signature)
+        if (!declaration.symbol.neverVerify(session) &&
+            (!signature.signature.isPure || convertedBodyResolver.lookupPure(signature.signature.name) == null)) {
+            embedFunctionBody(declaration.symbol, signature)
+        }
         val hasUniquenessErrors = uniquenessOutcomeOf(declaration).hasErrors
         registered += RegisteredFunction(declaration, signature.signature, signature.returnTarget, hasUniquenessErrors)
-        registerRefinements(declaration, signature.signature)
+        if (declaration is FirSimpleFunction) registerRefinements(declaration, signature.signature)
     }
 
     /**
@@ -398,12 +401,12 @@ class ProgramConverter(
     private fun embedFunctionBody(
         symbol: FirFunctionSymbol<*>, signature: SignatureWithTarget<CompleteFunctionSignature>
     ) {
-        val declaration = symbol.fir as? FirSimpleFunction ?: throw SnaktInternalException(
-            symbol.source, "Expected FirSimpleFunction, got unexpected type ${symbol.fir.javaClass.simpleName}"
-        )
+        val declaration = symbol.fir
 
         if (signature.signature.isPure && context(checkerContext) { symbol.isObserver() }) return
-        lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(declaration) })
+        if (declaration is FirSimpleFunction) {
+            lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(declaration) })
+        }
 
         val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis)
         if (signature.signature.isPure) {
@@ -411,7 +414,7 @@ class ProgramConverter(
             checkVarReads(declaration) { body.checkReadOnlyVarReads(it, this) }
             convertedBodyResolver.storePure(signature.signature.name, body)
         } else {
-            val body = context.convertImpureBody(declaration, signature.signature, signature.returnTarget)
+            val body = context.convertImpureBody(declaration as FirSimpleFunction, signature.signature, signature.returnTarget)
             checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
             declaration.source?.let { source -> body?.bodyExp?.checkNoMultisetValues(source, this) }
             body?.let { convertedBodyResolver.storeImpure(signature.signature.name, it) }
@@ -548,7 +551,8 @@ class ProgramConverter(
      *
      *
      * * Closed `val` (No Getter): Maps to a pure function. This can be done because the value cannot be changed.
-     * * Closed `val` (With Getter): Maps to an impure function to execute the custom getter logic.
+     * * `@Pure val`: Maps to a pure function with the getter's body when present.
+     * * Closed `val` (With Getter): Maps to an impure function for an unannotated custom getter.
      * * Closed `var`: Maps to a backing field. This value needs permissions and can be changed.
      * * Open `val` / `var`: Maps to an impure method. Abstracted because subclasses can override the behavior, introduce side effects, or turn a `val` into a `var`.
      * * Extension properties are handled like open properties.
@@ -580,6 +584,12 @@ class ProgramConverter(
                 val returnType = embedType(symbol.resolvedReturnType)
 
                 val (getter, setter) = when {
+                    symbol.isPure(session) && !isDefaultProperty -> {
+                        val accessor = symbol.getterSymbol ?: error("Pure property has no getter")
+                        val callable = embedAnyFunction(accessor) as NamedCallableEmbedding
+                        Pair(CustomGetter(fullSignatures.getValue(callable.name) as NonInlineFunctionSignature), null)
+                    }
+
                     (isDefaultProperty && !isImmutable) || isManual -> {
                         // use a backing field
                         val field = embedBackingField(symbol, regularClass)
@@ -696,6 +706,14 @@ class ProgramConverter(
     }
 
     private fun embedExtensionProperty(symbol: FirPropertySymbol): PropertyEmbedding {
+        if (symbol.isPure(session)) {
+            val callable = embedAnyFunction(symbol.getterSymbol ?: error("Pure property has no getter")) as NamedCallableEmbedding
+            return PropertyEmbedding(
+                CustomGetter(fullSignatures.getValue(callable.name) as NonInlineFunctionSignature),
+                setter = null, hasDefaultBehaviour = false, isUnique = false,
+                isVal = symbol.isVal, type = embedType(symbol.resolvedReturnType),
+            )
+        }
         val getterType = buildFunctionPretype {
             withExtensionReceiver { nullableAny() }
             withReturnType { nullableAny() }

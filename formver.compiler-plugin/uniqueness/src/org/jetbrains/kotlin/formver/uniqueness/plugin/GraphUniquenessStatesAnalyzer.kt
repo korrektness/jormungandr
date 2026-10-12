@@ -46,6 +46,7 @@ import org.jetbrains.kotlin.formver.locality.plugin.resolveCapturedSymbols
 import org.jetbrains.kotlin.formver.locality.plugin.resolveLocality
 import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
 import org.jetbrains.kotlin.formver.readonly.plugin.isPureCall
+import org.jetbrains.kotlin.formver.readonly.plugin.isPure
 import org.jetbrains.kotlin.formver.type.plugin.CallArgumentTypeFactsMapper
 
 typealias UniquenessStateFlow = ControlFlowInfo<Unit, UniquenessState>
@@ -251,6 +252,7 @@ class GraphUniquenessStatesAnalyzer(
     private fun UniquenessState.passReceiversToAccessor(access: FirQualifiedAccessExpression): UniquenessState {
         if (access in readOnlyContext || access.stringBuilderIntrinsic(context.session) != null) return this
         val property = access.accessorCallProperty(context.session) ?: return this
+        if (property.isPure(context.session)) return this
         var newUniquenessState = this
         for (receiver in listOfNotNull(access.dispatchReceiver, access.extensionReceiver)) {
             newUniquenessState = receiver.resolveAccessState().move(newUniquenessState)

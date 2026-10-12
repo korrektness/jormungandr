@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.formver.core.isPure
 
+
 import org.jetbrains.kotlin.contracts.description.LogicOperationKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.FirProperty
@@ -216,10 +217,6 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 } else return expansion.call(symbol, listOf(data.convert(propertyAccessExpression.dispatchReceiver!!)))
             }
         }
-        val propertySymbol = propertyAccessExpression.toResolvedCallableSymbol() as? FirPropertySymbol
-        if (propertySymbol?.isPure(data.session) == true) {
-            throw UnsupportedFeatureException(propertyAccessExpression.source, "a property observer")
-        }
         val propertyAccess = data.embedPropertyAccess(propertyAccessExpression)
         return propertyAccess.getValue(data)
     }
@@ -233,7 +230,11 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
      * A `const val` reads as the literal of its initializer. Any other property without a receiver is read as an
      * unconstrained value of its type.
      */
+    @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
     private fun StmtConversionContext.convertTopLevelPropertyRead(symbol: FirPropertySymbol): ExpEmbedding {
+        if (symbol.isPure(session) && symbol.getterSymbol?.fir?.body != null) {
+            return embedAnyFunction(symbol.getterSymbol!!).insertCall(emptyList(), this)
+        }
         if (symbol.resolvedStatus.isConst) return convert(symbol.resolvedInitializer!!)
         val declaration = declareAnonVar(embedType(symbol.resolvedReturnType), null)
         val value = declaration.variable.withInvariants(typeResolver) {

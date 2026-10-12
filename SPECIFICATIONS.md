@@ -116,18 +116,20 @@ is reported as an unsupported construct.
 
 ### Observers
 
-An observer is an abstract `@Pure` function of an interface. A class implements it with a
-`@Pure` override that has a body and fixed dispatch (see [Class laws](#class-laws)).
+An observer is an abstract `@Pure` function or `val` of an interface. A class implements it with a
+`@Pure` override whose function body or getter has fixed dispatch (see [Class laws](#class-laws)).
+Property getters use the same binding, ownership-transfer and law encoding as function observers.
+Use `@get:Unique` for a getter that reads mutable owned state.
 
 ```kotlin
 interface Measure {
-    @Pure
-    fun scaled(factor: Int): Int
+    @Pure val size: Int
+    @Pure fun scaled(factor: Int): Int
 }
 
 class Fixed : Measure {
-    @Pure
-    override fun scaled(factor: Int): Int = factor * 2
+    @Pure override val size: Int get() = 2
+    @Pure override fun scaled(factor: Int): Int = factor * size
 }
 ```
 
@@ -138,7 +140,7 @@ These are reported as `INVALID_OBSERVER`:
 - a class that implements an observer by inheriting a member that is not `@Pure` from a superclass;
 - a `@Pure` override of a member that is neither an observer nor an override of one;
 - an observer implementation with overridable dispatch;
-- a `@Pure` property.
+- a `@Pure var`.
 
 An observer function is encoded as a bodiless Viper function; a class override is encoded with its pure body.
 Calls select the function of the receiver's static type. Permissions follow the `@Pure` encoding described in

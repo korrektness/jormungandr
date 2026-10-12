@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirCallableDeclara
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirPropertyChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirBasicExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
@@ -28,8 +29,10 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
     }
 
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
-        override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker> = setOf(
+        override val functionCheckers: Set<FirFunctionChecker> = setOf(
             ViperPoweredDeclarationChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
+        )
+        override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker> = setOf(
             FunctionUniquenessStateRenderingChecker(config),
             SpecOfDeclarationChecker(session),
             LawDeclarationChecker,

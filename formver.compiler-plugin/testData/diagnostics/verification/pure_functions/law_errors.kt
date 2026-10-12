@@ -24,10 +24,10 @@ class Helpers {
 fun companionProvider(): Helpers.Companion = Helpers
 
 interface Laws {
-    <!INVALID_OBSERVER!>@Pure val size: Int<!>
+    @Pure val size: Int
     @Pure fun measure(factor: Int): Int
     val ordinary: Int
-    <!INVALID_OBSERVER!>@Pure val other: Laws<!>
+    @Pure val other: Laws
     fun impure(): Boolean
     @Pure fun memberHelper(): Boolean = true
 

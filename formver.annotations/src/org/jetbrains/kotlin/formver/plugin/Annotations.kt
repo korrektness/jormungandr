@@ -14,7 +14,7 @@ annotation class DumpExpEmbeddings
  *
  * On a member function, marks its dispatch receiver `this` as uniquely referenced, as in `@Unique fun reset()`.
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 annotation class Unique
 
 /**
@@ -22,7 +22,7 @@ annotation class Unique
  *
  * On a member function, marks its dispatch receiver `this` as borrowed, as in `@Borrowed @Unique fun size()`.
  */
-@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 annotation class Borrowed
 
 /** Marks a pure function or observer; see "Pure functions and specifications" and "Observers" in SPECIFICATIONS.md. */

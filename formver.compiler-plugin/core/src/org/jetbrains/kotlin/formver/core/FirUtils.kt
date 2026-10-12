@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.formver.readonly.plugin.isPure as isReadOnlyPure
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
@@ -100,7 +101,7 @@ fun FirBasedSymbol<*>.isBorrowed(): Boolean =
 context(context: CheckerContext)
 fun FirFunctionSymbol<*>.returnsUnique(): Boolean = resolveResultUniqueness() == Uniqueness.Unique
 
-fun FirBasedSymbol<*>.isPure(session: FirSession) = hasAnnotation(annotationId("Pure"), session)
+fun FirBasedSymbol<*>.isPure(session: FirSession): Boolean = isReadOnlyPure(session)
 
 fun FirBasedSymbol<*>.isLaw(session: FirSession) = hasAnnotation(annotationId("Law"), session)
 

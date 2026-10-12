@@ -10,12 +10,13 @@ import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.analysis.checkers.unsubstitutedScope
 import org.jetbrains.kotlin.fir.scopes.ScopeFunctionRequiresPrewarm
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.formver.core.embeddings.properties.CustomGetter
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedCallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.isObserver
-import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 import org.jetbrains.kotlin.formver.core.names.embedName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -38,11 +39,6 @@ class ObserverBindingRegistry {
             context(ctx.checkerContext) {
                 val scope = entry.value.unsubstitutedScope()
                 for (name in scope.getCallableNames()) {
-                    scope.processPropertiesByName(name) { property ->
-                        if (property.isPure(ctx.session)) {
-                            throw UnsupportedFeatureException(entry.value.source, "a property observer")
-                        }
-                    }
                     scope.processFunctionsByName(name) { member ->
                         if (member.inheritedContractImplementation(entry.value)) {
                             throw UnsupportedFeatureException(entry.value.source, "an inherited contract implementation")
@@ -50,6 +46,19 @@ class ObserverBindingRegistry {
                     }
                 }
                 for (name in scope.getCallableNames()) {
+                    scope.processPropertiesByName(name) { member ->
+                        if (member !is FirPropertySymbol || !member.isObserverOrOverride()) return@processPropertiesByName
+                        val getter = ctx.embedProperty(member.unwrapFakeOverrides()).getter as CustomGetter
+                        val binding = signature(getter.getterMethod.name)
+                        fun bind(symbol: FirPropertySymbol) {
+                            if (symbol.isObserver()) {
+                                val observer = ctx.embedProperty(symbol).getter as CustomGetter
+                                ctx.typeResolver.bindObserver(type, observer.getterMethod.name, binding)
+                            }
+                            symbol.directOverriddenSymbolsSafe().filterIsInstance<FirPropertySymbol>().forEach(::bind)
+                        }
+                        bind(member)
+                    }
                     scope.processFunctionsByName(name) { member ->
                         if (!member.isObserverOrOverride()) return@processFunctionsByName
                         val bindingName = (ctx.embedAnyFunction(member.unwrapFakeOverrides()) as NamedCallableEmbedding).name

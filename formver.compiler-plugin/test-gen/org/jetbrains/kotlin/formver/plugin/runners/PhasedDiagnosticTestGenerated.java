@@ -898,6 +898,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("property_observers.kt")
+      public void testProperty_observers() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/property_observers.kt");
+      }
+
+      @Test
       @TestMetadata("secondary_constructors.kt")
       public void testSecondary_constructors() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/secondary_constructors.kt");

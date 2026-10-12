@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.FirOperation
@@ -405,7 +406,7 @@ fun StmtConversionContext.convertImpureBody(
     return ConvertedMethodBody(bodyExp, returnTarget)
 }
 
-fun StmtConversionContext.convertPureBody(declaration: FirSimpleFunction): ExpEmbedding {
+fun StmtConversionContext.convertPureBody(declaration: FirFunction): ExpEmbedding {
     val firBody = declaration.body ?: throw SnaktInternalException(
         declaration.source,
         "Pure functions expect a function body to exist"

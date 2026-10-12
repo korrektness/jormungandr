@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
@@ -56,7 +57,8 @@ fun FirFunctionCall.isUniquePredConstruction(): Boolean =
     (toResolvedCallableSymbol() as? FirFunctionSymbol<*>)?.isUniquePredConstructor == true
 
 fun FirBasedSymbol<*>.isPure(session: FirSession): Boolean =
-    hasAnnotation(pureAnnotationId, session)
+    hasAnnotation(pureAnnotationId, session) ||
+            (this is FirPropertyAccessorSymbol && isGetter && propertySymbol.isPure(session))
 
 fun FirFunctionCall.isPureCall(session: FirSession): Boolean =
     toResolvedCallableSymbol()?.isPure(session) == true
