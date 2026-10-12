@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.embeddings.callables
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.formver.core.asPosition
@@ -213,7 +214,9 @@ data class InlineNamedFunction(
         val analysis = ctx.uniquenessAnalysisOf(symbol)
         if (analysis == null) {
             ctx.reportUnsupportedOwnership(
-                ctx.callSite?.source, "The uniqueness checker has no facts for the inline function '${symbol.name}'."
+                ctx.callSite?.source, ConversionOwnershipCondition.MissingFacts(
+                    ConversionOwnershipCondition.MissingFactsRule.INLINE_FUNCTION, symbol, symbol.source,
+                )
             )
         }
         return ctx.insertInlineFunctionCall(signature, paramNames, roots, args, firBody, signature.labelName, analysis)

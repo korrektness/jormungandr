@@ -7,7 +7,13 @@ package org.jetbrains.kotlin.formver.plugin.compiler
 
 import org.jetbrains.kotlin.KtRealSourceElementKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.ObserverRule
+import org.jetbrains.kotlin.formver.common.reportObserver
+import org.jetbrains.kotlin.formver.common.ExposesRule
+import org.jetbrains.kotlin.formver.common.Failure
+import org.jetbrains.kotlin.formver.common.FailureKind
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
@@ -53,7 +59,7 @@ object GhostObserverDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind
         // Override validity belongs to ObserverDeclarationChecker.
         if (declaration.overriddenGhostObserver() != null) return
         val failure = declaration.ghostObserverViolation()
-        if (failure != null) reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, failure)
+        if (failure != null) reporter.reportObserver(declaration.source, KotlinCondition.Observer(failure))
     }
 }
 
@@ -92,16 +98,16 @@ object ExposesPlacementChecker : FirBasicExpressionChecker(MppCheckerKind.Common
         if (expression is FirCallableReferenceAccess) {
             val callee = expression.toResolvedCallableSymbol() as? FirNamedFunctionSymbol
             if (callee?.isGhostObserver(context.session) == true || callee?.isFormverFunctionNamed("ghostObserver") == true) {
-                reporter.reportOn(expression.source, PluginErrors.INVALID_OBSERVER, "Ghost observer reference.")
+                reporter.reportObserver(expression.source, KotlinCondition.Observer(ObserverRule.GHOST_REFERENCE, callee))
             }
             if (callee?.isFormverFunctionNamed("exposes") == true) {
-                reporter.reportOn(expression.source, PluginErrors.INVALID_EXPOSES, "Observer binding reference.")
+                reporter.reportFailure(Failure(FailureKind.INVALID_EXPOSES, expression.source, KotlinCondition.Exposes(ExposesRule.REFERENCE)))
             }
         }
         val (spec, lambda) = expression.samLambda() ?: return
         if (spec.ghostObservers().isEmpty()) return
         if (lambda.body?.statements?.firstOrNull()?.unwrappedResult()?.isExposes() != true) {
-            reporter.reportOn(expression.source, PluginErrors.INVALID_EXPOSES, "Missing observer bindings.")
+            reporter.reportFailure(Failure(FailureKind.INVALID_EXPOSES, expression.source, KotlinCondition.Exposes(ExposesRule.MISSING_BINDINGS)))
         }
     }
 }
@@ -114,15 +120,15 @@ object ExposesCallChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
         if (callee.isFormverFunctionNamed("ghostObserver")) {
             val owner = context.containingDeclarations.lastOrNull() as? FirNamedFunctionSymbol
             if (owner?.isGhostObserver(context.session) != true) {
-                reporter.reportOn(expression.source, PluginErrors.INVALID_OBSERVER, "Ghost placeholder use.")
+                reporter.reportObserver(expression.source, KotlinCondition.Observer(ObserverRule.GHOST_PLACEHOLDER_USE, callee))
             }
         }
         if (callee.isGhostObserver(context.session) && !inSpecification(expression, callee)) {
-            reporter.reportOn(expression.source, PluginErrors.INVALID_OBSERVER, "Executable ghost observer use.")
+            reporter.reportObserver(expression.source, KotlinCondition.Observer(ObserverRule.EXECUTABLE_GHOST_USE, callee))
         }
         if (!callee.isFormverFunctionNamed("exposes")) return
         val failure = violation(expression)
-        if (failure != null) reporter.reportOn(expression.source, PluginErrors.INVALID_EXPOSES, failure)
+        if (failure != null) reporter.reportFailure(Failure(FailureKind.INVALID_EXPOSES, expression.source, KotlinCondition.Exposes(failure)))
     }
 
     context(context: CheckerContext)
@@ -140,32 +146,32 @@ object ExposesCallChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
     }
 
     context(context: CheckerContext)
-    private fun violation(call: FirFunctionCall): String? {
+    private fun violation(call: FirFunctionCall): ExposesRule? {
         val lambda = context.containingElements.filterIsInstance<FirAnonymousFunction>().lastOrNull()
-            ?: return "Observer bindings outside a SAM lambda."
-        if (lambda.body?.statements?.firstOrNull()?.unwrappedResult() !== call) return "Misplaced observer bindings."
+            ?: return ExposesRule.OUTSIDE_SAM_LAMBDA
+        if (lambda.body?.statements?.firstOrNull()?.unwrappedResult() !== call) return ExposesRule.PLACEMENT
         val sam = context.containingElements.filterIsInstance<FirStatement>()
             .mapNotNull { it.samLambda() }.lastOrNull { it.lambda === lambda }
-            ?: return "Observer bindings outside a SAM conversion."
+            ?: return ExposesRule.OUTSIDE_SAM_CONVERSION
         val spec = sam.spec
-        if (!spec.fir.isInterface || !spec.fir.status.isFun) return "Invalid callable specification."
+        if (!spec.fir.isInterface || !spec.fir.status.isFun) return ExposesRule.CALLABLE_SPECIFICATION
         return argumentsViolation(call, spec, lambda)
     }
 
     context(context: CheckerContext)
-    private fun argumentsViolation(call: FirFunctionCall, spec: FirRegularClassSymbol, lambda: FirAnonymousFunction): String? {
+    private fun argumentsViolation(call: FirFunctionCall, spec: FirRegularClassSymbol, lambda: FirAnonymousFunction): ExposesRule? {
         val arguments = call.resolvedArgumentMapping.orEmpty().entries.associate { (argument, parameter) ->
             parameter.name.asString() to argument.unwrapArgument()
         }
-        val token = arguments["spec"] as? FirGetClassCall ?: return "Invalid specification token."
+        val token = arguments["spec"] as? FirGetClassCall ?: return ExposesRule.SPECIFICATION_TOKEN
         if (token.argument !is FirResolvedQualifier && token.argument !is FirClassReferenceExpression) {
-            return "Non-literal specification token."
+            return ExposesRule.NON_LITERAL_TOKEN
         }
         val namedSpec = token.argument.resolvedType.toRegularClassSymbol(context.session)
-        if (namedSpec != spec) return "Mismatched callable specification."
+        if (namedSpec != spec) return ExposesRule.MISMATCHED_SPECIFICATION
         val body = (arguments["body"] as? FirAnonymousFunctionExpression)?.anonymousFunction
-            ?: return "Non-literal observer bindings."
-        if (!body.isLambda) return "Non-lambda observer bindings."
+            ?: return ExposesRule.NON_LITERAL_BINDINGS
+        if (!body.isLambda) return ExposesRule.NON_LAMBDA_BINDINGS
         return bindingsViolation(body, spec.ghostObservers(), lambda.valueParameters.map { it.symbol }.toSet())
     }
 
@@ -174,15 +180,15 @@ object ExposesCallChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
         body: FirAnonymousFunction,
         expected: Set<FirNamedFunctionSymbol>,
         inputs: Set<FirBasedSymbol<*>>,
-    ): String? {
+    ): ExposesRule? {
         val bound = mutableSetOf<FirNamedFunctionSymbol>()
         val statements = body.body?.statements.orEmpty()
-        var failure: String? = if (statements.isEmpty()) "Empty observer bindings." else null
+        var failure: ExposesRule? = if (statements.isEmpty()) ExposesRule.EMPTY_BINDINGS else null
         for (statement in statements) {
             val bindingFailure = bindingViolation(statement, body, expected, inputs, bound)
             failure = failure ?: bindingFailure
         }
-        if (failure == null && bound != expected) failure = "Incomplete observer bindings."
+        if (failure == null && bound != expected) failure = ExposesRule.INCOMPLETE_BINDINGS
         return failure
     }
 
@@ -193,20 +199,20 @@ object ExposesCallChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
         expected: Set<FirNamedFunctionSymbol>,
         inputs: Set<FirBasedSymbol<*>>,
         bound: MutableSet<FirNamedFunctionSymbol>,
-    ): String? {
+    ): ExposesRule? {
         val explicitReturn = statement is FirReturnExpression && statement.source?.kind == KtRealSourceElementKind
         val equality = statement.unwrappedResult() as? FirEqualityOperatorCall
         val left = equality?.argumentList?.arguments?.firstOrNull() as? FirFunctionCall
         val observer = (left?.toResolvedCallableSymbol() as? FirNamedFunctionSymbol)?.unwrapFakeOverrides()
         val right = equality?.argumentList?.arguments?.getOrNull(1)
         return when {
-            explicitReturn || equality == null -> "Invalid observer binding."
-            equality.operation != FirOperation.EQ -> "Invalid observer binding operator."
-            left == null -> "Invalid binding target."
-            observer !in expected || !left.isBindingTarget(body) -> "Foreign observer binding."
-            right == null || !right.isObserverBindingValue(context.session, body.receiverParameter?.symbol) -> "Invalid observer binding value."
-            right.readsAny(inputs) -> "Observer binding value reads a lambda parameter."
-            !bound.add(observer!!) -> "Duplicate observer binding."
+            explicitReturn || equality == null -> ExposesRule.BINDING_SHAPE
+            equality.operation != FirOperation.EQ -> ExposesRule.BINDING_OPERATOR
+            left == null -> ExposesRule.BINDING_TARGET
+            observer !in expected || !left.isBindingTarget(body) -> ExposesRule.FOREIGN_BINDING
+            right == null || !right.isObserverBindingValue(context.session, body.receiverParameter?.symbol) -> ExposesRule.BINDING_VALUE
+            right.readsAny(inputs) -> ExposesRule.PARAMETER_DEPENDENT_VALUE
+            !bound.add(observer!!) -> ExposesRule.DUPLICATE_BINDING
             else -> null
         }
     }

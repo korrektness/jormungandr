@@ -25,7 +25,8 @@ fun ExpEmbedding.checkNoMultisetValues(source: KtSourceElement, errors: ErrorCol
     when {
         this is Assert || this is Refute || this is VariableEmbedding -> {}
         type.pretype == MultisetTypeEmbedding ->
-            errors.reportUnsupportedFeature(nextSource, "a `Multiset` outside a specification")
+            errors.reportUnsupportedFeature(nextSource, "a `Multiset` outside a specification",
+                org.jetbrains.kotlin.formver.common.UnsupportedReason.MULTISET_OUTSIDE_SPECIFICATION)
         else -> children().forEach { it.checkNoMultisetValues(nextSource, errors) }
     }
 }

@@ -1,7 +1,7 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -68,14 +68,18 @@ private fun checkPathCollision(
             if (commonPrefixLength == 0) continue
 
             if (commonPrefixLength == leftPath.size && commonPrefixLength == rightPath.size) {
-                if (alsoLeft) reporter.reportOn(leftSource, INVALID_DUPLICATE_UNIQUE_ARGUMENT, leftPath)
-                reporter.reportOn(rightSource, INVALID_DUPLICATE_UNIQUE_ARGUMENT, rightPath)
+                if (alsoLeft) reporter.reportFailure(argumentCollisionFailure(
+                    leftSource, INVALID_DUPLICATE_UNIQUE_ARGUMENT, leftPath, rightPath, rightSource))
+                reporter.reportFailure(argumentCollisionFailure(
+                    rightSource, INVALID_DUPLICATE_UNIQUE_ARGUMENT, rightPath, leftPath, leftSource))
             } else if (
                 extendsThroughUniqueFields(leftPath, rightPath, commonPrefixLength) ||
                 extendsThroughUniqueFields(rightPath, leftPath, commonPrefixLength)
             ) {
-                if (alsoLeft) reporter.reportOn(leftSource, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, leftPath, rightPath)
-                reporter.reportOn(rightSource, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, rightPath, leftPath)
+                if (alsoLeft) reporter.reportFailure(argumentCollisionFailure(
+                    leftSource, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, leftPath, rightPath, rightSource))
+                reporter.reportFailure(argumentCollisionFailure(
+                    rightSource, INVALID_OVERLAPPING_UNIQUE_ARGUMENTS, rightPath, leftPath, leftSource))
             }
         }
     }

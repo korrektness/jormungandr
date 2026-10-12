@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.type.plugin
 
+import org.jetbrains.kotlin.formver.common.FactPosition
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -23,7 +24,7 @@ interface TypeFactMismatchExplainer<TypeFact> {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     fun reportExplained(
         source: KtSourceElement?,
-        position: String,
+        position: FactPosition,
         expression: FirExpression,
         requiredTypeFact: TypeFact,
         actualTypeFact: TypeFact,

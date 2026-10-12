@@ -7,14 +7,12 @@ package org.jetbrains.kotlin.formver.type.plugin
 
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory3
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.FactPosition
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirCallChecker
 import org.jetbrains.kotlin.fir.expressions.FirCall
 import org.jetbrains.kotlin.fir.expressions.unwrapAndFlattenArgument
-import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.resolvedType
 
 /**
@@ -33,8 +31,8 @@ class CallTypeFactChecker<TypeFact>(
     private val typeFactJudgment: TypeFactJudgment<TypeFact>,
     private val expressionTypeFactResolver: ExpressionTypeFactResolver<TypeFact>,
     private val callArgumentTypeFactsMapper: CallArgumentTypeFactsMapper<TypeFact>,
-    private val argumentDiagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
-    private val contextDiagnosticFactory: KtDiagnosticFactory3<ConeKotlinType, TypeFact, TypeFact>,
+    private val argumentDiagnosticFactory: TypeFactDiagnostic<TypeFact>,
+    private val contextDiagnosticFactory: TypeFactDiagnostic<TypeFact>,
     private val mismatchExplainer: TypeFactMismatchExplainer<TypeFact>? = null,
 ) : FirCallChecker(kind) {
 
@@ -51,7 +49,7 @@ class CallTypeFactChecker<TypeFact>(
                 if (typeFactJudgment.satisfies(requiredTypeFact, actualTypeFact)) continue
 
                 if (argument.source?.kind is KtFakeSourceElementKind.ImplicitContextParameterArgument) {
-                    reporter.reportOn(
+                    reporter.reportTypeFactFailure(
                         expression.source,
                         contextDiagnosticFactory,
                         argument.resolvedType,
@@ -59,14 +57,14 @@ class CallTypeFactChecker<TypeFact>(
                         actualTypeFact
                     )
                 } else if (mismatchExplainer?.reportExplained(
-                        effectiveArgument.source ?: argument.source, "Argument", effectiveArgument,
+                        effectiveArgument.source ?: argument.source, FactPosition.ARGUMENT, effectiveArgument,
                         requiredTypeFact, actualTypeFact
                     ) != true
                 ) {
-                    reporter.reportOn(
+                    reporter.reportTypeFactFailure(
                         effectiveArgument.source ?: argument.source,
                         argumentDiagnosticFactory,
-                        "Argument",
+                        FactPosition.ARGUMENT,
                         requiredTypeFact,
                         actualTypeFact
                     )

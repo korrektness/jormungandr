@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtensi
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 import org.jetbrains.kotlin.formver.locality.contract.plugin.ExpressionLocalityContractResolver
 import org.jetbrains.kotlin.formver.locality.contract.plugin.LocalityContractAdditionalCheckers
-import org.jetbrains.kotlin.formver.locality.contract.plugin.LocalityContractErrors
 import org.jetbrains.kotlin.formver.uniqueness.attribute.UniquenessAttributeExtension
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -44,8 +43,7 @@ class LocalityExtensionRegistrar(
     private val uniquenessAnnotationId: ClassId = defaultUniquenessAnnotationId,
 ) : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
-        registerDiagnosticContainers(LocalityErrors)
-        registerDiagnosticContainers(LocalityContractErrors)
+        registerDiagnosticContainers(org.jetbrains.kotlin.formver.common.FailureDiagnostics)
         +LocalityAttributeExtension.getFactory(localityAnnotationId)
         +UniquenessAttributeExtension.getFactory(uniquenessAnnotationId)
         +ExpressionLocalityContractResolver.getFactory()

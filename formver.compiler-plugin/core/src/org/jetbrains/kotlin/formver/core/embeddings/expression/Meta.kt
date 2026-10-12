@@ -6,11 +6,15 @@
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
+import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 
-data class WithPosition(val inner: ExpEmbedding, val source: KtSourceElement) : ExpEmbedding {
+data class WithPosition(val inner: ExpEmbedding, val source: KtSourceElement, override val sourceRole: SourceRole? = null) : ExpEmbedding {
     override val type: TypeEmbedding
         get() = inner.type
 
@@ -20,6 +24,13 @@ data class WithPosition(val inner: ExpEmbedding, val source: KtSourceElement) : 
 
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(inner)
 }
+
+fun List<ExpEmbedding>.withProofClause(clause: KotlinCondition.ProofClause, declaration: FirFunctionSymbol<*>): List<ExpEmbedding> =
+    map { exp ->
+        val source = (exp as? WithPosition)?.source ?: declaration.source
+            ?: throw SnaktInternalException(null, "An explicit specification has no Kotlin source.")
+        WithPosition(exp, source, SourceRole.Proof(clause, declaration))
+    }
 
 fun ExpEmbedding.withPosition(source: KtSourceElement?): ExpEmbedding =
     when {

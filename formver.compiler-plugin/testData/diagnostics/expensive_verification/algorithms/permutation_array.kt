@@ -83,9 +83,9 @@ fun <!VIPER_TEXT!>rotateFirstThree<!>(arr: @Unique @Borrowed IntArray) {
     swap(arr, 1, 2)
 }
 
-fun <!VIPER_TEXT!>zeroAll<!>(arr: @Unique @Borrowed IntArray) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>zeroAll<!>(arr: @Unique @Borrowed IntArray) {
     postconditions<Unit> {
-        <!VIPER_VERIFICATION_ERROR!>contents(arr)<!> == old(contents(arr))
+        contents(arr) == old(contents(arr))
     }
     var i = 0
     while (i < arr.size) {
@@ -95,7 +95,7 @@ fun <!VIPER_TEXT!>zeroAll<!>(arr: @Unique @Borrowed IntArray) {
         arr[i] = 0
         i++
     }
-}
+}<!>
 
 fun <!VIPER_TEXT!>multisetOperators<!>(x: Int, y: Int) {
     verify(

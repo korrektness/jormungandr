@@ -303,6 +303,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("attribute_failure_model.kt")
+    public void testAttribute_failure_model() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/attribute_failure_model.kt");
+    }
+
+    @Test
     @TestMetadata("break.kt")
     public void testBreak() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/break.kt");

@@ -1,3 +1,25 @@
+/loops.kt: info: Generated Viper text for violatedInvariant:
+method violatedInvariant() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant intFromRef(i) < 1
+  anon := ltInts(i, intToRef(2))
+  if (boolFromRef(anon)) {
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert intFromRef(i) < 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /loops.kt: info: Generated Viper text for test:
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())

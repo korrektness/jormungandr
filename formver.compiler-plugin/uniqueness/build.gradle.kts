@@ -7,6 +7,7 @@ dependencies {
     compileOnly(kotlin("compiler"))
     compileOnly(libs.kotlinx.collections.immutable)
     implementation(project(":formver.compiler-plugin:locality"))
+    implementation(project(":formver.common"))
 
     testImplementation(kotlin("test"))
     testImplementation(libs.jqwik)

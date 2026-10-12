@@ -19,7 +19,7 @@ fun <!VIPER_TEXT!>conditionalInlineIntoLocal<!>(b: Boolean) {
 
 fun <!VIPER_TEXT!>wrongConditionalInlineIntoLocal<!>(b: Boolean) {
     val c: @Unique Counter = if (b) makeInline(1) else makeInline(2)
-    verify(<!VIPER_VERIFICATION_ERROR!>c.x == 1<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>c.x == 1<!>)
 }
 
 fun <!VIPER_TEXT!>conditionalValueIntoFieldViaLocal<!>(h: @Unique @Borrowed Holder, b: Boolean) {
@@ -35,7 +35,7 @@ fun <!VIPER_TEXT!>conditionalConstructorIntoField<!>(h: @Unique @Borrowed Holder
 
 fun <!VIPER_TEXT!>wrongConditionalConstructorIntoField<!>(h: @Unique @Borrowed Holder, b: Boolean) {
     h.inner = if (b) Counter(1) else Counter(2)
-    verify(<!VIPER_VERIFICATION_ERROR!>h.inner.x == 2<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>h.inner.x == 2<!>)
 }
 
 fun <!VIPER_TEXT!>whenOfFreshValues<!>(n: Int) {

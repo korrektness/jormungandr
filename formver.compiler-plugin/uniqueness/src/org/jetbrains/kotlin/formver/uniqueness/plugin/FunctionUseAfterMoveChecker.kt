@@ -1,7 +1,7 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
@@ -16,8 +16,6 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableAssignmentNode
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.formver.locality.plugin.resolveCapturedSymbols
-import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_MOVED_ACCESS
-import org.jetbrains.kotlin.text
 
 /**
  * Resolves path accesses and assignment targets at this CFG node.
@@ -40,20 +38,10 @@ private val FirExpression.hasImplicitThisReceiver: Boolean
     get() = ((this as? FirQualifiedAccessExpression)?.dispatchReceiver as? FirThisReceiverExpression)?.isImplicit == true
 
 /**
- * Renders the source text of [sites] in source order, with each run of whitespace collapsed to one space.
- */
-private fun renderMoveSites(sites: Set<CFGNode<*>>): String =
-    sites.mapNotNull { it.fir.source }
-        .sortedBy { it.startOffset }
-        .mapNotNull { source -> source.text?.toString()?.replace(Regex("\\s+"), " ") }
-        .distinct()
-        .joinToString("', '")
-
-/**
  * Checks that expressions do not read paths that have already been moved.
  *
  * Each moved path is reported once for the moves that reach it, at its first access in source order, and the report
- * names those moves. Later accesses to the same path after the same moves are not reported again.
+ * retains those move locations. Later accesses to the same path after the same moves are not reported again.
  */
 object FunctionUseAfterMoveChecker : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -79,7 +67,7 @@ object FunctionUseAfterMoveChecker : FirFunctionChecker(MppCheckerKind.Common) {
                 val sites = moveSites.readInputMoveSitesOf(node, path)
                 if (node is VariableAssignmentNode && sites.none { it is AnonymousFunctionCaptureNode }) continue
                 if (reported.add(path to sites)) {
-                    reporter.reportOn(accessExpression.source, INVALID_MOVED_ACCESS, path, renderMoveSites(sites))
+                    reporter.reportFailure(movedAccessFailure(accessExpression.source, path, sites.mapNotNull { it.fir.source }))
                 }
             }
         }
@@ -96,7 +84,7 @@ object FunctionUseAfterMoveChecker : FirFunctionChecker(MppCheckerKind.Common) {
                     val path = listOf(symbol) + moved
                     val sites = moveSites.readInputMoveSitesOf(node, path)
                     if (reported.add(path to sites)) {
-                        reporter.reportOn(node.fir.source, INVALID_MOVED_ACCESS, path, renderMoveSites(sites))
+                        reporter.reportFailure(movedAccessFailure(node.fir.source, path, sites.mapNotNull { it.fir.source }))
                     }
                 }
             }

@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -21,7 +21,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.locality.plugin.resolveCapturedSymbols
 import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
-import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_UNIQUENESS_CAPTURE
 
 /**
  * The classes whose `this` the declaration of [this] graph references, explicitly or as an implicit receiver.
@@ -66,11 +65,8 @@ object FunctionCaptureUniquenessChecker : FirFunctionChecker(MppCheckerKind.Comm
             for (symbol in separateGraph.resolveCapturedSymbols() + separateGraph.capturedReceivers()) {
                 if (symbol !in ownedRoots) continue
 
-                reporter.reportOn(
-                    separateGraph.declaration?.source ?: declaration.source,
-                    INVALID_UNIQUENESS_CAPTURE,
-                    listOf(symbol),
-                )
+                val boundary = separateGraph.declaration?.source ?: declaration.source
+                reporter.reportFailure(uniqueCaptureFailure(boundary, listOf(symbol), boundary))
             }
         }
     }

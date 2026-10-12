@@ -7,8 +7,7 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory0
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirCallableDeclarationChecker
@@ -63,7 +62,7 @@ context(context: CheckerContext, reporter: DiagnosticReporter)
 private fun checkMatchingOwnership(
     declaration: FirCallableDeclaration,
     counterparts: List<FirCallableSymbol<*>>,
-    factory: KtDiagnosticFactory0,
+    factory: FailureKind,
 ) {
     val mismatchingTypeRefs = mutableSetOf<FirTypeRef>()
     for (counterpart in counterparts) {
@@ -90,12 +89,14 @@ private fun checkMatchingOwnership(
     if (declaration.dispatchReceiverType != null &&
         counterparts.any { dispatchReceiverOwnership(it) != dispatchReceiverOwnership(declaration.symbol) }
     ) {
-        reporter.reportOn(declaration.source, factory)
+        reporter.reportFailure(Failure(factory, declaration.source, AttributeCondition.Rule(factory),
+            related = counterparts.mapNotNull { it.source?.let { source -> RelatedLocation("counterpart declaration", source) } }))
     }
 
     for (typeRef in mismatchingTypeRefs) {
         val source = typeRef.source?.takeUnless { it.kind is KtFakeSourceElementKind } ?: declaration.source
-        reporter.reportOn(source, factory)
+        reporter.reportFailure(Failure(factory, source, AttributeCondition.Rule(factory),
+            related = counterparts.mapNotNull { it.source?.let { source -> RelatedLocation("counterpart declaration", source) } }))
     }
 }
 

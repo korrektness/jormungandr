@@ -69,6 +69,7 @@ private fun merge(lists: List<List<Exp.Unfolding>>): List<Exp.Unfolding> =
 
 context(predicateParameters: Set<PredicateParameter>)
 private fun Exp.hoist(): Hoisted = when (this) {
+    is Exp.WithInfo -> inner.hoist().let { Hoisted(copy(inner = it.body), it.pending) }
     is Exp.Unfolding -> {
         val args = predicateAccess.formalArgs.map { it.hoist() }
         val unfolding = copy(predicateAccess = predicateAccess.copy(formalArgs = args.map { it.body }))
@@ -237,6 +238,7 @@ private fun Exp.withoutUnfoldings(keys: Set<UnfoldingKey?>): Exp {
 private fun Exp.mentionedVariables(permissionFree: Boolean = false): Set<SymbolicName>? {
     var childrenPermissionFree = permissionFree
     val children = when (this) {
+        is Exp.WithInfo -> listOf(inner)
         is Exp.LocalVar -> return if (permissionFree) emptySet() else setOf(name)
         is Exp.FuncApp -> {
             if (functionName == IntArrayEmbedding.arraySizeFunction.name) childrenPermissionFree = true

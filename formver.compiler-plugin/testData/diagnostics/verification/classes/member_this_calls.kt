@@ -42,7 +42,7 @@ open class Counter(var count: Int) {
     fun <!VIPER_TEXT!>staleAfterPeek<!>() {
         count = 2
         peek()
-        verify(<!VIPER_VERIFICATION_ERROR!>count == 2<!>)
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>count == 2<!>)
     }
 
     @Unique @Borrowed
@@ -56,7 +56,7 @@ open class Counter(var count: Int) {
     fun <!VIPER_TEXT!>staleAfterTouch<!>() {
         count = 2
         touch()
-        verify(<!VIPER_VERIFICATION_ERROR!>count == 2<!>)
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>count == 2<!>)
     }
 
     @Unique @Borrowed
@@ -69,7 +69,7 @@ open class Counter(var count: Int) {
     @Unique @Borrowed
     fun <!VIPER_TEXT!>wrongValue<!>() {
         count = 2
-        verify(<!VIPER_VERIFICATION_ERROR!>value() == 3<!>)
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>value() == 3<!>)
     }
 
     @Unique
@@ -91,7 +91,7 @@ open class Counter(var count: Int) {
     fun <!VIPER_TEXT!>subclassFieldsLost<!>() {
         total = 5
         bump()
-        verify(<!VIPER_VERIFICATION_ERROR!>total == 5<!>)
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>total == 5<!>)
     }
 }
 
@@ -121,5 +121,5 @@ fun <!VIPER_TEXT!>builtKeepsTag<!>() {
 
 fun <!VIPER_TEXT!>builtKeepsA<!>() {
     val x: @Unique Built = Built(1, 2)
-    verify(<!VIPER_VERIFICATION_ERROR!>x.a == 1<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x.a == 1<!>)
 }

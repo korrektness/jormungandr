@@ -33,6 +33,37 @@ formver {
 }
 ```
 
+## Diagnostics
+
+A verification error means SnaKt could not establish a Kotlin obligation; it does not by itself establish a
+counterexample. `VERIFICATION_CONDITION_NOT_ESTABLISHED` identifies explicit Kotlin proof clauses. Backend obligations without a Kotlin classification use `VIPER_VERIFICATION_ERROR` and
+include backend error and reason codes. The `errorStyle` option selects Kotlin wording, backend evidence, or both
+for the same diagnostic.
+
+Warnings about unsupported conversion or skipped verification indicate incomplete coverage. `UNTRACKED_WRITE`
+is a warning because the shared-local write is excluded from the translated state; it is not a proof of that write.
+Internal failures, unavailable verifiers and invalid generated programs carry machine-readable reason codes.
+
+The authoritative diagnostic names, severities and source-positioning policies are in
+[`FailureKind`](formver.common/src/org/jetbrains/kotlin/formver/common/Failure.kt).
+The structured payload and its counterexample slot are defined by `Failure` in that file;
+[`FailureToFirRenderer`](formver.common/src/org/jetbrains/kotlin/formver/common/FailureToFirRenderer.kt)
+is the Kotlin diagnostic rendering boundary.
+
+The registry groups user-visible problems as follows:
+- Proof conditions: assertions, refutations, laws, preconditions, postconditions and loop invariants;
+  Kotlin returns effects and conditional effects; collection bounds and sub-list ranges;
+  ownership obligations and override refinement. Unclassified backend obligations retain their Silver identifiers.
+- Specification declarations: invalid specification functions, observer bindings, observers and laws.
+- Locality and uniqueness: incompatible attributes, captures, construction, escape and exit states;
+  duplicate or overlapping unique arguments, moved accesses, annotation placement, override and expect/actual
+  compatibility, pure results and unique predicates.
+- Conversion: impure expressions, unsupported ownership flows or constructs, untracked writes and skipped units.
+- Tool failures: internal invariants or unexpected exceptions, verifier availability and invalid generated Viper programs.
+
+Primary locations identify the failing use or implementation. Related locations retain available clause declarations
+and ownership-loss origins. Counterexample slots are empty.
+
 ## Preconditions and Postconditions
 
 ```kotlin

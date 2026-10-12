@@ -25,14 +25,14 @@ open <!VIPER_TEXT!>class GoodSizedLaw<!> : SizedLawDiamond {
     final override fun <!VIPER_TEXT!>size<!>(): Int = 3
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BrokenSizedLaw<!> : SizedLawDiamond {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class BrokenSizedLaw<!> : SizedLawDiamond {
     @Pure @Unique
     override fun <!VIPER_TEXT!>size<!>(): Int = -1
 }<!>
 
 <!VIPER_TEXT!>class InheritedSizedLaw<!> : GoodSizedLaw()
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class FieldSizedLaw<!>(var count: Int) : SizedLaw {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class FieldSizedLaw<!>(var count: Int) : SizedLaw {
     @Pure @Unique
     override fun <!VIPER_TEXT!>size<!>(): Int = count
 }<!>

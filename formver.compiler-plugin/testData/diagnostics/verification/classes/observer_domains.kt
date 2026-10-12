@@ -79,7 +79,7 @@ class WrongRead : PositiveRead {
 }
 
 class WrongBody : PositiveRead {
-    <!VIPER_VERIFICATION_ERROR!>@Pure override fun <!VIPER_TEXT!>read<!>(i: Int): Int = i - 1<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Pure override fun <!VIPER_TEXT!>read<!>(i: Int): Int = i - 1<!>
 }
 
 interface AnyRead {

@@ -8,6 +8,9 @@ package org.jetbrains.kotlin.formver.core.linearization
 import org.jetbrains.kotlin.formver.core.embeddings.types.StringBuilderEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.CharTypeEmbedding
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.common.FoldOwnershipCondition
+import org.jetbrains.kotlin.formver.common.FoldOwnershipRule
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
@@ -107,7 +110,7 @@ data class LinearizationVisitor(
             ctx.requireFoldedReads(e.invariants, headShapes + e.exitShapes)
             // The permissions come first, since the user's invariants may read through them.
             val headPermissions = headShapes.mapNotNull { foldState?.permission(it) }
-            ctx.addLabel(e.continueLabel.copy(invariants = headPermissions + e.continueLabel.invariants).toViper(ctx))
+            ctx.addLabel(e.continueLabel.copy(invariants = headPermissions + e.continueLabel.invariants).toViper(ctx, e.invariants))
             withinScope(ctx, e.placedLabels(), leave = { _, state -> state.leaveLoop(e.breakLabel.name) }) {
                 val condVar = ctx.freshAnonVar { boolean() }
                 e.condition.linearize().toViperStoringIn(condVar, ctx)
@@ -122,11 +125,12 @@ data class LinearizationVisitor(
                     Stmt.If(condVar.linearize().toViperBuiltinType(ctx), bodyBlock, els = Stmt.Seqn(), ctx.source.asPosition)
                 }
             }
-            ctx.addLabel(e.breakLabel.toViper(ctx))
+            ctx.addLabel(e.breakLabel.toViper(ctx, e.invariants))
 
             e.invariants.forEach {
                 ctx.addStatement {
-                    Stmt.Assert(it.pureToViper(toBuiltin = true, ctx.typeResolver))
+                    Stmt.Assert(it.pureToViper(toBuiltin = true, ctx.typeResolver),
+                        info = SourceRole.Proof(KotlinCondition.ProofClause.LOOP_INVARIANT).asInfo)
                 }
             }
         }
@@ -442,13 +446,15 @@ data class LinearizationVisitor(
 
     override fun visitAssert(e: Assert): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            ctx.addStatement { Stmt.Assert(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition) }
+            ctx.addStatement { Stmt.Assert(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition,
+                SourceRole.Proof(org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.ASSERTION).asInfo) }
         }
     }
 
     override fun visitRefute(e: Refute): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            ctx.addStatement { Stmt.Refute(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition) }
+            ctx.addStatement { Stmt.Refute(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition,
+                SourceRole.Proof(org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.REFUTATION).asInfo) }
         }
     }
 
@@ -1039,9 +1045,10 @@ data class LinearizationVisitor(
         val innerLinearizable = attributingFailuresTo(e.source) { e.inner.accept(copy(source = e.source)) }
         fun <R> LinearizationContext.positioned(action: LinearizationContext.() -> R): R =
             attributingFailuresTo(e.source) { withPosition(e.source, action) }
+        fun Exp.annotated(): Exp = e.sourceRole?.let { Exp.WithInfo(this, it.asInfo) } ?: this
         return object : Linearizable {
             override fun toViper(ctx: LinearizationContext): Exp =
-                ctx.positioned { innerLinearizable.toViper(this) }
+                ctx.positioned { innerLinearizable.toViper(this).annotated() }
 
             override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
                 ctx.positioned { innerLinearizable.toViperStoringIn(result, this) }
@@ -1052,10 +1059,10 @@ data class LinearizationVisitor(
             }
 
             override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
-                ctx.positioned { innerLinearizable.toViperBuiltinType(this) }
+                ctx.positioned { innerLinearizable.toViperBuiltinType(this).annotated() }
 
             override fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext): Exp =
-                ctx.positioned { innerLinearizable.toViperBuiltinTypeAs(type, this) }
+                ctx.positioned { innerLinearizable.toViperBuiltinTypeAs(type, this).annotated() }
 
             override fun toViperUnusedResult(ctx: LinearizationContext) {
                 ctx.positioned { innerLinearizable.toViperUnusedResult(this) }
@@ -1143,7 +1150,7 @@ private fun LinearizationContext.requireFoldedReads(invariants: List<ExpEmbeddin
     val hole = OwnedPath(shape.root, shape.holes.first())
     throw FoldStateException(
         source,
-        "Ownership of all of ${read.render()} is needed by a loop invariant, but ${hole.render()} is not held at the loop head.",
+        FoldOwnershipCondition(FoldOwnershipRule.LOOP_INVARIANT_HOLE, read.toConversionPath(), hole.toConversionPath()),
     )
 }
 
@@ -1163,12 +1170,8 @@ private fun LinearizationContext.ownedReceiverPath(
     if (with(typeResolver) { (receiver.type.pretype as? ClassTypeEmbedding)?.isManual } != false) return null
     val path = receiver.ownedPath()
     if (path == null && isWrite) {
-        val written = renderSite(source)?.let { " by $it" } ?: ""
-        throw FoldStateException(
-            source,
-            "Ownership of the receiver written$written is needed here, but the receiver is not a variable followed " +
-                "by `@Unique` properties, so its permissions are not tracked.",
-        )
+        throw FoldStateException(source,
+            FoldOwnershipCondition(FoldOwnershipRule.UNTRACKED_WRITE_RECEIVER, writeSite = source))
     }
     return path
 }
@@ -1233,8 +1236,7 @@ private fun LinearizationContext.exitBinding(binding: RootBinding, state: FoldSt
             if (state.holds(retained)) {
                 throw FoldStateException(
                     source,
-                    "${retained.render()} is assigned while an inline function borrows it, so the borrowed value " +
-                        "cannot be handed back.",
+                    FoldOwnershipCondition(FoldOwnershipRule.BORROWED_ASSIGNMENT, retained.toConversionPath()),
                 )
             }
             if (binding.familyUpcast) {
@@ -1262,7 +1264,7 @@ private fun LinearizationContext.coerceFreshArguments(
         val from = arg.ignoringCastsAndMetaNodes().type.pretype as? ClassTypeEmbedding ?: return@forEachIndexed
         val to = formal.type.pretype as? ClassTypeEmbedding ?: return@forEachIndexed
         if (from == to || !typeResolver.isFamilyView(to)) return@forEachIndexed
-        if (!typeResolver.isSubtype(from, to)) throw FoldStateException(source, "Ownership cannot be downcast to `${to.name.sourceSpelling}`.")
+        if (!typeResolver.isSubtype(from, to)) throw FoldStateException(source, FoldOwnershipCondition(FoldOwnershipRule.DOWNCAST, typeName = to.name.sourceSpelling))
         val method = typeResolver.familyTransfer(from, to).method
         addFamilyCall(values[index], arg.type.isNullable, method)
         if (formal.isBorrowed) loans += Triple(index, from, to)

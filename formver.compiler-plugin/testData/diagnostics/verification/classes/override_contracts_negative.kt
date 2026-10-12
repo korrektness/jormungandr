@@ -27,7 +27,7 @@ class WeakerPostcondition : Base() {
 }
 
 class InheritedViolated : Base() {
-    <!VIPER_VERIFICATION_ERROR!>override fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>override fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
         return x - 1
     }<!>
 }

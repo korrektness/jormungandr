@@ -190,10 +190,10 @@ method TextWindow_c_ChildWindow_restore(this: Ref)
       old(isSubtype(typeOf(index), intType())) &&
       old(isSubtype(typeOf(limit), intType())) &&
       old(isSubtype(typeOf(fallback), nullable(anyType()))) &&
-      (old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
         intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-        intFromRef(index))) &&
-      old(intFromRef(index) < intFromRef(limit))) &&
+        intFromRef(index)) &&
+      intFromRef(index) < intFromRef(limit)) &&
       isSubtype(typeOf(fallback), nullable(stringType())) ==>
       TextWindow_f_read(this, index, limit, fallback) ==
       old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
@@ -215,10 +215,10 @@ method TextWindow_c_ChildWindow_upcast(this: Ref)
       old(isSubtype(typeOf(at), intType())) &&
       old(isSubtype(typeOf(top), intType())) &&
       old(isSubtype(typeOf(text), nullable(stringType()))) &&
-      (old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at)) &&
-      old(intFromRef(at) < intFromRef(top))) &&
-      (old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at)) &&
-      old(intFromRef(at) < intFromRef(top))) &&
+      old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+      intFromRef(at) < intFromRef(top)) &&
+      old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at) &&
+      intFromRef(at) < intFromRef(top)) &&
       isSubtype(typeOf(text), nullable(anyType())) ==>
       (unfolding acc(c_ChildWindow_unique(this), wildcard) in
         c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
@@ -394,10 +394,10 @@ method TextWindow_c_ChildWindow_restore(this: Ref)
       old(isSubtype(typeOf(index), intType())) &&
       old(isSubtype(typeOf(limit), intType())) &&
       old(isSubtype(typeOf(fallback), nullable(anyType()))) &&
-      (old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
         intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-        intFromRef(index))) &&
-      old(intFromRef(index) < intFromRef(limit))) &&
+        intFromRef(index)) &&
+      intFromRef(index) < intFromRef(limit)) &&
       isSubtype(typeOf(fallback), nullable(stringType())) ==>
       TextWindow_f_read(this, index, limit, fallback) ==
       old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
@@ -419,10 +419,10 @@ method TextWindow_c_ChildWindow_upcast(this: Ref)
       old(isSubtype(typeOf(at), intType())) &&
       old(isSubtype(typeOf(top), intType())) &&
       old(isSubtype(typeOf(text), nullable(stringType()))) &&
-      (old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at)) &&
-      old(intFromRef(at) < intFromRef(top))) &&
-      (old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at)) &&
-      old(intFromRef(at) < intFromRef(top))) &&
+      old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+      intFromRef(at) < intFromRef(top)) &&
+      old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at) &&
+      intFromRef(at) < intFromRef(top)) &&
       isSubtype(typeOf(text), nullable(anyType())) ==>
       (unfolding acc(c_ChildWindow_unique(this), wildcard) in
         c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,

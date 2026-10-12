@@ -26,14 +26,14 @@ fun <!VIPER_TEXT!>ownedCapture<!>(): @Unique Accumulator {
     }
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>wrongParameterizedBody<!>(): @Unique Accumulator {
+fun <!VIPER_TEXT!>wrongParameterizedBody<!>(): @Unique Accumulator {
     var n = 0
-    return Accumulator { amount ->
+    return Accumulator <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
         exposes(Accumulator::class) { total() == n }
         n -= amount
         n
-    }
-}<!>
+    }<!>
+}
 
 fun <!VIPER_TEXT!>parameterClient<!>() {
     val f = ownedCapture()

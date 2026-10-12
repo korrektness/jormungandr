@@ -25,6 +25,9 @@ import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
 import org.jetbrains.kotlin.formver.core.conversion.interfaceLaws
 import org.jetbrains.kotlin.formver.core.conversion.registerClassLaws
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
+import org.jetbrains.kotlin.formver.common.reportTranslation
+import org.jetbrains.kotlin.formver.common.reportTool
+import org.jetbrains.kotlin.formver.common.reportInternalFailure
 import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.core.names.embedName
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
@@ -45,6 +48,12 @@ class ViperPoweredClassChecker(
     private val reportedErrors: ReportedVerifierErrors,
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
     private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors)
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun reportFailure(declaration: FirRegularClass, error: org.jetbrains.kotlin.formver.viper.errors.VerifierError) {
+        val source = error.reportingPosition(declaration.source).unwrapOr { declaration.source }
+        if (reportedErrors.add(error, source)) reporter.reportVerifierError(source, error, config.errorStyle)
+    }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     @OptIn(DirectDeclarationsAccess::class)
@@ -95,25 +104,23 @@ class ViperPoweredClassChecker(
                 declaration.shouldVerify = verify
             } else if (verify) {
                 val z3 = verifierLocator.z3Exe { reason ->
-                    reporter.reportOn(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, reason)
+                    reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
                 } ?: return
                 SiliconFrontend(
                     z3, cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
                     pluginOptions = config.verificationCacheOptions,
                 ).use { verifier ->
-                    verifier.verify(viperProgram) { error ->
-                        val source = error.reportingPosition().unwrapOr { declaration.source }
-                        if (reportedErrors.add(error, source)) reporter.reportVerifierError(source, error, config.errorStyle)
-                    }
+                    verifier.verify(viperProgram) { error -> reportFailure(declaration, error) }
                 }
             }
         } catch (error: UnsupportedFeatureException) {
-            reporter.reportOn(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message)
+            reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
         } catch (error: Exception) {
-            reporter.reportOn(declaration.source, PluginErrors.INTERNAL_ERROR, error.asInternalErrorAt(declaration.source).message)
+            reporter.reportInternalFailure(declaration.source,
+                (error as? org.jetbrains.kotlin.formver.common.SnaktInternalException) ?: error.asInternalErrorAt(declaration.source))
             config.messageCollector.report(org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.LOGGING, error.stackTraceToString())
         } catch (error: NotImplementedError) {
-            reporter.reportOn(declaration.source, PluginErrors.INTERNAL_ERROR, error.asInternalErrorAt(declaration.source).message)
+            reporter.reportInternalFailure(declaration.source, error.asInternalErrorAt(declaration.source))
             config.messageCollector.report(org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.LOGGING, error.stackTraceToString())
         }
     }

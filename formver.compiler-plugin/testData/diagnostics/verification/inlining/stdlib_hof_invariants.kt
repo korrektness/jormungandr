@@ -40,7 +40,7 @@ fun <!VIPER_TEXT!>countBounds<!>(s: String) {
 fun <!VIPER_TEXT!>countIsNotExact<!>(s: String) {
     preconditions { s.length > 0 }
     val n = s.count { true }
-    verify(<!VIPER_VERIFICATION_ERROR!>n == s.length<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n == s.length<!>)
 }
 
 fun <!VIPER_TEXT!>labeledReturn<!>(s: String): Int {

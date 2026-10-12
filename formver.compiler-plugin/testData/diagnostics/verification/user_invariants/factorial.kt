@@ -1,8 +1,8 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-@Pure
-fun <!INVALID_VIPER_PROGRAM, VIPER_TEXT!>fact<!>(n: Int): Int {
+<!INVALID_VIPER_PROGRAM!>@Pure
+fun <!VIPER_TEXT!>fact<!>(n: Int): Int {
     preconditions {
         n >= 0
     }
@@ -16,4 +16,4 @@ fun <!INVALID_VIPER_PROGRAM, VIPER_TEXT!>fact<!>(n: Int): Int {
     } else {
         n * fact(n - 1)
     }
-}
+}<!>

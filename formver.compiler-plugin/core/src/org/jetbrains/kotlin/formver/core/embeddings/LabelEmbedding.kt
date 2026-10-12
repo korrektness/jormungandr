@@ -6,6 +6,8 @@
 package org.jetbrains.kotlin.formver.core.embeddings
 
 import org.jetbrains.kotlin.formver.core.asPosition
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.linearization.LinearizationContext
 import org.jetbrains.kotlin.formver.core.linearization.pureToViper
@@ -27,6 +29,11 @@ fun LabelLink.toViperGoto(ctx: LinearizationContext): Stmt.Goto {
     return Label(name, emptyList()).toGoto(pos = ctx.source.asPosition)
 }
 
-fun LabelEmbedding.toViper(ctx: LinearizationContext): Label {
-    return Label(name, invariants.pureToViper(toBuiltin = true, ctx.typeResolver, ctx.source))
+fun LabelEmbedding.toViper(ctx: LinearizationContext, loopInvariants: List<ExpEmbedding> = emptyList()): Label {
+    return Label(name, invariants.map { invariant ->
+        val expression = invariant.pureToViper(toBuiltin = true, ctx.typeResolver, ctx.source)
+        if (loopInvariants.any { it === invariant })
+            Exp.WithInfo(expression, SourceRole.Proof(KotlinCondition.ProofClause.LOOP_INVARIANT).asInfo)
+        else expression
+    })
 }

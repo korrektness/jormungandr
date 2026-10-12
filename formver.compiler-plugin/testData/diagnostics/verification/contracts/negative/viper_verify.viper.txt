@@ -31,6 +31,48 @@ method verify_compound() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/viper_verify.kt: info: Generated Viper text for requires_positive:
+method requires_positive(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/viper_verify.kt: info: Generated Viper text for first_call:
+method first_call() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := requires_positive(intToRef(0))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method requires_positive(value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/viper_verify.kt: info: Generated Viper text for second_call:
+method requires_positive(value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) > 0
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method second_call() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := requires_positive(intToRef(0))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /viper_verify.kt: info: Generated Viper text for verify_forall:
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())

@@ -39,7 +39,7 @@ fun <!VIPER_TEXT!>wrongElement<!>(n: Int) {
     }
     val a: @Unique IntArray = IntArray(n) { it + 1 }
     val first = a[0]
-    verify(<!VIPER_VERIFICATION_ERROR!>first == 0<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>first == 0<!>)
 }
 
 fun <!VIPER_TEXT!>negativeSize<!>() {

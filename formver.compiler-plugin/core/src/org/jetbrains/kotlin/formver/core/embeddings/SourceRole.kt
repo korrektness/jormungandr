@@ -11,6 +11,12 @@ import org.jetbrains.kotlin.formver.viper.ast.Info
 import org.jetbrains.kotlin.formver.viper.ast.Position
 
 sealed interface SourceRole {
+    /** The Kotlin clause responsible for an explicit proof obligation. */
+    data class Proof(
+        val clause: org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause,
+        val declaration: FirBasedSymbol<*>? = null,
+    ) : SourceRole
+
     data class ListElementAccessCheck(val accessType: AccessCheckType) : SourceRole {
         enum class AccessCheckType {
             LESS_THAN_ZERO,

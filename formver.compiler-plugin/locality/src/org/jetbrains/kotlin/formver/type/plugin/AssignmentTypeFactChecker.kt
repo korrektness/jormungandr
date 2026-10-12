@@ -6,8 +6,7 @@
 package org.jetbrains.kotlin.formver.type.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory3
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.FactPosition
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirVariableAssignmentChecker
@@ -28,7 +27,7 @@ class AssignmentTypeFactChecker<TypeFact>(
     private val typeFactJudgment: TypeFactJudgment<TypeFact>,
     private val expressionTypeFactResolver: ExpressionTypeFactResolver<TypeFact>,
     private val leftTypeFactResolver: ExpressionTypeFactResolver<TypeFact> = expressionTypeFactResolver,
-    private val diagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
+    private val diagnosticFactory: TypeFactDiagnostic<TypeFact>,
     private val mismatchExplainer: TypeFactMismatchExplainer<TypeFact>? = null,
 ) : FirVariableAssignmentChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -38,14 +37,14 @@ class AssignmentTypeFactChecker<TypeFact>(
 
         if (typeFactJudgment.satisfies(requiredTypeFact, actualTypeFact)) return
         if (mismatchExplainer?.reportExplained(
-                expression.rValue.source, "Assignment", expression.rValue, requiredTypeFact, actualTypeFact
+                expression.rValue.source, FactPosition.ASSIGNMENT, expression.rValue, requiredTypeFact, actualTypeFact
             ) == true
         ) return
 
-        reporter.reportOn(
+        reporter.reportTypeFactFailure(
             expression.rValue.source,
             diagnosticFactory,
-            "Assignment",
+            FactPosition.ASSIGNMENT,
             requiredTypeFact,
             actualTypeFact
         )

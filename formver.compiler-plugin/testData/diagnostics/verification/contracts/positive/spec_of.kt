@@ -46,7 +46,7 @@ fun <!VIPER_TEXT!>stepRelies<!>(c: Counter): Int {
 }
 
 fun <!VIPER_TEXT!>stepBreaksPrecondition<!>(c: Counter): Int {
-    return <!VIPER_VERIFICATION_ERROR!>c.step(-1)<!>
+    return <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>c.step(-1)<!>
 }
 
 fun <!VIPER_TEXT!>sizeRelies<!>(m: Measure): Int {

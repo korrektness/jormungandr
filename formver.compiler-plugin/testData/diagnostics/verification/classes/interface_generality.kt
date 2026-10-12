@@ -55,16 +55,16 @@ fun <!VIPER_TEXT!>generalBindings<!>(token: GeneralToken?) {
 fun <!VIPER_TEXT!>falseGeneralBinding<!>() {
     val cell: @Unique GeneralCell = GeneralCell(true, null)
     val view: @Unique DetailedView = cell
-    verify(<!VIPER_VERIFICATION_ERROR!>view.matches(true, false, null)<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>view.matches(true, false, null)<!>)
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class FalseTruth<!> : DetailedView {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class FalseTruth<!> : DetailedView {
     @Pure @Unique override fun <!VIPER_TEXT!>truth<!>(): Boolean = false
     @Pure @Unique override fun <!VIPER_TEXT!>matches<!>(first: Boolean, second: Boolean, token: GeneralToken?): Boolean = true
     @Pure @Unique override fun <!VIPER_TEXT!>token<!>(): GeneralToken? = null
 }<!>
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class FalseOther<!> : TruthView, OtherView {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class FalseOther<!> : TruthView, OtherView {
     @Pure @Unique override fun <!VIPER_TEXT!>truth<!>(): Boolean = true
     @Pure @Unique override fun <!VIPER_TEXT!>other<!>(): Boolean = false
 }<!>
@@ -116,7 +116,7 @@ class HonestConsumer : ViewConsumer {
 }
 
 class DishonestConsumer : ViewConsumer {
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed
     override fun <!VIPER_TEXT!>accept<!>(view: @Unique @Borrowed DetailedView): Boolean = false<!>
 }
 
@@ -161,5 +161,5 @@ fun <!VIPER_TEXT!>recursiveFalseClaim<!>() {
     val node: @Unique BoolNode = BoolNode(false, null)
     val chain: @Unique BoolChain = BoolChain(node)
     val view: @Unique ChainView = chain
-    verify(<!VIPER_VERIFICATION_ERROR!>view.all()<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>view.all()<!>)
 }

@@ -37,7 +37,7 @@ class TomlMultilineString(private val isStringType: Boolean) {
     fun <!VIPER_TEXT!>writeThroughShared<!>() {
         isInMultilineBasic = true
         val basic = isInMultilineBasic
-        verify(<!VIPER_VERIFICATION_ERROR!>basic<!>)
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>basic<!>)
     }
 
     @Pure

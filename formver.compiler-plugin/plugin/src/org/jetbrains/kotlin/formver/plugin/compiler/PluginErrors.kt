@@ -7,19 +7,18 @@ package org.jetbrains.kotlin.formver.plugin.compiler
 
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.*
+import org.jetbrains.kotlin.formver.common.FailureKind
 
 object PluginErrors : KtDiagnosticsContainer() {
     val VIPER_TEXT by info2<PsiElement, String, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
     val EXP_EMBEDDING by info2<PsiElement, String, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
-    val INTERNAL_ERROR by error1<PsiElement, String>()
-    val VERIFIER_UNAVAILABLE by error1<PsiElement, String>()
-    val UNIQUENESS_VIOLATION by error1<PsiElement, String>()
+    val INTERNAL_ERROR get() = FailureKind.INTERNAL_ERROR
+    val VERIFIER_UNAVAILABLE get() = FailureKind.VERIFIER_UNAVAILABLE
     val UNIQUENESS_CFG by info1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
-    val ADT_VIOLATION by error1<PsiElement, String>()
-    val INVALID_EXPOSES by error1<PsiElement, String>()
-    val INVALID_SPEC_OF by error1<PsiElement, String>()
-    val INVALID_OBSERVER by error1<PsiElement, String>()
-    val INVALID_LAW by error1<PsiElement, String>()
+    val INVALID_EXPOSES get() = FailureKind.INVALID_EXPOSES
+    val INVALID_SPEC_OF get() = FailureKind.INVALID_SPEC_OF
+    val INVALID_OBSERVER get() = FailureKind.INVALID_OBSERVER
+    val INVALID_LAW get() = FailureKind.INVALID_LAW
     override fun getRendererFactory() = FormalVerificationPluginErrorMessages
 
     fun tags() = listOf(
@@ -27,9 +26,7 @@ object PluginErrors : KtDiagnosticsContainer() {
         EXP_EMBEDDING.name,
         INTERNAL_ERROR.name,
         VERIFIER_UNAVAILABLE.name,
-        UNIQUENESS_VIOLATION.name,
         UNIQUENESS_CFG.name,
-        ADT_VIOLATION.name,
         INVALID_EXPOSES.name,
         INVALID_SPEC_OF.name,
         INVALID_OBSERVER.name,
@@ -39,28 +36,16 @@ object PluginErrors : KtDiagnosticsContainer() {
 
 
 object VerificationErrors : KtDiagnosticsContainer() {
-    val CONDITIONAL_EFFECT_ERROR by warning2<PsiElement, String, String>()
-    val VIPER_VERIFICATION_ERROR by warning1<PsiElement, String>()
-    val POSSIBLE_INDEX_OUT_OF_BOUND by warning2<PsiElement, String, String>()
-    val UNEXPECTED_RETURNED_VALUE by warning1<PsiElement, String>()
-    val INVALID_SUBLIST_RANGE by warning2<PsiElement, String, String>()
-    val OWNERSHIP_NOT_ESTABLISHED by warning2<PsiElement, String, String>()
-    val OVERRIDE_NOT_REFINING by warning2<PsiElement, String, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
+    val CONDITIONAL_EFFECT_ERROR get() = FailureKind.CONDITIONAL_EFFECT_ERROR.factory
+    val VIPER_VERIFICATION_ERROR get() = FailureKind.VIPER_VERIFICATION_ERROR.factory
+    val POSSIBLE_INDEX_OUT_OF_BOUND get() = FailureKind.POSSIBLE_INDEX_OUT_OF_BOUND.factory
+    val UNEXPECTED_RETURNED_VALUE get() = FailureKind.UNEXPECTED_RETURNED_VALUE.factory
+    val INVALID_SUBLIST_RANGE get() = FailureKind.INVALID_SUBLIST_RANGE.factory
+    val OWNERSHIP_NOT_ESTABLISHED get() = FailureKind.OWNERSHIP_NOT_ESTABLISHED.factory
+    val OVERRIDE_NOT_REFINING get() = FailureKind.OVERRIDE_NOT_REFINING.factory
 
-    /**
-     * Viper rejected the program during verification. The compiler reports this as [PluginErrors.INTERNAL_ERROR]; the
-     * test facade reports it here so that it counts as a verification outcome.
-     */
-    val INVALID_VIPER_PROGRAM by error1<PsiElement, String>()
+    val INVALID_VIPER_PROGRAM get() = FailureKind.INVALID_VIPER_PROGRAM
     override fun getRendererFactory() = FormalVerificationPluginErrorMessages
-    fun tags() = listOf(
-        CONDITIONAL_EFFECT_ERROR.name,
-        VIPER_VERIFICATION_ERROR.name,
-        POSSIBLE_INDEX_OUT_OF_BOUND.name,
-        UNEXPECTED_RETURNED_VALUE.name,
-        INVALID_SUBLIST_RANGE.name,
-        OWNERSHIP_NOT_ESTABLISHED.name,
-        OVERRIDE_NOT_REFINING.name,
-        INVALID_VIPER_PROGRAM.name,
-    )
+    fun tags() = FailureKind.entries.filter { it.category == org.jetbrains.kotlin.formver.common.FailureCategory.PROOF }
+        .map { it.factory.name } + INVALID_VIPER_PROGRAM.name
 }

@@ -90,7 +90,7 @@ fun <!VIPER_TEXT!>nullableClassBorrow<!>(leaf: @Unique @Borrowed ObservationLeaf
 fun <!VIPER_TEXT!>wrongClassObservation<!>(leaf: @Unique @Borrowed ObservationLeaf) {
     val before = leaf.value()
     updateBase(leaf, 2)
-    verify(<!VIPER_VERIFICATION_ERROR!>leaf.value() == before + 3<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>leaf.value() == before + 3<!>)
 }
 
 fun <!VIPER_TEXT!>freshClassBorrow<!>() {

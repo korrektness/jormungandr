@@ -1,18 +1,8 @@
-/*
- * Copyright 2010-2023 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
- */
-
 package org.jetbrains.kotlin.formver.plugin.compiler.reporting
 
 import org.jetbrains.kotlin.KtSourceElement
-import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
-import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
-import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
+import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
-import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
-import org.jetbrains.kotlin.formver.plugin.compiler.reporting.SourceRoleConditionPrettyPrinter.prettyPrint
 import org.jetbrains.kotlin.formver.viper.ast.Position
 import org.jetbrains.kotlin.formver.viper.ast.info
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
@@ -20,197 +10,139 @@ import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
 import viper.silver.verifier.reasons
 
-sealed interface FormattedError {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    fun report(source: KtSourceElement?)
-}
-
-class ReturnsEffectError(private val sourceRole: SourceRole.ReturnsEffect) : FormattedError {
-    private val SourceRole.ReturnsEffect.asUserFriendlyMessage: String
-        get() = when (this) {
-            is SourceRole.ReturnsEffect.Bool -> if (bool) "false" else "true"
-            is SourceRole.ReturnsEffect.Null -> if (negated) "null" else "non-null"
-            else -> error("Unknown returns effect: $this")
-        }
-
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun report(source: KtSourceElement?) {
-        reporter.reportOn(source, VerificationErrors.UNEXPECTED_RETURNED_VALUE, msg())
-    }
-
-    fun msg(): String = sourceRole.asUserFriendlyMessage
-}
-
-class ConditionalEffectError(private val sourceRole: SourceRole.ConditionalEffect) : FormattedError {
-    private val SourceRole.ReturnsEffect.asUserFriendlyMessage: String
-        get() = when (this) {
-            is SourceRole.ReturnsEffect.Bool, is SourceRole.ReturnsEffect.Null -> "a $this value is returned"
-            SourceRole.ReturnsEffect.Wildcard -> "the function returns"
-        }
-
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun report(source: KtSourceElement?) {
-        val (returnEffectMsg, conditionPrettyPrinted) = msg()
-        reporter.reportOn(source, VerificationErrors.CONDITIONAL_EFFECT_ERROR, returnEffectMsg, conditionPrettyPrinted)
-    }
-
-    fun msg(): Pair<String, String> = sourceRole.let { (returnEffect, condition) ->
-        returnEffect.asUserFriendlyMessage to condition.prettyPrint()
-    }
-}
-
-class DefaultError(private val error: VerificationError) : FormattedError {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun report(source: KtSourceElement?) {
-        reporter.reportOn(source, VerificationErrors.VIPER_VERIFICATION_ERROR, msg())
-    }
-
-    fun msg(): String = error.msg
-}
-
-/**
- * An index that may be out of bounds. [target] names the indexed collection; when it is an inlined expression with no
- * symbol, it names no variable, since the compiler highlights the sub-expression causing the problem.
- */
-class IndexOutOfBoundError(private val target: String, private val violation: String) : FormattedError {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun report(source: KtSourceElement?) {
-        val (targetInfo, userFriendlyMessage) = msg()
-        reporter.reportOn(
-            source,
-            VerificationErrors.POSSIBLE_INDEX_OUT_OF_BOUND,
-            targetInfo,
-            userFriendlyMessage,
+/** Converts backend evidence into a Kotlin obligation without constructing diagnostic text. */
+fun VerificationError.toFailure(source: KtSourceElement?): Failure {
+    val role = lookupSourceRole()
+    val condition = when (role) {
+        is SourceRole.Proof -> KotlinCondition.Proof(role.clause, role.declaration)
+        is SourceRole.ReturnsEffect -> KotlinCondition.Returns(role.toReturnValue())
+        is SourceRole.ConditionalEffect -> KotlinCondition.Conditional(role.effect.toReturnValue(), role.condition.toPredicate())
+        is SourceRole.ListElementAccessCheck -> KotlinCondition.Index(
+            KotlinCondition.Collection.LIST, collectionSymbol(),
+            when (role.accessType) {
+                SourceRole.ListElementAccessCheck.AccessCheckType.LESS_THAN_ZERO -> KotlinCondition.Bound.NEGATIVE
+                SourceRole.ListElementAccessCheck.AccessCheckType.GREATER_THAN_LIST_SIZE -> KotlinCondition.Bound.ABOVE_SIZE
+            },
         )
-    }
-
-    fun msg(): Pair<String, String> = target to violation
-}
-
-private fun VerificationError.listIndexOutOfBound(sourceRole: SourceRole.ListElementAccessCheck): IndexOutOfBoundError {
-    val targetList = locationNode.asCallable().arg(0).info.unwrapOr<SourceRole.FirSymbolHolder> { null }
-    val violation = when (sourceRole.accessType) {
-        SourceRole.ListElementAccessCheck.AccessCheckType.LESS_THAN_ZERO -> "less than zero"
-        SourceRole.ListElementAccessCheck.AccessCheckType.GREATER_THAN_LIST_SIZE -> "greater than the list's size"
-    }
-    return IndexOutOfBoundError(targetList.formatListMessage(), violation)
-}
-
-private fun SourceRole.ArrayElementAccessCheck.indexOutOfBound(): IndexOutOfBoundError {
-    val target = array?.let { "array '${FirDiagnosticRenderers.DECLARATION_NAME.render(it)}'" }
-        ?: "the following array sub-expression"
-    val violation = when (bound) {
-        SourceRole.ArrayElementAccessCheck.Bound.NEGATIVE -> "less than zero"
-        SourceRole.ArrayElementAccessCheck.Bound.NOT_BELOW_SIZE -> "not less than the array's size"
-    }
-    return IndexOutOfBoundError(target, violation)
-}
-
-class InvalidSubListRangeError(
-    private val error: VerificationError,
-    private val sourceRole: SourceRole.SubListCreation
-) : FormattedError {
-    private val SourceRole.SubListCreation.asUserFriendlyMessage: String
-        get() = when (this) {
-            is SourceRole.SubListCreation.CheckNegativeIndices -> "including negative indices"
-            is SourceRole.SubListCreation.CheckInSize -> "greater than the list's size"
-        }
-
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun report(source: KtSourceElement?) {
-        val (targetInfo, userFriendlyMessage) = msg()
-        reporter.reportOn(
-            source,
-            VerificationErrors.INVALID_SUBLIST_RANGE,
-            targetInfo,
-            userFriendlyMessage,
+        is SourceRole.ArrayElementAccessCheck -> KotlinCondition.Index(
+            KotlinCondition.Collection.ARRAY, role.array,
+            when (role.bound) {
+                SourceRole.ArrayElementAccessCheck.Bound.NEGATIVE -> KotlinCondition.Bound.NEGATIVE
+                SourceRole.ArrayElementAccessCheck.Bound.NOT_BELOW_SIZE -> KotlinCondition.Bound.NOT_BELOW_SIZE
+            },
         )
+        is SourceRole.SubListCreation -> KotlinCondition.SubList(collectionSymbol(), role is SourceRole.SubListCreation.CheckNegativeIndices)
+        is SourceRole.Ownership -> role.toCondition()
+        is SourceRole.OverrideRefinement -> KotlinCondition.Override(
+            role.overridden, when (role.clause) {
+                SourceRole.OverrideRefinement.Clause.PRECONDITION -> KotlinCondition.OverrideClause.PRECONDITION
+                SourceRole.OverrideRefinement.Clause.POSTCONDITION -> KotlinCondition.OverrideClause.POSTCONDITION
+            },
+        )
+        is SourceRole.ObserverAccess -> KotlinCondition.Ownership("the observer receiver", KotlinCondition.OwnershipSite.UNFOLD)
+        else -> KotlinCondition.Unclassified
     }
-
-    fun msg(): Pair<String, String> {
-        val targetListInfo = error.locationNode.asCallable().arg(0).info
-        val targetList = targetListInfo.unwrapOr<SourceRole.FirSymbolHolder> { null }
-        return targetList.formatListMessage() to sourceRole.asUserFriendlyMessage
+    val kind = when (condition) {
+        is KotlinCondition.Proof -> FailureKind.VERIFICATION_CONDITION_NOT_ESTABLISHED
+        is KotlinCondition.Returns -> FailureKind.UNEXPECTED_RETURNED_VALUE
+        is KotlinCondition.Conditional -> FailureKind.CONDITIONAL_EFFECT_ERROR
+        is KotlinCondition.Index -> FailureKind.POSSIBLE_INDEX_OUT_OF_BOUND
+        is KotlinCondition.SubList -> FailureKind.INVALID_SUBLIST_RANGE
+        is KotlinCondition.Ownership -> FailureKind.OWNERSHIP_NOT_ESTABLISHED
+        is KotlinCondition.Override -> FailureKind.OVERRIDE_NOT_REFINING
+        KotlinCondition.Unclassified -> FailureKind.VIPER_VERIFICATION_ERROR
+        else -> error("A proof adapter produced a non-proof condition")
     }
+    return Failure(
+        kind, source, condition,
+        if (source == null) ObligationIdentity(result.offendingNode(), result.reason().offendingNode())
+        else ObligationIdentity.atOrigin(listOf(source, condition,
+            obligationShape(result.offendingNode()), obligationShape(result.reason().offendingNode()))),
+        related = if (role is SourceRole.Proof) listOfNotNull(
+            role.declaration?.source?.takeUnless { it == source }?.let { RelatedLocation("Kotlin clause declaration", it) },
+            position.unwrapOr<KtSourceElement> { null }?.takeUnless { it == source }
+                ?.let { RelatedLocation("Kotlin clause", it) },
+        ).distinctBy { it.source } else emptyList(),
+        backend = BackendEvidence(id, result.reason().id(), msg),
+    )
 }
 
-/** A permission on a path the fold state tracks that the verifier could not establish. */
-class OwnershipError(private val sourceRole: SourceRole.Ownership) : FormattedError {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun report(source: KtSourceElement?) {
-        val (path, site) = msg()
-        reporter.reportOn(source, VerificationErrors.OWNERSHIP_NOT_ESTABLISHED, path, site)
+/** Backend products encode clause structure without diagnostic text; metadata is presentation-independent. */
+private fun obligationShape(value: Any?): Any? = when (value) {
+    is viper.silver.ast.Position, is viper.silver.ast.Info, is viper.silver.ast.ErrorTrafo -> Unit
+    is scala.Product -> {
+        val source = (value as? viper.silver.ast.Node)?.let {
+            Position.fromSilver(it.prettyMetadata._1()).unwrapOr<KtSourceElement> { null }
+        }
+        val fields = mutableListOf<Any?>(value.productPrefix(), source)
+        val iterator = value.productIterator()
+        while (iterator.hasNext()) fields.add(obligationShape(iterator.next()))
+        fields
     }
-
-    fun msg(): Pair<String, String> = when (val site = sourceRole.site) {
-        SourceRole.Ownership.Site.Unfold -> sourceRole.path to "to unfold it"
-        SourceRole.Ownership.Site.Fold -> sourceRole.path to "to fold it"
-        SourceRole.Ownership.Site.Construction -> "the arguments stored in a new ${sourceRole.path}" to "to fold it"
-        SourceRole.Ownership.Site.Havoc -> sourceRole.path to "to havoc it after a call"
-        SourceRole.Ownership.Site.LoopHead -> sourceRole.path to "at the loop head"
-        is SourceRole.Ownership.Site.Precondition ->
-            "the argument for parameter ${sourceRole.path}" to "at the call to `${site.function}`"
-        is SourceRole.Ownership.Site.Postcondition -> sourceRole.path to "when `${site.function}` returns"
+    is scala.collection.Iterable<*> -> {
+        val elements = mutableListOf<Any?>()
+        val iterator = value.iterator()
+        while (iterator.hasNext()) elements.add(obligationShape(iterator.next()))
+        elements
     }
+    else -> value
 }
 
-/** An override whose contract may not refine the contract of the declaration it overrides. */
-class OverrideRefinementError(private val sourceRole: SourceRole.OverrideRefinement) : FormattedError {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun report(source: KtSourceElement?) {
-        val (overridden, reason) = msg()
-        reporter.reportOn(source, VerificationErrors.OVERRIDE_NOT_REFINING, overridden, reason)
-    }
-
-    fun msg(): Pair<String, String> = sourceRole.overridden to when (sourceRole.clause) {
-        SourceRole.OverrideRefinement.Clause.PRECONDITION -> "its precondition may not follow from the overridden one"
-        SourceRole.OverrideRefinement.Clause.POSTCONDITION -> "its postcondition may not establish the overridden one"
-    }
+private fun SourceRole.ReturnsEffect.toReturnValue(): KotlinCondition.ReturnValue = when (this) {
+    is SourceRole.ReturnsEffect.Bool -> if (bool) KotlinCondition.ReturnValue.TRUE else KotlinCondition.ReturnValue.FALSE
+    is SourceRole.ReturnsEffect.Null -> if (negated) KotlinCondition.ReturnValue.NON_NULL else KotlinCondition.ReturnValue.NULL
+    SourceRole.ReturnsEffect.Wildcard -> KotlinCondition.ReturnValue.ANY
 }
 
-fun VerificationError.formatUserFriendly(): FormattedError? =
-    when (val sourceRole = lookupSourceRole()) {
-        is SourceRole.ReturnsEffect -> ReturnsEffectError(sourceRole)
-        is SourceRole.ConditionalEffect -> ConditionalEffectError(sourceRole)
-        is SourceRole.ListElementAccessCheck -> listIndexOutOfBound(sourceRole)
-        is SourceRole.ArrayElementAccessCheck -> sourceRole.indexOutOfBound()
-        is SourceRole.SubListCreation -> InvalidSubListRangeError(this, sourceRole)
-        is SourceRole.Ownership -> OwnershipError(sourceRole)
-        is SourceRole.OverrideRefinement -> OverrideRefinementError(sourceRole)
-        is SourceRole.ObserverAccess -> OwnershipError(SourceRole.Ownership("the observer receiver", SourceRole.Ownership.Site.Unfold))
-        else -> null
-    }
+private fun SourceRole.Condition.toPredicate(): KotlinPredicate = when (this) {
+    is SourceRole.FirSymbolHolder -> KotlinPredicate.Symbol(firSymbol)
+    is SourceRole.Condition.Constant -> KotlinPredicate.Constant(literal)
+    is SourceRole.Condition.IsNull -> KotlinPredicate.IsNull(targetVariable, negated)
+    is SourceRole.Condition.IsType -> KotlinPredicate.IsType(targetVariable, expectedType, negated)
+    is SourceRole.Condition.Negation -> KotlinPredicate.Negation(arg.toPredicate())
+    is SourceRole.Condition.Conjunction -> KotlinPredicate.Conjunction(lhs.toPredicate(), rhs.toPredicate())
+    is SourceRole.Condition.Disjunction -> KotlinPredicate.Disjunction(lhs.toPredicate(), rhs.toPredicate())
+}
 
-/**
- * Find the contained [SourceRole] within a verification error.
- * If the role is not found, then returns `null`.
- */
+private fun SourceRole.Ownership.toCondition(): KotlinCondition.Ownership = when (val s = site) {
+    SourceRole.Ownership.Site.Unfold -> KotlinCondition.Ownership(path, KotlinCondition.OwnershipSite.UNFOLD)
+    SourceRole.Ownership.Site.Fold -> KotlinCondition.Ownership(path, KotlinCondition.OwnershipSite.FOLD)
+    SourceRole.Ownership.Site.Construction -> KotlinCondition.Ownership(path, KotlinCondition.OwnershipSite.CONSTRUCTION)
+    SourceRole.Ownership.Site.Havoc -> KotlinCondition.Ownership(path, KotlinCondition.OwnershipSite.HAVOC)
+    SourceRole.Ownership.Site.LoopHead -> KotlinCondition.Ownership(path, KotlinCondition.OwnershipSite.LOOP_HEAD)
+    is SourceRole.Ownership.Site.Precondition -> KotlinCondition.Ownership(path, KotlinCondition.OwnershipSite.PRECONDITION, s.function)
+    is SourceRole.Ownership.Site.Postcondition -> KotlinCondition.Ownership(path, KotlinCondition.OwnershipSite.POSTCONDITION, s.function)
+}
+
+private fun VerificationError.collectionSymbol() =
+    locationNode.asCallable().arg(0).info.unwrapOr<SourceRole.FirSymbolHolder> { null }?.firSymbol
+
 private fun VerificationError.lookupSourceRole(): SourceRole? {
-    /**
-     * Lookup strategy:
-     * The source role can be embedded either in the error's location node, or in the fault proposition.
-     *
-     * As an example, `PreconditionInCallFalse` errors have as offending node result the call-site of the called method.
-     * But the actual info we are interested in is on the pre-condition, contained in the reason's offending node.
-     */
-    fun applicable(role: SourceRole?): SourceRole? = role.takeUnless {
-        it is SourceRole.ObserverAccess && result.reason() !is reasons.InsufficientPermission
+    fun applicable(role: SourceRole?): SourceRole? = when (role) {
+        is SourceRole.Proof, is SourceRole.ReturnsEffect, is SourceRole.ConditionalEffect,
+        is SourceRole.ListElementAccessCheck, is SourceRole.ArrayElementAccessCheck,
+        is SourceRole.SubListCreation, is SourceRole.Ownership, is SourceRole.OverrideRefinement -> role
+        is SourceRole.ObserverAccess -> role.takeIf { result.reason() is reasons.InsufficientPermission }
+        is SourceRole.Condition, null -> null
     }
-    return applicable(locationNode.getInfoOrNull<SourceRole>())
-        ?: applicable(unverifiableProposition.getInfoOrNull<SourceRole>())
+    val location = applicable(locationNode.getInfoOrNull<SourceRole>())
+    val proposition = applicable(unverifiableProposition.getInfoOrNull<SourceRole>())
+    return if (location is SourceRole.Proof && proposition is SourceRole.ObserverAccess) proposition
+        else location ?: proposition
 }
 
 /** Generated checks retain their source obligation when a transformed expression supplies the failing node. */
-fun VerifierError.reportingPosition(): Position = when (val role = (this as? VerificationError)?.lookupSourceRole()) {
-    is SourceRole.OverrideRefinement -> role.position
-    is SourceRole.ObserverAccess -> role.position
-    else -> position
-}
-
-private fun SourceRole.FirSymbolHolder?.formatListMessage(): String = when (this) {
-    null -> "the following list sub-expression"
-    else -> {
-        val listName = FirDiagnosticRenderers.DECLARATION_NAME.render(firSymbol)
-        "list '${listName}'"
+fun VerifierError.reportingPosition(checkedSource: KtSourceElement? = null): Position =
+    when (val role = (this as? VerificationError)?.lookupSourceRole()) {
+        is SourceRole.OverrideRefinement -> role.position
+        is SourceRole.ObserverAccess -> role.position
+        is SourceRole.Proof -> {
+            val postcondition = (this as VerificationError).result as? viper.silver.verifier.errors.PostconditionViolated
+            if (postcondition != null) {
+                val memberPosition = Position.fromSilver(postcondition.member().prettyMetadata._1())
+                memberPosition.takeUnless { it == Position.NoPosition }
+                    ?: checkedSource?.let { Position.Wrapped(it) } ?: position
+            } else position
+        }
+        else -> position
     }
-}

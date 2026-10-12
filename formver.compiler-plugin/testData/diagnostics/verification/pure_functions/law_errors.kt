@@ -50,7 +50,7 @@ interface Laws {
     <!INVALID_LAW!>@Law @Pure fun <T> generic(): Boolean = true<!>
     <!INVALID_LAW!>context(n: Int)
     @Law @Pure fun contextual(): Boolean = true<!>
-    <!INVALID_LAW!>@Law fun several(n: Int): Int<!>
+    <!INVALID_LAW, INVALID_LAW, INVALID_LAW, INVALID_LAW!>@Law fun several(n: Int): Int<!>
 
     @Law @Pure fun ordinaryRead(): Boolean = <!INVALID_LAW!>ordinary<!> > 0
     @Law @Pure fun globalRead(): Boolean = <!INVALID_LAW!>global<!> > 0

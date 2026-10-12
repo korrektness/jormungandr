@@ -537,7 +537,7 @@ fun StmtConversionContext.convertReportingUnsupported(stmt: FirStatement): ExpEm
         convert(stmt)
     } catch (e: UnsupportedFeatureException) {
         if (typeResolver.classLawExpansion != null) throw e
-        reportUnsupportedFeature(e.source ?: stmt.source, e.message)
+        reportUnsupportedFeature(e.source ?: stmt.source, e.message, e.reason)
         UnsupportedPlaceholder.withPosition(stmt.source)
     }
 

@@ -75,7 +75,7 @@ fun <!VIPER_TEXT!>pathToBorrowed<!>(h: @Unique @Borrowed Holder) {
 
 fun <!VIPER_TEXT!>wrongPathToBorrowed<!>(h: @Unique @Borrowed Holder) {
     setX(h.inner, 5)
-    verify(<!VIPER_VERIFICATION_ERROR!>h.inner.x == 0<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>h.inner.x == 0<!>)
 }
 
 fun <!VIPER_TEXT!>pathToSharedBorrowed<!>(h: @Unique @Borrowed Holder) {

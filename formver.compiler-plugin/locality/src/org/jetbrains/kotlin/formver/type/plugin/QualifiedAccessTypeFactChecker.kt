@@ -8,8 +8,7 @@ package org.jetbrains.kotlin.formver.type.plugin
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory3
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.FactPosition
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirQualifiedAccessExpressionChecker
@@ -17,7 +16,6 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.isEnabled
-import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.resolvedType
 
 /**
@@ -39,8 +37,8 @@ class QualifiedAccessTypeFactChecker<TypeFact>(
     private val typeFactJudgment: TypeFactJudgment<TypeFact>,
     private val expressionTypeFactResolver: ExpressionTypeFactResolver<TypeFact>,
     private val qualifiedAccessArgumentTypeFactMapper: QualifiedAccessArgumentTypeFactMapper<TypeFact>,
-    private val receiverDiagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
-    private val contextArgumentDiagnosticFactory: KtDiagnosticFactory3<ConeKotlinType, TypeFact, TypeFact>,
+    private val receiverDiagnosticFactory: TypeFactDiagnostic<TypeFact>,
+    private val contextArgumentDiagnosticFactory: TypeFactDiagnostic<TypeFact>,
     private val mismatchExplainer: TypeFactMismatchExplainer<TypeFact>? = null,
 ) : FirQualifiedAccessExpressionChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -53,7 +51,7 @@ class QualifiedAccessTypeFactChecker<TypeFact>(
             if (typeFactJudgment.satisfies(requiredTypeFact, actualTypeFact)) continue
 
             if (argument in expression.contextArguments) {
-                reporter.reportOn(
+                reporter.reportTypeFactFailure(
                     expression.source,
                     contextArgumentDiagnosticFactory,
                     argument.resolvedType,
@@ -61,13 +59,13 @@ class QualifiedAccessTypeFactChecker<TypeFact>(
                     actualTypeFact
                 )
             } else if (mismatchExplainer?.reportExplained(
-                    argument.source ?: expression.source, "Receiver", argument, requiredTypeFact, actualTypeFact
+                    argument.source ?: expression.source, FactPosition.RECEIVER, argument, requiredTypeFact, actualTypeFact
                 ) != true
             ) {
-                reporter.reportOn(
+                reporter.reportTypeFactFailure(
                     argument.source ?: expression.source,
                     receiverDiagnosticFactory,
-                    "Receiver",
+                    FactPosition.RECEIVER,
                     requiredTypeFact,
                     actualTypeFact
                 )

@@ -28,7 +28,7 @@ fun <!VIPER_TEXT!>withCaptures<!>(start: Int): @Unique LiftedSpec {
     }
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>incorrectBody<!>(): @Unique LiftedSpec = LiftedSpec { x ->
+fun <!VIPER_TEXT!>incorrectBody<!>(): @Unique LiftedSpec = LiftedSpec <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ x ->
     exposes(LiftedSpec::class) { state() == 0 }
     x - 1
 }<!>
@@ -99,13 +99,13 @@ fun <!VIPER_TEXT!>countFrom<!>(start: Int) {
     refute(false)
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>stuckCounter<!>(start: Int): @Unique Counter {
+fun <!VIPER_TEXT!>stuckCounter<!>(start: Int): @Unique Counter {
     var n = start
-    return Counter {
+    return Counter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
         exposes(Counter::class) { state() == n }
         n
-    }
-}<!>
+    }<!>
+}
 
 @NeverConvert
 fun consume(f: @Unique LiftedSpec) {}

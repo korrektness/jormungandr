@@ -6,8 +6,7 @@
 package org.jetbrains.kotlin.formver.type.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory3
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.FactPosition
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirThrowExpressionChecker
@@ -27,7 +26,7 @@ class ThrowTypeFactChecker<TypeFact>(
     private val typeFactJudgment: TypeFactJudgment<TypeFact>,
     private val expressionTypeFactResolver: ExpressionTypeFactResolver<TypeFact>,
     private val throwExceptionTypeFactResolver: ThrowExceptionTypeFactResolver<TypeFact>,
-    private val diagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
+    private val diagnosticFactory: TypeFactDiagnostic<TypeFact>,
 ) : FirThrowExpressionChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirThrowExpression) {
@@ -36,10 +35,10 @@ class ThrowTypeFactChecker<TypeFact>(
 
         if (typeFactJudgment.satisfies(requiredTypeFact, actualTypeFact)) return
 
-        reporter.reportOn(
+        reporter.reportTypeFactFailure(
             expression.exception.source,
             diagnosticFactory,
-            "Throw",
+            FactPosition.THROW,
             requiredTypeFact,
             actualTypeFact
         )

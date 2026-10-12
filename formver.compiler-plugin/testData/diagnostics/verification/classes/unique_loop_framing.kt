@@ -68,7 +68,7 @@ fun <!VIPER_TEXT!>loopWritingRootForgetsIt<!>(a: @Unique Counter, n: Int) {
         a.x = i
         i = i + 1
     }
-    verify(<!VIPER_VERIFICATION_ERROR!>a.x == 1<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>a.x == 1<!>)
 }
 
 fun <!VIPER_TEXT!>invariantNamesRoot<!>(a: @Unique Counter, n: Int) {
@@ -97,5 +97,5 @@ fun <!VIPER_TEXT!>inlinedLoopKeepsSiblingField<!>(h: @Unique Holder, n: Int) {
 fun <!VIPER_TEXT!>lambdaInLoopReachesRoot<!>(a: @Unique Counter, n: Int) {
     a.x = 1
     repeat(n) { a.x = 2 }
-    verify(<!VIPER_VERIFICATION_ERROR!>a.x == 1<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>a.x == 1<!>)
 }

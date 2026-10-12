@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
+import org.jetbrains.kotlin.formver.common.PurityCondition
+import org.jetbrains.kotlin.formver.common.PurityRule
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
@@ -87,7 +89,7 @@ data class Assert(val exp: ExpEmbedding) : ExpEmbedding {
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitAssert(this)
 
     override fun isValid(ctx: PurityContext): Boolean = exp.isPure(admitsInlinedCalls = true).also {
-        if (!it) ctx.addPurityError(exp, "Assert condition is impure")
+        if (!it) ctx.addPurityError(exp, PurityCondition(PurityRule.ASSERT_CONDITION))
     }
 }
 
@@ -98,7 +100,7 @@ data class Refute(val exp: ExpEmbedding) : ExpEmbedding {
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitRefute(this)
 
     override fun isValid(ctx: PurityContext): Boolean = exp.isPure(admitsInlinedCalls = true).also {
-        if (!it) ctx.addPurityError(exp, "Refute condition is impure")
+        if (!it) ctx.addPurityError(exp, PurityCondition(PurityRule.REFUTE_CONDITION))
     }
 }
 

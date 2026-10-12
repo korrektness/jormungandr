@@ -7,8 +7,8 @@ package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.formver.core.embeddings.expression.StringBuilderUpdate
 import org.jetbrains.kotlin.KtSourceElement
-import org.jetbrains.kotlin.text
-import org.jetbrains.kotlin.formver.common.SnaktException
+import org.jetbrains.kotlin.formver.common.*
+import org.jetbrains.kotlin.formver.core.purity.conversionOwnershipPath
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
@@ -27,8 +27,6 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.withAccessRole
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.asInfo
-import org.jetbrains.kotlin.formver.core.names.FunctionResultVariableName
-import org.jetbrains.kotlin.formver.core.names.ReturnVariableName
 import org.jetbrains.kotlin.formver.core.names.sourceSpelling
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
@@ -65,45 +63,32 @@ typealias FoldSnapshot = FoldTrie.Snapshot<VariableEmbedding, PathStep, ClassTyp
  * Raised when the linearized code needs a unique predicate that the fold state does not hold.
  * The converter reports it as a conversion error.
  */
-class FoldStateException(source: KtSourceElement?, message: String) : SnaktException(source, message, null)
+class FoldStateException(source: KtSourceElement?, val condition: FoldOwnershipCondition) :
+    SnaktException(source, FailureToFirRenderer.message(unsupportedOwnershipFailure(source, condition)), null)
+
+fun OwnedPath.toConversionPath(): ConversionOwnershipPath = checkNotNull(root.conversionOwnershipPath()).copy(
+    members = fields.map { ConversionOwnershipPath.Member(it.symbol, it.spelling) },
+)
 
 /** [this] as the Kotlin source writes it, in backticks. */
-fun OwnedPath.render(): String {
-    val root = when (val name = root.name) {
-        is ReturnVariableName, FunctionResultVariableName -> return "the result" + fields.joinToString("") { ".${it.spelling}" }
-        else -> name.sourceSpelling ?: "a temporary value"
-    }
-    return "`" + (listOf(root) + fields.map { it.spelling }).joinToString(".") + "`"
+fun OwnedPath.render(): String = FailureToFirRenderer.ownershipPath(toConversionPath())
+
+private fun Absence<VariableEmbedding, PathStep, KtSourceElement?>.toCondition(): OwnershipAbsence = when (this) {
+    Absence.NeverHeld -> OwnershipAbsence(OwnershipAbsenceReason.NEVER_HELD)
+    is Absence.Released -> OwnershipAbsence(OwnershipAbsenceReason.CONSUMED, site = site)
+    is Absence.Moved -> OwnershipAbsence(OwnershipAbsenceReason.MOVED, target.toConversionPath(), site)
+    is Absence.Forgotten -> OwnershipAbsence(OwnershipAbsenceReason.JOINED, site = site)
+    is Absence.Framed -> OwnershipAbsence(OwnershipAbsenceReason.FRAMED, site = site)
 }
 
-/** The first line of the source text of [site], in backticks, cut short when it is long. */
-internal fun renderSite(site: KtSourceElement?): String? {
-    val line = site?.text?.lineSequence()?.firstOrNull()?.trim() ?: return null
-    return "`" + (if (line.length > MAX_SITE_LENGTH) line.take(MAX_SITE_LENGTH) + "..." else line) + "`"
-}
-
-private const val MAX_SITE_LENGTH = 40
-
-private fun Absence<VariableEmbedding, PathStep, KtSourceElement?>.render(): String = when (this) {
-    Absence.NeverHeld -> "was not tracked as owned before this point"
-    is Absence.Released -> "was consumed" + (renderSite(site)?.let { " by $it" } ?: "")
-    is Absence.Moved -> "was moved to ${target.render()}" + (renderSite(site)?.let { " by $it" } ?: "")
-    is Absence.Forgotten -> "was dropped where control flow joins" + (renderSite(site)?.let { " at $it" } ?: "")
-    is Absence.Framed -> "is kept outside the loop" + (renderSite(site)?.let { " at $it" } ?: "")
-}
-
-/** A message naming the path a failure needs and why the fold state does not hold it. */
-private fun FoldFailure<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourceElement?>.message(): String =
+fun FoldFailure<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourceElement?>.toCondition(): FoldOwnershipCondition =
     when (this) {
-        is FoldFailure.NotHeld -> {
-            val subject = if (absent == path) "it" else absent.render()
-            "Ownership of ${path.render()} is needed here, but $subject ${why.render()}."
-        }
-        is FoldFailure.HoleBelow ->
-            "Ownership of all of ${path.render()} is needed here, but ${hole.render()} ${why.render()}."
-        is FoldFailure.NotASupertype ->
-            "Ownership of ${path.render()} as `${cls.name.sourceSpelling}` is needed here, but `${cls.name.sourceSpelling}` " +
-                "is not a supertype of its type."
+        is FoldFailure.NotHeld -> FoldOwnershipCondition(FoldOwnershipRule.NOT_HELD,
+            path.toConversionPath(), absent.toConversionPath(), why.toCondition())
+        is FoldFailure.HoleBelow -> FoldOwnershipCondition(FoldOwnershipRule.HOLE_BELOW,
+            path.toConversionPath(), hole.toConversionPath(), why.toCondition())
+        is FoldFailure.NotASupertype -> FoldOwnershipCondition(FoldOwnershipRule.NOT_SUPERTYPE,
+            path.toConversionPath(), typeName = cls.name.sourceSpelling)
     }
 
 /**
@@ -213,7 +198,7 @@ class FoldState(private val typeResolver: TypeResolver) {
         to: ClassTypeEmbedding,
         value: OwnedPath,
     ) {
-        if (!typeResolver.isSubtype(from, to)) throw FoldStateException(ctx.source, "Ownership cannot be downcast to `${to.name.sourceSpelling}`.")
+        if (!typeResolver.isSubtype(from, to)) throw FoldStateException(ctx.source, FoldOwnershipCondition(FoldOwnershipRule.DOWNCAST, typeName = to.name.sourceSpelling))
         val method = typeResolver.familyTransfer(from, to).method
         val place = ctx.placeOf(value)
         ctx.addGuarded(place) { method.toMethodCall(listOf(place.exp), emptyList(), ctx.source.asPosition) }
@@ -359,7 +344,7 @@ private fun LinearizationContext.foldSink() =
         override val site: KtSourceElement? get() = source
 
         override fun fail(failure: FoldFailure<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourceElement?>): Nothing =
-            throw FoldStateException(source, failure.message())
+            throw FoldStateException(source, failure.toCondition())
     }
 
 /**

@@ -6,8 +6,8 @@
 package org.jetbrains.kotlin.formver.locality.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory0
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.FailureKind
+import org.jetbrains.kotlin.formver.common.reportAttributeFailure
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.containingClassLookupTag
@@ -104,7 +104,7 @@ object DispatchReceiverLocalityResolver : DispatchReceiverTypeFactResolver<Local
  */
 class DispatchReceiverAnnotationPlacementChecker(
     private val annotationId: ClassId,
-    private val factory: KtDiagnosticFactory0,
+    private val factory: FailureKind,
 ) : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
@@ -112,7 +112,7 @@ class DispatchReceiverAnnotationPlacementChecker(
         if (declaration.dispatchReceiverType != null ||
             (symbol is FirPropertyAccessorSymbol && symbol.propertySymbol.dispatchReceiverType != null)) return
         val annotation = declaration.getAnnotationByClassId(annotationId, context.session) ?: return
-        reporter.reportOn(annotation.source, factory)
+        reporter.reportAttributeFailure(annotation.source, factory)
     }
 }
 

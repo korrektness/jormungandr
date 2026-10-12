@@ -16,7 +16,7 @@ open class BaseMeter(var a: Int, var b: Int) : Meter {
     @Unique @Borrowed override fun <!VIPER_TEXT!>bump<!>() { a++ }
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class DerivedMeter<!> : BaseMeter(0, 5) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class DerivedMeter<!> : BaseMeter(0, 5) {
     @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = b
 }<!>
 
@@ -26,7 +26,7 @@ class GoodDerivedMeter : BaseMeter(0, 5) {
 }
 
 fun <!VIPER_TEXT!>staticBinding<!>(x: @Unique @Borrowed BaseMeter) {
-    verify(<!VIPER_VERIFICATION_ERROR!>x.level() == x.a<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x.level() == x.a<!>)
 }
 
 fun <!VIPER_TEXT!>meterClient<!>(m: @Unique @Borrowed Meter) {
@@ -43,14 +43,14 @@ fun <!VIPER_TEXT!>derivedThroughInterface<!>(d: @Unique @Borrowed DerivedMeter) 
 fun <!VIPER_TEXT!>goodDerivedThroughBase<!>(d: @Unique GoodDerivedMeter) {
     val base: @Unique BaseMeter = d
     meterClient(base)
-    verify(<!VIPER_VERIFICATION_ERROR!>base.level() == base.a<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>base.level() == base.a<!>)
 }
 
 fun <!VIPER_TEXT!>baseRoundTrip<!>(base: @Unique @Borrowed BaseMeter) {
     val before = base.level()
     meterClient(base)
     verify(base.level() == before + 1)
-    verify(<!VIPER_VERIFICATION_ERROR!>base.level() == base.a<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>base.level() == base.a<!>)
 }
 
 open class FinalObserver(var a: Int) : Meter {
@@ -76,7 +76,7 @@ class DerivedSize : OpenSize() {
     @Pure override val size: Int <!VIPER_TEXT!>get<!>() = 4
 }
 fun <!VIPER_TEXT!>propertyBinding<!>(s: @Unique @Borrowed OpenSize) {
-    verify(<!VIPER_VERIFICATION_ERROR!>s.size == 3<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>s.size == 3<!>)
 }
 abstract class AbstractSize : PropertyMeter {
     @Pure abstract override val size: Int
@@ -91,6 +91,6 @@ fun <!VIPER_TEXT!>concreteProperty<!>(s: @Unique @Borrowed ConcreteSize) {
 
 open <!VIPER_TEXT!>class ObserverMiddle<!>(a: Int, b: Int) : BaseMeter(a, b)
 <!VIPER_TEXT!>class GoodObserverLeaf<!>(a: Int, b: Int) : ObserverMiddle(a, b)
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BadObserverLeaf<!>(a: Int, b: Int) : ObserverMiddle(a, b) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class BadObserverLeaf<!>(a: Int, b: Int) : ObserverMiddle(a, b) {
     @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = b
 }<!>

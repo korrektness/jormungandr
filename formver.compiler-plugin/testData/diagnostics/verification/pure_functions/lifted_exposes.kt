@@ -56,12 +56,12 @@ fun <!VIPER_TEXT!>constantBinding<!>(): @Unique ConstantClosure {
     }
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>breaksBoundContract<!>(): @Unique ConstantClosure = ConstantClosure {
+fun <!VIPER_TEXT!>breaksBoundContract<!>(): @Unique ConstantClosure = ConstantClosure <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
     exposes(ConstantClosure::class) { value() == 7 }
     8
 }<!>
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>breaksInheritedLaw<!>(): @Unique ConstantClosure = ConstantClosure {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>breaksInheritedLaw<!>(): @Unique ConstantClosure = ConstantClosure {
     exposes(ConstantClosure::class) { value() == 8 }
     8
 }<!>

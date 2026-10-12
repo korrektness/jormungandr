@@ -6,6 +6,8 @@
 package org.jetbrains.kotlin.formver.core.diagnostics
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.formver.common.PurityCondition
+import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 
 /**
  * Surface for emitting conversion diagnostics, narrower than `ProgramConversionContext` so that
@@ -14,14 +16,14 @@ import org.jetbrains.kotlin.KtSourceElement
  */
 interface ErrorCollectionContext {
     /** Report a purity violation at [source]. */
-    fun reportPurityViolation(source: KtSourceElement?, msg: String)
+    fun reportPurityViolation(source: KtSourceElement?, condition: PurityCondition)
 
     /** Report code whose ownership the permission encoding cannot follow, at [source]. */
-    fun reportUnsupportedOwnership(source: KtSourceElement?, msg: String)
+    fun reportUnsupportedOwnership(source: KtSourceElement?, condition: ConversionOwnershipCondition)
 
     /** Warn that the write at [source] is dropped because the local it goes through is shared. */
     fun reportUntrackedWrite(source: KtSourceElement?)
 
     /** Report a construct at [source] that SnaKt does not translate. */
-    fun reportUnsupportedFeature(source: KtSourceElement?, msg: String)
+    fun reportUnsupportedFeature(source: KtSourceElement?, msg: String, reason: org.jetbrains.kotlin.formver.common.UnsupportedReason)
 }

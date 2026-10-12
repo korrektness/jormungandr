@@ -6,12 +6,20 @@ import org.jetbrains.kotlin.KtSourceElement
 abstract class SnaktException(val source: KtSourceElement?, override val message: String, cause: Throwable?) :
     Exception(message, cause)
 
+enum class InternalReason { INVARIANT_BROKEN, UNEXPECTED_EXCEPTION }
+enum class UnsupportedReason { KOTLIN_CONSTRUCT, MULTISET_OUTSIDE_SPECIFICATION }
+
 /** An invariant of SnaKt broke: a bug in the plugin. */
-class SnaktInternalException(source: KtSourceElement?, message: String, cause: Throwable? = null) :
-    SnaktException(source, message, cause)
+class SnaktInternalException(
+    source: KtSourceElement?, message: String, cause: Throwable? = null,
+    val reason: InternalReason = InternalReason.INVARIANT_BROKEN,
+) : SnaktException(source, message, cause)
 
 /** The construct at [source] is outside the fragment of Kotlin that SnaKt translates. */
-class UnsupportedFeatureException(source: KtSourceElement?, message: String) : SnaktException(source, message, null)
+class UnsupportedFeatureException(
+    source: KtSourceElement?, message: String,
+    val reason: UnsupportedReason = UnsupportedReason.KOTLIN_CONSTRUCT,
+) : SnaktException(source, message, null)
 
 /**
  * Runs [action], turning any failure that is not a [SnaktException] into a [SnaktInternalException] at [source].
@@ -29,4 +37,5 @@ inline fun <R> attributingFailuresTo(source: KtSourceElement?, action: () -> R):
     }
 
 fun Throwable.asInternalErrorAt(source: KtSourceElement?): SnaktInternalException =
-    SnaktInternalException(source, listOfNotNull(this::class.simpleName, message).joinToString(": "), this)
+    SnaktInternalException(source, listOfNotNull(this::class.simpleName, message).joinToString(": "), this,
+        InternalReason.UNEXPECTED_EXCEPTION)

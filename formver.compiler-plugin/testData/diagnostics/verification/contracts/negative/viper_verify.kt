@@ -3,11 +3,23 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 fun <!VIPER_TEXT!>verify_false<!>() {
-    verify(<!VIPER_VERIFICATION_ERROR!>false<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>)
 }
 
 fun <!VIPER_TEXT!>verify_compound<!>() {
-    verify(<!VIPER_VERIFICATION_ERROR!>true && false<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>true && false<!>)
+}
+
+fun <!VIPER_TEXT!>requires_positive<!>(value: Int) {
+    preconditions { value > 0 }
+}
+
+fun <!VIPER_TEXT!>first_call<!>() {
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>requires_positive(0)<!>
+}
+
+fun <!VIPER_TEXT!>second_call<!>() {
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>requires_positive(0)<!>
 }
 
 fun <!VIPER_TEXT!>verify_forall<!>() {

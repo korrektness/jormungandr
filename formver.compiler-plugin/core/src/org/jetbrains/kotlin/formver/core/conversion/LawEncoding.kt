@@ -5,6 +5,9 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.PurityCondition
+import org.jetbrains.kotlin.formver.common.PurityRule
+
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.descriptors.isInterface
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
@@ -12,6 +15,9 @@ import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.formver.core.asPosition
+import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
+import org.jetbrains.kotlin.formver.core.embeddings.asInfo
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PlaceholderVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.asTypeEmbedding
@@ -72,7 +78,7 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
             program, signature.signature, resolver, program.scopeIndexProducer.getFresh(), OwnershipFrame.root(null, emptyList()),
         ).statementCtxt()
         val body = context.convertPureBody(symbol.fir)
-        if (!body.isPure()) program.reportPurityViolation(symbol.source, "Impure law body")
+        if (!body.isPure()) program.reportPurityViolation(symbol.source, PurityCondition(PurityRule.LAW_BODY, symbol))
         val linearizer = PureFunBodyLinearizer(source, typeResolver = program.typeResolver, lawView = view)
         body.toLinearizable(symbol.source).toViperUnusedResult(linearizer)
         return signature.signature.returns.type.injection.fromRef(linearizer.constructExpression())
@@ -111,7 +117,9 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
                 override val pres = listOf(owned)
                 // Expose the representation's pure facts while keeping ownership folded for observer calls.
                 override val body = Stmt.Seqn(listOf(Stmt.Unfold(owned, position), Stmt.Fold(owned, position)) +
-                    assertions.map { Stmt.Assert(it, position) })
+                    assertions.zip(laws).map { (condition, law) ->
+                        Stmt.Assert(condition, position, SourceRole.Proof(KotlinCondition.ProofClause.LAW, law).asInfo)
+                    })
             }
         }
     }

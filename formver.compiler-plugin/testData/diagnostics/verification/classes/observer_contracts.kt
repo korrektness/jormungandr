@@ -91,7 +91,7 @@ class BrokenObservedCell(var count: Int, var item: Int) : ObservedList {
     @Pure @Unique
     override fun <!VIPER_TEXT!>get<!>(index: Int): Int = item
 
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed
     override fun <!VIPER_TEXT!>add<!>(value: Int) {
         item = value
     }<!>

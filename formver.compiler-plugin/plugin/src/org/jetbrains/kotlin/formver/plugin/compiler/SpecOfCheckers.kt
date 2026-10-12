@@ -6,7 +6,11 @@
 package org.jetbrains.kotlin.formver.plugin.compiler
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.Failure
+import org.jetbrains.kotlin.formver.common.FailureKind
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.common.SpecOfRule
+import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -37,47 +41,49 @@ class SpecOfDeclarationChecker(private val session: FirSession) : FirSimpleFunct
     override fun check(declaration: FirSimpleFunction) {
         val symbol = declaration.symbol
         val name = symbol.specOfTargetName(session) ?: return
-        violation(declaration, name)?.let { reporter.reportOn(declaration.source, PluginErrors.INVALID_SPEC_OF, it) }
+        violation(declaration, name)?.let {
+            reporter.reportFailure(Failure(FailureKind.INVALID_SPEC_OF, declaration.source, it))
+        }
     }
 
     context(context: CheckerContext)
-    private fun violation(declaration: FirSimpleFunction, name: String): String? {
+    private fun violation(declaration: FirSimpleFunction, name: String): KotlinCondition.SpecOf? {
         val symbol = declaration.symbol
-        if (symbol.receiverParameterSymbol != null) return "Invalid @SpecOf: extension receiver."
-        if (!declaration.returnTypeRef.coneType.isUnit) return "Invalid @SpecOf: return type."
+        if (symbol.receiverParameterSymbol != null) return KotlinCondition.SpecOf(SpecOfRule.EXTENSION_RECEIVER)
+        if (!declaration.returnTypeRef.coneType.isUnit) return KotlinCondition.SpecOf(SpecOfRule.RETURN_TYPE)
         if (symbol.functionsDeclaredBeside().none { it.name.asString() == name }) {
-            return "Invalid @SpecOf: no member '$name'."
+            return KotlinCondition.SpecOf(SpecOfRule.MISSING_MEMBER, name)
         }
         val target = symbol.specOfTargets(session).singleOrNull()
-            ?: return "Invalid @SpecOf: no overload of '$name' with these parameter types."
+            ?: return KotlinCondition.SpecOf(SpecOfRule.OVERLOAD, name)
         return targetViolation(declaration, target)
     }
 
     context(context: CheckerContext)
     @OptIn(SymbolInternals::class)
-    private fun targetViolation(declaration: FirSimpleFunction, target: FirNamedFunctionSymbol): String? {
+    private fun targetViolation(declaration: FirSimpleFunction, target: FirNamedFunctionSymbol): KotlinCondition.SpecOf? {
         val symbol = declaration.symbol
         val name = target.name.asString()
-        if (target.specOfSiblings(session).size > 1) return "Invalid @SpecOf: several @SpecOf functions for '$name'."
-        if (target.fir.ownSpecification() != null) return "Invalid @SpecOf: target has its own specification."
+        if (target.specOfSiblings(session).size > 1) return KotlinCondition.SpecOf(SpecOfRule.MULTIPLE_SPECIFICATIONS, name)
+        if (target.fir.ownSpecification() != null) return KotlinCondition.SpecOf(SpecOfRule.OWN_SPECIFICATION)
         val ownershipMatches = symbol.valueParameterSymbols.zip(target.valueParameterSymbols).all { (own, theirs) ->
             own.isUnique() == theirs.isUnique() && own.isBorrowed() == theirs.isBorrowed()
         }
-        if (!ownershipMatches) return "Invalid @SpecOf: parameter ownership."
+        if (!ownershipMatches) return KotlinCondition.SpecOf(SpecOfRule.PARAMETER_OWNERSHIP)
         return bodyViolation(declaration, target)
     }
 
-    private fun bodyViolation(declaration: FirSimpleFunction, target: FirNamedFunctionSymbol): String? {
+    private fun bodyViolation(declaration: FirSimpleFunction, target: FirNamedFunctionSymbol): KotlinCondition.SpecOf? {
         val statements = declaration.body?.statements.orEmpty()
         val pre = statements.getOrNull(0)?.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }
         val post = statements.getOrNull(if (pre != null) 1 else 0)
             ?.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }
         if (statements.size != listOfNotNull(pre, post).size) {
-            return "Invalid @SpecOf: body shape."
+            return KotlinCondition.SpecOf(SpecOfRule.BODY_SHAPE)
         }
         val resultType = declaration.body?.postconditionsResultType() ?: return null
         if (!resultType.sameUpToAttributes(target.resolvedReturnType)) {
-            return "Invalid @SpecOf: postconditions type."
+            return KotlinCondition.SpecOf(SpecOfRule.POSTCONDITIONS_TYPE)
         }
         return null
     }
@@ -89,6 +95,7 @@ class SpecOfCallChecker(private val session: FirSession) : FirFunctionCallChecke
     override fun check(expression: FirFunctionCall) {
         val callee = expression.toResolvedCallableSymbol() as? FirNamedFunctionSymbol ?: return
         if (callee.specOfTargetName(session) == null) return
-        reporter.reportOn(expression.source, PluginErrors.INVALID_SPEC_OF, "Invalid @SpecOf: call.")
+        reporter.reportFailure(Failure(FailureKind.INVALID_SPEC_OF, expression.source,
+            KotlinCondition.SpecOf(SpecOfRule.CALL)))
     }
 }

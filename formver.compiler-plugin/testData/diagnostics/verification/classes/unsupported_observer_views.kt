@@ -14,7 +14,7 @@ open class TallyBase(var v: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int = v
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>() {}
 }
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class InheritedTally<!> : TallyBase(0), Tally<!>
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class InheritedTally<!> : TallyBase(0), Tally<!>
 fun <!VIPER_TEXT!>tallyClient<!>(t: @Unique @Borrowed Tally) {
     postconditions<Unit> { t.count() == old(t.count()) + 1 }
     val before = t.count()
@@ -39,7 +39,7 @@ abstract class AbstractLevel : Level {
     @Law @Pure @Unique fun representation(): Boolean = l >= 0
     @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = l
 }
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class NegativeLevel<!> : AbstractLevel() {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class NegativeLevel<!> : AbstractLevel() {
     @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = -1
 }<!>
 fun <!VIPER_TEXT!>levelClient<!>(l: @Unique @Borrowed Level) {

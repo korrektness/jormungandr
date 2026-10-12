@@ -1,43 +1,12 @@
-/*
- * Copyright 2010-2026 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
- */
-
 package org.jetbrains.kotlin.formver.core.diagnostics
 
-import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
-import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
-import org.jetbrains.kotlin.diagnostics.error1
-import org.jetbrains.kotlin.diagnostics.warning0
-import org.jetbrains.kotlin.diagnostics.warning1
+import org.jetbrains.kotlin.formver.common.FailureKind
 
-/**
- * Diagnostics emitted by the conversion pipeline (FIR -> ExpEmbedding -> Viper).
- *
- * Kept in `core` so conversion code can call `reporter.reportOn(source, ConversionErrors.X, msg)`
- * directly instead of buffering through an intermediate collector.
- */
-object ConversionErrors : KtDiagnosticsContainer() {
-    val PURITY_VIOLATION by error1<PsiElement, String>()
-    /**
-     * Code whose ownership the permission encoding cannot follow, such as folding a path with a moved-out field.
-     */
-    val UNSUPPORTED_OWNERSHIP by error1<PsiElement, String>()
-    /**
-     * A write through a `Shared` local initialized from a constructor call, which conversion drops.
-     */
-    val UNTRACKED_WRITE by warning0<PsiElement>()
-    /**
-     * A construct outside the fragment of Kotlin that SnaKt translates.
-     */
-    val UNSUPPORTED_FEATURE by warning1<PsiElement, String>()
-
-    /**
-     * Per-function summary fired by `ProgramConverter.validateAll` whenever a registered declaration's
-     * pipeline (signature embedding, body conversion, or validation) produced any blocking errors.
-     */
-    val VERIFICATION_SKIPPED by warning1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
-
-    override fun getRendererFactory() = ConversionErrorMessages
+/** Conversion entry points use the shared failure registry. */
+object ConversionErrors {
+    val PURITY_VIOLATION get() = FailureKind.PURITY_VIOLATION
+    val UNSUPPORTED_OWNERSHIP get() = FailureKind.UNSUPPORTED_OWNERSHIP
+    val UNTRACKED_WRITE get() = FailureKind.UNTRACKED_WRITE
+    val UNSUPPORTED_FEATURE get() = FailureKind.UNSUPPORTED_FEATURE
+    val VERIFICATION_SKIPPED get() = FailureKind.VERIFICATION_SKIPPED
 }

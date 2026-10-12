@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
-import org.jetbrains.kotlin.diagnostics.rendering.Renderer
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.formver.locality.plugin.LocalityAttribute
 import org.jetbrains.kotlin.formver.locality.plugin.locality
@@ -14,12 +13,7 @@ import org.jetbrains.kotlin.formver.type.plugin.TypeFactUnifier
 import org.jetbrains.kotlin.formver.uniqueness.attribute.UniquenessAttribute
 import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 
-enum class Uniqueness {
-    Unique,
-    Unknown,
-    Shared,
-    Moved
-}
+typealias Uniqueness = org.jetbrains.kotlin.formver.common.Uniqueness
 
 /**
  * Resolves the uniqueness assumed for values of this type in the current scope, when no parameter-specific rule
@@ -58,14 +52,5 @@ fun Uniqueness.join(other: Uniqueness): Uniqueness =
 object UniquenessUnifier : TypeFactUnifier<Uniqueness> {
     override fun join(left: Uniqueness, right: Uniqueness): Uniqueness {
         return left.join(right)
-    }
-}
-
-val UniquenessRenderer = Renderer<Uniqueness> { uniqueness ->
-    when (uniqueness) {
-        Uniqueness.Unique -> "unique"
-        Uniqueness.Unknown -> "unknown"
-        Uniqueness.Shared -> "shared"
-        Uniqueness.Moved -> "moved"
     }
 }

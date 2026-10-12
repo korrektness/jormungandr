@@ -5,15 +5,12 @@
 
 package org.jetbrains.kotlin.formver.locality.plugin
 
-import org.jetbrains.kotlin.diagnostics.rendering.Renderer
 import org.jetbrains.kotlin.formver.type.plugin.TypeFactIntersector
 import org.jetbrains.kotlin.formver.type.plugin.TypeFactJudgment
 import org.jetbrains.kotlin.formver.type.plugin.TypeFactUnifier
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 
-enum class Locality {
-    Local, Global
-}
+typealias Locality = org.jetbrains.kotlin.formver.common.Locality
 
 fun Locality.accepts(other: Locality): Boolean =
     this <= other
@@ -32,13 +29,6 @@ val ConeKotlinType.locality: Locality
     } else {
         Locality.Global
     }
-
-val LocalityRenderer = Renderer<Locality> { locality ->
-    when (locality) {
-        Locality.Global -> "global"
-        Locality.Local -> "local"
-    }
-}
 
 object LocalityUnifier : TypeFactUnifier<Locality> {
     override fun join(left: Locality, right: Locality): Locality {

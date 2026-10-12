@@ -33,7 +33,7 @@ fun <!VIPER_TEXT!>preconditionOnly<!>(): @Unique ArgumentIncSpec = ArgumentIncSp
     x + 1
 }<!>
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>incorrectOwnBody<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec { x ->
+fun <!VIPER_TEXT!>incorrectOwnBody<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ x ->
     exposes(ArgumentIncSpec::class) { inc() == 1 }
     preconditions { x >= -1 }
     postconditions<Int> { result -> result == x + 1 }
@@ -48,11 +48,11 @@ fun <!VIPER_TEXT!>interfaceClient<!>() {
 
 fun <!VIPER_TEXT!>clientCannotUseOwnPrecondition<!>() {
     val f: @Unique ArgumentIncSpec = weakerPrecondition()
-    <!VIPER_VERIFICATION_ERROR!>f(-1)<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>f(-1)<!>
 }
 
 fun <!VIPER_TEXT!>clientCannotUseOwnPostcondition<!>() {
     val f: @Unique ArgumentIncSpec = weakerPrecondition()
     val result = f(0)
-    verify(<!VIPER_VERIFICATION_ERROR!>result == 1<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>result == 1<!>)
 }

@@ -38,7 +38,7 @@ fun <!VIPER_TEXT!>throwCaughtSkipsState<!>() {
         x = 1
         throw IllegalArgumentException()
     } catch (e: IllegalArgumentException) {
-        verify(<!VIPER_VERIFICATION_ERROR!>x == 0<!>)
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x == 0<!>)
     }
 }
 
@@ -52,7 +52,7 @@ fun <!VIPER_TEXT!>throwReachesOuterCatch<!>() {
             x = 2
         }
     } catch (e: IllegalStateException) {
-        verify(<!VIPER_VERIFICATION_ERROR!>x != 1<!>)
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x != 1<!>)
     }
 }
 

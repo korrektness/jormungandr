@@ -14,7 +14,7 @@ fun <!VIPER_TEXT!>getVal<!>(l: @Unique Link): Int? {
 fun <!VIPER_TEXT!>test<!>() {
     val l = Link(5, Link(3, null))
     val expr1 = l.data == 5
-    verify(<!VIPER_VERIFICATION_ERROR!>expr1<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>expr1<!>)
     val expr2 = l.next?.data == 3
     verify(expr2)
 }

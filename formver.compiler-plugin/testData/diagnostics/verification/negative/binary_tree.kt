@@ -14,7 +14,7 @@ fun <!VIPER_TEXT!>get_left_val<!>(n: @Unique Node): Int? {
 fun <!VIPER_TEXT!>test<!>() {
     val n = Node(5, Node(4, null, null), Node(3, Node(2, null, null), Node(1, null, null)))
     val expr1 = n.data == 5
-    verify(<!VIPER_VERIFICATION_ERROR!>expr1<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>expr1<!>)
     val expr2 = n.left?.data == 4
     verify(expr2)
 }

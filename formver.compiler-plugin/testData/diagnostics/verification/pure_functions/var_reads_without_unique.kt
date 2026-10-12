@@ -11,7 +11,7 @@ fun <!VERIFICATION_SKIPPED!>readShared<!>(b: Box): Int = <!UNSUPPORTED_OWNERSHIP
 @Pure
 fun <!VIPER_TEXT!>readUnique<!>(b: @Unique Box): Int = b.content
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>callsShared<!>(b: Box): Int {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>callsShared<!>(b: Box): Int {
     <!VIPER_VERIFICATION_ERROR!>preconditionShared(b)<!>
     return readShared(b)
 }<!>

@@ -5,6 +5,14 @@ import org.jetbrains.kotlin.formver.plugin.NeverConvert
 import org.jetbrains.kotlin.formver.plugin.loopInvariants
 import org.jetbrains.kotlin.formver.plugin.verify
 
+fun <!VIPER_TEXT!>violatedInvariant<!>() {
+    var i = 0
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>while (i < 2) {
+        loopInvariants { i < 1 }
+        i = i + 1
+    }<!>
+}
+
 fun <!VIPER_TEXT!>test<!>(n: Int) {
     var it = 0
     var holds = true

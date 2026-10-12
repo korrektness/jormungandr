@@ -22,7 +22,7 @@ fun <!VIPER_TEXT!>inspect<!>(b: @Unique @Borrowed Base) {
 fun <!VIPER_TEXT!>subFieldAfterBorrow<!>(sub: @Unique Sub) {
     sub.extra = 0
     inspect(sub)
-    verify(<!VIPER_VERIFICATION_ERROR!>sub.extra == 0<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>sub.extra == 0<!>)
 }
 
 // A plain val is heap-independent and immutable: nothing to havoc.
@@ -36,5 +36,5 @@ fun <!VIPER_TEXT!>plainValAfterBorrow<!>(rich: @Unique Rich) {
 fun <!VIPER_TEXT!>nestedAfterBorrow<!>(rich: @Unique Rich) {
     rich.next?.value = 0
     inspect(rich)
-    verify(<!VIPER_VERIFICATION_ERROR!>rich.next?.value == 0<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>rich.next?.value == 0<!>)
 }

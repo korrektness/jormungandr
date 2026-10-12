@@ -42,7 +42,7 @@ fun <!VIPER_TEXT!>initializedInBody<!>() {
 
 fun <!VIPER_TEXT!>initializedInBodyUnconstrained<!>() {
     val h: @Unique Holder = Holder(1)
-    verify(<!VIPER_VERIFICATION_ERROR!>h.inner.x == 0<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>h.inner.x == 0<!>)
 }
 
 class Node(val value: Int, var next: @Unique Node?)

@@ -28,7 +28,7 @@ class Identity : Counter() {
 }
 
 class Inheriting : Counter() {
-    <!VIPER_VERIFICATION_ERROR!>override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
         return n
     }<!>
 }

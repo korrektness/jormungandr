@@ -37,7 +37,7 @@ fun <!VIPER_TEXT!>advanceFromZero<!>(m: @Unique @Borrowed Meter) {
 fun <!VIPER_TEXT!>staleAfterAdvance<!>(m: @Unique @Borrowed Meter) {
     m.reading = 0
     m.advanceTwice()
-    verify(<!VIPER_VERIFICATION_ERROR!>m.reading == 0<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>m.reading == 0<!>)
 }
 
 open class Gauge(var level: Int) {
@@ -81,5 +81,5 @@ class FlaggingGauge(level: Int, var flagged: Boolean) : PlainGauge(level) {
 fun <!VIPER_TEXT!>staleAfterTick<!>(g: @Unique @Borrowed CountingGauge) {
     g.ticks = 0
     g.tickKeepsLevel()
-    verify(<!VIPER_VERIFICATION_ERROR!>g.ticks == 0<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>g.ticks == 0<!>)
 }

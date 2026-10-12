@@ -1,53 +1,25 @@
-/*
- * Copyright 2010-2026 JetBrains s.r.o. and Kotlin Programming Language contributors.
- * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
- */
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
-import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
-import org.jetbrains.kotlin.diagnostics.error0
-import org.jetbrains.kotlin.diagnostics.error1
-import org.jetbrains.kotlin.diagnostics.error2
-import org.jetbrains.kotlin.diagnostics.error3
-import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.formver.common.*
+import org.jetbrains.kotlin.formver.type.plugin.TypeFactDiagnostic
 
-object UniquenessErrors : KtDiagnosticsContainer() {
-    // Checking uniqueness type
-    val UNIQUENESS_MISMATCH by error3<PsiElement, String, Uniqueness, Uniqueness>()
-    val CONTEXT_UNIQUENESS_MISMATCH by error3<PsiElement, ConeKotlinType, Uniqueness, Uniqueness>()
-    val SHARED_CONSTRUCTION_MISMATCH by error2<PsiElement, String, ConstructionEscape>()
-
-    // Checking uniqueness consistency
-    val ESCAPE_UNIQUENESS_INCONSISTENCY by error1<PsiElement, Path>()
-    val CONTEXT_ESCAPE_UNIQUENESS_INCONSISTENCY by error2<PsiElement, ConeKotlinType, Path>()
-    val EXIT_UNIQUENESS_INCONSISTENCY by error1<PsiElement, Path>()
-
-    // Checking unique call arguments
-    val INVALID_DUPLICATE_UNIQUE_ARGUMENT by error1<PsiElement, Path>()
-    val INVALID_OVERLAPPING_UNIQUE_ARGUMENTS by error2<PsiElement, Path, Path>()
-
-    // Checking unique property accesses
-    val INVALID_MOVED_ACCESS by error2<PsiElement, Path, String>()
-
-    // Checking unique attributes
-    val INVALID_UNIQUENESS_TYPE_TARGET by error0<PsiElement>()
-    val INVALID_TYPE_PARAMETER_UNIQUENESS by error0<PsiElement>()
-    val INVALID_VALUE_TYPE_UNIQUENESS by error0<PsiElement>()
-
-    // Checking overrides and actual declarations
-    val OVERRIDE_UNIQUENESS_MISMATCH by error0<PsiElement>()
-    val ACTUAL_UNIQUENESS_MISMATCH by error0<PsiElement>()
-
-    // Checking captures
-    val INVALID_UNIQUENESS_CAPTURE by error1<PsiElement, Path>()
-
-    // Checking pure functions
-    val INVALID_PURE_UNIQUE_RESULT by error0<PsiElement>()
-    val INVALID_PURE_REFERENCE_RESULT by error0<PsiElement>()
-
-    // Checking ghost code
-    val INVALID_UNIQUE_PRED_PLACEMENT by error0<PsiElement>()
-
-    override fun getRendererFactory() = UniquenessErrorMessages
+object UniquenessErrors {
+    val UNIQUENESS_MISMATCH = TypeFactDiagnostic(FailureKind.UNIQUENESS_MISMATCH, AttributeCondition::UniquenessMismatch)
+    val CONTEXT_UNIQUENESS_MISMATCH = TypeFactDiagnostic(FailureKind.CONTEXT_UNIQUENESS_MISMATCH, AttributeCondition::UniquenessMismatch)
+    val SHARED_CONSTRUCTION_MISMATCH = FailureKind.SHARED_CONSTRUCTION_MISMATCH
+    val ESCAPE_UNIQUENESS_INCONSISTENCY = FailureKind.ESCAPE_UNIQUENESS_INCONSISTENCY
+    val CONTEXT_ESCAPE_UNIQUENESS_INCONSISTENCY = FailureKind.CONTEXT_ESCAPE_UNIQUENESS_INCONSISTENCY
+    val EXIT_UNIQUENESS_INCONSISTENCY = FailureKind.EXIT_UNIQUENESS_INCONSISTENCY
+    val INVALID_DUPLICATE_UNIQUE_ARGUMENT = FailureKind.INVALID_DUPLICATE_UNIQUE_ARGUMENT
+    val INVALID_OVERLAPPING_UNIQUE_ARGUMENTS = FailureKind.INVALID_OVERLAPPING_UNIQUE_ARGUMENTS
+    val INVALID_MOVED_ACCESS = FailureKind.INVALID_MOVED_ACCESS
+    val INVALID_UNIQUENESS_TYPE_TARGET = FailureKind.INVALID_UNIQUENESS_TYPE_TARGET
+    val INVALID_TYPE_PARAMETER_UNIQUENESS = FailureKind.INVALID_TYPE_PARAMETER_UNIQUENESS
+    val INVALID_VALUE_TYPE_UNIQUENESS = FailureKind.INVALID_VALUE_TYPE_UNIQUENESS
+    val OVERRIDE_UNIQUENESS_MISMATCH = FailureKind.OVERRIDE_UNIQUENESS_MISMATCH
+    val ACTUAL_UNIQUENESS_MISMATCH = FailureKind.ACTUAL_UNIQUENESS_MISMATCH
+    val INVALID_UNIQUENESS_CAPTURE = FailureKind.INVALID_UNIQUENESS_CAPTURE
+    val INVALID_PURE_UNIQUE_RESULT = FailureKind.INVALID_PURE_UNIQUE_RESULT
+    val INVALID_PURE_REFERENCE_RESULT = FailureKind.INVALID_PURE_REFERENCE_RESULT
+    val INVALID_UNIQUE_PRED_PLACEMENT = FailureKind.INVALID_UNIQUE_PRED_PLACEMENT
 }

@@ -28,7 +28,7 @@ fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUpEndProbe<!>(n: Int) {
         value = value + 1
         i++
     }
-    verify(<!VIPER_VERIFICATION_ERROR!>value == n + 1<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>value == n + 1<!>)
 }
 
 // The loop leaves the receiver alone; it is owned at the head and handed back at exit.

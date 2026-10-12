@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.formver.plugin.compiler
 
 import org.jetbrains.kotlin.descriptors.isInterface
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirCallableDeclarationChecker
@@ -39,9 +39,6 @@ import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 private val FirCallableSymbol<*>.isInInterface: Boolean
     get() = (getContainingClassSymbol() as? FirClassSymbol<*>)?.classKind?.isInterface == true
 
-/** The Kotlin spelling of this member's name in a diagnostic. */
-private val FirCallableSymbol<*>.spelling: String
-    get() = callableId?.className?.let { "$it.$name" } ?: name.asString()
 
 context(context: CheckerContext)
 internal fun FirCallableDeclaration.overriddenGhostObserver(): FirCallableSymbol<*>? =
@@ -59,21 +56,21 @@ object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind
         if (declaration !is FirSimpleFunction && declaration !is FirProperty) return
         val overridden = if (declaration.isOverride) declaration.symbol.directOverriddenSymbolsSafe() else emptyList()
         val violation = declaration.overriddenGhostObserver()?.takeIf { declaration.symbol.isInInterface }
-            ?.let { "Ghost observer override: '${it.spelling}'." } ?: violation(declaration, overridden)
-        if (violation != null) reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, violation)
+            ?.let { KotlinCondition.Observer(ObserverRule.GHOST_OVERRIDE, it) } ?: violation(declaration, overridden)
+        if (violation != null) reporter.reportObserver(declaration.source, violation)
     }
 
     context(context: CheckerContext)
     @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
-    private fun violation(declaration: FirCallableDeclaration, overridden: List<FirCallableSymbol<*>>): String? {
+    private fun violation(declaration: FirCallableDeclaration, overridden: List<FirCallableSymbol<*>>): KotlinCondition.Observer? {
         val symbol = declaration.symbol
         val isPure = symbol.isPure(context.session)
         val overridesObserver = overridden.any { it.isObserverOrOverride() }
-        if (declaration is FirProperty && declaration.isVar && isPure) return "Invalid @Pure property: mutable property."
-        if (overridesObserver && !isPure) return "Invalid observer override: not @Pure."
+        if (declaration is FirProperty && declaration.isVar && isPure) return KotlinCondition.Observer(ObserverRule.MUTABLE_PURE_PROPERTY)
+        if (overridesObserver && !isPure) return KotlinCondition.Observer(ObserverRule.IMPURE_OVERRIDE)
         if (isPure) {
             overridden.firstOrNull { !it.isObserverOrOverride() }?.let {
-                return "Invalid @Pure override: '${it.spelling}' is not an observer."
+                return KotlinCondition.Observer(ObserverRule.NON_OBSERVER_OVERRIDE, it)
             }
         }
         return null
@@ -91,7 +88,7 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
     override fun check(declaration: FirRegularClass) {
         if (declaration.isInterface) return
         val scope = declaration.symbol.unsubstitutedScope()
-        val violations = mutableListOf<String>()
+        val violations = mutableListOf<KotlinCondition.Observer>()
         for (name in scope.getCallableNames()) {
             scope.processFunctionsByName(name) {
                 val overridden = scope.getDirectOverriddenFunctions(it)
@@ -103,9 +100,7 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
                 violation(declaration, property, scope.getDirectOverriddenProperties(property))?.let(violations::add)
             }
         }
-        if (violations.isNotEmpty()) {
-            reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, violations.distinct().joinToString("\n"))
-        }
+        violations.distinct().forEach { reporter.reportObserver(declaration.source, it) }
     }
 
     // A member a superclass declares or creates is checked with the superclass.
@@ -117,11 +112,11 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
         declaration: FirRegularClass,
         member: FirCallableSymbol<*>,
         overridden: List<FirCallableSymbol<*>>,
-    ): String? {
+    ): KotlinCondition.Observer? {
         val implicitOverride = member.origin == FirDeclarationOrigin.Delegated || member.isIntersectionOverride
         if (!member.isCreatedIn(declaration) || !implicitOverride) return null
         val ghost = overridden.map { it.unwrapFakeOverrides() }.firstOrNull { it.isGhostObserver(context.session) }
-        return ghost?.let { "Ghost observer override: '${it.spelling}'." }
+        return ghost?.let { KotlinCondition.Observer(ObserverRule.GHOST_OVERRIDE, it) }
     }
 
     context(context: CheckerContext)
@@ -129,17 +124,16 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
         declaration: FirRegularClass,
         member: FirCallableSymbol<*>,
         overridden: List<FirCallableSymbol<*>>,
-    ): String? {
+    ): KotlinCondition.Observer? {
         if (!member.isCreatedIn(declaration)) return null
         if (overridden.none { it.isObserverOrOverride() }) return null
         if (member.origin == FirDeclarationOrigin.Delegated) {
-            return "Invalid observer override: '${member.spelling}' is delegated, so it has no body."
+            return KotlinCondition.Observer(ObserverRule.DELEGATED_IMPLEMENTATION, member)
         }
         if (!member.isIntersectionOverride) return null
         val implementation = overridden.map { it.unwrapFakeOverrides() }
             .firstOrNull { !it.isAbstract && !it.isPure(context.session) && !it.isObserverOrOverride() }
             ?: return null
-        return "Invalid observer override: '${member.spelling}' is implemented by '${implementation.spelling}', " +
-                "which is not @Pure."
+        return KotlinCondition.Observer(ObserverRule.IMPURE_IMPLEMENTATION, member, implementation)
     }
 }

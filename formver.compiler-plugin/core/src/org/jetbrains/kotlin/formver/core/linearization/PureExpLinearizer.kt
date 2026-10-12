@@ -7,6 +7,8 @@ package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.formver.core.embeddings.properties.UniqueValStep
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.formver.core.embeddings.asInfo
+import org.jetbrains.kotlin.formver.core.embeddings.expression.WithPosition
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
@@ -205,7 +207,8 @@ fun ExpEmbedding.pureToViper(
         functionResult = functionResult, observerFootprintOpen = observerFootprintOpen, variableNames = variableNames)
     val lin = toLinearizable(source)
     val exp = if (toBuiltin) lin.toViperBuiltinType(linearizer) else lin.toViper(linearizer)
-    return linearizer.hoistUnfoldings(exp)
+    val hoisted = linearizer.hoistUnfoldings(exp)
+    return (this as? WithPosition)?.sourceRole?.let { Exp.WithInfo(hoisted, it.asInfo) } ?: hoisted
 }
 
 fun List<ExpEmbedding>.pureToViper(

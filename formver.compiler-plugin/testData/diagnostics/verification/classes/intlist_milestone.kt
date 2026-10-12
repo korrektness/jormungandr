@@ -226,13 +226,13 @@ fun <!VIPER_TEXT!>arrayConstructionSnapshot<!>() {
     val data: @Unique IntArray = IntArray(1)
     data[0] = 11
     val list: @Unique ArrayIntList = ArrayIntList(data, 1)
-    verify(<!VIPER_VERIFICATION_ERROR!>list.get(0) == 11<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>list.get(0) == 11<!>)
 }
 
 fun <!VIPER_TEXT!>nodeConstructionSnapshot<!>() {
     val head: @Unique IntNode = IntNode(11, null)
     val list: @Unique NodeIntList = NodeIntList(head, 1)
-    verify(<!VIPER_VERIFICATION_ERROR!>list.get(0) == 11<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>list.get(0) == 11<!>)
 }
 
 fun <!VIPER_TEXT!>badSetIndex<!>(list: @Unique @Borrowed IntList) {
@@ -246,17 +246,17 @@ fun <!VIPER_TEXT!>badGetIndex<!>(list: @Unique @Borrowed IntList) {
 fun <!VIPER_TEXT!>falseClientClaim<!>(list: @Unique @Borrowed IntList) {
     val n = list.size()
     list.add(7)
-    verify(<!VIPER_VERIFICATION_ERROR!>list.get(n) == 8<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>list.get(n) == 8<!>)
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BrokenIntList<!>(var count: Int, var item: Int) : IntList {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class BrokenIntList<!>(var count: Int, var item: Int) : IntList {
     @Pure @Unique override fun <!VIPER_TEXT!>size<!>(): Int = count
     @Pure @Unique override fun <!VIPER_TEXT!>get<!>(i: Int): Int = item
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed override fun <!VIPER_TEXT!>add<!>(value: Int) {
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed override fun <!VIPER_TEXT!>add<!>(value: Int) {
         count++
         item = value
     }<!>
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) {
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) {
         item = value
     }<!>
 }<!>

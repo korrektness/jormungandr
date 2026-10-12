@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.expressions.FirExpression
@@ -95,7 +95,7 @@ object SharedConstructionExplainer : TypeFactMismatchExplainer<Uniqueness> {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun reportExplained(
         source: KtSourceElement?,
-        position: String,
+        position: FactPosition,
         expression: FirExpression,
         requiredTypeFact: Uniqueness,
         actualTypeFact: Uniqueness,
@@ -104,7 +104,7 @@ object SharedConstructionExplainer : TypeFactMismatchExplainer<Uniqueness> {
         val call = expression.unwrapExpression().removeCast() as? FirFunctionCall ?: return false
         val constructor = call.calleeReference.symbol as? FirConstructorSymbol ?: return false
         val escape = constructor.resolveConstructionEscape(context.session) ?: return false
-        reporter.reportOn(source, UniquenessErrors.SHARED_CONSTRUCTION_MISMATCH, position, escape)
+        reporter.reportFailure(constructionFailure(source, position, escape))
         return true
     }
 }

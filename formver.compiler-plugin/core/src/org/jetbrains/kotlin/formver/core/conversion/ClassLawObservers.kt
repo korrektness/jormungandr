@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.LawRule
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
@@ -20,5 +21,5 @@ fun classLawObserverBody(symbol: FirCallableSymbol<*>): FirFunctionSymbol<*>? = 
 }
 
 @OptIn(SymbolInternals::class)
-fun classLawObserverFailure(symbol: FirCallableSymbol<*>): String? =
-    if (classLawObserverBody(symbol)?.fir?.body == null) "Abstract observer in class law" else null
+fun classLawObserverFailure(symbol: FirCallableSymbol<*>): LawRule? =
+    if (classLawObserverBody(symbol)?.fir?.body == null) LawRule.ABSTRACT_OBSERVER else null

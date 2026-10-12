@@ -48,12 +48,12 @@ class ReviewOwned(var n: Int) {
     }
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class ReviewHolder<!> {
-    val action: @Unique ReviewAcc = ReviewAcc { amount ->
+<!VIPER_TEXT!>class ReviewHolder<!> {
+    val action: @Unique ReviewAcc = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
         exposes(ReviewAcc::class) { total() == 0 }
         -5
-    }
-}<!>
+    }<!>
+}
 
 fun <!VIPER_TEXT!>holderClient<!>(h: @Unique ReviewHolder) {
     preconditions { h.action.total() == 0 }
@@ -61,30 +61,30 @@ fun <!VIPER_TEXT!>holderClient<!>(h: @Unique ReviewHolder) {
     verify(r == 1)
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class ReviewCtorHolder<!>(val action: @Unique ReviewAcc = ReviewAcc { amount ->
+<!VIPER_TEXT!>class ReviewCtorHolder<!>(val action: @Unique ReviewAcc = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
     exposes(ReviewAcc::class) { total() == 0 }
     -5
-})<!>
+}<!>)
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class ReviewInitHolder<!> {
+<!VIPER_TEXT!>class ReviewInitHolder<!> {
     val action: @Unique ReviewAcc
     init {
-        action = ReviewAcc { amount ->
+        action = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
             exposes(ReviewAcc::class) { total() == 0 }
             -5
-        }
+        }<!>
     }
-}<!>
+}
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class ReviewSecondaryHolder<!> {
+<!VIPER_TEXT!>class ReviewSecondaryHolder<!> {
     val action: @Unique ReviewAcc
     constructor() {
-        action = ReviewAcc { amount ->
+        action = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
             exposes(ReviewAcc::class) { total() == 0 }
             -5
-        }
+        }<!>
     }
-}<!>
+}
 
 fun interface NamedCounterSpec {
     @GhostObserver @Pure @Unique fun <!VIPER_TEXT!>total<!>(): Int = ghostObserver()
@@ -105,7 +105,7 @@ class NamedReviewAcc(var n: Int) : NamedCounterSpec {
 
 class BrokenNamedReviewAcc(var n: Int) : NamedCounterSpec {
     @Pure @Unique override fun <!VIPER_TEXT!>total<!>(): Int = n
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed override fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int = -7<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed override fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int = -7<!>
 }
 
 fun <!VIPER_TEXT!>callTwice<!>(f: @Unique @Borrowed NamedCounterSpec): Int {
@@ -125,7 +125,7 @@ interface OrdinarySharedAcc {
     @Pure fun <!VIPER_TEXT!>total<!>(): Int
     fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int
     @SpecOf("invoke") fun invokeSpec(amount: Int) {
-        postconditions<Int> { r -> <!OWNERSHIP_NOT_ESTABLISHED, OWNERSHIP_NOT_ESTABLISHED!>total()<!> == old(total()) + amount && r == total() }
+        postconditions<Int> { r -> <!OWNERSHIP_NOT_ESTABLISHED, OWNERSHIP_NOT_ESTABLISHED, OWNERSHIP_NOT_ESTABLISHED!>total()<!> == old(total()) + amount && r == total() }
     }
 }
 
@@ -133,7 +133,7 @@ fun interface GhostSharedAcc {
     @GhostObserver @Pure fun <!VIPER_TEXT!>total<!>(): Int = ghostObserver()
     fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int
     @SpecOf("invoke") fun invokeSpec(amount: Int) {
-        postconditions<Int> { r -> <!OWNERSHIP_NOT_ESTABLISHED, OWNERSHIP_NOT_ESTABLISHED!>total()<!> == old(total()) + amount && r == total() }
+        postconditions<Int> { r -> <!OWNERSHIP_NOT_ESTABLISHED, OWNERSHIP_NOT_ESTABLISHED, OWNERSHIP_NOT_ESTABLISHED!>total()<!> == old(total()) + amount && r == total() }
     }
 }
 
@@ -149,7 +149,7 @@ fun <!VIPER_TEXT!>ghostSharedClient<!>(f: GhostSharedAcc) {
     verify(r2 == r1)
 }
 
-<!VIPER_VERIFICATION_ERROR!>val <!VIPER_TEXT!>topLevelBadAction<!>: @Unique ReviewAcc = ReviewAcc { amount ->
+val <!VIPER_TEXT!>topLevelBadAction<!>: @Unique ReviewAcc = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
     exposes(ReviewAcc::class) { total() == 0 }
     -5
 }<!>
@@ -197,7 +197,7 @@ fun interface ReviewLawful {
     @Law @Pure fun nonnegative(): Boolean = initial() >= 0
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class ReviewBrokenLawHolder<!> {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class ReviewBrokenLawHolder<!> {
     val action: @Unique ReviewLawful = ReviewLawful {
         exposes(ReviewLawful::class) { initial() == -1 }
         1

@@ -56,7 +56,7 @@ fun <!VIPER_TEXT!>ownedLocal<!>() {
 fun <!VIPER_TEXT!>lostField<!>(cell: @Unique @Borrowed BorrowedCell) {
     cell.value = 2
     lend(cell, 6)
-    verify(<!VIPER_VERIFICATION_ERROR!>cell.value == 2<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>cell.value == 2<!>)
 }
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>inlineLend<!>(cell: @Unique @Borrowed BorrowedView) {
@@ -74,7 +74,7 @@ fun <!VIPER_TEXT!>inlineBorrow<!>(cell: @Unique @Borrowed BorrowedCell) {
 fun <!VIPER_TEXT!>inlineLostField<!>(cell: @Unique @Borrowed BorrowedCell) {
     cell.value = 2
     inlineLend(cell)
-    verify(<!VIPER_VERIFICATION_ERROR!>cell.value == 2<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>cell.value == 2<!>)
 }
 
 fun <!VIPER_TEXT!>pureViewCall<!>(cell: @Unique @Borrowed BorrowedCell) {

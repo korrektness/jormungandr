@@ -18,6 +18,8 @@ import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.common.LawRule
 import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.isUnique
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineCallable
@@ -62,20 +64,22 @@ private fun FirQualifiedAccessExpression.isAllowedInitializerAccess(
 }
 
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
-private fun ownClassLawConstructionFailures(symbol: FirRegularClassSymbol): List<String> {
-    val failures = mutableListOf<String>()
+private fun ownClassLawConstructionFailures(symbol: FirRegularClassSymbol): List<KotlinCondition.Law> {
+    val failures = mutableListOf<KotlinCondition.Law>()
     val constructors = symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>()
     val primary = constructors.singleOrNull { it.isPrimary }
-    if (primary == null) failures += "Missing primary constructor"
-    if (constructors.any { !it.isPrimary }) failures += "Secondary constructor in invariant class"
+    if (primary == null) failures += KotlinCondition.Law(LawRule.PRIMARY_CONSTRUCTOR, symbol)
+    constructors.filter { !it.isPrimary }.forEach {
+        failures += KotlinCondition.Law(LawRule.SECONDARY_CONSTRUCTOR, it)
+    }
     symbol.fir.declarations.filterIsInstance<FirProperty>().forEach { property ->
-        if (property.delegate != null) failures += "Delegated property in invariant class"
+        if (property.delegate != null) failures += KotlinCondition.Law(LawRule.DELEGATED_PROPERTY, property.symbol)
     }
     return failures
 }
 
-fun classLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSession): List<String> {
-    val failures = mutableListOf<String>()
+fun classLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSession): List<KotlinCondition.Law> {
+    val failures = mutableListOf<KotlinCondition.Law>()
     val visited = mutableSetOf<FirRegularClassSymbol>()
     fun visit(current: FirRegularClassSymbol) {
         if (!visited.add(current)) return

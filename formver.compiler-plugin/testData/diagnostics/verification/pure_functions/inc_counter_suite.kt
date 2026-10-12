@@ -96,5 +96,5 @@ fun <!VIPER_TEXT!>deliversLess<!>(): @Unique IncCounterSpec {
 fun <!VIPER_TEXT!>exactIncrementAfterJoin<!>(step: Int) {
     val f: @Unique IncCounterSpec = makeCounter(step)
     val r1 = f()
-    verify(<!VIPER_VERIFICATION_ERROR!>r1 == step<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>r1 == step<!>)
 }

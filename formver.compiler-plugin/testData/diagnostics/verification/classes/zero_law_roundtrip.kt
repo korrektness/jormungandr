@@ -45,5 +45,5 @@ fun <!VIPER_TEXT!>permanentZeroLaws<!>(cell: @Unique ZeroLawCell) {
     val base: @Unique ZeroLawBase = diamond
     base.advance()
     verify(base.observe() == before + 1)
-    verify(<!VIPER_VERIFICATION_ERROR!>base.observe() == before<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>base.observe() == before<!>)
 }

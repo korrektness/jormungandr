@@ -2,7 +2,7 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -42,19 +42,20 @@ private fun reportEscapeUniquenessInconsistency(
     ownerElement: FirElement,
     escapingExpression: FirExpression,
     inconsistentPath: Path,
+    related: List<RelatedLocation>,
 ) {
     if (escapingExpression.source?.kind is KtFakeSourceElementKind.ImplicitContextParameterArgument) {
-        reporter.reportOn(
-            ownerElement.source,
-            CONTEXT_ESCAPE_UNIQUENESS_INCONSISTENCY,
-            escapingExpression.resolvedType,
-            inconsistentPath
-        )
+        reporter.reportFailure(Failure(
+            CONTEXT_ESCAPE_UNIQUENESS_INCONSISTENCY, ownerElement.source,
+            AttributeCondition.Path(inconsistentPath, contextType = escapingExpression.resolvedType),
+            related = related,
+        ))
     } else {
-        reporter.reportOn(
+        reporter.reportAttributeFailure(
             escapingExpression.source ?: ownerElement.source,
             ESCAPE_UNIQUENESS_INCONSISTENCY,
-            inconsistentPath
+            inconsistentPath,
+            related = related,
         )
     }
 }
@@ -72,6 +73,7 @@ object FunctionEscapeUniquenessConsistencyChecker : FirFunctionChecker(MppChecke
     override fun check(declaration: FirFunction) {
         val graph = declaration.uniquenessAnalysisGraph ?: return
         val uniquenessStateFlows = graph.resolveUniquenessStateFlows()
+        val moveSites by lazy { graph.resolveMoveSites(uniquenessStateFlows) }
 
         for (node in graph.uniquenessAnalysisTargetNodes) {
             if (node.isDead) continue
@@ -87,10 +89,12 @@ object FunctionEscapeUniquenessConsistencyChecker : FirFunctionChecker(MppChecke
                     val uniquenessSubstate = inputUniquenessState.value.find(accessPath) ?: continue
 
                     for (movedPath in uniquenessSubstate.enumerateInconsistentPaths()) {
+                        val path = accessPath + movedPath
                         reportEscapeUniquenessInconsistency(
                             node.fir,
                             escapingExpression,
-                            accessPath + movedPath
+                            path,
+                            moveLocations(moveSites.readInputMoveSitesOf(node, path).mapNotNull { it.fir.source }),
                         )
                     }
                 }

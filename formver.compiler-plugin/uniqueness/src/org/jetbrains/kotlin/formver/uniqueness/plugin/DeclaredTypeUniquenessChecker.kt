@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.reportAttributeFailure
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirCallableDeclarationChecker
@@ -41,8 +41,8 @@ object DeclaredTypeUniquenessChecker : FirCallableDeclarationChecker(MppCheckerK
 
             val type = typeRef.coneType
             when {
-                type.isTypeParameter -> reporter.reportOn(typeRef.source, INVALID_TYPE_PARAMETER_UNIQUENESS)
-                type.isValueType() -> reporter.reportOn(typeRef.source, INVALID_VALUE_TYPE_UNIQUENESS)
+                type.isTypeParameter -> reporter.reportAttributeFailure(typeRef.source, INVALID_TYPE_PARAMETER_UNIQUENESS)
+                type.isValueType() -> reporter.reportAttributeFailure(typeRef.source, INVALID_VALUE_TYPE_UNIQUENESS)
             }
         }
     }

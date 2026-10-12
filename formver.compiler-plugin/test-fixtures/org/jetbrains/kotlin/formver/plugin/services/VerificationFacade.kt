@@ -17,6 +17,9 @@ import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.core.lambdaPrograms
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.*
+import org.jetbrains.kotlin.formver.common.FailureToFirRenderer
+import org.jetbrains.kotlin.formver.common.Failure
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.plugin.runners.*
 import org.jetbrains.kotlin.formver.viper.InvalidViperProgramException
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
@@ -147,7 +150,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
     ): List<KtDiagnostic> {
         val results = mutableListOf<KtDiagnostic>()
         attempt.errors.forEach { err ->
-            val source = err.reportingPosition().unwrapOr { decl.source }!!
+            val source = err.reportingPosition(decl.source).unwrapOr { decl.source }!!
             if (reportedErrors.add(err, source)) {
                 results.add(
                     when (err) {
@@ -158,10 +161,10 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         }
         attempt.invalid?.let { e ->
             results.add(
-                VerificationErrors.INVALID_VIPER_PROGRAM.on(
-                    decl.source!!, e.message!!,
-                    positioningStrategy = SourceElementPositioningStrategies.DECLARATION_NAME,
-                    languageVersionSettings = module.languageVersionSettings
+                FailureToFirRenderer.diagnostic(
+                    Failure(VerificationErrors.INVALID_VIPER_PROGRAM, decl.source,
+                        KotlinCondition.Tool("BACKEND_REJECTED_PROGRAM", e.message!!)),
+                    module.languageVersionSettings,
                 )!!
             )
         }
@@ -177,78 +180,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         err: VerificationError, source: KtSourceElement,
         module: TestModule
     ): KtDiagnostic {
-        val diagnostic = when (val formattedError = err.formatUserFriendly()) {
-            is ConditionalEffectError -> {
-                val msg = formattedError.msg()
-                VerificationErrors.CONDITIONAL_EFFECT_ERROR.on(
-                    source, msg.first, msg.second,
-                    positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
-                    languageVersionSettings = module.languageVersionSettings
-                )
-            }
-
-            is OverrideRefinementError -> {
-                val msg = formattedError.msg()
-                VerificationErrors.OVERRIDE_NOT_REFINING.on(
-                    source, msg.first, msg.second,
-                    positioningStrategy = SourceElementPositioningStrategies.DECLARATION_NAME,
-                    languageVersionSettings = module.languageVersionSettings
-                )
-            }
-
-            is DefaultError -> {
-                val msg = formattedError.msg()
-                VerificationErrors.VIPER_VERIFICATION_ERROR.on(
-                    source, msg,
-                    positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
-                    languageVersionSettings = module.languageVersionSettings
-                )
-            }
-
-            is IndexOutOfBoundError -> {
-                val msg = formattedError.msg()
-                VerificationErrors.POSSIBLE_INDEX_OUT_OF_BOUND.on(
-                    source, msg.first, msg.second,
-                    positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
-                    languageVersionSettings = module.languageVersionSettings
-                )
-            }
-
-            is InvalidSubListRangeError -> {
-                val msg = formattedError.msg()
-                VerificationErrors.INVALID_SUBLIST_RANGE.on(
-                    source, msg.first, msg.second,
-                    positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
-                    languageVersionSettings = module.languageVersionSettings
-                )
-            }
-
-            is OwnershipError -> {
-                val msg = formattedError.msg()
-                VerificationErrors.OWNERSHIP_NOT_ESTABLISHED.on(
-                    source, msg.first, msg.second,
-                    positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
-                    languageVersionSettings = module.languageVersionSettings
-                )
-            }
-
-            is ReturnsEffectError -> {
-                val msg = formattedError.msg()
-                VerificationErrors.UNEXPECTED_RETURNED_VALUE.on(
-                    source, msg,
-                    positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
-                    languageVersionSettings = module.languageVersionSettings
-                )
-            }
-
-            null -> {
-                VerificationErrors.VIPER_VERIFICATION_ERROR.on(
-                    source, err.msg, positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
-                    languageVersionSettings = module.languageVersionSettings
-                )
-            }
-        }
-        return diagnostic!!
+        return FailureToFirRenderer.diagnostic(err.toFailure(source), module.languageVersionSettings)!!
     }
 }
 

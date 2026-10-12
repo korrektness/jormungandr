@@ -6,6 +6,13 @@
 package org.jetbrains.kotlin.formver.core.purity
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
+import org.jetbrains.kotlin.formver.common.ConversionOwnershipPath
+import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveFieldAccess
+import org.jetbrains.kotlin.formver.core.names.FunctionResultVariableName
+import org.jetbrains.kotlin.formver.core.names.ReturnVariableName
+import org.jetbrains.kotlin.formver.core.names.sourceSpelling
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.diagnostics.ErrorCollectionContext
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Assert
@@ -36,27 +43,30 @@ fun ExpEmbedding.checkReadOnlyVarReads(
     consumed: Set<SymbolicName> = emptySet(),
 ) {
     val nextSource = (this as? WithPosition)?.source ?: source
-    fun checkOwnedRead(receiver: ExpEmbedding, receiverOwned: Boolean, read: String, owner: String) = when {
-        !receiverOwned -> errors.reportUnsupportedOwnership(nextSource, "Reading $read needs a @Unique $owner.")
-        receiver.pathRoot()?.name in consumed -> errors.reportUnsupportedOwnership(
-            nextSource,
-            "Reading $read in a postcondition needs a @Borrowed root; the function consumes ${receiver.pathRoot()!!.consumedSpelling}.",
-        )
-        else -> {}
+    fun checkOwnedRead(
+        receiver: ExpEmbedding, receiverOwned: Boolean, kind: ConversionOwnershipCondition.ReadKind,
+        property: org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol? = null,
+    ) {
+        val reason = when {
+            !receiverOwned -> ConversionOwnershipCondition.ReadReason.NEEDS_UNIQUE_RECEIVER
+            receiver.pathRoot()?.name in consumed -> ConversionOwnershipCondition.ReadReason.CONSUMED_ROOT
+            else -> return
+        }
+        errors.reportUnsupportedOwnership(nextSource,
+            ConversionOwnershipCondition.Read(kind, reason, receiver.conversionOwnershipPath(), property))
     }
     when {
         this is FieldAccess && field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS ->
-            checkOwnedRead(receiver, receiverOwned, "this var property", "receiver")
-        this is IntArrayGet -> checkOwnedRead(array, receiverOwned, "an array element", "array")
-        this is IntArrayContents -> checkOwnedRead(array, receiverOwned, "the contents of an array", "array")
-        this is StringBuilderRead -> checkOwnedRead(builder, receiverOwned, "a StringBuilder", "builder")
+            checkOwnedRead(receiver, receiverOwned, ConversionOwnershipCondition.ReadKind.VAR_PROPERTY, field.symbol)
+        this is IntArrayGet -> checkOwnedRead(array, receiverOwned, ConversionOwnershipCondition.ReadKind.ARRAY_ELEMENT)
+        this is IntArrayContents -> checkOwnedRead(array, receiverOwned, ConversionOwnershipCondition.ReadKind.ARRAY_CONTENTS)
+        this is StringBuilderRead -> checkOwnedRead(builder, receiverOwned, ConversionOwnershipCondition.ReadKind.STRING_BUILDER)
         this is FunctionCall -> function.formalArgs.zip(args)
             .filter { (param, arg) -> param.isUnique && arg.pathRoot()?.name in consumed }
             .forEach { (_, arg) ->
                 errors.reportUnsupportedOwnership(
                     (arg as? WithPosition)?.source ?: nextSource,
-                    "Passing this @Unique parameter to a pure function in a postcondition needs a @Borrowed root; " +
-                            "the function consumes it.",
+                    ConversionOwnershipCondition.ConsumedArgument(checkNotNull(arg.conversionOwnershipPath()), function.symbol),
                 )
             }
     }
@@ -79,9 +89,27 @@ fun ExpEmbedding.checkSpecificationVarReads(source: KtSourceElement, errors: Err
     }
 }
 
-/** This consumed root as a diagnostic names it. */
-private val VariableEmbedding.consumedSpelling: String
-    get() = if (name == DispatchReceiverName) "`this`" else "this @Unique parameter"
+internal fun ExpEmbedding.conversionOwnershipPath(): ConversionOwnershipPath? = when (val exp = ignoringCastsAndMetaNodes()) {
+    is VariableEmbedding -> ConversionOwnershipPath(ConversionOwnershipPath.Root(
+        kind = when (exp.name) {
+            DispatchReceiverName -> ConversionOwnershipPath.Kind.DISPATCH_RECEIVER
+            is ReturnVariableName, FunctionResultVariableName -> ConversionOwnershipPath.Kind.RESULT
+            else -> if (exp.name.sourceSpelling == null) ConversionOwnershipPath.Kind.SYNTHETIC else ConversionOwnershipPath.Kind.LOCAL
+        },
+        symbol = (exp as? FirVariableEmbedding)?.symbol,
+        name = exp.name.sourceSpelling,
+    ))
+    is FieldAccess -> exp.receiver.conversionOwnershipPath()?.let {
+        it.copy(members = it.members + ConversionOwnershipPath.Member(exp.field.symbol, exp.field.name.sourceSpelling))
+    }
+    is PrimitiveFieldAccess -> exp.inner.conversionOwnershipPath()?.let {
+        it.copy(members = it.members + ConversionOwnershipPath.Member(exp.field.symbol, exp.field.name.sourceSpelling))
+    }
+    is UniqueValAccess -> exp.receiver.conversionOwnershipPath()?.let {
+        it.copy(members = it.members + ConversionOwnershipPath.Member(exp.step.symbol, exp.step.name.sourceSpelling))
+    }
+    else -> null
+}
 
 private fun ExpEmbedding.pathRoot(): VariableEmbedding? = when (val exp = ignoringCastsAndMetaNodes()) {
     is VariableEmbedding -> exp

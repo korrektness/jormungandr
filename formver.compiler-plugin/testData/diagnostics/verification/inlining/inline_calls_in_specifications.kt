@@ -103,7 +103,7 @@ fun <!VIPER_TEXT!>scopeFunctionsOverUniqueReceivers<!>(c: @Unique @Borrowed Coun
     return c.x * 2
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>wrongLetOverUniqueReceiver<!>(c: @Unique @Borrowed Counter): Int {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongLetOverUniqueReceiver<!>(c: @Unique @Borrowed Counter): Int {
     postconditions<Int> { r -> r == c.let { it.x + 1 } }
     return c.x
 }<!>
@@ -164,7 +164,7 @@ fun <!VIPER_TEXT!>safeCastInPostcondition<!>(x: Any): Int {
     return if (x is Int) x else 0
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>wrongLetInPostcondition<!>(n: Int): Int {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongLetInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r -> r == n.let { it + 1 } }
     return n
 }<!>

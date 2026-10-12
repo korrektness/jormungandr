@@ -65,5 +65,5 @@ fun <!VIPER_TEXT!>genericNullableView<!>(token: GenericToken?) {
 fun <!VIPER_TEXT!>genericFalseClaim<!>() {
     val cell: @Unique GenericCell<Boolean> = GenericCell(true)
     val view: @Unique GenericView<Boolean> = cell
-    verify(<!VIPER_VERIFICATION_ERROR!>view.same(false)<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>view.same(false)<!>)
 }

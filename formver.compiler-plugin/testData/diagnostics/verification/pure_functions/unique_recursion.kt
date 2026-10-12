@@ -53,7 +53,7 @@ fun <!VIPER_TEXT!>nextLength<!>(n: @Unique Node?): Int {
     return <!OWNERSHIP_NOT_ESTABLISHED!>length(m)<!>
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>tail<!>(l: @Unique Node): @Unique Node? {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>tail<!>(l: @Unique Node): @Unique Node? {
     postconditions<Node?> { r -> length(r) == old(nextLength(l)) }
     return l.next
 }<!>

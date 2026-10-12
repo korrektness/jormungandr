@@ -26,7 +26,7 @@ fun <!VIPER_TEXT!>returnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder, b: B
     verify(h.inner.x == 1)
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>wrongReturnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongReturnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder) {
     postconditions<Unit> { h.inner.x == 0 }
     borrowThen(h.inner) {
         return

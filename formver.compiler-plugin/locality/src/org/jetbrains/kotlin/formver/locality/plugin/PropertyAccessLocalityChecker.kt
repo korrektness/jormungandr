@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.formver.locality.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirPropertyAccessExpressionChecker
@@ -61,12 +61,9 @@ object PropertyAccessLocalityChecker : FirPropertyAccessExpressionChecker(MppChe
                 }
             }
 
-            reporter.reportOn(
-                expression.source,
-                LocalityErrors.INVALID_LOCALITY_CAPTURE,
-                capturedSymbol,
-                parentSymbol,
-            )
+            reporter.reportFailure(localCaptureFailure(
+                expression.source, capturedSymbol, parentSymbol, parentSymbol.source,
+            ))
 
             return
         }

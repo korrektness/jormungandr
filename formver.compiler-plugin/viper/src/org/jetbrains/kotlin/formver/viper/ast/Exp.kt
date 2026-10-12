@@ -58,6 +58,21 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
     context(nameResolver: NameResolver)
     fun registerNames()
 
+    data class WithInfo(val inner: Exp, override val info: Info) : Exp {
+        override val pos: Position get() = inner.pos
+        override val type: Type get() = inner.type
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() = inner.registerNames()
+
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.Exp {
+            val node = inner.toSilver()
+            val metadata = node.prettyMetadata
+            return node.withMeta(scala.Tuple3(metadata._1(), info.toSilver(), metadata._3())) as viper.silver.ast.Exp
+        }
+    }
+
     data class Minus(
         override val arg: Exp,
         override val pos: Position = Position.NoPosition,

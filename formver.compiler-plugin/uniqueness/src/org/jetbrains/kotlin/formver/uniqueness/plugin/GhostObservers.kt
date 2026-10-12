@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.common.ObserverRule
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -29,20 +30,20 @@ fun FirCallableSymbol<*>.isGhostObserver(session: FirSession): Boolean = hasAnno
 
 context(context: CheckerContext)
 @OptIn(SymbolInternals::class)
-fun FirSimpleFunction.ghostObserverViolation(): String? {
+fun FirSimpleFunction.ghostObserverViolation(): ObserverRule? {
     val owner = symbol.getContainingClassSymbol() as? FirRegularClassSymbol
     val statement = body?.statements?.singleOrNull()
     val placeholder = (if (statement is FirReturnExpression) statement.result else statement) as? FirFunctionCall
     val validBody = (placeholder?.toResolvedCallableSymbol() as? FirNamedFunctionSymbol)
         ?.callableId == CallableId(FqName("org.jetbrains.kotlin.formver.plugin"), Name.identifier("ghostObserver"))
     return when {
-        owner?.fir?.isInterface != true || !owner.fir.status.isFun -> "Ghost observer outside a fun interface."
-        !symbol.hasAnnotation(ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.Pure")), context.session) -> "Missing @Pure on ghost observer."
-        status.isSuspend -> "Suspend ghost observer."
-        symbol.hasAnnotation(ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.Law")), context.session) -> "Ghost observer marked @Law."
+        owner?.fir?.isInterface != true || !owner.fir.status.isFun -> ObserverRule.GHOST_OWNER
+        !symbol.hasAnnotation(ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.Pure")), context.session) -> ObserverRule.GHOST_PURITY
+        status.isSuspend -> ObserverRule.GHOST_SUSPEND
+        symbol.hasAnnotation(ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.Law")), context.session) -> ObserverRule.GHOST_LAW
         valueParameters.isNotEmpty() || typeParameters.isNotEmpty() || receiverParameter != null ||
-            contextParameters.isNotEmpty() -> "Ghost observer parameters."
-        !validBody -> "Non-placeholder ghost observer body."
+            contextParameters.isNotEmpty() -> ObserverRule.GHOST_PARAMETERS
+        !validBody -> ObserverRule.GHOST_BODY
         else -> null
     }
 }

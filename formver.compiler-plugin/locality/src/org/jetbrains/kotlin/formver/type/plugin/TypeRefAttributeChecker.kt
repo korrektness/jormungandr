@@ -6,8 +6,8 @@
 package org.jetbrains.kotlin.formver.type.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory0
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.FailureKind
+import org.jetbrains.kotlin.formver.common.reportAttributeFailure
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -25,7 +25,7 @@ class TypeRefAttributeChecker<Attribute : ConeAttribute<Attribute>>(
     kind: MppCheckerKind,
     private val attributeClass: KClass<Attribute>,
     private val attributeTargetJudgment: AttributeTargetJudgment,
-    private val diagnosticFactory: KtDiagnosticFactory0,
+    private val diagnosticFactory: FailureKind,
 ) : FirResolvedTypeRefChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(typeRef: FirResolvedTypeRef) {
@@ -33,6 +33,6 @@ class TypeRefAttributeChecker<Attribute : ConeAttribute<Attribute>>(
 
         if (attributeTargetJudgment.accepts(context.containingElements.asReversed())) return
 
-        reporter.reportOn(typeRef.source, diagnosticFactory)
+        reporter.reportAttributeFailure(typeRef.source, diagnosticFactory)
     }
 }

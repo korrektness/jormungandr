@@ -18,7 +18,7 @@ private fun UniquenessState?.renderOrNull(): String =
 private fun UniquenessState.render(): String? =
     children.takeIf { it.isNotEmpty() }?.entries
         ?.flatMap { (symbol, state) ->
-            val current = "${symbol.render()} ${UniquenessRenderer.render(state.data)}"
+            val current = "${symbol.render()} ${org.jetbrains.kotlin.formver.common.FailureToFirRenderer.uniqueness(state.data)}"
             val children = state.render()?.prependIndent("    ")
             listOfNotNull(current, children)
         }

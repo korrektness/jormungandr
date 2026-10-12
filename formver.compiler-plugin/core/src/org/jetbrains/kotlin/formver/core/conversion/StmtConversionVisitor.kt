@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
+
 import org.jetbrains.kotlin.formver.core.isPure
 
 
@@ -613,7 +615,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             throw UnsupportedFeatureException(tryExpression.source, "`finally` block")
         }
         if (data.holdsOwnership()) {
-            data.reportUnsupportedOwnership(tryExpression.source, "`try` is not supported in a function that holds ownership.")
+            data.reportUnsupportedOwnership(tryExpression.source, ConversionOwnershipCondition.TryWithOwnership)
         }
         val (catchData, tryBody) = data.withCatches(tryExpression.catches) { catchData ->
             withNewScope {

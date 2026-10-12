@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.reportAttributeFailure
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
@@ -24,6 +24,6 @@ object UniquePredPlacementChecker : FirFunctionCallChecker(MppCheckerKind.Common
     override fun check(expression: FirFunctionCall) {
         if (!expression.isUniquePredConstruction() || context.isInSpecification()) return
 
-        reporter.reportOn(expression.source, INVALID_UNIQUE_PRED_PLACEMENT)
+        reporter.reportAttributeFailure(expression.source, INVALID_UNIQUE_PRED_PLACEMENT)
     }
 }

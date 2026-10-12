@@ -34,6 +34,12 @@ public class LocalityDiagnosticTestGenerated extends AbstractLocalityDiagnosticT
   }
 
   @Test
+  @TestMetadata("attribute_failure_model.kt")
+  public void testAttribute_failure_model() {
+    runTest("formver.compiler-plugin/locality/testData/diagnostics/attribute_failure_model.kt");
+  }
+
+  @Test
   @TestMetadata("buffer_builder.kt")
   public void testBuffer_builder() {
     runTest("formver.compiler-plugin/locality/testData/diagnostics/buffer_builder.kt");

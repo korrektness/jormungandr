@@ -66,7 +66,7 @@ fun <!VIPER_TEXT!>impureLambdaNoFacts<!>(s: String) {
         it == 'z'
     }
     if (r >= 0) {
-        verify(<!VIPER_VERIFICATION_ERROR!>s[r] == 'z'<!>)
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>s[r] == 'z'<!>)
     }
 }
 
@@ -102,7 +102,7 @@ fun <!VIPER_TEXT!>sharedArraySearch<!>(a: IntArray): Boolean {
 fun <!VIPER_TEXT!>sharedArrayNoFacts<!>(a: IntArray) {
     if (a.all { it == 7 }) {
         val none = a.none { it != 7 }
-        verify(<!VIPER_VERIFICATION_ERROR!>none<!>)
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>none<!>)
     }
 }
 

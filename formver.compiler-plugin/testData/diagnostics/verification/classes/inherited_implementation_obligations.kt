@@ -21,13 +21,13 @@ open class IdleBase(var n: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int = n
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>() {}
 }
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class InheritedIdle<!> : IdleBase(0), RuntimeTally<!>
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class InheritedIdle<!> : IdleBase(0), RuntimeTally<!>
 
 open class BoundBase(var n: Int, var other: Int) : RuntimeTally {
     @Pure @Unique override fun <!VIPER_TEXT!>count<!>(): Int = n
     @NeverVerify @Unique @Borrowed override fun <!VIPER_TEXT!>inc<!>() { n++ }
 }
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class ChangedBinding<!> : BoundBase(0, 5) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class ChangedBinding<!> : BoundBase(0, 5) {
     @Pure @Unique override fun <!VIPER_TEXT!>count<!>(): Int = other
 }<!>
 <!VIPER_TEXT!>class SameBinding<!> : BoundBase(0, 5) {
@@ -53,7 +53,7 @@ interface StrongerTally {
     }
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>()
 }
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class InheritedStronger<!> : CountingBase(0), StrongerTally<!>
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class InheritedStronger<!> : CountingBase(0), StrongerTally<!>
 
 open class ContractBase(var n: Int) {
     @Unique @Borrowed fun <!VIPER_TEXT!>add<!>(amount: Int): Int {

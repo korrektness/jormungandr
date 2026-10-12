@@ -6,8 +6,7 @@
 package org.jetbrains.kotlin.formver.type.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory3
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.FactPosition
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirValueParameterChecker
@@ -29,7 +28,7 @@ class ValueParameterTypeFactChecker<TypeFact>(
     private val typeFactJudgment: TypeFactJudgment<TypeFact>,
     private val expressionTypeFactResolver: ExpressionTypeFactResolver<TypeFact>,
     private val parameterDeclaredTypeFactResolver: SymbolTypeFactResolver<TypeFact, FirValueParameterSymbol>,
-    private val diagnosticFactory: KtDiagnosticFactory3<String, TypeFact, TypeFact>,
+    private val diagnosticFactory: TypeFactDiagnostic<TypeFact>,
     private val mismatchExplainer: TypeFactMismatchExplainer<TypeFact>? = null,
 ) : FirValueParameterChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -41,14 +40,14 @@ class ValueParameterTypeFactChecker<TypeFact>(
 
         if (typeFactJudgment.satisfies(requiredTypeFact, actualTypeFact)) return
         if (mismatchExplainer?.reportExplained(
-                defaultValue.source ?: declaration.source, "Initializer", defaultValue, requiredTypeFact, actualTypeFact
+                defaultValue.source ?: declaration.source, FactPosition.INITIALIZER, defaultValue, requiredTypeFact, actualTypeFact
             ) == true
         ) return
 
-        reporter.reportOn(
+        reporter.reportTypeFactFailure(
             defaultValue.source ?: declaration.source,
             diagnosticFactory,
-            "Initializer",
+            FactPosition.INITIALIZER,
             requiredTypeFact,
             actualTypeFact
         )

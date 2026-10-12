@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.reportAttributeFailure
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
@@ -35,7 +35,7 @@ object PureFunctionResultChecker : FirFunctionChecker(MppCheckerKind.Common) {
         val source = returnTypeRef.source ?: declaration.source
 
         if (returnTypeRef.isUnique) {
-            reporter.reportOn(source, INVALID_PURE_UNIQUE_RESULT)
+            reporter.reportAttributeFailure(source, INVALID_PURE_UNIQUE_RESULT)
             return
         }
 
@@ -45,7 +45,7 @@ object PureFunctionResultChecker : FirFunctionChecker(MppCheckerKind.Common) {
                     declaration.valueParameters.map { it.returnTypeRef }
 
         if (parameterTypeRefs.any { it.isUnique } && !returnTypeRef.coneType.isValueType()) {
-            reporter.reportOn(source, INVALID_PURE_REFERENCE_RESULT)
+            reporter.reportAttributeFailure(source, INVALID_PURE_REFERENCE_RESULT)
         }
     }
 }

@@ -81,7 +81,7 @@ fun <!VIPER_TEXT!>nestedInlining<!>(c: @Unique @Borrowed Counter) {
 fun <!VIPER_TEXT!>wrongNestedInlining<!>(c: @Unique @Borrowed Counter) {
     c.x = 0
     bumpTwice(c)
-    verify(<!VIPER_VERIFICATION_ERROR!>c.x == 1<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>c.x == 1<!>)
 }
 
 fun <!VIPER_TEXT!>extensionReceiver<!>(c: @Unique @Borrowed Counter) {
@@ -120,13 +120,13 @@ fun <!VIPER_TEXT!>borrowedWriteToOwnedLocal<!>() {
 fun <!VIPER_TEXT!>wrongBorrowedWriteToOwnedLocal<!>() {
     val v: @Unique Counter = Counter(0)
     setShared(v, 5)
-    verify(<!VIPER_VERIFICATION_ERROR!>v.x == 0<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>v.x == 0<!>)
 }
 
 fun <!VIPER_TEXT!>wrongBorrowedWriteSeenByLambda<!>() {
     val v: @Unique Counter = Counter(0)
     v.x = 0
-    setSharedThen(v) { verify(<!VIPER_VERIFICATION_ERROR!>v.x == 0<!>) }
+    setSharedThen(v) { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>v.x == 0<!>) }
 }
 
 fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>lambdaReadsArgumentOfPlainParameter<!>() {

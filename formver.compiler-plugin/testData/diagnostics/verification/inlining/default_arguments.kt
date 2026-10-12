@@ -39,7 +39,7 @@ fun <!VIPER_TEXT!>inlineCallWithDefaultInSpecification<!>(n: Int): Int {
     return n * 2 + 1
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>wrongInlineCallWithDefault<!>(n: Int): Int {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongInlineCallWithDefault<!>(n: Int): Int {
     postconditions<Int> { r -> r == n * 3 + 1 }
     return scaled(n) { it + 1 }
 }<!>

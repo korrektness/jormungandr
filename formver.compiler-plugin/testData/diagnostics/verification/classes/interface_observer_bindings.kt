@@ -81,5 +81,5 @@ fun <!VIPER_TEXT!>bareInterface<!>(view: @Unique @Borrowed BindingView) {
     val cell: @Unique BindingCell = BindingCell(7)
     val known: @Unique BindingView = cell
     verify(known.value() == 7)
-    verify(<!VIPER_VERIFICATION_ERROR!>view.value() == 7<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>view.value() == 7<!>)
 }

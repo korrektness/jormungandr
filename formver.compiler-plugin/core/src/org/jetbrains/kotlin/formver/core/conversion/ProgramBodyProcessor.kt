@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.PurityCondition
+import org.jetbrains.kotlin.formver.common.PurityRule
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CompleteFunctionSignature
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
@@ -38,7 +40,8 @@ internal class ProgramBodyProcessor(
         }
         converter.convertedBodyResolver.forEachPure { name, body ->
             if (!body.isPure()) {
-                converter.reportPurityViolation(signatures[name]?.declarationSource, "Impure function body detected in pure function")
+                converter.reportPurityViolation(signatures[name]?.declarationSource,
+                    PurityCondition(PurityRule.FUNCTION_BODY, signatures[name]?.symbol))
             }
         }
         for (signature in signatures.values) {

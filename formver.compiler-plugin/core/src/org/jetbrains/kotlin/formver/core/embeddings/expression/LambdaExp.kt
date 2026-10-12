@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
+import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.formver.core.conversion.MethodConversionContext
 import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
@@ -42,7 +43,9 @@ class LambdaExp(
         val enclosingAnalysis = parentCtx.ownershipFrame.analysis
         val analysis = enclosingAnalysis?.takeIf { it.hasState(inlineBody) }
         if (enclosingAnalysis != null && analysis == null && enclosingAnalysis.ownsAnyPath) {
-            ctx.reportUnsupportedOwnership(inlineBody.source, "The uniqueness checker has no state for this lambda body.")
+            ctx.reportUnsupportedOwnership(inlineBody.source, ConversionOwnershipCondition.MissingFacts(
+                ConversionOwnershipCondition.MissingFactsRule.LAMBDA_BODY, function.symbol, function.source,
+            ))
         }
         return ctx.insertInlineFunctionCall(
             signature,

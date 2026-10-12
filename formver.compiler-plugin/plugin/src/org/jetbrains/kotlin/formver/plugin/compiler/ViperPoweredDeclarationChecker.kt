@@ -36,6 +36,9 @@ import org.jetbrains.kotlin.formver.common.TargetsSelection
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
 import org.jetbrains.kotlin.formver.core.conversion.specOfId
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
+import org.jetbrains.kotlin.formver.common.reportTranslation
+import org.jetbrains.kotlin.formver.common.reportTool
+import org.jetbrains.kotlin.formver.common.reportInternalFailure
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.print
 import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
 import org.jetbrains.kotlin.formver.core.isLaw
@@ -159,10 +162,10 @@ class ViperPoweredDeclarationChecker(
             }
         } else if (shouldVerify) {
             val z3Exe = verifierLocator.z3Exe { reason ->
-                reporter.reportOn(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, reason)
+                reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
             } ?: return
             val onFailure = { err: VerifierError ->
-                val source = err.reportingPosition().unwrapOr { declaration.source }
+                val source = err.reportingPosition(declaration.source).unwrapOr { declaration.source }
                 if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
             }
             SiliconFrontend(
@@ -177,7 +180,7 @@ class ViperPoweredDeclarationChecker(
         try {
             convert()
         } catch (e: UnsupportedFeatureException) {
-            reporter.reportOn(reportingSource(e.source, declaration), ConversionErrors.UNSUPPORTED_FEATURE, e.message)
+            reporter.reportTranslation(reportingSource(e.source, declaration), ConversionErrors.UNSUPPORTED_FEATURE, e.message, e.reason.name)
         } catch (e: SnaktInternalException) {
             reportInternalError(e, declaration)
         } catch (e: Exception) {
@@ -189,7 +192,7 @@ class ViperPoweredDeclarationChecker(
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun reportInternalError(e: SnaktInternalException, declaration: FirDeclaration) {
-        reporter.reportOn(reportingSource(e.source, declaration), PluginErrors.INTERNAL_ERROR, e.message)
+        reporter.reportInternalFailure(reportingSource(e.source, declaration), e)
         config.messageCollector.report(CompilerMessageSeverity.LOGGING, e.stackTraceToString())
     }
 

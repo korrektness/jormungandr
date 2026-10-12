@@ -5,8 +5,9 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.formver.common.ConstructionEscapeFact
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.diagnostics.rendering.Renderer
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -28,7 +29,6 @@ import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertySetter
 import org.jetbrains.kotlin.fir.declarations.utils.hasBackingField
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
-import org.jetbrains.kotlin.fir.declarations.utils.memberDeclarationNameOrNull
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
@@ -53,34 +53,7 @@ import org.jetbrains.kotlin.formver.locality.plugin.locality
 import org.jetbrains.kotlin.formver.locality.plugin.receiverOwner
 import org.jetbrains.kotlin.formver.readonly.plugin.isSpecificationCall
 
-/**
- * How the construction of [escapingClass] lets the object under construction escape. Its constructors then return
- * the object shared, since code outside the class may hold it.
- */
-data class ConstructionEscape(val escapingClass: FirRegularClassSymbol, val kind: Kind, val member: FirCallableSymbol<*>?) {
-    enum class Kind {
-        /** A member that may store its receiver is used on `this`. */
-        MemberCall,
-
-        /** `this` itself escapes. */
-        Use,
-
-        /** A declaration that may run after construction references `this`. */
-        Capture,
-    }
-}
-
-val ConstructionEscapeRenderer = Renderer<ConstructionEscape> { escape ->
-    val owner = escape.escapingClass.name.asString()
-    when (escape.kind) {
-        ConstructionEscape.Kind.MemberCall ->
-            "the construction of '$owner' calls member '${escape.member?.memberDeclarationNameOrNull}' on 'this'"
-        ConstructionEscape.Kind.Use ->
-            "the construction of '$owner' lets 'this' escape"
-        ConstructionEscape.Kind.Capture ->
-            "the construction of '$owner' captures 'this' in a declaration that is not called in place"
-    }
-}
+typealias ConstructionEscape = ConstructionEscapeFact
 
 /**
  * Finds how the construction of a class lets the object under construction escape, if it does. SPECIFICATIONS.md
@@ -192,8 +165,8 @@ private class EscapeFinder(
     private fun FirExpression.isThis(): Boolean =
         this is FirThisReceiverExpression && calleeReference.symbol == classSymbol
 
-    private fun escape(kind: ConstructionEscape.Kind, member: FirCallableSymbol<*>? = null) {
-        if (escape == null) escape = ConstructionEscape(classSymbol, kind, member)
+    private fun escape(kind: ConstructionEscapeFact.Kind, source: KtSourceElement?, member: FirCallableSymbol<*>? = null) {
+        if (escape == null) escape = ConstructionEscape(classSymbol, kind, member, source)
     }
 
     /**
@@ -208,7 +181,7 @@ private class EscapeFinder(
     override fun visitElement(element: FirElement) {
         if (escape != null || element.isSpecificationCall()) return
         when (element) {
-            is FirThisReceiverExpression -> if (element.isThis()) escape(ConstructionEscape.Kind.Use)
+            is FirThisReceiverExpression -> if (element.isThis()) escape(ConstructionEscapeFact.Kind.Use, element.source)
             is FirFunctionCall -> visitAccess(element)
             is FirPropertyAccessExpression -> visitAccess(element)
             is FirAnonymousFunction ->
@@ -228,7 +201,7 @@ private class EscapeFinder(
             val callee = access.toResolvedCallableSymbol()
             val callsMember = callee !is FirPropertySymbol || !callee.isField
             if (callsMember && callee?.borrowsDispatchReceiver(session) != true) {
-                escape(ConstructionEscape.Kind.MemberCall, callee)
+                escape(ConstructionEscapeFact.Kind.MemberCall, access.source, callee)
             }
         } else {
             dispatchReceiver?.accept(this)
@@ -250,7 +223,7 @@ private class EscapeFinder(
         element.accept(object : FirVisitorVoid() {
             override fun visitElement(element: FirElement) {
                 if (escape != null) return
-                if (element is FirExpression && element.isThis()) escape(ConstructionEscape.Kind.Capture)
+                if (element is FirExpression && element.isThis()) escape(ConstructionEscapeFact.Kind.Capture, element.source)
                 element.acceptChildren(this)
             }
         })

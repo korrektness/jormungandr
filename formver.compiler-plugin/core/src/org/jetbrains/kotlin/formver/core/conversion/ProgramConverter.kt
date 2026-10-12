@@ -11,8 +11,16 @@ import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderClassIds
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.descriptors.isInterface
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory1
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.Failure
+import org.jetbrains.kotlin.formver.common.FailureKind
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.common.UnsupportedReason
+import org.jetbrains.kotlin.formver.common.PurityCondition
+import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
+import org.jetbrains.kotlin.formver.common.purityFailure
+import org.jetbrains.kotlin.formver.common.unsupportedOwnershipFailure
+import org.jetbrains.kotlin.formver.common.reportFailure
+import org.jetbrains.kotlin.formver.common.reportTranslation
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
@@ -40,6 +48,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousBuiltinVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.withProofClause
 import org.jetbrains.kotlin.formver.core.embeddings.properties.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.*
 import org.jetbrains.kotlin.formver.core.names.*
@@ -76,33 +85,28 @@ class ProgramConverter(
     var hadConversionError: Boolean = false
         private set
 
-    private fun emit(source: KtSourceElement?, factory: KtDiagnosticFactory1<String>, msg: String) {
-        context(checkerContext) {
-            reporter.reportOn(source, factory, msg)
-        }
+    private fun emit(failure: Failure) {
+        context(checkerContext) { reporter.reportFailure(failure) }
         hadConversionError = true
     }
 
-    override fun reportPurityViolation(source: KtSourceElement?, msg: String) =
-        emit(source, ConversionErrors.PURITY_VIOLATION, msg)
+    override fun reportPurityViolation(source: KtSourceElement?, condition: PurityCondition) =
+        emit(purityFailure(source, condition))
 
-    override fun reportUnsupportedOwnership(source: KtSourceElement?, msg: String) =
-        emit(source, ConversionErrors.UNSUPPORTED_OWNERSHIP, msg)
+    override fun reportUnsupportedOwnership(source: KtSourceElement?, condition: ConversionOwnershipCondition) =
+        emit(unsupportedOwnershipFailure(source, condition))
 
-    override fun reportUntrackedWrite(source: KtSourceElement?) {
-        context(checkerContext) {
-            reporter.reportOn(source, ConversionErrors.UNTRACKED_WRITE)
-        }
+    override fun reportUntrackedWrite(source: KtSourceElement?) = context(checkerContext) {
+        reporter.reportTranslation(source, ConversionErrors.UNTRACKED_WRITE)
     }
 
-    override fun reportUnsupportedFeature(source: KtSourceElement?, msg: String) =
-        emit(source, ConversionErrors.UNSUPPORTED_FEATURE, msg)
+    override fun reportUnsupportedFeature(source: KtSourceElement?, msg: String, reason: UnsupportedReason) =
+        emit(Failure(ConversionErrors.UNSUPPORTED_FEATURE, source, KotlinCondition.Translation(reason.name, msg)))
 
-    private fun reportVerificationSkipped(source: KtSourceElement?, msg: String) {
+    private fun reportVerificationSkipped(source: KtSourceElement?, reason: KotlinCondition.SkipReason, symbol: FirFunctionSymbol<*>?) =
         context(checkerContext) {
-            reporter.reportOn(source, ConversionErrors.VERIFICATION_SKIPPED, msg)
+            reporter.reportFailure(Failure(ConversionErrors.VERIFICATION_SKIPPED, source, KotlinCondition.Skipped(reason, symbol)))
         }
-    }
 
     private val specialFunctions: Map<SymbolicName, SpecialKotlinFunction> = buildMap {
         putAll(SpecialKotlinFunctions.byName)
@@ -313,13 +317,13 @@ class ProgramConverter(
         for (entry in registered) {
             if (entry.declaration.symbol.neverVerify(session)) continue
             val reason = when {
-                hadConversionError -> "errors in its declaration"
-                entry.hasUniquenessErrors -> "uniqueness or locality errors"
+                hadConversionError -> KotlinCondition.SkipReason.CONVERSION_ERRORS
+                entry.hasUniquenessErrors -> KotlinCondition.SkipReason.UNIQUENESS_OR_LOCALITY_ERRORS
                 else -> continue
             }
             reportVerificationSkipped(
                 entry.declaration.source,
-                "Function '${entry.declaration.symbol.name.asString()}' was not verified because of $reason",
+                reason, entry.declaration.symbol,
             )
         }
     }
@@ -329,10 +333,10 @@ class ProgramConverter(
         ProgramBodyProcessor(this, uniquenessOutcomes, fullSignatures, refinements) { error, signature ->
             hadOwnershipError = true
             context(checkerContext) {
-                reporter.reportOn(error.source ?: signature.declarationSource, ConversionErrors.UNSUPPORTED_OWNERSHIP, error.message)
+                reporter.reportFailure(unsupportedOwnershipFailure(error.source ?: signature.declarationSource, error.condition))
             }
             reportVerificationSkipped(signature.declarationSource,
-                "Function '${signature.symbol?.name?.asString()}' was not verified because of unsupported ownership")
+                KotlinCondition.SkipReason.UNSUPPORTED_OWNERSHIP, signature.symbol)
         }
     }
 
@@ -547,7 +551,8 @@ class ProgramConverter(
     ): Pair<List<ExpEmbedding>, List<ExpEmbedding>> {
         val kotlinContractPostcondition = embedKotlinContract(symbol, signature)
         val userContract = embedFormverContract(symbol, signature, returnTarget)
-        return Pair(userContract.first, kotlinContractPostcondition + userContract.second)
+        return Pair(userContract.first.withProofClause(KotlinCondition.ProofClause.PRECONDITION, symbol),
+            kotlinContractPostcondition + userContract.second.withProofClause(KotlinCondition.ProofClause.POSTCONDITION, symbol))
     }
 
     // endregion

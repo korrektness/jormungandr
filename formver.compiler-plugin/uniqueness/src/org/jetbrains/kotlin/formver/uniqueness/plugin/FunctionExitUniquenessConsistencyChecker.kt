@@ -1,7 +1,8 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.formver.common.reportAttributeFailure
+import org.jetbrains.kotlin.formver.common.moveLocations
 import org.jetbrains.kotlin.fir.FirFunctionTarget
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -44,6 +45,7 @@ object FunctionExitUniquenessConsistencyChecker : FirFunctionChecker( MppChecker
     override fun check(declaration: FirFunction) {
         val graph = declaration.uniquenessAnalysisGraph ?: return
         val uniquenessStateFlows = graph.resolveUniquenessStateFlows()
+        val moveSites by lazy { graph.resolveMoveSites(uniquenessStateFlows) }
 
         fun CFGNode<*>.isExit(): Boolean =
             when (this) {
@@ -70,10 +72,13 @@ object FunctionExitUniquenessConsistencyChecker : FirFunctionChecker( MppChecker
                 if (symbol.locality != Locality.Local) continue
 
                 for (inconsistentPath in uniquenessState.enumerateInconsistentPaths(includeRoot = true)) {
-                    reporter.reportOn(
+                    val path = listOf(symbol) + inconsistentPath
+                    val sites = moveSites[node]?.values?.flatMap { it[path].orEmpty() }.orEmpty()
+                    reporter.reportAttributeFailure(
                         node.fir.source ?: declaration.source,
                         EXIT_UNIQUENESS_INCONSISTENCY,
-                        listOf(symbol) + inconsistentPath
+                        path,
+                        related = moveLocations(sites.mapNotNull { it.fir.source }),
                     )
                 }
             }

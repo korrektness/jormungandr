@@ -14,7 +14,7 @@ fun <!VIPER_TEXT!>passToBorrowed<!>(b: @Unique @Borrowed Box) {
     val x1 = b.value
     borrow(b)
     val x2 = b.value
-    verify(<!VIPER_VERIFICATION_ERROR!>x1 == x2<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x1 == x2<!>)
 }
 
 fun <!VIPER_TEXT!>passToBorrowedNullable<!>(b: @Unique @Borrowed Box?) {

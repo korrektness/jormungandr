@@ -134,7 +134,7 @@ fun ghostInSpecifications(counter: CounterSpec) {
     refute(counter.value() < 0)
 }
 
-<!INVALID_LAW!>@Law @Pure fun topLevelLaw(counter: CounterSpec): Boolean = <!INVALID_LAW, INVALID_OBSERVER!><!INVALID_LAW!>counter<!>.value()<!> >= 0<!>
+<!INVALID_LAW, INVALID_LAW!>@Law @Pure fun topLevelLaw(counter: CounterSpec): Boolean = <!INVALID_LAW, INVALID_OBSERVER!><!INVALID_LAW!>counter<!>.value()<!> >= 0<!>
 
 class ClassGhostLaw(val counter: CounterSpec) {
     @Law @Pure fun law(): Boolean = <!INVALID_LAW, INVALID_OBSERVER!>counter.value()<!> >= 0
@@ -278,7 +278,7 @@ fun interface SubInterfaceGhostOverride : CounterSpec {
     <!INVALID_OBSERVER!>@GhostObserver @Pure override fun value(): Int = 1<!>
 }
 
-<!INVALID_LAW, INVALID_OBSERVER!>class DelegatedGhostOverride(counter: CounterSpec) : CounterSpec by counter<!>
+<!INVALID_LAW, INVALID_OBSERVER, INVALID_OBSERVER!>class DelegatedGhostOverride(counter: CounterSpec) : CounterSpec by counter<!>
 
 open class GhostNameCollision {
     fun value(): Int = 0

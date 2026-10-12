@@ -104,6 +104,7 @@ private fun Exp.contains(predicate: (Exp) -> Boolean): Boolean =
     predicate(this) || subExps().any { it.contains(predicate) }
 
 internal fun Exp.subExps(): List<Exp> = when (this) {
+    is Exp.WithInfo -> listOf(inner)
     is BinaryExp -> listOf(left, right)
     is UnaryExp -> listOf(arg)
     is Exp.Forall -> listOf(exp)

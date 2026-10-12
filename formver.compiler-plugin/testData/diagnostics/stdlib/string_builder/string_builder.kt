@@ -65,7 +65,7 @@ fun <!VIPER_TEXT!>bindAppended<!>(): Int {
 fun <!VIPER_TEXT!>wrongLength<!>() {
     val sb: @Unique StringBuilder = StringBuilder()
     sb.append('a')
-    verify(<!VIPER_VERIFICATION_ERROR!>sb.length == 2<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>sb.length == 2<!>)
 }
 
 fun <!VIPER_TEXT!>appendShared<!>(sb: StringBuilder) {

@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.scopes.getFunctions
@@ -285,8 +286,10 @@ fun LiftedLambda.invokeSignature(inherited: CompleteFunctionSignature): Signatur
                 OwnershipFrame.root(converter.uniquenessAnalysisOf(source.function.symbol), emptyList()),
                 captures = accesses(dispatch),
             ).statementCtxt()
-            (specification.precond?.let { context(resolver).collectInvariants(it) } ?: emptyList()) to
+            (specification.precond?.let { context(resolver).collectInvariants(it) } ?: emptyList())
+                .withProofClause(KotlinCondition.ProofClause.PRECONDITION, source.function.symbol) to
                 (specification.postcond?.let { context(postResolver).collectInvariants(it) } ?: emptyList())
+                    .withProofClause(KotlinCondition.ProofClause.POSTCONDITION, source.function.symbol)
         } else converter.embedContract(source.invoke, named.signature, target)
         addPreconditions(pre)
         addPostconditions(post)

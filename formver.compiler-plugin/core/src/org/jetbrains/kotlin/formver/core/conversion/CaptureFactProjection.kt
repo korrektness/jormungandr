@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.formver.viper.ast.Exp
 
 /** A value path, independent of source positions and the unfoldings needed to read it. */
 internal fun Exp.capturePath(): List<SymbolicName>? = when (this) {
+    is Exp.WithInfo -> inner.capturePath()
     is Exp.LocalVar -> listOf(name)
     is Exp.FieldAccess -> rcv.capturePath()?.plus(field.name)
     is Exp.Unfolding -> body.capturePath()
@@ -34,6 +35,7 @@ internal fun Exp.freeVariables(bound: Set<SymbolicName> = emptySet()): Set<Symbo
 
 /** A value's expression structure, independent of source metadata and read permissions. */
 internal fun Exp.captureValueKey(): Any = capturePath() ?: when (this) {
+    is Exp.WithInfo -> inner.captureValueKey()
     is Exp.Unfolding -> body.captureValueKey()
     is Exp.IntLit -> listOf(javaClass, value)
     is Exp.BoolLit -> listOf(javaClass, value)
@@ -90,6 +92,7 @@ internal fun Exp.rewriteCaptureValues(
         Exp.Trigger(it.exps.map { exp -> exp.rewriteCaptureValues(replacements, bound + variables.map { v -> v.name }) }, it.pos, it.info)
     }
     return when (this) {
+        is Exp.WithInfo -> copy(inner = inner.rewrite())
         is BinaryExp -> rewriteOperands { it.rewrite() }
         is Exp.Minus -> copy(arg = arg.rewrite())
         is Exp.Not -> copy(arg = arg.rewrite())
@@ -123,6 +126,7 @@ internal fun Exp.rewriteCaptureValues(
 }
 
 internal fun Exp.conjuncts(): List<Exp> = when (this) {
+    is Exp.WithInfo -> inner.conjuncts()
     is Exp.And -> left.conjuncts() + right.conjuncts()
     is Exp.Not -> when (val negated = arg) {
         is Exp.Or -> Exp.Not(negated.left, pos, info).conjuncts() + Exp.Not(negated.right, pos, info).conjuncts()
