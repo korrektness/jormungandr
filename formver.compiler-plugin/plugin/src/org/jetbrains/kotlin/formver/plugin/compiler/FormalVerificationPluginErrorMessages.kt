@@ -29,8 +29,8 @@ object FormalVerificationPluginErrorMessages : BaseDiagnosticRendererFactory() {
             CommonRenderers.STRING,
         )
         map.put(
-            VerificationErrors.CONSISTENCY,
-            "Viper consistency error: {0}",
+            VerificationErrors.INVALID_VIPER_PROGRAM,
+            "{0}",
             CommonRenderers.STRING,
         )
         map.put(

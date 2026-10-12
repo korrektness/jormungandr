@@ -690,6 +690,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       runTest("formver.compiler-plugin/testData/diagnostics/verification/unsupported_constructs.kt");
     }
 
+    @Test
+    @TestMetadata("viper_keyword_names.kt")
+    public void testViper_keyword_names() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/viper_keyword_names.kt");
+    }
+
     @Nested
     @TestMetadata("formver.compiler-plugin/testData/diagnostics/verification/classes")
     @TestDataPath("$PROJECT_ROOT")

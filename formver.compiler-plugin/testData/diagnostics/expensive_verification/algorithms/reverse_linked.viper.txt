@@ -43,18 +43,18 @@ method reverse(head: Ref) returns (v_ret_0: Ref)
   ensures v_ret_0 != nullValue() ==> acc(Node_unique(v_ret_0), write)
   ensures intFromRef(length(v_ret_0)) == old(intFromRef(length(head)))
 {
-  var acc: Ref
+  var l4_acc: Ref
   var cur: Ref
   var anon_4: Ref
-  acc := nullValue()
+  l4_acc := nullValue()
   cur := head
   label cont
-    invariant acc != nullValue() ==> acc(Node_unique(acc), write)
+    invariant l4_acc != nullValue() ==> acc(Node_unique(l4_acc), write)
     invariant cur != nullValue() ==> acc(Node_unique(cur), write)
-    invariant isSubtype(typeOf(acc), nullable(Node()))
+    invariant isSubtype(typeOf(l4_acc), nullable(Node()))
     invariant isSubtype(typeOf(cur), nullable(Node()))
     invariant isSubtype(typeOf(head), nullable(Node()))
-    invariant intFromRef(length(acc)) + intFromRef(length(cur)) ==
+    invariant intFromRef(length(l4_acc)) + intFromRef(length(cur)) ==
       old(intFromRef(length(head)))
   anon_4 := notBool(boolToRef(cur == nullValue()))
   if (boolFromRef(anon_4)) {
@@ -63,21 +63,21 @@ method reverse(head: Ref) returns (v_ret_0: Ref)
       unfold acc(Node_unique(cur), write)
     }
     nxt := cur.next
-    cur.next := acc
+    cur.next := l4_acc
     if (cur != nullValue()) {
       fold acc(Node_unique(cur), write)
     }
-    acc := cur
+    l4_acc := cur
     cur := nxt
     goto cont
   }
   label break
-  assert isSubtype(typeOf(acc), nullable(Node()))
+  assert isSubtype(typeOf(l4_acc), nullable(Node()))
   assert isSubtype(typeOf(cur), nullable(Node()))
   assert isSubtype(typeOf(head), nullable(Node()))
-  assert intFromRef(length(acc)) + intFromRef(length(cur)) ==
+  assert intFromRef(length(l4_acc)) + intFromRef(length(cur)) ==
     old(intFromRef(length(head)))
-  v_ret_0 := acc
+  v_ret_0 := l4_acc
   goto lbl_ret_0
   label lbl_ret_0
 }

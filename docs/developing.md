@@ -26,7 +26,7 @@ The test runners are generated from the testData tree as part of
 `compileTestKotlin`, so a new file is picked up on the next build.
 
 The pipeline splits into conversion (uniqueness checking, conversion, purity
-checking) and verification (Viper consistency checking and verification):
+checking, Viper consistency checking) and verification:
 
 | Task                       | Conversion | Verification                |
 |:---------------------------|:-----------|:----------------------------|

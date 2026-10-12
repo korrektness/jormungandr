@@ -46,7 +46,12 @@ object VerificationErrors : KtDiagnosticsContainer() {
     val INVALID_SUBLIST_RANGE by warning2<PsiElement, String, String>()
     val OWNERSHIP_NOT_ESTABLISHED by warning2<PsiElement, String, String>()
     val OVERRIDE_NOT_REFINING by warning2<PsiElement, String, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
-    val CONSISTENCY by error1<PsiElement, String>()
+
+    /**
+     * Viper rejected the program during verification. The compiler reports this as [PluginErrors.INTERNAL_ERROR]; the
+     * test facade reports it here so that it counts as a verification outcome.
+     */
+    val INVALID_VIPER_PROGRAM by error1<PsiElement, String>()
     override fun getRendererFactory() = FormalVerificationPluginErrorMessages
     fun tags() = listOf(
         CONDITIONAL_EFFECT_ERROR.name,
@@ -56,6 +61,6 @@ object VerificationErrors : KtDiagnosticsContainer() {
         INVALID_SUBLIST_RANGE.name,
         OWNERSHIP_NOT_ESTABLISHED.name,
         OVERRIDE_NOT_REFINING.name,
-        CONSISTENCY.name
+        INVALID_VIPER_PROGRAM.name,
     )
 }

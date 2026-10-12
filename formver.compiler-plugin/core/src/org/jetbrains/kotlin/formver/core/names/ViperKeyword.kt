@@ -3,6 +3,7 @@ package org.jetbrains.kotlin.formver.core.names
 import org.jetbrains.kotlin.formver.viper.AnyName
 import org.jetbrains.kotlin.formver.viper.CandidateName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
+import scala.jdk.javaapi.CollectionConverters
 
 
 abstract class ViperKeyword(keyword: String) : AnyName {
@@ -20,50 +21,9 @@ object FunctionResultVariableName : ViperKeyword("result"), SymbolicName {
 }
 
 object ViperKeywords {
-    val keywords = setOf(
-        "let",
-        "apply",
-        "import",
-        "define",
-        "field",
-        "method",
-        "function",
-        "predicate",
-        "domain",
-        "interpretation",
-        "returns",
-        "unique",
-        "requires",
-        "ensures",
-        "invariant",
-        "forall",
-        "exists",
-        "forperm",
-        "new",
-        "lhs",
-        "if",
-        "elseif",
-        "else",
-        "while",
-        "fold",
-        "unfold",
-        "inhale",
-        "package",
-        "assert",
-        "assume",
-        "var",
-        "label",
-        "goto",
-        "quasihavoc",
-        "quasihavocall",
-        "true",
-        "false",
-        "null",
-        "none",
-        "wildcard",
-        "write",
-        "epsilon",
-    ).map { object : ViperKeyword(it) {} } + listOf(
+    val keywords = CollectionConverters.asJava(viper.silver.ast.utility.Consistency.reservedNames())
+        .filter { it != "result" }
+        .map { object : ViperKeyword(it) {} } + listOf(
         FunctionResultVariableName
     )
 }

@@ -1,0 +1,14 @@
+/viper_keyword_names.kt: info: Generated Viper text for viperKeywordNames:
+method viperKeywordNames(par_exhale: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_exhale), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(par_exhale) + 2
+{
+  var l0_acc: Ref
+  var l0_unfolding: Ref
+  l0_acc := plusInts(par_exhale, intToRef(1))
+  l0_unfolding := plusInts(l0_acc, intToRef(1))
+  v_ret_0 := l0_unfolding
+  goto lbl_ret_0
+  label lbl_ret_0
+}

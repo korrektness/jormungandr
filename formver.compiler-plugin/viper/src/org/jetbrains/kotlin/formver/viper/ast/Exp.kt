@@ -774,7 +774,13 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         }
     }
 
-    /** A pure test of whether a predicate's required permission is available. */
+    /**
+     * A pure test of whether a predicate's required permission is available.
+     *
+     * Viper allows `perm` in a specification only inside an inhale-exhale assertion, so the test is emitted as one
+     * whose inhale and exhale sides are the same test: it reads the permissions held wherever the specification is
+     * evaluated.
+     */
     data class PermissionCheck(val access: PredicateAccess) : Exp {
         override val type = Type.Bool
         override val pos = access.pos
@@ -782,6 +788,12 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
 
         context(nameResolver: NameResolver)
         override fun toSilver(): viper.silver.ast.Exp {
+            val check = currentPermissionCheck()
+            return viper.silver.ast.InhaleExhaleExp(check, check, pos.toSilver(), info.toSilver(), silverNoTrafos)
+        }
+
+        context(nameResolver: NameResolver)
+        private fun currentPermissionCheck(): viper.silver.ast.Exp {
             val current = viper.silver.ast.CurrentPerm(access.toSilver().loc(), pos.toSilver(), info.toSilver(), silverNoTrafos)
             return when (access.perm) {
                 is PermExp.FullPerm -> viper.silver.ast.PermGeCmp(

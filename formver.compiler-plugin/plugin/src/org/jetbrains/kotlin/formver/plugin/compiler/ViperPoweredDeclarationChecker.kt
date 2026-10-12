@@ -102,6 +102,7 @@ class ViperPoweredDeclarationChecker(
             )
         }
         val viperProgram = with(programConversionContext.nameResolver) { program.toSilver() }
+        SiliconFrontend.checkConsistency(viperProgram)
         val shouldVerify = config.shouldVerify(declaration) && !programConversionContext.skipsVerification
         if (System.getProperty("formver.testRun").toBoolean()) {
             // The test facade verifies the program later.

@@ -1,14 +1,18 @@
 package org.jetbrains.kotlin.formver.viper
 
-import org.jetbrains.kotlin.formver.viper.errors.GenericConsistencyError
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
+import scala.jdk.javaapi.CollectionConverters
 import viper.silver.reporter.StdIOReporter
 import java.io.Closeable
 import java.io.File
 
 /** The verifier cannot run in this environment. */
 class VerifierUnavailableException(message: String) : Exception(message)
+
+/** Viper rejected a program as malformed, so verifying it says nothing about the program's correctness. */
+class InvalidViperProgramException(errors: List<String>) :
+    Exception("Viper rejected the generated program: ${errors.joinToString("; ")}")
 
 /**
  * Passes Viper programs for verification to the Silicon backend via [viper.silicon.SiliconFrontendAPI], using the Z3
@@ -57,6 +61,15 @@ class SiliconFrontend(z3Exe: String, commandLineArgs: List<String> = emptyList()
                 ?: throw VerifierUnavailableException("Cannot find Z3 from Z3_EXE: '$name' is not on PATH.")
         }
 
+        /**
+         * Throws [InvalidViperProgramException] when [viperProgram] fails Viper's consistency checks, such as a
+         * reference to an undeclared variable.
+         */
+        fun checkConsistency(viperProgram: viper.silver.ast.Program) {
+            val errors = viperProgram.checkTransitively()
+            if (!errors.isEmpty) throw InvalidViperProgramException(CollectionConverters.asJava(errors).map { it.readableMessage() })
+        }
+
         private fun defaultZ3Name(): String =
             if (System.getProperty("os.name").startsWith("Windows")) "z3.exe" else "z3"
 
@@ -73,21 +86,23 @@ class SiliconFrontend(z3Exe: String, commandLineArgs: List<String> = emptyList()
         }
     }
 
-    /** Consistency-checks and verifies [viperProgram], calling [onFailure] for each error found. */
+    /**
+     * Consistency-checks and verifies [viperProgram], calling [onFailure] for each verification error found.
+     * Throws [InvalidViperProgramException] when Viper reports anything other than verification errors.
+     */
     fun verify(viperProgram: viper.silver.ast.Program, onFailure: (VerifierError) -> Unit) {
-        // The AST API runs ConsistencyCheck and Verification. SilFrontend.verification invokes
-        // the default plugins' beforeVerify and mapVerificationResult hooks, including RefutePlugin.
-        // Its isolated assertion branch leaves the continuation available for further checks.
+        // The AST API starts in the state after the consistency check, so its ConsistencyCheck phase does nothing.
+        // Silicon does not check the AST itself either: an undeclared variable makes it abort with an exception,
+        // which the result reports as an error that is not a verification error.
+        checkConsistency(viperProgram)
+        // SilFrontend.verification invokes the default plugins' beforeVerify and mapVerificationResult hooks,
+        // including RefutePlugin. Its isolated assertion branch leaves the continuation available for further checks.
         val result = siliconApi.verify(viperProgram)
         if (result is viper.silver.verifier.Failure) {
-            for (error in result.errors()) {
-                when (error) {
-                    is viper.silver.verifier.VerificationError ->
-                        onFailure(VerificationError(error))
-                    is viper.silver.verifier.ConsistencyError ->
-                        onFailure(GenericConsistencyError(error))
-                }
-            }
+            val errors = CollectionConverters.asJava(result.errors())
+            val rejections = errors.filter { it !is viper.silver.verifier.VerificationError }
+            if (rejections.isNotEmpty()) throw InvalidViperProgramException(rejections.map { it.readableMessage() })
+            errors.forEach { onFailure(VerificationError(it as viper.silver.verifier.VerificationError)) }
         }
     }
 

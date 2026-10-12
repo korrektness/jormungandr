@@ -424,8 +424,10 @@ method InheritedBindingCell_c_BindingView_restore(this: Ref)
       { BindingCell_f_read(this, argument) }
       true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
       old(isSubtype(typeOf(argument), BindingArgument())) &&
-      (old(perm(BindingArgument_unique(argument)) >= write) &&
-      perm(BindingArgument_unique(argument)) >= write) ==>
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) ==>
       (unfolding acc(InheritedBindingCell_unique(this), write) in
         BindingCell_f_read(this, argument)) ==
       old(c_BindingView_f_read(this, argument)))
@@ -449,8 +451,10 @@ method InheritedBindingCell_c_BindingView_upcast(this: Ref)
       { c_BindingView_f_read(this, argument) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
       old(isSubtype(typeOf(argument), BindingArgument())) &&
-      (old(perm(BindingArgument_unique(argument)) >= write) &&
-      perm(BindingArgument_unique(argument)) >= write) ==>
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) ==>
       c_BindingView_f_read(this, argument) ==
       old((unfolding acc(InheritedBindingCell_unique(this), write) in
         BindingCell_f_read(this, argument))))
@@ -607,8 +611,10 @@ method BindingCell_c_BindingView_upcast(this: Ref)
       { c_BindingView_f_read(this, par_argument) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
       old(isSubtype(typeOf(par_argument), BindingArgument())) &&
-      (old(perm(BindingArgument_unique(par_argument)) >= write) &&
-      perm(BindingArgument_unique(par_argument)) >= write) ==>
+      (old([perm(BindingArgument_unique(par_argument)) >= write,
+      perm(BindingArgument_unique(par_argument)) >= write]) &&
+      [perm(BindingArgument_unique(par_argument)) >= write,
+      perm(BindingArgument_unique(par_argument)) >= write]) ==>
       c_BindingView_f_read(this, par_argument) ==
       old(BindingCell_f_read(this, par_argument)))
 
@@ -763,8 +769,10 @@ method BindingCell_c_BindingView_restore(this: Ref)
       { BindingCell_f_read(this, argument) }
       true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
       old(isSubtype(typeOf(argument), BindingArgument())) &&
-      (old(perm(BindingArgument_unique(argument)) >= write) &&
-      perm(BindingArgument_unique(argument)) >= write) ==>
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) ==>
       BindingCell_f_read(this, argument) ==
       old(c_BindingView_f_read(this, argument)))
 
@@ -784,8 +792,10 @@ method BindingCell_c_BindingView_upcast(this: Ref)
       { c_BindingView_f_read(this, argument) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
       old(isSubtype(typeOf(argument), BindingArgument())) &&
-      (old(perm(BindingArgument_unique(argument)) >= write) &&
-      perm(BindingArgument_unique(argument)) >= write) ==>
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) ==>
       c_BindingView_f_read(this, argument) ==
       old(BindingCell_f_read(this, argument)))
 
@@ -932,8 +942,10 @@ method BindingCell_c_BindingView_restore(this: Ref)
       { BindingCell_f_read(this, argument) }
       true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
       old(isSubtype(typeOf(argument), BindingArgument())) &&
-      (old(perm(BindingArgument_unique(argument)) >= write) &&
-      perm(BindingArgument_unique(argument)) >= write) ==>
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) ==>
       BindingCell_f_read(this, argument) ==
       old(c_BindingView_f_read(this, argument)))
 
@@ -953,8 +965,10 @@ method BindingCell_c_BindingView_upcast(this: Ref)
       { c_BindingView_f_read(this, argument) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
       old(isSubtype(typeOf(argument), BindingArgument())) &&
-      (old(perm(BindingArgument_unique(argument)) >= write) &&
-      perm(BindingArgument_unique(argument)) >= write) ==>
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) ==>
       c_BindingView_f_read(this, argument) ==
       old(BindingCell_f_read(this, argument)))
 
@@ -1105,8 +1119,10 @@ method BindingCell_c_BindingView_upcast(this: Ref)
       { c_BindingView_f_read(this, argument) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
       old(isSubtype(typeOf(argument), BindingArgument())) &&
-      (old(perm(BindingArgument_unique(argument)) >= write) &&
-      perm(BindingArgument_unique(argument)) >= write) ==>
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) ==>
       c_BindingView_f_read(this, argument) ==
       old(BindingCell_f_read(this, argument)))
 

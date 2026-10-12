@@ -16,9 +16,9 @@ import org.jetbrains.kotlin.formver.core.lambdaPrograms
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.*
 import org.jetbrains.kotlin.formver.plugin.runners.*
+import org.jetbrains.kotlin.formver.viper.InvalidViperProgramException
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
-import org.jetbrains.kotlin.formver.viper.errors.ConsistencyError
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
 import org.jetbrains.kotlin.test.TestInfrastructureInternals
@@ -115,13 +115,22 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
             if (reportedErrors.add(err, source)) {
                 results.add(
                     when (err) {
-                        is ConsistencyError -> formatConsistencyError(err, source, module)
                         is VerificationError -> formatVerificationError(err, source, module)
                     }
                 )
             }
         }
-        programs.forEach { verifier.verify(it, onFailure) }
+        try {
+            programs.forEach { verifier.verify(it, onFailure) }
+        } catch (e: InvalidViperProgramException) {
+            results.add(
+                VerificationErrors.INVALID_VIPER_PROGRAM.on(
+                    decl.source!!, e.message!!,
+                    positioningStrategy = SourceElementPositioningStrategies.DECLARATION_NAME,
+                    languageVersionSettings = module.languageVersionSettings
+                )!!
+            )
+        }
 
         return results
     }
@@ -206,18 +215,6 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
             }
         }
         return diagnostic!!
-    }
-
-    @OptIn(InternalDiagnosticFactoryMethod::class)
-    private fun formatConsistencyError(
-        err: ConsistencyError, source: KtSourceElement,
-        module: TestModule
-    ): KtDiagnostic {
-        val diagnostics = VerificationErrors.CONSISTENCY.on(
-            source, err.msg, positioningStrategy = SourceElementPositioningStrategies.DEFAULT,
-            languageVersionSettings = module.languageVersionSettings
-        )
-        return diagnostics!!
     }
 }
 

@@ -67,6 +67,7 @@ class ViperPoweredClassChecker(
                     with(converter.nameResolver) { it.toDebugOutput() })
             }
             val viperProgram = with(converter.nameResolver) { program.toSilver() }
+            SiliconFrontend.checkConsistency(viperProgram)
             val verify = config.verificationSelection !in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) &&
                 !converter.skipsVerification
             if (System.getProperty("formver.testRun").toBoolean()) {
