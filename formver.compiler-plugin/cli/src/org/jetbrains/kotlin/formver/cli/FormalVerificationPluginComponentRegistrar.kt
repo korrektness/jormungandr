@@ -43,6 +43,7 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
         val config = PluginConfiguration(
             logLevel, errorStyle, conversionSelection, verificationSelection,
             dumpUniquenessCFG, configuration.messageCollector,
+            configuration.get(FormalVerificationConfigurationKeys.VERIFICATION_CACHE_DIRECTORY),
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
 

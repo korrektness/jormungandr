@@ -20,6 +20,8 @@ import org.jetbrains.kotlin.formver.plugin.compiler.reporting.*
 import org.jetbrains.kotlin.formver.plugin.runners.*
 import org.jetbrains.kotlin.formver.viper.InvalidViperProgramException
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
+import org.jetbrains.kotlin.formver.viper.OrderedVerificationExecutor
+import java.nio.file.Path
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
@@ -102,14 +104,31 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                 })
             }
             if (toVerify.isNotEmpty()) {
-                val verifier = SiliconFrontend(SiliconFrontend.locateZ3())
-                toVerify.forEach { (testFile, decl) ->
-                    val diagnostics = verifyFunction(verifier, decl, module)
+                val z3 = SiliconFrontend.locateZ3()
+                val programs = toVerify.map { (_, decl) ->
+                    listOfNotNull(decl.viperProgram.takeIf { decl.shouldVerify == true }) +
+                        decl.lambdaPrograms.orEmpty().filter { it.shouldVerify }.map { it.program }
+                }
+                val cacheDirectory = System.getProperty("formver.verificationCacheDirectory")?.let { Path.of(it) }
+                val attempts = OrderedVerificationExecutor.shared.mapWithResource(
+                    programs, { SiliconFrontend(z3, cacheDirectory = cacheDirectory) },
+                ) { verifier, group ->
+                    val errors = mutableListOf<VerifierError>()
+                    var invalid: InvalidViperProgramException? = null
+                    try {
+                        group.forEach { verifier.verify(it) { error -> errors.add(error) } }
+                    } catch (error: InvalidViperProgramException) {
+                        invalid = error
+                    }
+                    VerificationAttempt(errors, invalid)
+                }
+                toVerify.zip(attempts).forEach { (owner, attempt) ->
+                    val (testFile, decl) = owner
+                    val diagnostics = verifyFunction(attempt, decl, module)
                     testServices.verificationDiagnosticsCollector.addDiagnostics(diagnostics)
                     testServices.allTagCollector.reportDiagnostics(testFile, diagnostics)
                     testServices.verificationOutcomes.reportDiagnostics(testFile, diagnostics)
                 }
-                verifier.close()
 
             }
         }
@@ -117,19 +136,17 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         return inputArtifact
     }
 
-    /**
-     * Runs the verifier
-     */
+    private data class VerificationAttempt(val errors: List<VerifierError>, val invalid: InvalidViperProgramException?)
+
+    /** Formats worker results on the compiler thread. */
     @OptIn(InternalDiagnosticFactoryMethod::class)
     private fun verifyFunction(
-        verifier: SiliconFrontend,
+        attempt: VerificationAttempt,
         decl: FirDeclaration,
         module: TestModule
     ): List<KtDiagnostic> {
         val results = mutableListOf<KtDiagnostic>()
-        val programs = listOfNotNull(decl.viperProgram.takeIf { decl.shouldVerify == true }) +
-            decl.lambdaPrograms.orEmpty().filter { it.shouldVerify }.map { it.program }
-        val onFailure: (VerifierError) -> Unit = { err ->
+        attempt.errors.forEach { err ->
             val source = err.reportingPosition().unwrapOr { decl.source }!!
             if (reportedErrors.add(err, source)) {
                 results.add(
@@ -139,9 +156,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                 )
             }
         }
-        try {
-            programs.forEach { verifier.verify(it, onFailure) }
-        } catch (e: InvalidViperProgramException) {
+        attempt.invalid?.let { e ->
             results.add(
                 VerificationErrors.INVALID_VIPER_PROGRAM.on(
                     decl.source!!, e.message!!,

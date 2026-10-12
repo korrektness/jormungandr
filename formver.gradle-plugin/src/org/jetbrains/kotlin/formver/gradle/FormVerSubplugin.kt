@@ -40,6 +40,10 @@ class FormVerGradleSubplugin
         return project.provider {
             val options = mutableListOf<SubpluginOption>()
 
+            formVerExtension.myVerificationCacheDirectory?.let {
+                options += SubpluginOption(FormalVerificationPluginNames.VERIFICATION_CACHE_DIRECTORY_OPTION_NAME, project.file(it).absolutePath)
+            }
+
             formVerExtension.myLogLevel?.let {
                 options += SubpluginOption(FormalVerificationPluginNames.LOG_LEVEL_OPTION_NAME, it)
             }

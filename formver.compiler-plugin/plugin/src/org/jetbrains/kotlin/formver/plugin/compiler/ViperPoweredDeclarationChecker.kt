@@ -165,7 +165,10 @@ class ViperPoweredDeclarationChecker(
                 val source = err.reportingPosition().unwrapOr { declaration.source }
                 if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
             }
-            SiliconFrontend(z3Exe).use { it.verify(viperProgram, onFailure) }
+            SiliconFrontend(
+                z3Exe, cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
+                pluginOptions = config.verificationCacheOptions,
+            ).use { it.verify(viperProgram, onFailure) }
         }
     }
 

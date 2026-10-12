@@ -7,6 +7,13 @@ package org.jetbrains.kotlin.formver.gradle
 
 
 open class FormVerExtension {
+    internal var myVerificationCacheDirectory: String? = null
+
+    open fun verificationCacheDirectory(directory: String) {
+        require(directory.isNotBlank())
+        myVerificationCacheDirectory = directory
+    }
+
     internal var myLogLevel: String? = null
     internal var myErrorStyle: String? = null
     internal var myConversionTargetsSelection: String? = null

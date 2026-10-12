@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.VERIFIC
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
 
 object FormalVerificationConfigurationKeys {
+    val VERIFICATION_CACHE_DIRECTORY: CompilerConfigurationKey<String> = CompilerConfigurationKey.create("verification cache directory")
     val LOG_LEVEL: CompilerConfigurationKey<LogLevel> = CompilerConfigurationKey.create("viper log level")
     val ERROR_STYLE: CompilerConfigurationKey<ErrorStyle> = CompilerConfigurationKey.create("error style")
     val CONVERSION_TARGETS_SELECTION: CompilerConfigurationKey<TargetsSelection> =
@@ -35,6 +36,10 @@ object FormalVerificationConfigurationKeys {
 @OptIn(ExperimentalCompilerApi::class)
 class FormalVerificationCommandLineProcessor : CommandLineProcessor {
     companion object {
+        val VERIFICATION_CACHE_DIRECTORY_OPTION = CliOption(
+            FormalVerificationPluginNames.VERIFICATION_CACHE_DIRECTORY_OPTION_NAME, "<directory>",
+            "Directory for successful verification results", required = false, allowMultipleOccurrences = false
+        )
         val LOG_LEVEL_OPTION = CliOption(
             LOG_LEVEL_OPTION_NAME, "<log_level>", "Viper log level",
             required = false, allowMultipleOccurrences = false
@@ -68,6 +73,7 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
 
     override val pluginId: String = FormalVerificationPluginNames.PLUGIN_ID
     override val pluginOptions: Collection<AbstractCliOption> = listOf(
+        VERIFICATION_CACHE_DIRECTORY_OPTION,
         LOG_LEVEL_OPTION,
         ERROR_STYLE_OPTION,
         CONVERSION_TARGETS_SELECTION_OPTION,
@@ -78,6 +84,10 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
     override fun processOption(option: AbstractCliOption, value: String, configuration: CompilerConfiguration) =
         try {
             when (option) {
+                VERIFICATION_CACHE_DIRECTORY_OPTION -> {
+                    require(value.isNotBlank())
+                    configuration.put(FormalVerificationConfigurationKeys.VERIFICATION_CACHE_DIRECTORY, value)
+                }
                 LOG_LEVEL_OPTION -> configuration.put(LOG_LEVEL, LogLevel.valueOf(value.toUpperCaseAsciiOnly()))
                 ERROR_STYLE_OPTION ->
                     configuration.put(ERROR_STYLE, ErrorStyle.valueOf(value.toUpperCaseAsciiOnly()))

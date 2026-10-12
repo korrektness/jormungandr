@@ -91,6 +91,12 @@ fun Test.configureFormverTest() {
 
     systemProperty("idea.ignore.disabled.plugins", "true")
     systemProperty("formver.testRun", "true")
+    project.findProperty("formver.verificationCacheDirectory")?.let {
+        systemProperty("formver.verificationCacheDirectory", it)
+    }
+    project.findProperty("formver.verificationJobs")?.let {
+        systemProperty("formver.verificationJobs", it)
+    }
     systemProperty("idea.home.path", rootDir)
 
     project.findProperty("kotlin.test.update.test.data")?.let {
@@ -112,10 +118,8 @@ fun Test.provideZ3() {
     }
 }
 
-// Silicon defaults to one parallel verifier, each with its own Z3 process, per core, and every test starts a fresh
-// Silicon. Starting those processes dominates the suite's run time; two verifiers was the fastest setting measured.
-// A single verifier is slower still, as one Z3 instance then accumulates state across a test's methods.
-// Setting SILICON_PARALLEL_VERIFIERS in the environment overrides this.
+// Each declaration worker has two method provers and a main prover. The shared declaration executor bounds jobs
+// across parallel tests. SILICON_PARALLEL_VERIFIERS overrides the per-job method worker count.
 fun Test.limitSiliconParallelism() {
     if (providers.environmentVariable("SILICON_PARALLEL_VERIFIERS").orNull == null) {
         environment("SILICON_PARALLEL_VERIFIERS", "2")

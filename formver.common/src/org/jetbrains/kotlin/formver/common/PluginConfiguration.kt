@@ -15,7 +15,12 @@ data class PluginConfiguration(
     val dumpUniquenessCFG: Boolean,
     /** Receives the stack traces of internal errors, which diagnostics do not carry. */
     val messageCollector: MessageCollector,
+    val verificationCacheDirectory: String? = null,
 ) {
+    /** Includes selection and diagnostic settings conservatively in the verification identity. */
+    val verificationCacheOptions: List<String>
+        get() = listOf(logLevel.name, errorStyle.name, conversionSelection.name, verificationSelection.name, dumpUniquenessCFG.toString())
+
     init {
         require(conversionSelection >= verificationSelection) {
             "Conversion options may not be stricter than verification options; converting $conversionSelection but verifying $verificationSelection."

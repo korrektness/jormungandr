@@ -102,6 +102,13 @@ The plugin accepts a number of command line options which can be passed via
 - Option `error_style`: permitted values `user_friendly`, `original_viper` and `both` (default: `user_friendly`).
 - Options `conversion_targets_selection` and `verification_targets_selection`: permitted values `no_targets`
   and `all_targets` (default: `all_targets`).
+- Option `verification_cache_directory`: enables persistent successful verification results in the given
+  directory. In Gradle, use `formver { verificationCacheDirectory("build/verification-cache") }`.
+  Omit the option to bypass the cache. The key covers the complete dependency-closed Viper text,
+  Silicon/Silver artifact bytes, Z3 executable bytes, effective verifier arguments and plugin settings.
+  Consistency checks run on hits. Failures are verified again to produce current-source diagnostics;
+  malformed entries and cache I/O errors surface as errors. Treat the directory as trusted build state.
+  Custom Silicon plugins and obligation filters require bypassing the cache.
 
 ### Z3
 

@@ -97,7 +97,10 @@ class ViperPoweredClassChecker(
                 val z3 = verifierLocator.z3Exe { reason ->
                     reporter.reportOn(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, reason)
                 } ?: return
-                SiliconFrontend(z3).use { verifier ->
+                SiliconFrontend(
+                    z3, cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
+                    pluginOptions = config.verificationCacheOptions,
+                ).use { verifier ->
                     verifier.verify(viperProgram) { error ->
                         val source = error.reportingPosition().unwrapOr { declaration.source }
                         if (reportedErrors.add(error, source)) reporter.reportVerifierError(source, error, config.errorStyle)

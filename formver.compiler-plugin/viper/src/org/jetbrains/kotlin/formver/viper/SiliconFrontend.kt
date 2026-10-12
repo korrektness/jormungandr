@@ -6,6 +6,7 @@ import scala.jdk.javaapi.CollectionConverters
 import viper.silver.reporter.StdIOReporter
 import java.io.Closeable
 import java.io.File
+import java.nio.file.Path
 
 /** The verifier cannot run in this environment. */
 class VerifierUnavailableException(message: String) : Exception(message)
@@ -19,24 +20,59 @@ class InvalidViperProgramException(errors: List<String>) :
  * binary at [z3Exe], as found by [SiliconFrontend.locateZ3].
  * Use [SiliconFrontend.verify] to consistency-check and verify a given program.
  */
-class SiliconFrontend(z3Exe: String, commandLineArgs: List<String> = emptyList()) : Closeable {
-    private val siliconApi: viper.silicon.SiliconFrontendAPI
+class SiliconFrontend(
+    z3Exe: String,
+    commandLineArgs: List<String> = emptyList(),
+    cacheDirectory: Path? = null,
+    pluginOptions: List<String> = emptyList(),
+) : Closeable {
+    private val args = buildList {
+        addAll(commandLineArgs)
+        add("--z3Exe")
+        add(z3Exe)
+        add("--numberOfParallelVerifiers")
+        add(System.getenv("SILICON_PARALLEL_VERIFIERS") ?: "2")
+    }
+    private val cache = cacheDirectory?.let { VerificationResultCache(it) }
+    private val cacheOptions = args + pluginOptions + listOf(
+        System.getProperty("java.runtime.version"), System.getProperty("os.name"), System.getProperty("os.arch"),
+    )
+    private val cacheVersion = cacheDirectory?.let {
+        // Custom plugins and obligation filters can change semantics beyond the printed program.
+        require(commandLineArgs.chunked(2).all { pair ->
+            pair.size == 2 && pair[0] in cacheableOptions && pair[1].toLongOrNull() != null
+        }) { "Verification caching requires supported numeric Silicon options." }
+        VerificationResultCache.fingerprint(listOf(
+            artifactDigest(viper.silicon.SiliconFrontendAPI::class.java),
+            artifactDigest(viper.silver.ast.Program::class.java),
+            VerificationResultCache.fileDigest(Path.of(z3Exe)),
+        ))
+    }
+    private var siliconApi: viper.silicon.SiliconFrontendAPI? = null
 
-    init {
-        val args = buildList {
-            addAll(commandLineArgs)
-            add("--z3Exe")
-            add(z3Exe)
-            System.getenv("SILICON_PARALLEL_VERIFIERS")?.let {
-                add("--numberOfParallelVerifiers")
-                add(it)
-            }
+    private fun backend(): viper.silicon.SiliconFrontendAPI = siliconApi ?: run {
+        val api = viper.silicon.SiliconFrontendAPI(StdIOReporter("stdout_reporter", true))
+        try {
+            api.initialize(args.toScalaSeq())
+        } catch (error: Throwable) {
+            api.stop()
+            throw error
         }
-        siliconApi = viper.silicon.SiliconFrontendAPI(StdIOReporter("stdout_reporter", true))
-        siliconApi.initialize(args.toScalaSeq())
+        siliconApi = api
+        api
     }
 
     companion object {
+        private val cacheableOptions = setOf(
+            "--timeout", "--assertTimeout", "--proverSaturationTimeout", "--randomizeSeeds",
+        )
+
+        private fun artifactDigest(type: Class<*>): String {
+            val path = Path.of(type.protectionDomain.codeSource.location.toURI())
+            require(path.toFile().isFile) { "Verification caching requires a packaged Silicon/Silver artifact: $path" }
+            return VerificationResultCache.fileDigest(path)
+        }
+
         /**
          * Returns the absolute path of the Z3 binary named by the environment, or throws [VerifierUnavailableException].
          */
@@ -97,16 +133,26 @@ class SiliconFrontend(z3Exe: String, commandLineArgs: List<String> = emptyList()
         checkConsistency(viperProgram)
         // SilFrontend.verification invokes the default plugins' beforeVerify and mapVerificationResult hooks,
         // including RefutePlugin. Its isolated assertion branch leaves the continuation available for further checks.
-        val result = siliconApi.verify(viperProgram)
-        if (result is viper.silver.verifier.Failure) {
-            val errors = CollectionConverters.asJava(result.errors())
-            val rejections = errors.filter { it !is viper.silver.verifier.VerificationError }
-            if (rejections.isNotEmpty()) throw InvalidViperProgramException(rejections.map { it.readableMessage() })
-            errors.forEach { onFailure(VerificationError(it as viper.silver.verifier.VerificationError)) }
+        val verify = {
+            val result = backend().verify(viperProgram)
+            when (result) {
+                is viper.silver.verifier.Failure -> {
+                    val errors = CollectionConverters.asJava(result.errors())
+                    val rejections = errors.filter { it !is viper.silver.verifier.VerificationError }
+                    if (rejections.isNotEmpty()) throw InvalidViperProgramException(rejections.map { it.readableMessage() })
+                    errors.forEach { onFailure(VerificationError(it as viper.silver.verifier.VerificationError)) }
+                    false
+                }
+                viper.silver.verifier.`Success$`.`MODULE$` -> true
+                else -> error("Unexpected Silicon verification result: $result")
+            }
         }
+        if (cache == null) verify()
+        else cache.verify(viperProgram.toString(), cacheVersion!!, cacheOptions, verify)
     }
 
     override fun close() {
-        siliconApi.stop()
+        siliconApi?.stop()
+        siliconApi = null
     }
 }
