@@ -13,12 +13,12 @@ fun interface LiftedSpec {
     @GhostObserver @Pure fun <!VIPER_TEXT!>state<!>(): Int = ghostObserver()
 }
 
-fun <!VIPER_TEXT, VIPER_TEXT!>noCaptures<!>(): @Unique LiftedSpec = LiftedSpec { x ->
+fun <!VIPER_TEXT!>noCaptures<!>(): @Unique LiftedSpec = LiftedSpec { x ->
     exposes(LiftedSpec::class) { state() == 0 }
     x + 1
 }
 
-fun <!VIPER_TEXT, VIPER_TEXT!>withCaptures<!>(start: Int): @Unique LiftedSpec {
+fun <!VIPER_TEXT!>withCaptures<!>(start: Int): @Unique LiftedSpec {
     var n = start
     val step = 1
     return LiftedSpec { x ->
@@ -28,27 +28,27 @@ fun <!VIPER_TEXT, VIPER_TEXT!>withCaptures<!>(start: Int): @Unique LiftedSpec {
     }
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT, VIPER_TEXT!>incorrectBody<!>(): @Unique LiftedSpec = LiftedSpec { x ->
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>incorrectBody<!>(): @Unique LiftedSpec = LiftedSpec { x ->
     exposes(LiftedSpec::class) { state() == 0 }
     x - 1
 }<!>
 
 class LiftedCell(var n: Int) {
     @Unique
-    fun <!VIPER_TEXT, VIPER_TEXT!>captureReceiver<!>(): @Unique LiftedSpec = LiftedSpec { x ->
+    fun <!VIPER_TEXT!>captureReceiver<!>(): @Unique LiftedSpec = LiftedSpec { x ->
         exposes(LiftedSpec::class) { state() == 0 }
         n = x
         n
     }
 }
 
-fun <!VIPER_TEXT, VIPER_TEXT!>captureObject<!>(cell: @Unique LiftedCell): @Unique LiftedSpec = LiftedSpec { x ->
+fun <!VIPER_TEXT!>captureObject<!>(cell: @Unique LiftedCell): @Unique LiftedSpec = LiftedSpec { x ->
     exposes(LiftedSpec::class) { state() == cell.n }
     cell.n = x
     cell.n
 }
 
-fun <!VIPER_TEXT, VIPER_TEXT!>captureLoop<!>(start: Int): @Unique LiftedSpec {
+fun <!VIPER_TEXT!>captureLoop<!>(start: Int): @Unique LiftedSpec {
     var n = start
     return LiftedSpec { x ->
         exposes(LiftedSpec::class) { state() == n }
@@ -59,7 +59,7 @@ fun <!VIPER_TEXT, VIPER_TEXT!>captureLoop<!>(start: Int): @Unique LiftedSpec {
     }
 }
 
-fun <!VIPER_TEXT, VIPER_TEXT!>boundObserver<!>(): @Unique LiftedSpec {
+fun <!VIPER_TEXT!>boundObserver<!>(): @Unique LiftedSpec {
     val f: @Unique LiftedSpec = LiftedSpec { x ->
         exposes(LiftedSpec::class) { state() == 7 }
         x
@@ -68,7 +68,7 @@ fun <!VIPER_TEXT, VIPER_TEXT!>boundObserver<!>(): @Unique LiftedSpec {
     return f
 }
 
-fun <!VIPER_TEXT, VIPER_TEXT!>exposedOnlyCapture<!>(k: Int): @Unique LiftedSpec {
+fun <!VIPER_TEXT!>exposedOnlyCapture<!>(k: Int): @Unique LiftedSpec {
     val f: @Unique LiftedSpec = LiftedSpec { x ->
         exposes(LiftedSpec::class) { state() == k + 1 }
         x
@@ -86,7 +86,7 @@ fun interface Counter {
     @GhostObserver @Pure fun <!VIPER_TEXT!>state<!>(): Int = ghostObserver()
 }
 
-fun <!VIPER_TEXT, VIPER_TEXT!>countFrom<!>(start: Int) {
+fun <!VIPER_TEXT!>countFrom<!>(start: Int) {
     var n = start
     val c: @Unique Counter = Counter {
         exposes(Counter::class) { state() == n }
@@ -99,7 +99,7 @@ fun <!VIPER_TEXT, VIPER_TEXT!>countFrom<!>(start: Int) {
     refute(false)
 }
 
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT, VIPER_TEXT!>stuckCounter<!>(start: Int): @Unique Counter {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>stuckCounter<!>(start: Int): @Unique Counter {
     var n = start
     return Counter {
         exposes(Counter::class) { state() == n }
@@ -110,7 +110,7 @@ fun <!VIPER_TEXT, VIPER_TEXT!>countFrom<!>(start: Int) {
 @NeverConvert
 fun consume(f: @Unique LiftedSpec) {}
 
-fun <!VIPER_TEXT, VIPER_TEXT!>implicitSam<!>(start: Int) {
+fun <!VIPER_TEXT!>implicitSam<!>(start: Int) {
     var n = start
     consume { x ->
         exposes(LiftedSpec::class) { state() == n }
@@ -119,7 +119,7 @@ fun <!VIPER_TEXT, VIPER_TEXT!>implicitSam<!>(start: Int) {
     }
 }
 
-fun <!VIPER_TEXT, VIPER_TEXT, VIPER_TEXT!>nestedSam<!>(start: Int): @Unique LiftedSpec {
+fun <!VIPER_TEXT!>nestedSam<!>(start: Int): @Unique LiftedSpec {
     return LiftedSpec { x ->
         exposes(LiftedSpec::class) { state() == start }
         var n = start

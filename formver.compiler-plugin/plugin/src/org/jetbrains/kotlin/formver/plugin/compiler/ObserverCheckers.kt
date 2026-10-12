@@ -119,7 +119,9 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
                 violation(declaration, property, scope.getDirectOverriddenProperties(property))?.let(violations::add)
             }
         }
-        for (violation in violations) reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, violation)
+        if (violations.isNotEmpty()) {
+            reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, violations.distinct().joinToString("\n"))
+        }
     }
 
     // A member a superclass declares or creates is checked with the superclass.

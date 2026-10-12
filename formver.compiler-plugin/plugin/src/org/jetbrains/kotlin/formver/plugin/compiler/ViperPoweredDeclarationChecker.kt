@@ -64,22 +64,26 @@ class ViperPoweredDeclarationChecker(
         if (!config.shouldConvert(declaration)) return
         declaration.lambdaPrograms = emptyList()
         val root = ProgramConverter(session, config, context, reporter)
+        val dumps = mutableListOf<String>()
         reportConversionErrors(declaration) {
             root.register(declaration)
-            convert(declaration, root, 0)
+            convert(declaration, root, 0, dumps)
         }
         root.specifiedLambdas.forEachIndexed { index, lambda ->
             if (!processedLambdas.add(lambda.function.symbol)) return@forEachIndexed
             reportConversionErrors(declaration) {
                 val converter = ProgramConverter(session, config, context, reporter)
                 converter.registerLambda(lambda, root.specifiedLambdas)
-                convert(declaration, converter, index + 1)
+                convert(declaration, converter, index + 1, dumps)
             }
+        }
+        if (dumps.isNotEmpty()) {
+            reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.name.asString(), dumps.joinToString("\n\n"))
         }
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun convert(declaration: FirSimpleFunction, programConversionContext: ProgramConverter, index: Int) {
+    private fun convert(declaration: FirSimpleFunction, programConversionContext: ProgramConverter, index: Int, dumps: MutableList<String>) {
         programConversionContext.validateAll()
         if (shouldDumpExpEmbeddings(declaration)) {
             with(SimpleNameResolver()) {
@@ -94,12 +98,8 @@ class ViperPoweredDeclarationChecker(
         with(programConversionContext.nameResolver) { program.registerAllNames() }
         programConversionContext.nameResolver.resolve()
         getProgramForLogging(program)?.let {
-            reporter.reportOn(
-                declaration.source,
-                PluginErrors.VIPER_TEXT,
-                if (index == 0) declaration.name.asString() else "${declaration.name}.lambda${index - 1}.invoke",
-                with(programConversionContext.nameResolver) { it.toDebugOutput() }
-            )
+            val heading = if (index == 0) "" else "${declaration.name}.lambda${index - 1}.invoke:\n"
+            dumps += heading + with(programConversionContext.nameResolver) { it.toDebugOutput() }
         }
         val viperProgram = with(programConversionContext.nameResolver) { program.toSilver() }
         SiliconFrontend.checkConsistency(viperProgram)

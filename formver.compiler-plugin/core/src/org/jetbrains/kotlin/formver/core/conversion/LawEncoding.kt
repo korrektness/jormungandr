@@ -33,7 +33,8 @@ fun ProgramConverter.registerClassLaws(symbol: FirRegularClassSymbol) {
 internal class LawEncoding(private val program: ProgramConversionContext) {
     private val interfaces = linkedMapOf<ClassTypeEmbedding, List<FirNamedFunctionSymbol>>()
     private val classes = linkedMapOf<ClassTypeEmbedding, Pair<FirRegularClassSymbol, List<FirNamedFunctionSymbol>>>()
-    private var implementation: Pair<ClassTypeEmbedding, FirRegularClassSymbol>? = null
+    private data class Implementation(val type: ClassTypeEmbedding, val symbol: FirRegularClassSymbol, val source: KtSourceElement?)
+    private val implementations = linkedMapOf<ClassTypeEmbedding, Implementation>()
     val methods = mutableListOf<Method>()
 
     fun registerType(type: ClassTypeEmbedding, symbol: FirRegularClassSymbol) {
@@ -51,8 +52,8 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
         interfaces[type] = laws
     }
 
-    fun registerClass(type: ClassTypeEmbedding, symbol: FirRegularClassSymbol) {
-        implementation = type to symbol
+    fun registerClass(type: ClassTypeEmbedding, symbol: FirRegularClassSymbol, source: KtSourceElement? = symbol.source) {
+        implementations[type] = Implementation(type, symbol, source)
     }
 
     @OptIn(SymbolInternals::class)
@@ -96,20 +97,21 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
             prepared += entry.key
             program.typeResolver.setInterfaceLaws(entry.key, entry.value.map { convertLaw(it, entry.key) })
         }
-        val (view, symbol) = implementation ?: return
-        val laws = context(program.checkerContext) { symbol.interfaceLaws() }
-        if (laws.isEmpty()) return
-        val assertions = laws.map { convertLaw(it, view, symbol.source) }
-        val position = symbol.source.asPosition
-        val receiver = Exp.LocalVar(DispatchReceiverName, Type.Ref)
-        methods += object : Method(ScopedName(view.name.asScope(), PredicateName("laws")), position) {
-            override val formalArgs = listOf(Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref))
-            override val formalReturns = emptyList<Declaration.LocalVarDecl>()
-            private val owned = Exp.PredicateAccess(view.uniquePredicateName, listOf(receiver), PermExp.FullPerm())
-            override val pres = listOf(owned)
-            // Expose the representation's pure facts while keeping ownership folded for observer calls.
-            override val body = Stmt.Seqn(listOf(Stmt.Unfold(owned, position), Stmt.Fold(owned, position)) +
-                assertions.map { Stmt.Assert(it, position) })
+        for ((view, symbol, source) in implementations.values.toList()) {
+            val laws = context(program.checkerContext) { symbol.interfaceLaws() }
+            if (laws.isEmpty()) continue
+            val assertions = laws.map { convertLaw(it, view, source) }
+            val position = source.asPosition
+            val receiver = Exp.LocalVar(DispatchReceiverName, Type.Ref)
+            methods += object : Method(ScopedName(view.name.asScope(), PredicateName("laws")), position) {
+                override val formalArgs = listOf(Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref))
+                override val formalReturns = emptyList<Declaration.LocalVarDecl>()
+                private val owned = Exp.PredicateAccess(view.uniquePredicateName, listOf(receiver), PermExp.FullPerm())
+                override val pres = listOf(owned)
+                // Expose the representation's pure facts while keeping ownership folded for observer calls.
+                override val body = Stmt.Seqn(listOf(Stmt.Unfold(owned, position), Stmt.Fold(owned, position)) +
+                    assertions.map { Stmt.Assert(it, position) })
+            }
         }
     }
 }

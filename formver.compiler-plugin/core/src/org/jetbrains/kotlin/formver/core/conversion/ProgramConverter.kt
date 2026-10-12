@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
+import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirEnumEntrySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
@@ -198,6 +199,8 @@ class ProgramConverter(
     fun registerLambda(lambda: SpecifiedLambda, lambdas: List<SpecifiedLambda>) {
         registeredSymbol = lambda.function.symbol
         val result = lambdaRegistry.register(lambda, lambdas) { embedCompleteSignature(lambda.invoke).signature }
+        lawEncoding.registerClass(lambdaRegistry[lambda.expression]!!.type,
+            lambda.expression.resolvedType.toRegularClassSymbol(session)!!, lambda.function.source)
         registered += RegisteredFunction(lambda.function, result.signature, result.target, uniquenessOutcomeOf(lambda.function).hasErrors)
         result.refinement?.let { refinements += it }
     }

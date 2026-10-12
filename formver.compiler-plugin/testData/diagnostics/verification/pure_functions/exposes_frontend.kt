@@ -278,7 +278,7 @@ fun interface SubInterfaceGhostOverride : CounterSpec {
     <!INVALID_OBSERVER!>@GhostObserver @Pure override fun value(): Int = 1<!>
 }
 
-<!INVALID_LAW, INVALID_OBSERVER, INVALID_OBSERVER!>class DelegatedGhostOverride(counter: CounterSpec) : CounterSpec by counter<!>
+<!INVALID_LAW, INVALID_OBSERVER!>class DelegatedGhostOverride(counter: CounterSpec) : CounterSpec by counter<!>
 
 open class GhostNameCollision {
     fun value(): Int = 0

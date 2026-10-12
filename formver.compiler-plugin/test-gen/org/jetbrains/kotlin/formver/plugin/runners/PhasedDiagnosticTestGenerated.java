@@ -1428,6 +1428,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("lifted_exposes.kt")
+      public void testLifted_exposes() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/lifted_exposes.kt");
+      }
+
+      @Test
       @TestMetadata("lifted_lambda_binding_parameter.kt")
       public void testLifted_lambda_binding_parameter() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/lifted_lambda_binding_parameter.kt");
