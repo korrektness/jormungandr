@@ -21,6 +21,10 @@ class ObserverBinding(val view: ClassTypeEmbedding, val signature: NonInlineFunc
     fun trigger(args: List<Exp>, position: Position = Position.NoPosition): Exp.FuncApp = Exp.FuncApp(name, args, Type.Ref, position)
 
     fun application(args: List<Exp>, position: Position = Position.NoPosition): Exp {
+        if (resolver.hasInterfaceLaws(view)) return Exp.Unfolding(
+            Exp.PredicateAccess(view.uniquePredicateName, listOf(args.first()), PermExp.WildcardPerm()),
+            trigger(args, position), position,
+        )
         if (inheritedInterface) return trigger(args, position)
         val path = generateSequence(view, resolver::superClass).takeWhile { it != declaringType }.toList()
         return path.foldRight<ClassTypeEmbedding, Exp>(trigger(args, position)) { type, body ->
@@ -47,7 +51,8 @@ class ObserverBinding(val view: ClassTypeEmbedding, val signature: NonInlineFunc
         val receiver = signature.dispatchReceiver!!.toLocalVarUse()
         val pres = signature.preconditions.pureToViper(toBuiltin = true, resolver).map {
             if (it is Exp.PredicateAccess && it.formalArgs == listOf(receiver))
-                Exp.PredicateAccess(view.uniquePredicateName, listOf(receiver), it.perm)
+                Exp.PredicateAccess(if (resolver.hasInterfaceLaws(view)) view.footprintPredicateName else view.uniquePredicateName,
+                    listOf(receiver), it.perm)
             else it
         }
         return UserFunction(name, signature.formalArgs.map { it.toLocalVarDecl() }, Type.Ref, pres,

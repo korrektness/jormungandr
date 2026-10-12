@@ -54,6 +54,11 @@ import org.jetbrains.kotlin.formver.viper.ast.Program
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 
+/** The functions that encode Kotlin's built-in operators, which take values and read no heap. */
+private val operatorFunctions: Set<SymbolicName> by lazy {
+    (SpecialFunctions.all + SpecialFunctions.multiset).map { it.name }.toSet()
+}
+
 /**
  * Tracks the top-level information about the program.
  * Conversions for global entities like types should generally be
@@ -179,11 +184,9 @@ class ProgramConverter(
         functions = SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
                 linearizedBodyResolver.functions + typeResolver.inheritedObserverFunctions() +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray }),
-        methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods(),
-        predicates = typeResolver.classTypeEmbeddings().map {
-            with(typeResolver) {
-                it.uniquePredicate()
-            }
+        methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods,
+        predicates = typeResolver.classTypeEmbeddings().flatMap {
+            with(typeResolver) { listOfNotNull(it.footprintPredicate(), it.uniquePredicate()) }
         },
         adts = emptyList(),
     )
@@ -236,6 +239,7 @@ class ProgramConverter(
      */
     fun validateAll() {
         observerBindingRegistry.registerBindings(this) { fullSignatures.getValue(it) as NonInlineFunctionSignature }
+        lawEncoding.prepare()
         convertedBodyResolver.forEachImpure { name, body ->
             val source = fullSignatures[name]?.declarationSource
             body.bodyExp.checkValidity(source, this)
@@ -265,11 +269,6 @@ class ProgramConverter(
         }
     }
 
-
-    /** The functions that encode Kotlin's built-in operators, which take values and read no heap. */
-    private val operatorFunctions: Set<SymbolicName> by lazy {
-        (SpecialFunctions.all + SpecialFunctions.multiset).map { it.name }.toSet()
-    }
 
     private fun linearizePure(name: SymbolicName, signature: CompleteFunctionSignature) {
         val converted = convertedBodyResolver.lookupPure(name)
@@ -760,9 +759,10 @@ class ProgramConverter(
     override fun embedType(type: ConeKotlinType): TypeEmbedding = buildType { embedTypeWithBuilder(type) }
 
     private val observerBindingRegistry = ObserverBindingRegistry()
+    internal val lawEncoding = LawEncoding(this)
 
     /** Returns an embedding of the class type, with details set. */
-    private fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
+    internal fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
         observerBindingRegistry.registerClass(symbol)
         if (symbol.classId == IntArrayEmbedding.classId) {
             registerBuiltinHierarchy(symbol, IntArrayEmbedding.classType)
@@ -782,6 +782,7 @@ class ProgramConverter(
             }
 
             typeResolver.register(classEmbedding, symbol.classKind.isInterface)
+            lawEncoding.registerType(classEmbedding, symbol)
             if (symbol.isManual(session)) {
                 typeResolver.markManual(className)
             }

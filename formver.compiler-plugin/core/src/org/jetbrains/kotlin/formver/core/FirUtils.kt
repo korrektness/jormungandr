@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.contracts.FirEffectDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationDataKey
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationDataRegistry
-import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.declarations.utils.isInline
 import org.jetbrains.kotlin.fir.expressions.FirExpression
@@ -121,5 +121,5 @@ val FirFunctionSymbol<*>.shouldBeInlined
 private object ViperProgram : FirDeclarationDataKey()
 private object ShouldVerify : FirDeclarationDataKey()
 
-var FirSimpleFunction.viperProgram: viper.silver.ast.Program? by FirDeclarationDataRegistry.data(ViperProgram)
-var FirSimpleFunction.shouldVerify: Boolean? by FirDeclarationDataRegistry.data(ShouldVerify)
+var FirDeclaration.viperProgram: viper.silver.ast.Program? by FirDeclarationDataRegistry.data(ViperProgram)
+var FirDeclaration.shouldVerify: Boolean? by FirDeclarationDataRegistry.data(ShouldVerify)

@@ -151,6 +151,24 @@ value from the pre-transfer snapshot. Function parameters are quantified over th
 destination observer application as the trigger. Returning a borrowed interface view preserves its current
 observations in the restored class view. A bare interface view exposes no class-specific binding.
 
+### Interface laws
+
+Declare a Boolean `@Law @Pure` interface member with a body to state a law. Use `@Unique` when it calls observers
+that require an owned receiver:
+
+```kotlin
+interface Sized {
+    @Pure @Unique fun size(): Int
+    @Law @Pure @Unique fun nonnegative(): Boolean = size() >= 0
+}
+```
+
+The interface's ownership predicate contains the conjunction of its laws, including inherited laws. An owned
+interface client can use these facts without a separate precondition. Inheritance diamonds include each law once.
+Each implementing class has one verification harness that proves the conjunction from its own ownership predicate,
+with its observer bindings substituted. It checks arbitrary legal representation states; a failure is reported on
+the class. Law declarations are specification bodies and have no standalone verification obligation.
+
 ## Loop Invariants
 
 ```kotlin

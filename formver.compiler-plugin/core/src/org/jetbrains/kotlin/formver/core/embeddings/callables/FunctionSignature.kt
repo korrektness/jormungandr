@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.MethodCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FunctionTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.*
@@ -158,7 +159,12 @@ fun CompleteFunctionSignature.toViperFunction(
         formalArgs.map { it.toLocalVarDecl() },
         // TODO: Be explicit about the return types of functions instead of boxing them into a Ref
         Type.Ref,
-        preconditions.pureToViper(toBuiltin = true, ctx),
+        preconditions.pureToViper(toBuiltin = true, ctx).map { pre ->
+            val view = (dispatchReceiver?.type?.pretype as? ClassTypeEmbedding)?.takeIf(ctx::hasInterfaceLaws)
+            if (pre is Exp.PredicateAccess && pre.predicateName == view?.uniquePredicateName)
+                pre.copy(predicateName = view!!.footprintPredicateName)
+            else pre
+        },
         postconditions.pureToViper(toBuiltin = true, ctx) + extraPostconditions,
         body,
         declarationSource.asPosition

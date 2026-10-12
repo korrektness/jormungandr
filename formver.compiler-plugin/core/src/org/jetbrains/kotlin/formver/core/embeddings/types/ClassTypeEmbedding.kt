@@ -28,12 +28,25 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
 
     val uniquePredicateName = ScopedName(name.asScope(), PredicateName("unique"))
 
+    val footprintPredicateName = ScopedName(name.asScope(), PredicateName("footprint"))
+
+    context(ctx: TypeResolver)
+    fun footprintPredicate(): Predicate? = if (ctx.hasInterfaceLaws(this))
+        Predicate(footprintPredicateName, listOf(Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref)), body = null)
+    else null
+
     context(ctx: TypeResolver)
     fun uniquePredicate(): Predicate = when (this) {
         IntArrayEmbedding.classType -> IntArrayEmbedding.uniquePredicate()
         StringBuilderEmbedding.classType -> StringBuilderEmbedding.uniquePredicate()
         else -> if (ctx.isInterface(this)) {
-            Predicate(uniquePredicateName, listOf(Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref)), body = null)
+            val receiver = Exp.LocalVar(DispatchReceiverName, Type.Ref)
+            val body = if (ctx.hasInterfaceLaws(this)) {
+                val footprint = Exp.PredicateAccess(footprintPredicateName, listOf(receiver), PermExp.FullPerm())
+                val subtype = RuntimeTypeDomain.isSubtype(RuntimeTypeDomain.typeOf(receiver), runtimeType)
+                ctx.interfaceLaws(this).fold<Exp, Exp>(Exp.And(footprint, subtype)) { acc, law -> Exp.And(acc, law) }
+            } else null
+            Predicate(uniquePredicateName, listOf(Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref)), body)
         } else userClassUniquePredicate()
     }
 

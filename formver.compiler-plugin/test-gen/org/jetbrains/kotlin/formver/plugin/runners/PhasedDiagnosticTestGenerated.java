@@ -736,6 +736,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("interface_laws.kt")
+      public void testInterface_laws() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_laws.kt");
+      }
+
+      @Test
       @TestMetadata("interface_observer_bindings.kt")
       public void testInterface_observer_bindings() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_observer_bindings.kt");

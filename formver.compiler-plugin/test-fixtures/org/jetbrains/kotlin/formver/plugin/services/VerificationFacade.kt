@@ -5,6 +5,8 @@ import org.jetbrains.kotlin.diagnostics.InternalDiagnosticFactoryMethod
 import org.jetbrains.kotlin.diagnostics.KtDiagnostic
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.visitors.FirDefaultVisitorVoid
 import org.jetbrains.kotlin.formver.common.services.runChecks
@@ -43,7 +45,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
     /**
      * Returns true iff the given [decl] should be verified.
      */
-    fun shouldVerify(decl: FirSimpleFunction, testServices: TestServices): Boolean =
+    fun shouldVerify(decl: FirDeclaration, testServices: TestServices): Boolean =
         decl.shouldVerify == true && !shouldSkipByTestMode(testServices)
 
     /**
@@ -56,7 +58,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         inputArtifact: FirOutputArtifact
     ): FirOutputArtifact {
         inputArtifact.partsForDependsOnModules.forEach { part ->
-            val toVerify: MutableList<Pair<TestFile, FirSimpleFunction>> = mutableListOf()
+            val toVerify: MutableList<Pair<TestFile, FirDeclaration>> = mutableListOf()
             part.firFiles.map { (testFile, firFile) ->
                 firFile.accept(object : FirDefaultVisitorVoid() {
                     override fun visitElement(element: FirElement) {
@@ -64,6 +66,11 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                             is FirSimpleFunction -> visitSimpleFunction(element)
                             else -> element.acceptChildren(this)
                         }
+                    }
+
+                    override fun visitRegularClass(regularClass: FirRegularClass) {
+                        if (shouldVerify(regularClass, testServices)) toVerify.add(Pair(testFile, regularClass))
+                        regularClass.acceptChildren(this)
                     }
 
                     override fun visitSimpleFunction(simpleFunction: FirSimpleFunction) {
@@ -95,7 +102,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
     @OptIn(InternalDiagnosticFactoryMethod::class)
     private fun verifyFunction(
         verifier: SiliconFrontend,
-        decl: FirSimpleFunction,
+        decl: FirDeclaration,
         module: TestModule
     ): List<KtDiagnostic> {
         val results = mutableListOf<KtDiagnostic>()

@@ -30,7 +30,7 @@ annotation class Borrowed
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 annotation class Pure
 
-/** Marks an interface law checked by the front end. */
+/** Marks an interface law; see "Interface laws" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 annotation class Law
 

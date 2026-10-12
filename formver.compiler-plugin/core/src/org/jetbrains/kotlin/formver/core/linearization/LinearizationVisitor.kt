@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
+import org.jetbrains.kotlin.formver.core.embeddings.types.asTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
@@ -200,6 +201,12 @@ data class LinearizationVisitor(
     override fun visitFunctionCall(e: FunctionCall): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp {
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
+            val lawView = (ctx as? PureFunBodyLinearizer)?.lawView
+            if (lawView != null) {
+                val binding = ctx.typeResolver.observerBinding(lawView, e.function.name)
+                if (binding != null) return if (ctx.typeResolver.isInterface(lawView)) binding.trigger(argsViper, ctx.source.asPosition)
+                else binding.application(argsViper, ctx.source.asPosition)
+            }
             if (ctx is PureExpLinearizer) {
                 val view = e.args.firstOrNull()?.type?.pretype as? ClassTypeEmbedding
                 val binding = view?.let { ctx.typeResolver.observerBinding(it, e.function.name) }
@@ -211,9 +218,16 @@ data class LinearizationVisitor(
                     return binding.application(argsViper, ctx.source.asPosition)
                 }
             }
-            val exposed = ctx.heldPaths(e.args, e.function.formalArgs).filter { (_, formal) -> formal.isUnique }
+            val view = e.args.firstOrNull()?.type?.pretype as? ClassTypeEmbedding
+            val interfaceBinding = view?.takeIf(ctx.typeResolver::hasInterfaceLaws)
+                ?.let { ctx.typeResolver.observerBinding(it, e.function.name) }
+            val formals = if (interfaceBinding == null) e.function.formalArgs else e.function.formalArgs.mapIndexed { index, formal ->
+                if (index == 0) PlaceholderVariableEmbedding(formal.name, view!!.asTypeEmbedding(), isUnique = true) else formal
+            }
+            val exposed = ctx.heldPaths(e.args, formals).filter { (_, formal) -> formal.isUnique }
             for ((path, formal) in exposed) ctx.exposeFor(path, formal)
-            val app = e.function.toFuncApp(argsViper, ctx.source.asPosition)
+            val app = interfaceBinding?.application(argsViper, ctx.source.asPosition)
+                ?: e.function.toFuncApp(argsViper, ctx.source.asPosition)
             if (app is Exp.FuncApp) e.function.formalArgs.forEachIndexed { index, formal ->
                 if (formal.isUnique) ctx.addPredicateParameter(PredicateParameter(app.functionName, index))
             }

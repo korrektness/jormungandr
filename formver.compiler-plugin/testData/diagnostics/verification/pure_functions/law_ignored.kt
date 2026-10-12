@@ -13,6 +13,6 @@ interface LawOnly {
     }
 }
 
-class LawImplementation : LawOnly
+<!VIPER_TEXT!>class LawImplementation<!> : LawOnly
 
 fun <!VIPER_TEXT!>unrelated<!>(): Boolean = true

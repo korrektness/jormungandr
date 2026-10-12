@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariable
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Declaration
@@ -36,13 +37,15 @@ data class PureFunBodyLinearizer(
     val state: SharedLinearizationState = SharedLinearizationState(FreshEntityProducer(::AnonymousVariableEmbedding)),
     private val ssaConverter: SsaConverter = SsaConverter(source),
     override val typeResolver: TypeResolver,
+    /** Observer bindings used to check a law in this ownership presentation. */
+    val lawView: ClassTypeEmbedding? = null,
 ) : LinearizationContext {
 
     override val logicOperatorPolicy: LogicOperatorPolicy
         get() = LogicOperatorPolicy.CONVERT_TO_EXPRESSION
 
     override fun <R> withPosition(newSource: KtSourceElement, action: LinearizationContext.() -> R): R =
-        copy(source = newSource).action()
+        copy(source = if (lawView == null) newSource else source).action()
 
     override fun freshAnonVar(type: TypeEmbedding): AnonymousVariableEmbedding = state.freshAnonVar(type)
 

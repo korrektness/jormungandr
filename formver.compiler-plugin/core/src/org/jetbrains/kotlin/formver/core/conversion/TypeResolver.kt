@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.formver.core.names.NameScope
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Method
+import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.name.Name
 
 /**
@@ -84,6 +85,20 @@ class TypeResolver {
         return reaches(subtype.name)
     }
 
+    private val interfaceLawBodies = linkedMapOf<SymbolicName, List<Exp>>()
+
+    fun registerInterfaceLaws(type: ClassTypeEmbedding) {
+        interfaceLawBodies.putIfAbsent(type.name, emptyList())
+    }
+
+    fun hasInterfaceLaws(type: ClassTypeEmbedding) = type.name in interfaceLawBodies
+
+    fun setInterfaceLaws(type: ClassTypeEmbedding, laws: List<Exp>) {
+        interfaceLawBodies[type.name] = laws
+    }
+
+    fun interfaceLaws(type: ClassTypeEmbedding) = interfaceLawBodies[type.name].orEmpty()
+
     private val observerBindings = linkedMapOf<SymbolicName, MutableMap<SymbolicName, ObserverBinding>>()
 
     fun bindObserver(type: ClassTypeEmbedding, observer: NonInlineFunctionSignature, binding: NonInlineFunctionSignature) {
@@ -91,7 +106,9 @@ class TypeResolver {
     }
 
     fun observerBinding(view: ClassTypeEmbedding, observer: SymbolicName): ObserverBinding? =
-        observerBindings[view.name]?.get(observer)
+        observerBindings[view.name]?.let { bindings ->
+            bindings[observer] ?: if (hasInterfaceLaws(view)) bindings.values.firstOrNull { it.signature.name == observer } else null
+        }
 
     fun observerBindings(from: ClassTypeEmbedding, to: ClassTypeEmbedding) =
         observerBindings[to.name].orEmpty().map { (observer, target) ->

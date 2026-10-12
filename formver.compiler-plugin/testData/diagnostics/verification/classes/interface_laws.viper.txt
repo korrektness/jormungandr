@@ -1,0 +1,861 @@
+/interface_laws.kt: info: Generated Viper text for size:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SizedLaw())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate SizedLaw_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), SizedLaw()) &&
+  boolFromRef(geInts(size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/interface_laws.kt: info: Generated Viper text for GoodSizedLaw:
+function GoodSizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), GoodSizedLaw())
+  requires acc(GoodSizedLaw_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(3)
+}
+
+function SizedLawDiamond_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawLeft_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawRight_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(c_SizedLaw_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate GoodSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), GoodSizedLaw())
+}
+
+predicate SizedLawDiamond_footprint(this: Ref)
+
+predicate SizedLawDiamond_unique(this: Ref) {
+  acc(SizedLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawDiamond()) &&
+  boolFromRef((let v_l1_count_0 ==
+    (SizedLawDiamond_c_SizedLaw_f_size(this)) in
+    leInts(v_l1_count_0, intToRef(10)))) &&
+  boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawLeft_footprint(this: Ref)
+
+predicate SizedLawLeft_unique(this: Ref) {
+  acc(SizedLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawLeft()) &&
+  boolFromRef(geInts(SizedLawLeft_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawRight_footprint(this: Ref)
+
+predicate SizedLawRight_unique(this: Ref) {
+  acc(SizedLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawRight()) &&
+  boolFromRef(geInts(SizedLawRight_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate c_SizedLaw_footprint(this: Ref)
+
+predicate c_SizedLaw_unique(this: Ref) {
+  acc(c_SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLaw()) &&
+  boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+method laws(this: Ref)
+  requires acc(GoodSizedLaw_unique(this), write)
+{
+  unfold acc(GoodSizedLaw_unique(this), write)
+  fold acc(GoodSizedLaw_unique(this), write)
+  assert boolFromRef((let v_l6_count_0 ==
+      (GoodSizedLaw_f_size(this)) in
+      leInts(v_l6_count_0, intToRef(10))))
+  assert boolFromRef(geInts(GoodSizedLaw_f_size(this), intToRef(0)))
+}
+
+/interface_laws.kt: info: Generated Viper text for size:
+function GoodSizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), GoodSizedLaw())
+  requires acc(GoodSizedLaw_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(3)
+}
+
+function SizedLawDiamond_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawLeft_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawRight_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(c_SizedLaw_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate GoodSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), GoodSizedLaw())
+}
+
+predicate SizedLawDiamond_footprint(this: Ref)
+
+predicate SizedLawDiamond_unique(this: Ref) {
+  acc(SizedLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawDiamond()) &&
+  boolFromRef((let count_0 ==
+    (SizedLawDiamond_c_SizedLaw_f_size(this)) in
+    leInts(count_0, intToRef(10)))) &&
+  boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawLeft_footprint(this: Ref)
+
+predicate SizedLawLeft_unique(this: Ref) {
+  acc(SizedLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawLeft()) &&
+  boolFromRef(geInts(SizedLawLeft_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawRight_footprint(this: Ref)
+
+predicate SizedLawRight_unique(this: Ref) {
+  acc(SizedLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawRight()) &&
+  boolFromRef(geInts(SizedLawRight_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate c_SizedLaw_footprint(this: Ref)
+
+predicate c_SizedLaw_unique(this: Ref) {
+  acc(c_SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLaw()) &&
+  boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+/interface_laws.kt: info: Generated Viper text for BrokenSizedLaw:
+function BrokenSizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenSizedLaw())
+  requires acc(BrokenSizedLaw_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(-1)
+}
+
+function SizedLawDiamond_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawLeft_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawRight_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(c_SizedLaw_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenSizedLaw())
+}
+
+predicate SizedLawDiamond_footprint(this: Ref)
+
+predicate SizedLawDiamond_unique(this: Ref) {
+  acc(SizedLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawDiamond()) &&
+  boolFromRef((let v_l1_count_0 ==
+    (SizedLawDiamond_c_SizedLaw_f_size(this)) in
+    leInts(v_l1_count_0, intToRef(10)))) &&
+  boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawLeft_footprint(this: Ref)
+
+predicate SizedLawLeft_unique(this: Ref) {
+  acc(SizedLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawLeft()) &&
+  boolFromRef(geInts(SizedLawLeft_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawRight_footprint(this: Ref)
+
+predicate SizedLawRight_unique(this: Ref) {
+  acc(SizedLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawRight()) &&
+  boolFromRef(geInts(SizedLawRight_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate c_SizedLaw_footprint(this: Ref)
+
+predicate c_SizedLaw_unique(this: Ref) {
+  acc(c_SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLaw()) &&
+  boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+method laws(this: Ref)
+  requires acc(BrokenSizedLaw_unique(this), write)
+{
+  unfold acc(BrokenSizedLaw_unique(this), write)
+  fold acc(BrokenSizedLaw_unique(this), write)
+  assert boolFromRef((let v_l6_count_0 ==
+      (BrokenSizedLaw_f_size(this)) in
+      leInts(v_l6_count_0, intToRef(10))))
+  assert boolFromRef(geInts(BrokenSizedLaw_f_size(this), intToRef(0)))
+}
+
+/interface_laws.kt: info: Generated Viper text for size:
+function BrokenSizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenSizedLaw())
+  requires acc(BrokenSizedLaw_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(-1)
+}
+
+function SizedLawDiamond_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawLeft_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawRight_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(c_SizedLaw_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenSizedLaw())
+}
+
+predicate SizedLawDiamond_footprint(this: Ref)
+
+predicate SizedLawDiamond_unique(this: Ref) {
+  acc(SizedLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawDiamond()) &&
+  boolFromRef((let count_0 ==
+    (SizedLawDiamond_c_SizedLaw_f_size(this)) in
+    leInts(count_0, intToRef(10)))) &&
+  boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawLeft_footprint(this: Ref)
+
+predicate SizedLawLeft_unique(this: Ref) {
+  acc(SizedLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawLeft()) &&
+  boolFromRef(geInts(SizedLawLeft_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawRight_footprint(this: Ref)
+
+predicate SizedLawRight_unique(this: Ref) {
+  acc(SizedLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawRight()) &&
+  boolFromRef(geInts(SizedLawRight_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate c_SizedLaw_footprint(this: Ref)
+
+predicate c_SizedLaw_unique(this: Ref) {
+  acc(c_SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLaw()) &&
+  boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+/interface_laws.kt: info: Generated Viper text for InheritedSizedLaw:
+function GoodSizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), GoodSizedLaw())
+  requires acc(GoodSizedLaw_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(3)
+}
+
+function SizedLawDiamond_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawLeft_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawRight_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(c_SizedLaw_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate GoodSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), GoodSizedLaw())
+}
+
+predicate InheritedSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), InheritedSizedLaw()) &&
+  acc(GoodSizedLaw_unique(this), write)
+}
+
+predicate SizedLawDiamond_footprint(this: Ref)
+
+predicate SizedLawDiamond_unique(this: Ref) {
+  acc(SizedLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawDiamond()) &&
+  boolFromRef((let v_l1_count_0 ==
+    (SizedLawDiamond_c_SizedLaw_f_size(this)) in
+    leInts(v_l1_count_0, intToRef(10)))) &&
+  boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawLeft_footprint(this: Ref)
+
+predicate SizedLawLeft_unique(this: Ref) {
+  acc(SizedLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawLeft()) &&
+  boolFromRef(geInts(SizedLawLeft_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawRight_footprint(this: Ref)
+
+predicate SizedLawRight_unique(this: Ref) {
+  acc(SizedLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawRight()) &&
+  boolFromRef(geInts(SizedLawRight_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate c_SizedLaw_footprint(this: Ref)
+
+predicate c_SizedLaw_unique(this: Ref) {
+  acc(c_SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLaw()) &&
+  boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+method laws(this: Ref)
+  requires acc(InheritedSizedLaw_unique(this), write)
+{
+  unfold acc(InheritedSizedLaw_unique(this), write)
+  fold acc(InheritedSizedLaw_unique(this), write)
+  assert boolFromRef((unfolding acc(InheritedSizedLaw_unique(this), write) in
+      (let v_l6_count_0 ==
+        (GoodSizedLaw_f_size(this)) in
+        leInts(v_l6_count_0, intToRef(10)))))
+  assert boolFromRef((unfolding acc(InheritedSizedLaw_unique(this), write) in
+      geInts(GoodSizedLaw_f_size(this), intToRef(0))))
+}
+
+/interface_laws.kt: info: Generated Viper text for FieldSizedLaw:
+field count: Ref
+
+function FieldSizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), FieldSizedLaw())
+  requires acc(FieldSizedLaw_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(FieldSizedLaw_unique(this), write) in this.count)
+}
+
+function SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SizedLaw())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate FieldSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), FieldSizedLaw()) && acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType())
+}
+
+predicate SizedLaw_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), SizedLaw()) &&
+  boolFromRef(geInts(SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method laws(this: Ref)
+  requires acc(FieldSizedLaw_unique(this), write)
+{
+  unfold acc(FieldSizedLaw_unique(this), write)
+  fold acc(FieldSizedLaw_unique(this), write)
+  assert boolFromRef(geInts(FieldSizedLaw_f_size(this), intToRef(0)))
+}
+
+/interface_laws.kt: info: Generated Viper text for size:
+field count: Ref
+
+function FieldSizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), FieldSizedLaw())
+  requires acc(FieldSizedLaw_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(FieldSizedLaw_unique(this), write) in this.count)
+}
+
+function SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SizedLaw())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate FieldSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), FieldSizedLaw()) && acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType())
+}
+
+predicate SizedLaw_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), SizedLaw()) &&
+  boolFromRef(geInts(SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/interface_laws.kt: info: Generated Viper text for borrowedLawTransfer:
+function GoodSizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), GoodSizedLaw())
+  requires acc(GoodSizedLaw_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(3)
+}
+
+function SizedLawLeft_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawRight_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SizedLawDiamond_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(c_SizedLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(c_SizedLaw_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate GoodSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), GoodSizedLaw())
+}
+
+predicate InheritedSizedLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), InheritedSizedLaw()) &&
+  acc(GoodSizedLaw_unique(this), write)
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate SizedLawLeft_footprint(this: Ref)
+
+predicate SizedLawLeft_unique(this: Ref) {
+  acc(SizedLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawLeft()) &&
+  boolFromRef(geInts(SizedLawLeft_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this),
+  intToRef(0)))
+}
+
+predicate SizedLawRight_footprint(this: Ref)
+
+predicate SizedLawRight_unique(this: Ref) {
+  acc(SizedLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawRight()) &&
+  boolFromRef(geInts(SizedLawRight_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this),
+  intToRef(0)))
+}
+
+predicate c_SizedLawDiamond_footprint(this: Ref)
+
+predicate c_SizedLawDiamond_unique(this: Ref) {
+  acc(c_SizedLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLawDiamond()) &&
+  boolFromRef((let count_0 ==
+    (c_SizedLawDiamond_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this)) in
+    leInts(count_0, intToRef(10)))) &&
+  boolFromRef(geInts(c_SizedLawDiamond_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this),
+  intToRef(0)))
+}
+
+predicate c_SizedLaw_footprint(this: Ref)
+
+predicate c_SizedLaw_unique(this: Ref) {
+  acc(c_SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLaw()) &&
+  boolFromRef(geInts(c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this), intToRef(0)))
+}
+
+method InheritedSizedLaw_c_SizedLawDiamond_upcast(this: Ref)
+  requires acc(InheritedSizedLaw_unique(this), write)
+  ensures acc(c_SizedLawDiamond_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), GoodSizedLaw())) && true ==>
+    (unfolding acc(c_SizedLawDiamond_unique(this), wildcard) in
+      c_SizedLawDiamond_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this)) ==
+    old((unfolding acc(InheritedSizedLaw_unique(this), write) in
+      GoodSizedLaw_f_size(this)))
+
+
+method InheritedSizedLaw_c_SizedLaw_restore(this: Ref)
+  requires acc(c_SizedLaw_unique(this), write)
+  requires isSubtype(typeOf(this), InheritedSizedLaw())
+  ensures acc(InheritedSizedLaw_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_SizedLaw())) && true ==>
+    (unfolding acc(InheritedSizedLaw_unique(this), write) in
+      GoodSizedLaw_f_size(this)) ==
+    old((unfolding acc(c_SizedLaw_unique(this), wildcard) in
+      c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this)))
+
+
+method InheritedSizedLaw_c_SizedLaw_upcast(this: Ref)
+  requires acc(InheritedSizedLaw_unique(this), write)
+  ensures acc(c_SizedLaw_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), GoodSizedLaw())) && true ==>
+    (unfolding acc(c_SizedLaw_unique(this), wildcard) in
+      c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this)) ==
+    old((unfolding acc(InheritedSizedLaw_unique(this), write) in
+      GoodSizedLaw_f_size(this)))
+
+
+method borrowedLawTransfer() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var value: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_view: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  value := con()
+  fold acc(GoodSizedLaw_unique(value), write)
+  fold acc(InheritedSizedLaw_unique(value), write)
+  InheritedSizedLaw_c_SizedLaw_upcast(value)
+  anon_0 := lawClient(value)
+  InheritedSizedLaw_c_SizedLaw_restore(value)
+  unfold acc(InheritedSizedLaw_unique(value), write)
+  anon_1 := GoodSizedLaw_f_size(value)
+  assert intFromRef(anon_1) == 3
+  fold acc(InheritedSizedLaw_unique(value), write)
+  l0_view := value
+  InheritedSizedLaw_c_SizedLawDiamond_upcast(l0_view)
+  anon_2 := inheritedLawClient(l0_view)
+  anon_3 := (unfolding acc(c_SizedLawDiamond_unique(l0_view), wildcard) in
+      c_SizedLawDiamond_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(l0_view))
+  assert intFromRef(anon_3) >= 0
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), InheritedSizedLaw())
+  ensures isSubtype(typeOf(ret_1), InheritedSizedLaw()) &&
+    isSubtype(typeOf(ret_1), GoodSizedLaw())
+
+
+method inheritedLawClient(par_view: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_view), c_SizedLawDiamond())
+  requires acc(c_SizedLawDiamond_unique(par_view), write)
+  ensures acc(c_SizedLawDiamond_unique(par_view), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method lawClient(par_view: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_view), c_SizedLaw())
+  requires acc(c_SizedLaw_unique(par_view), write)
+  ensures acc(c_SizedLaw_unique(par_view), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+/interface_laws.kt: info: Generated Viper text for lawPostcondition:
+function SizedLawDiamond_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawLeft_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawRight_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(c_SizedLaw_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate SizedLawDiamond_footprint(this: Ref)
+
+predicate SizedLawDiamond_unique(this: Ref) {
+  acc(SizedLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawDiamond()) &&
+  boolFromRef((let count_0 ==
+    (SizedLawDiamond_c_SizedLaw_f_size(this)) in
+    leInts(count_0, intToRef(10)))) &&
+  boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawLeft_footprint(this: Ref)
+
+predicate SizedLawLeft_unique(this: Ref) {
+  acc(SizedLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawLeft()) &&
+  boolFromRef(geInts(SizedLawLeft_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawRight_footprint(this: Ref)
+
+predicate SizedLawRight_unique(this: Ref) {
+  acc(SizedLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawRight()) &&
+  boolFromRef(geInts(SizedLawRight_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate c_SizedLaw_footprint(this: Ref)
+
+predicate c_SizedLaw_unique(this: Ref) {
+  acc(c_SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLaw()) &&
+  boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+method lawPostcondition(view: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(view), SizedLawDiamond())
+  requires acc(SizedLawDiamond_unique(view), write)
+  ensures acc(SizedLawDiamond_unique(view), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= 0 && intFromRef(v_ret_0) <= 10
+{
+  var anon: Ref
+  anon := (unfolding acc(SizedLawDiamond_unique(view), wildcard) in
+      SizedLawDiamond_c_SizedLaw_f_size(view))
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/interface_laws.kt: info: Generated Viper text for lawClient:
+function f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SizedLaw())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate SizedLaw_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), SizedLaw()) &&
+  boolFromRef(geInts(f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method lawClient(view: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(view), SizedLaw())
+  requires acc(SizedLaw_unique(view), write)
+  ensures acc(SizedLaw_unique(view), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := (unfolding acc(SizedLaw_unique(view), wildcard) in f_size(view))
+  assert intFromRef(anon) >= 0
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_laws.kt: info: Generated Viper text for inheritedLawClient:
+function SizedLawDiamond_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawLeft_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SizedLawRight_c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(SizedLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SizedLaw_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SizedLaw())
+  requires acc(c_SizedLaw_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate SizedLawDiamond_footprint(this: Ref)
+
+predicate SizedLawDiamond_unique(this: Ref) {
+  acc(SizedLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawDiamond()) &&
+  boolFromRef((let count_0 ==
+    (SizedLawDiamond_c_SizedLaw_f_size(this)) in
+    leInts(count_0, intToRef(10)))) &&
+  boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawLeft_footprint(this: Ref)
+
+predicate SizedLawLeft_unique(this: Ref) {
+  acc(SizedLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawLeft()) &&
+  boolFromRef(geInts(SizedLawLeft_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate SizedLawRight_footprint(this: Ref)
+
+predicate SizedLawRight_unique(this: Ref) {
+  acc(SizedLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLawRight()) &&
+  boolFromRef(geInts(SizedLawRight_c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+predicate c_SizedLaw_footprint(this: Ref)
+
+predicate c_SizedLaw_unique(this: Ref) {
+  acc(c_SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLaw()) &&
+  boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
+}
+
+method inheritedLawClient(view: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(view), SizedLawDiamond())
+  requires acc(SizedLawDiamond_unique(view), write)
+  ensures acc(SizedLawDiamond_unique(view), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := (unfolding acc(SizedLawDiamond_unique(view), wildcard) in
+      SizedLawDiamond_c_SizedLaw_f_size(view))
+  assert intFromRef(anon_0) >= 0
+  anon_1 := (unfolding acc(SizedLawDiamond_unique(view), wildcard) in
+      SizedLawDiamond_c_SizedLaw_f_size(view))
+  assert intFromRef(anon_1) <= 10
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

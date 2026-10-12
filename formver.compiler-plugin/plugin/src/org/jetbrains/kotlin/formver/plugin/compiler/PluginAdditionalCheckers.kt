@@ -36,6 +36,7 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
         override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(
             ObserverImplementationChecker,
             LawImplementationChecker,
+            ViperPoweredClassChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
         )
     }
 
