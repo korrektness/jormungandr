@@ -15,10 +15,14 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChe
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.formver.common.*
+import org.jetbrains.kotlin.formver.core.conversion.classLawConstructionFailures
+import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
 import org.jetbrains.kotlin.formver.core.conversion.interfaceLaws
 import org.jetbrains.kotlin.formver.core.conversion.registerClassLaws
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
+import org.jetbrains.kotlin.formver.core.isLaw
+import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
@@ -27,7 +31,7 @@ import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.registerAllNames
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
 
-/** Checks the inherited interface laws once at each source implementation. */
+/** Checks the representation and inherited interface laws at each source implementation. */
 class ViperPoweredClassChecker(
     private val session: FirSession,
     private val config: PluginConfiguration,
@@ -35,10 +39,14 @@ class ViperPoweredClassChecker(
     private val reportedErrors: ReportedVerifierErrors,
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
+    @OptIn(DirectDeclarationsAccess::class)
     override fun check(declaration: FirRegularClass) {
         if (declaration.origin != FirDeclarationOrigin.Source || declaration.classKind.isInterface) return
         if (config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) ||
-            declaration.symbol.interfaceLaws().isEmpty()) return
+            (declaration.symbol.interfaceLaws().isEmpty() &&
+                declaration.symbol.declarationSymbols.none { it.isLaw(session) })) return
+        if (declaration.symbol.ownClassLaws(session).isNotEmpty() &&
+            classLawConstructionFailures(declaration.symbol, session).isNotEmpty()) return
         try {
             val converter = ProgramConverter(session, config, context, reporter)
             converter.registerClassLaws(declaration.symbol)

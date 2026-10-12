@@ -253,13 +253,16 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
             EqCmp(value, param)
         }
 
+        val (lawPreconditions, initializerPostconditions) = classLawConstructorConditions(symbol, current.signature, result)
         val contract = current.signature.buildConditions(typeResolver) {
             userFunctionPreconditions(consumes = { param -> stored.none { it.first == param } })
+            addPreconditions(lawPreconditions)
             userFunctionPostcondition(resultFolded = constructed == null)
             if (constructed != null) {
                 val omitted = stored.mapTo(mutableSetOf()) { it.second.name }
                 addPostconditions(listOf(with(typeResolver) { constructed.openPredicateChain(result, omitted) }))
             }
+            addPostconditions(initializerPostconditions)
             addPostconditions(fieldPostconditions)
             if (symbol.resolvedReturnType.toRegularClassSymbol(converter.session)?.classId == IntArrayEmbedding.classId) {
                 val size = current.signature.params.single()

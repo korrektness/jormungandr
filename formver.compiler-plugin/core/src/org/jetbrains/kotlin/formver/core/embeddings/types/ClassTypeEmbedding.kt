@@ -8,6 +8,8 @@ package org.jetbrains.kotlin.formver.core.embeddings.types
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpWrapper
+import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.core.names.PredicateName
@@ -101,6 +103,18 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
                     addAccessToUniquePredicate { access -> if (step == null) access else nested.ofField(step, access) }
                 }
             }
+        }
+        if (ctx.hasClassLaws(this@ClassTypeEmbedding)) {
+            includeInvariant(TypeInvariantEmbedding { subject ->
+                val boolean = buildType { boolean() }
+                ExpWrapper.deferred(boolean) {
+                    val laws = ctx.classLaws(this@ClassTypeEmbedding).fold<Exp, Exp>(Exp.BoolLit(true)) { acc, law -> Exp.And(acc, law) }
+                    boolean.injection.toRef(Exp.LetBinding(
+                        Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref),
+                        subject.pureToViper(toBuiltin = false, ctx), laws,
+                    ))
+                }
+            })
         }
         forEachSuperType {
             val superType = type.pretype as ClassTypeEmbedding

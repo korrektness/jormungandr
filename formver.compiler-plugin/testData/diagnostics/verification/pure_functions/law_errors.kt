@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 <!INVALID_LAW!>@Law @Pure fun topLevel(): Boolean = true<!>
 
 class Concrete {
-    <!INVALID_LAW!>@Law @Pure fun law(): Boolean = true<!>
+    @Law @Pure fun law(): Boolean = true
 }
 
 const val limit = 0

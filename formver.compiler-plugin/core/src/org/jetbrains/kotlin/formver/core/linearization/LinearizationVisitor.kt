@@ -198,6 +198,11 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitRepresentationObserverCall(e: RepresentationObserverCall): Linearizable =
+        object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            override fun toViper(ctx: LinearizationContext): Exp = e.expand(e.args.map { it.linearize().toViper(ctx) })
+        }
+
     override fun visitFunctionCall(e: FunctionCall): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp {
             val argsViper = e.args.map { it.linearize().toViper(ctx) }

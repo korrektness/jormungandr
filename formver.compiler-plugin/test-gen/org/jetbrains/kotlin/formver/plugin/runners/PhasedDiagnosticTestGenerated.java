@@ -700,6 +700,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("class_invariants.kt")
+      public void testClass_invariants() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/class_invariants.kt");
+      }
+
+      @Test
       @TestMetadata("construction_writes.kt")
       public void testConstruction_writes() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/construction_writes.kt");
@@ -1347,6 +1353,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("branching.kt")
       public void testBranching() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/branching.kt");
+      }
+
+      @Test
+      @TestMetadata("class_law_errors.kt")
+      public void testClass_law_errors() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/class_law_errors.kt");
       }
 
       @Test

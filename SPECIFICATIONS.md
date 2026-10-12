@@ -169,6 +169,19 @@ Each implementing class has one verification harness that proves the conjunction
 with its observer bindings substituted. It checks arbitrary legal representation states; a failure is reported on
 the class. Law declarations are specification bodies and have no standalone verification obligation.
 
+### Class laws
+
+A class may declare `@Law @Pure` Boolean members with the signature and expression rules of interface laws.
+Its unique predicate conjoins these representation invariants with its field permissions. Observer calls on `this`
+in a class law expand recursively to bodies declared in that class, exposing field reads. Abstract, inherited,
+recursive, and overridable observers are rejected with `INVALID_LAW`; a final class or final member fixes dispatch.
+
+Class laws require a primary constructor with no secondary constructors or init blocks. Stored properties must
+have initializers that are constructor parameters or pure expressions over those parameters. Delegated properties
+and superclasses carrying class laws are outside this scope. Unsupported shapes are rejected with `INVALID_LAW`.
+The constructor requires the invariant with field reads substituted by their initializers. Each call site proves
+this precondition; the returned representation and its opened-predicate description include the invariant.
+
 ## Loop Invariants
 
 ```kotlin

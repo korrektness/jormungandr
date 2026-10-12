@@ -38,6 +38,12 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isBoolean
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
+import org.jetbrains.kotlin.formver.core.conversion.classLawConstructionFailures
+import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
+import org.jetbrains.kotlin.formver.core.conversion.hasSuperclassLaws
+import org.jetbrains.kotlin.formver.core.conversion.isLawValueOperation
+import org.jetbrains.kotlin.formver.core.conversion.classLawObserverBody
+import org.jetbrains.kotlin.formver.core.conversion.classLawObserverFailure
 import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 import org.jetbrains.kotlin.formver.core.isPure
@@ -50,6 +56,11 @@ object LawImplementationChecker : FirRegularClassChecker(MppCheckerKind.Common) 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     @OptIn(ScopeFunctionRequiresPrewarm::class)
     override fun check(declaration: FirRegularClass) {
+        if (!declaration.classKind.isInterface &&
+            (declaration.symbol.ownClassLaws(context.session).isNotEmpty() || declaration.symbol.hasSuperclassLaws(context.session))) {
+            val failures = classLawConstructionFailures(declaration.symbol, context.session)
+            if (failures.isNotEmpty()) reporter.reportOn(declaration.source, PluginErrors.INVALID_LAW, failures.joinToString("; ") + ".")
+        }
         val scope = declaration.symbol.unsubstitutedScope()
         for (name in scope.getCallableNames()) {
             scope.processFunctionsByName(name) { member ->
@@ -80,7 +91,7 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
         val isLaw = symbol.isLaw(context.session)
         val owner = symbol.getContainingClassSymbol() as? FirClassSymbol<*>
         if (isLaw) {
-            if (owner?.classKind?.isInterface != true) failures.add("Law declared outside an interface")
+            if (owner !is FirRegularClassSymbol) failures.add("Law declared outside a class or interface")
             if (!symbol.isPure(context.session)) failures.add("Missing @Pure on law")
             if (!declaration.returnTypeRef.coneType.isBoolean) failures.add("Non-Boolean law result")
             if (declaration.body == null) failures.add("Bodiless law")
@@ -94,7 +105,36 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
         }
         if (!isLaw) return
         declaration.body?.accept(object : FirVisitorVoid() {
-            private val values = mutableSetOf<FirPropertySymbol>()
+            private val values = mutableSetOf<FirCallableSymbol<*>>()
+            private val expanding = mutableSetOf<FirCallableSymbol<*>>()
+            private var expansionSource: org.jetbrains.kotlin.KtSourceElement? = null
+            private val classOwner = (owner as? FirRegularClassSymbol)?.takeUnless { it.classKind.isInterface }
+
+            private fun reject(element: FirElement, reason: String) {
+                reporter.reportOn(expansionSource ?: element.source, PluginErrors.INVALID_LAW, reason)
+            }
+
+            private fun expand(element: FirQualifiedAccessExpression, callee: FirCallableSymbol<*>) {
+                val failure = classLawObserverFailure(callee, classOwner!!)
+                if (failure != null) {
+                    reject(element, "$failure.")
+                    return
+                }
+                val body = classLawObserverBody(callee)!!
+                if (!expanding.add(body)) {
+                    reject(element, "Recursive observer in class law.")
+                    return
+                }
+                val savedValues = values.toSet()
+                val savedSource = expansionSource
+                expansionSource = expansionSource ?: element.source
+                values.addAll(body.valueParameterSymbols)
+                body.fir.body!!.accept(this)
+                values.clear()
+                values.addAll(savedValues)
+                expansionSource = savedSource
+                expanding.remove(body)
+            }
 
             private fun FirExpression?.isOwnThis(): Boolean =
                 this is FirThisReceiverExpression && calleeReference.symbol == owner
@@ -103,33 +143,33 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
                 when (element) {
                     is FirProperty -> {
                         if (element.isVar || element.delegate != null) {
-                            reporter.reportOn(element.source, PluginErrors.INVALID_LAW, "Mutable local in law.")
+                            reject(element, "Mutable local in law.")
                         } else values.add(element.symbol)
                         element.initializer?.accept(this)
                     }
                     is FirVariableAssignment -> {
-                        reporter.reportOn(element.source, PluginErrors.INVALID_LAW, "Assignment in law.")
+                        reject(element, "Assignment in law.")
                         element.rValue.accept(this)
                     }
                     is FirQualifiedAccessExpression -> {
                         val callee = element.toResolvedCallableSymbol()
                         // Observers reached through another observer's result are deliberately out of scope.
-                        val observer = callee?.isObserverOrOverride() == true && element.dispatchReceiver.isOwnThis() &&
-                                element.extensionReceiver == null
+                        val ownAccess = element.dispatchReceiver.isOwnThis() && element.extensionReceiver == null
+                        val field = classOwner != null && ownAccess && callee is FirPropertySymbol &&
+                                callee.fir.backingField != null && callee.fir.getter?.body == null &&
+                                callee.getContainingClassSymbol() == classOwner
+                        val observer = ownAccess && (callee?.isObserverOrOverride() == true ||
+                                (classOwner != null && callee?.isPure(context.session) == true))
+                        if (observer && classOwner != null && !field) expand(element, callee!!)
                         val calleeOwner = callee?.getContainingClassSymbol() as? FirRegularClassSymbol
                         val companionHelper = calleeOwner?.fir?.isCompanion == true
                         val pureHelper = element is FirFunctionCall && callee?.isPure(context.session) == true &&
                                 (callee.callableId?.let { it.className == null && !it.isLocal } == true || companionHelper)
                         val value = callee in values || (callee is FirPropertySymbol && callee.isConst)
-                        val operation = callee?.callableId?.let {
-                            val scalarOperation = element is FirFunctionCall && it.className?.asString() in valueClasses &&
-                                    it.callableName.asString() in valueOperations
-                            val stringLength = it.className?.asString() == "String" && it.callableName.asString() == "length"
-                            it.packageName.asString() == "kotlin" && (scalarOperation || stringLength)
-                        } == true
-                        val allowedAccess = observer || value || operation
+                        val operation = element.isLawValueOperation()
+                        val allowedAccess = observer || field || value || operation
                         if (!allowedAccess && !pureHelper) {
-                            reporter.reportOn(element.source, PluginErrors.INVALID_LAW, "Non-value read or call in law.")
+                            reject(element, "Non-value read or call in law.")
                         }
                         if (operation || !element.dispatchReceiver.isOwnThis()) {
                             element.dispatchReceiver?.accept(this)
@@ -144,10 +184,4 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
         })
     }
 
-    private val valueClasses = setOf("Boolean", "Byte", "Short", "Int", "Long", "Float", "Double", "Char", "String")
-    private val valueOperations = setOf(
-        "plus", "minus", "times", "div", "rem", "unaryMinus", "unaryPlus", "not", "compareTo", "equals", "get",
-        "and", "or", "xor", "inv", "shl", "shr", "ushr",
-        "toByte", "toShort", "toInt", "toLong", "toFloat", "toDouble", "toChar",
-    )
 }

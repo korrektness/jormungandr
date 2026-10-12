@@ -60,6 +60,8 @@ internal class ClassPredicateBuilder private constructor(
             TypeEmbedding(ctx.lookupClassTypeEmbedding(name)!!, TypeEmbeddingFlags(nullable = false))
     }
 
+    fun includeInvariant(invariant: TypeInvariantEmbedding) = body.add(invariant.fillHole(subject))
+
     fun includeSubTypeInvariants() = body.add(
         SubTypeInvariantEmbedding(typeEmbedding).fillHole(subject)
     )

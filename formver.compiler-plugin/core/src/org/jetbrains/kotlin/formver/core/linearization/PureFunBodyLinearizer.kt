@@ -39,6 +39,8 @@ data class PureFunBodyLinearizer(
     override val typeResolver: TypeResolver,
     /** Observer bindings used to check a law in this ownership presentation. */
     val lawView: ClassTypeEmbedding? = null,
+    /** Field permissions are supplied by the surrounding representation predicate. */
+    val representationLaw: Boolean = false,
 ) : LinearizationContext {
 
     override val logicOperatorPolicy: LogicOperatorPolicy
@@ -110,7 +112,7 @@ data class PureFunBodyLinearizer(
         receiverPath: OwnedPath?,
     ) {
         val viperReceiver = localReceiver(receiver)
-        val accessInvariants = hierarchyPredicateAccesses(viperReceiver, receiverType, field).toList()
+        val accessInvariants = if (representationLaw) emptyList() else hierarchyPredicateAccesses(viperReceiver, receiverType, field).toList()
         val primitiveAccess: Exp = Exp.FieldAccess(viperReceiver, field.toViper(), source.asPosition)
         ssaConverter.addAssignment(result.name, primitiveAccess, accessInvariants)
     }

@@ -201,6 +201,14 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)
         }
         propertyAccessExpression.topLevelPropertySymbol()?.let { return data.convertTopLevelPropertyRead(it) }
+        data.typeResolver.classLawExpansion?.let { expansion ->
+            val symbol = propertyAccessExpression.toResolvedCallableSymbol() as? FirPropertySymbol
+            if (symbol != null && expansion.isOwnAccess(propertyAccessExpression)) {
+                if (data.isGuaranteedDefaultProperty(symbol)) {
+                    expansion.initializedField(symbol)?.let { return it }
+                } else return expansion.call(symbol, listOf(data.convert(propertyAccessExpression.dispatchReceiver!!)))
+            }
+        }
         val propertyAccess = data.embedPropertyAccess(propertyAccessExpression)
         return propertyAccess.getValue(data)
     }
@@ -329,6 +337,18 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitFunctionCall(functionCall: FirFunctionCall, data: StmtConversionContext): ExpEmbedding {
         val symbol = functionCall.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
             ?: throw NotImplementedError("Only functions are expected as callables of function calls, got ${functionCall.toResolvedCallableSymbol()}")
+        data.typeResolver.classLawExpansion?.let { expansion ->
+            if (expansion.isOwnAccess(functionCall)) {
+                val mapping = functionCall.resolvedArgumentMapping
+                val values = functionCall.argumentList.arguments.associateWith { data.convert(it) }
+                val arguments = if (mapping == null) values.values.toList() else symbol.valueParameterSymbols.map { parameter ->
+                    val argument = mapping.entries.singleOrNull { it.value.symbol == parameter }?.key
+                        ?: throw UnsupportedFeatureException(functionCall.source, "Omitted observer argument in class law")
+                    values.getValue(argument)
+                }
+                return expansion.call(symbol, listOf(data.convert(functionCall.dispatchReceiver!!)) + arguments)
+            }
+        }
         if (functionCall.isIntArrayElementAccess()) return data.convertIntArrayElementAccess(functionCall)
         if (functionCall.isIntArrayInit()) return data.convertIntArrayInit(functionCall)
         data.convertStdlibHof(functionCall)?.let { return it }

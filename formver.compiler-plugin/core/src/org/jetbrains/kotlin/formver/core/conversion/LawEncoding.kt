@@ -29,14 +29,22 @@ fun ProgramConverter.registerClassLaws(symbol: FirRegularClassSymbol) {
     lawEncoding.registerClass(embedClass(symbol), symbol)
 }
 
-/** Converts interface laws in an abstract or concrete ownership presentation. */
+/** Converts laws in abstract ownership and concrete representation presentations. */
 internal class LawEncoding(private val program: ProgramConversionContext) {
     private val interfaces = linkedMapOf<ClassTypeEmbedding, List<FirNamedFunctionSymbol>>()
+    private val classes = linkedMapOf<ClassTypeEmbedding, Pair<FirRegularClassSymbol, List<FirNamedFunctionSymbol>>>()
     private var implementation: Pair<ClassTypeEmbedding, FirRegularClassSymbol>? = null
     val methods = mutableListOf<Method>()
 
     fun registerType(type: ClassTypeEmbedding, symbol: FirRegularClassSymbol) {
-        if (!symbol.classKind.isInterface) return
+        if (!symbol.classKind.isInterface) {
+            val laws = symbol.ownClassLaws(program.session)
+            if (laws.isNotEmpty()) {
+                program.typeResolver.registerClassLaws(type)
+                classes[type] = symbol to laws
+            }
+            return
+        }
         val laws = context(program.checkerContext) { symbol.interfaceLaws() }
         if (laws.isEmpty()) return
         program.typeResolver.registerInterfaceLaws(type)
@@ -69,6 +77,19 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
     }
 
     fun prepare() {
+        val preparedClasses = mutableSetOf<ClassTypeEmbedding>()
+        while (true) {
+            val entry = classes.entries.firstOrNull { it.key !in preparedClasses } ?: break
+            preparedClasses += entry.key
+            val (owner, laws) = entry.value
+            val expansion = ClassLawExpansion(program, owner)
+            val receiver = PlaceholderVariableEmbedding(DispatchReceiverName, entry.key.asTypeEmbedding(), isUnique = true)
+            program.typeResolver.setClassLaws(entry.key, laws.map { law ->
+                val expression = expansion.body(law, mapOf(SubstitutedArgument.DispatchThis to receiver))
+                val signature = with(program) { law.toFunctionSignature() }
+                signature.signature.returns.type.injection.fromRef(expression)
+            })
+        }
         val prepared = mutableSetOf<ClassTypeEmbedding>()
         while (true) {
             val entry = interfaces.entries.firstOrNull { it.key !in prepared } ?: break
@@ -77,6 +98,7 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
         }
         val (view, symbol) = implementation ?: return
         val laws = context(program.checkerContext) { symbol.interfaceLaws() }
+        if (laws.isEmpty()) return
         val assertions = laws.map { convertLaw(it, view, symbol.source) }
         val position = symbol.source.asPosition
         val receiver = Exp.LocalVar(DispatchReceiverName, Type.Ref)

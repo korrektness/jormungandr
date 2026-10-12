@@ -34,6 +34,7 @@ internal class ExprPurityVisitor(
     override fun visitLiteralEmbedding(e: LiteralEmbedding) = true
     override fun visitPermissionLit(e: PermissionLit) = true
     override fun visitExpWrapper(e: ExpWrapper) = true
+    override fun visitRepresentationObserverCall(e: RepresentationObserverCall) = e.args.all { it.accept(this) }
     override fun visitVariableEmbedding(e: VariableEmbedding) = true
     override fun visitAssign(e: Assign): Boolean =
         e.lhs.ignoringMetaNodes() is VariableEmbedding && declaredVariables.contains(e.lhs.ignoringMetaNodes())

@@ -85,6 +85,20 @@ class TypeResolver {
         return reaches(subtype.name)
     }
 
+    private val classLawBodies = linkedMapOf<SymbolicName, List<Exp>>()
+    var classLawExpansion: ClassLawExpansion? = null
+
+    fun registerClassLaws(type: ClassTypeEmbedding) {
+        classLawBodies.putIfAbsent(type.name, emptyList())
+    }
+
+    fun setClassLaws(type: ClassTypeEmbedding, laws: List<Exp>) {
+        classLawBodies[type.name] = laws
+    }
+
+    fun classLaws(type: ClassTypeEmbedding) = classLawBodies[type.name].orEmpty()
+    fun hasClassLaws(type: ClassTypeEmbedding) = type.name in classLawBodies
+
     private val interfaceLawBodies = linkedMapOf<SymbolicName, List<Exp>>()
 
     fun registerInterfaceLaws(type: ClassTypeEmbedding) {

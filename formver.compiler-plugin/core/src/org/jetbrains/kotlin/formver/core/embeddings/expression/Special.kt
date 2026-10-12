@@ -17,9 +17,25 @@ import org.jetbrains.kotlin.formver.viper.ast.Exp
  * We will eventually want to solve this somehow, but there are still open design questions there, so for now this wrapper will
  * do the job.
  */
-data class ExpWrapper(val value: Exp, override val type: TypeEmbedding) : ExpEmbedding {
+class ExpWrapper private constructor(private val expression: () -> Exp, override val type: TypeEmbedding) : ExpEmbedding {
+    constructor(value: Exp, type: TypeEmbedding) : this({ value }, type)
+
+    val value: Exp get() = expression()
+
+    companion object {
+        /** Resolve a specification expression after all type declarations have been registered. */
+        fun deferred(type: TypeEmbedding, expression: () -> Exp) = ExpWrapper(expression, type)
+    }
 
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitExpWrapper(this)
+}
+
+class RepresentationObserverCall(
+    val args: List<ExpEmbedding>,
+    override val type: TypeEmbedding,
+    val expand: (List<Exp>) -> Exp,
+) : ExpEmbedding {
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitRepresentationObserverCall(this)
 }
 
 /**

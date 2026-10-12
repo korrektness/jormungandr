@@ -68,6 +68,7 @@ interface ExpVisitor<R> {
     fun visitWithPosition(e: WithPosition): R
     fun visitLiteralEmbedding(e: LiteralEmbedding): R
     fun visitExpWrapper(e: ExpWrapper): R
+    fun visitRepresentationObserverCall(e: RepresentationObserverCall): R
     fun visitVariableEmbedding(e: VariableEmbedding): R
     fun visitAccEmbedding(e: AccEmbedding): R
     fun visitPermissionLit(e: PermissionLit): R
@@ -145,6 +146,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitWithPosition(e: WithPosition): R = visitDefault(e)
     override fun visitLiteralEmbedding(e: LiteralEmbedding): R = visitDefault(e)
     override fun visitExpWrapper(e: ExpWrapper): R = visitDefault(e)
+    override fun visitRepresentationObserverCall(e: RepresentationObserverCall): R = visitDefault(e)
     override fun visitVariableEmbedding(e: VariableEmbedding): R = visitDefault(e)
     override fun visitAccEmbedding(e: AccEmbedding): R = visitDefault(e)
     override fun visitPermissionLit(e: PermissionLit): R = visitDefault(e)
