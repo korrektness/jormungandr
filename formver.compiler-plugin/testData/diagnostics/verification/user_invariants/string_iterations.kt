@@ -1,7 +1,6 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun String.<!VIPER_TEXT!>firstAtLeast<!>(c: Char): Int {
     postconditions<Int> { res ->
         0 <= res && res <= length
@@ -25,7 +24,6 @@ fun String.<!VIPER_TEXT!>firstAtLeast<!>(c: Char): Int {
     return i
 }
 
-@AlwaysVerify
 fun String.<!VIPER_TEXT!>lastLess<!>(c: Char): Int {
     postconditions<Int> { res ->
         -1 <= res && res <= length - 1

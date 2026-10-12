@@ -1,24 +1,20 @@
 // FULL_JDK
 
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 @NeverConvert
 inline fun invoke(f: (Int) -> Int): Int {
     return f(0)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>explicitArg<!>(): Int {
     return invoke { x -> x + x }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>implicitArg<!>(): Int {
     return invoke { it * 2 }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>lambdaIf<!>(): Int {
     return invoke {
         if (it == 0) {
@@ -29,12 +25,10 @@ fun <!VIPER_TEXT!>lambdaIf<!>(): Int {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnValueNotUsed<!>(): Unit {
     invoke { it }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>shadowing<!>(): Int {
     val x = 1
     val y = 1
@@ -51,7 +45,6 @@ inline fun nestedHelper(): Int {
     return invoke { x -> x + 1 }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>nested<!>(): Int {
     val x = 2
     return nestedHelper()
@@ -62,23 +55,19 @@ inline fun passthroughHelper(f: (Int) -> Int) {
     invoke(f)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>lambdaPassthrough<!>() {
     passthroughHelper { it + 1 }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>captureArg<!>(g: (Int) -> Int): Int {
     return invoke { g(it) }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>captureVar<!>(): Int {
     val x = 1
     return invoke { it + x }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>captureAndShadow<!>(x: Int): Int {
     return invoke {
         val y = x
@@ -93,12 +82,10 @@ inline fun invokeClash(f: (Int) -> Int): Int {
     return f(0) + x
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>captureVarClash<!>(x: Int): Int {
     return invokeClash { it * x }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>captureAndShadowClash<!>(x: Int): Int {
     return invokeClash {
         val y = x
@@ -107,7 +94,6 @@ fun <!VIPER_TEXT!>captureAndShadowClash<!>(x: Int): Int {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>nestedLambdaShadowing<!>(x: Int): Int {
     return invokeClash {
         invokeClash {
@@ -126,7 +112,6 @@ inline fun doubleInvoke(f: (Int) -> Int): Int {
     return f(1)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>callDoubleInvoke<!>(x: Int): Int {
     return doubleInvoke {
         val x = it

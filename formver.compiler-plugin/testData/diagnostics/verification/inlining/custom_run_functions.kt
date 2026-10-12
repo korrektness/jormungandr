@@ -4,7 +4,6 @@
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.verify
 
 @NeverConvert
@@ -144,7 +143,6 @@ class CustomClass {
 @NeverConvert
 inline fun <T> CustomClass.extensionRun(block: CustomClass.() -> T): T = block()
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>testCustomClass<!>() {
     val custom = CustomClass()
     val cond1 = custom.memberRun { member } == custom.extensionRun { member }

@@ -3,7 +3,6 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>repeatChar<!>(c: Char, n: Int): String {
     preconditions {
         n >= 0
@@ -24,7 +23,6 @@ fun <!VIPER_TEXT!>repeatChar<!>(c: Char, n: Int): String {
     return sb.toString()
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>literal<!>(): String {
     postconditions<String> { r ->
         r == "abc"
@@ -34,7 +32,6 @@ fun <!VIPER_TEXT!>literal<!>(): String {
     return sb.toString()
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>appendTwice<!>(sb: @Unique @Borrowed StringBuilder, s: String) {
     postconditions<Unit> {
         sb.length == old(sb.length) + 2 * s.length
@@ -44,7 +41,6 @@ fun <!VIPER_TEXT!>appendTwice<!>(sb: @Unique @Borrowed StringBuilder, s: String)
     sb.append(s)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>clearThenAppend<!>(sb: @Unique @Borrowed StringBuilder) {
     postconditions<Unit> {
         sb.toString() == "x"
@@ -52,12 +48,10 @@ fun <!VIPER_TEXT!>clearThenAppend<!>(sb: @Unique @Borrowed StringBuilder) {
     sb.clear().append('x')
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnAppended<!>(sb: @Unique StringBuilder): @Unique StringBuilder {
     return sb.append('!')
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>bindAppended<!>(): Int {
     postconditions<Int> { r ->
         r == 2
@@ -68,14 +62,12 @@ fun <!VIPER_TEXT!>bindAppended<!>(): Int {
     return t.length
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>wrongLength<!>() {
     val sb: @Unique StringBuilder = StringBuilder()
     sb.append('a')
     verify(<!VIPER_VERIFICATION_ERROR!>sb.length == 2<!>)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>appendShared<!>(sb: StringBuilder) {
     sb.append('a')
     val n = sb.length

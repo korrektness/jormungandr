@@ -14,7 +14,6 @@ fun String.chooseIndex(): Int {
     return indices.random()
 }
 
-@AlwaysVerify
 fun String.<!VIPER_TEXT!>minOrMaxChar<!>(calcMin: Boolean): Char {
     preconditions {
         length >= 1
@@ -45,7 +44,6 @@ fun String.<!VIPER_TEXT!>minOrMaxChar<!>(calcMin: Boolean): Char {
     return res
 }
 
-@AlwaysVerify
 fun String.<!VIPER_TEXT!>quickSort<!>() : String {
     postconditions<String> { res ->
         res.length == length
@@ -61,7 +59,6 @@ fun String.<!VIPER_TEXT!>quickSort<!>() : String {
     return quickSortRec(minVal, maxVal)
 }
 
-@AlwaysVerify
 fun String.<!VIPER_TEXT!>quickSortRec<!>(minVal: Char, maxVal: Char): String {
     preconditions {
         forAll<Int> {

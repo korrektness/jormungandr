@@ -1,11 +1,9 @@
 // FULL_JDK
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.verify
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 
 class CharBox(val char: Char)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>testChars<!>(c: Char) {
     val box = CharBox('a')
     val charA = 'a'

@@ -19,11 +19,9 @@ fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
 }
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>contents<!>(n: @Unique Node?): Multiset<Int> =
     if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @Unique Node {
     preconditions {
         isSorted(sorted)
@@ -40,7 +38,6 @@ fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @U
     return sorted
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>insertionSort<!>(head: @Unique Node?): @Unique Node? {
     postconditions<Node?> { r -> isSorted(r) && contents(r) == old(contents(head)) }
     var sorted: @Unique Node? = null

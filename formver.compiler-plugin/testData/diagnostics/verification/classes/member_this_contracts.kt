@@ -3,31 +3,30 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 class Meter(var reading: Int) {
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>advance<!>(by: Int) {
         preconditions { by >= 0 }
         postconditions<Unit> { reading == old(reading) + by }
         reading = reading + by
     }
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>advanceTwice<!>() {
         postconditions<Unit> { reading == old(reading) + 3 }
         advance(1)
         advance(2)
     }
 
-    @AlwaysVerify @Unique @Pure
+    @Unique @Pure
     fun <!VIPER_TEXT!>current<!>(): Int = reading
 
-    @AlwaysVerify @Unique
+    @Unique
     fun <!VERIFICATION_SKIPPED!>close<!>() {
         postconditions<Unit> { <!UNSUPPORTED_OWNERSHIP!>reading<!> == 0 }
         reading = 0
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>advanceFromZero<!>(m: @Unique @Borrowed Meter) {
     m.reading = 0
     m.advance(1)
@@ -35,7 +34,6 @@ fun <!VIPER_TEXT!>advanceFromZero<!>(m: @Unique @Borrowed Meter) {
     verify(m.current() == 3)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>staleAfterAdvance<!>(m: @Unique @Borrowed Meter) {
     m.reading = 0
     m.advanceTwice()
@@ -43,12 +41,12 @@ fun <!VIPER_TEXT!>staleAfterAdvance<!>(m: @Unique @Borrowed Meter) {
 }
 
 open class Gauge(var level: Int) {
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     open fun <!VIPER_TEXT!>tick<!>() {
         postconditions<Unit> { level == old(level) }
     }
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>tickKeepsLevel<!>() {
         level = 3
         tick()
@@ -57,14 +55,14 @@ open class Gauge(var level: Int) {
 }
 
 class CountingGauge(level: Int, var ticks: Int) : Gauge(level) {
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     override fun <!VIPER_TEXT!>tick<!>() {
         ticks = ticks + 1
     }
 }
 
 class DriftingGauge(level: Int) : Gauge(level) {
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     override fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>tick<!>() {
         postconditions<Unit> { true }
         level = level + 1
@@ -74,13 +72,12 @@ class DriftingGauge(level: Int) : Gauge(level) {
 open class PlainGauge(level: Int) : Gauge(level)
 
 class FlaggingGauge(level: Int, var flagged: Boolean) : PlainGauge(level) {
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     override fun <!VIPER_TEXT!>tick<!>() {
         flagged = true
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>staleAfterTick<!>(g: @Unique @Borrowed CountingGauge) {
     g.ticks = 0
     g.tickKeepsLevel()

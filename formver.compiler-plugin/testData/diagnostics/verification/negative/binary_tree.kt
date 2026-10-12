@@ -1,7 +1,6 @@
 // RENDER_PREDICATES
 // FULL_JDK
 
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.Unique
 import org.jetbrains.kotlin.formver.plugin.verify
 
@@ -12,7 +11,6 @@ fun <!VIPER_TEXT!>get_left_val<!>(n: @Unique Node): Int? {
 }
 
 // these expressions should all verify - they currently do not due to lack of uniqueness information
-@AlwaysVerify
 fun <!VIPER_TEXT!>test<!>() {
     val n = Node(5, Node(4, null, null), Node(3, Node(2, null, null), Node(1, null, null)))
     val expr1 = n.data == 5

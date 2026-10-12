@@ -37,7 +37,6 @@ fun <!VIPER_TEXT!>zFuncHelper<!>(s: String, res: String, i: Int, checkedLeft: In
     }
 }
 
-@AlwaysVerify
 fun String.<!VIPER_TEXT!>zFunction<!>(): String {
     postconditions<String> { res ->
         res.length == length
@@ -96,7 +95,6 @@ fun String.<!VIPER_TEXT!>zFunction<!>(): String {
     return res
 }
 
-@AlwaysVerify
 fun String.<!VIPER_TEXT!>zFunctionNaive<!>(): String {
     postconditions<String> { res ->
         res.length == length

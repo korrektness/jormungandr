@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Node(val value: Int, var next: @Unique Node?)
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
     if (n == null) {
         return true
@@ -17,7 +16,6 @@ fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @Unique Node {
     preconditions {
         isSorted(sorted)
@@ -32,7 +30,6 @@ fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @U
     return sorted
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>insertionSort<!>(head: @Unique Node?): @Unique Node? {
     postconditions<Node?> { r -> isSorted(r) }
     var sorted: @Unique Node? = null

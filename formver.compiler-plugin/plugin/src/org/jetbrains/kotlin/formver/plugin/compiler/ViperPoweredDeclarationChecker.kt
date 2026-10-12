@@ -16,8 +16,6 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
-import org.jetbrains.kotlin.fir.contracts.FirResolvedContractDescription
-import org.jetbrains.kotlin.fir.declarations.FirContractDescriptionOwner
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
@@ -46,19 +44,6 @@ import org.jetbrains.kotlin.formver.viper.mangled
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-
-private val FirContractDescriptionOwner.hasContract: Boolean
-    get() = when (val description = contractDescription) {
-        is FirResolvedContractDescription -> description.effects.isNotEmpty()
-        else -> false
-    }
-
-private fun TargetsSelection.applicable(declaration: FirSimpleFunction): Boolean = when (this) {
-    TargetsSelection.ALL_TARGETS -> true
-    TargetsSelection.TARGETS_WITH_CONTRACT -> declaration.hasContract
-    TargetsSelection.NO_TARGETS -> false
-    TargetsSelection.FORCE_DISABLE -> false
-}
 
 /**
  * Converts each selected function to Viper and verifies it. One instance checks every function of a FIR session, so
@@ -181,7 +166,6 @@ class ViperPoweredDeclarationChecker(
 
     private val neverConvertId: ClassId = getAnnotationId("NeverConvert")
     private val neverVerifyId: ClassId = getAnnotationId("NeverVerify")
-    private val alwaysVerifyId: ClassId = getAnnotationId("AlwaysVerify")
     private val dumpExpEmbeddingsId: ClassId = getAnnotationId("DumpExpEmbeddings")
 
     private fun PluginConfiguration.shouldConvert(declaration: FirSimpleFunction): Boolean = when {
@@ -192,15 +176,13 @@ class ViperPoweredDeclarationChecker(
         declaration.hasAnnotation(neverConvertId, session) -> false
         declaration.hasAnnotation(specOfId, session) -> false
         declaration.symbol.isLaw(session) -> false
-        declaration.hasAnnotation(alwaysVerifyId, session) -> true
-        else -> conversionSelection.applicable(declaration)
+        else -> conversionSelection == TargetsSelection.ALL_TARGETS
     }
 
     private fun PluginConfiguration.shouldVerify(declaration: FirSimpleFunction): Boolean = when {
         declaration.hasAnnotation(neverConvertId, session) -> false
         declaration.hasAnnotation(neverVerifyId, session) -> false
-        declaration.hasAnnotation(alwaysVerifyId, session) -> true
-        else -> verificationSelection.applicable(declaration)
+        else -> verificationSelection == TargetsSelection.ALL_TARGETS
     }
 
     private fun shouldDumpExpEmbeddings(declaration: FirSimpleFunction): Boolean =

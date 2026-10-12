@@ -30,7 +30,6 @@ interface IntList {
 }
 
 // Observers are total; the checked read operation supplies the index contract.
-@AlwaysVerify
 fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
     preconditions { 0 <= i && i < list.size() }
     postconditions<Int> { result ->
@@ -43,11 +42,11 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
 
 <!VIPER_TEXT!>class ArrayIntList<!>(var data: @Unique IntArray, var count: Int) : IntList {
     @Law @Pure @Unique fun representation(): Boolean = 0 <= count && count <= data.size
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>size<!>(): Int = count
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>get<!>(i: Int): Int =
+    @Pure @Unique override fun <!VIPER_TEXT!>size<!>(): Int = count
+    @Pure @Unique override fun <!VIPER_TEXT!>get<!>(i: Int): Int =
         if (0 <= i && i < count && i < data.size) data[i] else 0
 
-    @Unique @Borrowed @AlwaysVerify override fun <!VIPER_TEXT!>add<!>(value: Int) {
+    @Unique @Borrowed override fun <!VIPER_TEXT!>add<!>(value: Int) {
         val n = count
         val replacement: @Unique IntArray = IntArray(n + 1)
         var i = 0
@@ -66,7 +65,7 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
         count = n + 1
     }
 
-    @Unique @Borrowed @AlwaysVerify override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) {
+    @Unique @Borrowed override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) {
         data[i] = value
     }
 }
@@ -74,7 +73,7 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
 // A pure array read's well-formedness needs its array bound in the guard.
 <!VIPER_TEXT!>class ArrayBoundProbe<!>(var data: @Unique IntArray, var count: Int) {
     @Law @Pure @Unique fun representation(): Boolean = 0 <= count && count <= data.size
-    <!VIPER_VERIFICATION_ERROR!>@Pure @Unique @AlwaysVerify fun <!VIPER_TEXT!>getByCount<!>(i: Int): Int =
+    <!VIPER_VERIFICATION_ERROR!>@Pure @Unique fun <!VIPER_TEXT!>getByCount<!>(i: Int): Int =
         if (0 <= i && i < count) data[i] else 0<!>
 }
 
@@ -84,7 +83,6 @@ class IntNode(var value: Int, var next: @Unique IntNode?)
 @Pure fun <!VIPER_TEXT!>nodeGet<!>(node: @Unique IntNode?, i: Int): Int =
     if (node == null) 0 else if (i == 0) node.value else nodeGet(node.next, i - 1)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>nonnegativeNodes<!>(node: @Unique @Borrowed IntNode?) {
     postconditions<Unit> {
         nodeSize(node) >= 0
@@ -94,7 +92,6 @@ fun <!VIPER_TEXT!>nonnegativeNodes<!>(node: @Unique @Borrowed IntNode?) {
     if (node != null) nonnegativeNodes(node.next)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>appendNode<!>(node: @Unique IntNode?, value: Int): @Unique IntNode {
     postconditions<IntNode> { result ->
         nodeSize(result) == old(nodeSize(node)) + 1
@@ -107,7 +104,6 @@ fun <!VIPER_TEXT!>appendNode<!>(node: @Unique IntNode?, value: Int): @Unique Int
     return node
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>setNode<!>(node: @Unique @Borrowed IntNode?, i: Int, value: Int) {
     preconditions { 0 <= i && i < nodeSize(node) }
     postconditions<Unit> {
@@ -123,18 +119,17 @@ fun <!VIPER_TEXT!>setNode<!>(node: @Unique @Borrowed IntNode?, i: Int, value: In
 
 <!VIPER_TEXT!>class NodeIntList<!>(var head: @Unique IntNode?, var count: Int) : IntList {
     @Law @Pure @Unique fun representation(): Boolean = count >= 0 && count == nodeSize(head)
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>size<!>(): Int = count
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>get<!>(i: Int): Int = nodeGet(head, i)
-    @Unique @Borrowed @AlwaysVerify override fun <!VIPER_TEXT!>add<!>(value: Int) {
+    @Pure @Unique override fun <!VIPER_TEXT!>size<!>(): Int = count
+    @Pure @Unique override fun <!VIPER_TEXT!>get<!>(i: Int): Int = nodeGet(head, i)
+    @Unique @Borrowed override fun <!VIPER_TEXT!>add<!>(value: Int) {
         head = appendNode(head, value)
         count++
     }
-    @Unique @Borrowed @AlwaysVerify override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) {
+    @Unique @Borrowed override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) {
         setNode(head, i, value)
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>interfaceClient<!>(list: @Unique @Borrowed IntList) {
     val n = list.size()
     verify(n >= 0)
@@ -153,7 +148,6 @@ fun <!VIPER_TEXT!>interfaceClient<!>(list: @Unique @Borrowed IntList) {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>lendClient<!>(list: @Unique @Borrowed IntList) {
     postconditions<Unit> {
         list.size() == old(list.size()) + 1
@@ -163,7 +157,6 @@ fun <!VIPER_TEXT!>lendClient<!>(list: @Unique @Borrowed IntList) {
     list.add(42)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>createUpcastArray<!>() {
     val list: @Unique ArrayIntList = ArrayIntList(IntArray(0), 0)
     lendClient(list)
@@ -176,7 +169,6 @@ fun <!VIPER_TEXT!>createUpcastArray<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>createUpcastNode<!>() {
     val list: @Unique NodeIntList = NodeIntList(null, 0)
     lendClient(list)
@@ -189,7 +181,6 @@ fun <!VIPER_TEXT!>createUpcastNode<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>concreteArrayOperations<!>() {
     val list: @Unique ArrayIntList = ArrayIntList(IntArray(0), 0)
     list.add(11)
@@ -205,7 +196,6 @@ fun <!VIPER_TEXT!>concreteArrayOperations<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>concreteNodeOperations<!>() {
     val list: @Unique NodeIntList = NodeIntList(null, 0)
     list.add(11)
@@ -222,7 +212,6 @@ fun <!VIPER_TEXT!>concreteNodeOperations<!>() {
 }
 
 // Snapshot preservation through invariant-bearing constructors is a translation-gap probe.
-@AlwaysVerify
 fun <!VIPER_TEXT!>arrayConstructionSnapshot<!>() {
     val data: @Unique IntArray = IntArray(1)
     data[0] = 11
@@ -230,34 +219,28 @@ fun <!VIPER_TEXT!>arrayConstructionSnapshot<!>() {
     verify(<!VIPER_VERIFICATION_ERROR!>list.get(0) == 11<!>)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>nodeConstructionSnapshot<!>() {
     val head: @Unique IntNode = IntNode(11, null)
     val list: @Unique NodeIntList = NodeIntList(head, 1)
     verify(<!VIPER_VERIFICATION_ERROR!>list.get(0) == 11<!>)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>badSetIndex<!>(list: @Unique @Borrowed IntList) {
     <!VIPER_VERIFICATION_ERROR!>list.set(list.size(), 1)<!>
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>badGetIndex<!>(list: @Unique @Borrowed IntList) {
     <!VIPER_VERIFICATION_ERROR!>get(list, -1)<!>
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>badArrayConstruction<!>() {
     val array: @Unique ArrayIntList = <!VIPER_VERIFICATION_ERROR!>ArrayIntList(IntArray(1), 2)<!>
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>badNodeConstruction<!>() {
     val nodes: @Unique NodeIntList = <!VIPER_VERIFICATION_ERROR!>NodeIntList(null, 1)<!>
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>falseClientClaim<!>(list: @Unique @Borrowed IntList) {
     val n = list.size()
     list.add(7)
@@ -265,13 +248,13 @@ fun <!VIPER_TEXT!>falseClientClaim<!>(list: @Unique @Borrowed IntList) {
 }
 
 <!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BrokenIntList<!>(var count: Int, var item: Int) : IntList {
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>size<!>(): Int = count
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>get<!>(i: Int): Int = item
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed @AlwaysVerify override fun <!VIPER_TEXT!>add<!>(value: Int) {
+    @Pure @Unique override fun <!VIPER_TEXT!>size<!>(): Int = count
+    @Pure @Unique override fun <!VIPER_TEXT!>get<!>(i: Int): Int = item
+    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed override fun <!VIPER_TEXT!>add<!>(value: Int) {
         count++
         item = value
     }<!>
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed @AlwaysVerify override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) {
+    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) {
         item = value
     }<!>
 }<!>

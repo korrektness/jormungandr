@@ -2,7 +2,6 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 
-@AlwaysVerify
 fun String.<!VIPER_TEXT!>subs<!>(lo: Int, hi: Int) : String {
     preconditions {
         0 <= lo && lo <= hi && hi <= length
@@ -29,7 +28,6 @@ fun String.<!VIPER_TEXT!>subs<!>(lo: Int, hi: Int) : String {
     return res
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>mergeStrings<!>(a: String, b: String): String {
     preconditions {
         forAll<Int> {
@@ -71,7 +69,6 @@ fun <!VIPER_TEXT!>mergeStrings<!>(a: String, b: String): String {
     return res
 }
 
-@AlwaysVerify
 fun String.<!VIPER_TEXT!>mergeSorted<!>(): String {
     postconditions<String> { res ->
         res.length == length

@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 class Box(var value: Int)
 
-@AlwaysVerify
 fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUp<!>(n: Int) {
     preconditions { 0 <= n }
     refute(false)
@@ -20,7 +19,6 @@ fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUp<!>(n: Int) {
     verify(value == n)
 }
 
-@AlwaysVerify
 fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUpEndProbe<!>(n: Int) {
     preconditions { 0 <= n }
     var i = 0
@@ -34,7 +32,6 @@ fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUpEndProbe<!>(n: Int) {
 }
 
 // The loop leaves the receiver alone; it is owned at the head and handed back at exit.
-@AlwaysVerify
 fun @Unique @Borrowed Box.<!VIPER_TEXT!>countIntoParameter<!>(b: @Unique @Borrowed Box, n: Int) {
     preconditions { 0 <= n }
     refute(false)

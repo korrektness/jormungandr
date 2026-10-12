@@ -48,19 +48,19 @@ interface ObservedList {
 }
 
 class ObservedCell(var count: Int, var item: Int) : ObservedList {
-    @Unique @Borrowed @AlwaysVerify
+    @Unique @Borrowed
     override fun <!VIPER_TEXT!>addFrom<!>(source: @Unique @Borrowed ObservedList) {
         item = source.get(0)
         count++
     }
 
-    @Pure @Unique @AlwaysVerify
+    @Pure @Unique
     override fun <!VIPER_TEXT!>size<!>(): Int = count
 
-    @Pure @Unique @AlwaysVerify
+    @Pure @Unique
     override fun <!VIPER_TEXT!>get<!>(index: Int): Int = item
 
-    @Unique @Borrowed @AlwaysVerify
+    @Unique @Borrowed
     override fun <!VIPER_TEXT!>add<!>(value: Int) {
         postconditions<Unit> {
             count == old(count) + 1
@@ -72,37 +72,36 @@ class ObservedCell(var count: Int, var item: Int) : ObservedList {
         item = value
     }
 
-    @Unique @Borrowed @AlwaysVerify
+    @Unique @Borrowed
     override fun <!VIPER_TEXT!>set<!>(index: Int, value: Int) {
         item = value
     }
 }
 
 class BrokenObservedCell(var count: Int, var item: Int) : ObservedList {
-    @Unique @Borrowed @AlwaysVerify
+    @Unique @Borrowed
     override fun <!VIPER_TEXT!>addFrom<!>(source: @Unique @Borrowed ObservedList) {
         item = source.get(0)
         count++
     }
 
-    @Pure @Unique @AlwaysVerify
+    @Pure @Unique
     override fun <!VIPER_TEXT!>size<!>(): Int = count
 
-    @Pure @Unique @AlwaysVerify
+    @Pure @Unique
     override fun <!VIPER_TEXT!>get<!>(index: Int): Int = item
 
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed @AlwaysVerify
+    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed
     override fun <!VIPER_TEXT!>add<!>(value: Int) {
         item = value
     }<!>
 
-    @Unique @Borrowed @AlwaysVerify
+    @Unique @Borrowed
     override fun <!VIPER_TEXT!>set<!>(index: Int, value: Int) {
         item = value
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>chainedObserverCalls<!>(list: @Unique @Borrowed ObservedList) {
     preconditions { list.size() >= 0 }
     val index = list.size()
@@ -115,7 +114,6 @@ fun <!VIPER_TEXT!>chainedObserverCalls<!>(list: @Unique @Borrowed ObservedList) 
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>observerParameterContract<!>(list: @Unique @Borrowed ObservedList) {
     preconditions { list.size() >= 0 }
     postconditions<Unit> {

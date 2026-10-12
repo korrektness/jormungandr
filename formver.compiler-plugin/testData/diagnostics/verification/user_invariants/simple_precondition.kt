@@ -1,10 +1,8 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.verify
 import org.jetbrains.kotlin.formver.plugin.preconditions
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>test<!>(idx: Int) {
     preconditions {
         0 <= idx
@@ -15,7 +13,6 @@ fun <!VIPER_TEXT!>test<!>(idx: Int) {
 }
 
 
-@AlwaysVerify
 @Suppress("NOTHING_TO_INLINE")
 inline fun <!VIPER_TEXT!>inlineWithSpecification<!>(bool: Boolean) {
     preconditions {
@@ -24,7 +21,6 @@ inline fun <!VIPER_TEXT!>inlineWithSpecification<!>(bool: Boolean) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>good_call<!>() {
     test(2)
 

@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Node(val value: Int, val next: Node?)
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>isSorted<!>(n: Node?): Boolean =
     if (n == null) {
         true
@@ -15,11 +14,9 @@ fun <!VIPER_TEXT!>isSorted<!>(n: Node?): Boolean =
     }
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>contents<!>(n: Node?): Multiset<Int> =
     if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>insert<!>(x: Int, l: Node?): Node {
     preconditions { isSorted(l) }
     postconditions<Node> { r ->
@@ -33,7 +30,6 @@ fun <!VIPER_TEXT!>insert<!>(x: Int, l: Node?): Node {
     return Node(l.value, insert(x, l.next))
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>insertionSort<!>(l: Node?): Node? {
     postconditions<Node?> { r -> isSorted(r) && contents(r) == contents(l) }
     if (l == null) {

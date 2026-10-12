@@ -1,12 +1,10 @@
 // FULL_JDK
 // REPLACE_STDLIB_EXTENSIONS
 
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 import org.jetbrains.kotlin.formver.plugin.loopInvariants
 import org.jetbrains.kotlin.formver.plugin.verify
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>test<!>(n: Int) {
     var it = 0
     var holds = true
@@ -31,7 +29,6 @@ fun <!VIPER_TEXT!>test<!>(n: Int) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>loopInsideLoop<!>() {
     var i = 0
     while (i < 10) {
@@ -50,7 +47,6 @@ fun <!VIPER_TEXT!>loopInsideLoop<!>() {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>withBreak<!>() {
     var i = 0
     while (true) {
@@ -67,7 +63,6 @@ class WithVar(var e: Int) {
     fun doSomething() = e > 10
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>test_boolean_postcondition<!>() {
     val withVar = WithVar(42)
     var boolean = true

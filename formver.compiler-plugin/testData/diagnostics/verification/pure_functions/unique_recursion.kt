@@ -4,10 +4,8 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Node(var value: Int, var next: @Unique Node?)
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>length<!>(n: @Unique Node?): Int = if (n == null) 0 else 1 + length(n.next)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>appendGhost<!>(l: @Unique Node?, v: Int, n: Int): @Unique Node {
     preconditions { length(l) == n }
     postconditions<Node> { r -> length(r) == n + 1 }
@@ -18,7 +16,6 @@ fun <!VIPER_TEXT!>appendGhost<!>(l: @Unique Node?, v: Int, n: Int): @Unique Node
     return l
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>append<!>(l: @Unique Node?, v: Int): @Unique Node {
     postconditions<Node> { r -> length(r) == old(length(l)) + 1 }
     if (l == null) {
@@ -28,7 +25,6 @@ fun <!VIPER_TEXT!>append<!>(l: @Unique Node?, v: Int): @Unique Node {
     return l
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>incAllRec<!>(l: @Unique Node?): @Unique Node? {
     postconditions<Node?> { r -> length(r) == old(length(l)) }
     if (l == null) {
@@ -39,13 +35,11 @@ fun <!VIPER_TEXT!>incAllRec<!>(l: @Unique Node?): @Unique Node? {
     return l
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>prepend<!>(l: @Unique Node?, v: Int): @Unique Node {
     postconditions<Node> { r -> length(r) == old(length(l)) + 1 }
     return Node(v, l)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>twoNodes<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> length(r) == 2 }
     return Node(v, Node(v, null))
@@ -54,14 +48,12 @@ fun <!VIPER_TEXT!>twoNodes<!>(v: Int): @Unique Node {
 // `m` joins the two branches of a condition on `n`: it is bound outside the `unfolding` that reads `n.next`, and
 // carries no access invariants for the call.
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>nextLength<!>(n: @Unique Node?): Int {
     val m = if (n == null) null else n.next
     return <!OWNERSHIP_NOT_ESTABLISHED!>length(m)<!>
 }
 
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-fun <!VIPER_TEXT!>tail<!>(l: @Unique Node): @Unique Node? {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>tail<!>(l: @Unique Node): @Unique Node? {
     postconditions<Node?> { r -> length(r) == old(nextLength(l)) }
     return l.next
 }<!>
@@ -69,10 +61,8 @@ fun <!VIPER_TEXT!>tail<!>(l: @Unique Node): @Unique Node? {
 class VNode(val value: Int, val next: @Unique VNode?)
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>vLength<!>(n: @Unique VNode?): Int = if (n == null) 0 else 1 + vLength(n.next)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>vTail<!>(l: @Unique VNode, n: Int): @Unique VNode? {
     preconditions { vLength(l) == n }
     postconditions<VNode?> { r -> vLength(r) == n - 1 }
@@ -81,33 +71,27 @@ fun <!VIPER_TEXT!>vTail<!>(l: @Unique VNode, n: Int): @Unique VNode? {
 
 // The `null` case of `n` reads `d`, so `valueOr` gets no postcondition for it.
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>valueOr<!>(n: @Unique Node?, d: @Unique Node): Int = if (n == null) d.value else n.value
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>oneNode<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> length(r) == 1 }
     return Node(v, null)
 }
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>sum<!>(n: @Unique Node?): Int {
     if (n == null) return 0
     return n.value + sum(n.next)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>oneSum<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> sum(r) == v }
     return Node(v, null)
 }
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>lengthFrom<!>(k: Int, n: @Unique Node?): Int = if (n == null) k else lengthFrom(k + 1, n.next)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>oneFrom<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> lengthFrom(0, r) == 1 }
     return Node(v, null)
@@ -115,61 +99,51 @@ fun <!VIPER_TEXT!>oneFrom<!>(v: Int): @Unique Node {
 
 // The `null` case of `a` calls `length(b)`, which reads the heap, so `lengthOf` gets no postcondition for `a`.
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>lengthOf<!>(a: @Unique Node?, b: @Unique Node?): Int = if (a == null) length(b) else length(a)
 
 // The precondition excludes the `null` case of `n`.
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>headValue<!>(n: @Unique Node?): Int {
     preconditions { n != null }
     return if (n == null) -1 else n.value
 }
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>lengthWhen<!>(n: @Unique Node?): Int = when (n) {
     null -> 0
     else -> 1 + lengthWhen(n.next)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>oneNodeWhen<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> lengthWhen(r) == 1 }
     return Node(v, null)
 }
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>lengthPlus<!>(n: @Unique Node?, k: Int): Int = if (n == null) k + 1 else 1 + lengthPlus(n.next, k)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>oneNodePlus<!>(v: Int, k: Int): @Unique Node {
     postconditions<Node> { r -> lengthPlus(r, k) == k + 2 }
     return Node(v, null)
 }
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>sumFrom<!>(n: @Unique Node?, k: Int): Int {
     val base = k * 2
     if (n == null) return base
     return n.value + sumFrom(n.next, k)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>oneNodeSum<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> sumFrom(r, 3) == v + 6 }
     return Node(v, null)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>prependUnrolled<!>(l: @Unique Node?, v: Int): @Unique Node {
     postconditions<Node> { r -> sum(r) == r.value + sum(r.next) }
     return Node(v, l)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>sumPlusValue<!>(n: @Unique @Borrowed Node): Int {
     postconditions<Int> { r ->
         r == sum(n) + n.value
@@ -179,11 +153,9 @@ fun <!VIPER_TEXT!>sumPlusValue<!>(n: @Unique @Borrowed Node): Int {
 }
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>sumAndValue<!>(n: @Unique Node): Int = sum(n) + n.value
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>valueThenSum<!>(n: @Unique Node): Int {
     val v = n.value
     return v + sum(n)

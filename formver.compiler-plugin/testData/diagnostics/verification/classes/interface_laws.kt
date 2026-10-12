@@ -44,7 +44,7 @@ open <!VIPER_TEXT!>class GoodSizedLaw<!> : SizedLawDiamond {
     @Law @Pure @Unique
     fun representation(): Boolean = size() >= 0
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>add<!>() {
         verify(count >= 0)
         count++
@@ -52,7 +52,6 @@ open <!VIPER_TEXT!>class GoodSizedLaw<!> : SizedLawDiamond {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>invariantLawTransfer<!>() {
     val value: @Unique InvariantSizedLaw = InvariantSizedLaw(0)
     value.add()
@@ -63,7 +62,6 @@ fun <!VIPER_TEXT!>invariantLawTransfer<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>borrowedLawTransfer<!>() {
     val value: @Unique InheritedSizedLaw = InheritedSizedLaw()
     lawClient(value)
@@ -74,19 +72,16 @@ fun <!VIPER_TEXT!>borrowedLawTransfer<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>lawPostcondition<!>(view: @Unique @Borrowed SizedLawDiamond): Int {
     postconditions<Int> { result -> result >= 0 && result <= 10 }
     return view.size()
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>lawClient<!>(view: @Unique @Borrowed SizedLaw) {
     verify(view.size() >= 0)
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inheritedLawClient<!>(view: @Unique @Borrowed SizedLawDiamond) {
     verify(view.size() >= 0)
     verify(view.size() <= 10)

@@ -1,6 +1,5 @@
 // FULL_JDK
 
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 import org.jetbrains.kotlin.formver.plugin.verify
 
@@ -97,7 +96,6 @@ fun create6() = object : InheritingInterfaceWithoutImplementation6 {
 }
 
 @Suppress("USELESS_IS_CHECK")
-@AlwaysVerify
 fun <!VIPER_TEXT!>createImpls<!>() {
     val impl12 = Impl12()
     val start12 = impl12.field + 1 - 1

@@ -1,14 +1,12 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 import org.jetbrains.kotlin.formver.plugin.verify
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 @NeverConvert
 inline fun not(f: () -> Boolean): Boolean = !f()
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>simple_return<!>() {
     val cond1 = not { false }
     verify(cond1)

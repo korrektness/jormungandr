@@ -14,43 +14,36 @@ class Middle(val inner: @Unique Inner)
 
 class Outer(val middle: @Unique Middle)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>safeLetInPostcondition<!>(o: Box?): Int {
     postconditions<Int> { r -> r == (o?.let { 1 } ?: 0) }
     return if (o == null) 0 else 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>runInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r -> r == run { n + 1 } }
     return n + 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>receiverRunInPostcondition<!>(b: Box): Int {
     postconditions<Int> { r -> r == b.run { v * 2 } }
     return b.v * 2
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>withInPostcondition<!>(b: Box): Int {
     postconditions<Int> { r -> r == with(b) { v + 3 } }
     return b.v + 3
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>alsoInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r -> r == n.also { } }
     return n
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>applyInPostcondition<!>(b: Box): Box {
     postconditions<Box> { r -> r.v == b.apply { }.v }
     return b
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>takeIfInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r -> r == (n.takeIf { it > 0 } ?: 0) }
     return if (n > 0) n else 0
@@ -58,13 +51,11 @@ fun <!VIPER_TEXT!>takeIfInPostcondition<!>(n: Int): Int {
 
 inline fun <!VIPER_TEXT!>twice<!>(n: Int, f: (Int) -> Int): Int = f(f(n))
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>userInlineInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r -> r == twice(n) { it + 1 } }
     return n + 2
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>scopeFunctionsInPrecondition<!>(b: Box, n: Int): Int {
     preconditions {
         n.let { it } > 0
@@ -80,7 +71,6 @@ fun <!VIPER_TEXT!>scopeFunctionsInPrecondition<!>(b: Box, n: Int): Int {
     return n
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>scopeFunctionsInLoopInvariant<!>(b: Box, n: Int): Int {
     preconditions { n >= 0 && b.v >= 0 }
     postconditions<Int> { r -> r == n }
@@ -101,7 +91,6 @@ fun <!VIPER_TEXT!>scopeFunctionsInLoopInvariant<!>(b: Box, n: Int): Int {
     return i
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>scopeFunctionsOverUniqueReceivers<!>(c: @Unique @Borrowed Counter, n: @Unique @Borrowed Node?, o: @Unique @Borrowed Outer): Int {
     preconditions { c.x > 0 }
     postconditions<Int> { r ->
@@ -114,13 +103,11 @@ fun <!VIPER_TEXT!>scopeFunctionsOverUniqueReceivers<!>(c: @Unique @Borrowed Coun
     return c.x * 2
 }
 
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-fun <!VIPER_TEXT!>wrongLetOverUniqueReceiver<!>(c: @Unique @Borrowed Counter): Int {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>wrongLetOverUniqueReceiver<!>(c: @Unique @Borrowed Counter): Int {
     postconditions<Int> { r -> r == c.let { it.x + 1 } }
     return c.x
 }<!>
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>letInQuantifiers<!>(arr: @Unique @Borrowed IntArray, n: Int) {
     preconditions {
         forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k].let { it >= 0 }) }
@@ -129,18 +116,15 @@ fun <!VIPER_TEXT!>letInQuantifiers<!>(arr: @Unique @Borrowed IntArray, n: Int) {
     postconditions<Unit> { forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] >= 0) } }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>letOverArrayInQuantifier<!>(arr: @Unique @Borrowed IntArray) {
     preconditions { forAll<Int> { k -> (0 <= k && k < arr.size) implies arr.let { it[k] >= 0 } } }
     postconditions<Unit> { forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] >= 0) } }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>letInVerify<!>(n: Int, o: Int?) {
     verify(n.let { it + 1 } == n + 1, (o?.let { it + 1 } ?: 0) >= 0 || n == n)
 }
 
-@AlwaysVerify
 fun <!VERIFICATION_SKIPPED!>sideEffectsInVerify<!>(n: Int): Int {
     var x = 0
     verify(<!PURITY_VIOLATION!>n.let { x = it; true }<!>)
@@ -149,13 +133,11 @@ fun <!VERIFICATION_SKIPPED!>sideEffectsInVerify<!>(n: Int): Int {
     return 0
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>letOverOldInPostcondition<!>(c: @Unique @Borrowed Counter) {
     postconditions<Unit> { c.x == old(c.x).let { it + 1 } }
     c.x = c.x + 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>localInLambdaInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r ->
         r == n.let {
@@ -166,7 +148,6 @@ fun <!VIPER_TEXT!>localInLambdaInPostcondition<!>(n: Int): Int {
     return n * 2 + 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>initializersInLambdaInPostcondition<!>(b: Box): Int {
     postconditions<Int> { r ->
         r == b.let {
@@ -178,19 +159,16 @@ fun <!VIPER_TEXT!>initializersInLambdaInPostcondition<!>(b: Box): Int {
     return if (b.v > 0) b.v else 0
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>safeCastInPostcondition<!>(x: Any): Int {
     postconditions<Int> { r -> r == ((x as? Int) ?: 0) }
     return if (x is Int) x else 0
 }
 
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-fun <!VIPER_TEXT!>wrongLetInPostcondition<!>(n: Int): Int {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>wrongLetInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r -> r == n.let { it + 1 } }
     return n
 }<!>
 
-@AlwaysVerify
 fun reassignmentInPostcondition(n: Int): Int {
     postconditions<Int> { r ->
         r == run {
@@ -202,7 +180,6 @@ fun reassignmentInPostcondition(n: Int): Int {
     return n
 }
 
-@AlwaysVerify
 fun assignmentInLoopInvariant(n: Int) {
     var i = 0
     var seen = 0
@@ -212,13 +189,11 @@ fun assignmentInLoopInvariant(n: Int) {
     }
 }
 
-@AlwaysVerify
 fun earlyReturnInPostcondition(n: Int): Int {
     postconditions<Int> { r -> r == n.let { <!UNSUPPORTED_FEATURE!>if (it < 0) return@let 0<!>; it } }
     return if (n < 0) 0 else n
 }
 
-@AlwaysVerify
 fun loopInPostcondition(n: Int): Int {
     postconditions<Int> { r ->
         r == run {
@@ -232,7 +207,6 @@ fun loopInPostcondition(n: Int): Int {
 
 fun <!VIPER_TEXT!>opaque<!>(n: Int): Int = n
 
-@AlwaysVerify
 fun methodCallInPostcondition(n: Int): Int {
     postconditions<Int> { r -> r == <!UNSUPPORTED_FEATURE!>opaque(n)<!> }
     return n

@@ -2,7 +2,6 @@
 // REPLACE_STDLIB_EXTENSIONS
 
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.verify
 
 @Suppress("NOTHING_TO_INLINE")
@@ -14,7 +13,6 @@ inline fun Int?.isNull() = this == null
 inline fun Int?.isNotNull() = this != null
 
 @Suppress("LABEL_NAME_CLASH")
-@AlwaysVerify
 fun Int?.<!VIPER_TEXT!>with_run_extension_labeled<!>() {
     val cond1 = isNull() || this@with_run_extension_labeled.isNotNull()
     verify(cond1)

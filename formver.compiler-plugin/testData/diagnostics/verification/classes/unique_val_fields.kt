@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Inner(var x: Int)
 class Outer(val inner: @Unique Inner, var y: Int)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>bumpBoth<!>(o: @Unique @Borrowed Outer) {
     postconditions<Unit> {
         o.inner.x == old(o.inner.x) + 1
@@ -15,7 +14,6 @@ fun <!VIPER_TEXT!>bumpBoth<!>(o: @Unique @Borrowed Outer) {
     o.y = o.y + 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>callBumpTwice<!>(o: @Unique @Borrowed Outer) {
     preconditions { o.inner.x == 0 && o.y == 0 }
     bumpBoth(o)
@@ -28,28 +26,24 @@ fun <!VIPER_TEXT!>bump<!>(i: @Unique @Borrowed Inner) {
     i.x = i.x + 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>borrowThroughVal<!>(o: @Unique @Borrowed Outer) {
     preconditions { o.inner.x == 5 }
     bump(o.inner)
     verify(o.inner.x == 6)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>moveOutThroughVal<!>(o: @Unique Outer): @Unique Inner {
     postconditions<Inner> { r -> r.x == 3 }
     o.inner.x = 3
     return o.inner
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>readThroughSharedVal<!>(o: Outer): Inner {
     return o.inner
 }
 
 class Buf(val data: @Unique IntArray, var count: Int)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>push<!>(b: @Unique @Borrowed Buf, v: Int) {
     preconditions { 0 <= b.count && b.count < b.data.size }
     postconditions<Unit> {
@@ -61,7 +55,6 @@ fun <!VIPER_TEXT!>push<!>(b: @Unique @Borrowed Buf, v: Int) {
     b.count = b.count + 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>pushTwice<!>(b: @Unique @Borrowed Buf) {
     preconditions { b.count == 0 && b.data.size >= 2 }
     push(b, 7)
@@ -75,24 +68,19 @@ class B(val c: @Unique C)
 class A(val b: @Unique B)
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>xOf<!>(a: @Unique A): Int = a.b.c.x
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>innerXOf<!>(o: @Unique Outer): Int = o.inner.x
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>firstOrZero<!>(b: @Unique Buf): Int = if (b.data.size > 0) b.data[0] else 0
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>bumpThroughPure<!>(a: @Unique @Borrowed A) {
     postconditions<Unit> { xOf(a) == old(xOf(a)) + 1 }
     a.b.c.x = a.b.c.x + 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>pushThroughPure<!>(b: @Unique @Borrowed Buf) {
     preconditions { b.count == 0 && b.data.size >= 1 }
     push(b, 7)

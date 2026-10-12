@@ -8,11 +8,10 @@ interface GenericView<T> {
 }
 
 class GenericCell<T>(val contents: T) : GenericView<T> {
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>value<!>(): T = contents
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>same<!>(candidate: T): Boolean = candidate == contents
+    @Pure @Unique override fun <!VIPER_TEXT!>value<!>(): T = contents
+    @Pure @Unique override fun <!VIPER_TEXT!>same<!>(candidate: T): Boolean = candidate == contents
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>genericBooleanView<!>() {
     val cell: @Unique GenericCell<Boolean> = GenericCell(true)
     val view: @Unique GenericView<Boolean> = cell
@@ -23,11 +22,10 @@ fun <!VIPER_TEXT!>genericBooleanView<!>() {
 }
 
 class BooleanView(val contents: Boolean) : GenericView<Boolean> {
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>value<!>(): Boolean = contents
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>same<!>(candidate: Boolean): Boolean = candidate == contents
+    @Pure @Unique override fun <!VIPER_TEXT!>value<!>(): Boolean = contents
+    @Pure @Unique override fun <!VIPER_TEXT!>same<!>(candidate: Boolean): Boolean = candidate == contents
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>specializedImplementation<!>() {
     val cell: @Unique BooleanView = BooleanView(true)
     val view: @Unique GenericView<Boolean> = cell
@@ -37,7 +35,6 @@ fun <!VIPER_TEXT!>specializedImplementation<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>lendGeneric<!>(view: @Unique @Borrowed GenericView<Boolean>): Boolean {
     postconditions<Boolean> { result ->
         result == old(view.value())
@@ -47,7 +44,6 @@ fun <!VIPER_TEXT!>lendGeneric<!>(view: @Unique @Borrowed GenericView<Boolean>): 
     return view.value()
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>borrowGenericBinding<!>() {
     val cell: @Unique GenericCell<Boolean> = GenericCell(true)
     val value = lendGeneric(cell)
@@ -58,7 +54,6 @@ fun <!VIPER_TEXT!>borrowGenericBinding<!>() {
 
 class GenericToken
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>genericNullableView<!>(token: GenericToken?) {
     val cell: @Unique GenericCell<GenericToken?> = GenericCell(token)
     val view: @Unique GenericView<GenericToken?> = cell
@@ -67,7 +62,6 @@ fun <!VIPER_TEXT!>genericNullableView<!>(token: GenericToken?) {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>genericFalseClaim<!>() {
     val cell: @Unique GenericCell<Boolean> = GenericCell(true)
     val view: @Unique GenericView<Boolean> = cell

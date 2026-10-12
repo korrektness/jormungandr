@@ -9,11 +9,9 @@ class Node(val value: Int, var next: @Unique Node?)
 fun <!VERIFICATION_SKIPPED!>readShared<!>(b: Box): Int = <!UNSUPPORTED_OWNERSHIP!>b.content<!><!>
 
 @Pure
-@AlwaysVerify
 fun <!VIPER_TEXT!>readUnique<!>(b: @Unique Box): Int = b.content
 
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-fun <!VIPER_TEXT!>callsShared<!>(b: Box): Int {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>callsShared<!>(b: Box): Int {
     <!VIPER_VERIFICATION_ERROR!>preconditionShared(b)<!>
     return readShared(b)
 }<!>
@@ -44,7 +42,6 @@ fun <!VERIFICATION_SKIPPED!>postconditionConsumed<!>(n: @Unique Node) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>postconditionConsumedOld<!>(n: @Unique Node) {
     postconditions<Unit> {
         old(n.next) == old(n.next)
@@ -52,7 +49,6 @@ fun <!VIPER_TEXT!>postconditionConsumedOld<!>(n: @Unique Node) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>postconditionBorrowed<!>(n: @Unique @Borrowed Node) {
     preconditions {
         n.next == null

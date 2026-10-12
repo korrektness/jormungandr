@@ -108,6 +108,8 @@ fun FirBasedSymbol<*>.isManual(session: FirSession) = hasAnnotation(annotationId
 
 fun FirFunctionSymbol<*>.neverConvert(session: FirSession) = hasAnnotation(annotationId("NeverConvert"), session)
 
+fun FirFunctionSymbol<*>.neverVerify(session: FirSession) = hasAnnotation(annotationId("NeverVerify"), session)
+
 fun FirFunctionSymbol<*>.isFormverFunctionNamed(name: String) =
     this is FirNamedFunctionSymbol && callableId == formverCallableId(className = null, name)
 

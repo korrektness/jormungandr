@@ -2,7 +2,6 @@
 // USE_STDLIB
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>swap<!>(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
     preconditions {
         0 <= i && i < arr.size
@@ -17,7 +16,6 @@ fun <!VIPER_TEXT!>swap<!>(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
     arr[j] = tmp
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>swapKeepsSingleQuantifiedFact<!>(arr: @Unique @Borrowed IntArray, i: Int, j: Int, v: Int) {
     preconditions {
         0 <= i && i < arr.size
@@ -30,7 +28,6 @@ fun <!VIPER_TEXT!>swapKeepsSingleQuantifiedFact<!>(arr: @Unique @Borrowed IntArr
     swap(arr, i, j)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>swapKeepsSortedPrefix<!>(arr: @Unique @Borrowed IntArray, n: Int) {
     preconditions {
         0 <= n && n + 2 <= arr.size
@@ -42,7 +39,6 @@ fun <!VIPER_TEXT!>swapKeepsSortedPrefix<!>(arr: @Unique @Borrowed IntArray, n: I
     swap(arr, n, n + 1)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>selectionSort<!>(arr: @Unique @Borrowed IntArray) {
     postconditions<Unit> {
         forAll<Int> { a -> forAll<Int> { b -> (0 <= a && a < b && b < arr.size) implies (arr[a] <= arr[b]) } }
@@ -73,7 +69,6 @@ fun <!VIPER_TEXT!>selectionSort<!>(arr: @Unique @Borrowed IntArray) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>insertionSortWithSwap<!>(arr: @Unique @Borrowed IntArray) {
     postconditions<Unit> {
         forAll<Int> { a -> forAll<Int> { b -> (0 <= a && a < b && b < arr.size) implies (arr[a] <= arr[b]) } }
@@ -99,7 +94,6 @@ fun <!VIPER_TEXT!>insertionSortWithSwap<!>(arr: @Unique @Borrowed IntArray) {
 }
 
 // The frame is a loop invariant, and the goal after the loop mentions only the current state.
-@AlwaysVerify
 fun <!VIPER_TEXT!>loopFrameKeepsBound<!>(arr: @Unique @Borrowed IntArray, v: Int) {
     preconditions {
         forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] <= v) }
@@ -118,7 +112,6 @@ fun <!VIPER_TEXT!>loopFrameKeepsBound<!>(arr: @Unique @Borrowed IntArray, v: Int
 }
 
 // User triggers are kept as written, with nothing derived next to them.
-@AlwaysVerify
 fun <!VIPER_TEXT!>userTriggerOnFrame<!>(arr: @Unique @Borrowed IntArray, i: Int) {
     preconditions { 0 <= i && i < arr.size }
     postconditions<Unit> {
@@ -135,7 +128,6 @@ fun <!VIPER_TEXT!>first<!>(x: Int, y: Int): Int = x
 
 // The current-state reads that mention `k` have an arithmetic index, so no trigger is derived for `k`. The read of
 // `first` mentions `b`, which is bound inside `a`'s quantifier, so `a`'s derived trigger is a subterm without `b`.
-@AlwaysVerify
 fun <!VIPER_TEXT!>rejectedCandidates<!>(arr: @Unique @Borrowed IntArray) {
     preconditions {
         forAll<Int> { k -> (0 <= k && k + 1 < arr.size) implies (arr[k + 1] == arr[k]) }

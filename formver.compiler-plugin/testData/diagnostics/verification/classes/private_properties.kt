@@ -1,6 +1,5 @@
 // FULL_JDK
 
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.verify
 
 open class A {
@@ -26,7 +25,6 @@ class D: B() {
     val field: Int = 0
 }
 
-@AlwaysVerify
 @Suppress("USELESS_IS_CHECK")
 fun <!VIPER_TEXT!>extractPublic<!>() {
     val cond1 = C().field is Int

@@ -7,7 +7,6 @@ class Counter(
     var n: Int
 )
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Counter, k: Int) {
     preconditions {
         k >= 0

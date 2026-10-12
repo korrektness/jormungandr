@@ -16,19 +16,18 @@ interface BindingView {
 }
 
 open class BindingCell(var contents: Int) : BindingView {
-    @Pure @Unique @AlwaysVerify
+    @Pure @Unique
     final override fun <!VIPER_TEXT!>value<!>(): Int = contents
 
-    @Pure @Unique @AlwaysVerify
+    @Pure @Unique
     final override fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int = contents * factor
 
-    @Pure @Unique @AlwaysVerify
+    @Pure @Unique
     final override fun <!VIPER_TEXT!>read<!>(argument: @Unique BindingArgument): Int = contents + argument.number
 }
 
 class InheritedBindingCell(contents: Int) : BindingCell(contents)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inheritedBinding<!>() {
     val cell: @Unique InheritedBindingCell = InheritedBindingCell(1)
     cell.contents = 6
@@ -40,7 +39,6 @@ fun <!VIPER_TEXT!>inheritedBinding<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>moveBinding<!>() {
     val cell: @Unique BindingCell = BindingCell(1)
     cell.contents = 7
@@ -52,7 +50,6 @@ fun <!VIPER_TEXT!>moveBinding<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>borrowBinding<!>() {
     val cell: @Unique BindingCell = BindingCell(1)
     cell.contents = 9
@@ -71,7 +68,6 @@ fun readBinding(view: @Unique @Borrowed BindingView): Int {
     return view.value() + view.scaled(2)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>borrowedCallBinding<!>() {
     val cell: @Unique BindingCell = BindingCell(1)
     cell.contents = 4
@@ -81,7 +77,6 @@ fun <!VIPER_TEXT!>borrowedCallBinding<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>bareInterface<!>(view: @Unique @Borrowed BindingView) {
     val cell: @Unique BindingCell = BindingCell(7)
     val known: @Unique BindingView = cell

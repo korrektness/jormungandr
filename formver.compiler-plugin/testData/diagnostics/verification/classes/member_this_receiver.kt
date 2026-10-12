@@ -6,7 +6,7 @@ class TomlMultilineString(private val isStringType: Boolean) {
     private var isInMultilineBasic = false
     private var isInMultilineLiteral = false
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>trackMultilineString<!>(line: String) {
         preconditions { !(isInMultilineBasic && isInMultilineLiteral) }
         postconditions<Unit> { !(isInMultilineBasic && isInMultilineLiteral) }
@@ -34,7 +34,6 @@ class TomlMultilineString(private val isStringType: Boolean) {
     }
 
     // A shared `this` gives no permission: the write is dropped and the read is unknown.
-    @AlwaysVerify
     fun <!VIPER_TEXT!>writeThroughShared<!>() {
         isInMultilineBasic = true
         val basic = isInMultilineBasic

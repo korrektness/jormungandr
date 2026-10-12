@@ -13,7 +13,6 @@ abstract class Counter {
 }
 
 class Incrementer : Counter() {
-    @AlwaysVerify
     override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
         preconditions { n >= -1 }
         postconditions<Int> { r -> r == n + 1 }
@@ -22,7 +21,6 @@ class Incrementer : Counter() {
 }
 
 class Identity : Counter() {
-    @AlwaysVerify
     override fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>step<!>(n: Int): Int {
         postconditions<Int> { r -> r == n }
         return n
@@ -30,8 +28,7 @@ class Identity : Counter() {
 }
 
 class Inheriting : Counter() {
-    <!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-    override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
+    <!VIPER_VERIFICATION_ERROR!>override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
         return n
     }<!>
 }
@@ -53,7 +50,6 @@ class Halving : Measure {
         postconditions<Int> { r -> r == limit / 2 }
     }
 
-    @AlwaysVerify
     override fun <!VIPER_TEXT!>size<!>(limit: Int): Int = limit / 2
 }
 
@@ -64,6 +60,5 @@ class Positive : Measure {
         postconditions<Int> { r -> r == 1 }
     }
 
-    @AlwaysVerify
     override fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>size<!>(limit: Int): Int = 1
 }

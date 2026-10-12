@@ -25,54 +25,54 @@ open class Counter(var count: Int) {
     @Unique
     fun <!VIPER_TEXT!>finish<!>() {}
 
-    @AlwaysVerify @Unique
+    @Unique
     fun <!VIPER_TEXT!>consumeByPlain<!>() {
         count = 1
         plain()
     }
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>keepAfterPeek<!>() {
         peek()
         count = 2
         verify(count == 2)
     }
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>staleAfterPeek<!>() {
         count = 2
         peek()
         verify(<!VIPER_VERIFICATION_ERROR!>count == 2<!>)
     }
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>restatedByBump<!>() {
         count = 2
         bump()
         verify(count == 3)
     }
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>staleAfterTouch<!>() {
         count = 2
         touch()
         verify(<!VIPER_VERIFICATION_ERROR!>count == 2<!>)
     }
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>keepAfterValue<!>() {
         count = 2
         val v = value()
         verify(v == 2, count == 2)
     }
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>wrongValue<!>() {
         count = 2
         verify(<!VIPER_VERIFICATION_ERROR!>value() == 3<!>)
     }
 
-    @AlwaysVerify @Unique
+    @Unique
     fun <!VIPER_TEXT!>consumeByFinish<!>() {
         count = 1
         finish()
@@ -80,14 +80,14 @@ open class Counter(var count: Int) {
 }
 
 class Tally(count: Int, var total: Int) : Counter(count) {
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>bumpInBase<!>() {
         count = 2
         bump()
         verify(count == 3)
     }
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>subclassFieldsLost<!>() {
         total = 5
         bump()
@@ -114,13 +114,11 @@ class Built(var a: Int, val tag: Int) {
     fun <!VIPER_TEXT!>peek<!>() {}
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>builtKeepsTag<!>() {
     val x: @Unique Built = Built(1, 2)
     verify(x.tag == 2)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>builtKeepsA<!>() {
     val x: @Unique Built = Built(1, 2)
     verify(<!VIPER_VERIFICATION_ERROR!>x.a == 1<!>)

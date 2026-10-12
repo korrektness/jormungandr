@@ -4,12 +4,13 @@ SnaKt translates Kotlin code with formal specifications to [Viper](https://www.p
 
 ## Verification Control
 
-By default, SnaKt only verifies functions with Kotlin `contract { }` blocks. To verify functions with SnaKt specifications:
+SnaKt converts and verifies every function in the sources being compiled. A function's specification comes from its
+`preconditions` and `postconditions` blocks, its Kotlin `contract { }`, its ownership annotations, `@Pure`, and its
+types:
 
 ```kotlin
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify  // Enables verification for this function
 fun divide(numerator: Int, denominator: Int): Int {
     preconditions { denominator != 0 }
     return numerator / denominator
@@ -17,25 +18,24 @@ fun divide(numerator: Int, denominator: Int): Int {
 ```
 
 **Annotations:**
-- `@AlwaysVerify` — verify this function regardless of plugin settings
-- `@NeverVerify` — skip verification even with contracts
+- `@NeverVerify` — do not verify this function or look at its body. Its signature and specification are still
+  converted for its callers, and problems in them are reported.
 - `@NeverConvert` — skip Viper conversion entirely
+
+A function that uses a construct SnaKt does not translate gets an `UNSUPPORTED_FEATURE` warning at the construct and a
+`VERIFICATION_SKIPPED` warning at its name, and is not verified. Compilation continues.
 
 **Plugin configuration** (in `build.gradle.kts`):
 ```kotlin
 formver {
-    verificationTargetsSelection("all_targets")  // Verify all functions
-    // or "targets_with_contract" (default) — only Kotlin contract { } blocks
-    // or "no_targets" — disable verification
+    verificationTargetsSelection("no_targets")  // Convert, but verify nothing
+    // or "all_targets" (default) — verify every function
 }
 ```
-
-Note that `@AlwaysVerify` overrides plugin settings.
 
 ## Preconditions and Postconditions
 
 ```kotlin
-@AlwaysVerify
 fun abs(x: Int): Int {
     postconditions<Int> { result ->
         result >= 0
@@ -108,9 +108,8 @@ class Refining : Base() {
 An override without a specification of its own has the specification of the declaration it overrides, and its body
 is verified against it. When several declarations it overrides have one, it has none and must write its own.
 
-The check runs when the override is converted. Unselected implementations are trusted under the configured
-per-function conversion and verification selection, including `@NeverVerify`; interface-law harnesses do not certify
-these method bodies. A class inheriting an implementation of a contract-bearing member is rejected with
+The check runs when the override is converted. An implementation left unverified by the plugin's selection or by
+`@NeverVerify` is trusted; interface-law harnesses do not certify these method bodies. A class inheriting an implementation of a contract-bearing member is rejected with
 `INVALID_OBSERVER`, because no refinement check runs under that class's bindings.
 A `@Pure` function outside the observer mechanism cannot be open or override another; such a function, and a call to it,
 is reported as an unsupported construct.
@@ -224,7 +223,6 @@ an additional observer axiom.
 ## Loop Invariants
 
 ```kotlin
-@AlwaysVerify
 fun sumUpTo(n: Int): Int {
     preconditions { n >= 0 }
     var sum = 0
@@ -255,7 +253,6 @@ A `for` loop over an `Int` progression written with `until`, `..<`, `..` or `dow
 `step`, puts its `loopInvariants` at the start of its body:
 
 ```kotlin
-@AlwaysVerify
 fun fill(arr: @Unique @Borrowed IntArray, v: Int) {
     postconditions<Unit> {
         forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] == v) }
@@ -278,7 +275,6 @@ range is empty. The body may assume the variable lies within the range. A step t
 Use `forAll<T>` for quantified formulas:
 
 ```kotlin
-@AlwaysVerify
 fun example(arr: @Unique @Borrowed IntArray): Unit {
     preconditions {
         forAll<Int> { j ->
@@ -421,13 +417,11 @@ the same object.
 ```kotlin
 class Counter(var n: Int)
 
-@AlwaysVerify
 fun bump(c: @Unique @Borrowed Counter) {
     postconditions<Unit> { c.n == old(c.n) + 1 }
     c.n = c.n + 1                 // verifies
 }
 
-@AlwaysVerify
 fun reset(c: Counter) {
     c.n = 0
     val k = c.n
@@ -474,7 +468,6 @@ inline fun setN(c: @Unique @Borrowed Counter, v: Int) {
     c.n = v
 }
 
-@AlwaysVerify
 fun caller(c: @Unique @Borrowed Counter) {
     setN(c, 5)
     verify(c.n == 5)              // verifies
@@ -522,7 +515,6 @@ An `IntArray` holds its elements as a sequence.
   Invariants).
 
 ```kotlin
-@AlwaysVerify
 fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
     preconditions {
         0 <= i && i < arr.size
@@ -550,7 +542,6 @@ For a linked structure, write a recursive `@Pure` function that returns a
 `Multiset<Int>`.
 
 ```kotlin
-@AlwaysVerify
 fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
     preconditions {
         0 <= i && i < arr.size

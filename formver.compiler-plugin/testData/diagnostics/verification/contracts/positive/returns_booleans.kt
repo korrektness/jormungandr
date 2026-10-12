@@ -1,10 +1,8 @@
 // FULL_JDK
 import kotlin.contracts.contract
 import kotlin.contracts.ExperimentalContracts
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>returns_true<!>(): Boolean {
     contract {
         returns()
@@ -14,7 +12,6 @@ fun <!VIPER_TEXT!>returns_true<!>(): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>returns_false<!>(): Boolean {
     contract {
         returns()
@@ -24,7 +21,6 @@ fun <!VIPER_TEXT!>returns_false<!>(): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>conditional_basic<!>(b: Boolean): Boolean {
     contract {
         returns(true) implies (true)
@@ -34,7 +30,6 @@ fun <!VIPER_TEXT!>conditional_basic<!>(b: Boolean): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>binary_logic_expressions<!>(a:Boolean, b: Boolean): Boolean {
     contract {
         returns(false) implies (b && false)
@@ -44,7 +39,6 @@ fun <!VIPER_TEXT!>binary_logic_expressions<!>(a:Boolean, b: Boolean): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>logical_not<!>(b: Boolean): Boolean {
     contract{
         returns(true) implies (!b && b)
@@ -54,7 +48,6 @@ fun <!VIPER_TEXT!>logical_not<!>(b: Boolean): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>call_fun_with_contracts<!>(b: Boolean): Boolean {
     contract {
         returns(true)
@@ -64,7 +57,6 @@ fun <!VIPER_TEXT!>call_fun_with_contracts<!>(b: Boolean): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 public fun <T> Collection<T>?.<!VIPER_TEXT!>isNullOrEmpty<!>(): Boolean {
     contract {
         returns(false) implies (this@isNullOrEmpty != null)

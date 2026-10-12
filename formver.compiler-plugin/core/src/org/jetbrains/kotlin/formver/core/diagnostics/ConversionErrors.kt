@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.error1
 import org.jetbrains.kotlin.diagnostics.warning0
+import org.jetbrains.kotlin.diagnostics.warning1
 
 /**
  * Diagnostics emitted by the conversion pipeline (FIR -> ExpEmbedding -> Viper).
@@ -30,13 +31,13 @@ object ConversionErrors : KtDiagnosticsContainer() {
     /**
      * A construct outside the fragment of Kotlin that SnaKt translates.
      */
-    val UNSUPPORTED_FEATURE by error1<PsiElement, String>()
+    val UNSUPPORTED_FEATURE by warning1<PsiElement, String>()
 
     /**
      * Per-function summary fired by `ProgramConverter.validateAll` whenever a registered declaration's
      * pipeline (signature embedding, body conversion, or validation) produced any blocking errors.
      */
-    val VERIFICATION_SKIPPED by error1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
+    val VERIFICATION_SKIPPED by warning1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
 
     override fun getRendererFactory() = ConversionErrorMessages
 }

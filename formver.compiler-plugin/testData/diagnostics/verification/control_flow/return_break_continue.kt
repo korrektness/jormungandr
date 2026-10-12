@@ -1,13 +1,10 @@
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>testReturn<!>(): Int {
     return 0
     return 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnFromLoop<!>(): Int {
     while (true) {
         return 0
@@ -15,7 +12,6 @@ fun <!VIPER_TEXT!>returnFromLoop<!>(): Int {
     return 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>whileBreak<!>(b: Boolean): Int {
     var i = 0
     while (b) {
@@ -25,7 +21,6 @@ fun <!VIPER_TEXT!>whileBreak<!>(b: Boolean): Int {
     return i
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>whileContinue<!>() {
     var b = true
     while (b) {
@@ -34,7 +29,6 @@ fun <!VIPER_TEXT!>whileContinue<!>() {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>whileNested<!>(b: Boolean) {
     while(b){
         while (b){
@@ -48,7 +42,6 @@ fun <!VIPER_TEXT!>whileNested<!>(b: Boolean) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>labelledBreak<!>(b: Boolean) {
     loop1@ while(b){
         loop2@ while (b){
@@ -61,7 +54,6 @@ fun <!VIPER_TEXT!>labelledBreak<!>(b: Boolean) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>labelledContinue<!>(b: Boolean) {
     loop1@ while(b){
         loop2@ while (b){
@@ -74,7 +66,6 @@ fun <!VIPER_TEXT!>labelledContinue<!>(b: Boolean) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>labelledWhileShadowing<!>(b: Boolean) {
     loop1@ while(b){
         loop1@ while (b){

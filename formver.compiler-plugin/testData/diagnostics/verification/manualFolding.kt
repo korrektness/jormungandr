@@ -11,7 +11,6 @@ class Test(
     x: Int
 ) : Super(x)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>test<!>(p: @Unique Test) {
     unfold(UniquePred(p))
     unfold(UniquePred(p as Super))
@@ -29,7 +28,6 @@ class Tree(
 )
 
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>contains<!>(tree: @Unique @Borrowed Tree?, search: Int) : Boolean {
     if (tree == null) return false
     unfold(UniquePred(tree))
@@ -43,7 +41,6 @@ fun <!VIPER_TEXT!>contains<!>(tree: @Unique @Borrowed Tree?, search: Int) : Bool
 }
 
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>combine<!>(left: @Unique Tree, right: @Unique Tree): @Unique Tree {
     unfold(UniquePred(left))
     unfold(UniquePred(right))

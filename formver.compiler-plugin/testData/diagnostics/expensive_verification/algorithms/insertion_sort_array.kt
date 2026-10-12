@@ -2,7 +2,6 @@
 // USE_STDLIB
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
     postconditions<Unit> {
         forAll<Int> { i ->
@@ -51,7 +50,6 @@ fun <!VIPER_TEXT!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
 
 class Sorter(val arr: @Unique IntArray)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>insertionSortThroughVal<!>(s: @Unique @Borrowed Sorter) {
     postconditions<Unit> {
         forAll<Int> { i ->

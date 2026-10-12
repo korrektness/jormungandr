@@ -7,13 +7,11 @@ class Inner(var x: Int)
 
 class Outer(var inner: @Unique Inner, var y: Int)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>freshNested<!>() {
     val o: @Unique Outer = Outer(Inner(0), 1)
     verify(o.inner.x == 0 && o.y == 1)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>storedLocal<!>() {
     val i: @Unique Inner = Inner(3)
     i.x = 4
@@ -25,7 +23,6 @@ open class Sup(var s: @Unique Inner)
 
 class Sub(s: @Unique Inner, var t: Int) : Sup(s)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>storedBySuperclass<!>(i: @Unique Inner) {
     i.x = 7
     val sub: @Unique Sub = Sub(i, 2)
@@ -37,14 +34,12 @@ class Holder(var y: Int) {
     var inner: @Unique Inner = Inner(0)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>initializedInBody<!>() {
     val h: @Unique Holder = Holder(1)
     h.inner.x = 2
     verify(h.y == 1 && h.inner.x == 2)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>initializedInBodyUnconstrained<!>() {
     val h: @Unique Holder = Holder(1)
     verify(<!VIPER_VERIFICATION_ERROR!>h.inner.x == 0<!>)
@@ -52,7 +47,6 @@ fun <!VIPER_TEXT!>initializedInBodyUnconstrained<!>() {
 
 class Node(val value: Int, var next: @Unique Node?)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>twoNodes<!>() {
     val l: @Unique Node = Node(1, Node(2, null))
     val n = l.next
@@ -64,7 +58,6 @@ fun <!VIPER_TEXT!>twoNodes<!>() {
 
 class Buf(val data: @Unique IntArray, var len: Int)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>storedInVal<!>(a: @Unique IntArray) {
     preconditions { a.size == 3 }
     refute(false)
@@ -76,7 +69,6 @@ fun <!VIPER_TEXT!>storedInVal<!>(a: @Unique IntArray) {
 @Manual
 class Tree(var left: @Unique Tree?, var data: Int)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>manualStored<!>(l: @Unique Tree) {
     unfold(UniquePred(l))
     l.data = 5

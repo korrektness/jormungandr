@@ -3,7 +3,6 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>recursiveSumOfIntegersUpToN<!>(n: Int): Int {
     preconditions { n >= 0 }
     postconditions<Int> { res -> res == n * (n + 1) / 2 }
@@ -12,7 +11,6 @@ fun <!VIPER_TEXT!>recursiveSumOfIntegersUpToN<!>(n: Int): Int {
     else return n + recursiveSumOfIntegersUpToN(n - 1)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>sumOfIntegersUpToN<!>(n: Int): Int {
     preconditions { n >= 0 }
     postconditions<Int> { res -> res == n * (n + 1) / 2 }

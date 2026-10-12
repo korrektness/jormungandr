@@ -1,6 +1,5 @@
 // FULL_JDK
 
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 
 val Int.intValProp: Int get() = this
@@ -9,13 +8,11 @@ var Int.intVarProp: Int
     get() = 0
     set(v) {}
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>extensionGetterProperty<!>() {
     val a = 0.intValProp
     val b = 1.intValProp.intValProp
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>extensionSetterProperty<!>() {
     42.intVarProp = 0
 }
@@ -28,12 +25,10 @@ var PrimitiveField.pfVarProp: Int
     get() = 0
     set(v) {}
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>extensionGetterPropertyUserDefinedClass<!>(pf: PrimitiveField) {
     val x = pf.pfValProp
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>extensionSetterPropertyUserDefinedClass<!>(pf: PrimitiveField) {
     pf.pfVarProp = 42
 }

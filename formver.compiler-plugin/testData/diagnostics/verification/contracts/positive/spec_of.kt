@@ -36,30 +36,25 @@ class Doubler {
         postconditions<Int> { r -> r == 2 * x }
     }
 
-    @AlwaysVerify
     fun <!VIPER_TEXT!>twice<!>(x: Int): Int = x + x
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>stepRelies<!>(c: Counter): Int {
     val r = c.step(3)
     verify(r > 3)
     return r
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>stepBreaksPrecondition<!>(c: Counter): Int {
     return <!VIPER_VERIFICATION_ERROR!>c.step(-1)<!>
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>sizeRelies<!>(m: Measure): Int {
     val r = m.size(10)
     verify(r <= 10)
     return r
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>twiceRelies<!>(d: Doubler): Int {
     val r = d.twice(4)
     verify(r == 8)

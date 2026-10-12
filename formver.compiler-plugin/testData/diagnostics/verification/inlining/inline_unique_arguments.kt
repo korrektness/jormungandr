@@ -67,69 +67,58 @@ fun <!VIPER_TEXT!>fresh<!>(): @Unique Counter {
     return c
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>pathToBorrowed<!>(h: @Unique @Borrowed Holder) {
     h.count = 2
     setX(h.inner, 5)
     verify(h.inner.x == 5 && h.count == 2)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>wrongPathToBorrowed<!>(h: @Unique @Borrowed Holder) {
     setX(h.inner, 5)
     verify(<!VIPER_VERIFICATION_ERROR!>h.inner.x == 0<!>)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>pathToSharedBorrowed<!>(h: @Unique @Borrowed Holder) {
     setShared(h.inner, 5)
     verify(h.inner.x == 5)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>pathToConsumed<!>(h: @Unique Holder) {
     h.inner.x = 4
     verify(consume(h.inner) == 4)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>freshToConsumed<!>() {
     val r = consume(fresh())
     verify(r == 3)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>constructorToConsumed<!>() {
     val r = consume(Counter(2))
     verify(r == 2)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>nestedPathToBorrowed<!>(h: @Unique @Borrowed Holder) {
     setXTwice(h.inner)
     verify(h.inner.x == 2)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>loopWithPathToBorrowed<!>(h: @Unique @Borrowed Holder, n: Int) {
     val k = countTo(h.inner, n)
     verify(h.inner.x == k)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>loopWithPathToSharedBorrowed<!>(h: @Unique @Borrowed Holder, n: Int) {
     countShared(h.inner, n)
 }
 
 // The temporary for `h.inner` has the static type `Tagged`, so `tag` is kept across the call.
-@AlwaysVerify
 fun <!VIPER_TEXT!>subtypeToBorrowed<!>(h: @Unique @Borrowed TaggedHolder) {
     h.inner.tag = 1
     setX(h.inner, 5)
     verify(h.inner.tag == 1 && h.inner.x == 5)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>annotatedLambdaParameter<!>(h: @Unique Holder) {
     giveInner(h) { c: @Unique Counter ->
         c.x = 7
@@ -137,7 +126,6 @@ fun <!VIPER_TEXT!>annotatedLambdaParameter<!>(h: @Unique Holder) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>annotatedBorrowedLambdaParameter<!>(c: @Unique Counter) {
     val r = give(c) { d: @Unique @Borrowed Counter ->
         d.x = 1
@@ -147,7 +135,6 @@ fun <!VIPER_TEXT!>annotatedBorrowedLambdaParameter<!>(c: @Unique Counter) {
 }
 
 // An inferred lambda parameter is shared, so the lambda cannot read a `var` property through it.
-@AlwaysVerify
 fun <!VERIFICATION_SKIPPED!>inferredLambdaParameter<!>(h: @Unique Holder) {
     giveInner(h) {
         it.x = 7
@@ -156,12 +143,10 @@ fun <!VERIFICATION_SKIPPED!>inferredLambdaParameter<!>(h: @Unique Holder) {
 }
 
 // The lambda assigns `h.inner` while `borrowThen` borrows it, so the borrowed value cannot be handed back.
-@AlwaysVerify
 fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>lambdaReassignsRetainedPath<!>(h: @Unique Holder) {
     <!UNSUPPORTED_OWNERSHIP!>borrowThen(h.inner) { h.inner = Counter(0) }<!>
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnInlineResult<!>(c: @Unique Counter): @Unique Counter {
     postconditions<Counter> { r -> r.x == old(c.x) + 1 }
     return successor(c)
@@ -171,27 +156,23 @@ fun <!VIPER_TEXT!>returnInlineResult<!>(c: @Unique Counter): @Unique Counter {
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>plusOne<!>(v: Int): Int = v + 1
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>resultIntoPath<!>(h: @Unique @Borrowed Holder) {
     h.inner = make(3)
     verify(h.inner.x == 3)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>resultIntoLocalPath<!>() {
     val h: @Unique Holder = Holder(Counter(0), 0)
     h.inner = make(3)
     verify(h.inner.x == 3)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>plainResultIntoPathField<!>(h: @Unique @Borrowed Holder) {
     h.inner.x = plusOne(2)
     h.count = plusOne(1)
     verify(h.inner.x == 3 && h.count == 2)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>conditionalIntoPathField<!>(h: @Unique @Borrowed Holder, b: Boolean) {
     h.inner.x = if (b) 1 else 2
     verify(h.inner.x >= 1)

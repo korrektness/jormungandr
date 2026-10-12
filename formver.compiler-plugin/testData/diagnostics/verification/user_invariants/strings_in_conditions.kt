@@ -3,7 +3,6 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>firstNotSortedIndex<!>(s: String): Int {
     postconditions<Int> { res ->
         0 <= res && res <= s.length
@@ -30,13 +29,11 @@ fun <!VIPER_TEXT!>firstNotSortedIndex<!>(s: String): Int {
 }
 
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnNewString<!>(): String {
     return "42"
 }
 
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>addCharacterTimes<!>(s: String, c: Char, n: Int): String {
     preconditions {
         n >= 0

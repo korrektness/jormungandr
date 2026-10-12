@@ -200,10 +200,14 @@ class ProgramConverter(
     /**
      * Embed the declaration's signature and embeds the body.
      */
+    /**
+     * Embeds [declaration]'s signature and body. A `@NeverVerify` function contributes only its signature, so its body
+     * produces no diagnostics.
+     */
     fun register(declaration: FirSimpleFunction) {
         registeredSymbol = declaration.symbol
         val signature = embedCompleteSignature(declaration.symbol)
-        embedFunctionBody(declaration.symbol, signature)
+        if (!declaration.symbol.neverVerify(session)) embedFunctionBody(declaration.symbol, signature)
         val hasUniquenessErrors = uniquenessOutcomeOf(declaration).hasErrors
         registered += RegisteredFunction(declaration, signature.signature, signature.returnTarget, hasUniquenessErrors)
         registerRefinements(declaration, signature.signature)
@@ -234,6 +238,7 @@ class ProgramConverter(
      * conversion error has been reported by the time this returns, emit a [ConversionErrors.VERIFICATION_SKIPPED]
      * summary on every registered declaration so the user sees per-function attribution for the bail-out.
      * Otherwise, emit it on every registered declaration with uniqueness or locality errors.
+     * A `@NeverVerify` declaration never receives it.
      * Callers should inspect [hadConversionError] afterwards and skip [linearizeAll] when set, and skip verification
      * when [skipsVerification] is set after [linearizeAll].
      */
@@ -257,6 +262,7 @@ class ProgramConverter(
             }
         }
         for (entry in registered) {
+            if (entry.declaration.symbol.neverVerify(session)) continue
             val reason = when {
                 hadConversionError -> "errors in its declaration"
                 entry.hasUniquenessErrors -> "uniqueness or locality errors"

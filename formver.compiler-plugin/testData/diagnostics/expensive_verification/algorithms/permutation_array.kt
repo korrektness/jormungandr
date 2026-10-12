@@ -2,7 +2,6 @@
 // USE_STDLIB
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>selectionSort<!>(arr: @Unique @Borrowed IntArray) {
     postconditions<Unit> {
         forAll<Int> { i ->
@@ -60,7 +59,6 @@ fun <!VIPER_TEXT!>selectionSort<!>(arr: @Unique @Borrowed IntArray) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>swap<!>(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
     preconditions {
         0 <= i && i < arr.size
@@ -74,7 +72,6 @@ fun <!VIPER_TEXT!>swap<!>(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
     arr[j] = t
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>rotateFirstThree<!>(arr: @Unique @Borrowed IntArray) {
     preconditions {
         arr.size >= 3
@@ -86,7 +83,6 @@ fun <!VIPER_TEXT!>rotateFirstThree<!>(arr: @Unique @Borrowed IntArray) {
     swap(arr, 1, 2)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>zeroAll<!>(arr: @Unique @Borrowed IntArray) {
     postconditions<Unit> {
         <!VIPER_VERIFICATION_ERROR!>contents(arr)<!> == old(contents(arr))
@@ -101,7 +97,6 @@ fun <!VIPER_TEXT!>zeroAll<!>(arr: @Unique @Borrowed IntArray) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>multisetOperators<!>(x: Int, y: Int) {
     verify(
         multisetOf(x, y, x).count(x) >= 2,

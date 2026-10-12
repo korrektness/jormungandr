@@ -19,7 +19,6 @@ inline fun <!VIPER_TEXT!>borrowTwiceThen<!>(c: @Unique @Borrowed Counter, f: () 
     borrowThen(c) { f() }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder, b: Boolean) {
     borrowThen(h.inner) {
         if (b) return
@@ -27,15 +26,13 @@ fun <!VIPER_TEXT!>returnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder, b: B
     verify(h.inner.x == 1)
 }
 
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-fun <!VIPER_TEXT!>wrongReturnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder) {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>wrongReturnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder) {
     postconditions<Unit> { h.inner.x == 0 }
     borrowThen(h.inner) {
         return
     }
 }<!>
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnThroughBorrowedPathKeepsSibling<!>(h: @Unique Holder): Int {
     postconditions<Int> { r -> r == 2 }
     h.count = 2
@@ -45,7 +42,6 @@ fun <!VIPER_TEXT!>returnThroughBorrowedPathKeepsSibling<!>(h: @Unique Holder): I
     return 0
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnThroughNestedBorrows<!>(h: @Unique @Borrowed Holder, b: Boolean) {
     borrowTwiceThen(h.inner) {
         if (b) return
@@ -53,14 +49,12 @@ fun <!VIPER_TEXT!>returnThroughNestedBorrows<!>(h: @Unique @Borrowed Holder, b: 
     verify(h.inner.x == 1)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnThroughConsumedPath<!>(h: @Unique Holder, b: Boolean) {
     consumeThen(h.inner) {
         if (b) return
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>breakThroughBorrowedPath<!>(h: @Unique @Borrowed Holder, n: Int) {
     var i = 0
     while (i < n) {
@@ -73,7 +67,6 @@ fun <!VIPER_TEXT!>breakThroughBorrowedPath<!>(h: @Unique @Borrowed Holder, n: In
     verify(h.inner.x == 2)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>continueThroughBorrowedPath<!>(h: @Unique @Borrowed Holder, n: Int) {
     var i = 0
     while (i < n) {

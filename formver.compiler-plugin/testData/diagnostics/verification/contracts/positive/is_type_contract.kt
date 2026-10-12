@@ -2,10 +2,8 @@
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>isString<!>(x: Any?): Boolean {
     contract {
         returns(true) implies (x is String)
@@ -14,7 +12,6 @@ fun <!VIPER_TEXT!>isString<!>(x: Any?): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun Any.<!VIPER_TEXT!>isString<!>(): Boolean {
     contract {
         returns(true) implies (this@isString is String)
@@ -23,7 +20,6 @@ fun Any.<!VIPER_TEXT!>isString<!>(): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>subtypeTransitive<!>(x: Unit) {
     contract {
         returns() implies (x is Any?)
@@ -37,7 +33,6 @@ open class Foo() {
 class Bar() : Foo()
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>constructorReturnType<!>(): Boolean {
     contract {
         returns(true)
@@ -46,7 +41,6 @@ fun <!VIPER_TEXT!>constructorReturnType<!>(): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>subtypeSuperType<!>(bar: Bar) {
     contract {
         returns() implies (bar is Foo)
@@ -54,7 +48,6 @@ fun <!VIPER_TEXT!>subtypeSuperType<!>(bar: Bar) {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>typeOfField<!>(foo: Foo): Boolean {
     contract {
         returns(true)

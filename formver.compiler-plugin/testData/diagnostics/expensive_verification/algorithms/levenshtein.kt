@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.formver.plugin.*
 //
 // Row `i` of the table bounds every entry by `max(j, i)`; `r <= a || r <= b` states
 // `r <= max(a, b)`.
-@AlwaysVerify
 fun <!VIPER_TEXT!>levenshteinDistance<!>(first: String, second: String): Int {
     postconditions<Int> { result ->
         0 <= result

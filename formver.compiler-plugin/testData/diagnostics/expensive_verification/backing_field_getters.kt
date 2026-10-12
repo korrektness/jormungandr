@@ -1,7 +1,6 @@
 // FULL_JDK
 import kotlin.contracts.contract
 import kotlin.contracts.ExperimentalContracts
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.verify
 
 class Z
@@ -13,7 +12,6 @@ class X {
     val y = Y()
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>cascadeGet<!>(x: X): Z {
     return x.y.z
 }
@@ -54,14 +52,12 @@ class Baz {
     val x: Int = 4
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>nullableReceiverNotNullSafeGet<!>() {
     val f: Baz? = Baz()
     val cond1 = f?.x != null
     verify(cond1)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>nullableReceiverNullSafeGet<!>() {
     val f: Baz? = null
     val cond1 = f?.x == null
@@ -69,7 +65,6 @@ fun <!VIPER_TEXT!>nullableReceiverNullSafeGet<!>() {
 }
 
 @Suppress("UNNECESSARY_SAFE_CALL")
-@AlwaysVerify
 fun <!VIPER_TEXT!>nonNullableReceiverSafeGet<!>() {
     val f: Baz = Baz()
     val cond1 = f?.x != null
@@ -82,7 +77,6 @@ open class ClassI(val x: Int, val y: Int) {
 
 class ClassII(final override val z: Z) : ClassI(10, 10)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>checkPrimary<!>(x: Int, y: Int) {
     val classI = ClassI(x, y)
     val z = Z()

@@ -3,21 +3,18 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>bothEmpty<!>(arg: Boolean): Boolean {
     preconditions {}
     postconditions<Boolean> {}
     return arg
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>preEmpty<!>(arg: Boolean): Boolean {
     preconditions {}
     postconditions<Boolean> { ret -> ret == arg }
     return arg
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>postEmpty<!>(arg: Boolean): Boolean {
     preconditions {
         arg == true
@@ -26,7 +23,6 @@ fun <!VIPER_TEXT!>postEmpty<!>(arg: Boolean): Boolean {
     return arg
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>testInsertedReturn<!>() {
     preconditions {
         return@preconditions Unit

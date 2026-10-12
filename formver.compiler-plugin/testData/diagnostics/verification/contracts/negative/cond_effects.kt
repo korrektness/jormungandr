@@ -1,10 +1,8 @@
 // FULL_JDK
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>compoundConditionalEffect<!>(b: Boolean): Unit {
     contract {
         <!CONDITIONAL_EFFECT_ERROR!>returns() implies (b && false)<!>
@@ -12,7 +10,6 @@ fun <!VIPER_TEXT!>compoundConditionalEffect<!>(b: Boolean): Unit {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>mayReturnNonNull<!>(x: Any?): Any? {
     contract {
         <!CONDITIONAL_EFFECT_ERROR!>returns(null) implies (x is Int)<!>
@@ -21,7 +18,6 @@ fun <!VIPER_TEXT!>mayReturnNonNull<!>(x: Any?): Any? {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>mayReturnNull<!>(x: Any?): Any? {
     contract {
         <!CONDITIONAL_EFFECT_ERROR!>returnsNotNull() implies (x is Int)<!>
@@ -34,7 +30,6 @@ fun <!VIPER_TEXT!>mayReturnNull<!>(x: Any?): Any? {
  * The function return statement has been negated.
  */
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>isNullOrEmptyWrong<!>(seq: CharSequence?): Boolean {
     contract {
         <!CONDITIONAL_EFFECT_ERROR!>returns(false) implies (seq != null)<!>
@@ -43,7 +38,6 @@ fun <!VIPER_TEXT!>isNullOrEmptyWrong<!>(seq: CharSequence?): Boolean {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>recursiveContract<!>(n: Int, x: Any?): Boolean {
     contract {
         <!CONDITIONAL_EFFECT_ERROR!>returns(true) implies (x is String)<!>

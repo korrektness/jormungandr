@@ -1,7 +1,6 @@
 // FULL_JDK
 
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.verify
 
 fun <T> <!VIPER_TEXT!>idFun<!>(t: T): T = t
@@ -16,7 +15,6 @@ inline fun <T> T.unitRun(block: T.() -> Unit) {
     block()
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>useInlineUnit<!>(b: Boolean) {
     val unitRes = b.unitRun {
         if (this) {

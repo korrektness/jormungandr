@@ -2,7 +2,6 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>fill<!>(arr: @Unique @Borrowed IntArray, v: Int) {
     postconditions<Unit> {
         forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] == v) }
@@ -15,7 +14,6 @@ fun <!VIPER_TEXT!>fill<!>(arr: @Unique @Borrowed IntArray, v: Int) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>sum<!>(arr: @Unique @Borrowed IntArray): Int {
     preconditions {
         forAll<Int> { k -> (0 <= k && k < arr.size) implies (0 <= arr[k] && arr[k] <= 10) }
@@ -33,7 +31,6 @@ fun <!VIPER_TEXT!>sum<!>(arr: @Unique @Borrowed IntArray): Int {
 }
 
 // The bound is evaluated once, so changing `n` in the body does not change the iterations.
-@AlwaysVerify
 fun <!VIPER_TEXT!>countInclusive<!>(n: Int): Int {
     preconditions { n >= 0 }
     postconditions<Int> { result -> result == n + 1 }
@@ -47,7 +44,6 @@ fun <!VIPER_TEXT!>countInclusive<!>(n: Int): Int {
     return count
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>clearBackwards<!>(arr: @Unique @Borrowed IntArray) {
     postconditions<Unit> {
         forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] == 0) }
@@ -60,7 +56,6 @@ fun <!VIPER_TEXT!>clearBackwards<!>(arr: @Unique @Borrowed IntArray) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>evenSlots<!>(arr: @Unique @Borrowed IntArray, s: Int) {
     for (i in 0 until arr.size step 2) {
         arr[i] = 1
@@ -71,7 +66,6 @@ fun <!VIPER_TEXT!>evenSlots<!>(arr: @Unique @Borrowed IntArray, s: Int) {
 }
 
 // `continue` still steps the variable, and `break` leaves with it in bounds.
-@AlwaysVerify
 fun <!VIPER_TEXT!>skipAndStop<!>(arr: @Unique @Borrowed IntArray, stop: Int): Int {
     postconditions<Int> { result -> 0 <= result && result <= arr.size }
     var last = 0
@@ -85,7 +79,6 @@ fun <!VIPER_TEXT!>skipAndStop<!>(arr: @Unique @Borrowed IntArray, stop: Int): In
 }
 
 // A range with no elements leaves the variable at its start.
-@AlwaysVerify
 fun <!VIPER_TEXT!>emptyRange<!>(): Int {
     postconditions<Int> { result -> result == 0 }
     var count = 0
@@ -96,7 +89,6 @@ fun <!VIPER_TEXT!>emptyRange<!>(): Int {
     return count
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>writePastEnd<!>(arr: @Unique @Borrowed IntArray) {
     for (i in 0..arr.size) {
         <!POSSIBLE_INDEX_OUT_OF_BOUND!>arr[i] = 0<!>

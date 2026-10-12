@@ -14,38 +14,32 @@ fun <!VIPER_TEXT!>difference<!>(a: Int, b: Int): Int {
     return a - b
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inlineCallWithDefault<!>(n: Int): Int {
     postconditions<Int> { r -> r == n * 2 + 1 }
     return scaled(n) { it + 1 }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inlineCallWithExplicitArgument<!>(n: Int): Int {
     postconditions<Int> { r -> r == n * 3 + 1 }
     return scaled(n, 3) { it + 1 }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>callWithDefault<!>(n: Int): Int {
     postconditions<Int> { r -> r == n + 1 }
     return offset(n)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>callWithNamedArgumentsReordered<!>(a: Int, b: Int): Int {
     postconditions<Int> { r -> r == a - b }
     return difference(b = b, a = a)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inlineCallWithDefaultInSpecification<!>(n: Int): Int {
     postconditions<Int> { r -> r == scaled(n) { it + 1 } }
     return n * 2 + 1
 }
 
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-fun <!VIPER_TEXT!>wrongInlineCallWithDefault<!>(n: Int): Int {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>wrongInlineCallWithDefault<!>(n: Int): Int {
     postconditions<Int> { r -> r == n * 3 + 1 }
     return scaled(n) { it + 1 }
 }<!>
@@ -57,13 +51,11 @@ fun <!VIPER_TEXT!>span<!>(lo: Int, hi: Int = lo * 2): Int {
 
 inline fun Int.<!VIPER_TEXT!>doubled<!>(k: Int = this, f: (Int) -> Int): Int = f(this + k)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>defaultReadsEarlierParameter<!>(n: Int): Int {
     postconditions<Int> { r -> r == n }
     return span(n + 0)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>defaultReadsReceiver<!>(n: Int): Int {
     postconditions<Int> { r -> r == n * 2 }
     return n.doubled { it }
@@ -78,14 +70,12 @@ fun <!VIPER_TEXT!>counterPlus<!>(c: @Unique @Borrowed Counter, k: Int = c.x): In
     return k + 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inlineDefaultReadsUniqueField<!>(c: @Unique Counter): Int {
     postconditions<Int> { r -> r == 5 }
     c.x = 4
     return withCounter(c) { it + 1 }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>defaultReadsUniqueField<!>(c: @Unique Counter): Int {
     postconditions<Int> { r -> r == 5 }
     c.x = 4

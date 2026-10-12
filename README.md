@@ -100,8 +100,8 @@ The plugin accepts a number of command line options which can be passed via
 - Option `log_level`: permitted values `only_warnings`, `short_viper_dump`, `full_viper_dump` (default:
   `only_warnings`).
 - Option `error_style`: permitted values `user_friendly`, `original_viper` and `both` (default: `user_friendly`).
-- Options `conversion_targets_selection` and `verification_targets_selection`: permitted values `no_targets`,
-  `targets_with_contract`, `all_targets` (default: `targets_with_contract`).
+- Options `conversion_targets_selection` and `verification_targets_selection`: permitted values `no_targets`
+  and `all_targets` (default: `all_targets`).
 
 ### Z3
 

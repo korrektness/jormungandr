@@ -4,7 +4,6 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 class Box(var value: Int)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>boundAll<!>(b: @Unique @Borrowed Box) {
     postconditions<Unit> {
         forAll<Int> { k -> (0 <= k && k < 3) implies (b.value + k >= k) }
@@ -12,7 +11,6 @@ fun <!VIPER_TEXT!>boundAll<!>(b: @Unique @Borrowed Box) {
     b.value = 0
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>clearIfPresent<!>(b: @Unique @Borrowed Box?) {
     postconditions<Unit> {
         b == null || b.value == 0
@@ -20,7 +18,6 @@ fun <!VIPER_TEXT!>clearIfPresent<!>(b: @Unique @Borrowed Box?) {
     if (b != null) b.value = 0
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inRange<!>(b: @Unique @Borrowed Box) {
     postconditions<Unit> {
         0 <= b.value && b.value <= 10
@@ -30,7 +27,6 @@ fun <!VIPER_TEXT!>inRange<!>(b: @Unique @Borrowed Box) {
 
 class ArrayHolder(var arr: @Unique IntArray)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>sizeGuardThroughVar<!>(h: @Unique @Borrowed ArrayHolder) {
     postconditions<Unit> {
         forAll<Int> { j -> (0 <= j && j < h.arr.size) implies (h.arr[j] == h.arr[j]) }

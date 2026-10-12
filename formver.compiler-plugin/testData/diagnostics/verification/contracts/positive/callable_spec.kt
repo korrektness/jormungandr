@@ -20,7 +20,6 @@ fun interface CounterSpec {
     operator fun <!VIPER_TEXT!>invoke<!>(): Int
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>callTwice<!>(f: @Unique @Borrowed CounterSpec): Int {
     postconditions<Int> { result ->
         f.value() == old(f.value()) + 2 * old(f.inc())
@@ -31,7 +30,6 @@ fun <!VIPER_TEXT!>callTwice<!>(f: @Unique @Borrowed CounterSpec): Int {
     return f()
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>applyTwice<!>(f: @Unique CounterSpec): Int {
     postconditions<Int> { result -> result == old(f.value()) + 2 * old(f.inc()) }
     f()

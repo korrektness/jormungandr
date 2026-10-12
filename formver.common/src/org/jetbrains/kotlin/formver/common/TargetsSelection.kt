@@ -6,13 +6,13 @@
 package org.jetbrains.kotlin.formver.common
 
 enum class TargetsSelection {
-    FORCE_DISABLE, NO_TARGETS, TARGETS_WITH_CONTRACT, ALL_TARGETS;
+    FORCE_DISABLE, NO_TARGETS, ALL_TARGETS;
 
 
     companion object {
         @JvmStatic
         fun defaultBehaviour(): TargetsSelection {
-            return TARGETS_WITH_CONTRACT
+            return ALL_TARGETS
         }
     }
 }

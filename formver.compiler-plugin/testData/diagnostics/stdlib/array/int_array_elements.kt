@@ -2,7 +2,6 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>swap<!>(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
     preconditions {
         0 <= i && i < arr.size
@@ -16,7 +15,6 @@ fun <!VIPER_TEXT!>swap<!>(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
     arr.set(j, tmp)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>addTwo<!>(arr: @Unique @Borrowed IntArray, i: Int) {
     preconditions {
         0 <= i && i < arr.size
@@ -28,7 +26,6 @@ fun <!VIPER_TEXT!>addTwo<!>(arr: @Unique @Borrowed IntArray, i: Int) {
     arr[i]++
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>fill<!>(arr: @Unique @Borrowed IntArray, v: Int) {
     postconditions<Unit> {
         forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] == v) }
@@ -45,7 +42,6 @@ fun <!VIPER_TEXT!>fill<!>(arr: @Unique @Borrowed IntArray, v: Int) {
 }
 
 // The guard of `||` reads the array as its right operand does, so both are evaluated under one `unfolding`.
-@AlwaysVerify
 fun <!VIPER_TEXT!>boundedByIndexOr<!>(arr: @Unique @Borrowed IntArray, n: Int) {
     preconditions {
         forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] <= k || arr[k] <= n) }
@@ -55,15 +51,12 @@ fun <!VIPER_TEXT!>boundedByIndexOr<!>(arr: @Unique @Borrowed IntArray, n: Int) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>readPastEnd<!>(arr: @Unique @Borrowed IntArray): Int = <!POSSIBLE_INDEX_OUT_OF_BOUND!>arr[arr.size]<!>
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>writeNegative<!>(arr: @Unique @Borrowed IntArray) {
     <!POSSIBLE_INDEX_OUT_OF_BOUND!>arr[-1] = 0<!>
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>writeShared<!>(arr: IntArray) {
     arr[0] = 1
     val first = arr[0]

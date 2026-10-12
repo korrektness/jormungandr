@@ -1,7 +1,5 @@
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>shadowLocal<!>(): Unit {
     var foo: Int
     val x = 0
@@ -17,7 +15,6 @@ fun <!VIPER_TEXT!>shadowLocal<!>(): Unit {
     foo = x
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>shadowParam<!>(x: Int): Unit {
     var foo: Int
     foo = x
@@ -25,7 +22,6 @@ fun <!VIPER_TEXT!>shadowParam<!>(x: Int): Unit {
     foo = x
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>shadowNested<!>(x: Int): Unit {
     var foo: Int
     foo = x

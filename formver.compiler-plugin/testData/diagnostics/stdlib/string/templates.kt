@@ -2,14 +2,12 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>templateInThrow<!>(x: Int, c: Char): Int {
     postconditions<Int> { it >= 0 }
     if (x < 0) throw IllegalArgumentException("bad $x at $c")
     return x
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>templateOfStringsAndChars<!>(s: String, c: Char) {
     verify(
         "<$s>" == "<" + s + ">",
@@ -19,7 +17,6 @@ fun <!VIPER_TEXT!>templateOfStringsAndChars<!>(s: String, c: Char) {
     )
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>templateOfLiterals<!>() {
     verify("a${'b'}${1}" == "ab1")
 }

@@ -1,6 +1,5 @@
 // RENDER_PREDICATES
 
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 open class A(val a: Int)
 
@@ -13,17 +12,14 @@ interface D {
 
 class C(val x: A, var y: A) : D, B(0)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>accessSuperTypeProperty<!>(c: C){
     val temp = c.a
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>accessNested<!>(c: C){
     val temp = c.x.a
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>accessNullable<!>(x: A?){
     var n: Int
     if (x != null) {
@@ -31,13 +27,11 @@ fun <!VIPER_TEXT!>accessNullable<!>(x: A?){
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>accessCast<!>(x: A){
     var n: Int
     n = (x as B).b
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>accessSafeCast<!>(x: A){
     var n: Int = 0
     val y = x as? B
@@ -46,7 +40,6 @@ fun <!VIPER_TEXT!>accessSafeCast<!>(x: A){
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>accessSmartCast<!>(x: A){
     var n: Int = 0
     if (x is B) {

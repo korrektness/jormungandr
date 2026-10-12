@@ -2,7 +2,6 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>anyWitness<!>(s: String, k: Int) {
     preconditions { 0 <= k && k < s.length }
     if (s.any { it == 'a' }) {
@@ -12,7 +11,6 @@ fun <!VIPER_TEXT!>anyWitness<!>(s: String, k: Int) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>allDigits<!>(s: String, k: Int) {
     preconditions { 0 <= k && k < s.length }
     if (s.all { it >= '0' && it <= '9' }) {
@@ -20,7 +18,6 @@ fun <!VIPER_TEXT!>allDigits<!>(s: String, k: Int) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>noneSpace<!>(s: String, k: Int) {
     preconditions { 0 <= k && k < s.length }
     if (s.none { it == ' ' }) {
@@ -28,7 +25,6 @@ fun <!VIPER_TEXT!>noneSpace<!>(s: String, k: Int) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>firstIndex<!>(s: String): Int {
     postconditions<Int> { r -> -1 <= r && r < s.length }
     val r = s.indexOfFirst { it == '=' }
@@ -38,14 +34,12 @@ fun <!VIPER_TEXT!>firstIndex<!>(s: String): Int {
     return r
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>firstIndexIsFirst<!>(s: String, k: Int) {
     preconditions { 0 <= k && k < s.length && s[k] == '=' }
     val r = s.indexOfFirst { it == '=' }
     verify(0 <= r, r <= k)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>firstMatch<!>(s: String) {
     val c = s.firstOrNull { it == 'x' || it == 'y' }
     if (c != null) {
@@ -53,10 +47,8 @@ fun <!VIPER_TEXT!>firstMatch<!>(s: String) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>labeledReturnPredicate<!>(s: String): Boolean = s.any { return@any it == 'q' }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>impureLambdaBounds<!>(s: String) {
     var calls = 0
     val r = s.indexOfFirst {
@@ -67,7 +59,6 @@ fun <!VIPER_TEXT!>impureLambdaBounds<!>(s: String) {
     verify(-1 <= r, r < s.length)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>impureLambdaNoFacts<!>(s: String) {
     var calls = 0
     val r = s.indexOfFirst {
@@ -79,7 +70,6 @@ fun <!VIPER_TEXT!>impureLambdaNoFacts<!>(s: String) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>ownedArraySearch<!>(n: Int, k: Int): Int {
     preconditions { 0 <= k && k < n }
     val a: @Unique IntArray = IntArray(n) { it }
@@ -103,14 +93,12 @@ fun <!VIPER_TEXT!>ownedArraySearch<!>(n: Int, k: Int): Int {
     return a.count { it > 0 } + sum
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>sharedArraySearch<!>(a: IntArray): Boolean {
     val r = a.indexOfFirst { it == 0 }
     verify(-1 <= r, r < a.size)
     return a.none { it < 0 }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>sharedArrayNoFacts<!>(a: IntArray) {
     if (a.all { it == 7 }) {
         val none = a.none { it != 7 }
@@ -118,17 +106,14 @@ fun <!VIPER_TEXT!>sharedArrayNoFacts<!>(a: IntArray) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>listCallsWithFunctionValues<!>(xs: List<Int>, p: (Int) -> Boolean, f: (Int) -> Unit): Int {
     xs.forEach(f)
     return if (xs.any(p)) xs.count(p) else 0
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>arrayAndStringCallsWithFunctionValues<!>(a: IntArray, s: String, p: (Int) -> Boolean, q: (Char) -> Boolean): Boolean =
     a.any(p) && s.any(q)
 
 inline fun <!VIPER_TEXT!>anyOf<!>(a: IntArray, p: (Int) -> Boolean): Boolean = a.any(p)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inlineParameterSearch<!>(a: IntArray): Boolean = anyOf(a) { it == 3 }

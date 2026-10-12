@@ -21,26 +21,23 @@ interface OtherView {
 
 <!VIPER_TEXT!>class GeneralCell<!>(var enabled: Boolean, val stored: GeneralToken?) : DetailedView, OtherView {
     @Law @Pure @Unique fun representation(): Boolean = enabled
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>truth<!>(): Boolean = enabled
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>other<!>(): Boolean = enabled
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>matches<!>(first: Boolean, second: Boolean, token: GeneralToken?): Boolean =
+    @Pure @Unique override fun <!VIPER_TEXT!>truth<!>(): Boolean = enabled
+    @Pure @Unique override fun <!VIPER_TEXT!>other<!>(): Boolean = enabled
+    @Pure @Unique override fun <!VIPER_TEXT!>matches<!>(first: Boolean, second: Boolean, token: GeneralToken?): Boolean =
         first == second && token == stored
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>token<!>(): GeneralToken? = stored
+    @Pure @Unique override fun <!VIPER_TEXT!>token<!>(): GeneralToken? = stored
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inheritedTruth<!>(view: @Unique @Borrowed DetailedView) {
     verify(view.truth())
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>otherTruth<!>(view: @Unique @Borrowed OtherView) {
     verify(view.other())
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>generalBindings<!>(token: GeneralToken?) {
     val cell: @Unique GeneralCell = GeneralCell(true, token)
     inheritedTruth(cell)
@@ -54,7 +51,6 @@ fun <!VIPER_TEXT!>generalBindings<!>(token: GeneralToken?) {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>falseGeneralBinding<!>() {
     val cell: @Unique GeneralCell = GeneralCell(true, null)
     val view: @Unique DetailedView = cell
@@ -74,7 +70,6 @@ fun <!VIPER_TEXT!>falseGeneralBinding<!>() {
 
 class ViewHolder(var view: @Unique DetailedView)
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>readDetailed<!>(view: @Unique @Borrowed DetailedView): GeneralToken? {
     postconditions<GeneralToken?> { result ->
         result == old(view.token())
@@ -86,7 +81,6 @@ fun <!VIPER_TEXT!>readDetailed<!>(view: @Unique @Borrowed DetailedView): General
     return view.token()
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>lendAndReplaceField<!>(holder: @Unique @Borrowed ViewHolder, replacement: @Unique DetailedView) {
     val originalToken = holder.view.token()
     val originalMatch = holder.view.matches(true, false, null)
@@ -116,16 +110,15 @@ interface ViewConsumer {
 }
 
 class HonestConsumer : ViewConsumer {
-    @Unique @Borrowed @AlwaysVerify
+    @Unique @Borrowed
     override fun <!VIPER_TEXT!>accept<!>(view: @Unique @Borrowed DetailedView): Boolean = view.truth()
 }
 
 class DishonestConsumer : ViewConsumer {
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed @AlwaysVerify
+    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed
     override fun <!VIPER_TEXT!>accept<!>(view: @Unique @Borrowed DetailedView): Boolean = false<!>
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>consumerClient<!>(consumer: @Unique @Borrowed ViewConsumer, view: @Unique @Borrowed DetailedView) {
     val token = view.token()
     val accepted = consumer.accept(view)
@@ -143,10 +136,9 @@ interface ChainView {
     @Pure @Unique fun <!VIPER_TEXT!>all<!>(): Boolean
 }
 class BoolChain(var head: @Unique BoolNode?) : ChainView {
-    @Pure @Unique @AlwaysVerify override fun <!VIPER_TEXT!>all<!>(): Boolean = allTrue(head)
+    @Pure @Unique override fun <!VIPER_TEXT!>all<!>(): Boolean = allTrue(head)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>recursiveView<!>(head: @Unique BoolNode?) {
     val chain: @Unique BoolChain = BoolChain(head)
     val before = chain.all()
@@ -155,7 +147,6 @@ fun <!VIPER_TEXT!>recursiveView<!>(head: @Unique BoolNode?) {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>recursiveConcreteView<!>() {
     val tail: @Unique BoolNode = BoolNode(false, null)
     val head: @Unique BoolNode = BoolNode(true, tail)
@@ -165,7 +156,6 @@ fun <!VIPER_TEXT!>recursiveConcreteView<!>() {
     refute(false)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>recursiveFalseClaim<!>() {
     val node: @Unique BoolNode = BoolNode(false, null)
     val chain: @Unique BoolChain = BoolChain(node)

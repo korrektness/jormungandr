@@ -2,21 +2,18 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>requirePositive<!>(x: Int): Int {
     postconditions<Int> { it > 0 }
     if (x <= 0) throw IllegalArgumentException("not positive")
     return x
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>throwFromElvis<!>(x: Int?): Int {
     postconditions<Int> { it == x }
     val y = x ?: throw IllegalStateException()
     return y
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>falseAssertionAfterThrow<!>(x: Int) {
     if (x > 0) {
         throw IllegalArgumentException()
@@ -25,7 +22,6 @@ fun <!VIPER_TEXT!>falseAssertionAfterThrow<!>(x: Int) {
     verify(x <= 0)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>throwCaughtWithState<!>() {
     var x = 0
     try {
@@ -36,7 +32,6 @@ fun <!VIPER_TEXT!>throwCaughtWithState<!>() {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>throwCaughtSkipsState<!>() {
     var x = 0
     try {
@@ -47,7 +42,6 @@ fun <!VIPER_TEXT!>throwCaughtSkipsState<!>() {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>throwReachesOuterCatch<!>() {
     var x = 0
     try {
@@ -62,7 +56,6 @@ fun <!VIPER_TEXT!>throwReachesOuterCatch<!>() {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>rethrowFromCatch<!>(): Int {
     postconditions<Int> { it == 1 }
     try {
@@ -72,7 +65,6 @@ fun <!VIPER_TEXT!>rethrowFromCatch<!>(): Int {
     }
 }
 
-@AlwaysVerify
 fun <!VERIFICATION_SKIPPED!>throwInsideTryWithFinally<!>() {
     <!UNSUPPORTED_FEATURE!>try {
         throw IllegalArgumentException()

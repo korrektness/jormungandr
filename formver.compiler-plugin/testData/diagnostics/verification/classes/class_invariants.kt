@@ -10,24 +10,24 @@ import org.jetbrains.kotlin.formver.plugin.*
     var value: Int = adjusted(start)
     @Law @Pure fun invariant(): Boolean = value > 0 && nonnegative(value)
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>increment<!>() {
         verify(value > 0)
         value++
         refute(false)
     }
 
-    <!VIPER_VERIFICATION_ERROR!>@AlwaysVerify @Unique @Borrowed
+    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed
     fun <!VIPER_TEXT!>reset<!>() {
         value = 0
     }<!>
 
-    <!VIPER_VERIFICATION_ERROR!>@AlwaysVerify @Unique
+    <!VIPER_VERIFICATION_ERROR!>@Unique
     fun <!VIPER_TEXT!>consumeBroken<!>() {
         value = -1
     }<!>
 
-    @AlwaysVerify @Unique @Borrowed
+    @Unique @Borrowed
     fun <!VIPER_TEXT!>restore<!>(early: Boolean) {
         verify(value > 0)
         value = 0
@@ -40,7 +40,6 @@ import org.jetbrains.kotlin.formver.plugin.*
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>createPositive<!>(start: Int) {
     if (start >= 0) {
         val p: @Unique Positive = Positive(start)
@@ -49,7 +48,6 @@ fun <!VIPER_TEXT!>createPositive<!>(start: Int) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>createBroken<!>() {
     val p: @Unique Positive = <!VIPER_VERIFICATION_ERROR!>Positive(-2)<!>
 }
@@ -60,7 +58,6 @@ fun <!VIPER_TEXT!>createBroken<!>() {
     @Law @Pure @Unique fun invariant(): Boolean = nested() >= 0
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>createNestedObservation<!>(value: Int) {
     if (value >= 0) {
         val good: @Unique NestedObservation = NestedObservation(value)
@@ -75,7 +72,6 @@ fun <!VIPER_TEXT!>createNestedObservation<!>(value: Int) {
     @Law @Pure fun invariant(): Boolean = first > second
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>createSwapped<!>() {
     val good: @Unique Swapped = Swapped(1, 2)
     verify(good.first == 2 && good.second == 1)

@@ -2,7 +2,6 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>identity<!>(n: Int, k: Int) {
     preconditions {
         0 <= k && k < n
@@ -12,7 +11,6 @@ fun <!VIPER_TEXT!>identity<!>(n: Int, k: Int) {
     verify(a.size == n, x == k)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>squares<!>(n: Int): @Unique IntArray {
     preconditions {
         n >= 0
@@ -27,7 +25,6 @@ fun <!VIPER_TEXT!>squares<!>(n: Int): @Unique IntArray {
 fun <!VIPER_TEXT!>next<!>(i: Int): Int = i + 1
 
 // The initializer calls a function, so only the size and ownership of the array are known.
-@AlwaysVerify
 fun <!VIPER_TEXT!>impureInitializer<!>(n: Int): Int {
     preconditions {
         n > 0
@@ -36,7 +33,6 @@ fun <!VIPER_TEXT!>impureInitializer<!>(n: Int): Int {
     return a[n - 1]
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>wrongElement<!>(n: Int) {
     preconditions {
         n > 1
@@ -46,13 +42,11 @@ fun <!VIPER_TEXT!>wrongElement<!>(n: Int) {
     verify(<!VIPER_VERIFICATION_ERROR!>first == 0<!>)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>negativeSize<!>() {
     val a: @Unique IntArray = <!VIPER_VERIFICATION_ERROR!>IntArray(-1) { it }<!>
 }
 
 // The initializer returns from `earlyExit`, so the value it returns is not an element.
-@AlwaysVerify
 fun <!VIPER_TEXT!>earlyExit<!>(n: Int): Int {
     preconditions {
         n > 0

@@ -2,7 +2,6 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>hoistedInvariants<!>(s: String) {
     var n = 0
     s.forEachIndexed { i, c ->
@@ -15,7 +14,6 @@ fun <!VIPER_TEXT!>hoistedInvariants<!>(s: String) {
     verify(n <= s.length)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>indexFacts<!>(s: String): Int {
     var last = -1
     s.forEachIndexed { i, _ ->
@@ -26,7 +24,6 @@ fun <!VIPER_TEXT!>indexFacts<!>(s: String): Int {
     return last
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>previousCharacter<!>(s: String): Int {
     var escaped = 0
     s.forEachIndexed { i, c ->
@@ -35,20 +32,17 @@ fun <!VIPER_TEXT!>previousCharacter<!>(s: String): Int {
     return escaped
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>countBounds<!>(s: String) {
     val n = s.count { it == 'a' }
     verify(0 <= n, n <= s.length)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>countIsNotExact<!>(s: String) {
     preconditions { s.length > 0 }
     val n = s.count { true }
     verify(<!VIPER_VERIFICATION_ERROR!>n == s.length<!>)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>labeledReturn<!>(s: String): Int {
     var n = 0
     s.forEach {
@@ -59,12 +53,10 @@ fun <!VIPER_TEXT!>labeledReturn<!>(s: String): Int {
     return n
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>throwInside<!>(s: String) {
     s.forEach { if (it == '\n') throw IllegalArgumentException() }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>repeatIndex<!>(times: Int): Int {
     var sum = 0
     repeat(times) { i ->
@@ -75,7 +67,6 @@ fun <!VIPER_TEXT!>repeatIndex<!>(times: Int): Int {
     return sum
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>fillOwnedBuilder<!>(s: String): String {
     postconditions<String> { r -> r.length == s.length }
     val sb: @Unique StringBuilder = StringBuilder()
@@ -95,7 +86,6 @@ inline fun <!VIPER_TEXT!>myEach<!>(s: String, f: (Char) -> Unit) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>myEachOwnedBuilder<!>(s: String): String {
     val sb: @Unique StringBuilder = StringBuilder()
     myEach(s) { sb.append(it) }

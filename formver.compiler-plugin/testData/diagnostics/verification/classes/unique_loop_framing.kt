@@ -24,7 +24,6 @@ inline fun <!VIPER_TEXT!>repeat<!>(n: Int, f: () -> Unit) {
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>loopKeepsOtherRoot<!>(a: @Unique Counter, c: @Unique Counter, n: Int) {
     a.x = 1
     var i = 0
@@ -35,7 +34,6 @@ fun <!VIPER_TEXT!>loopKeepsOtherRoot<!>(a: @Unique Counter, c: @Unique Counter, 
     verify(a.x == 1)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>returnFromLoopKeepsOtherRoot<!>(a: @Unique @Borrowed Counter, c: @Unique Counter, n: Int) {
     postconditions<Unit> { a.x == 1 }
     a.x = 1
@@ -47,7 +45,6 @@ fun <!VIPER_TEXT!>returnFromLoopKeepsOtherRoot<!>(a: @Unique @Borrowed Counter, 
     }
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>breakFromNestedLoopKeepsOtherRoot<!>(a: @Unique Counter, c: @Unique Counter, n: Int) {
     a.x = 1
     var i = 0
@@ -64,7 +61,6 @@ fun <!VIPER_TEXT!>breakFromNestedLoopKeepsOtherRoot<!>(a: @Unique Counter, c: @U
 }
 
 // The loop writes `a`, so it holds `a` and its value is unknown after the loop.
-@AlwaysVerify
 fun <!VIPER_TEXT!>loopWritingRootForgetsIt<!>(a: @Unique Counter, n: Int) {
     a.x = 1
     var i = 0
@@ -75,7 +71,6 @@ fun <!VIPER_TEXT!>loopWritingRootForgetsIt<!>(a: @Unique Counter, n: Int) {
     verify(<!VIPER_VERIFICATION_ERROR!>a.x == 1<!>)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>invariantNamesRoot<!>(a: @Unique Counter, n: Int) {
     a.x = 1
     var i = 0
@@ -86,14 +81,12 @@ fun <!VIPER_TEXT!>invariantNamesRoot<!>(a: @Unique Counter, n: Int) {
     verify(a.x == 1)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inlinedLoopKeepsOtherRoot<!>(a: @Unique Counter, c: @Unique Counter, n: Int) {
     a.x = 1
     countTo(c, n)
     verify(a.x == 1)
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>inlinedLoopKeepsSiblingField<!>(h: @Unique Holder, n: Int) {
     h.count = 2
     countTo(h.inner, n)
@@ -101,7 +94,6 @@ fun <!VIPER_TEXT!>inlinedLoopKeepsSiblingField<!>(h: @Unique Holder, n: Int) {
 }
 
 // The lambda inlined in the loop writes `a`, so the loop holds `a`.
-@AlwaysVerify
 fun <!VIPER_TEXT!>lambdaInLoopReachesRoot<!>(a: @Unique Counter, n: Int) {
     a.x = 1
     repeat(n) { a.x = 2 }

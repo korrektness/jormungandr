@@ -8,8 +8,7 @@ class Counter(
 )
 
 // Without the predicate in the invariant, the loop head holds no permission to c.
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-fun <!VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Counter, k: Int) {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Counter, k: Int) {
     preconditions {
         k >= 0
     }

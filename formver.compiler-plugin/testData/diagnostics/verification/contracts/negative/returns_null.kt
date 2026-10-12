@@ -1,9 +1,7 @@
 import kotlin.contracts.contract
 import kotlin.contracts.ExperimentalContracts
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>returns_null_unverifiable<!>(x: Int?): Int? {
     contract {
         <!CONDITIONAL_EFFECT_ERROR!>returns() implies false<!>
@@ -12,7 +10,6 @@ fun <!VIPER_TEXT!>returns_null_unverifiable<!>(x: Int?): Int? {
 }
 
 @OptIn(ExperimentalContracts::class)
-@AlwaysVerify
 fun <!VIPER_TEXT!>non_nullable_returns_null<!>(x: Int): Int {
     contract {
         <!UNEXPECTED_RETURNED_VALUE!>returns(null)<!>

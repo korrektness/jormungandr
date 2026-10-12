@@ -10,5 +10,4 @@ class Square : Shape() {
     override fun sides(): Int = 4<!>
 }
 
-@AlwaysVerify
 fun <!VERIFICATION_SKIPPED!>count<!>(s: Shape): Int = <!UNSUPPORTED_FEATURE!>s.sides()<!>

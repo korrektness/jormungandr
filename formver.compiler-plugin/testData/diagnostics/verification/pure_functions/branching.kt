@@ -1,6 +1,5 @@
 // FULL_JDK
 
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 import org.jetbrains.kotlin.formver.plugin.Pure
 
 @Pure
@@ -128,7 +127,6 @@ fun <!VIPER_TEXT!>complexBooleanReturn<!>(x: Int): Boolean {
     }
 }
 
-@AlwaysVerify
 @Pure
 fun <!VIPER_TEXT!>safeDivide<!>(x: Int, y: Int): Int {
     var res = 0
@@ -138,7 +136,6 @@ fun <!VIPER_TEXT!>safeDivide<!>(x: Int, y: Int): Int {
     return res
 }
 
-@AlwaysVerify
 @Pure
 fun <!VIPER_TEXT!>getStringLength<!>(obj: Any): Int {
     var len = -1
@@ -148,7 +145,6 @@ fun <!VIPER_TEXT!>getStringLength<!>(obj: Any): Int {
     return len
 }
 
-@AlwaysVerify
 @Pure
 fun <!VIPER_TEXT!>safeNestedDivide<!>(x: Int, y: Int, z: Int): Int {
     var res = 0
@@ -160,7 +156,6 @@ fun <!VIPER_TEXT!>safeNestedDivide<!>(x: Int, y: Int, z: Int): Int {
     return res
 }
 
-@AlwaysVerify
 @Pure
 fun <!VIPER_TEXT!>safeInverseDifference<!>(x: Int, y: Int): Int {
     var res = 0

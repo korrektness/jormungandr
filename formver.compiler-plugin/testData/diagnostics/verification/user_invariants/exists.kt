@@ -3,7 +3,6 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 // Verifies that we can transform exists from SnaKt to viper
-@AlwaysVerify
 fun <!VIPER_TEXT!>simpleExists<!>(): Int {
     preconditions {
         exists<Int> {
@@ -17,7 +16,6 @@ fun <!VIPER_TEXT!>simpleExists<!>(): Int {
 // `val c = s[0]` reads `s[0]` before the loop, making it a ground term. The loop
 // invariant's `s[it]` trigger then lets the solver instantiate `it = 0` as the
 // witness, connecting `c` back to `s[res]` in the postcondition.
-@AlwaysVerify
 fun <!VIPER_TEXT!>symbolExists<!>(s: String): Int {
     preconditions {
         s.length > 0
@@ -43,8 +41,7 @@ fun <!VIPER_TEXT!>symbolExists<!>(s: String): Int {
 
 // Without `val c = s[0]`, `s[0]` is never read before the loop so there is no ground
 // term for the `s[it]` trigger to match — the solver cannot construct the witness.
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-fun <!VIPER_TEXT!>symbolExistsWithoutGroundTerm<!>(s: String): Int {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>symbolExistsWithoutGroundTerm<!>(s: String): Int {
     preconditions {
         s.length > 0
     }
@@ -60,8 +57,7 @@ fun <!VIPER_TEXT!>symbolExistsWithoutGroundTerm<!>(s: String): Int {
 // instantiation the witness cannot be constructed, so the postcondition is reported as a
 // verification warning. This pins "witness not found" — not "existential is false" — and is the
 // counterpart to max_character.kt, where a `s[i]` trigger plus a loop invariant let it verify.
-<!VIPER_VERIFICATION_ERROR!>@AlwaysVerify
-fun <!VIPER_TEXT!>existsPostcondWithoutTrigger<!>(): Int {
+<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>existsPostcondWithoutTrigger<!>(): Int {
     postconditions<Int> {
         exists<Int> { it == 0 }
     }

@@ -3,7 +3,6 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>anyIntegerSquaredAtLeastZero<!>(): Int {
     postconditions<Int> { res ->
         forAll<Int> {
@@ -14,7 +13,6 @@ fun <!VIPER_TEXT!>anyIntegerSquaredAtLeastZero<!>(): Int {
     return 0
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>anyIntegerSquaredIsAtLeastOneExceptZero<!>(): Int {
     postconditions<Int> { res ->
         forAll<Int> {
@@ -24,7 +22,6 @@ fun <!VIPER_TEXT!>anyIntegerSquaredIsAtLeastOneExceptZero<!>(): Int {
     return 1
 }
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>anyIntegerSquaredIsAtLeastZeroStringVersion<!>(str: String): Int {
     var res = 0
     var i = 10

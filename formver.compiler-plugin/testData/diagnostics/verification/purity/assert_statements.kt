@@ -1,7 +1,6 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-@NeverVerify
 fun <!VERIFICATION_SKIPPED!>test<!>() {
     var x = 42
     // Pure
@@ -10,7 +9,6 @@ fun <!VERIFICATION_SKIPPED!>test<!>() {
     verify(<!PURITY_VIOLATION!>x++<43<!>, <!PURITY_VIOLATION!>++x<43<!>)
 }
 
-@NeverVerify
 fun <!VERIFICATION_SKIPPED!>testImpure<!>() {
     var x = 42
     verify(<!PURITY_VIOLATION!>++x<43<!>)

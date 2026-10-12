@@ -1,8 +1,6 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.Pure
-import org.jetbrains.kotlin.formver.plugin.AlwaysVerify
 
-@AlwaysVerify
 fun <!VIPER_TEXT!>iAmAMethod<!>(): Int {
     return 1
 }
@@ -25,7 +23,6 @@ fun <!VERIFICATION_SKIPPED!>testFieldModification<!>(field: Field): Int {
     return <!UNSUPPORTED_OWNERSHIP!>field.value<!>
 }<!>
 
-@AlwaysVerify
 fun Field.<!VIPER_TEXT!>impureExtension<!>() {
     this.value += 1
 }
