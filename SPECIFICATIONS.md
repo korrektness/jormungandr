@@ -174,8 +174,11 @@ Bindings on another receiver, binding values that read a parameter of the lambda
 other operators and other statements are reported as `INVALID_EXPOSES`. The block does nothing at runtime; `ghostObserver()` throws if executed.
 
 A literal lambda SAM-converted to a fun interface with ghost observers is lifted to a synthetic class. Its captured
-values, receivers and `var`s are fields owned by the class's unique predicate. The lambda body is the class's `invoke`, verified once against the
-interface's `invoke` specification. Each binding defines its observer on the class as the bound expression over the
+values, receivers and `var`s are fields owned by the class's unique predicate. The lambda body is the class's `invoke`.
+Leading `preconditions` and `postconditions` blocks after `exposes` define its own contract; with neither block,
+it inherits the interface's `invoke` specification. The body is verified against that contract. The override
+refinement check proves that it implements the interface contract under its observer bindings. Callers use the
+interface contract. Each binding defines its observer on the class as the bound expression over the
 captured state, so an observer follows the lambda's later writes to captured `var`s. The creation site constructs the
 object and converts it to an owned value of the interface, carrying each observer's value across.
 

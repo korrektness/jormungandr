@@ -1,0 +1,685 @@
+/inc_counter_contracts.kt: info: Generated Viper text for inc:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArgumentIncSpec())
+  requires acc(ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArgumentIncSpec_unique(this: Ref)
+
+/inc_counter_contracts.kt: info: Generated Viper text for invoke:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArgumentIncSpec())
+  requires acc(ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArgumentIncSpec_unique(this: Ref)
+
+method invoke(this: Ref, x: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), ArgumentIncSpec())
+  requires acc(ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures acc(ArgumentIncSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) >= intFromRef(x)
+
+
+/inc_counter_contracts.kt: info: Generated Viper text for weakerPrecondition:
+function Lambda0_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_ArgumentIncSpec_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ArgumentIncSpec_unique(this: Ref)
+
+method Lambda0_c_ArgumentIncSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ArgumentIncSpec_f_inc(this) == old(Lambda0_f_inc(this))
+
+
+method create() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+
+
+method weakerPrecondition() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_ArgumentIncSpec())
+  ensures acc(c_ArgumentIncSpec_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := create()
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_ArgumentIncSpec())
+  Lambda0_c_ArgumentIncSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+weakerPrecondition.lambda0.invoke:
+function Lambda0_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_ArgumentIncSpec_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ArgumentIncSpec_unique(this: Ref)
+
+method Lambda0_c_ArgumentIncSpec_restore(this: Ref)
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ArgumentIncSpec())) && true ==>
+    Lambda0_f_inc(this) == old(c_ArgumentIncSpec_f_inc(this))
+
+
+method Lambda0_c_ArgumentIncSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ArgumentIncSpec_f_inc(this) == old(Lambda0_f_inc(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= -1
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) == intFromRef(x) + 1
+{
+  v_ret_3 := plusInts(x, intToRef(1))
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ArgumentIncSpec_restore(this)
+  ret_2 := Lambda0_invoke(this, x)
+  Lambda0_c_ArgumentIncSpec_upcast(this)
+  assert acc(c_ArgumentIncSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) >= intFromRef(x)
+}
+
+method weakerPrecondition() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_ArgumentIncSpec())
+  ensures acc(c_ArgumentIncSpec_unique(ret_1), write)
+
+
+/inc_counter_contracts.kt: info: Generated Viper text for postconditionOnly:
+function Lambda0_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_ArgumentIncSpec_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ArgumentIncSpec_unique(this: Ref)
+
+method Lambda0_c_ArgumentIncSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ArgumentIncSpec_f_inc(this) == old(Lambda0_f_inc(this))
+
+
+method create() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+
+
+method postconditionOnly() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_ArgumentIncSpec())
+  ensures acc(c_ArgumentIncSpec_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := create()
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_ArgumentIncSpec())
+  Lambda0_c_ArgumentIncSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+postconditionOnly.lambda0.invoke:
+function Lambda0_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_ArgumentIncSpec_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ArgumentIncSpec_unique(this: Ref)
+
+method Lambda0_c_ArgumentIncSpec_restore(this: Ref)
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ArgumentIncSpec())) && true ==>
+    Lambda0_f_inc(this) == old(c_ArgumentIncSpec_f_inc(this))
+
+
+method Lambda0_c_ArgumentIncSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ArgumentIncSpec_f_inc(this) == old(Lambda0_f_inc(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) == intFromRef(x) + 1
+{
+  v_ret_3 := plusInts(x, intToRef(1))
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(x)
+
+
+method postconditionOnly() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_ArgumentIncSpec())
+  ensures acc(c_ArgumentIncSpec_unique(ret_1), write)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ArgumentIncSpec_restore(this)
+  ret_2 := Lambda0_invoke(this, x)
+  Lambda0_c_ArgumentIncSpec_upcast(this)
+  assert acc(c_ArgumentIncSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) >= intFromRef(x)
+}
+
+/inc_counter_contracts.kt: info: Generated Viper text for preconditionOnly:
+function Lambda0_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_ArgumentIncSpec_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ArgumentIncSpec_unique(this: Ref)
+
+method Lambda0_c_ArgumentIncSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ArgumentIncSpec_f_inc(this) == old(Lambda0_f_inc(this))
+
+
+method create() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+
+
+method preconditionOnly() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_ArgumentIncSpec())
+  ensures acc(c_ArgumentIncSpec_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := create()
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_ArgumentIncSpec())
+  Lambda0_c_ArgumentIncSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+preconditionOnly.lambda0.invoke:
+function Lambda0_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_ArgumentIncSpec_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ArgumentIncSpec_unique(this: Ref)
+
+method Lambda0_c_ArgumentIncSpec_restore(this: Ref)
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ArgumentIncSpec())) && true ==>
+    Lambda0_f_inc(this) == old(c_ArgumentIncSpec_f_inc(this))
+
+
+method Lambda0_c_ArgumentIncSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ArgumentIncSpec_f_inc(this) == old(Lambda0_f_inc(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= -1
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_3), intType())
+{
+  v_ret_3 := plusInts(x, intToRef(1))
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(x)
+
+
+method preconditionOnly() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_ArgumentIncSpec())
+  ensures acc(c_ArgumentIncSpec_unique(ret_1), write)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ArgumentIncSpec_restore(this)
+  ret_2 := Lambda0_invoke(this, x)
+  Lambda0_c_ArgumentIncSpec_upcast(this)
+  assert acc(c_ArgumentIncSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) >= intFromRef(x)
+}
+
+/inc_counter_contracts.kt: info: Generated Viper text for incorrectOwnBody:
+function Lambda0_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_ArgumentIncSpec_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ArgumentIncSpec_unique(this: Ref)
+
+method Lambda0_c_ArgumentIncSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ArgumentIncSpec_f_inc(this) == old(Lambda0_f_inc(this))
+
+
+method create() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+
+
+method incorrectOwnBody() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_ArgumentIncSpec())
+  ensures acc(c_ArgumentIncSpec_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := create()
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_ArgumentIncSpec())
+  Lambda0_c_ArgumentIncSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+incorrectOwnBody.lambda0.invoke:
+function Lambda0_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_ArgumentIncSpec_f_inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ArgumentIncSpec_unique(this: Ref)
+
+method Lambda0_c_ArgumentIncSpec_restore(this: Ref)
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ArgumentIncSpec())) && true ==>
+    Lambda0_f_inc(this) == old(c_ArgumentIncSpec_f_inc(this))
+
+
+method Lambda0_c_ArgumentIncSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ArgumentIncSpec_f_inc(this) == old(Lambda0_f_inc(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= -1
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) == intFromRef(x) + 1
+{
+  v_ret_3 := plusInts(x, intToRef(2))
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures acc(c_ArgumentIncSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(x)
+
+
+method incorrectOwnBody() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_ArgumentIncSpec())
+  ensures acc(c_ArgumentIncSpec_unique(ret_1), write)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_ArgumentIncSpec())
+  requires acc(c_ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ArgumentIncSpec_restore(this)
+  ret_2 := Lambda0_invoke(this, x)
+  Lambda0_c_ArgumentIncSpec_upcast(this)
+  assert acc(c_ArgumentIncSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) >= intFromRef(x)
+}
+
+/inc_counter_contracts.kt: info: Generated Viper text for interfaceClient:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArgumentIncSpec())
+  requires acc(ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArgumentIncSpec_unique(this: Ref)
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+method interfaceClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var l0_result: Ref
+  f := weakerPrecondition()
+  l0_result := invoke(f, intToRef(0))
+  assert intFromRef(l0_result) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), ArgumentIncSpec())
+  requires acc(ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures acc(ArgumentIncSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(x)
+
+
+method weakerPrecondition() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ArgumentIncSpec())
+  ensures acc(ArgumentIncSpec_unique(ret_1), write)
+
+
+/inc_counter_contracts.kt: info: Generated Viper text for clientCannotUseOwnPrecondition:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArgumentIncSpec())
+  requires acc(ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArgumentIncSpec_unique(this: Ref)
+
+method clientCannotUseOwnPrecondition() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var anon: Ref
+  f := weakerPrecondition()
+  anon := invoke(f, intToRef(-1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), ArgumentIncSpec())
+  requires acc(ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures acc(ArgumentIncSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(x)
+
+
+method weakerPrecondition() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ArgumentIncSpec())
+  ensures acc(ArgumentIncSpec_unique(ret_1), write)
+
+
+/inc_counter_contracts.kt: info: Generated Viper text for clientCannotUseOwnPostcondition:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArgumentIncSpec())
+  requires acc(ArgumentIncSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArgumentIncSpec_unique(this: Ref)
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+method clientCannotUseOwnPostcondition() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var l0_result: Ref
+  f := weakerPrecondition()
+  l0_result := invoke(f, intToRef(0))
+  assert intFromRef(l0_result) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), ArgumentIncSpec())
+  requires acc(ArgumentIncSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures acc(ArgumentIncSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(x)
+
+
+method weakerPrecondition() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ArgumentIncSpec())
+  ensures acc(ArgumentIncSpec_unique(ret_1), write)

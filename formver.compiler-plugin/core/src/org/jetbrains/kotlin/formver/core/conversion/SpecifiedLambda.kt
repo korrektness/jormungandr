@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.fir.scopes.unsubstitutedScope
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.resolvedType
+import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.core.embeddings.callables.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -251,7 +252,23 @@ fun LiftedLambda.invokeSignature(inherited: CompleteFunctionSignature): Signatur
     ).toNamedSignature(ScopedName(source.name.asScope(), PretypeName("invoke")))
     return named.toNonInlineSignature(null).toCompleteSignature(source.function.source) {
         userFunctionContract()
-        val (pre, post) = converter.embedContract(source.invoke, named.signature, target)
+        val specification = extractFirSpecification(
+            source.function.body!!.statements.dropWhile { it.isExposes() }, source.function.returnTypeRef.coneType,
+        )
+        val (pre, post) = if (specification.precond != null || specification.postcond != null) {
+            val resolver = RootParameterResolver(converter, named.signature, source.function.symbol.valueParameterSymbols,
+                source.function.symbol.label?.name, target)
+            val postResolver = specification.returnVar?.let {
+                SubstitutedReturnParameterResolver(resolver, ReturnVarSubstitutor(it, named.signature.returns))
+            } ?: resolver
+            fun context(resolver: ParameterResolver) = MethodConverter(
+                converter, named.signature, resolver, ScopeIndex.NoScope,
+                OwnershipFrame.root(converter.uniquenessAnalysisOf(source.function.symbol), emptyList()),
+                captures = accesses(dispatch),
+            ).statementCtxt()
+            (specification.precond?.let { context(resolver).collectInvariants(it) } ?: emptyList()) to
+                (specification.postcond?.let { context(postResolver).collectInvariants(it) } ?: emptyList())
+        } else converter.embedContract(source.invoke, named.signature, target)
         addPreconditions(pre)
         addPostconditions(post)
     }

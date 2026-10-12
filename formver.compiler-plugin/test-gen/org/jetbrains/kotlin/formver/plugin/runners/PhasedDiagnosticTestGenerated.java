@@ -1416,6 +1416,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("inc_counter_contracts.kt")
+      public void testInc_counter_contracts() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/inc_counter_contracts.kt");
+      }
+
+      @Test
+      @TestMetadata("inc_counter_suite.kt")
+      public void testInc_counter_suite() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/inc_counter_suite.kt");
+      }
+
+      @Test
       @TestMetadata("law_errors.kt")
       public void testLaw_errors() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/law_errors.kt");

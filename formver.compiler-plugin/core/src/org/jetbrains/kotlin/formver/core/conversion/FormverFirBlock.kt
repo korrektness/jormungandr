@@ -57,8 +57,11 @@ fun FirBlock.postconditionsResultType(): ConeKotlinType? {
     return post?.valueParameters?.firstOrNull()?.symbol?.resolvedReturnType
 }
 
-fun extractFirSpecification(parentBlock: FirBlock, returnType: ConeKotlinType): FirSpecification {
-    val firstStmt = parentBlock.statements.firstOrNull() ?: return FirSpecification()
+fun extractFirSpecification(parentBlock: FirBlock, returnType: ConeKotlinType): FirSpecification =
+    extractFirSpecification(parentBlock.statements, returnType)
+
+fun extractFirSpecification(statements: List<FirStatement>, returnType: ConeKotlinType): FirSpecification {
+    val firstStmt = statements.firstOrNull() ?: return FirSpecification()
 
     firstStmt.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }?.let { lambda ->
         return FirSpecification(null, lambda.body, lambda.extractFormverReturnVar(returnType))
@@ -67,6 +70,6 @@ fun extractFirSpecification(parentBlock: FirBlock, returnType: ConeKotlinType): 
     val precond = firstStmt.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }
         ?: return FirSpecification()
     val postcond =
-        parentBlock.statements.getOrNull(1)?.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }
+        statements.getOrNull(1)?.extractFormverFirBlock { isFormverFunctionNamed("postconditions") }
     return FirSpecification(precond.body, postcond?.body, postcond?.extractFormverReturnVar(returnType))
 }
