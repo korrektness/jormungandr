@@ -66,8 +66,11 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
      * nests.
      */
     context(ctx: TypeResolver)
-    fun uniquePredicateBody(subject: ExpEmbedding, nested: NestedPredicates): ExpEmbedding =
-        ClassPredicateBuilder.body(name, subject) { addUniquePredicateBody(nested) }
+    fun uniquePredicateBody(
+        subject: ExpEmbedding,
+        nested: NestedPredicates,
+        includeRepresentationFacts: Boolean = true,
+    ): ExpEmbedding = ClassPredicateBuilder.body(name, subject) { addUniquePredicateBody(nested, includeRepresentationFacts) }
 
     /**
      * The bodies of the unique predicates of this class and its superclasses for [subject], the predicates of the
@@ -85,7 +88,7 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
         })
 
     context(ctx: TypeResolver)
-    private fun ClassPredicateBuilder.addUniquePredicateBody(nested: NestedPredicates) {
+    private fun ClassPredicateBuilder.addUniquePredicateBody(nested: NestedPredicates, includeRepresentationFacts: Boolean = true) {
         includeSubTypeInvariants()
         forEachPropertyField {
             forBackingField {
@@ -104,7 +107,17 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
                 }
             }
         }
-        if (ctx.hasClassLaws(this@ClassTypeEmbedding)) {
+        if (includeRepresentationFacts && ctx.hasCaptureFacts(this@ClassTypeEmbedding)) {
+            includeInvariant(TypeInvariantEmbedding { subject ->
+                val boolean = buildType { boolean() }
+                ExpWrapper.deferred(boolean) {
+                    boolean.injection.toRef(ctx.captureFactAssertion(
+                        this@ClassTypeEmbedding, subject.pureToViper(toBuiltin = false, ctx),
+                    ))
+                }
+            })
+        }
+        if (includeRepresentationFacts && ctx.hasClassLaws(this@ClassTypeEmbedding)) {
             includeInvariant(TypeInvariantEmbedding { subject ->
                 val boolean = buildType { boolean() }
                 ExpWrapper.deferred(boolean) {

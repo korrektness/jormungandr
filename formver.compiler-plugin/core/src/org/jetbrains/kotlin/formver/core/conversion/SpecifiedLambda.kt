@@ -31,6 +31,9 @@ import org.jetbrains.kotlin.formver.locality.plugin.ownsDispatchReceiver
 import org.jetbrains.kotlin.formver.uniqueness.plugin.specifiedLambda
 import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessAnalysisGraph
 import org.jetbrains.kotlin.formver.viper.ast.Type
+import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.core.linearization.pureToViper
+import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.util.OperatorNameConventions
@@ -42,14 +45,18 @@ data class SpecifiedLambda(
     val function: FirAnonymousFunction,
     val invoke: FirNamedFunctionSymbol,
     val name: ScopedName,
+    val parent: SpecifiedLambda?,
 ) {
     companion object {
         context(converter: ProgramConversionContext)
         fun collect(declaration: FirSimpleFunction): List<SpecifiedLambda> {
             val result = mutableListOf<SpecifiedLambda>()
             declaration.accept(object : FirVisitorVoid() {
+                private var enclosing: SpecifiedLambda? = null
+
                 override fun visitElement(element: FirElement) {
                     if (element is FirSimpleFunction && element !== declaration) return
+                    val parent = enclosing
                     val lambda = context(converter.checkerContext) { element.specifiedLambda() }
                     if (lambda != null) {
                         val expression = element as FirExpression
@@ -59,10 +66,13 @@ data class SpecifiedLambda(
                         )
                         val invoke = scope.getFunctions(OperatorNameConventions.INVOKE).single()
                         val owner = declaration.symbol.embedName(converter)
-                        result += SpecifiedLambda(expression, declaration, lambda, invoke,
-                            ScopedName(CallableScope(owner.scope, owner.name), ClassKotlinName(FqName("Lambda${result.size}"))))
+                        val source = SpecifiedLambda(expression, declaration, lambda, invoke,
+                            ScopedName(CallableScope(owner.scope, owner.name), ClassKotlinName(FqName("Lambda${result.size}"))), parent)
+                        result += source
+                        enclosing = source
                     }
                     element.acceptChildren(this)
+                    enclosing = parent
                 }
             })
             return result
@@ -88,7 +98,11 @@ class LiftedLambda(
     val interfaceType: TypeEmbedding,
     val captures: Map<FirBasedSymbol<*>, PropertyEmbedding>,
     val constructor: NonInlineFunctionSignature,
+    internal val creationPreconditions: MutableList<ExpEmbedding>,
 ) {
+    internal val creationFactContexts = mutableListOf<() -> List<Exp>>()
+    internal val baseCreationPreconditions = creationPreconditions.toList()
+
     fun accesses(receiver: ExpEmbedding): Map<FirBasedSymbol<*>, PropertyAccessEmbedding> =
         captures.mapValues { (_, property) -> ClassPropertyAccess(receiver, property, property.type, receiverOwned = true) }
 }
@@ -147,7 +161,7 @@ fun SpecifiedLambda.lift(): LiftedLambda {
     val concreteType = buildType { existing(type) }
     val target = converter.returnTargetProducer.getFresh(concreteType)
     val params = properties.values.mapIndexed { index, property ->
-        PlaceholderVariableEmbedding(AnonymousName(index), property.type, property.isUnique)
+        PlaceholderVariableEmbedding(ScopedName(name.asScope(), PretypeName("captureArg$index")), property.type, property.isUnique)
     }
     val callableType = buildFunctionPretype {
         params.forEach { param -> withParam { isNullable = param.type.isNullable; existing(param.type.pretype) } }
@@ -158,12 +172,18 @@ fun SpecifiedLambda.lift(): LiftedLambda {
         FunctionSignatureImpl(callableType, null, null, params, target.variable, false), target,
     ).toNamedSignature(ScopedName(name.asScope(), PretypeName("create")))
         .toNonInlineSignature(null).toCompleteSignature(expression.source) {
-            userFunctionContract()
+            userFunctionPreconditions()
+            userFunctionPostcondition(resultFolded = false)
+            addPostconditions(listOf(with(resolver) {
+                type.uniquePredicateBody(target.variable, NestedPredicates.Held, includeRepresentationFacts = false)
+            }))
             addPostconditions(properties.values.zip(params).map { (property, param) ->
-                EqCmp(property.getter!!.getValue(target.variable, resolver, receiverOwned = true), param)
+                EqCmp(PrimitiveFieldAccess(target.variable, (property.getter as BackingFieldGetter).field), param)
             })
         }.signature
-    return LiftedLambda(this, type, interfaceType, properties, signature)
+    val preconditions = signature.preconditions.toMutableList()
+    return LiftedLambda(this, type, interfaceType, properties,
+        signature.copy(preconditions = preconditions, openConstructedClass = type), preconditions)
 }
 
 private fun FirStatement.result(): FirStatement = (this as? FirReturnExpression)?.result ?: this
@@ -265,6 +285,73 @@ fun LiftedLambda.invokeBody(
     return ConvertedMethodBody(FunctionExp(signature, body, target.label!!), target)
 }
 
+private fun StmtConversionContext.establishCaptureFacts(lambda: LiftedLambda, arguments: List<ExpEmbedding>) {
+    val immutable = lambda.captures.entries.zip(arguments).zip(lambda.constructor.params).filter { (capture, _) ->
+        val symbol = capture.first.key
+        symbol !is FirPropertySymbol || symbol.isVal
+    }
+    val replacements = immutable.flatMap { (capture, param) ->
+        val argument = capture.second
+        listOf(false, true).map { builtin ->
+            argument.pureToViper(toBuiltin = builtin, typeResolver).captureValueKey() to
+                param.pureToViper(toBuiltin = builtin, typeResolver)
+        }
+    }.toMap()
+    val parameters = lambda.constructor.params.mapTo(mutableSetOf()) { it.name }
+    val known = creationPathFacts
+    val receiver = signature.dispatchReceiver?.takeIf { it.isUnique }
+    val receiverClass = receiver?.type?.pretype as? ClassTypeEmbedding
+    val receiverValue = receiver?.pureToViper(toBuiltin = false, typeResolver)
+    val aliases = creationPathAliases.filterValues { it.isPure(admitsInlinedCalls = true) }.map { (name, value) ->
+        listOf(name) to value.pureToViper(toBuiltin = false, typeResolver)
+    }.toMap()
+    val aliasFacts = immutable.groupBy { (capture, _) ->
+        capture.second.pureToViper(toBuiltin = false, typeResolver).captureValueKey()
+    }.values.flatMap { group ->
+        group.drop(1).map { (_, param) -> Exp.EqCmp(
+            group.first().second.pureToViper(toBuiltin = false, typeResolver),
+            param.pureToViper(toBuiltin = false, typeResolver),
+        ) }
+    }
+    val directFacts = known.filter { it.isPure(admitsInlinedCalls = true) }.flatMap {
+        it.pureToViper(toBuiltin = true, typeResolver).conjuncts()
+    }
+    lambda.creationFactContexts += {
+        val inheritedFacts = if (receiverClass != null && receiverValue != null)
+            typeResolver.captureFacts(receiverClass, receiverValue) else emptyList()
+        (directFacts + inheritedFacts).filterNot { it.hasOwnershipAssertion() }.map { fact ->
+            var expanded = fact
+            repeat(aliases.size) { expanded = expanded.rewriteCaptureValues(aliases) }
+            expanded.rewriteCaptureValues(replacements)
+        }.filter { fact ->
+            fact.freeVariables().all(parameters::contains) && !(fact is Exp.BoolLit && fact.value) &&
+                    fact.isStableCaptureFact(this)
+        }.plus(aliasFacts).distinct()
+    }
+}
+
+context(converter: ProgramConversionContext)
+internal fun LiftedLambda.finalizeCreationFacts() {
+    val alternatives = creationFactContexts.map { it() }.distinctBy { facts -> facts.mapTo(mutableSetOf()) { it.captureValueKey() } }
+    // Each site proves its own conjunction, hence the disjunction; the body assumes only that disjunction.
+    val facts = when (alternatives.size) {
+        0 -> emptyList()
+        1 -> alternatives.single()
+        else -> listOf(alternatives.map { alternative ->
+            alternative.fold<Exp, Exp>(Exp.BoolLit(true)) { acc, fact -> Exp.And(acc, fact) }
+        }.reduce { left, right -> Exp.Or(left, right) })
+    }
+    val boolean = buildType { boolean() }
+    creationPreconditions.clear()
+    creationPreconditions += baseCreationPreconditions
+    creationPreconditions += facts.map { ExpWrapper(boolean.injection.toRef(it), boolean) }
+    val fields = captures.values.zip(constructor.params).associate { (property, param) ->
+        listOf(param.name) to Exp.FieldAccess(Exp.LocalVar(DispatchReceiverName, Type.Ref),
+            (property.getter as BackingFieldGetter).field.toViper())
+    }
+    converter.typeResolver.setCaptureFacts(type, facts.map { it.rewriteCaptureValues(fields) })
+}
+
 fun StmtConversionContext.constructLambda(lambda: LiftedLambda): ExpEmbedding {
     val arguments = lambda.captures.keys.map { symbol ->
         capturedAccess(symbol)?.getValue(this) ?: when (symbol) {
@@ -275,6 +362,7 @@ fun StmtConversionContext.constructLambda(lambda: LiftedLambda): ExpEmbedding {
             else -> error("Unexpected capture: $symbol")
         }
     }
+    establishCaptureFacts(lambda, arguments)
     return lambda.constructor.insertCall(arguments).withNewTypeInvariants(lambda.interfaceType, typeResolver) {
         proven = true
         access = true

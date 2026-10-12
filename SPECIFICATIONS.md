@@ -179,6 +179,14 @@ interface's `invoke` specification. Each binding defines its observer on the cla
 captured state, so an observer follows the lambda's later writes to captured `var`s. The creation site constructs the
 object and converts it to an owned value of the interface, carrying each observer's value across.
 
+Creation-path conditions and creator preconditions whose free variables are captured `val`s and whose heap reads
+are immutable become assertions over those capture fields in the synthetic class's predicate. Pure helper bodies
+must also read immutable state; an abstract helper with owned arguments supplies no stable creation fact.
+Bound variables in quantified facts stay local to the fact. The formula is finalized over all creation contexts
+before emitting the synthetic constructor and predicate. The constructor requires that formula and returns initialized
+fields with their permissions; folding at the creation site proves the capture assertions. The lifted body obtains
+them by opening its owned predicate.
+
 ### Interface laws
 
 Declare a Boolean `@Law @Pure` interface member with a body to state a law. Laws have no value, type, extension,

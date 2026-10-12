@@ -11,9 +11,8 @@ import org.jetbrains.kotlin.fir.expressions.FirCatch
 import org.jetbrains.kotlin.fir.expressions.FirStatement
 import org.jetbrains.kotlin.formver.common.attributingFailuresTo
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.expression.withPosition
+import org.jetbrains.kotlin.formver.core.embeddings.expression.*
+import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignatureWithContract
 import org.jetbrains.kotlin.formver.core.names.BreakLabelName
 import org.jetbrains.kotlin.formver.core.names.ContinueLabelName
 import org.jetbrains.kotlin.formver.core.names.LoopHeadLabelName
@@ -36,9 +35,27 @@ data class StmtConverter(
     private val scopeIndex: ScopeIndex = ScopeIndex.Indexed(0),
     override val activeCatchLabels: List<LabelEmbedding> = listOf(),
     override val callSite: FirElement? = null,
+    override var creationPathFacts: List<ExpEmbedding> =
+        (methodCtx.signature as? NamedFunctionSignatureWithContract)?.preconditions.orEmpty().toList(),
+    override val creationPathAliases: Map<SymbolicName, ExpEmbedding> = emptyMap(),
 ) : StmtConversionContext, MethodConversionContext by methodCtx {
     override fun convert(stmt: FirStatement): ExpEmbedding =
-        attributingFailuresTo(stmt.source) { stmt.accept(StmtConversionVisitor, this) }.withPosition(stmt.source)
+        attributingFailuresTo(stmt.source) { stmt.accept(StmtConversionVisitor, this) }.also { converted ->
+            rememberContinuationFacts(converted)
+        }.withPosition(stmt.source)
+
+    // A context is one straight-line region; nested regions use copies with immutable fact lists.
+    // Facts recorded here therefore hold on every later path through this context.
+    private fun rememberContinuationFacts(expression: ExpEmbedding) {
+        when (val exp = expression.ignoringCastsAndMetaNodes()) {
+            is Block -> if (exp.placedLabels().isEmpty()) exp.exps.forEach(::rememberContinuationFacts)
+            is If -> {
+                if (exp.thenBranch.exitsCreationRegion()) creationPathFacts = creationPathFacts + OperatorExpEmbeddings.Not(exp.condition)
+                if (exp.elseBranch.exitsCreationRegion()) creationPathFacts = creationPathFacts + exp.condition
+            }
+            else -> Unit
+        }
+    }
 
     override fun <R> withNewScope(action: StmtConversionContext.() -> R): R = withNewScopeImpl { action() }
     override fun <R> withNoScope(action: StmtConversionContext.() -> R): R =
@@ -82,11 +99,15 @@ data class StmtConverter(
             ctx.action()
         }
 
+    override fun <R> withCreationPathFact(fact: ExpEmbedding, action: StmtConversionContext.() -> R): R =
+        copy(creationPathFacts = creationPathFacts + fact).action()
+
     override fun <R> withCallSite(call: FirElement, action: StmtConversionContext.() -> R): R =
         copy(callSite = call).action()
 
-    override fun <R> withWhenSubject(subject: VariableEmbedding?, action: StmtConversionContext.() -> R): R =
-        copy(whenSubject = subject).action()
+    override fun <R> withWhenSubject(subject: VariableEmbedding?, value: ExpEmbedding?, action: StmtConversionContext.() -> R): R =
+        copy(whenSubject = subject, creationPathAliases =
+            if (subject != null && value != null) creationPathAliases + (subject.name to value) else creationPathAliases).action()
 
     override fun <R> withCheckedSafeCallSubject(subject: ExpEmbedding?, action: StmtConversionContext.() -> R): R =
         copy(checkedSafeCallSubject = subject).action()

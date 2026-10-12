@@ -82,10 +82,32 @@ class TypeResolver {
 
     fun isInterface(type: ClassTypeEmbedding): Boolean = type.name in interfaceEmbedding
 
+    fun isImmutableField(name: SymbolicName): Boolean = properties.values.any { property ->
+        val field = toBackingField(property)
+        property.isVal && field != null && (field.name == name || field.toViper().name == name)
+    }
+
     fun isSubtype(subtype: ClassTypeEmbedding, supertype: ClassTypeEmbedding): Boolean {
         fun reaches(name: SymbolicName): Boolean =
             name == supertype.name || superTypes[name].orEmpty().any { reaches(it) }
         return reaches(subtype.name)
+    }
+
+    private val captureFacts = linkedMapOf<SymbolicName, List<Exp>>()
+
+    fun setCaptureFacts(type: ClassTypeEmbedding, facts: List<Exp>) {
+        captureFacts[type.name] = facts
+    }
+
+    fun captureFactAssertion(type: ClassTypeEmbedding, receiver: Exp): Exp = Exp.LetBinding(
+        Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref), receiver,
+        captureFacts[type.name].orEmpty().fold<Exp, Exp>(Exp.BoolLit(true)) { acc, fact -> Exp.And(acc, fact) },
+    )
+
+    fun hasCaptureFacts(type: ClassTypeEmbedding) = captureFacts[type.name]?.isNotEmpty() == true
+
+    fun captureFacts(type: ClassTypeEmbedding, receiver: Exp): List<Exp> = captureFacts[type.name].orEmpty().map {
+        it.rewriteCaptureValues(mapOf(listOf(DispatchReceiverName) to receiver))
     }
 
     private val classLawBodies = linkedMapOf<SymbolicName, List<Exp>>()

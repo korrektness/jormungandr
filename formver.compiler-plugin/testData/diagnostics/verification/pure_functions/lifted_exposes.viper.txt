@@ -133,12 +133,13 @@ method Lambda0_c_ExposedCounter_upcast(this: Ref)
     old(Lambda0_f_step(this))
 
 
-method create(anon_0: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(anon_0), intType())
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
   ensures isSubtype(typeOf(ret_1), Lambda0())
-  ensures acc(Lambda0_unique(ret_1), write)
-  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
-      intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(anon_0))
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(captureArg0)
 
 
 method createCounter() returns (v_ret_0: Ref)
@@ -150,10 +151,11 @@ method createCounter() returns (v_ret_0: Ref)
       intFromRef(c_ExposedCounter_f_step(v_ret_0)) == 1)
 {
   var n: Ref
-  var anon_1: Ref
+  var anon: Ref
   n := intToRef(0)
-  anon_1 := create(n)
-  v_ret_0 := anon_1
+  anon := create(n)
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
   inhale isSubtype(typeOf(v_ret_0), c_ExposedCounter())
   Lambda0_c_ExposedCounter_upcast(v_ret_0)
   goto lbl_ret_0
@@ -231,48 +233,58 @@ method Lambda0_c_ExposedCounter_upcast(this: Ref)
     old(Lambda0_f_step(this))
 
 
-method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   ensures acc(Lambda0_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(Lambda0_f_value(this)) ==
     old(intFromRef(Lambda0_f_value(this))) +
     intFromRef(Lambda0_f_step(this))
-  ensures intFromRef(v_ret_2) == intFromRef(Lambda0_f_value(this))
+  ensures intFromRef(v_ret_4) == intFromRef(Lambda0_f_value(this))
   ensures intFromRef(Lambda0_f_step(this)) ==
     old(intFromRef(Lambda0_f_step(this)))
 {
-  var anon_1: Ref
+  var anon: Ref
   unfold acc(Lambda0_unique(this), write)
-  anon_1 := this.Lambda0_p_capture0
-  this.Lambda0_p_capture0 := plusInts(anon_1, intToRef(1))
-  v_ret_2 := this.Lambda0_p_capture0
+  anon := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon, intToRef(1))
+  v_ret_4 := this.Lambda0_p_capture0
   fold acc(Lambda0_unique(this), write)
-  goto lbl_ret_2
-  label lbl_ret_2
+  goto lbl_ret_4
+  label lbl_ret_4
 }
 
-method create(anon_0: Ref) returns (ret_0: Ref)
-  requires isSubtype(typeOf(anon_0), intType())
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
   ensures isSubtype(typeOf(ret_0), Lambda0())
-  ensures acc(Lambda0_unique(ret_0), write)
-  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
-      intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(anon_0))
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
 
 
-method f_invoke(this: Ref) returns (ret_1: Ref)
+method createCounter() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_ExposedCounter())
+  ensures acc(c_ExposedCounter_unique(ret_1), write)
+  ensures (unfolding acc(c_ExposedCounter_unique(ret_1), wildcard) in
+      intFromRef(c_ExposedCounter_f_value(ret_1)) == 0)
+  ensures (unfolding acc(c_ExposedCounter_unique(ret_1), wildcard) in
+      intFromRef(c_ExposedCounter_f_step(ret_1)) == 1)
+
+
+method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_ExposedCounter())
   requires acc(c_ExposedCounter_unique(this), write)
   ensures acc(c_ExposedCounter_unique(this), write)
-  ensures isSubtype(typeOf(ret_1), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
       intFromRef(c_ExposedCounter_f_value(this)) ==
       old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
         intFromRef(c_ExposedCounter_f_value(this)))) +
       intFromRef(c_ExposedCounter_f_step(this)))
   ensures (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
-      intFromRef(ret_1) == intFromRef(c_ExposedCounter_f_value(this)))
+      intFromRef(ret_3) == intFromRef(c_ExposedCounter_f_value(this)))
   ensures (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
       intFromRef(c_ExposedCounter_f_step(this)) ==
       old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
@@ -287,23 +299,23 @@ method laws(this: Ref)
   assert boolFromRef(gtInts(Lambda0_f_step(this), intToRef(0)))
 }
 
-method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_ExposedCounter())
   requires acc(c_ExposedCounter_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ExposedCounter_restore(this)
-  ret_1 := Lambda0_invoke(this)
+  ret_3 := Lambda0_invoke(this)
   Lambda0_c_ExposedCounter_upcast(this)
   assert acc(c_ExposedCounter_unique(this), write)
-  assert isSubtype(typeOf(ret_1), intType())
+  assert isSubtype(typeOf(ret_3), intType())
   assert (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
       intFromRef(c_ExposedCounter_f_value(this)) ==
       old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
         intFromRef(c_ExposedCounter_f_value(this)))) +
       intFromRef(c_ExposedCounter_f_step(this)))
   assert (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
-      intFromRef(ret_1) == intFromRef(c_ExposedCounter_f_value(this)))
+      intFromRef(ret_3) == intFromRef(c_ExposedCounter_f_value(this)))
   assert (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
       intFromRef(c_ExposedCounter_f_step(this)) ==
       old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
@@ -491,6 +503,7 @@ method constantBinding() returns (v_ret_0: Ref)
 {
   var anon: Ref
   anon := create()
+  fold acc(Lambda0_unique(anon), write)
   v_ret_0 := anon
   inhale isSubtype(typeOf(v_ret_0), c_ConstantClosure())
   Lambda0_c_ConstantClosure_upcast(v_ret_0)
@@ -500,7 +513,7 @@ method constantBinding() returns (v_ret_0: Ref)
 
 method create() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Lambda0())
-  ensures acc(Lambda0_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
 
 
 constantBinding.lambda0.invoke:
@@ -566,30 +579,37 @@ method Lambda0_c_ConstantObservation_upcast(this: Ref)
     old(Lambda0_f_value(this))
 
 
-method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   ensures acc(Lambda0_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_2), intType())
-  ensures intFromRef(v_ret_2) == intFromRef(Lambda0_f_value(this))
+  ensures isSubtype(typeOf(v_ret_4), intType())
+  ensures intFromRef(v_ret_4) == intFromRef(Lambda0_f_value(this))
 {
-  v_ret_2 := intToRef(7)
-  goto lbl_ret_2
-  label lbl_ret_2
+  v_ret_4 := intToRef(7)
+  goto lbl_ret_4
+  label lbl_ret_4
 }
+
+method constantBinding() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ConstantClosure())
+  ensures acc(ConstantClosure_unique(ret_1), write)
+  ensures (unfolding acc(ConstantClosure_unique(ret_1), wildcard) in
+      intFromRef(ConstantClosure_c_ConstantObservation_f_value(ret_1)) == 7)
+
 
 method create() returns (ret_0: Ref)
   ensures isSubtype(typeOf(ret_0), Lambda0())
-  ensures acc(Lambda0_unique(ret_0), write)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
 
 
-method f_invoke(this: Ref) returns (ret_1: Ref)
+method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   ensures acc(c_ConstantObservation_unique(this), write)
-  ensures isSubtype(typeOf(ret_1), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_1) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_3) == intFromRef(c_ConstantObservation_f_value(this)))
 
 
 method laws(this: Ref)
@@ -600,18 +620,18 @@ method laws(this: Ref)
   assert boolFromRef(boolToRef(intFromRef(Lambda0_f_value(this)) == 7))
 }
 
-method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ConstantObservation_restore(this)
-  ret_1 := Lambda0_invoke(this)
+  ret_3 := Lambda0_invoke(this)
   Lambda0_c_ConstantObservation_upcast(this)
   assert acc(c_ConstantObservation_unique(this), write)
-  assert isSubtype(typeOf(ret_1), intType())
+  assert isSubtype(typeOf(ret_3), intType())
   assert (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_1) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_3) == intFromRef(c_ConstantObservation_f_value(this)))
 }
 
 /lifted_exposes.kt: info: Generated Viper text for breaksBoundContract:
@@ -672,6 +692,7 @@ method breaksBoundContract() returns (v_ret_0: Ref)
 {
   var anon: Ref
   anon := create()
+  fold acc(Lambda0_unique(anon), write)
   v_ret_0 := anon
   inhale isSubtype(typeOf(v_ret_0), c_ConstantClosure())
   Lambda0_c_ConstantClosure_upcast(v_ret_0)
@@ -681,7 +702,7 @@ method breaksBoundContract() returns (v_ret_0: Ref)
 
 method create() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Lambda0())
-  ensures acc(Lambda0_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
 
 
 breaksBoundContract.lambda0.invoke:
@@ -747,30 +768,35 @@ method Lambda0_c_ConstantObservation_upcast(this: Ref)
     old(Lambda0_f_value(this))
 
 
-method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+method Lambda0_invoke(this: Ref) returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   ensures acc(Lambda0_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_2), intType())
-  ensures intFromRef(v_ret_2) == intFromRef(Lambda0_f_value(this))
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) == intFromRef(Lambda0_f_value(this))
 {
-  v_ret_2 := intToRef(8)
-  goto lbl_ret_2
-  label lbl_ret_2
+  v_ret_3 := intToRef(8)
+  goto lbl_ret_3
+  label lbl_ret_3
 }
+
+method breaksBoundContract() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ConstantClosure())
+  ensures acc(ConstantClosure_unique(ret_1), write)
+
 
 method create() returns (ret_0: Ref)
   ensures isSubtype(typeOf(ret_0), Lambda0())
-  ensures acc(Lambda0_unique(ret_0), write)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
 
 
-method f_invoke(this: Ref) returns (ret_1: Ref)
+method f_invoke(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   ensures acc(c_ConstantObservation_unique(this), write)
-  ensures isSubtype(typeOf(ret_1), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_1) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_2) == intFromRef(c_ConstantObservation_f_value(this)))
 
 
 method laws(this: Ref)
@@ -781,18 +807,18 @@ method laws(this: Ref)
   assert boolFromRef(boolToRef(intFromRef(Lambda0_f_value(this)) == 7))
 }
 
-method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+method refines_f_invoke(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ConstantObservation_restore(this)
-  ret_1 := Lambda0_invoke(this)
+  ret_2 := Lambda0_invoke(this)
   Lambda0_c_ConstantObservation_upcast(this)
   assert acc(c_ConstantObservation_unique(this), write)
-  assert isSubtype(typeOf(ret_1), intType())
+  assert isSubtype(typeOf(ret_2), intType())
   assert (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_1) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_2) == intFromRef(c_ConstantObservation_f_value(this)))
 }
 
 /lifted_exposes.kt: info: Generated Viper text for breaksInheritedLaw:
@@ -853,6 +879,7 @@ method breaksInheritedLaw() returns (v_ret_0: Ref)
 {
   var anon: Ref
   anon := create()
+  fold acc(Lambda0_unique(anon), write)
   v_ret_0 := anon
   inhale isSubtype(typeOf(v_ret_0), c_ConstantClosure())
   Lambda0_c_ConstantClosure_upcast(v_ret_0)
@@ -862,7 +889,7 @@ method breaksInheritedLaw() returns (v_ret_0: Ref)
 
 method create() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Lambda0())
-  ensures acc(Lambda0_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
 
 
 breaksInheritedLaw.lambda0.invoke:
@@ -928,30 +955,35 @@ method Lambda0_c_ConstantObservation_upcast(this: Ref)
     old(Lambda0_f_value(this))
 
 
-method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+method Lambda0_invoke(this: Ref) returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   ensures acc(Lambda0_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_2), intType())
-  ensures intFromRef(v_ret_2) == intFromRef(Lambda0_f_value(this))
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) == intFromRef(Lambda0_f_value(this))
 {
-  v_ret_2 := intToRef(8)
-  goto lbl_ret_2
-  label lbl_ret_2
+  v_ret_3 := intToRef(8)
+  goto lbl_ret_3
+  label lbl_ret_3
 }
+
+method breaksInheritedLaw() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ConstantClosure())
+  ensures acc(ConstantClosure_unique(ret_1), write)
+
 
 method create() returns (ret_0: Ref)
   ensures isSubtype(typeOf(ret_0), Lambda0())
-  ensures acc(Lambda0_unique(ret_0), write)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
 
 
-method f_invoke(this: Ref) returns (ret_1: Ref)
+method f_invoke(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   ensures acc(c_ConstantObservation_unique(this), write)
-  ensures isSubtype(typeOf(ret_1), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_1) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_2) == intFromRef(c_ConstantObservation_f_value(this)))
 
 
 method laws(this: Ref)
@@ -962,18 +994,18 @@ method laws(this: Ref)
   assert boolFromRef(boolToRef(intFromRef(Lambda0_f_value(this)) == 7))
 }
 
-method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+method refines_f_invoke(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ConstantObservation_restore(this)
-  ret_1 := Lambda0_invoke(this)
+  ret_2 := Lambda0_invoke(this)
   Lambda0_c_ConstantObservation_upcast(this)
   assert acc(c_ConstantObservation_unique(this), write)
-  assert isSubtype(typeOf(ret_1), intType())
+  assert isSubtype(typeOf(ret_2), intType())
   assert (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_1) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_2) == intFromRef(c_ConstantObservation_f_value(this)))
 }
 
 /lifted_exposes.kt: info: Generated Viper text for multipleLawObligations:
@@ -1055,7 +1087,7 @@ method Lambda0_c_ConstantClosure_upcast(this: Ref)
 
 method Lambda0_create() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Lambda0())
-  ensures acc(Lambda0_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
 
 
 method Lambda1_c_ConstantClosure_upcast(this: Ref)
@@ -1069,7 +1101,7 @@ method Lambda1_c_ConstantClosure_upcast(this: Ref)
 
 method Lambda1_create() returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), Lambda1())
-  ensures acc(Lambda1_unique(ret_2), write)
+  ensures isSubtype(typeOf(ret_2), Lambda1())
 
 
 method c_ConstantClosure_c_ConstantObservation_restore(this: Ref)
@@ -1115,10 +1147,12 @@ method multipleLawObligations() returns (v_ret_0: Ref)
   var a: Ref
   var b: Ref
   anon_0 := Lambda0_create()
+  fold acc(Lambda0_unique(anon_0), write)
   first := anon_0
   inhale isSubtype(typeOf(first), c_ConstantClosure())
   Lambda0_c_ConstantClosure_upcast(first)
   anon_1 := Lambda1_create()
+  fold acc(Lambda1_unique(anon_1), write)
   second := anon_1
   inhale isSubtype(typeOf(second), c_ConstantClosure())
   Lambda1_c_ConstantClosure_upcast(second)
@@ -1163,6 +1197,17 @@ function c_ConstantObservation_f_value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
 predicate ConstantClosure_footprint(this: Ref)
 
 predicate ConstantClosure_unique(this: Ref) {
@@ -1179,6 +1224,8 @@ predicate Lambda0_unique(this: Ref) {
 predicate Lambda1_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda1())
 }
+
+predicate Serializable_unique(this: Ref)
 
 predicate c_ConstantObservation_footprint(this: Ref)
 
@@ -1211,33 +1258,33 @@ method Lambda0_c_ConstantObservation_upcast(this: Ref)
 
 method Lambda0_create() returns (ret_0: Ref)
   ensures isSubtype(typeOf(ret_0), Lambda0())
-  ensures acc(Lambda0_unique(ret_0), write)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
 
 
-method Lambda0_invoke(this: Ref) returns (v_ret_3: Ref)
+method Lambda0_invoke(this: Ref) returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   ensures acc(Lambda0_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_3), intType())
-  ensures intFromRef(v_ret_3) == intFromRef(Lambda0_f_value(this))
+  ensures isSubtype(typeOf(v_ret_5), intType())
+  ensures intFromRef(v_ret_5) == intFromRef(Lambda0_f_value(this))
 {
-  v_ret_3 := intToRef(7)
-  goto lbl_ret_3
-  label lbl_ret_3
+  v_ret_5 := intToRef(7)
+  goto lbl_ret_5
+  label lbl_ret_5
 }
 
 method Lambda1_create() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Lambda1())
-  ensures acc(Lambda1_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), Lambda1())
 
 
-method f_invoke(this: Ref) returns (ret_2: Ref)
+method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   ensures acc(c_ConstantObservation_unique(this), write)
-  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_2) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_3) == intFromRef(c_ConstantObservation_f_value(this)))
 
 
 method laws(this: Ref)
@@ -1248,18 +1295,22 @@ method laws(this: Ref)
   assert boolFromRef(boolToRef(intFromRef(Lambda0_f_value(this)) == 7))
 }
 
-method refines_f_invoke(this: Ref) returns (ret_2: Ref)
+method multipleLawObligations() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ConstantObservation_restore(this)
-  ret_2 := Lambda0_invoke(this)
+  ret_4 := Lambda0_invoke(this)
   Lambda0_c_ConstantObservation_upcast(this)
   assert acc(c_ConstantObservation_unique(this), write)
-  assert isSubtype(typeOf(ret_2), intType())
+  assert isSubtype(typeOf(ret_4), intType())
   assert (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_2) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_4) == intFromRef(c_ConstantObservation_f_value(this)))
 }
 
 multipleLawObligations.lambda1.invoke:
@@ -1291,6 +1342,17 @@ function c_ConstantObservation_f_value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
 predicate ConstantClosure_footprint(this: Ref)
 
 predicate ConstantClosure_unique(this: Ref) {
@@ -1308,6 +1370,8 @@ predicate Lambda1_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda1())
 }
 
+predicate Serializable_unique(this: Ref)
+
 predicate c_ConstantObservation_footprint(this: Ref)
 
 predicate c_ConstantObservation_unique(this: Ref) {
@@ -1319,7 +1383,7 @@ predicate c_ConstantObservation_unique(this: Ref) {
 
 method Lambda0_create() returns (ret_0: Ref)
   ensures isSubtype(typeOf(ret_0), Lambda0())
-  ensures acc(Lambda0_unique(ret_0), write)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
 
 
 method Lambda1_c_ConstantObservation_restore(this: Ref)
@@ -1344,28 +1408,28 @@ method Lambda1_c_ConstantObservation_upcast(this: Ref)
 
 method Lambda1_create() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Lambda1())
-  ensures acc(Lambda1_unique(ret_1), write)
+  ensures isSubtype(typeOf(ret_1), Lambda1())
 
 
-method Lambda1_invoke(this: Ref) returns (v_ret_3: Ref)
+method Lambda1_invoke(this: Ref) returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
   ensures acc(Lambda1_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_3), intType())
-  ensures intFromRef(v_ret_3) == intFromRef(Lambda1_f_value(this))
+  ensures isSubtype(typeOf(v_ret_5), intType())
+  ensures intFromRef(v_ret_5) == intFromRef(Lambda1_f_value(this))
 {
-  v_ret_3 := intToRef(7)
-  goto lbl_ret_3
-  label lbl_ret_3
+  v_ret_5 := intToRef(7)
+  goto lbl_ret_5
+  label lbl_ret_5
 }
 
-method f_invoke(this: Ref) returns (ret_2: Ref)
+method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   ensures acc(c_ConstantObservation_unique(this), write)
-  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_2) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_3) == intFromRef(c_ConstantObservation_f_value(this)))
 
 
 method laws(this: Ref)
@@ -1376,16 +1440,20 @@ method laws(this: Ref)
   assert boolFromRef(boolToRef(intFromRef(Lambda1_f_value(this)) == 7))
 }
 
-method refines_f_invoke(this: Ref) returns (ret_2: Ref)
+method multipleLawObligations() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_ConstantObservation())
   requires acc(c_ConstantObservation_unique(this), write)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_ConstantObservation_restore(this)
-  ret_2 := Lambda1_invoke(this)
+  ret_4 := Lambda1_invoke(this)
   Lambda1_c_ConstantObservation_upcast(this)
   assert acc(c_ConstantObservation_unique(this), write)
-  assert isSubtype(typeOf(ret_2), intType())
+  assert isSubtype(typeOf(ret_4), intType())
   assert (unfolding acc(c_ConstantObservation_unique(this), wildcard) in
-      intFromRef(ret_2) == intFromRef(c_ConstantObservation_f_value(this)))
+      intFromRef(ret_4) == intFromRef(c_ConstantObservation_f_value(this)))
 }

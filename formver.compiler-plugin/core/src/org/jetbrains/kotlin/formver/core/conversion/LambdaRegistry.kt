@@ -34,6 +34,12 @@ internal class LambdaRegistry(
         }
     }
 
+    fun finalizeCreationFacts() {
+        for (implementation in lifted.values.sortedBy { lambda ->
+            generateSequence(lambda.source.parent) { it.parent }.count()
+        }) with(converter) { implementation.finalizeCreationFacts() }
+    }
+
     fun register(
         lambda: SpecifiedLambda,
         lambdas: List<SpecifiedLambda>,

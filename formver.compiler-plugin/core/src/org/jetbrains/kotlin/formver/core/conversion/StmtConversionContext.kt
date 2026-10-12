@@ -66,6 +66,10 @@ interface StmtConversionContext : MethodConversionContext {
     /** The call being inserted, once its arguments are converted. Bodies inlined at it are bound there. */
     val callSite: FirElement?
 
+    val creationPathFacts: List<ExpEmbedding>
+    val creationPathAliases: Map<SymbolicName, ExpEmbedding>
+    fun <R> withCreationPathFact(fact: ExpEmbedding, action: StmtConversionContext.() -> R): R
+
     fun continueLabelName(targetName: String? = null): SymbolicName
     fun breakLabelName(targetName: String? = null): SymbolicName
 
@@ -82,7 +86,7 @@ interface StmtConversionContext : MethodConversionContext {
 
     fun <R> withFreshWhile(label: FirLabel?, action: StmtConversionContext.() -> R): R
     fun <R> withCallSite(call: FirElement, action: StmtConversionContext.() -> R): R
-    fun <R> withWhenSubject(subject: VariableEmbedding?, action: StmtConversionContext.() -> R): R
+    fun <R> withWhenSubject(subject: VariableEmbedding?, value: ExpEmbedding? = null, action: StmtConversionContext.() -> R): R
     fun <R> withCheckedSafeCallSubject(subject: ExpEmbedding?, action: StmtConversionContext.() -> R): R
     fun <R> withCatches(
         catches: List<FirCatch>,

@@ -124,7 +124,8 @@ data class NonInlineFunctionSignature(
     val signature: NamedFunctionSignature,
     override val preconditions: List<ExpEmbedding>,
     override val postconditions: List<ExpEmbedding>,
-    override val declarationSource: KtSourceElement?
+    override val declarationSource: KtSourceElement?,
+    val openConstructedClass: ClassTypeEmbedding? = null,
 ) : CompleteFunctionSignature, NonInlineCallable, NamedFunctionSignature by signature
 
 

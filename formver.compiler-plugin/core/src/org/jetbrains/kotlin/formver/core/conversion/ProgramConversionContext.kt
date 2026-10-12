@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.core.diagnostics.ErrorCollectionContext
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.callables.CompleteFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousBuiltinVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
@@ -28,6 +29,7 @@ import org.jetbrains.kotlin.formver.core.names.CatchLabelName
 import org.jetbrains.kotlin.formver.core.names.TryExitLabelName
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.viper.NameResolver
+import org.jetbrains.kotlin.formver.viper.SymbolicName
 
 interface ProgramConversionContext : ErrorCollectionContext {
 
@@ -52,6 +54,7 @@ interface ProgramConversionContext : ErrorCollectionContext {
     val linearizedBodyResolver: LinearizedBodyResolver
 
     fun liftedLambda(expression: FirExpression): LiftedLambda?
+    fun lookupFunctionSignature(name: SymbolicName): CompleteFunctionSignature?
 
     fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding
     fun embedType(type: ConeKotlinType): TypeEmbedding

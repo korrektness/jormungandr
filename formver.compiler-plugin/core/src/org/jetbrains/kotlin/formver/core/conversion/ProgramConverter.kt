@@ -195,9 +195,21 @@ class ProgramConverter(
         get() = lambdaRegistry.sources
 
     override fun liftedLambda(expression: FirExpression): LiftedLambda? = lambdaRegistry[expression]
+    override fun lookupFunctionSignature(name: SymbolicName): CompleteFunctionSignature? = fullSignatures[name]
 
     fun registerLambda(lambda: SpecifiedLambda, lambdas: List<SpecifiedLambda>) {
         registeredSymbol = lambda.function.symbol
+        lambdaRegistry.prepare(lambdas)
+        // Each lifted body has its own verification unit; lower its creation path in that unit's symbol context.
+        val ownerSignature = embedCompleteSignature(lambda.owner.symbol)
+        val ownerContext = createBodyConversionContext(lambda.owner.symbol, ownerSignature, uniquenessOutcomeOf(lambda.owner).analysis)
+        if (ownerSignature.signature.isPure) ownerContext.convertPureBody(lambda.owner)
+        else ownerContext.convertImpureBody(lambda.owner, ownerSignature.signature, ownerSignature.returnTarget)
+        for (parent in generateSequence(lambda.parent) { it.parent }.toList().asReversed()) {
+            val lifted = lambdaRegistry[parent.expression]!!
+            val (signature, target) = with(this) { lifted.invokeSignature(embedCompleteSignature(parent.invoke).signature) }
+            with(this) { lifted.invokeBody(signature, target, uniquenessAnalysisOf(parent.function.symbol)) }
+        }
         val result = lambdaRegistry.register(lambda, lambdas) { embedCompleteSignature(lambda.invoke).signature }
         lawEncoding.registerClass(lambdaRegistry[lambda.expression]!!.type,
             lambda.expression.resolvedType.toRegularClassSymbol(session)!!, lambda.function.source)
@@ -247,6 +259,7 @@ class ProgramConverter(
     fun validateAll() {
         observerBindingRegistry.registerBindings(this) { fullSignatures.getValue(it) as NonInlineFunctionSignature }
         lawEncoding.prepare()
+        lambdaRegistry.finalizeCreationFacts()
         bodyProcessor.validate()
         for (entry in registered) {
             if (entry.declaration.symbol.neverVerify(session)) continue

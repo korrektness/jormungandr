@@ -592,6 +592,10 @@ data class LinearizationVisitor(
         override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
             replacement(ctx).linearize().toViperStoringIn(result, ctx)
         }
+
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            replacement(ctx).linearize().toViperUnusedResult(ctx)
+        }
     }
 
     // endregion

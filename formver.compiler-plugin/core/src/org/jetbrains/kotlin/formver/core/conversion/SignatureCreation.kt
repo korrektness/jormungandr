@@ -186,12 +186,12 @@ fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(
 
 
 /**
- * The class whose object a call of this function returns open: this is a primary constructor of a class whose predicate
- * is built from its properties. The caller folds the returned representation into the object's predicates.
+ * The class whose object a call of this function returns open. The caller folds the returned representation into the
+ * object's predicates.
  * `null` for every other function.
  */
 val NamedFunctionSignature.constructedOpen: ClassTypeEmbedding?
-    get() = (returns.type.pretype as? ClassTypeEmbedding)
+    get() = (this as? NonInlineFunctionSignature)?.openConstructedClass ?: (returns.type.pretype as? ClassTypeEmbedding)
         ?.takeIf { symbol?.isPrimaryConstructor() == true && !it.hasBuiltinPredicate }
 
 /**

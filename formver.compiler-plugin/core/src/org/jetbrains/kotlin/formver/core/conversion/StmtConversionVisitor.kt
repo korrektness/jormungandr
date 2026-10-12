@@ -174,8 +174,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             data.withNewScope { convert(branch.result) }
         } else {
             val cond = data.convert(branch.condition).withType { boolean() }
-            val thenExp = data.withNewScope { convert(branch.result) }
-            val elseExp = convertWhenBranches(whenBranches, type, data)
+            val thenExp = data.withCreationPathFact(cond) { withNewScope { convert(branch.result) } }
+            val elseExp = data.withCreationPathFact(OperatorExpEmbeddings.Not(cond)) {
+                convertWhenBranches(whenBranches, type, this)
+            }
             If(cond, thenExp.withType(type), elseExp.withType(type), type)
         }
     }
@@ -190,7 +192,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 else
                     declareLocalVariable(firSubjVar.symbol, subjExp)
             }
-            val body = withWhenSubject(subj?.variable) {
+            val body = withWhenSubject(subj?.variable,
+                subj?.initializer?.takeIf { whenExpression.subjectVariable?.name?.isSpecial == true }) {
                 convertWhenBranches(whenExpression.branches.iterator(), type, this)
             }
             subj?.let { blockOf(it, body) } ?: body
@@ -437,7 +440,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitWhileLoop(whileLoop: FirWhileLoop, data: StmtConversionContext): ExpEmbedding {
         val condition = data.convert(whileLoop.condition).withType { boolean() }
         return data.convertLoop(whileLoop, condition, extractLoopInvariants(whileLoop.block.statements)) {
-            convert(whileLoop.block)
+            withCreationPathFact(condition) { convert(whileLoop.block) }
         }
     }
 
@@ -510,7 +513,11 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data: StmtConversionContext,
     ): ExpEmbedding {
         val left = data.convert(booleanOperatorExpression.leftOperand)
-        val right = data.convert(booleanOperatorExpression.rightOperand)
+        val rightCondition = when (booleanOperatorExpression.kind) {
+            LogicOperationKind.AND -> left
+            LogicOperationKind.OR -> OperatorExpEmbeddings.Not(left)
+        }
+        val right = data.withCreationPathFact(rightCondition) { convert(booleanOperatorExpression.rightOperand) }
         return when (booleanOperatorExpression.kind) {
             LogicOperationKind.AND -> SequentialAnd(left, right)
             LogicOperationKind.OR -> SequentialOr(left, right)
@@ -646,7 +653,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data: StmtConversionContext,
     ): ExpEmbedding {
         val lhs = data.convert(elvisExpression.lhs)
-        val rhs = data.convert(elvisExpression.rhs)
+        val rhs = data.withCreationPathFact(OperatorExpEmbeddings.Not(lhs.notNullCmp())) { convert(elvisExpression.rhs) }
         val expType = data.embedType(elvisExpression.resolvedType)
         return Elvis(lhs, rhs, expType)
     }
@@ -663,7 +670,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         return share(receiver) { sharedReceiver ->
             If(
                 sharedReceiver.notNullCmp(),
-                data.withCheckedSafeCallSubject(sharedReceiver.withType(checkedSafeCallSubjectType)) { convert(selector) }.withType(expType),
+                data.withCreationPathFact(sharedReceiver.notNullCmp()) {
+                    withCheckedSafeCallSubject(sharedReceiver.withType(checkedSafeCallSubjectType)) { convert(selector) }
+                }.withType(expType),
                 NullLit.withType(expType),
                 expType
             )
