@@ -232,13 +232,18 @@ laws use the declaring class's implementation, including inherited bodies, expan
 Field reads and `@Pure` non-member calls retain their ordinary encoding. An observer without a visible body or a
 recursive expansion is rejected with `INVALID_LAW` and a reason.
 
-A class carrying its own or inherited class laws requires a primary constructor with no secondary constructors
-or init blocks. Stored properties must have initializers that are constructor parameters or pure expressions over
-those parameters. Delegated properties are outside this scope. Unsupported shapes are rejected with `INVALID_LAW`.
-The constructor requires its own and superclass invariants with field reads substituted by their initializers and
-superclass constructor arguments, including defaults. An inherited field used in this substitution must retain its
-initializer value and owned state throughout construction. Each call site proves the constructor precondition; the returned
-representation and its opened-predicate description include the invariants.
+A class carrying its own or inherited class laws requires a primary constructor with no secondary constructors.
+Delegated properties are outside this scope. Unsupported shapes are rejected with `INVALID_LAW`.
+Primary-constructor proofs allocate fresh field permissions, execute superclass initialization and then property
+initializers and init blocks in declaration order, and establish the invariants in the returned open representation.
+The proof starts without assuming those invariants; a violating initialization is a verification error on the class.
+Inherited fields used by class laws must retain their initializer value and owned state throughout construction.
+The returned representation and its opened-predicate description include the invariants.
+
+Temporary construction-call restrictions: calls passing the object under construction are rejected with
+`UNSUPPORTED_FEATURE` when it has
+law-bearing nested owned children, or when a helper reads uninitialized immutable storage. Calls with unavailable
+helper bodies require initialized immutable storage. These restrictions apply with and without class laws.
 
 Unfolding an owned class receiver exposes its invariant to the member body. Every refold proves the invariant,
 including refolds for calls and control-flow joins. On member exit, a retained unique receiver with class laws is
@@ -400,7 +405,7 @@ val c: @Unique Node = Node(3, null)  // unique
 
 A constructor call gives a shared object when the class lets `this` escape
 while it is constructed. That happens when a constructor body, an `init` block
-or a property initializer, of the class or of a superclass, uses `this` other
+or a property initializer, of the class or of a superclass, uses `this` in executable code other
 than to read or write a field, to pass it to a `@Borrowed` parameter, or to
 call a member that borrows `this` (`@Borrowed`, `@Unique @Borrowed` or
 `@Unique @Pure`): for example, it calls an unannotated member function, reads
@@ -418,21 +423,21 @@ class Parser(first: String) {
 val p: @Unique Parser = Parser("x")  // error: the construction of 'Parser' calls member 'track' on 'this'
 ```
 
-During construction `this` is shared, so a member that owns `this` needs the
-object handed over. Construction code may call a `@Unique @Borrowed` or
+During non-escaping construction, initialized stored unique fields are owned paths.
+`this` itself is shared, so a member that owns `this` needs the object handed over. Construction code may call a `@Unique @Borrowed` or
 `@Unique @Pure` member on `this` when the class does not let `this` escape,
 the member is final, and every field of the class is initialized at the call:
 every property of the class with a backing field or delegate has an
 initializer, and when the call is in an `init` block, is declared above it.
 Other calls to a member that owns `this` are rejected.
 
-Construction code itself is not verified. A constructor call gives the type
-facts of every field. It also gives the value a parameter stores in a property,
+Construction proofs for representation invariants are described in Class laws.
+A constructor call gives the type facts of every field. It also gives the value a parameter stores in a property,
 unless construction code assigns that property or, for a `var`, uses `this`
 other than to read or write a field. An argument stored in a `@Unique`
-property keeps what the caller knew about it only when construction code
-neither reads nor assigns that property and uses `this` only to read or write
-fields.
+property keeps what the caller knew about it only when the constructor carries
+no class laws, construction code neither reads nor assigns that property, and
+uses `this` only to read or write fields.
 
 `@Unique` on a value type (`Int`, `Boolean`, `Char`, `String`, `Unit`, or their
 nullable forms) is rejected, since such values own nothing.

@@ -380,14 +380,14 @@ predicate c_AbstractLevel_unique(this: Ref) {
 predicate footprint(this: Ref)
 
 /unsupported_observer_views.kt: info: Generated Viper text for ConcreteLevel:
-field l: Ref
+field bf_l: Ref
 
 function ConcreteLevel_f_level(this: Ref): Ref
   requires isSubtype(typeOf(this), ConcreteLevel())
   requires acc(ConcreteLevel_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(ConcreteLevel_unique(this), write) in this.l)
+  (unfolding acc(ConcreteLevel_unique(this), write) in this.bf_l)
 }
 
 function Level_f_level(this: Ref): Ref
@@ -409,15 +409,15 @@ function c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
 
 
 predicate ConcreteLevel_unique(this: Ref) {
-  isSubtype(typeOf(this), ConcreteLevel()) && acc(this.l, write) &&
-  isSubtype(typeOf(this.l), intType()) &&
+  isSubtype(typeOf(this), ConcreteLevel()) && acc(this.bf_l, write) &&
+  isSubtype(typeOf(this.bf_l), intType()) &&
   acc(c_AbstractLevel_unique(this), write) &&
   (let this ==
     (this) in
     (unfolding acc(c_AbstractLevel_unique(this), wildcard) in
       true &&
       boolFromRef((let anon_0_0 ==
-        (this.l) in
+        (this.bf_l) in
         geInts(anon_0_0, intToRef(0))))))
 }
 
@@ -432,6 +432,41 @@ predicate c_AbstractLevel_unique(this: Ref) {
 
 predicate footprint(this: Ref)
 
+method con(par_l: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_l), intType())
+  ensures isSubtype(typeOf(v_ret_0), ConcreteLevel())
+  ensures isSubtype(typeOf(v_ret_0), ConcreteLevel()) &&
+    acc(v_ret_0.bf_l, write) &&
+    isSubtype(typeOf(v_ret_0.bf_l), intType()) &&
+    isSubtype(typeOf(v_ret_0), c_AbstractLevel()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_l) in
+        geInts(anon_0_0, intToRef(0)))))
+  ensures intFromRef(v_ret_0.bf_l) == intFromRef(par_l)
+  ensures intFromRef(v_ret_0.bf_l) == intFromRef(par_l)
+{
+  var anon_2: Ref
+  v_ret_0 := new(bf_l)
+  inhale typeOf(v_ret_0) == ConcreteLevel()
+  v_ret_0.bf_l := par_l
+  anon_2 := require(geInts(v_ret_0.bf_l, intToRef(0)))
+  label lbl_ret_0
+  fold acc(c_AbstractLevel_unique(v_ret_0), write)
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_AbstractLevel_unique(this), wildcard) in
+        true &&
+        boolFromRef((let anon_0_0 ==
+          (this.bf_l) in
+          geInts(anon_0_0, intToRef(0))))))
+  fold acc(ConcreteLevel_unique(v_ret_0), write)
+  unfold acc(ConcreteLevel_unique(v_ret_0), write)
+  unfold acc(c_AbstractLevel_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(ConcreteLevel_unique(this), write)
 {
@@ -439,6 +474,12 @@ method laws(this: Ref)
   fold acc(ConcreteLevel_unique(this), write)
   assert boolFromRef(geInts(ConcreteLevel_f_level(this), intToRef(0)))
 }
+
+method require(value: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures true ==> boolFromRef(value)
+
 
 /unsupported_observer_views.kt: info: Generated Viper text for level:
 field l: Ref

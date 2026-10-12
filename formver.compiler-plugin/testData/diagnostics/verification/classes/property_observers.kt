@@ -23,6 +23,7 @@ interface Growing : Sized {
     @Unique @Borrowed fun <!VIPER_TEXT!>grow<!>()
 }
 <!VIPER_TEXT!>class MutableSize<!>(var n: Int) : Growing {
+    init { require(n >= 0) }
     @Law @Pure fun invariant(): Boolean = size >= 0
     @get:Unique @Pure override val size: Int <!VIPER_TEXT!>get<!>() = n
     @Unique @Borrowed override fun <!VIPER_TEXT!>grow<!>() { n++ }
@@ -43,6 +44,7 @@ fun <!VIPER_TEXT!>borrowedProperty<!>(s: @Unique @Borrowed MutableSize) {
     @Pure override val size: Int <!VIPER_TEXT!>get<!>() = -1
 }<!>
 <!VIPER_TEXT!>class WrongGrow<!>(var n: Int) : Growing {
+    init { require(n >= 0) }
     @Law @Pure fun invariant(): Boolean = n >= 0
     @get:Unique @Pure override val size: Int <!VIPER_TEXT!>get<!>() = n
     <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed override fun <!VIPER_TEXT!>grow<!>() { n += 2 }<!>

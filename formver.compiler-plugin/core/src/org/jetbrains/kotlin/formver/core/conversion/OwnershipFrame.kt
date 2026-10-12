@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.Path
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
 
 /**
- * The uniqueness facts for one body being converted: a function's own body, or a body inlined at a call, which is an
+ * The uniqueness facts for one body being converted: a function or construction initializer, or a body inlined at a call, which is an
  * inline function's body, a lambda invoked in place, or a default argument.
  *
  * Paths in the body are rooted at the symbols of the function the body belongs to, and [analysis] answers for them.

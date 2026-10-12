@@ -15,9 +15,11 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChe
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.formver.core.conversion.inheritedImplementationObligations
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.core.conversion.classLawConstructionFailures
+import org.jetbrains.kotlin.formver.core.conversion.hasSuperclassLaws
 import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
 import org.jetbrains.kotlin.formver.core.conversion.interfaceLaws
@@ -52,13 +54,19 @@ class ViperPoweredClassChecker(
         if (declaration.classKind.isInterface || declaration.isAbstract) return
         if (config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE)) return
         val inherited = declaration.symbol.inheritedImplementationObligations()
-        if (inherited.isEmpty() && declaration.symbol.interfaceLaws().isEmpty() &&
-            declaration.symbol.declarationSymbols.none { it.isLaw(session) }) return
-        if (declaration.symbol.ownClassLaws(session).isNotEmpty() &&
+        val primary = declaration.symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>()
+            .singleOrNull { it.isPrimary }?.takeIf {
+                declaration.symbol.ownClassLaws(session).isNotEmpty() || declaration.symbol.hasSuperclassLaws(session)
+            }
+        val hasLawHarness = declaration.symbol.interfaceLaws().isNotEmpty() ||
+            declaration.symbol.declarationSymbols.any { it.isLaw(session) }
+        if (primary == null && inherited.isEmpty() && !hasLawHarness) return
+        if ((declaration.symbol.ownClassLaws(session).isNotEmpty() || declaration.symbol.hasSuperclassLaws(session)) &&
             classLawConstructionFailures(declaration.symbol, session).isNotEmpty()) return
         try {
             val converter = ProgramConverter(session, config, context, reporter)
             converter.registerClassLaws(declaration.symbol)
+            primary?.let { converter.registerPrimaryConstructor(it) }
             for (obligation in inherited) {
                 converter.registerInheritedImplementation(declaration.symbol, obligation.implementation, obligation.contracts)
             }

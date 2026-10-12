@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.attributingFailuresTo
 import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.constructedOpen
+import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.domains.SeqMultisetDomain
@@ -176,7 +177,8 @@ data class LinearizationVisitor(
             for ((path, formal) in heldArgs) {
                 when {
                     formal.isUnique -> ctx.exposeFor(path, formal)
-                    formal.isBorrowed -> ctx.foldState?.close(ctx, path)
+                    formal.isBorrowed -> if (ctx.foldState?.isConstructionRoot(path) == true) ctx.foldState?.tidy(ctx, path)
+                        else ctx.foldState?.close(ctx, path)
                 }
             }
             ctx.addStatement {
@@ -293,7 +295,16 @@ data class LinearizationVisitor(
                     val path = OwnedPath(receiver)
                     if (foldState.holds(path)) foldState.close(ctx, path)
                 }
-                if (signature.callableType.returnsUnique) foldState.close(ctx, OwnedPath(signature.returns))
+                if (signature.callableType.returnsUnique) {
+                    foldState.close(ctx, OwnedPath(signature.returns))
+                    val constructed = (signature as? NamedFunctionSignature)?.constructedOpen
+                    if (constructed != null) {
+                        val returned = signature.returns.toLocalVarUse()
+                        for (cls in generateSequence(constructed, ctx.typeResolver::superClass)) {
+                            ctx.addStatement { Stmt.Unfold(hierarchyPredicateAccess(returned, cls, ctx.source), ctx.source.asPosition) }
+                        }
+                    }
+                }
             }
         }
     }
@@ -438,6 +449,23 @@ data class LinearizationVisitor(
     override fun visitRefute(e: Refute): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addStatement { Stmt.Refute(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition) }
+        }
+    }
+
+    override fun visitBindOwnedField(e: BindOwnedField): Linearizable = object : UnitResultLinearizable(e) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            ctx.foldState?.transfer(ctx, OwnedPath(e.value), OwnedPath(e.receiver) + e.step)
+        }
+    }
+
+    override fun visitAllocateObject(e: AllocateObject): Linearizable = object : UnitResultLinearizable(e) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            val result = e.result.toLocalVarUse()
+            ctx.addStatement { Stmt.New(result, e.fields.map { it.toViper() }, ctx.source.asPosition) }
+            ctx.foldState?.acquireConstruction(ctx, OwnedPath(e.result), e.constructed)
+            ctx.addStatement {
+                Stmt.Inhale(Exp.EqCmp(RuntimeTypeDomain.typeOf(result), e.constructed.runtimeType), ctx.source.asPosition)
+            }
         }
     }
 

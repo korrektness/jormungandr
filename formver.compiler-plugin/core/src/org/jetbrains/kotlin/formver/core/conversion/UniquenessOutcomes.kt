@@ -8,6 +8,8 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
+import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessFacts
@@ -21,7 +23,7 @@ internal class UniquenessOutcomes(private val session: FirSession, private val c
     fun cached(symbol: FirFunctionSymbol<*>): UniquenessOutcome? = outcomes[symbol]
 
     operator fun get(declaration: FirFunction): UniquenessOutcome = outcomes.getOrPut(declaration.symbol) {
-        if (declaration.body == null) {
+        if (declaration.body == null && !(declaration is FirConstructor && declaration.origin == FirDeclarationOrigin.Source)) {
             UniquenessOutcome(analysis = null, hasErrors = false)
         } else {
             val analysis = context(context) { session.uniquenessFacts.analysis(declaration) }

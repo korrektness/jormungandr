@@ -33,6 +33,7 @@ class MethodConverter(
     override val ownershipFrame: OwnershipFrame,
     private val parent: MethodConversionContext? = null,
     private val captures: Map<FirBasedSymbol<*>, PropertyAccessEmbedding> = emptyMap(),
+    override val constructionReceiver: ExpEmbedding? = null,
 ) : MethodConversionContext, ProgramConversionContext by programCtx {
     private var propertyResolver = PropertyResolver(scopeDepth)
 

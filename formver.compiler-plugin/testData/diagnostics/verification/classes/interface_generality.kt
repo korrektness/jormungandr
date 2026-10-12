@@ -20,6 +20,7 @@ interface OtherView {
 }
 
 <!VIPER_TEXT!>class GeneralCell<!>(var enabled: Boolean, val stored: GeneralToken?) : DetailedView, OtherView {
+    init { require(enabled) }
     @Law @Pure @Unique fun representation(): Boolean = enabled
     @Pure @Unique override fun <!VIPER_TEXT!>truth<!>(): Boolean = enabled
     @Pure @Unique override fun <!VIPER_TEXT!>other<!>(): Boolean = enabled

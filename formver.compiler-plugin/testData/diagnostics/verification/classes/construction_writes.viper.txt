@@ -65,6 +65,75 @@ method clearChild(this: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/construction_writes.kt: info: Generated Viper text for ForwardLoanSink:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), ForwardLoanSink())
+  ensures isSubtype(typeOf(v_ret_0), ForwardLoanSink()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        geInts(anon_0_0, intToRef(1)))))
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  var anon_1: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == ForwardLoanSink()
+  v_ret_0.bf_n := par_n
+  anon_1 := require(geInts(v_ret_0.bf_n, intToRef(1)))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        geInts(anon_0_0, intToRef(1)))))
+  fold acc(ForwardLoanSink_unique(v_ret_0), write)
+  unfold acc(ForwardLoanSink_unique(v_ret_0), write)
+}
+
+method require(value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/construction_writes.kt: info: Generated Viper text for accept:
+field n: Ref
+
+function age(this: Ref): Ref
+  requires isSubtype(typeOf(this), ForwardLoanSource())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method accept(this: Ref, source: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ForwardLoanSink())
+  requires acc(ForwardLoanSink_unique(this), write)
+  requires isSubtype(typeOf(source), ForwardLoanSource())
+  requires intFromRef(age(source)) >= 1
+  ensures acc(ForwardLoanSink_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(ForwardLoanSink_unique(this), write)
+  this.n := age(source)
+  label lbl_ret_0
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.n) in
+        geInts(anon_0_0, intToRef(1)))))
+  fold acc(ForwardLoanSink_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /construction_writes.kt: info: Generated Viper text for keepsParameters:
 field bf_a: Ref
 

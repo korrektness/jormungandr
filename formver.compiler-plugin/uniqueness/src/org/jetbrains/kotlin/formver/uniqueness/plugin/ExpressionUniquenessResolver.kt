@@ -69,7 +69,8 @@ fun FirExpression.resolveTerminalUniqueness(): Uniqueness {
         }
 
         is FirPropertyAccessExpression -> {
-            val receiverUniqueness = pathReceiver?.resolveUniqueness() ?: Uniqueness.Unique
+            val receiverUniqueness = if (isOwnedConstructionField()) Uniqueness.Unique
+            else pathReceiver?.resolveUniqueness() ?: Uniqueness.Unique
 
             receiverUniqueness.join(resolveAccessUniqueness())
         }

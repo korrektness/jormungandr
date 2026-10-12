@@ -38,6 +38,7 @@ open <!VIPER_TEXT!>class GoodSizedLaw<!> : SizedLawDiamond {
 }<!>
 
 <!VIPER_TEXT!>class InvariantSizedLaw<!>(var count: Int) : SizedLaw {
+    init { require(count >= 0) }
     @Pure @Unique
     override fun <!VIPER_TEXT!>size<!>(): Int = count
 

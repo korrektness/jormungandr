@@ -6,6 +6,9 @@
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
+import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.purity.PurityContext
@@ -55,6 +58,26 @@ data object UnsupportedPlaceholder : ExpEmbedding {
     override val type: TypeEmbedding = buildType { nothing() }
 
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitUnsupportedPlaceholder(this)
+}
+
+/** Allocates field permissions and fixes the runtime identity, without assuming a representation invariant. */
+data class AllocateObject(
+    val result: VariableEmbedding,
+    val constructed: ClassTypeEmbedding,
+    val fields: List<FieldEmbedding>,
+) : ExpEmbedding {
+    override val type: TypeEmbedding = buildType { unit() }
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitAllocateObject(this)
+}
+
+/** Moves an evaluated unique initializer into immutable storage whose getter equality is established. */
+data class BindOwnedField(
+    val receiver: VariableEmbedding,
+    val step: PathStep,
+    val value: VariableEmbedding,
+) : ExpEmbedding {
+    override val type: TypeEmbedding = buildType { unit() }
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitBindOwnedField(this)
 }
 
 data class Assert(val exp: ExpEmbedding) : ExpEmbedding {

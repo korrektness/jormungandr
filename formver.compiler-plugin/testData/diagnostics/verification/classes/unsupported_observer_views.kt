@@ -35,6 +35,7 @@ abstract class AbstractLevel : Level {
     @Pure @Unique abstract override fun <!VIPER_TEXT!>level<!>(): Int
 }
 <!VIPER_TEXT!>class ConcreteLevel<!>(var l: Int) : AbstractLevel() {
+    init { require(l >= 0) }
     @Law @Pure @Unique fun representation(): Boolean = l >= 0
     @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = l
 }

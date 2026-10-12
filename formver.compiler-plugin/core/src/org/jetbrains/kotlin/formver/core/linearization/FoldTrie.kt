@@ -155,6 +155,8 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
     /** Why each root that held a predicate and is missing from [roots] holds nothing. */
     private var absentRoots: MutableMap<Any, Absence<R, F, S>> = mutableMapOf()
 
+    private val constructionRoots = mutableMapOf<Any, List<C>>()
+
     /** Labels that jumps have reached, with the joined state of those jumps. */
     private val pendingJumps: MutableMap<Any, Snapshot<R, F, C, S>> = mutableMapOf()
 
@@ -173,6 +175,23 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
     fun acquire(sink: FoldSink<R, F, C, S>, path: FoldPath<R, F>) {
         val cls = classOf(path) ?: return
         place(sink, path, FoldNode(cls, FoldStatus.Folded))
+    }
+
+    /** Tracks a fresh representation supplied as field permissions, without unfolding or assuming its predicate. */
+    fun acquireOpen(sink: FoldSink<R, F, C, S>, path: FoldPath<R, F>, opened: List<C>) {
+        val cls = classOf(path) ?: return
+        check(path.fields.isEmpty())
+        constructionRoots[hierarchy.rootKey(path.root)] = opened
+        place(sink, path, FoldNode(cls, FoldStatus.Open(opened)))
+    }
+
+    /** Refreshes a building root's open classes without folding its representation invariant. */
+    fun refreshConstruction(sink: FoldSink<R, F, C, S>, path: FoldPath<R, F>) {
+        val opened = constructionRoots[hierarchy.rootKey(path.root)] ?: error("Not a construction root.")
+        val node = locate(sink, path) ?: notHeld(sink, path)
+        closeChildren(sink, node, path)
+        if (!openChain(sink, node, path) { opened }) notHeld(sink, path)
+        for (cls in opened) sink.refreshOwn(path, cls)
     }
 
     /** Whether the predicate of [path] is held, possibly nested in the folded predicate of an ancestor. */
@@ -552,7 +571,12 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
         holes: List<List<F>>,
         forgotten: Absence<R, F, S>,
     ) {
-        if (holes.isEmpty()) return closeNode(sink, node, path)
+        val construction = if (path.fields.isEmpty()) constructionRoots[hierarchy.rootKey(path.root)] else null
+        if (holes.isEmpty()) {
+            if (construction == null) return closeNode(sink, node, path)
+            if (!openChain(sink, node, path) { construction }) notHeld(sink, path)
+            return closeChildren(sink, node, path)
+        }
         val cls = node.cls ?: notHeld(sink, path)
         val byField = holes.groupBy { hierarchy.fieldKey(it.first()) }
         for ((key, group) in byField) {
@@ -575,7 +599,7 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
             child.requireHeld(sink, path, field)
             closeNode(sink, child, path + field)
         }
-        val depth = byField.values.maxOf { hierarchy.chainTo(cls, it.first().first()).size }
+        val depth = maxOf(construction?.size ?: 0, byField.values.maxOf { hierarchy.chainTo(cls, it.first().first()).size })
         val opened = (node.status as FoldStatus.Open).opened
         for (unneeded in opened.drop(depth).reversed()) sink.fold(path, unneeded)
         node.status = FoldStatus.Open(opened.take(depth))

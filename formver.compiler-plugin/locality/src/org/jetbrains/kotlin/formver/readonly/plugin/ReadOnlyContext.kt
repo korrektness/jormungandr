@@ -84,7 +84,7 @@ fun FirReceiverParameterSymbol.isReadOnlyBorrowed(session: FirSession): Boolean 
     return function.borrowsParameterOfType(resolvedType, session)
 }
 
-private fun FirElement.isSpecificationCall(): Boolean =
+fun FirElement.isSpecificationCall(): Boolean =
     this is FirFunctionCall && toResolvedCallableSymbol()?.callableId in specificationFunctionIds
 
 /**

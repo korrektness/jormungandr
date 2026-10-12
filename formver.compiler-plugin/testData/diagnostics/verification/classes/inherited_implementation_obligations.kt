@@ -40,6 +40,7 @@ interface NonnegativeTally : RuntimeTally {
 abstract class AbstractTally : NonnegativeTally
 abstract class AbstractMiddle : AbstractTally()
 <!VIPER_TEXT!>class ConcreteTally<!>(var n: Int) : AbstractMiddle() {
+    init { require(n >= 0) }
     @Law @Pure @Unique fun representation(): Boolean = n >= 0
     @Pure @Unique override fun <!VIPER_TEXT!>count<!>(): Int = n
     @Unique @Borrowed override fun <!VIPER_TEXT!>inc<!>() { n++ }

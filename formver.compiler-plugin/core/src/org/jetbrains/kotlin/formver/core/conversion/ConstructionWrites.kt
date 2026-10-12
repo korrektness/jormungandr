@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyGetter
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertySetter
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
+import org.jetbrains.kotlin.fir.expressions.FirDesugaredAssignmentValueReferenceExpression
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirSuperReceiverExpression
@@ -26,6 +27,7 @@ import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
+import org.jetbrains.kotlin.formver.readonly.plugin.isSpecificationCall
 
 /**
  * What the property initializers and `init` blocks of [this] class and its superclasses may do to the object under
@@ -92,9 +94,13 @@ private class ConstructionWriteFinder(private val constructedIsFinal: Boolean) :
         }
 
     override fun visitElement(element: FirElement) {
+        if (element.isSpecificationCall()) return
         when {
             element is FirVariableAssignment -> {
-                val target = element.lValue as? FirQualifiedAccessExpression
+                val target = when (val lValue = element.lValue) {
+                    is FirDesugaredAssignmentValueReferenceExpression -> lValue.expressionRef.value as? FirQualifiedAccessExpression
+                    else -> lValue as? FirQualifiedAccessExpression
+                }
                 if (target != null && target.accessesField) assigned.add(target.toResolvedCallableSymbol() as FirPropertySymbol)
                 element.acceptChildren(this)
             }

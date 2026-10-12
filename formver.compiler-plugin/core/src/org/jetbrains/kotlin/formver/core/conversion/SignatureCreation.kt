@@ -2,6 +2,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.analysis.checkers.isPrimaryConstructor
+import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.utils.correspondingValueParameterFromPrimaryConstructor
 import org.jetbrains.kotlin.fir.FirSession
@@ -168,13 +169,15 @@ fun SignatureWithTarget<NamedFunctionSignature>.toNonInlineSignature(symbol: Fir
 
 
 context(converter: ProgramConversionContext)
-fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<NonInlineFunctionSignature> =
-    when {
+fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<NonInlineFunctionSignature> {
+    if (symbol is FirConstructorSymbol) checkConstructionCalls(symbol)
+    return when {
         symbol.isPrimaryConstructor() -> this.toConstructorSignature(symbol)
         symbol is FirConstructorSymbol && symbol.resolvedReturnType.isStringBuilder(converter.session) ->
             this.toStringBuilderConstructorSignature(symbol)
         else -> this.toNormalSignature(symbol)
     }
+}
 
 context(converter: ProgramConversionContext)
 fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(
@@ -252,14 +255,15 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
             EqCmp(value, param)
         }
 
-        val (lawPreconditions, initializerPostconditions) = classLawConstructorConditions(symbol, current.signature, result)
+        val initializerPostconditions = constructorInitializerConditions(symbol, current.signature, result)
+        val owner = symbol.resolvedReturnType.toRegularClassSymbol(converter.session)
+        val verifiedConstruction = symbol.origin == FirDeclarationOrigin.Source && constructed != null && owner != null &&
+            (owner.ownClassLaws(converter.session).isNotEmpty() || owner.hasSuperclassLaws(converter.session))
         val contract = current.signature.buildConditions(typeResolver) {
-            userFunctionPreconditions(consumes = { param -> lawPreconditions.isNotEmpty() || stored.none { it.first == param } })
-            addPreconditions(lawPreconditions)
+            userFunctionPreconditions(consumes = { param -> verifiedConstruction || stored.none { it.first == param } })
             userFunctionPostcondition(resultFolded = constructed == null)
             if (constructed != null) {
-                // Laws may read nested ownership before the stored-field equalities are available.
-                val omitted = if (lawPreconditions.isEmpty()) stored.mapTo(mutableSetOf()) { it.second.name } else emptySet()
+                val omitted = if (verifiedConstruction) emptySet() else stored.mapTo(mutableSetOf()) { it.second.name }
                 addPostconditions(listOf(with(typeResolver) { constructed.openPredicateChain(result, omitted) }))
             }
             addPostconditions(initializerPostconditions)

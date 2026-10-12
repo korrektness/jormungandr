@@ -133,7 +133,7 @@ method grow(this: Ref) returns (ret: Ref)
 
 
 /property_observers.kt: info: Generated Viper text for MutableSize:
-field n: Ref
+field bf_n: Ref
 
 function Growing_c_Sized_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Sized())
@@ -146,7 +146,7 @@ function MutableSize_g_size(this: Ref): Ref
   requires acc(MutableSize_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(MutableSize_unique(this), write) in this.n)
+  (unfolding acc(MutableSize_unique(this), write) in this.bf_n)
 }
 
 function c_Sized_g_size(this: Ref): Ref
@@ -155,6 +155,31 @@ function c_Sized_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), MutableSize())
+  ensures isSubtype(typeOf(v_ret_0), MutableSize()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(geInts(this.bf_n, intToRef(0))))
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == MutableSize()
+  v_ret_0.bf_n := par_n
+  anon := require(geInts(v_ret_0.bf_n, intToRef(0)))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(geInts(this.bf_n, intToRef(0))))
+  fold acc(MutableSize_unique(v_ret_0), write)
+  unfold acc(MutableSize_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(MutableSize_unique(this), write)
 {
@@ -162,6 +187,12 @@ method laws(this: Ref)
   fold acc(MutableSize_unique(this), write)
   assert boolFromRef(geInts(MutableSize_g_size(this), intToRef(0)))
 }
+
+method require(value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(value)
+
 
 /property_observers.kt: info: Generated Viper text for size:
 field n: Ref
@@ -450,7 +481,7 @@ function Sized_g_size(this: Ref): Ref
 
 
 /property_observers.kt: info: Generated Viper text for WrongGrow:
-field n: Ref
+field bf_n: Ref
 
 function Growing_c_Sized_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Sized())
@@ -463,7 +494,7 @@ function WrongGrow_g_size(this: Ref): Ref
   requires acc(WrongGrow_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(WrongGrow_unique(this), write) in this.n)
+  (unfolding acc(WrongGrow_unique(this), write) in this.bf_n)
 }
 
 function c_Sized_g_size(this: Ref): Ref
@@ -472,6 +503,37 @@ function c_Sized_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), WrongGrow())
+  ensures isSubtype(typeOf(v_ret_0), WrongGrow()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        geInts(anon_0_0, intToRef(0)))))
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  var anon_2: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == WrongGrow()
+  v_ret_0.bf_n := par_n
+  anon_2 := require(geInts(v_ret_0.bf_n, intToRef(0)))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(WrongGrow_unique(v_ret_0), write)
+  unfold acc(WrongGrow_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(WrongGrow_unique(this), write)
 {
@@ -479,6 +541,12 @@ method laws(this: Ref)
   fold acc(WrongGrow_unique(this), write)
   assert boolFromRef(geInts(WrongGrow_g_size(this), intToRef(0)))
 }
+
+method require(value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(value)
+
 
 /property_observers.kt: info: Generated Viper text for size:
 field n: Ref

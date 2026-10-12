@@ -8,6 +8,7 @@ interface Reading {
 }
 
 open <!VIPER_TEXT!>class LawBase<!>(var n: Int) : Reading {
+    init { require(n >= 0) }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = n
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
     @Unique @Borrowed fun <!VIPER_TEXT!>increment<!>() { n++ }
@@ -15,6 +16,7 @@ open <!VIPER_TEXT!>class LawBase<!>(var n: Int) : Reading {
 }
 
 <!VIPER_TEXT!>class LawDerived<!>(n: Int, var m: Int) : LawBase(n) {
+    init { require(m >= 0) }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = m
     @Law @Pure @Unique fun ownNonnegative(): Boolean = read() >= 0
     @Unique @Borrowed fun <!VIPER_TEXT!>incrementOther<!>() { m++ }
@@ -35,6 +37,7 @@ open class PlainBase(var n: Int = 3) : Reading {
     @Pure @Unique fun <!VIPER_TEXT!>nested<!>(): Int = n
 }
 <!VIPER_TEXT!>class InheritedLaw<!>(n: Int) : PlainBase(n) {
+    init { require(n >= 0) }
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
     @Unique @Borrowed fun <!VIPER_TEXT!>increment<!>() { n++ }
     <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed fun <!VIPER_TEXT!>breakInvariant<!>() { n = -1 }<!>
@@ -44,13 +47,15 @@ open class PlainBase(var n: Int = 3) : Reading {
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
 }
 <!VIPER_TEXT!>class ComputedInheritedLaw<!>(n: Int) : PlainBase(n + 1) {
+    init { require(n >= -1) }
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
 }
 open <!VIPER_TEXT!>class StableLawBase<!>(var n: Int) : Reading {
+    init { require(n >= 0) }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = n
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
 }
-class StableOverride(n: Int) : StableLawBase(n) {
+<!VIPER_TEXT!>class StableOverride<!>(n: Int) : StableLawBase(n) {
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = -1
 }
 fun <!VIPER_TEXT!>stableOverride<!>() {
@@ -81,27 +86,16 @@ fun <!VIPER_TEXT!>validConstruction<!>() {
     val computed: @Unique ComputedInheritedLaw = ComputedInheritedLaw(0)
     verify(computed.n >= 0)
 }
-fun <!VIPER_TEXT!>invalidBaseConstruction<!>() {
-    val derived: @Unique LawDerived = <!VIPER_VERIFICATION_ERROR!>LawDerived(-1, 2)<!>
-}
-fun <!VIPER_TEXT!>invalidDerivedConstruction<!>() {
-    val derived: @Unique LawDerived = <!VIPER_VERIFICATION_ERROR!>LawDerived(1, -2)<!>
-}
-fun <!VIPER_TEXT!>invalidInheritedConstruction<!>() {
-    val inherited: @Unique InheritedLaw = <!VIPER_VERIFICATION_ERROR!>InheritedLaw(-3)<!>
-}
-fun <!VIPER_TEXT!>invalidComputedConstruction<!>() {
-    val computed: @Unique ComputedInheritedLaw = <!VIPER_VERIFICATION_ERROR!>ComputedInheritedLaw(-2)<!>
-}
 
 open class ChangedInitializerBase(<!UNSUPPORTED_FEATURE!>var n: Int<!>) : Reading {
     init { n = 1 }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = n
 }
-<!VIPER_TEXT!>class ChangedInitializerLaw<!>(n: Int) : ChangedInitializerBase(n) {
+<!UNSUPPORTED_FEATURE!>class ChangedInitializerLaw(n: Int) : ChangedInitializerBase(n) {
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
-}
+}<!>
 <!VIPER_TEXT!>class UnrelatedInitializerLaw<!>(n: Int, val m: Int) : ChangedInitializerBase(n) {
+    init { require(m >= 0) }
     @Law @Pure fun nonnegative(): Boolean = m >= 0
 }
 fun <!VERIFICATION_SKIPPED!>changedInitializerConstruction<!>() {
@@ -117,9 +111,9 @@ open class ChangedOwnedStateBase(<!UNSUPPORTED_FEATURE!>val data: @Unique IntArr
     init { if (data.size > 0) data[0] = 1 }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = first(data)
 }
-<!VIPER_TEXT!>class ChangedOwnedStateLaw<!>(data: @Unique IntArray) : ChangedOwnedStateBase(data) {
+<!UNSUPPORTED_FEATURE!>class ChangedOwnedStateLaw(data: @Unique IntArray) : ChangedOwnedStateBase(data) {
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
-}
+}<!>
 fun <!VERIFICATION_SKIPPED!>changedOwnedStateConstruction<!>(data: @Unique IntArray) {
     val value: @Unique ChangedOwnedStateLaw = ChangedOwnedStateLaw(data)
 }

@@ -45,6 +45,7 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
 }
 
 <!VIPER_TEXT!>class ArrayIntList<!>(var data: @Unique IntArray, var count: Int) : IntList {
+    init { require(0 <= count && count <= data.size) }
     @Law @Pure @Unique fun representation(): Boolean = 0 <= count && count <= data.size
     @Pure @Unique override fun <!VIPER_TEXT!>size<!>(): Int = count
     @SpecOf("get") @Unique
@@ -79,6 +80,7 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
 
 // A pure array read's well-formedness needs its array bound in the guard.
 <!VIPER_TEXT!>class ArrayBoundProbe<!>(var data: @Unique IntArray, var count: Int) {
+    init { require(0 <= count && count <= data.size) }
     @Law @Pure @Unique fun representation(): Boolean = 0 <= count && count <= data.size
     <!VIPER_VERIFICATION_ERROR!>@Pure @Unique fun <!VIPER_TEXT!>getByCount<!>(i: Int): Int =
         if (0 <= i && i < count) data[i] else 0<!>
@@ -125,6 +127,7 @@ fun <!VIPER_TEXT!>setNode<!>(node: @Unique @Borrowed IntNode?, i: Int, value: In
 }
 
 <!VIPER_TEXT!>class NodeIntList<!>(var head: @Unique IntNode?, var count: Int) : IntList {
+    init { require(count >= 0 && count == nodeSize(head)) }
     @Law @Pure @Unique fun representation(): Boolean = count >= 0 && count == nodeSize(head)
     @Pure @Unique override fun <!VIPER_TEXT!>size<!>(): Int = count
     @Pure @Unique override fun <!VIPER_TEXT!>get<!>(i: Int): Int = nodeGet(head, i)
@@ -238,14 +241,6 @@ fun <!VIPER_TEXT!>badSetIndex<!>(list: @Unique @Borrowed IntList) {
 
 fun <!VIPER_TEXT!>badGetIndex<!>(list: @Unique @Borrowed IntList) {
     <!VIPER_VERIFICATION_ERROR!>list.get(-1)<!>
-}
-
-fun <!VIPER_TEXT!>badArrayConstruction<!>() {
-    val array: @Unique ArrayIntList = <!VIPER_VERIFICATION_ERROR!>ArrayIntList(IntArray(1), 2)<!>
-}
-
-fun <!VIPER_TEXT!>badNodeConstruction<!>() {
-    val nodes: @Unique NodeIntList = <!VIPER_VERIFICATION_ERROR!>NodeIntList(null, 1)<!>
 }
 
 fun <!VIPER_TEXT!>falseClientClaim<!>(list: @Unique @Borrowed IntList) {

@@ -1,0 +1,1544 @@
+/primary_constructor_bodies.kt: info: Generated Viper text for Initialized:
+field value: Ref
+
+predicate Initialized_unique(this: Ref) {
+  isSubtype(typeOf(this), Initialized()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      geInts(anon_0_0, intToRef(0)))))
+}
+
+method con(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), Initialized())
+  ensures isSubtype(typeOf(v_ret_0), Initialized()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        geInts(anon_0_0, intToRef(0)))))
+{
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == Initialized()
+  v_ret_0.value := start
+  if (intFromRef(v_ret_0.value) < 0) {
+    v_ret_0.value := intToRef(0)
+  }
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(Initialized_unique(v_ret_0), write)
+  unfold acc(Initialized_unique(v_ret_0), write)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for BrokenInitialization:
+field value: Ref
+
+predicate BrokenInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenInitialization()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      geInts(anon_0_0, intToRef(0)))))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), BrokenInitialization())
+  ensures isSubtype(typeOf(v_ret_0), BrokenInitialization()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        geInts(anon_0_0, intToRef(0)))))
+{
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == BrokenInitialization()
+  v_ret_0.value := intToRef(1)
+  v_ret_0.value := intToRef(-1)
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(BrokenInitialization_unique(v_ret_0), write)
+  unfold acc(BrokenInitialization_unique(v_ret_0), write)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for OrderedInitialization:
+field value: Ref
+
+function snapshot(this: Ref): Ref
+  requires isSubtype(typeOf(this), OrderedInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate OrderedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), OrderedInitialization()) &&
+  acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.value) in
+      andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
+      3)))))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), OrderedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), OrderedInitialization()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.value) in
+        andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
+        3)))))
+{
+  var anon_0: Ref
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == OrderedInitialization()
+  v_ret_0.value := intToRef(1)
+  v_ret_0.value := plusInts(v_ret_0.value, intToRef(2))
+  anon_0 := v_ret_0.value
+  inhale intFromRef(snapshot(v_ret_0)) == intFromRef(anon_0)
+  v_ret_0.value := plusInts(v_ret_0.value, snapshot(v_ret_0))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.value) in
+        andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
+        3)))))
+  fold acc(OrderedInitialization_unique(v_ret_0), write)
+  unfold acc(OrderedInitialization_unique(v_ret_0), write)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for InitializedLater:
+field value: Ref
+
+predicate InitializedLater_unique(this: Ref) {
+  isSubtype(typeOf(this), InitializedLater()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.value) in
+      gtInts(anon_1_0, intToRef(0)))))
+}
+
+method con(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), InitializedLater())
+  ensures isSubtype(typeOf(v_ret_0), InitializedLater()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.value) in
+        gtInts(anon_1_0, intToRef(0)))))
+{
+  var anon_2: Ref
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == InitializedLater()
+  if (intFromRef(start) > 0) {
+    anon_2 := start
+  } else {
+    anon_2 := intToRef(1)}
+  v_ret_0.value := anon_2
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.value) in
+        gtInts(anon_1_0, intToRef(0)))))
+  fold acc(InitializedLater_unique(v_ret_0), write)
+  unfold acc(InitializedLater_unique(v_ret_0), write)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for CheckedInitialization:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CheckedInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate CheckedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), CheckedInitialization()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(geInts(g_value(this), intToRef(0))))
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), CheckedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), CheckedInitialization()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(geInts(g_value(this), intToRef(0))))
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CheckedInitialization()
+  anon_0 := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := require(geInts(g_value(v_ret_0), intToRef(0)))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(geInts(g_value(this), intToRef(0))))
+  fold acc(CheckedInitialization_unique(v_ret_0), write)
+  unfold acc(CheckedInitialization_unique(v_ret_0), write)
+}
+
+method require(par_value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(par_value)
+
+
+/primary_constructor_bodies.kt: info: Generated Viper text for positiveInitializer:
+method positiveInitializer(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  if (intFromRef(value) > 0) {
+    v_ret_0 := value
+  } else {
+    v_ret_0 := intToRef(1)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for EffectfulInitialization:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), EffectfulInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate EffectfulInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), EffectfulInitialization()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+}
+
+method con(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), EffectfulInitialization())
+  ensures isSubtype(typeOf(v_ret_0), EffectfulInitialization()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == EffectfulInitialization()
+  anon := positiveInitializer(start)
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  fold acc(EffectfulInitialization_unique(v_ret_0), write)
+  unfold acc(EffectfulInitialization_unique(v_ret_0), write)
+}
+
+method positiveInitializer(par_value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) > 0
+
+
+/primary_constructor_bodies.kt: info: Generated Viper text for BrokenInitializer:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenInitializer())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenInitializer_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenInitializer()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(value(this), intToRef(0))))
+}
+
+method con(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), BrokenInitializer())
+  ensures isSubtype(typeOf(v_ret_0), BrokenInitializer()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(value(this), intToRef(0))))
+  ensures intFromRef(value(v_ret_0)) == intFromRef(start) - 1
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == BrokenInitializer()
+  anon := minusInts(start, intToRef(1))
+  inhale intFromRef(value(v_ret_0)) == intFromRef(anon)
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(value(this), intToRef(0))))
+  fold acc(BrokenInitializer_unique(v_ret_0), write)
+  unfold acc(BrokenInitializer_unique(v_ret_0), write)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for initializedHead:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function initializedHead(data: Ref): Ref
+  requires isSubtype(typeOf(data), IntArray())
+  requires acc(IntArray_unique(data), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(IntArray_unique(data), write) in
+    (arraySize(data) > 0 ? intToRef(data.contents[0]) : intToRef(0)))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for OwnedInitialization:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), OwnedInitialization())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+function initializedHead(par_data: Ref): Ref
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(IntArray_unique(par_data), write) in
+    (arraySize(par_data) > 0 ?
+      intToRef(par_data.contents[0]) :
+      intToRef(0)))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate OwnedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), OwnedInitialization()) &&
+  acc(IntArray_unique(g_data(this)), write) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (g_data(this)) in
+      gtInts(initializedHead(anon_1_0), intToRef(0)))))
+}
+
+method con(par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(v_ret_0), OwnedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), OwnedInitialization()) &&
+    acc(IntArray_unique(g_data(v_ret_0)), write) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (g_data(this)) in
+        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+  ensures g_data(v_ret_0) == par_data
+  ensures g_data(v_ret_0) == par_data
+{
+  var anon_0: Ref
+  var anon_6: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == OwnedInitialization()
+  anon_0 := par_data
+  inhale g_data(v_ret_0) == anon_0
+  anon_6 := require(gtInts(intToRef(arraySize(g_data(v_ret_0))), intToRef(0)))
+  assert 0 >= 0
+  assert 0 < arraySize(g_data(v_ret_0))
+  unfold acc(IntArray_unique(g_data(v_ret_0)), write)
+  g_data(v_ret_0).contents := g_data(v_ret_0).contents[0 := 1]
+  label lbl_ret_0
+  fold acc(IntArray_unique(g_data(v_ret_0)), write)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (g_data(this)) in
+        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+  fold acc(OwnedInitialization_unique(v_ret_0), write)
+  unfold acc(OwnedInitialization_unique(v_ret_0), write)
+}
+
+method require(value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/primary_constructor_bodies.kt: info: Generated Viper text for BrokenOwnedInitialization:
+field bf_data: Ref
+
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function initializedHead(par_data: Ref): Ref
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(IntArray_unique(par_data), write) in
+    (arraySize(par_data) > 0 ?
+      intToRef(par_data.contents[0]) :
+      intToRef(0)))
+}
+
+predicate BrokenOwnedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenOwnedInitialization()) &&
+  acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), IntArray()) &&
+  acc(IntArray_unique(this.bf_data), write) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_data) in
+      gtInts(initializedHead(anon_0_0), intToRef(0)))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+method con(par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(v_ret_0), BrokenOwnedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), BrokenOwnedInitialization()) &&
+    acc(v_ret_0.bf_data, write) &&
+    isSubtype(typeOf(v_ret_0.bf_data), IntArray()) &&
+    acc(IntArray_unique(v_ret_0.bf_data), write) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_data) in
+        gtInts(initializedHead(anon_0_0), intToRef(0)))))
+  ensures v_ret_0.bf_data == par_data
+  ensures v_ret_0.bf_data == par_data
+{
+  var anon_5: Ref
+  v_ret_0 := new(bf_data)
+  inhale typeOf(v_ret_0) == BrokenOwnedInitialization()
+  v_ret_0.bf_data := par_data
+  anon_5 := require(gtInts(intToRef(arraySize(v_ret_0.bf_data)), intToRef(0)))
+  assert 0 >= 0
+  assert 0 < arraySize(v_ret_0.bf_data)
+  unfold acc(IntArray_unique(v_ret_0.bf_data), write)
+  v_ret_0.bf_data.contents := v_ret_0.bf_data.contents[0 := -1]
+  label lbl_ret_0
+  fold acc(IntArray_unique(v_ret_0.bf_data), write)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_data) in
+        gtInts(initializedHead(anon_0_0), intToRef(0)))))
+  fold acc(BrokenOwnedInitialization_unique(v_ret_0), write)
+  unfold acc(BrokenOwnedInitialization_unique(v_ret_0), write)
+}
+
+method require(value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/primary_constructor_bodies.kt: info: Generated Viper text for AssignedImmutable:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), AssignedImmutable())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AssignedImmutable_unique(this: Ref) {
+  isSubtype(typeOf(this), AssignedImmutable()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(value(this), intToRef(0))))
+}
+
+method con(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), AssignedImmutable())
+  ensures isSubtype(typeOf(v_ret_0), AssignedImmutable()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(value(this), intToRef(0))))
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == AssignedImmutable()
+  if (intFromRef(start) > 0) {
+    anon := start
+  } else {
+    anon := intToRef(1)}
+  inhale intFromRef(value(v_ret_0)) == intFromRef(anon)
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(value(this), intToRef(0))))
+  fold acc(AssignedImmutable_unique(v_ret_0), write)
+  unfold acc(AssignedImmutable_unique(v_ret_0), write)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for LoopInitialization:
+field value: Ref
+
+predicate LoopInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), LoopInitialization()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_2_0 ==
+      (this.value) in
+      boolToRef(intFromRef(anon_2_0) == 3))))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), LoopInitialization())
+  ensures isSubtype(typeOf(v_ret_0), LoopInitialization()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.value) in
+        boolToRef(intFromRef(anon_2_0) == 3))))
+{
+  var index: Ref
+  var anon_3: Ref
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == LoopInitialization()
+  v_ret_0.value := intToRef(0)
+  index := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(v_ret_0), LoopInitialization()) &&
+      acc(v_ret_0.value, write) &&
+      isSubtype(typeOf(v_ret_0.value), intType())
+    invariant isSubtype(typeOf(index), intType())
+    invariant isSubtype(typeOf(v_ret_0), LoopInitialization())
+    invariant intFromRef(index) >= 0 && intFromRef(index) <= 3 &&
+      intFromRef(v_ret_0.value) == intFromRef(index)
+  anon_3 := ltInts(index, intToRef(3))
+  if (boolFromRef(anon_3)) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_0 := v_ret_0.value
+    v_ret_0.value := plusInts(anon_0, intToRef(1))
+    anon_1 := index
+    index := plusInts(anon_1, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(index), intType())
+  assert isSubtype(typeOf(v_ret_0), LoopInitialization())
+  assert intFromRef(index) >= 0 && intFromRef(index) <= 3 &&
+    intFromRef(v_ret_0.value) == intFromRef(index)
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.value) in
+        boolToRef(intFromRef(anon_2_0) == 3))))
+  fold acc(LoopInitialization_unique(v_ret_0), write)
+  unfold acc(LoopInitialization_unique(v_ret_0), write)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for LocalOwnedInitialization:
+field bf_data: Ref
+
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function initializedHead(par_data: Ref): Ref
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(IntArray_unique(par_data), write) in
+    (arraySize(par_data) > 0 ?
+      intToRef(par_data.contents[0]) :
+      intToRef(0)))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate LocalOwnedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), LocalOwnedInitialization()) &&
+  acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), IntArray()) &&
+  acc(IntArray_unique(this.bf_data), write) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.bf_data) in
+      gtInts(initializedHead(anon_1_0), intToRef(0)))))
+}
+
+method con_IntArray(size: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(size), intType())
+  requires intFromRef(size) >= 0
+  ensures isSubtype(typeOf(ret_3), IntArray())
+  ensures acc(IntArray_unique(ret_3), write)
+  ensures arraySize(ret_3) == intFromRef(size)
+  ensures (unfolding acc(IntArray_unique(ret_3), write) in
+      (forall j: Int ::
+        { ret_3.contents[j] }
+        j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
+
+
+method con_LocalOwnedInitialization() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), LocalOwnedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), LocalOwnedInitialization()) &&
+    acc(v_ret_0.bf_data, write) &&
+    isSubtype(typeOf(v_ret_0.bf_data), IntArray()) &&
+    acc(IntArray_unique(v_ret_0.bf_data), write) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_data) in
+        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+{
+  var anon_6: Ref
+  var replacement: Ref
+  v_ret_0 := new(bf_data)
+  inhale typeOf(v_ret_0) == LocalOwnedInitialization()
+  anon_6 := con_IntArray(intToRef(1))
+  v_ret_0.bf_data := anon_6
+  replacement := con_IntArray(intToRef(1))
+  assert 0 >= 0
+  assert 0 < arraySize(replacement)
+  unfold acc(IntArray_unique(replacement), write)
+  replacement.contents := replacement.contents[0 := 1]
+  fold acc(IntArray_unique(replacement), write)
+  v_ret_0.bf_data := replacement
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_data) in
+        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+  fold acc(LocalOwnedInitialization_unique(v_ret_0), write)
+  unfold acc(LocalOwnedInitialization_unique(v_ret_0), write)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for BrokenLocalOwnedInitialization:
+field bf_data: Ref
+
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function initializedHead(par_data: Ref): Ref
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(IntArray_unique(par_data), write) in
+    (arraySize(par_data) > 0 ?
+      intToRef(par_data.contents[0]) :
+      intToRef(0)))
+}
+
+predicate BrokenLocalOwnedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenLocalOwnedInitialization()) &&
+  acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), IntArray()) &&
+  acc(IntArray_unique(this.bf_data), write) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.bf_data) in
+      gtInts(initializedHead(anon_1_0), intToRef(0)))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+method con_BrokenLocalOwnedInitialization() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), BrokenLocalOwnedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), BrokenLocalOwnedInitialization()) &&
+    acc(v_ret_0.bf_data, write) &&
+    isSubtype(typeOf(v_ret_0.bf_data), IntArray()) &&
+    acc(IntArray_unique(v_ret_0.bf_data), write) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_data) in
+        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+{
+  var anon_6: Ref
+  var replacement: Ref
+  v_ret_0 := new(bf_data)
+  inhale typeOf(v_ret_0) == BrokenLocalOwnedInitialization()
+  anon_6 := con_IntArray(intToRef(1))
+  v_ret_0.bf_data := anon_6
+  replacement := con_IntArray(intToRef(1))
+  assert 0 >= 0
+  assert 0 < arraySize(replacement)
+  unfold acc(IntArray_unique(replacement), write)
+  replacement.contents := replacement.contents[0 := -1]
+  fold acc(IntArray_unique(replacement), write)
+  v_ret_0.bf_data := replacement
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_data) in
+        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+  fold acc(BrokenLocalOwnedInitialization_unique(v_ret_0), write)
+  unfold acc(BrokenLocalOwnedInitialization_unique(v_ret_0), write)
+}
+
+method con_IntArray(size: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(size), intType())
+  requires intFromRef(size) >= 0
+  ensures isSubtype(typeOf(ret_3), IntArray())
+  ensures acc(IntArray_unique(ret_3), write)
+  ensures arraySize(ret_3) == intFromRef(size)
+  ensures (unfolding acc(IntArray_unique(ret_3), write) in
+      (forall j: Int ::
+        { ret_3.contents[j] }
+        j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
+
+
+/primary_constructor_bodies.kt: info: Generated Viper text for ObservedBeforeInitialization:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservedBeforeInitialization())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+function initializedHead(par_data: Ref): Ref
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(IntArray_unique(par_data), write) in
+    (arraySize(par_data) > 0 ?
+      intToRef(par_data.contents[0]) :
+      intToRef(0)))
+}
+
+function snapshot(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservedBeforeInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate ObservedBeforeInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservedBeforeInitialization()) &&
+  acc(IntArray_unique(g_data(this)), write) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_2_0 ==
+      (g_data(this)) in
+      gtInts(initializedHead(anon_2_0), intToRef(0)))))
+}
+
+method con(par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(v_ret_0), ObservedBeforeInitialization())
+  ensures isSubtype(typeOf(v_ret_0), ObservedBeforeInitialization()) &&
+    acc(IntArray_unique(g_data(v_ret_0)), write) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (g_data(this)) in
+        gtInts(initializedHead(anon_2_0), intToRef(0)))))
+  ensures g_data(v_ret_0) == par_data
+  ensures g_data(v_ret_0) == par_data
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ObservedBeforeInitialization()
+  anon_0 := par_data
+  inhale g_data(v_ret_0) == anon_0
+  anon_7 := initializedHead(g_data(v_ret_0))
+  anon_1 := anon_7
+  inhale intFromRef(snapshot(v_ret_0)) == intFromRef(anon_1)
+  anon_8 := require(gtInts(intToRef(arraySize(g_data(v_ret_0))), intToRef(0)))
+  assert 0 >= 0
+  assert 0 < arraySize(g_data(v_ret_0))
+  unfold acc(IntArray_unique(g_data(v_ret_0)), write)
+  g_data(v_ret_0).contents := g_data(v_ret_0).contents[0 := 1]
+  label lbl_ret_0
+  fold acc(IntArray_unique(g_data(v_ret_0)), write)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (g_data(this)) in
+        gtInts(initializedHead(anon_2_0), intToRef(0)))))
+  fold acc(ObservedBeforeInitialization_unique(v_ret_0), write)
+  unfold acc(ObservedBeforeInitialization_unique(v_ret_0), write)
+}
+
+method require(value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/primary_constructor_bodies.kt: info: Generated Viper text for SharedBorrowedInitialization:
+field value: Ref
+
+predicate SharedBorrowedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), SharedBorrowedInitialization()) &&
+  acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      geInts(anon_0_0, intToRef(0)))))
+}
+
+method clear(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), SharedBorrowedInitialization())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SharedBorrowedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), SharedBorrowedInitialization()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        geInts(anon_0_0, intToRef(0)))))
+{
+  var anon_1: Ref
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == SharedBorrowedInitialization()
+  v_ret_0.value := intToRef(1)
+  anon_1 := clear(v_ret_0)
+  exhale isSubtype(typeOf(v_ret_0), SharedBorrowedInitialization()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType())
+  inhale isSubtype(typeOf(v_ret_0), SharedBorrowedInitialization()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType())
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(SharedBorrowedInitialization_unique(v_ret_0), write)
+  unfold acc(SharedBorrowedInitialization_unique(v_ret_0), write)
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for clear:
+field value: Ref
+
+predicate SharedBorrowedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), SharedBorrowedInitialization()) &&
+  acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      geInts(anon_0_0, intToRef(0)))))
+}
+
+method clear(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), SharedBorrowedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for SharedBorrowedCheckedInitialization:
+field bf_value: Ref
+
+predicate SharedBorrowedCheckedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), SharedBorrowedCheckedInitialization()) &&
+  acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      geInts(anon_0_0, intToRef(0)))))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SharedBorrowedCheckedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), SharedBorrowedCheckedInitialization()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        geInts(anon_0_0, intToRef(0)))))
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == SharedBorrowedCheckedInitialization()
+  v_ret_0.bf_value := intToRef(1)
+  anon_1 := preserve(v_ret_0)
+  exhale isSubtype(typeOf(v_ret_0), SharedBorrowedCheckedInitialization()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  inhale isSubtype(typeOf(v_ret_0), SharedBorrowedCheckedInitialization()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  anon_2 := require(geInts(v_ret_0.bf_value, intToRef(0)))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(SharedBorrowedCheckedInitialization_unique(v_ret_0), write)
+  unfold acc(SharedBorrowedCheckedInitialization_unique(v_ret_0), write)
+}
+
+method preserve(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), SharedBorrowedCheckedInitialization())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method require(par_value: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures true ==> boolFromRef(par_value)
+
+
+/primary_constructor_bodies.kt: info: Generated Viper text for preserve:
+field value: Ref
+
+predicate SharedBorrowedCheckedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), SharedBorrowedCheckedInitialization()) &&
+  acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      geInts(anon_0_0, intToRef(0)))))
+}
+
+method preserve(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), SharedBorrowedCheckedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for SharedBorrowedPreservedInitialization:
+field scratch: Ref
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), SharedBorrowedPreservedInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate SharedBorrowedPreservedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), SharedBorrowedPreservedInitialization()) &&
+  acc(this.scratch, write) &&
+  isSubtype(typeOf(this.scratch), intType()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(geInts(value(this), intToRef(0))))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SharedBorrowedPreservedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), SharedBorrowedPreservedInitialization()) &&
+    acc(v_ret_0.scratch, write) &&
+    isSubtype(typeOf(v_ret_0.scratch), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(geInts(value(this), intToRef(0))))
+  ensures intFromRef(value(v_ret_0)) == 1
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(scratch)
+  inhale typeOf(v_ret_0) == SharedBorrowedPreservedInitialization()
+  anon_0 := intToRef(1)
+  inhale intFromRef(value(v_ret_0)) == intFromRef(anon_0)
+  v_ret_0.scratch := intToRef(0)
+  anon_1 := preserve(v_ret_0)
+  exhale isSubtype(typeOf(v_ret_0), SharedBorrowedPreservedInitialization()) &&
+    acc(v_ret_0.scratch, write) &&
+    isSubtype(typeOf(v_ret_0.scratch), intType())
+  inhale isSubtype(typeOf(v_ret_0), SharedBorrowedPreservedInitialization()) &&
+    acc(v_ret_0.scratch, write) &&
+    isSubtype(typeOf(v_ret_0.scratch), intType())
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(geInts(value(this), intToRef(0))))
+  fold acc(SharedBorrowedPreservedInitialization_unique(v_ret_0), write)
+  unfold acc(SharedBorrowedPreservedInitialization_unique(v_ret_0), write)
+}
+
+method preserve(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), SharedBorrowedPreservedInitialization())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+/primary_constructor_bodies.kt: info: Generated Viper text for preserve:
+field scratch: Ref
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), SharedBorrowedPreservedInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate SharedBorrowedPreservedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), SharedBorrowedPreservedInitialization()) &&
+  acc(this.scratch, write) &&
+  isSubtype(typeOf(this.scratch), intType()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(geInts(value(this), intToRef(0))))
+}
+
+method preserve(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), SharedBorrowedPreservedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for LawfulConstructionChild:
+field bf_value: Ref
+
+predicate LawfulConstructionChild_unique(this: Ref) {
+  isSubtype(typeOf(this), LawfulConstructionChild()) &&
+  acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      geInts(anon_0_0, intToRef(0)))))
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), LawfulConstructionChild())
+  ensures isSubtype(typeOf(v_ret_0), LawfulConstructionChild()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        geInts(anon_0_0, intToRef(0)))))
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  var anon_1: Ref
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == LawfulConstructionChild()
+  v_ret_0.bf_value := par_value
+  anon_1 := require(geInts(v_ret_0.bf_value, intToRef(0)))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(LawfulConstructionChild_unique(v_ret_0), write)
+  unfold acc(LawfulConstructionChild_unique(v_ret_0), write)
+}
+
+method require(par_value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(par_value)
+
+
+/primary_constructor_bodies.kt: info: Generated Viper text for borrowedChildValue:
+field value: Ref
+
+function borrowedChildValue(child: Ref): Ref
+  requires isSubtype(typeOf(child), LawfulConstructionChild())
+  requires acc(LawfulConstructionChild_unique(child), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+{
+  (unfolding acc(LawfulConstructionChild_unique(child), write) in
+    child.value)
+}
+
+predicate LawfulConstructionChild_unique(this: Ref) {
+  isSubtype(typeOf(this), LawfulConstructionChild()) &&
+  acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      geInts(anon_0_0, intToRef(0)))))
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for corrupt:
+field value: Ref
+
+function borrowedChildValue(par_child: Ref): Ref
+  requires isSubtype(typeOf(par_child), LawfulConstructionChild())
+  requires acc(LawfulConstructionChild_unique(par_child), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+{
+  (unfolding acc(LawfulConstructionChild_unique(par_child), write) in
+    par_child.value)
+}
+
+function g_child(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenNestedBorrowedInitialization())
+  ensures isSubtype(typeOf(result), LawfulConstructionChild())
+
+
+predicate BrokenNestedBorrowedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenNestedBorrowedInitialization()) &&
+  acc(LawfulConstructionChild_unique(g_child(this)), write) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (g_child(this)) in
+      geInts(borrowedChildValue(anon_0_0), intToRef(0)))))
+}
+
+predicate LawfulConstructionChild_unique(this: Ref) {
+  isSubtype(typeOf(this), LawfulConstructionChild()) &&
+  acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.value) in
+      geInts(anon_1_0, intToRef(0)))))
+}
+
+method corrupt(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), BrokenNestedBorrowedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for readAge:
+field before: Ref
+
+function age(this: Ref): Ref
+  requires isSubtype(typeOf(this), ForwardBorrowedImmutableInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ForwardBorrowedImmutableInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), ForwardBorrowedImmutableInitialization()) &&
+  acc(this.before, write) &&
+  isSubtype(typeOf(this.before), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.before) in
+      geInts(anon_0_0, intToRef(1)))))
+}
+
+method readAge(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ForwardBorrowedImmutableInitialization())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(age(this))
+{
+  v_ret_0 := age(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/primary_constructor_bodies.kt: info: Generated Viper text for initializedClient:
+field bf_value: Ref
+
+function AssignedImmutable_g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), AssignedImmutable())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function CheckedInitialization_g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CheckedInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function EffectfulInitialization_g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), EffectfulInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function snapshot(this: Ref): Ref
+  requires isSubtype(typeOf(this), OrderedInitialization())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AssignedImmutable_unique(this: Ref) {
+  isSubtype(typeOf(this), AssignedImmutable()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef(gtInts(AssignedImmutable_g_value(this), intToRef(0))))
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate CheckedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), CheckedInitialization()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef(geInts(CheckedInitialization_g_value(this), intToRef(0))))
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate EffectfulInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), EffectfulInitialization()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef(gtInts(EffectfulInitialization_g_value(this), intToRef(0))))
+}
+
+predicate InitializedLater_unique(this: Ref) {
+  isSubtype(typeOf(this), InitializedLater()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_3_0 ==
+      (this.bf_value) in
+      gtInts(anon_3_0, intToRef(0)))))
+}
+
+predicate Initialized_unique(this: Ref) {
+  isSubtype(typeOf(this), Initialized()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.bf_value) in
+      geInts(anon_1_0, intToRef(0)))))
+}
+
+predicate LoopInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), LoopInitialization()) &&
+  acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_4_0 ==
+      (this.bf_value) in
+      boolToRef(intFromRef(anon_4_0) == 3))))
+}
+
+predicate OrderedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), OrderedInitialization()) &&
+  acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_2_0 ==
+      (this.bf_value) in
+      andBools(boolToRef(intFromRef(anon_2_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
+      3)))))
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method con_AssignedImmutable(start: Ref) returns (ret_16: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(ret_16), AssignedImmutable())
+  ensures isSubtype(typeOf(ret_16), AssignedImmutable()) &&
+    (let this ==
+      (ret_16) in
+      true &&
+      boolFromRef(gtInts(AssignedImmutable_g_value(this), intToRef(0))))
+
+
+method con_CheckedInitialization(par_value: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_10), CheckedInitialization())
+  ensures isSubtype(typeOf(ret_10), CheckedInitialization()) &&
+    (let this ==
+      (ret_10) in
+      true &&
+      boolFromRef(geInts(CheckedInitialization_g_value(this), intToRef(0))))
+  ensures intFromRef(CheckedInitialization_g_value(ret_10)) ==
+    intFromRef(par_value)
+  ensures intFromRef(CheckedInitialization_g_value(ret_10)) ==
+    intFromRef(par_value)
+
+
+method con_EffectfulInitialization(start: Ref) returns (ret_13: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(ret_13), EffectfulInitialization())
+  ensures isSubtype(typeOf(ret_13), EffectfulInitialization()) &&
+    (let this ==
+      (ret_13) in
+      true &&
+      boolFromRef(gtInts(EffectfulInitialization_g_value(this), intToRef(0))))
+
+
+method con_Initialized(start: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(ret_1), Initialized())
+  ensures isSubtype(typeOf(ret_1), Initialized()) &&
+    acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_value) in
+        geInts(anon_1_0, intToRef(0)))))
+
+
+method con_InitializedLater(start: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(ret_7), InitializedLater())
+  ensures isSubtype(typeOf(ret_7), InitializedLater()) &&
+    acc(ret_7.bf_value, write) &&
+    isSubtype(typeOf(ret_7.bf_value), intType()) &&
+    (let this ==
+      (ret_7) in
+      true &&
+      boolFromRef((let anon_3_0 ==
+        (this.bf_value) in
+        gtInts(anon_3_0, intToRef(0)))))
+
+
+method con_LoopInitialization() returns (ret_19: Ref)
+  ensures isSubtype(typeOf(ret_19), LoopInitialization())
+  ensures isSubtype(typeOf(ret_19), LoopInitialization()) &&
+    acc(ret_19.bf_value, write) &&
+    isSubtype(typeOf(ret_19.bf_value), intType()) &&
+    (let this ==
+      (ret_19) in
+      true &&
+      boolFromRef((let anon_4_0 ==
+        (this.bf_value) in
+        boolToRef(intFromRef(anon_4_0) == 3))))
+
+
+method con_OrderedInitialization() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), OrderedInitialization())
+  ensures isSubtype(typeOf(ret_4), OrderedInitialization()) &&
+    acc(ret_4.bf_value, write) &&
+    isSubtype(typeOf(ret_4.bf_value), intType()) &&
+    (let this ==
+      (ret_4) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.bf_value) in
+        andBools(boolToRef(intFromRef(anon_2_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
+        3)))))
+
+
+method initializedClient(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var instance: Ref
+  var anon_5: Ref
+  var ordered: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var later: Ref
+  var anon_8: Ref
+  var checked: Ref
+  var effectful: Ref
+  var assigned: Ref
+  var loop: Ref
+  var anon_9: Ref
+  instance := con_Initialized(start)
+  fold acc(Initialized_unique(instance), write)
+  unfold acc(Initialized_unique(instance), write)
+  anon_5 := instance.bf_value
+  assert intFromRef(anon_5) >= 0
+  ordered := con_OrderedInitialization()
+  fold acc(OrderedInitialization_unique(ordered), write)
+  unfold acc(OrderedInitialization_unique(ordered), write)
+  anon_7 := ordered.bf_value
+  assert (let this ==
+      (instance) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_value) in
+        geInts(anon_1_0, intToRef(0)))))
+  fold acc(Initialized_unique(instance), write)
+  assert (let this ==
+      (ordered) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.bf_value) in
+        andBools(boolToRef(intFromRef(anon_2_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
+        3)))))
+  fold acc(OrderedInitialization_unique(ordered), write)
+  if (intFromRef(anon_7) == 6) {
+    anon_6 := boolToRef(intFromRef(snapshot(ordered)) == 3)
+  } else {
+    anon_6 := boolToRef(false)}
+  assert boolFromRef(anon_6)
+  later := con_InitializedLater(start)
+  fold acc(InitializedLater_unique(later), write)
+  unfold acc(InitializedLater_unique(later), write)
+  anon_8 := later.bf_value
+  assert intFromRef(anon_8) > 0
+  checked := con_CheckedInitialization(start)
+  fold acc(CheckedInitialization_unique(checked), write)
+  assert intFromRef(CheckedInitialization_g_value(checked)) >= 0
+  effectful := con_EffectfulInitialization(start)
+  fold acc(EffectfulInitialization_unique(effectful), write)
+  assert intFromRef(EffectfulInitialization_g_value(effectful)) > 0
+  assigned := con_AssignedImmutable(start)
+  fold acc(AssignedImmutable_unique(assigned), write)
+  assert intFromRef(AssignedImmutable_g_value(assigned)) > 0
+  loop := con_LoopInitialization()
+  fold acc(LoopInitialization_unique(loop), write)
+  unfold acc(LoopInitialization_unique(loop), write)
+  anon_9 := loop.bf_value
+  assert intFromRef(anon_9) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

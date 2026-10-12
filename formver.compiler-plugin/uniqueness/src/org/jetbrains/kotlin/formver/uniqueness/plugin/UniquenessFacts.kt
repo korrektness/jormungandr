@@ -24,6 +24,11 @@ import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirProperty
+import org.jetbrains.kotlin.fir.declarations.FirAnonymousInitializer
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
+import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
+import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirWhileLoop
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
@@ -36,9 +41,9 @@ import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.locality.plugin.localityCheckerFactories
 
 /**
- * Uniqueness facts about one function that has no uniqueness or locality diagnostic.
+ * Uniqueness facts about one function or construction initializer with no uniqueness or locality diagnostic.
  *
- * States are read from the uniqueness-state flow analysis of the function's control-flow graph. An element with no
+ * States are read from the uniqueness-state flow analysis of the declaration's control-flow graph. An element with no
  * CFG node of its own gets the state before the nearest enclosing element that has one.
  */
 class FunctionUniquenessAnalysis internal constructor(
@@ -167,6 +172,26 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
         }
     }
 
+    private val initializationCache = session.firCachesFactory.createCache { key: Pair<FirDeclaration, FirRegularClassSymbol>, context: CheckerContext ->
+        context(context) {
+            val (declaration, owner) = key
+            val file = session.firProvider.getFirClassifierContainerFile(owner.classId)
+                ?: error("No containing file for ${owner.classId}.")
+            if (declaration.hasUniquenessDiagnostics(file)) null else {
+                val graph = when (declaration) {
+                    is FirProperty -> declaration.controlFlowGraphReference?.controlFlowGraph
+                    is FirAnonymousInitializer -> declaration.controlFlowGraphReference?.controlFlowGraph
+                    else -> error("Expected a construction initializer.")
+                } ?: error("Construction initializer has no control-flow graph.")
+                declaration.buildAnalysis(graph)
+            }
+        }
+    }
+
+    context(context: CheckerContext)
+    fun initializationAnalysis(declaration: FirDeclaration, owner: FirRegularClassSymbol): FunctionUniquenessAnalysis? =
+        initializationCache.getValue(declaration to owner, context)
+
     /**
      * Returns the analysis of [function], or `null` when the uniqueness or locality checkers report an error in it.
      */
@@ -185,6 +210,14 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
     @OptIn(SymbolInternals::class)
     context(context: CheckerContext)
     private fun FirFunction.hasUniquenessDiagnostics(): Boolean {
+        val file = moduleData.session.firProvider.getFirCallableContainerFile(symbol)
+            ?: context.containingFileSymbol?.fir
+            ?: error("No containing file for ${symbol.callableId}.")
+        return hasUniquenessDiagnostics(file)
+    }
+
+    context(context: CheckerContext)
+    private fun FirDeclaration.hasUniquenessDiagnostics(file: FirFile): Boolean {
         val reporter = ErrorCountingReporter()
         val components = checkerExtensions.flatMap { extension ->
             listOf(
@@ -195,17 +228,13 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
         }
         val providerContext = context as? CheckerContextForProvider
             ?: error("Expected a ${CheckerContextForProvider::class.simpleName}, got ${context::class.simpleName}.")
-        // A local function is only converted from within its own file, which is the file being checked.
-        val file = moduleData.session.firProvider.getFirCallableContainerFile(symbol)
-            ?: context.containingFileSymbol?.fir
-            ?: error("No containing file for ${symbol.callableId}.")
         val visitor = TargetCheckerRunningVisitor(
             MutableCheckerContext(providerContext.sessionHolder, providerContext.returnTypeCalculator),
             components,
             this,
         )
         file.accept(visitor, null)
-        check(visitor.targetVisited) { "${symbol.callableId} was not found in ${file.name}." }
+        check(visitor.targetVisited) { "Declaration was not found in ${file.name}." }
         return reporter.errorCount > 0
     }
 
@@ -213,6 +242,11 @@ class UniquenessFacts(session: FirSession) : FirExtensionSessionComponent(sessio
     private fun FirFunction.buildAnalysis(): FunctionUniquenessAnalysis {
         val graph = uniquenessAnalysisGraph
             ?: error("Function ${symbol.callableId} has no control-flow graph of its own.")
+        return buildAnalysis(graph)
+    }
+
+    context(context: CheckerContext)
+    private fun FirDeclaration.buildAnalysis(graph: ControlFlowGraph): FunctionUniquenessAnalysis {
         val flows = graph.resolveUniquenessStateFlows()
 
         val firstNodes = mutableMapOf<FirElement, CFGNode<*>>()
@@ -273,7 +307,7 @@ private class ErrorCountingReporter : DiagnosticReporter() {
 private class TargetCheckerRunningVisitor(
     context: CheckerContextForProvider,
     private val components: List<AbstractDiagnosticCollectorComponent>,
-    private val target: FirFunction,
+    private val target: FirDeclaration,
 ) : AbstractDiagnosticCollectorVisitor(context) {
     private var insideTarget = false
 

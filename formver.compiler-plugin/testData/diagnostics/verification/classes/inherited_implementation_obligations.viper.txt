@@ -725,7 +725,7 @@ predicate c_BoundBase_unique(this: Ref) {
 predicate footprint(this: Ref)
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for ConcreteTally:
-field n: Ref
+field bf_n: Ref
 
 function AbstractMiddle_c_RuntimeTally_f_count(this: Ref): Ref
   requires isSubtype(typeOf(this), c_RuntimeTally())
@@ -744,7 +744,7 @@ function ConcreteTally_f_count(this: Ref): Ref
   requires acc(ConcreteTally_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(ConcreteTally_unique(this), write) in this.n)
+  (unfolding acc(ConcreteTally_unique(this), write) in this.bf_n)
 }
 
 function NonnegativeTally_c_RuntimeTally_f_count(this: Ref): Ref
@@ -769,8 +769,8 @@ predicate AbstractTally_unique(this: Ref) {
 }
 
 predicate ConcreteTally_unique(this: Ref) {
-  isSubtype(typeOf(this), ConcreteTally()) && acc(this.n, write) &&
-  isSubtype(typeOf(this.n), intType()) &&
+  isSubtype(typeOf(this), ConcreteTally()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType()) &&
   acc(AbstractMiddle_unique(this), write) &&
   (let this ==
     (this) in
@@ -778,7 +778,7 @@ predicate ConcreteTally_unique(this: Ref) {
       (unfolding acc(AbstractTally_unique(this), wildcard) in
         true &&
         boolFromRef((let anon_0_0 ==
-          (this.n) in
+          (this.bf_n) in
           geInts(anon_0_0, intToRef(0)))))))
 }
 
@@ -797,6 +797,45 @@ predicate c_RuntimeTally_unique(this: Ref) {
   isSubtype(typeOf(this), c_RuntimeTally())
 }
 
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), ConcreteTally())
+  ensures isSubtype(typeOf(v_ret_0), ConcreteTally()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (isSubtype(typeOf(v_ret_0), AbstractMiddle()) &&
+    isSubtype(typeOf(v_ret_0), AbstractTally())) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        geInts(anon_0_0, intToRef(0)))))
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  var anon_2: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == ConcreteTally()
+  v_ret_0.bf_n := par_n
+  anon_2 := require(geInts(v_ret_0.bf_n, intToRef(0)))
+  label lbl_ret_0
+  fold acc(AbstractTally_unique(v_ret_0), write)
+  fold acc(AbstractMiddle_unique(v_ret_0), write)
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(AbstractMiddle_unique(this), wildcard) in
+        (unfolding acc(AbstractTally_unique(this), wildcard) in
+          true &&
+          boolFromRef((let anon_0_0 ==
+            (this.bf_n) in
+            geInts(anon_0_0, intToRef(0)))))))
+  fold acc(ConcreteTally_unique(v_ret_0), write)
+  unfold acc(ConcreteTally_unique(v_ret_0), write)
+  unfold acc(AbstractMiddle_unique(v_ret_0), write)
+  unfold acc(AbstractTally_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(ConcreteTally_unique(this), write)
 {
@@ -804,6 +843,12 @@ method laws(this: Ref)
   fold acc(ConcreteTally_unique(this), write)
   assert boolFromRef(geInts(ConcreteTally_f_count(this), intToRef(0)))
 }
+
+method require(value: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures true ==> boolFromRef(value)
+
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
 field n: Ref

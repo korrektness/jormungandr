@@ -479,14 +479,14 @@ predicate SizedLaw_unique(this: Ref) {
 predicate footprint(this: Ref)
 
 /interface_laws.kt: info: Generated Viper text for InvariantSizedLaw:
-field count: Ref
+field bf_count: Ref
 
 function InvariantSizedLaw_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), InvariantSizedLaw())
   requires acc(InvariantSizedLaw_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(InvariantSizedLaw_unique(this), write) in this.count)
+  (unfolding acc(InvariantSizedLaw_unique(this), write) in this.bf_count)
 }
 
 function SizedLaw_f_size(this: Ref): Ref
@@ -496,11 +496,11 @@ function SizedLaw_f_size(this: Ref): Ref
 
 
 predicate InvariantSizedLaw_unique(this: Ref) {
-  isSubtype(typeOf(this), InvariantSizedLaw()) && acc(this.count, write) &&
-  isSubtype(typeOf(this.count), intType()) &&
+  isSubtype(typeOf(this), InvariantSizedLaw()) && acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
   (let this ==
     (this) in
-    true && boolFromRef(geInts(this.count, intToRef(0))))
+    true && boolFromRef(geInts(this.bf_count, intToRef(0))))
 }
 
 predicate SizedLaw_unique(this: Ref) {
@@ -510,6 +510,31 @@ predicate SizedLaw_unique(this: Ref) {
 
 predicate footprint(this: Ref)
 
+method con(par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), InvariantSizedLaw())
+  ensures isSubtype(typeOf(v_ret_0), InvariantSizedLaw()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(geInts(this.bf_count, intToRef(0))))
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_count)
+  inhale typeOf(v_ret_0) == InvariantSizedLaw()
+  v_ret_0.bf_count := par_count
+  anon := require(geInts(v_ret_0.bf_count, intToRef(0)))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(geInts(this.bf_count, intToRef(0))))
+  fold acc(InvariantSizedLaw_unique(v_ret_0), write)
+  unfold acc(InvariantSizedLaw_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(InvariantSizedLaw_unique(this), write)
 {
@@ -517,6 +542,12 @@ method laws(this: Ref)
   fold acc(InvariantSizedLaw_unique(this), write)
   assert boolFromRef(geInts(InvariantSizedLaw_f_size(this), intToRef(0)))
 }
+
+method require(value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(value)
+
 
 /interface_laws.kt: info: Generated Viper text for size:
 field count: Ref
@@ -712,7 +743,6 @@ method add(this: Ref) returns (ret_4: Ref)
 
 method con(par_count: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_count), intType())
-  requires boolFromRef(geInts(par_count, intToRef(0)))
   ensures isSubtype(typeOf(ret_1), InvariantSizedLaw())
   ensures isSubtype(typeOf(ret_1), InvariantSizedLaw()) &&
     acc(ret_1.bf_count, write) &&

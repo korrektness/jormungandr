@@ -910,6 +910,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("primary_constructor_bodies.kt")
+      public void testPrimary_constructor_bodies() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/primary_constructor_bodies.kt");
+      }
+
+      @Test
       @TestMetadata("primary_constructors.kt")
       public void testPrimary_constructors() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/primary_constructors.kt");

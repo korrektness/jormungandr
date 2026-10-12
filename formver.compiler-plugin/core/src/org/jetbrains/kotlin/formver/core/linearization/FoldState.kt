@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.formver.core.asPosition
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveFieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayInit
 import org.jetbrains.kotlin.formver.core.embeddings.expression.InlineCall
@@ -51,6 +52,7 @@ fun ExpEmbedding.ownedPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaN
     is StringBuilderUpdate -> exp.builder.ownedPath()
     is IntArrayInit -> exp.array.ownedPath()
     is InlineCall -> if (exp.returnsUnique) OwnedPath(exp.returnVariable) else null
+    is PrimitiveFieldAccess -> if (exp.field.isUnique) exp.inner.ownedPath()?.plus(exp.field) else null
     is FieldAccess -> if (exp.field.isUnique) exp.receiver.ownedPath()?.plus(exp.field) else null
     is UniqueValAccess -> exp.receiver.ownedPath()?.plus(exp.step)
     else -> null
@@ -111,6 +113,7 @@ private fun FoldFailure<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourc
  * `@Manual` are tracked. Each operation is the [FoldTrie] operation of the same name.
  */
 class FoldState(private val typeResolver: TypeResolver) {
+    private val constructionRoots = mutableSetOf<SymbolicName>()
     private val trie = FoldTrie<VariableEmbedding, PathStep, ClassTypeEmbedding, KtSourceElement?>(object : FoldHierarchy<VariableEmbedding, PathStep, ClassTypeEmbedding> {
         override fun rootClass(root: VariableEmbedding) = trackedClass(root.type)
         override fun fieldClass(field: PathStep) = trackedClass(field.type)
@@ -138,6 +141,11 @@ class FoldState(private val typeResolver: TypeResolver) {
 
     fun acquire(ctx: LinearizationContext, path: OwnedPath) = trie.acquire(ctx.foldSink(), path)
 
+    fun acquireConstruction(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding) {
+        constructionRoots += path.root.name
+        trie.acquireOpen(ctx.foldSink(), path, generateSequence(cls, typeResolver::superClass).toList())
+    }
+
     fun holds(path: OwnedPath): Boolean = trie.holds(path)
 
     fun release(ctx: LinearizationContext, path: OwnedPath) = trie.release(ctx.foldSink(), path)
@@ -148,7 +156,12 @@ class FoldState(private val typeResolver: TypeResolver) {
 
     fun close(ctx: LinearizationContext, path: OwnedPath) = trie.close(ctx.foldSink(), path)
 
-    fun refresh(ctx: LinearizationContext, path: OwnedPath) = trie.refresh(ctx.foldSink(), path)
+    fun isConstructionRoot(path: OwnedPath): Boolean = path.fields.isEmpty() && path.root.name in constructionRoots
+
+    fun refresh(ctx: LinearizationContext, path: OwnedPath) {
+        if (isConstructionRoot(path)) trie.refreshConstruction(ctx.foldSink(), path)
+        else trie.refresh(ctx.foldSink(), path)
+    }
 
     fun expose(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding) {
         val own = trackedClass(path.fields.lastOrNull()?.type ?: path.root.type) ?: return
@@ -293,7 +306,7 @@ class FoldState(private val typeResolver: TypeResolver) {
                     override fun ofSuperType(type: ClassTypeEmbedding, access: TypeInvariantEmbedding) =
                         if (type in opened) TypeInvariantEmbedding { bodyOf(type, it) }
                         else access.withAccessRole(path.loopHeadRole())
-                })
+                }, includeRepresentationFacts = path.fields.isNotEmpty() || path.root.name !in constructionRoots)
             }
     }
 }
@@ -335,7 +348,8 @@ private fun LinearizationContext.foldSink() =
             val withoutSuperTypes = object : NestedPredicates {
                 override fun ofSuperType(type: ClassTypeEmbedding, access: TypeInvariantEmbedding) = null
             }
-            val body = with(typeResolver) { cls.uniquePredicateBody(embeddingOf(path), withoutSuperTypes) }
+            val body = with(typeResolver) { cls.uniquePredicateBody(embeddingOf(path), withoutSuperTypes,
+                includeRepresentationFacts = foldState?.isConstructionRoot(path) != true) }
                 .pureToViper(toBuiltin = true, typeResolver, source)
             val held = place.guards.foldRight(body) { guard, inner -> Exp.Implies(guard, inner, pos) }
             addStatement { Stmt.Exhale(held, pos, SourceRole.Ownership(path.render(), SourceRole.Ownership.Site.Havoc).asInfo) }

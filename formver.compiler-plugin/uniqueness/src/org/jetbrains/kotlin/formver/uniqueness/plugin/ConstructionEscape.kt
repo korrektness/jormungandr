@@ -51,6 +51,7 @@ import org.jetbrains.kotlin.formver.locality.plugin.Locality
 import org.jetbrains.kotlin.formver.locality.plugin.borrowsDispatchReceiver
 import org.jetbrains.kotlin.formver.locality.plugin.locality
 import org.jetbrains.kotlin.formver.locality.plugin.receiverOwner
+import org.jetbrains.kotlin.formver.readonly.plugin.isSpecificationCall
 
 /**
  * How the construction of [escapingClass] lets the object under construction escape. Its constructors then return
@@ -165,6 +166,23 @@ private fun FirRegularClassSymbol.initializesEveryFieldBefore(owner: FirDeclarat
     }
 }
 
+/** Whether this field access runs on an exclusive receiver during construction. */
+context(context: CheckerContext)
+fun FirPropertyAccessExpression.isOwnedConstructionField(): Boolean {
+    val receiver = dispatchReceiver as? FirThisReceiverExpression ?: return false
+    val cls = receiver.calleeReference.symbol as? FirRegularClassSymbol ?: return false
+    val owner = cls.receiverOwner() ?: return false
+    if (owner is FirFunction && owner !is FirConstructor) return false
+    val field = toResolvedCallableSymbol() as? FirPropertySymbol ?: return false
+    return field.isConstructionField(cls) && context.session.constructionEscapeResolver.resolve(cls) == null
+}
+
+@OptIn(SymbolInternals::class)
+private fun FirPropertySymbol.isConstructionField(cls: FirRegularClassSymbol): Boolean =
+    !isAbstract && (isFinal || cls.isFinal) &&
+        getterSymbol?.fir.let { it == null || it is FirDefaultPropertyGetter } &&
+        setterSymbol?.fir.let { it == null || it is FirDefaultPropertySetter }
+
 private class EscapeFinder(
     private val classSymbol: FirRegularClassSymbol,
     private val session: FirSession,
@@ -185,12 +203,10 @@ private class EscapeFinder(
      */
     private val FirPropertySymbol.isField: Boolean
         @OptIn(SymbolInternals::class)
-        get() = !isAbstract && (isFinal || classSymbol.isFinal) &&
-                getterSymbol?.fir.let { it == null || it is FirDefaultPropertyGetter } &&
-                setterSymbol?.fir.let { it == null || it is FirDefaultPropertySetter }
+        get() = isConstructionField(classSymbol)
 
     override fun visitElement(element: FirElement) {
-        if (escape != null) return
+        if (escape != null || element.isSpecificationCall()) return
         when (element) {
             is FirThisReceiverExpression -> if (element.isThis()) escape(ConstructionEscape.Kind.Use)
             is FirFunctionCall -> visitAccess(element)

@@ -62,34 +62,14 @@ private fun FirQualifiedAccessExpression.isAllowedInitializerAccess(
 }
 
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
-private fun ownClassLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSession): List<String> {
+private fun ownClassLawConstructionFailures(symbol: FirRegularClassSymbol): List<String> {
     val failures = mutableListOf<String>()
     val constructors = symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>()
     val primary = constructors.singleOrNull { it.isPrimary }
     if (primary == null) failures += "Missing primary constructor"
     if (constructors.any { !it.isPrimary }) failures += "Secondary constructor in invariant class"
-    if (symbol.fir.declarations.any { it is FirAnonymousInitializer }) failures += "Init block in invariant class"
-    val parameters = primary?.valueParameterSymbols.orEmpty().toSet()
     symbol.fir.declarations.filterIsInstance<FirProperty>().forEach { property ->
         if (property.delegate != null) failures += "Delegated property in invariant class"
-        val initializer = property.initializer
-        if (initializer == null) {
-            if (property.backingField != null && property.getter?.body == null) failures += "Uninitialized field in invariant class"
-        } else {
-            var valid = true
-            initializer.accept(object : FirVisitorVoid() {
-                override fun visitElement(element: FirElement) {
-                    when (element) {
-                        is FirVariableAssignment, is FirThisReceiverExpression, is FirAnonymousFunctionExpression, is FirSimpleFunction -> valid = false
-                        is FirQualifiedAccessExpression -> {
-                            if (!element.isAllowedInitializerAccess(parameters, session)) valid = false
-                        }
-                    }
-                    element.acceptChildren(this)
-                }
-            })
-            if (!valid) failures += "Property initializer is not a pure expression over constructor parameters"
-        }
     }
     return failures
 }
@@ -100,7 +80,7 @@ fun classLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSess
     fun visit(current: FirRegularClassSymbol) {
         if (!visited.add(current)) return
         if (current.ownClassLaws(session).isNotEmpty() || current.hasSuperclassLaws(session)) {
-            failures += ownClassLawConstructionFailures(current, session)
+            failures += ownClassLawConstructionFailures(current)
         }
         current.resolvedSuperTypes.mapNotNull { it.toRegularClassSymbol(session) }
             .filter { !it.classKind.isInterface && it.origin == FirDeclarationOrigin.Source }
@@ -110,15 +90,31 @@ fun classLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSess
     return failures.distinct()
 }
 
-/** The constructor's representation laws, evaluated on its field initializers. */
+context(program: ProgramConversionContext)
+private fun isStableInitializer(initializer: FirExpression, parameters: Set<FirValueParameterSymbol>): Boolean {
+    var stable = true
+    initializer.accept(object : FirVisitorVoid() {
+        override fun visitElement(element: FirElement) {
+            val hasClosure = element is FirAnonymousFunctionExpression || element is FirSimpleFunction
+            val unsupportedAccess = element is FirQualifiedAccessExpression &&
+                !element.isAllowedInitializerAccess(parameters, program.session)
+            val hasStateAccess = element is FirVariableAssignment || element is FirThisReceiverExpression
+            if (hasStateAccess || hasClosure || unsupportedAccess) stable = false
+            element.acceptChildren(this)
+        }
+    })
+    return stable
+}
+
+/** Stable initializer equalities and checks for inherited law-field substitution. */
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
 context(program: ProgramConversionContext)
-fun classLawConstructorConditions(
+fun constructorInitializerConditions(
     symbol: FirConstructorSymbol, signature: NonInlineCallable, result: ExpEmbedding,
-): Pair<List<ExpEmbedding>, List<ExpEmbedding>> {
-    val owner = symbol.resolvedReturnType.toRegularClassSymbol(program.session) ?: return emptyList<ExpEmbedding>() to emptyList()
+): List<ExpEmbedding> {
+    val owner = symbol.resolvedReturnType.toRegularClassSymbol(program.session) ?: return emptyList()
     if (owner.ownClassLaws(program.session).isEmpty() && !owner.hasSuperclassLaws(program.session)) {
-        return emptyList<ExpEmbedding>() to emptyList()
+        return emptyList()
     }
     val receiver = PlaceholderVariableEmbedding(DispatchReceiverName, program.embedType(symbol.resolvedReturnType), isUnique = true)
     val substitutions = symbol.valueParameterSymbols.zip(signature.params).associate { (symbol, value) ->
@@ -156,6 +152,7 @@ fun classLawConstructorConditions(
         }
         declaringClass.fir.declarations.filterIsInstance<FirProperty>().forEach { property ->
             property.initializer?.let { initializer ->
+                if (!isStableInitializer(initializer, constructor.valueParameterSymbols.toSet())) return@let
                 initializers[property.symbol] = {
                     val nestedStateMayChange = context(program.checkerContext) { property.symbol.isUnique() } &&
                         writes.mayReach(property.symbol)
@@ -173,18 +170,25 @@ fun classLawConstructorConditions(
     fun initializedField(property: FirPropertySymbol): ExpEmbedding? =
         fields[property] ?: initializers[property]?.invoke()?.also { fields[property] = it }
     owner.fir.declarations.filterIsInstance<FirProperty>().forEach { initializedField(it.symbol) }
-    val preconditions = lawOwners.flatMap { declaringClass ->
+    for (declaringClass in lawOwners) {
         val expansion = ClassLawExpansion(program, declaringClass, ::initializedField)
-        declaringClass.ownClassLaws(program.session).map { law ->
-            val resultType = with(program) { law.toFunctionSignature() }.signature.returns.type
-            ExpWrapper(expansion.body(law, mapOf(SubstitutedArgument.DispatchThis to receiver)), resultType)
+        for (law in declaringClass.ownClassLaws(program.session)) {
+            expansion.body(law, mapOf(SubstitutedArgument.DispatchThis to receiver))
         }
     }
     val postconditions = fields.mapNotNull { (property, initializer) ->
-        val getter = program.embedProperty(property).getter ?: return@mapNotNull null
+        if (writes.mayChange(property)) return@mapNotNull null
+        val readsOwnedState = initializer.subtree().any { expression ->
+            expression is FieldAccess || expression is PrimitiveFieldAccess || expression is IntArrayGet ||
+                expression is FunctionCall && expression.function.formalArgs.any { it.isUnique }
+        }
+        if (readsOwnedState) return@mapNotNull null
+        val embedded = program.embedProperty(property)
+        if (!embedded.hasDefaultBehaviour) return@mapNotNull null
+        val getter = embedded.getter ?: return@mapNotNull null
         val value = if (getter is BackingFieldGetter) PrimitiveFieldAccess(result, getter.field)
         else getter.getValueSimple(result, program.typeResolver)
         EqCmp(value, initializer)
     }
-    return preconditions to postconditions
+    return postconditions
 }

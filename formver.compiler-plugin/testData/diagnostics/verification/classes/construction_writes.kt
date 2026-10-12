@@ -71,6 +71,24 @@ class Derived(a: Int) : Base(a) {
     }
 }
 
+<!VIPER_TEXT!>class ForwardLoanSink<!>(var n: Int) {
+    init { require(n >= 1) }
+    @Law @Pure fun invariant(): Boolean = n >= 1
+    @Unique @Borrowed fun <!VIPER_TEXT!>accept<!>(source: @Borrowed ForwardLoanSource) {
+        preconditions { source.age >= 1 }
+        n = source.age
+    }
+}
+class ForwardLoanSource<!UNSUPPORTED_FEATURE!>(sink: @Unique @Borrowed ForwardLoanSink)<!> {
+    init { sink.accept(this) }
+    val age = 1
+}
+fun <!VERIFICATION_SKIPPED!>forwardLoanClient<!>() {
+    val sink: @Unique ForwardLoanSink = ForwardLoanSink(1)
+    val source: @Unique ForwardLoanSource = ForwardLoanSource(sink)
+    verify(sink.n >= 1)
+}
+
 fun <!VIPER_TEXT!>keepsParameters<!>() {
     val c: @Unique Checked = Checked(1, 2)
     verify(c.a == 1, c.b == 2)

@@ -163,7 +163,19 @@ fun StmtConversionContext.embedPropertyAccess(
                         embedProperty(it)
                     } ?: embedProperty(calleeSymbol)
                     val receiver = accessExpression.dispatchReceiver!!
-                    ClassPropertyAccess(convert(receiver), property, type, ownsFor(accessElement, receiver, property))
+                    val converted = convert(receiver)
+                    val field = (property.getter as? BackingFieldGetter)?.field
+                    val constructing = constructionReceiver as? VariableEmbedding
+                    val hasConstructionStorage = field != null || property.hasDefaultBehaviour && property.isVal
+                    if (constructing != null && converted.ignoringCastsAndMetaNodes() == constructing && hasConstructionStorage) {
+                        object : PropertyAccessEmbedding {
+                            override fun getValue(ctx: StmtConversionContext): ExpEmbedding =
+                                if (field != null) PrimitiveFieldAccess(converted, field)
+                                else property.getter!!.getValue(converted, ctx.typeResolver, receiverOwned = true)
+                            override fun setValue(value: ExpEmbedding, ctx: StmtConversionContext): ExpEmbedding =
+                                constructionStore(constructing, property, value)
+                        }
+                    } else ClassPropertyAccess(converted, property, type, ownsFor(accessElement, receiver, property))
                 }
 
                 accessExpression.extensionReceiver != null -> {
@@ -188,6 +200,14 @@ fun StmtConversionContext.embedPropertyAccess(
  */
 fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpression): Boolean {
     val denoted = (expression as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: expression
+    if (constructionReceiver != null) {
+        val constructedPath = convert(denoted).ownedPath()
+        if (constructedPath?.root == constructionReceiver) {
+            val analysis = ownershipFrame.analysis
+            val path = ownershipFrame.pathOf(denoted)
+            return if (analysis != null && path != null) analysis.owns(analysis.stateBefore(element), path, rootOwned = true) else true
+        }
+    }
     val path = ownershipFrame.pathOf(denoted) ?: return false
     return ownershipFrame.ownsBefore(element, path)
 }
@@ -620,4 +640,6 @@ fun StmtConversionContext.ownedShapes(
             embedProperty(property).ownedStep ?: return@mapNotNull null
         }
     })
-} + ownershipFrame.storageShapes(point)
+} + ownershipFrame.storageShapes(point) + listOfNotNull((constructionReceiver as? VariableEmbedding)?.let { receiver ->
+    OwnedShape(receiver).takeUnless { ownershipFrame.storageShapes(point).any { it.root == receiver } }
+})

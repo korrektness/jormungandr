@@ -57,23 +57,23 @@ class InvalidExpandedBody {
     @Law @Pure fun invariant(): Boolean = value >= 0
 }<!>
 
-<!INVALID_LAW!>class InitInvariant(val value: Int) {
+class InitInvariant(val value: Int) {
     init { require(value >= 0) }
     @Law @Pure fun invariant(): Boolean = value >= 0
-}<!>
+}
 
 var externalState = 0
 fun impureInitializer(value: Int): Int = value
 
-<!INVALID_LAW!>class ImpureInitializerInvariant(value: Int) {
+class ImpureInitializerInvariant(value: Int) {
     val initialized = impureInitializer(value)
     @Law @Pure fun invariant(): Boolean = initialized >= 0
-}<!>
+}
 
-<!INVALID_LAW!>class ExternalInitializerInvariant {
+class ExternalInitializerInvariant {
     val initialized = externalState
     @Law @Pure fun invariant(): Boolean = initialized >= 0
-}<!>
+}
 
 open class SuperInvariant(val value: Int) {
     @Law @Pure fun invariant(): Boolean = value >= 0
@@ -81,21 +81,21 @@ open class SuperInvariant(val value: Int) {
 
 class SubInvariant(value: Int) : SuperInvariant(value)
 
-<!INVALID_LAW!>class PropertyInitializerInvariant(value: Int) {
+class PropertyInitializerInvariant(value: Int) {
     val first = value
     val second = first
     @Law @Pure fun invariant(): Boolean = second >= 0
-}<!>
+}
 
-<!INVALID_LAW!>class LambdaInitializerInvariant(value: Int) {
+class LambdaInitializerInvariant(value: Int) {
     val function = { parameter: Int -> parameter + value }
     @Law @Pure fun invariant(): Boolean = true
-}<!>
+}
 
-<!INVALID_LAW!>class LocalFunctionInitializerInvariant(value: Int) {
+class LocalFunctionInitializerInvariant(value: Int) {
     val initialized = if (value > 0) {
         @Pure fun local(parameter: Int): Int = parameter
         local(value)
     } else value
     @Law @Pure fun invariant(): Boolean = initialized >= 0
-}<!>
+}

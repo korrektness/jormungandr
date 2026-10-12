@@ -101,6 +101,7 @@ data class FieldModification(
     val field: FieldEmbedding,
     val newValue: ExpEmbedding,
     val receiverOwned: Boolean = false,
+    val constructionWrite: Boolean = false,
 ) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 
@@ -113,7 +114,7 @@ data class FieldModification(
      * keep direct field access on `@Manual` classes, so they still need the predicate the user unfolded.
      */
     val dropsWrite: Boolean
-        get() = this.field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS && !receiverOwned
+        get() = this.field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS && !receiverOwned && !constructionWrite
 }
 
 data class FieldAccessPermissions(val inner: ExpEmbedding, val field: FieldEmbedding, val perm: PermExp) :

@@ -133,7 +133,7 @@ predicate OtherView_unique(this: Ref) {
 predicate footprint(this: Ref)
 
 /interface_generality.kt: info: Generated Viper text for GeneralCell:
-field enabled: Ref
+field bf_enabled: Ref
 
 function DetailedView_c_TruthView_f_truth(this: Ref): Ref
   requires isSubtype(typeOf(this), c_TruthView())
@@ -165,7 +165,7 @@ function GeneralCell_f_matches(this: Ref, first: Ref, second: Ref, par_token: Re
   ensures isSubtype(typeOf(result), boolType())
 {
   andBools(boolToRef(boolFromRef(first) == boolFromRef(second)), boolToRef(par_token ==
-  stored(this)))
+  g_stored(this)))
 }
 
 function GeneralCell_f_other(this: Ref): Ref
@@ -173,7 +173,7 @@ function GeneralCell_f_other(this: Ref): Ref
   requires acc(GeneralCell_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
 {
-  (unfolding acc(GeneralCell_unique(this), write) in this.enabled)
+  (unfolding acc(GeneralCell_unique(this), write) in this.bf_enabled)
 }
 
 function GeneralCell_f_token(this: Ref): Ref
@@ -181,7 +181,7 @@ function GeneralCell_f_token(this: Ref): Ref
   requires acc(GeneralCell_unique(this), write)
   ensures isSubtype(typeOf(result), nullable(GeneralToken()))
 {
-  stored(this)
+  g_stored(this)
 }
 
 function GeneralCell_f_truth(this: Ref): Ref
@@ -189,7 +189,7 @@ function GeneralCell_f_truth(this: Ref): Ref
   requires acc(GeneralCell_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
 {
-  (unfolding acc(GeneralCell_unique(this), write) in this.enabled)
+  (unfolding acc(GeneralCell_unique(this), write) in this.bf_enabled)
 }
 
 function OtherView_f_other(this: Ref): Ref
@@ -209,7 +209,7 @@ function flag(this: Ref): Ref
   ensures isSubtype(typeOf(result), boolType())
 
 
-function stored(this: Ref): Ref
+function g_stored(this: Ref): Ref
   requires isSubtype(typeOf(this), GeneralCell())
   ensures isSubtype(typeOf(result), nullable(GeneralToken()))
 
@@ -223,11 +223,11 @@ predicate DetailedView_unique(this: Ref) {
 }
 
 predicate GeneralCell_unique(this: Ref) {
-  isSubtype(typeOf(this), GeneralCell()) && acc(this.enabled, write) &&
-  isSubtype(typeOf(this.enabled), boolType()) &&
+  isSubtype(typeOf(this), GeneralCell()) && acc(this.bf_enabled, write) &&
+  isSubtype(typeOf(this.bf_enabled), boolType()) &&
   (let this ==
     (this) in
-    true && boolFromRef(this.enabled))
+    true && boolFromRef(this.bf_enabled))
 }
 
 predicate GeneralToken_unique(this: Ref) {
@@ -250,6 +250,37 @@ predicate c_TruthView_unique(this: Ref) {
   boolFromRef(c_TruthView_f_truth(this))
 }
 
+method con(par_enabled: Ref, par_stored: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_enabled), boolType())
+  requires isSubtype(typeOf(par_stored), nullable(GeneralToken()))
+  ensures isSubtype(typeOf(v_ret_0), GeneralCell())
+  ensures isSubtype(typeOf(v_ret_0), GeneralCell()) &&
+    acc(v_ret_0.bf_enabled, write) &&
+    isSubtype(typeOf(v_ret_0.bf_enabled), boolType()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(this.bf_enabled))
+  ensures boolFromRef(v_ret_0.bf_enabled) == boolFromRef(par_enabled)
+  ensures g_stored(v_ret_0) == par_stored
+  ensures boolFromRef(v_ret_0.bf_enabled) == boolFromRef(par_enabled)
+  ensures g_stored(v_ret_0) == par_stored
+{
+  var anon_0: Ref
+  var anon_4: Ref
+  v_ret_0 := new(bf_enabled)
+  inhale typeOf(v_ret_0) == GeneralCell()
+  v_ret_0.bf_enabled := par_enabled
+  anon_0 := par_stored
+  inhale g_stored(v_ret_0) == anon_0
+  anon_4 := require(v_ret_0.bf_enabled)
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(this.bf_enabled))
+  fold acc(GeneralCell_unique(v_ret_0), write)
+  unfold acc(GeneralCell_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(GeneralCell_unique(this), write)
 {
@@ -258,6 +289,12 @@ method laws(this: Ref)
   assert boolFromRef(GeneralCell_f_truth(this))
   assert boolFromRef(GeneralCell_f_other(this))
 }
+
+method require(value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(value)
+
 
 /interface_generality.kt: info: Generated Viper text for truth:
 field enabled: Ref
@@ -1082,7 +1119,6 @@ method GeneralCell_c_OtherView_upcast(this: Ref)
 method con(par_enabled: Ref, par_stored: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_enabled), boolType())
   requires isSubtype(typeOf(par_stored), nullable(GeneralToken()))
-  requires boolFromRef(par_enabled)
   ensures isSubtype(typeOf(ret_1), GeneralCell())
   ensures isSubtype(typeOf(ret_1), GeneralCell()) &&
     acc(ret_1.bf_enabled, write) &&
@@ -1318,7 +1354,6 @@ method GeneralCell_c_DetailedView_upcast(this: Ref)
 method con(par_enabled: Ref, par_stored: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_enabled), boolType())
   requires isSubtype(typeOf(par_stored), nullable(GeneralToken()))
-  requires boolFromRef(par_enabled)
   ensures isSubtype(typeOf(ret_1), GeneralCell())
   ensures isSubtype(typeOf(ret_1), GeneralCell()) &&
     acc(ret_1.bf_enabled, write) &&

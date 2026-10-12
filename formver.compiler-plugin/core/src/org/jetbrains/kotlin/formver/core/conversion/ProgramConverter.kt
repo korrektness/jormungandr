@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
+import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirEnumEntrySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
@@ -233,6 +234,21 @@ class ProgramConverter(
         val hasUniquenessErrors = uniquenessOutcomeOf(declaration).hasErrors
         registered += RegisteredFunction(declaration, signature.signature, signature.returnTarget, hasUniquenessErrors)
         if (declaration is FirSimpleFunction) registerRefinements(declaration, signature.signature)
+    }
+
+    /** Registers the proof of a source primary constructor against its exported contract. */
+    @OptIn(SymbolInternals::class)
+    fun registerPrimaryConstructor(symbol: FirConstructorSymbol) {
+        registeredSymbol = symbol
+        val signature = embedCompleteSignature(symbol)
+        val contract = signature.signature as NonInlineFunctionSignature
+        val owner = symbol.resolvedReturnType.toRegularClassSymbol(session)!!
+        lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(owner.fir, owner.classId.embedName()) })
+        var hasInitializationErrors = false
+        val body = with(this) { primaryConstructionBody(symbol, contract, signature.returnTarget) { hasInitializationErrors = true } }
+        convertedBodyResolver.storeImpure(contract.name, body)
+        registered += RegisteredFunction(symbol.fir, contract, signature.returnTarget,
+            hasInitializationErrors || uniquenessOutcomeOf(symbol.fir).hasErrors)
     }
 
     /**
