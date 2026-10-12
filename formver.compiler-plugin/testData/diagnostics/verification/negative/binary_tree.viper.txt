@@ -63,7 +63,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Node_unique(this: Ref) {
   isSubtype(typeOf(this), Node()) && acc(this.bf_data, write) &&
@@ -72,7 +77,12 @@ predicate Node_unique(this: Ref) {
   (g_right(this) != nullValue() ==> acc(Node_unique(g_right(this)), write))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method con(par_data: Ref, par_left: Ref, par_right: Ref)
   returns (ret_1: Ref)

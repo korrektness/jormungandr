@@ -13,9 +13,19 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate StringBox_unique(this: Ref) {
   isSubtype(typeOf(this), StringBox())
@@ -62,9 +72,19 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate StringBox_unique(this: Ref) {
   isSubtype(typeOf(this), StringBox())
@@ -102,9 +122,19 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method plus(this: Ref, other: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), stringType())

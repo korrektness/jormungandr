@@ -27,11 +27,11 @@ fun <!VIPER_TEXT!>postconditionOnly<!>(): @Unique ArgumentIncSpec = ArgumentIncS
     x + 1
 }
 
-fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>preconditionOnly<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec { x ->
+fun <!VIPER_TEXT!>preconditionOnly<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec <!OVERRIDE_NOT_REFINING!>{ x ->
     exposes(ArgumentIncSpec::class) { inc() == 1 }
     preconditions { x >= -1 }
     x + 1
-}
+}<!>
 
 <!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>incorrectOwnBody<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec { x ->
     exposes(ArgumentIncSpec::class) { inc() == 1 }

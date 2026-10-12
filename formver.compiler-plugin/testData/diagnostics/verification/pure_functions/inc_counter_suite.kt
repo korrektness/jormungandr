@@ -84,13 +84,13 @@ fun <!VIPER_TEXT!>demandsMore<!>(): @Unique IncCounterSpec {
     }<!>
 }
 
-fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>deliversLess<!>(): @Unique IncCounterSpec {
+fun <!VIPER_TEXT!>deliversLess<!>(): @Unique IncCounterSpec {
     var n = 0
-    return IncCounterSpec {
+    return IncCounterSpec <!OVERRIDE_NOT_REFINING!>{
         exposes(IncCounterSpec::class) { value() == n; inc() == 1 }
         postconditions<Int> { result -> result == n && n == old(n) }
         n
-    }
+    }<!>
 }
 
 fun <!VIPER_TEXT!>exactIncrementAfterJoin<!>(step: Int) {

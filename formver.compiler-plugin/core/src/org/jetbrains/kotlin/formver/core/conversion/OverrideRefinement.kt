@@ -52,7 +52,7 @@ internal data class Refinement(
      */
     fun toMethod(typeResolver: TypeResolver): UserMethod {
         val position = source.asPosition
-        fun role(clause: SourceRole.OverrideRefinement.Clause) = SourceRole.OverrideRefinement(spelling, clause).asInfo
+        fun role(clause: SourceRole.OverrideRefinement.Clause) = SourceRole.OverrideRefinement(spelling, clause, position).asInfo
         val receiverType = override.dispatchReceiver?.provenInvariants().orEmpty()
         val call = override.toMethodCall(
             overridden.formalArgs.map { it.toLocalVarUse() },

@@ -30,7 +30,11 @@ predicate C_unique(this: Ref) {
   acc(B_unique(this), write)
 }
 
-predicate D_unique(this: Ref)
+predicate D_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), D())
+}
+
+predicate footprint(this: Ref)
 
 method accessSuperTypeProperty(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), C())
@@ -79,7 +83,11 @@ predicate C_unique(this: Ref) {
   acc(B_unique(this), write)
 }
 
-predicate D_unique(this: Ref)
+predicate D_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), D())
+}
+
+predicate footprint(this: Ref)
 
 method accessNested(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), C())

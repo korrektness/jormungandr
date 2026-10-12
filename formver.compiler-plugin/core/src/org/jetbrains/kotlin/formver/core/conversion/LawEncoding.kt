@@ -47,8 +47,6 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
             return
         }
         val laws = context(program.checkerContext) { symbol.interfaceLaws() }
-        if (laws.isEmpty()) return
-        program.typeResolver.registerInterfaceLaws(type)
         interfaces[type] = laws
     }
 

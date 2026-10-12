@@ -56,7 +56,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Positive_unique(this: Ref) {
   isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
@@ -71,7 +76,12 @@ predicate Positive_unique(this: Ref) {
         andBools(gtInts(anon_1_0, intToRef(0)), nonnegative(anon_2_0))))))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method increment(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Positive())
@@ -206,7 +216,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Positive_unique(this: Ref) {
   isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
@@ -221,7 +236,12 @@ predicate Positive_unique(this: Ref) {
         andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method restore(this: Ref, early: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Positive())
@@ -290,7 +310,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Positive_unique(this: Ref) {
   isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
@@ -305,7 +330,12 @@ predicate Positive_unique(this: Ref) {
         andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method con(start: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(start), intType())
@@ -490,7 +520,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate NestedObservation_unique(this: Ref) {
   isSubtype(typeOf(this), NestedObservation()) &&
@@ -499,7 +534,12 @@ predicate NestedObservation_unique(this: Ref) {
     true && boolFromRef(geInts(g_value(this), intToRef(0))))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method con(par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
@@ -568,9 +608,19 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate Swapped_unique(this: Ref) {
   isSubtype(typeOf(this), Swapped()) &&

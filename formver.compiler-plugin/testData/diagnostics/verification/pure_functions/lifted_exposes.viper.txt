@@ -330,13 +330,13 @@ function size(this: Ref): Ref
 
 function step(this: Ref): Ref
   requires isSubtype(typeOf(this), ExposedCounter())
-  requires acc(footprint(this), wildcard)
+  requires acc(ExposedCounter_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), ExposedCounter())
-  requires acc(footprint(this), wildcard)
+  requires acc(ExposedCounter_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -344,16 +344,27 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate ExposedCounter_footprint(this: Ref)
 
 predicate ExposedCounter_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), ExposedCounter()) &&
+  acc(ExposedCounter_footprint(this), write) &&
+  isSubtype(typeOf(this), ExposedCounter()) &&
   boolFromRef(gtInts(step(this), intToRef(0)))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate footprint(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method createCounter() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), ExposedCounter())
@@ -1046,7 +1057,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0())
@@ -1056,7 +1072,12 @@ predicate Lambda1_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda1())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate c_ConstantClosure_footprint(this: Ref)
 
@@ -1206,7 +1227,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate ConstantClosure_footprint(this: Ref)
 
@@ -1225,7 +1251,12 @@ predicate Lambda1_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda1())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate c_ConstantObservation_footprint(this: Ref)
 
@@ -1351,7 +1382,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate ConstantClosure_footprint(this: Ref)
 
@@ -1370,7 +1406,12 @@ predicate Lambda1_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda1())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate c_ConstantObservation_footprint(this: Ref)
 

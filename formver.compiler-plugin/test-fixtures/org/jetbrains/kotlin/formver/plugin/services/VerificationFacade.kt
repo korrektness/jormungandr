@@ -122,7 +122,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         val programs = listOfNotNull(decl.viperProgram.takeIf { decl.shouldVerify == true }) +
             decl.lambdaPrograms.orEmpty().filter { it.shouldVerify }.map { it.program }
         val onFailure: (VerifierError) -> Unit = { err ->
-            val source = err.position.unwrapOr { decl.source }!!
+            val source = err.reportingPosition().unwrapOr { decl.source }!!
             if (reportedErrors.add(err, source)) {
                 results.add(
                     when (err) {

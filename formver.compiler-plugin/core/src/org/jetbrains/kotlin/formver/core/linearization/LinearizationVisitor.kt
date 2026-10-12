@@ -226,8 +226,7 @@ data class LinearizationVisitor(
             val view = e.args.firstOrNull()?.type?.pretype as? ClassTypeEmbedding
             val interfaceBinding = view?.let { receiverType ->
                 ctx.typeResolver.observerBinding(receiverType, e.function.name)?.takeIf {
-                    ctx.typeResolver.hasInterfaceLaws(receiverType) ||
-                        ctx.typeResolver.isInterface(receiverType) && it.signature.dispatchReceiver!!.type.pretype != receiverType
+                    ctx.typeResolver.isInterface(receiverType)
                 }
             }
             val formals = if (interfaceBinding == null) e.function.formalArgs else e.function.formalArgs.mapIndexed { index, formal ->

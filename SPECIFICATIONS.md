@@ -206,11 +206,12 @@ interface Sized {
 }
 ```
 
-The interface's ownership predicate contains the conjunction of its laws, including inherited laws. An owned
-interface client can use these facts without a separate precondition. Inheritance diamonds include each law once.
-Each implementing class has one verification harness that proves the conjunction from its own ownership predicate,
-with its observer bindings substituted. It checks arbitrary legal representation states; a failure is reported on
-the class. Law declarations are specification bodies and have no standalone verification obligation.
+Every interface has an abstract footprint predicate. Its ownership predicate contains that footprint, the runtime
+subtype fact, and the conjunction of zero or more laws, including inherited laws. Observer functions require the
+footprint; owned calls unfold the ownership predicate to supply it. An owned interface client can use the laws
+without a separate precondition. Inheritance diamonds include each law once.
+Implementation law harnesses prove inherited laws from the class's own ownership predicate, with its observer
+bindings substituted. They check arbitrary legal representation states; a failure is reported on the class. Law declarations are specification bodies and have no standalone verification obligation.
 
 ### Class laws
 

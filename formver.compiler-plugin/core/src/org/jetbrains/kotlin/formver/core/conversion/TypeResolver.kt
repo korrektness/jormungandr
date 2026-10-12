@@ -130,12 +130,6 @@ class TypeResolver {
 
     private val interfaceLawBodies = linkedMapOf<SymbolicName, List<Exp>>()
 
-    fun registerInterfaceLaws(type: ClassTypeEmbedding) {
-        interfaceLawBodies.putIfAbsent(type.name, emptyList())
-    }
-
-    fun hasInterfaceLaws(type: ClassTypeEmbedding) = type.name in interfaceLawBodies
-
     fun setInterfaceLaws(type: ClassTypeEmbedding, laws: List<Exp>) {
         interfaceLawBodies[type.name] = laws
     }
@@ -150,7 +144,7 @@ class TypeResolver {
 
     fun observerBinding(view: ClassTypeEmbedding, observer: SymbolicName): ObserverBinding? =
         observerBindings[view.name]?.let { bindings ->
-            bindings[observer] ?: if (hasInterfaceLaws(view)) bindings.values.firstOrNull { it.signature.name == observer } else null
+            bindings[observer] ?: bindings.values.firstOrNull { it.signature.name == observer }
         }
 
     fun observerBindings(from: ClassTypeEmbedding, to: ClassTypeEmbedding) =

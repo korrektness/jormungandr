@@ -42,6 +42,7 @@ import org.jetbrains.kotlin.formver.core.lambdaPrograms
 import org.jetbrains.kotlin.formver.core.LambdaVerificationProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
+import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportingPosition
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.Program
 import org.jetbrains.kotlin.formver.viper.ast.registerAllNames
@@ -150,7 +151,7 @@ class ViperPoweredDeclarationChecker(
                 reporter.reportOn(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, reason)
             } ?: return
             val onFailure = { err: VerifierError ->
-                val source = err.position.unwrapOr { declaration.source }
+                val source = err.reportingPosition().unwrapOr { declaration.source }
                 if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
             }
             SiliconFrontend(z3Exe).use { it.verify(viperProgram, onFailure) }

@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
+import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportingPosition
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.registerAllNames
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
@@ -84,7 +85,7 @@ class ViperPoweredClassChecker(
                 } ?: return
                 SiliconFrontend(z3).use { verifier ->
                     verifier.verify(viperProgram) { error ->
-                        val source = error.position.unwrapOr { declaration.source }
+                        val source = error.reportingPosition().unwrapOr { declaration.source }
                         if (reportedErrors.add(error, source)) reporter.reportVerifierError(source, error, config.errorStyle)
                     }
                 }

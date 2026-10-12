@@ -161,7 +161,7 @@ fun CompleteFunctionSignature.toViperFunction(
         // TODO: Be explicit about the return types of functions instead of boxing them into a Ref
         Type.Ref,
         preconditions.pureToViper(toBuiltin = true, ctx).map { pre ->
-            val view = (dispatchReceiver?.type?.pretype as? ClassTypeEmbedding)?.takeIf(ctx::hasInterfaceLaws)
+            val view = (dispatchReceiver?.type?.pretype as? ClassTypeEmbedding)?.takeIf(ctx::isInterface)
             if (pre is Exp.PredicateAccess && pre.predicateName == view?.uniquePredicateName)
                 pre.copy(predicateName = view!!.footprintPredicateName)
             else pre

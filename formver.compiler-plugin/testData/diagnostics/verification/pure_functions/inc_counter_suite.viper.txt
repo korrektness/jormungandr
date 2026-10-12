@@ -1,58 +1,80 @@
 /inc_counter_suite.kt: info: Generated Viper text for value:
 function inc(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate IncCounterSpec_unique(this: Ref)
+predicate IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 /inc_counter_suite.kt: info: Generated Viper text for inc:
 function inc(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate IncCounterSpec_unique(this: Ref)
+predicate IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 /inc_counter_suite.kt: info: Generated Viper text for invoke:
 function inc(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate IncCounterSpec_unique(this: Ref)
+predicate IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method invoke(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), IncCounterSpec())
   requires acc(IncCounterSpec_unique(this), write)
   ensures acc(IncCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
-  ensures intFromRef(value(this)) ==
-    old(intFromRef(value(this))) + old(intFromRef(inc(this)))
-  ensures intFromRef(inc(this)) == old(intFromRef(inc(this)))
-  ensures intFromRef(ret) == intFromRef(value(this))
-  ensures intFromRef(ret) > old(intFromRef(value(this)))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(value(this)))) +
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(inc(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret) == intFromRef(value(this)))
+  ensures intFromRef(ret) >
+    old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this))))
 
 
 /inc_counter_suite.kt: info: Generated Viper text for makeCounter:
@@ -96,13 +118,13 @@ function Lambda1_f_value(this: Ref): Ref
 
 function c_IncCounterSpec_f_inc(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IncCounterSpec_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -122,15 +144,24 @@ predicate Lambda1_unique(this: Ref) {
     !(intFromRef(this.Lambda1_p_capture1) <= 0))
 }
 
-predicate c_IncCounterSpec_unique(this: Ref)
+predicate c_IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_IncCounterSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_value(this) == old(Lambda0_f_value(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)) ==
+    old(Lambda0_f_value(this))
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_inc(this) == old(Lambda0_f_inc(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)) ==
+    old(Lambda0_f_inc(this))
 
 
 method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_1: Ref)
@@ -147,9 +178,13 @@ method Lambda1_c_IncCounterSpec_upcast(this: Ref)
   requires acc(Lambda1_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
-    c_IncCounterSpec_f_value(this) == old(Lambda1_f_value(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)) ==
+    old(Lambda1_f_value(this))
   ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
-    c_IncCounterSpec_f_inc(this) == old(Lambda1_f_inc(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)) ==
+    old(Lambda1_f_inc(this))
 
 
 method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
@@ -173,9 +208,11 @@ method makeCounter(step: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(step), intType())
   ensures isSubtype(typeOf(v_ret_0), c_IncCounterSpec())
   ensures acc(c_IncCounterSpec_unique(v_ret_0), write)
-  ensures intFromRef(c_IncCounterSpec_f_value(v_ret_0)) == 0
-  ensures intFromRef(c_IncCounterSpec_f_inc(v_ret_0)) ==
-    intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step))
+  ensures (unfolding acc(c_IncCounterSpec_unique(v_ret_0), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(v_ret_0)) == 0)
+  ensures (unfolding acc(c_IncCounterSpec_unique(v_ret_0), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(v_ret_0)) ==
+      intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step)))
 {
   var n: Ref
   var anon_3: Ref
@@ -241,13 +278,13 @@ function Lambda1_f_value(this: Ref): Ref
 
 function c_IncCounterSpec_f_inc(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IncCounterSpec_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -267,25 +304,38 @@ predicate Lambda1_unique(this: Ref) {
     !(intFromRef(this.Lambda1_p_capture1) <= 0))
 }
 
-predicate c_IncCounterSpec_unique(this: Ref)
+predicate c_IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_IncCounterSpec_restore(this: Ref)
   requires acc(c_IncCounterSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_IncCounterSpec())) && true ==>
-    Lambda0_f_value(this) == old(c_IncCounterSpec_f_value(this))
+    Lambda0_f_value(this) ==
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)))
   ensures true && old(isSubtype(typeOf(this), c_IncCounterSpec())) && true ==>
-    Lambda0_f_inc(this) == old(c_IncCounterSpec_f_inc(this))
+    Lambda0_f_inc(this) ==
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)))
 
 
 method Lambda0_c_IncCounterSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_value(this) == old(Lambda0_f_value(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)) ==
+    old(Lambda0_f_value(this))
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_inc(this) == old(Lambda0_f_inc(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)) ==
+    old(Lambda0_f_inc(this))
 
 
 method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
@@ -343,23 +393,32 @@ method f_invoke(this: Ref) returns (ret_4: Ref)
   requires acc(c_IncCounterSpec_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
-  ensures intFromRef(c_IncCounterSpec_f_value(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_value(this))) +
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  ensures intFromRef(c_IncCounterSpec_f_inc(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  ensures intFromRef(ret_4) == intFromRef(c_IncCounterSpec_f_value(this))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_value(this)))) +
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_4) == intFromRef(c_IncCounterSpec_f_value(this)))
   ensures intFromRef(ret_4) >
-    old(intFromRef(c_IncCounterSpec_f_value(this)))
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this))))
 
 
 method makeCounter(step: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(step), intType())
   ensures isSubtype(typeOf(ret_2), c_IncCounterSpec())
   ensures acc(c_IncCounterSpec_unique(ret_2), write)
-  ensures intFromRef(c_IncCounterSpec_f_value(ret_2)) == 0
-  ensures intFromRef(c_IncCounterSpec_f_inc(ret_2)) ==
-    intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step))
+  ensures (unfolding acc(c_IncCounterSpec_unique(ret_2), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(ret_2)) == 0)
+  ensures (unfolding acc(c_IncCounterSpec_unique(ret_2), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(ret_2)) ==
+      intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step)))
 
 
 method refines_f_invoke(this: Ref) returns (ret_4: Ref)
@@ -372,14 +431,21 @@ method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   Lambda0_c_IncCounterSpec_upcast(this)
   assert acc(c_IncCounterSpec_unique(this), write)
   assert isSubtype(typeOf(ret_4), intType())
-  assert intFromRef(c_IncCounterSpec_f_value(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_value(this))) +
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  assert intFromRef(c_IncCounterSpec_f_inc(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  assert intFromRef(ret_4) == intFromRef(c_IncCounterSpec_f_value(this))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_value(this)))) +
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_4) == intFromRef(c_IncCounterSpec_f_value(this)))
   assert intFromRef(ret_4) >
-    old(intFromRef(c_IncCounterSpec_f_value(this)))
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this))))
 }
 
 makeCounter.lambda1.invoke:
@@ -423,13 +489,13 @@ function Lambda1_f_value(this: Ref): Ref
 
 function c_IncCounterSpec_f_inc(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IncCounterSpec_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -449,7 +515,12 @@ predicate Lambda1_unique(this: Ref) {
     !(intFromRef(this.Lambda1_p_capture1) <= 0))
 }
 
-predicate c_IncCounterSpec_unique(this: Ref)
+predicate c_IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
   requires isSubtype(typeOf(Lambda0_captureArg0), intType())
@@ -466,18 +537,26 @@ method Lambda1_c_IncCounterSpec_restore(this: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   ensures acc(Lambda1_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_IncCounterSpec())) && true ==>
-    Lambda1_f_value(this) == old(c_IncCounterSpec_f_value(this))
+    Lambda1_f_value(this) ==
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)))
   ensures true && old(isSubtype(typeOf(this), c_IncCounterSpec())) && true ==>
-    Lambda1_f_inc(this) == old(c_IncCounterSpec_f_inc(this))
+    Lambda1_f_inc(this) ==
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)))
 
 
 method Lambda1_c_IncCounterSpec_upcast(this: Ref)
   requires acc(Lambda1_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
-    c_IncCounterSpec_f_value(this) == old(Lambda1_f_value(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)) ==
+    old(Lambda1_f_value(this))
   ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
-    c_IncCounterSpec_f_inc(this) == old(Lambda1_f_inc(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)) ==
+    old(Lambda1_f_inc(this))
 
 
 method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
@@ -527,23 +606,32 @@ method f_invoke(this: Ref) returns (ret_4: Ref)
   requires acc(c_IncCounterSpec_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
-  ensures intFromRef(c_IncCounterSpec_f_value(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_value(this))) +
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  ensures intFromRef(c_IncCounterSpec_f_inc(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  ensures intFromRef(ret_4) == intFromRef(c_IncCounterSpec_f_value(this))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_value(this)))) +
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_4) == intFromRef(c_IncCounterSpec_f_value(this)))
   ensures intFromRef(ret_4) >
-    old(intFromRef(c_IncCounterSpec_f_value(this)))
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this))))
 
 
 method makeCounter(step: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(step), intType())
   ensures isSubtype(typeOf(ret_2), c_IncCounterSpec())
   ensures acc(c_IncCounterSpec_unique(ret_2), write)
-  ensures intFromRef(c_IncCounterSpec_f_value(ret_2)) == 0
-  ensures intFromRef(c_IncCounterSpec_f_inc(ret_2)) ==
-    intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step))
+  ensures (unfolding acc(c_IncCounterSpec_unique(ret_2), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(ret_2)) == 0)
+  ensures (unfolding acc(c_IncCounterSpec_unique(ret_2), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(ret_2)) ==
+      intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step)))
 
 
 method refines_f_invoke(this: Ref) returns (ret_4: Ref)
@@ -556,40 +644,60 @@ method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   Lambda1_c_IncCounterSpec_upcast(this)
   assert acc(c_IncCounterSpec_unique(this), write)
   assert isSubtype(typeOf(ret_4), intType())
-  assert intFromRef(c_IncCounterSpec_f_value(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_value(this))) +
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  assert intFromRef(c_IncCounterSpec_f_inc(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  assert intFromRef(ret_4) == intFromRef(c_IncCounterSpec_f_value(this))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_value(this)))) +
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_4) == intFromRef(c_IncCounterSpec_f_value(this)))
   assert intFromRef(ret_4) >
-    old(intFromRef(c_IncCounterSpec_f_value(this)))
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this))))
 }
 
 /inc_counter_suite.kt: info: Generated Viper text for callTwice:
 function inc(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate IncCounterSpec_unique(this: Ref)
+predicate IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method callTwice(f: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(f), IncCounterSpec())
   requires acc(IncCounterSpec_unique(f), write)
   ensures acc(IncCounterSpec_unique(f), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(value(f)) ==
-    old(intFromRef(value(f))) + 2 * old(intFromRef(inc(f)))
-  ensures intFromRef(inc(f)) == old(intFromRef(inc(f)))
-  ensures intFromRef(v_ret_0) == intFromRef(value(f))
+  ensures (unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(value(f)) ==
+      old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+        intFromRef(value(f)))) +
+      2 *
+      old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+        intFromRef(inc(f)))))
+  ensures (unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(inc(f)) ==
+      old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+        intFromRef(inc(f)))))
+  ensures (unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(v_ret_0) == intFromRef(value(f)))
 {
   var anon: Ref
   anon := invoke(f)
@@ -603,34 +711,52 @@ method invoke(this: Ref) returns (ret_2: Ref)
   requires acc(IncCounterSpec_unique(this), write)
   ensures acc(IncCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(value(this)) ==
-    old(intFromRef(value(this))) + old(intFromRef(inc(this)))
-  ensures intFromRef(inc(this)) == old(intFromRef(inc(this)))
-  ensures intFromRef(ret_2) == intFromRef(value(this))
-  ensures intFromRef(ret_2) > old(intFromRef(value(this)))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(value(this)))) +
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(inc(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(value(this)))
+  ensures intFromRef(ret_2) >
+    old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this))))
 
 
 /inc_counter_suite.kt: info: Generated Viper text for applyTwice:
 function inc(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate IncCounterSpec_unique(this: Ref)
+predicate IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method applyTwice(f: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(f), IncCounterSpec())
   requires acc(IncCounterSpec_unique(f), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
-    old(intFromRef(value(f))) + 2 * old(intFromRef(inc(f)))
+    old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(value(f)))) +
+    2 *
+    old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(inc(f))))
 {
   v_ret_0 := callTwice(f)
   goto lbl_ret_0
@@ -642,16 +768,25 @@ method callTwice(f: Ref) returns (ret_2: Ref)
   requires acc(IncCounterSpec_unique(f), write)
   ensures acc(IncCounterSpec_unique(f), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(value(f)) ==
-    old(intFromRef(value(f))) + 2 * old(intFromRef(inc(f)))
-  ensures intFromRef(inc(f)) == old(intFromRef(inc(f)))
-  ensures intFromRef(ret_2) == intFromRef(value(f))
+  ensures (unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(value(f)) ==
+      old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+        intFromRef(value(f)))) +
+      2 *
+      old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+        intFromRef(inc(f)))))
+  ensures (unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(inc(f)) ==
+      old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+        intFromRef(inc(f)))))
+  ensures (unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(ret_2) == intFromRef(value(f)))
 
 
 /inc_counter_suite.kt: info: Generated Viper text for client:
 function inc(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(IncCounterSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -662,7 +797,7 @@ function size(this: Ref): Ref
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(IncCounterSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -670,11 +805,26 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate IncCounterSpec_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate Serializable_unique(this: Ref)
+predicate IncCounterSpec_footprint(this: Ref)
+
+predicate IncCounterSpec_unique(this: Ref) {
+  acc(IncCounterSpec_footprint(this), write) &&
+  isSubtype(typeOf(this), IncCounterSpec())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method client(step: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(step), intType())
@@ -702,26 +852,38 @@ method invoke(this: Ref) returns (ret_2: Ref)
   requires acc(IncCounterSpec_unique(this), write)
   ensures acc(IncCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(value(this)) ==
-    old(intFromRef(value(this))) + old(intFromRef(inc(this)))
-  ensures intFromRef(inc(this)) == old(intFromRef(inc(this)))
-  ensures intFromRef(ret_2) == intFromRef(value(this))
-  ensures intFromRef(ret_2) > old(intFromRef(value(this)))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(value(this)))) +
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(inc(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(value(this)))
+  ensures intFromRef(ret_2) >
+    old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this))))
 
 
 method makeCounter(step: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(step), intType())
   ensures isSubtype(typeOf(ret_1), IncCounterSpec())
   ensures acc(IncCounterSpec_unique(ret_1), write)
-  ensures intFromRef(value(ret_1)) == 0
-  ensures intFromRef(inc(ret_1)) ==
-    intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step))
+  ensures (unfolding acc(IncCounterSpec_unique(ret_1), wildcard) in
+      intFromRef(value(ret_1)) == 0)
+  ensures (unfolding acc(IncCounterSpec_unique(ret_1), wildcard) in
+      intFromRef(inc(ret_1)) ==
+      intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step)))
 
 
 /inc_counter_suite.kt: info: Generated Viper text for borrowedClient:
 function inc(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(IncCounterSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -732,7 +894,7 @@ function size(this: Ref): Ref
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(IncCounterSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -740,11 +902,26 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate IncCounterSpec_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate Serializable_unique(this: Ref)
+predicate IncCounterSpec_footprint(this: Ref)
+
+predicate IncCounterSpec_unique(this: Ref) {
+  acc(IncCounterSpec_footprint(this), write) &&
+  isSubtype(typeOf(this), IncCounterSpec())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method borrowedClient(step: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(step), intType())
@@ -777,10 +954,19 @@ method callTwice(par_f: Ref) returns (ret_2: Ref)
   requires acc(IncCounterSpec_unique(par_f), write)
   ensures acc(IncCounterSpec_unique(par_f), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(value(par_f)) ==
-    old(intFromRef(value(par_f))) + 2 * old(intFromRef(inc(par_f)))
-  ensures intFromRef(inc(par_f)) == old(intFromRef(inc(par_f)))
-  ensures intFromRef(ret_2) == intFromRef(value(par_f))
+  ensures (unfolding acc(IncCounterSpec_unique(par_f), wildcard) in
+      intFromRef(value(par_f)) ==
+      old((unfolding acc(IncCounterSpec_unique(par_f), wildcard) in
+        intFromRef(value(par_f)))) +
+      2 *
+      old((unfolding acc(IncCounterSpec_unique(par_f), wildcard) in
+        intFromRef(inc(par_f)))))
+  ensures (unfolding acc(IncCounterSpec_unique(par_f), wildcard) in
+      intFromRef(inc(par_f)) ==
+      old((unfolding acc(IncCounterSpec_unique(par_f), wildcard) in
+        intFromRef(inc(par_f)))))
+  ensures (unfolding acc(IncCounterSpec_unique(par_f), wildcard) in
+      intFromRef(ret_2) == intFromRef(value(par_f)))
 
 
 method invoke(this: Ref) returns (ret_3: Ref)
@@ -788,26 +974,38 @@ method invoke(this: Ref) returns (ret_3: Ref)
   requires acc(IncCounterSpec_unique(this), write)
   ensures acc(IncCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
-  ensures intFromRef(value(this)) ==
-    old(intFromRef(value(this))) + old(intFromRef(inc(this)))
-  ensures intFromRef(inc(this)) == old(intFromRef(inc(this)))
-  ensures intFromRef(ret_3) == intFromRef(value(this))
-  ensures intFromRef(ret_3) > old(intFromRef(value(this)))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(value(this)))) +
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(inc(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_3) == intFromRef(value(this)))
+  ensures intFromRef(ret_3) >
+    old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this))))
 
 
 method makeCounter(step: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(step), intType())
   ensures isSubtype(typeOf(ret_1), IncCounterSpec())
   ensures acc(IncCounterSpec_unique(ret_1), write)
-  ensures intFromRef(value(ret_1)) == 0
-  ensures intFromRef(inc(ret_1)) ==
-    intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step))
+  ensures (unfolding acc(IncCounterSpec_unique(ret_1), wildcard) in
+      intFromRef(value(ret_1)) == 0)
+  ensures (unfolding acc(IncCounterSpec_unique(ret_1), wildcard) in
+      intFromRef(inc(ret_1)) ==
+      intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step)))
 
 
 /inc_counter_suite.kt: info: Generated Viper text for consumingClient:
 function inc(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(IncCounterSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -818,7 +1016,7 @@ function size(this: Ref): Ref
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(IncCounterSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -826,18 +1024,37 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate IncCounterSpec_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate Serializable_unique(this: Ref)
+predicate IncCounterSpec_footprint(this: Ref)
+
+predicate IncCounterSpec_unique(this: Ref) {
+  acc(IncCounterSpec_footprint(this), write) &&
+  isSubtype(typeOf(this), IncCounterSpec())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method applyTwice(f: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(f), IncCounterSpec())
   requires acc(IncCounterSpec_unique(f), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures intFromRef(ret_1) ==
-    old(intFromRef(value(f))) + 2 * old(intFromRef(inc(f)))
+    old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(value(f)))) +
+    2 *
+    old((unfolding acc(IncCounterSpec_unique(f), wildcard) in
+      intFromRef(inc(f))))
 
 
 method consumingClient(step: Ref) returns (v_ret_0: Ref)
@@ -862,9 +1079,11 @@ method makeCounter(step: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(step), intType())
   ensures isSubtype(typeOf(ret_2), IncCounterSpec())
   ensures acc(IncCounterSpec_unique(ret_2), write)
-  ensures intFromRef(value(ret_2)) == 0
-  ensures intFromRef(inc(ret_2)) ==
-    intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step))
+  ensures (unfolding acc(IncCounterSpec_unique(ret_2), wildcard) in
+      intFromRef(value(ret_2)) == 0)
+  ensures (unfolding acc(IncCounterSpec_unique(ret_2), wildcard) in
+      intFromRef(inc(ret_2)) ==
+      intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step)))
 
 
 /inc_counter_suite.kt: info: Generated Viper text for demandsMore:
@@ -888,13 +1107,13 @@ function Lambda0_f_value(this: Ref): Ref
 
 function c_IncCounterSpec_f_inc(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IncCounterSpec_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -903,15 +1122,24 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_IncCounterSpec_unique(this: Ref)
+predicate c_IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_IncCounterSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_value(this) == old(Lambda0_f_value(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)) ==
+    old(Lambda0_f_value(this))
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_inc(this) == old(Lambda0_f_inc(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)) ==
+    old(Lambda0_f_inc(this))
 
 
 method create(captureArg0: Ref) returns (ret_1: Ref)
@@ -960,13 +1188,13 @@ function Lambda0_f_value(this: Ref): Ref
 
 function c_IncCounterSpec_f_inc(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IncCounterSpec_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -975,25 +1203,38 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_IncCounterSpec_unique(this: Ref)
+predicate c_IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_IncCounterSpec_restore(this: Ref)
   requires acc(c_IncCounterSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_IncCounterSpec())) && true ==>
-    Lambda0_f_value(this) == old(c_IncCounterSpec_f_value(this))
+    Lambda0_f_value(this) ==
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)))
   ensures true && old(isSubtype(typeOf(this), c_IncCounterSpec())) && true ==>
-    Lambda0_f_inc(this) == old(c_IncCounterSpec_f_inc(this))
+    Lambda0_f_inc(this) ==
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)))
 
 
 method Lambda0_c_IncCounterSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_value(this) == old(Lambda0_f_value(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)) ==
+    old(Lambda0_f_value(this))
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_inc(this) == old(Lambda0_f_inc(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)) ==
+    old(Lambda0_f_inc(this))
 
 
 method Lambda0_invoke(this: Ref) returns (v_ret_3: Ref)
@@ -1040,14 +1281,21 @@ method f_invoke(this: Ref) returns (ret_2: Ref)
   requires acc(c_IncCounterSpec_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(c_IncCounterSpec_f_value(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_value(this))) +
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  ensures intFromRef(c_IncCounterSpec_f_inc(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  ensures intFromRef(ret_2) == intFromRef(c_IncCounterSpec_f_value(this))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_value(this)))) +
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(c_IncCounterSpec_f_value(this)))
   ensures intFromRef(ret_2) >
-    old(intFromRef(c_IncCounterSpec_f_value(this)))
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this))))
 
 
 method refines_f_invoke(this: Ref) returns (ret_2: Ref)
@@ -1060,14 +1308,21 @@ method refines_f_invoke(this: Ref) returns (ret_2: Ref)
   Lambda0_c_IncCounterSpec_upcast(this)
   assert acc(c_IncCounterSpec_unique(this), write)
   assert isSubtype(typeOf(ret_2), intType())
-  assert intFromRef(c_IncCounterSpec_f_value(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_value(this))) +
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  assert intFromRef(c_IncCounterSpec_f_inc(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  assert intFromRef(ret_2) == intFromRef(c_IncCounterSpec_f_value(this))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_value(this)))) +
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(c_IncCounterSpec_f_value(this)))
   assert intFromRef(ret_2) >
-    old(intFromRef(c_IncCounterSpec_f_value(this)))
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this))))
 }
 
 /inc_counter_suite.kt: info: Generated Viper text for deliversLess:
@@ -1091,13 +1346,13 @@ function Lambda0_f_value(this: Ref): Ref
 
 function c_IncCounterSpec_f_inc(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IncCounterSpec_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1106,15 +1361,24 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_IncCounterSpec_unique(this: Ref)
+predicate c_IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_IncCounterSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_value(this) == old(Lambda0_f_value(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)) ==
+    old(Lambda0_f_value(this))
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_inc(this) == old(Lambda0_f_inc(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)) ==
+    old(Lambda0_f_inc(this))
 
 
 method create(captureArg0: Ref) returns (ret_1: Ref)
@@ -1163,13 +1427,13 @@ function Lambda0_f_value(this: Ref): Ref
 
 function c_IncCounterSpec_f_inc(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IncCounterSpec_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IncCounterSpec())
-  requires acc(c_IncCounterSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1178,25 +1442,38 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_IncCounterSpec_unique(this: Ref)
+predicate c_IncCounterSpec_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_IncCounterSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_IncCounterSpec_restore(this: Ref)
   requires acc(c_IncCounterSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_IncCounterSpec())) && true ==>
-    Lambda0_f_value(this) == old(c_IncCounterSpec_f_value(this))
+    Lambda0_f_value(this) ==
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)))
   ensures true && old(isSubtype(typeOf(this), c_IncCounterSpec())) && true ==>
-    Lambda0_f_inc(this) == old(c_IncCounterSpec_f_inc(this))
+    Lambda0_f_inc(this) ==
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)))
 
 
 method Lambda0_c_IncCounterSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_value(this) == old(Lambda0_f_value(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_value(this)) ==
+    old(Lambda0_f_value(this))
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_IncCounterSpec_f_inc(this) == old(Lambda0_f_inc(this))
+    (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      c_IncCounterSpec_f_inc(this)) ==
+    old(Lambda0_f_inc(this))
 
 
 method Lambda0_invoke(this: Ref) returns (v_ret_3: Ref)
@@ -1237,14 +1514,21 @@ method f_invoke(this: Ref) returns (ret_2: Ref)
   requires acc(c_IncCounterSpec_unique(this), write)
   ensures acc(c_IncCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(c_IncCounterSpec_f_value(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_value(this))) +
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  ensures intFromRef(c_IncCounterSpec_f_inc(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  ensures intFromRef(ret_2) == intFromRef(c_IncCounterSpec_f_value(this))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_value(this)))) +
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  ensures (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(c_IncCounterSpec_f_value(this)))
   ensures intFromRef(ret_2) >
-    old(intFromRef(c_IncCounterSpec_f_value(this)))
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this))))
 
 
 method refines_f_invoke(this: Ref) returns (ret_2: Ref)
@@ -1257,20 +1541,27 @@ method refines_f_invoke(this: Ref) returns (ret_2: Ref)
   Lambda0_c_IncCounterSpec_upcast(this)
   assert acc(c_IncCounterSpec_unique(this), write)
   assert isSubtype(typeOf(ret_2), intType())
-  assert intFromRef(c_IncCounterSpec_f_value(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_value(this))) +
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  assert intFromRef(c_IncCounterSpec_f_inc(this)) ==
-    old(intFromRef(c_IncCounterSpec_f_inc(this)))
-  assert intFromRef(ret_2) == intFromRef(c_IncCounterSpec_f_value(this))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_value(this)))) +
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_inc(this)) ==
+      old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+        intFromRef(c_IncCounterSpec_f_inc(this)))))
+  assert (unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(c_IncCounterSpec_f_value(this)))
   assert intFromRef(ret_2) >
-    old(intFromRef(c_IncCounterSpec_f_value(this)))
+    old((unfolding acc(c_IncCounterSpec_unique(this), wildcard) in
+      intFromRef(c_IncCounterSpec_f_value(this))))
 }
 
 /inc_counter_suite.kt: info: Generated Viper text for exactIncrementAfterJoin:
 function inc(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(IncCounterSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1281,7 +1572,7 @@ function size(this: Ref): Ref
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), IncCounterSpec())
-  requires acc(IncCounterSpec_unique(this), wildcard)
+  requires acc(IncCounterSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1289,11 +1580,26 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate IncCounterSpec_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate Serializable_unique(this: Ref)
+predicate IncCounterSpec_footprint(this: Ref)
+
+predicate IncCounterSpec_unique(this: Ref) {
+  acc(IncCounterSpec_footprint(this), write) &&
+  isSubtype(typeOf(this), IncCounterSpec())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method exactIncrementAfterJoin(step: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(step), intType())
@@ -1313,17 +1619,29 @@ method invoke(this: Ref) returns (ret_2: Ref)
   requires acc(IncCounterSpec_unique(this), write)
   ensures acc(IncCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(value(this)) ==
-    old(intFromRef(value(this))) + old(intFromRef(inc(this)))
-  ensures intFromRef(inc(this)) == old(intFromRef(inc(this)))
-  ensures intFromRef(ret_2) == intFromRef(value(this))
-  ensures intFromRef(ret_2) > old(intFromRef(value(this)))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(value(this)))) +
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(inc(this)) ==
+      old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+        intFromRef(inc(this)))))
+  ensures (unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(value(this)))
+  ensures intFromRef(ret_2) >
+    old((unfolding acc(IncCounterSpec_unique(this), wildcard) in
+      intFromRef(value(this))))
 
 
 method makeCounter(step: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(step), intType())
   ensures isSubtype(typeOf(ret_1), IncCounterSpec())
   ensures acc(IncCounterSpec_unique(ret_1), write)
-  ensures intFromRef(value(ret_1)) == 0
-  ensures intFromRef(inc(ret_1)) ==
-    intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step))
+  ensures (unfolding acc(IncCounterSpec_unique(ret_1), wildcard) in
+      intFromRef(value(ret_1)) == 0)
+  ensures (unfolding acc(IncCounterSpec_unique(ret_1), wildcard) in
+      intFromRef(inc(ret_1)) ==
+      intFromRef((intFromRef(step) <= 0 ? intToRef(1) : step)))

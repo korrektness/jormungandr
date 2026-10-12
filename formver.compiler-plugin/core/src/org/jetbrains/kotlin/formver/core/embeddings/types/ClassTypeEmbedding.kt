@@ -33,7 +33,7 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
     val footprintPredicateName = ScopedName(name.asScope(), PredicateName("footprint"))
 
     context(ctx: TypeResolver)
-    fun footprintPredicate(): Predicate? = if (ctx.hasInterfaceLaws(this))
+    fun footprintPredicate(): Predicate? = if (ctx.isInterface(this))
         Predicate(footprintPredicateName, listOf(Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref)), body = null)
     else null
 
@@ -43,11 +43,9 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
         StringBuilderEmbedding.classType -> StringBuilderEmbedding.uniquePredicate()
         else -> if (ctx.isInterface(this)) {
             val receiver = Exp.LocalVar(DispatchReceiverName, Type.Ref)
-            val body = if (ctx.hasInterfaceLaws(this)) {
-                val footprint = Exp.PredicateAccess(footprintPredicateName, listOf(receiver), PermExp.FullPerm())
-                val subtype = RuntimeTypeDomain.isSubtype(RuntimeTypeDomain.typeOf(receiver), runtimeType)
-                ctx.interfaceLaws(this).fold<Exp, Exp>(Exp.And(footprint, subtype)) { acc, law -> Exp.And(acc, law) }
-            } else null
+            val footprint = Exp.PredicateAccess(footprintPredicateName, listOf(receiver), PermExp.FullPerm())
+            val subtype = RuntimeTypeDomain.isSubtype(RuntimeTypeDomain.typeOf(receiver), runtimeType)
+            val body = ctx.interfaceLaws(this).fold<Exp, Exp>(Exp.And(footprint, subtype)) { acc, law -> Exp.And(acc, law) }
             Predicate(uniquePredicateName, listOf(Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref)), body)
         } else userClassUniquePredicate()
     }

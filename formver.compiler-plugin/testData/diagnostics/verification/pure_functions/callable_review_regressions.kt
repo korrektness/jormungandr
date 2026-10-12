@@ -125,7 +125,7 @@ interface OrdinarySharedAcc {
     @Pure fun <!VIPER_TEXT!>total<!>(): Int
     fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int
     @SpecOf("invoke") fun invokeSpec(amount: Int) {
-        postconditions<Int> { r -> <!OWNERSHIP_NOT_ESTABLISHED!>total()<!> == old(total()) + amount && r == total() }
+        postconditions<Int> { r -> <!OWNERSHIP_NOT_ESTABLISHED, OWNERSHIP_NOT_ESTABLISHED!>total()<!> == old(total()) + amount && r == total() }
     }
 }
 
@@ -133,7 +133,7 @@ fun interface GhostSharedAcc {
     @GhostObserver @Pure fun <!VIPER_TEXT!>total<!>(): Int = ghostObserver()
     fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int
     @SpecOf("invoke") fun invokeSpec(amount: Int) {
-        postconditions<Int> { r -> <!OWNERSHIP_NOT_ESTABLISHED!>total()<!> == old(total()) + amount && r == total() }
+        postconditions<Int> { r -> <!OWNERSHIP_NOT_ESTABLISHED, OWNERSHIP_NOT_ESTABLISHED!>total()<!> == old(total()) + amount && r == total() }
     }
 }
 
@@ -154,12 +154,12 @@ fun <!VIPER_TEXT!>ghostSharedClient<!>(f: GhostSharedAcc) {
     -5
 }<!>
 
-<!OVERRIDE_NOT_REFINING, VIPER_TEXT!>class ReviewRefinementHolder<!> {
-    val action: @Unique ReviewAcc = ReviewAcc { amount ->
+<!VIPER_TEXT!>class ReviewRefinementHolder<!> {
+    val action: @Unique ReviewAcc = ReviewAcc <!OVERRIDE_NOT_REFINING!>{ amount ->
         exposes(ReviewAcc::class) { total() == 0 }
         postconditions<Int> { r -> r == -5 }
         -5
-    }
+    }<!>
 }
 
 fun interface ReviewRead {

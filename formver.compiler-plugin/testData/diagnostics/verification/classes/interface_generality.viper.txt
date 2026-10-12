@@ -773,7 +773,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate DetailedView_footprint(this: Ref)
 
@@ -787,7 +792,12 @@ predicate GeneralToken_unique(this: Ref) {
   isSubtype(typeOf(this), GeneralToken())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate c_TruthView_footprint(this: Ref)
 
@@ -815,7 +825,7 @@ method inheritedTruth(view: Ref) returns (v_ret_0: Ref)
 /interface_generality.kt: info: Generated Viper text for otherTruth:
 function other(this: Ref): Ref
   requires isSubtype(typeOf(this), OtherView())
-  requires acc(footprint(this), wildcard)
+  requires acc(OtherView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
 
 
@@ -828,16 +838,27 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate OtherView_footprint(this: Ref)
 
 predicate OtherView_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), OtherView()) &&
+  acc(OtherView_footprint(this), write) &&
+  isSubtype(typeOf(this), OtherView()) &&
   boolFromRef(other(this))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate footprint(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method otherTruth(view: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(view), OtherView())
@@ -944,7 +965,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate GeneralCell_unique(this: Ref) {
   isSubtype(typeOf(this), GeneralCell()) && acc(this.bf_enabled, write) &&
@@ -958,7 +984,12 @@ predicate GeneralToken_unique(this: Ref) {
   isSubtype(typeOf(this), GeneralToken())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate c_DetailedView_footprint(this: Ref)
 
@@ -1212,7 +1243,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate GeneralCell_unique(this: Ref) {
   isSubtype(typeOf(this), GeneralCell()) && acc(this.bf_enabled, write) &&
@@ -1234,7 +1270,12 @@ predicate OtherView_unique(this: Ref) {
   boolFromRef(OtherView_f_other(this))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate c_DetailedView_footprint(this: Ref)
 
@@ -1939,7 +1980,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate DetailedView_footprint(this: Ref)
 
@@ -1957,7 +2003,12 @@ predicate InvariantBuilder_unique(this: Ref) {
   isSubtype(typeOf(this), InvariantBuilder())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate ViewHolder_unique(this: Ref) {
   isSubtype(typeOf(this), ViewHolder()) && acc(this.bf_view, write) &&
@@ -2128,7 +2179,12 @@ predicate GeneralToken_unique(this: Ref) {
   isSubtype(typeOf(this), GeneralToken())
 }
 
-predicate ViewConsumer_unique(this: Ref)
+predicate ViewConsumer_footprint(this: Ref)
+
+predicate ViewConsumer_unique(this: Ref) {
+  acc(ViewConsumer_footprint(this), write) &&
+  isSubtype(typeOf(this), ViewConsumer())
+}
 
 predicate c_TruthView_footprint(this: Ref)
 
@@ -2212,7 +2268,12 @@ predicate c_TruthView_unique(this: Ref) {
   boolFromRef(c_TruthView_f_truth(this))
 }
 
-predicate c_ViewConsumer_unique(this: Ref)
+predicate c_ViewConsumer_footprint(this: Ref)
+
+predicate c_ViewConsumer_unique(this: Ref) {
+  acc(c_ViewConsumer_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ViewConsumer())
+}
 
 method HonestConsumer_c_ViewConsumer_restore(this: Ref)
   requires acc(c_ViewConsumer_unique(this), write)
@@ -2346,7 +2407,12 @@ predicate c_TruthView_unique(this: Ref) {
   boolFromRef(c_TruthView_f_truth(this))
 }
 
-predicate c_ViewConsumer_unique(this: Ref)
+predicate c_ViewConsumer_footprint(this: Ref)
+
+predicate c_ViewConsumer_unique(this: Ref) {
+  acc(c_ViewConsumer_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ViewConsumer())
+}
 
 method DishonestConsumer_c_ViewConsumer_restore(this: Ref)
   requires acc(c_ViewConsumer_unique(this), write)
@@ -2463,7 +2529,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate DetailedView_footprint(this: Ref)
 
@@ -2477,9 +2548,19 @@ predicate GeneralToken_unique(this: Ref) {
   isSubtype(typeOf(this), GeneralToken())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate ViewConsumer_unique(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate ViewConsumer_footprint(this: Ref)
+
+predicate ViewConsumer_unique(this: Ref) {
+  acc(ViewConsumer_footprint(this), write) &&
+  isSubtype(typeOf(this), ViewConsumer())
+}
 
 predicate c_TruthView_footprint(this: Ref)
 
@@ -2568,11 +2649,15 @@ predicate BoolNode_unique(this: Ref) {
 /interface_generality.kt: info: Generated Viper text for all:
 function all(this: Ref): Ref
   requires isSubtype(typeOf(this), ChainView())
-  requires acc(ChainView_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
 
 
-predicate ChainView_unique(this: Ref)
+predicate ChainView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ChainView())
+}
+
+predicate footprint(this: Ref)
 
 /interface_generality.kt: info: Generated Viper text for all:
 field flag: Ref
@@ -2594,7 +2679,7 @@ function BoolChain_f_all(this: Ref): Ref
 
 function ChainView_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), ChainView())
-  requires acc(ChainView_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
 
 
@@ -2628,7 +2713,11 @@ predicate BoolNode_unique(this: Ref) {
   (this.next != nullValue() ==> acc(BoolNode_unique(this.next), write))
 }
 
-predicate ChainView_unique(this: Ref)
+predicate ChainView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ChainView())
+}
+
+predicate footprint(this: Ref)
 
 /interface_generality.kt: info: Generated Viper text for recursiveView:
 field bf_head: Ref
@@ -2666,7 +2755,7 @@ function allTrue(node: Ref): Ref
 
 function c_ChainView_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ChainView())
-  requires acc(c_ChainView_unique(this), wildcard)
+  requires acc(c_ChainView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
 
 
@@ -2694,17 +2783,34 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_ChainView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_ChainView_footprint(this: Ref)
+
+predicate c_ChainView_unique(this: Ref) {
+  acc(c_ChainView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ChainView())
+}
 
 method BoolChain_c_ChainView_upcast(this: Ref)
   requires acc(BoolChain_unique(this), write)
   ensures acc(c_ChainView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BoolChain())) && true ==>
-    c_ChainView_f_all(this) == old(BoolChain_f_all(this))
+    (unfolding acc(c_ChainView_unique(this), wildcard) in
+      c_ChainView_f_all(this)) ==
+    old(BoolChain_f_all(this))
 
 
 method con(par_head: Ref) returns (ret_1: Ref)
@@ -2733,7 +2839,8 @@ method recursiveView(par_head: Ref) returns (v_ret_0: Ref)
   before := anon_6
   view := chain
   BoolChain_c_ChainView_upcast(view)
-  anon_7 := c_ChainView_f_all(view)
+  anon_7 := (unfolding acc(c_ChainView_unique(view), wildcard) in
+      c_ChainView_f_all(view))
   assert boolFromRef(anon_7) == boolFromRef(before)
   refute false
   label lbl_ret_0
@@ -2776,7 +2883,7 @@ function allTrue(node: Ref): Ref
 
 function c_ChainView_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ChainView())
-  requires acc(c_ChainView_unique(this), wildcard)
+  requires acc(c_ChainView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
 
 
@@ -2805,17 +2912,34 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_ChainView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_ChainView_footprint(this: Ref)
+
+predicate c_ChainView_unique(this: Ref) {
+  acc(c_ChainView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ChainView())
+}
 
 method BoolChain_c_ChainView_upcast(this: Ref)
   requires acc(BoolChain_unique(this), write)
   ensures acc(c_ChainView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BoolChain())) && true ==>
-    c_ChainView_f_all(this) == old(BoolChain_f_all(this))
+    (unfolding acc(c_ChainView_unique(this), wildcard) in
+      c_ChainView_f_all(this)) ==
+    old(BoolChain_f_all(this))
 
 
 method con_BoolChain(par_head: Ref) returns (ret_2: Ref)
@@ -2855,7 +2979,8 @@ method recursiveConcreteView() returns (v_ret_0: Ref)
   fold acc(BoolChain_unique(chain), write)
   view := chain
   BoolChain_c_ChainView_upcast(view)
-  anon_6 := c_ChainView_f_all(view)
+  anon_6 := (unfolding acc(c_ChainView_unique(view), wildcard) in
+      c_ChainView_f_all(view))
   assert !boolFromRef(anon_6)
   refute false
   label lbl_ret_0
@@ -2899,7 +3024,7 @@ function allTrue(par_node: Ref): Ref
 
 function c_ChainView_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ChainView())
-  requires acc(c_ChainView_unique(this), wildcard)
+  requires acc(c_ChainView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
 
 
@@ -2928,17 +3053,34 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_ChainView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_ChainView_footprint(this: Ref)
+
+predicate c_ChainView_unique(this: Ref) {
+  acc(c_ChainView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ChainView())
+}
 
 method BoolChain_c_ChainView_upcast(this: Ref)
   requires acc(BoolChain_unique(this), write)
   ensures acc(c_ChainView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BoolChain())) && true ==>
-    c_ChainView_f_all(this) == old(BoolChain_f_all(this))
+    (unfolding acc(c_ChainView_unique(this), wildcard) in
+      c_ChainView_f_all(this)) ==
+    old(BoolChain_f_all(this))
 
 
 method con_BoolChain(par_head: Ref) returns (ret_2: Ref)
@@ -2975,7 +3117,8 @@ method recursiveFalseClaim() returns (v_ret_0: Ref)
   fold acc(BoolChain_unique(chain), write)
   view := chain
   BoolChain_c_ChainView_upcast(view)
-  anon_6 := c_ChainView_f_all(view)
+  anon_6 := (unfolding acc(c_ChainView_unique(view), wildcard) in
+      c_ChainView_f_all(view))
   assert boolFromRef(anon_6)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())

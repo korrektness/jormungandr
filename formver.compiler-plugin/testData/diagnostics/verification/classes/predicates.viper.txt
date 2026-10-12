@@ -74,17 +74,46 @@ method threeLayersHierarchy(c: Ref) returns (v_ret_0: Ref)
 /predicates.kt: info: Generated Viper text for listHierarchy:
 field size: Ref
 
-predicate Collection_unique(this: Ref)
+predicate Collection_footprint(this: Ref)
 
-predicate Iterable_unique(this: Ref)
+predicate Collection_unique(this: Ref) {
+  acc(Collection_footprint(this), write) &&
+  isSubtype(typeOf(this), Collection())
+}
 
-predicate List_unique(this: Ref)
+predicate Iterable_footprint(this: Ref)
 
-predicate MutableCollection_unique(this: Ref)
+predicate Iterable_unique(this: Ref) {
+  acc(Iterable_footprint(this), write) &&
+  isSubtype(typeOf(this), Iterable())
+}
 
-predicate MutableIterable_unique(this: Ref)
+predicate List_footprint(this: Ref)
 
-predicate MutableList_unique(this: Ref)
+predicate List_unique(this: Ref) {
+  acc(List_footprint(this), write) && isSubtype(typeOf(this), List())
+}
+
+predicate MutableCollection_footprint(this: Ref)
+
+predicate MutableCollection_unique(this: Ref) {
+  acc(MutableCollection_footprint(this), write) &&
+  isSubtype(typeOf(this), MutableCollection())
+}
+
+predicate MutableIterable_footprint(this: Ref)
+
+predicate MutableIterable_unique(this: Ref) {
+  acc(MutableIterable_footprint(this), write) &&
+  isSubtype(typeOf(this), MutableIterable())
+}
+
+predicate MutableList_footprint(this: Ref)
+
+predicate MutableList_unique(this: Ref) {
+  acc(MutableList_footprint(this), write) &&
+  isSubtype(typeOf(this), MutableList())
+}
 
 method listHierarchy(xs: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(xs), MutableList())

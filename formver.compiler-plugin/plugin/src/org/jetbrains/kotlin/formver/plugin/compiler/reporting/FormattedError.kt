@@ -13,9 +13,12 @@ import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.SourceRoleConditionPrettyPrinter.prettyPrint
+import org.jetbrains.kotlin.formver.viper.ast.Position
 import org.jetbrains.kotlin.formver.viper.ast.info
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
+import org.jetbrains.kotlin.formver.viper.errors.VerifierError
+import viper.silver.verifier.reasons
 
 sealed interface FormattedError {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -174,6 +177,7 @@ fun VerificationError.formatUserFriendly(): FormattedError? =
         is SourceRole.SubListCreation -> InvalidSubListRangeError(this, sourceRole)
         is SourceRole.Ownership -> OwnershipError(sourceRole)
         is SourceRole.OverrideRefinement -> OverrideRefinementError(sourceRole)
+        is SourceRole.ObserverAccess -> OwnershipError(SourceRole.Ownership("the observer receiver", SourceRole.Ownership.Site.Unfold))
         else -> null
     }
 
@@ -189,10 +193,18 @@ private fun VerificationError.lookupSourceRole(): SourceRole? {
      * As an example, `PreconditionInCallFalse` errors have as offending node result the call-site of the called method.
      * But the actual info we are interested in is on the pre-condition, contained in the reason's offending node.
      */
-    return when (val locationNodeRole = locationNode.getInfoOrNull<SourceRole>()) {
-        null -> unverifiableProposition.getInfoOrNull<SourceRole>()
-        else -> locationNodeRole
+    fun applicable(role: SourceRole?): SourceRole? = role.takeUnless {
+        it is SourceRole.ObserverAccess && result.reason() !is reasons.InsufficientPermission
     }
+    return applicable(locationNode.getInfoOrNull<SourceRole>())
+        ?: applicable(unverifiableProposition.getInfoOrNull<SourceRole>())
+}
+
+/** Generated checks retain their source obligation when a transformed expression supplies the failing node. */
+fun VerifierError.reportingPosition(): Position = when (val role = (this as? VerificationError)?.lookupSourceRole()) {
+    is SourceRole.OverrideRefinement -> role.position
+    is SourceRole.ObserverAccess -> role.position
+    else -> position
 }
 
 private fun SourceRole.FirSymbolHolder?.formatListMessage(): String = when (this) {

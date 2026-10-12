@@ -1,50 +1,62 @@
 /observer_contracts.kt: info: Generated Viper text for size:
 function get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 /observer_contracts.kt: info: Generated Viper text for get:
 function get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 /observer_contracts.kt: info: Generated Viper text for add:
 function get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method add(this: Ref, value: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), ObservedList())
@@ -52,25 +64,36 @@ method add(this: Ref, value: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(value), intType())
   ensures acc(ObservedList_unique(this), write)
   ensures isSubtype(typeOf(ret), unitType())
-  ensures intFromRef(size(this)) == old(intFromRef(size(this))) + 1
-  ensures intFromRef(get(this, old(size(this)))) == intFromRef(value)
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(size(this))) ==
+    old((unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(size(this)))) +
+    1
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(get(this, old((unfolding acc(ObservedList_unique(this), wildcard) in
+        size(this))))) ==
+      intFromRef(value))
 
 
 /observer_contracts.kt: info: Generated Viper text for set:
 function get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method set(this: Ref, index: Ref, value: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), ObservedList())
@@ -78,44 +101,66 @@ method set(this: Ref, index: Ref, value: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(index), intType())
   requires isSubtype(typeOf(value), intType())
   requires intFromRef(index) >= 0
-  requires intFromRef(index) < intFromRef(size(this))
+  requires (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(index) < intFromRef(size(this)))
   ensures acc(ObservedList_unique(this), write)
   ensures isSubtype(typeOf(ret), unitType())
-  ensures intFromRef(size(this)) == old(intFromRef(size(this)))
-  ensures intFromRef(get(this, index)) == intFromRef(value)
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(size(this))) ==
+    old((unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(size(this))))
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(get(this, index)) == intFromRef(value))
 
 
 /observer_contracts.kt: info: Generated Viper text for addFrom:
 function get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method addFrom(this: Ref, source: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), ObservedList())
   requires acc(ObservedList_unique(this), write)
   requires isSubtype(typeOf(source), ObservedList())
   requires acc(ObservedList_unique(source), write)
-  requires intFromRef(size(source)) > 0
+  requires (unfolding acc(ObservedList_unique(source), wildcard) in
+      intFromRef(size(source)) > 0)
   ensures acc(ObservedList_unique(this), write)
   ensures acc(ObservedList_unique(source), write)
   ensures isSubtype(typeOf(ret), unitType())
-  ensures intFromRef(size(this)) == old(intFromRef(size(this))) + 1
-  ensures intFromRef(get(this, old(size(this)))) ==
-    old(intFromRef(get(source, intToRef(0))))
-  ensures intFromRef(size(source)) == old(intFromRef(size(source)))
-  ensures intFromRef(get(source, intToRef(0))) ==
-    old(intFromRef(get(source, intToRef(0))))
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(size(this))) ==
+    old((unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(size(this)))) +
+    1
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(get(this, old((unfolding acc(ObservedList_unique(this), wildcard) in
+        size(this))))) ==
+      old((unfolding acc(ObservedList_unique(source), wildcard) in
+        intFromRef(get(source, intToRef(0))))))
+  ensures (unfolding acc(ObservedList_unique(source), wildcard) in
+      intFromRef(size(source))) ==
+    old((unfolding acc(ObservedList_unique(source), wildcard) in
+      intFromRef(size(source))))
+  ensures (unfolding acc(ObservedList_unique(source), wildcard) in
+      intFromRef(get(source, intToRef(0)))) ==
+    old((unfolding acc(ObservedList_unique(source), wildcard) in
+      intFromRef(get(source, intToRef(0)))))
 
 
 /observer_contracts.kt: info: Generated Viper text for addFrom:
@@ -142,14 +187,14 @@ function ObservedCell_f_size(this: Ref): Ref
 
 function c_ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -160,32 +205,42 @@ predicate ObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate c_ObservedList_unique(this: Ref)
+predicate c_ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method ObservedCell_c_ObservedList_restore(this: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(this), ObservedCell())
   ensures acc(ObservedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_ObservedList())) && true ==>
-    ObservedCell_f_size(this) == old(c_ObservedList_f_size(this))
+    ObservedCell_f_size(this) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)))
   ensures (forall index: Ref ::
       { ObservedCell_f_get(this, index) }
       true && old(isSubtype(typeOf(this), c_ObservedList())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
       ObservedCell_f_get(this, index) ==
-      old(c_ObservedList_f_get(this, index)))
+      old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index))))
 
 
 method ObservedCell_c_ObservedList_upcast(this: Ref)
   requires acc(ObservedCell_unique(this), write)
   ensures acc(c_ObservedList_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), ObservedCell())) && true ==>
-    c_ObservedList_f_size(this) == old(ObservedCell_f_size(this))
+    (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)) ==
+    old(ObservedCell_f_size(this))
   ensures (forall index: Ref ::
       { c_ObservedList_f_get(this, index) }
       true && old(isSubtype(typeOf(this), ObservedCell())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
-      c_ObservedList_f_get(this, index) ==
+      (unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index)) ==
       old(ObservedCell_f_get(this, index)))
 
 
@@ -195,22 +250,29 @@ method ObservedCell_f_addFrom(this: Ref, source: Ref)
   requires acc(ObservedCell_unique(this), write)
   requires isSubtype(typeOf(source), c_ObservedList())
   requires acc(c_ObservedList_unique(source), write)
-  requires intFromRef(c_ObservedList_f_size(source)) > 0
+  requires (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source)) > 0)
   ensures acc(ObservedCell_unique(this), write)
   ensures acc(c_ObservedList_unique(source), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(ObservedCell_f_size(this)) ==
     old(intFromRef(ObservedCell_f_size(this))) + 1
   ensures intFromRef(ObservedCell_f_get(this, old(ObservedCell_f_size(this)))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
-  ensures intFromRef(c_ObservedList_f_size(source)) ==
-    old(intFromRef(c_ObservedList_f_size(source)))
-  ensures intFromRef(c_ObservedList_f_get(source, intToRef(0))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))))
+  ensures (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))))
+  ensures (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))))
 {
   var anon_3: Ref
   var anon_0: Ref
-  anon_3 := c_ObservedList_f_get(source, intToRef(0))
+  anon_3 := (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      c_ObservedList_f_get(source, intToRef(0)))
   unfold acc(ObservedCell_unique(this), write)
   this.item := anon_3
   anon_0 := this.count
@@ -226,18 +288,29 @@ method c_ObservedList_f_addFrom(this: Ref, source: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(source), c_ObservedList())
   requires acc(c_ObservedList_unique(source), write)
-  requires intFromRef(c_ObservedList_f_size(source)) > 0
+  requires (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source)) > 0)
   ensures acc(c_ObservedList_unique(this), write)
   ensures acc(c_ObservedList_unique(source), write)
   ensures isSubtype(typeOf(ret_1), unitType())
-  ensures intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this))) + 1
-  ensures intFromRef(c_ObservedList_f_get(this, old(c_ObservedList_f_size(this)))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
-  ensures intFromRef(c_ObservedList_f_size(source)) ==
-    old(intFromRef(c_ObservedList_f_size(source)))
-  ensures intFromRef(c_ObservedList_f_get(source, intToRef(0))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this)))) +
+    1
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_size(this))))) ==
+      old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+        intFromRef(c_ObservedList_f_get(source, intToRef(0))))))
+  ensures (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))))
+  ensures (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))))
 
 
 method refines_c_ObservedList_f_addFrom(this: Ref, source: Ref)
@@ -246,7 +319,8 @@ method refines_c_ObservedList_f_addFrom(this: Ref, source: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(source), c_ObservedList())
   requires acc(c_ObservedList_unique(source), write)
-  requires intFromRef(c_ObservedList_f_size(source)) > 0
+  requires (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source)) > 0)
   requires isSubtype(typeOf(this), ObservedCell())
 {
   ObservedCell_c_ObservedList_restore(this)
@@ -255,14 +329,24 @@ method refines_c_ObservedList_f_addFrom(this: Ref, source: Ref)
   assert acc(c_ObservedList_unique(this), write)
   assert acc(c_ObservedList_unique(source), write)
   assert isSubtype(typeOf(ret_1), unitType())
-  assert intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this))) + 1
-  assert intFromRef(c_ObservedList_f_get(this, old(c_ObservedList_f_size(this)))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
-  assert intFromRef(c_ObservedList_f_size(source)) ==
-    old(intFromRef(c_ObservedList_f_size(source)))
-  assert intFromRef(c_ObservedList_f_get(source, intToRef(0))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this)))) +
+    1
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_size(this))))) ==
+      old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+        intFromRef(c_ObservedList_f_get(source, intToRef(0))))))
+  assert (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))))
+  assert (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))))
 }
 
 /observer_contracts.kt: info: Generated Viper text for size:
@@ -289,14 +373,14 @@ function ObservedCell_f_size(this: Ref): Ref
 
 function ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -307,7 +391,11 @@ predicate ObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 /observer_contracts.kt: info: Generated Viper text for get:
 field count: Ref
@@ -333,14 +421,14 @@ function ObservedCell_f_size(this: Ref): Ref
 
 function ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -351,7 +439,11 @@ predicate ObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 /observer_contracts.kt: info: Generated Viper text for add:
 field count: Ref
@@ -377,14 +469,14 @@ function ObservedCell_f_size(this: Ref): Ref
 
 function c_ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -395,32 +487,42 @@ predicate ObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate c_ObservedList_unique(this: Ref)
+predicate c_ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method ObservedCell_c_ObservedList_restore(this: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(this), ObservedCell())
   ensures acc(ObservedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_ObservedList())) && true ==>
-    ObservedCell_f_size(this) == old(c_ObservedList_f_size(this))
+    ObservedCell_f_size(this) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)))
   ensures (forall index: Ref ::
       { ObservedCell_f_get(this, index) }
       true && old(isSubtype(typeOf(this), c_ObservedList())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
       ObservedCell_f_get(this, index) ==
-      old(c_ObservedList_f_get(this, index)))
+      old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index))))
 
 
 method ObservedCell_c_ObservedList_upcast(this: Ref)
   requires acc(ObservedCell_unique(this), write)
   ensures acc(c_ObservedList_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), ObservedCell())) && true ==>
-    c_ObservedList_f_size(this) == old(ObservedCell_f_size(this))
+    (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)) ==
+    old(ObservedCell_f_size(this))
   ensures (forall index: Ref ::
       { c_ObservedList_f_get(this, index) }
       true && old(isSubtype(typeOf(this), ObservedCell())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
-      c_ObservedList_f_get(this, index) ==
+      (unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index)) ==
       old(ObservedCell_f_get(this, index)))
 
 
@@ -460,10 +562,15 @@ method c_ObservedList_f_add(this: Ref, value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), intType())
   ensures acc(c_ObservedList_unique(this), write)
   ensures isSubtype(typeOf(ret_2), unitType())
-  ensures intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this))) + 1
-  ensures intFromRef(c_ObservedList_f_get(this, old(c_ObservedList_f_size(this)))) ==
-    intFromRef(value)
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this)))) +
+    1
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_size(this))))) ==
+      intFromRef(value))
 
 
 method refines_c_ObservedList_f_add(this: Ref, value: Ref)
@@ -478,10 +585,15 @@ method refines_c_ObservedList_f_add(this: Ref, value: Ref)
   ObservedCell_c_ObservedList_upcast(this)
   assert acc(c_ObservedList_unique(this), write)
   assert isSubtype(typeOf(ret_2), unitType())
-  assert intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this))) + 1
-  assert intFromRef(c_ObservedList_f_get(this, old(c_ObservedList_f_size(this)))) ==
-    intFromRef(value)
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this)))) +
+    1
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_size(this))))) ==
+      intFromRef(value))
 }
 
 /observer_contracts.kt: info: Generated Viper text for set:
@@ -508,14 +620,14 @@ function ObservedCell_f_size(this: Ref): Ref
 
 function c_ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -526,32 +638,42 @@ predicate ObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate c_ObservedList_unique(this: Ref)
+predicate c_ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method ObservedCell_c_ObservedList_restore(this: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(this), ObservedCell())
   ensures acc(ObservedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_ObservedList())) && true ==>
-    ObservedCell_f_size(this) == old(c_ObservedList_f_size(this))
+    ObservedCell_f_size(this) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)))
   ensures (forall index: Ref ::
       { ObservedCell_f_get(this, index) }
       true && old(isSubtype(typeOf(this), c_ObservedList())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
       ObservedCell_f_get(this, index) ==
-      old(c_ObservedList_f_get(this, index)))
+      old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index))))
 
 
 method ObservedCell_c_ObservedList_upcast(this: Ref)
   requires acc(ObservedCell_unique(this), write)
   ensures acc(c_ObservedList_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), ObservedCell())) && true ==>
-    c_ObservedList_f_size(this) == old(ObservedCell_f_size(this))
+    (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)) ==
+    old(ObservedCell_f_size(this))
   ensures (forall index: Ref ::
       { c_ObservedList_f_get(this, index) }
       true && old(isSubtype(typeOf(this), ObservedCell())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
-      c_ObservedList_f_get(this, index) ==
+      (unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index)) ==
       old(ObservedCell_f_get(this, index)))
 
 
@@ -583,13 +705,16 @@ method c_ObservedList_f_set(this: Ref, index: Ref, value: Ref)
   requires isSubtype(typeOf(index), intType())
   requires isSubtype(typeOf(value), intType())
   requires intFromRef(index) >= 0
-  requires intFromRef(index) < intFromRef(c_ObservedList_f_size(this))
+  requires (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(index) < intFromRef(c_ObservedList_f_size(this)))
   ensures acc(c_ObservedList_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
-  ensures intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this)))
-  ensures intFromRef(c_ObservedList_f_get(this, index)) ==
-    intFromRef(value)
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))))
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, index)) == intFromRef(value))
 
 
 method refines_c_ObservedList_f_set(this: Ref, index: Ref, value: Ref)
@@ -599,7 +724,8 @@ method refines_c_ObservedList_f_set(this: Ref, index: Ref, value: Ref)
   requires isSubtype(typeOf(index), intType())
   requires isSubtype(typeOf(value), intType())
   requires intFromRef(index) >= 0
-  requires intFromRef(index) < intFromRef(c_ObservedList_f_size(this))
+  requires (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(index) < intFromRef(c_ObservedList_f_size(this)))
   requires isSubtype(typeOf(this), ObservedCell())
 {
   ObservedCell_c_ObservedList_restore(this)
@@ -607,9 +733,12 @@ method refines_c_ObservedList_f_set(this: Ref, index: Ref, value: Ref)
   ObservedCell_c_ObservedList_upcast(this)
   assert acc(c_ObservedList_unique(this), write)
   assert isSubtype(typeOf(ret_1), unitType())
-  assert intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this)))
-  assert intFromRef(c_ObservedList_f_get(this, index)) == intFromRef(value)
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))))
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, index)) == intFromRef(value))
 }
 
 /observer_contracts.kt: info: Generated Viper text for addFrom:
@@ -636,14 +765,14 @@ function BrokenObservedCell_f_size(this: Ref): Ref
 
 function c_ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -654,20 +783,27 @@ predicate BrokenObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate c_ObservedList_unique(this: Ref)
+predicate c_ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method BrokenObservedCell_c_ObservedList_restore(this: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(this), BrokenObservedCell())
   ensures acc(BrokenObservedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_ObservedList())) && true ==>
-    BrokenObservedCell_f_size(this) == old(c_ObservedList_f_size(this))
+    BrokenObservedCell_f_size(this) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)))
   ensures (forall index: Ref ::
       { BrokenObservedCell_f_get(this, index) }
       true && old(isSubtype(typeOf(this), c_ObservedList())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
       BrokenObservedCell_f_get(this, index) ==
-      old(c_ObservedList_f_get(this, index)))
+      old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index))))
 
 
 method BrokenObservedCell_c_ObservedList_upcast(this: Ref)
@@ -675,12 +811,15 @@ method BrokenObservedCell_c_ObservedList_upcast(this: Ref)
   ensures acc(c_ObservedList_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BrokenObservedCell())) &&
     true ==>
-    c_ObservedList_f_size(this) == old(BrokenObservedCell_f_size(this))
+    (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)) ==
+    old(BrokenObservedCell_f_size(this))
   ensures (forall index: Ref ::
       { c_ObservedList_f_get(this, index) }
       true && old(isSubtype(typeOf(this), BrokenObservedCell())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
-      c_ObservedList_f_get(this, index) ==
+      (unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index)) ==
       old(BrokenObservedCell_f_get(this, index)))
 
 
@@ -690,22 +829,29 @@ method BrokenObservedCell_f_addFrom(this: Ref, source: Ref)
   requires acc(BrokenObservedCell_unique(this), write)
   requires isSubtype(typeOf(source), c_ObservedList())
   requires acc(c_ObservedList_unique(source), write)
-  requires intFromRef(c_ObservedList_f_size(source)) > 0
+  requires (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source)) > 0)
   ensures acc(BrokenObservedCell_unique(this), write)
   ensures acc(c_ObservedList_unique(source), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(BrokenObservedCell_f_size(this)) ==
     old(intFromRef(BrokenObservedCell_f_size(this))) + 1
   ensures intFromRef(BrokenObservedCell_f_get(this, old(BrokenObservedCell_f_size(this)))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
-  ensures intFromRef(c_ObservedList_f_size(source)) ==
-    old(intFromRef(c_ObservedList_f_size(source)))
-  ensures intFromRef(c_ObservedList_f_get(source, intToRef(0))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))))
+  ensures (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))))
+  ensures (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))))
 {
   var anon_3: Ref
   var anon_0: Ref
-  anon_3 := c_ObservedList_f_get(source, intToRef(0))
+  anon_3 := (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      c_ObservedList_f_get(source, intToRef(0)))
   unfold acc(BrokenObservedCell_unique(this), write)
   this.item := anon_3
   anon_0 := this.count
@@ -721,18 +867,29 @@ method c_ObservedList_f_addFrom(this: Ref, source: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(source), c_ObservedList())
   requires acc(c_ObservedList_unique(source), write)
-  requires intFromRef(c_ObservedList_f_size(source)) > 0
+  requires (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source)) > 0)
   ensures acc(c_ObservedList_unique(this), write)
   ensures acc(c_ObservedList_unique(source), write)
   ensures isSubtype(typeOf(ret_1), unitType())
-  ensures intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this))) + 1
-  ensures intFromRef(c_ObservedList_f_get(this, old(c_ObservedList_f_size(this)))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
-  ensures intFromRef(c_ObservedList_f_size(source)) ==
-    old(intFromRef(c_ObservedList_f_size(source)))
-  ensures intFromRef(c_ObservedList_f_get(source, intToRef(0))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this)))) +
+    1
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_size(this))))) ==
+      old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+        intFromRef(c_ObservedList_f_get(source, intToRef(0))))))
+  ensures (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))))
+  ensures (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))))
 
 
 method refines_c_ObservedList_f_addFrom(this: Ref, source: Ref)
@@ -741,7 +898,8 @@ method refines_c_ObservedList_f_addFrom(this: Ref, source: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(source), c_ObservedList())
   requires acc(c_ObservedList_unique(source), write)
-  requires intFromRef(c_ObservedList_f_size(source)) > 0
+  requires (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source)) > 0)
   requires isSubtype(typeOf(this), BrokenObservedCell())
 {
   BrokenObservedCell_c_ObservedList_restore(this)
@@ -750,14 +908,24 @@ method refines_c_ObservedList_f_addFrom(this: Ref, source: Ref)
   assert acc(c_ObservedList_unique(this), write)
   assert acc(c_ObservedList_unique(source), write)
   assert isSubtype(typeOf(ret_1), unitType())
-  assert intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this))) + 1
-  assert intFromRef(c_ObservedList_f_get(this, old(c_ObservedList_f_size(this)))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
-  assert intFromRef(c_ObservedList_f_size(source)) ==
-    old(intFromRef(c_ObservedList_f_size(source)))
-  assert intFromRef(c_ObservedList_f_get(source, intToRef(0))) ==
-    old(intFromRef(c_ObservedList_f_get(source, intToRef(0))))
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this)))) +
+    1
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_size(this))))) ==
+      old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+        intFromRef(c_ObservedList_f_get(source, intToRef(0))))))
+  assert (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_size(source))))
+  assert (unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))) ==
+    old((unfolding acc(c_ObservedList_unique(source), wildcard) in
+      intFromRef(c_ObservedList_f_get(source, intToRef(0)))))
 }
 
 /observer_contracts.kt: info: Generated Viper text for size:
@@ -784,14 +952,14 @@ function BrokenObservedCell_f_size(this: Ref): Ref
 
 function ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -802,7 +970,11 @@ predicate BrokenObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 /observer_contracts.kt: info: Generated Viper text for get:
 field count: Ref
@@ -828,14 +1000,14 @@ function BrokenObservedCell_f_size(this: Ref): Ref
 
 function ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -846,7 +1018,11 @@ predicate BrokenObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 /observer_contracts.kt: info: Generated Viper text for add:
 field count: Ref
@@ -872,14 +1048,14 @@ function BrokenObservedCell_f_size(this: Ref): Ref
 
 function c_ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -890,20 +1066,27 @@ predicate BrokenObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate c_ObservedList_unique(this: Ref)
+predicate c_ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method BrokenObservedCell_c_ObservedList_restore(this: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(this), BrokenObservedCell())
   ensures acc(BrokenObservedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_ObservedList())) && true ==>
-    BrokenObservedCell_f_size(this) == old(c_ObservedList_f_size(this))
+    BrokenObservedCell_f_size(this) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)))
   ensures (forall index: Ref ::
       { BrokenObservedCell_f_get(this, index) }
       true && old(isSubtype(typeOf(this), c_ObservedList())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
       BrokenObservedCell_f_get(this, index) ==
-      old(c_ObservedList_f_get(this, index)))
+      old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index))))
 
 
 method BrokenObservedCell_c_ObservedList_upcast(this: Ref)
@@ -911,12 +1094,15 @@ method BrokenObservedCell_c_ObservedList_upcast(this: Ref)
   ensures acc(c_ObservedList_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BrokenObservedCell())) &&
     true ==>
-    c_ObservedList_f_size(this) == old(BrokenObservedCell_f_size(this))
+    (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)) ==
+    old(BrokenObservedCell_f_size(this))
   ensures (forall index: Ref ::
       { c_ObservedList_f_get(this, index) }
       true && old(isSubtype(typeOf(this), BrokenObservedCell())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
-      c_ObservedList_f_get(this, index) ==
+      (unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index)) ==
       old(BrokenObservedCell_f_get(this, index)))
 
 
@@ -945,10 +1131,15 @@ method c_ObservedList_f_add(this: Ref, value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(value), intType())
   ensures acc(c_ObservedList_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
-  ensures intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this))) + 1
-  ensures intFromRef(c_ObservedList_f_get(this, old(c_ObservedList_f_size(this)))) ==
-    intFromRef(value)
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this)))) +
+    1
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_size(this))))) ==
+      intFromRef(value))
 
 
 method refines_c_ObservedList_f_add(this: Ref, value: Ref)
@@ -963,10 +1154,15 @@ method refines_c_ObservedList_f_add(this: Ref, value: Ref)
   BrokenObservedCell_c_ObservedList_upcast(this)
   assert acc(c_ObservedList_unique(this), write)
   assert isSubtype(typeOf(ret_1), unitType())
-  assert intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this))) + 1
-  assert intFromRef(c_ObservedList_f_get(this, old(c_ObservedList_f_size(this)))) ==
-    intFromRef(value)
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this)))) +
+    1
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_size(this))))) ==
+      intFromRef(value))
 }
 
 /observer_contracts.kt: info: Generated Viper text for set:
@@ -993,14 +1189,14 @@ function BrokenObservedCell_f_size(this: Ref): Ref
 
 function c_ObservedList_f_get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_ObservedList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservedList())
-  requires acc(c_ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1011,20 +1207,27 @@ predicate BrokenObservedCell_unique(this: Ref) {
   isSubtype(typeOf(this.item), intType())
 }
 
-predicate c_ObservedList_unique(this: Ref)
+predicate c_ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method BrokenObservedCell_c_ObservedList_restore(this: Ref)
   requires acc(c_ObservedList_unique(this), write)
   requires isSubtype(typeOf(this), BrokenObservedCell())
   ensures acc(BrokenObservedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_ObservedList())) && true ==>
-    BrokenObservedCell_f_size(this) == old(c_ObservedList_f_size(this))
+    BrokenObservedCell_f_size(this) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)))
   ensures (forall index: Ref ::
       { BrokenObservedCell_f_get(this, index) }
       true && old(isSubtype(typeOf(this), c_ObservedList())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
       BrokenObservedCell_f_get(this, index) ==
-      old(c_ObservedList_f_get(this, index)))
+      old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index))))
 
 
 method BrokenObservedCell_c_ObservedList_upcast(this: Ref)
@@ -1032,12 +1235,15 @@ method BrokenObservedCell_c_ObservedList_upcast(this: Ref)
   ensures acc(c_ObservedList_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BrokenObservedCell())) &&
     true ==>
-    c_ObservedList_f_size(this) == old(BrokenObservedCell_f_size(this))
+    (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      c_ObservedList_f_size(this)) ==
+    old(BrokenObservedCell_f_size(this))
   ensures (forall index: Ref ::
       { c_ObservedList_f_get(this, index) }
       true && old(isSubtype(typeOf(this), BrokenObservedCell())) && true &&
       old(isSubtype(typeOf(index), intType())) ==>
-      c_ObservedList_f_get(this, index) ==
+      (unfolding acc(c_ObservedList_unique(this), wildcard) in
+        c_ObservedList_f_get(this, index)) ==
       old(BrokenObservedCell_f_get(this, index)))
 
 
@@ -1070,13 +1276,16 @@ method c_ObservedList_f_set(this: Ref, index: Ref, value: Ref)
   requires isSubtype(typeOf(index), intType())
   requires isSubtype(typeOf(value), intType())
   requires intFromRef(index) >= 0
-  requires intFromRef(index) < intFromRef(c_ObservedList_f_size(this))
+  requires (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(index) < intFromRef(c_ObservedList_f_size(this)))
   ensures acc(c_ObservedList_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
-  ensures intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this)))
-  ensures intFromRef(c_ObservedList_f_get(this, index)) ==
-    intFromRef(value)
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))))
+  ensures (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, index)) == intFromRef(value))
 
 
 method refines_c_ObservedList_f_set(this: Ref, index: Ref, value: Ref)
@@ -1086,7 +1295,8 @@ method refines_c_ObservedList_f_set(this: Ref, index: Ref, value: Ref)
   requires isSubtype(typeOf(index), intType())
   requires isSubtype(typeOf(value), intType())
   requires intFromRef(index) >= 0
-  requires intFromRef(index) < intFromRef(c_ObservedList_f_size(this))
+  requires (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(index) < intFromRef(c_ObservedList_f_size(this)))
   requires isSubtype(typeOf(this), BrokenObservedCell())
 {
   BrokenObservedCell_c_ObservedList_restore(this)
@@ -1094,15 +1304,18 @@ method refines_c_ObservedList_f_set(this: Ref, index: Ref, value: Ref)
   BrokenObservedCell_c_ObservedList_upcast(this)
   assert acc(c_ObservedList_unique(this), write)
   assert isSubtype(typeOf(ret_1), unitType())
-  assert intFromRef(c_ObservedList_f_size(this)) ==
-    old(intFromRef(c_ObservedList_f_size(this)))
-  assert intFromRef(c_ObservedList_f_get(this, index)) == intFromRef(value)
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))) ==
+    old((unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_size(this))))
+  assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
+      intFromRef(c_ObservedList_f_get(this, index)) == intFromRef(value))
 }
 
 /observer_contracts.kt: info: Generated Viper text for chainedObserverCalls:
 function f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(ObservedList_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1113,7 +1326,7 @@ function g_size(this: Ref): Ref
 
 function get(this: Ref, par_index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(ObservedList_footprint(this), wildcard)
   requires isSubtype(typeOf(par_index), intType())
   ensures isSubtype(typeOf(result), intType())
 
@@ -1122,11 +1335,26 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate ObservedList_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate Serializable_unique(this: Ref)
+predicate ObservedList_footprint(this: Ref)
+
+predicate ObservedList_unique(this: Ref) {
+  acc(ObservedList_footprint(this), write) &&
+  isSubtype(typeOf(this), ObservedList())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method add(this: Ref, value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), ObservedList())
@@ -1134,14 +1362,22 @@ method add(this: Ref, value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), intType())
   ensures acc(ObservedList_unique(this), write)
   ensures isSubtype(typeOf(ret_2), unitType())
-  ensures intFromRef(f_size(this)) == old(intFromRef(f_size(this))) + 1
-  ensures intFromRef(get(this, old(f_size(this)))) == intFromRef(value)
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(f_size(this))) ==
+    old((unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(f_size(this)))) +
+    1
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(get(this, old((unfolding acc(ObservedList_unique(this), wildcard) in
+        f_size(this))))) ==
+      intFromRef(value))
 
 
 method chainedObserverCalls(list: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(list), ObservedList())
   requires acc(ObservedList_unique(list), write)
-  requires intFromRef(f_size(list)) >= 0
+  requires (unfolding acc(ObservedList_unique(list), wildcard) in
+      intFromRef(f_size(list)) >= 0)
   ensures acc(ObservedList_unique(list), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -1153,17 +1389,22 @@ method chainedObserverCalls(list: Ref) returns (v_ret_0: Ref)
   var anon_4: Ref
   var anon_5: Ref
   var anon_6: Ref
-  anon_0 := f_size(list)
+  anon_0 := (unfolding acc(ObservedList_unique(list), wildcard) in
+      f_size(list))
   l0_index := anon_0
   anon_1 := add(list, intToRef(7))
-  anon_2 := f_size(list)
+  anon_2 := (unfolding acc(ObservedList_unique(list), wildcard) in
+      f_size(list))
   assert intFromRef(anon_2) == intFromRef(l0_index) + 1
-  anon_3 := get(list, l0_index)
+  anon_3 := (unfolding acc(ObservedList_unique(list), wildcard) in
+      get(list, l0_index))
   assert intFromRef(anon_3) == 7
   anon_4 := set(list, l0_index, intToRef(9))
-  anon_5 := f_size(list)
+  anon_5 := (unfolding acc(ObservedList_unique(list), wildcard) in
+      f_size(list))
   assert intFromRef(anon_5) == intFromRef(l0_index) + 1
-  anon_6 := get(list, l0_index)
+  anon_6 := (unfolding acc(ObservedList_unique(list), wildcard) in
+      get(list, l0_index))
   assert intFromRef(anon_6) == 9
   refute false
   label lbl_ret_0
@@ -1176,28 +1417,37 @@ method set(this: Ref, par_index: Ref, value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(value), intType())
   requires intFromRef(par_index) >= 0
-  requires intFromRef(par_index) < intFromRef(f_size(this))
+  requires (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(par_index) < intFromRef(f_size(this)))
   ensures acc(ObservedList_unique(this), write)
   ensures isSubtype(typeOf(ret_3), unitType())
-  ensures intFromRef(f_size(this)) == old(intFromRef(f_size(this)))
-  ensures intFromRef(get(this, par_index)) == intFromRef(value)
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(f_size(this))) ==
+    old((unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(f_size(this))))
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(get(this, par_index)) == intFromRef(value))
 
 
 /observer_contracts.kt: info: Generated Viper text for observerParameterContract:
 function get(this: Ref, index: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservedList())
-  requires acc(ObservedList_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate ObservedList_unique(this: Ref)
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
 
 method add(this: Ref, value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), ObservedList())
@@ -1205,18 +1455,33 @@ method add(this: Ref, value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(value), intType())
   ensures acc(ObservedList_unique(this), write)
   ensures isSubtype(typeOf(ret_3), unitType())
-  ensures intFromRef(size(this)) == old(intFromRef(size(this))) + 1
-  ensures intFromRef(get(this, old(size(this)))) == intFromRef(value)
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(size(this))) ==
+    old((unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(size(this)))) +
+    1
+  ensures (unfolding acc(ObservedList_unique(this), wildcard) in
+      intFromRef(get(this, old((unfolding acc(ObservedList_unique(this), wildcard) in
+        size(this))))) ==
+      intFromRef(value))
 
 
 method observerParameterContract(list: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(list), ObservedList())
   requires acc(ObservedList_unique(list), write)
-  requires intFromRef(size(list)) >= 0
+  requires (unfolding acc(ObservedList_unique(list), wildcard) in
+      intFromRef(size(list)) >= 0)
   ensures acc(ObservedList_unique(list), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures intFromRef(size(list)) == old(intFromRef(size(list))) + 1
-  ensures intFromRef(get(list, old(size(list)))) == 5
+  ensures (unfolding acc(ObservedList_unique(list), wildcard) in
+      intFromRef(size(list))) ==
+    old((unfolding acc(ObservedList_unique(list), wildcard) in
+      intFromRef(size(list)))) +
+    1
+  ensures (unfolding acc(ObservedList_unique(list), wildcard) in
+      intFromRef(get(list, old((unfolding acc(ObservedList_unique(list), wildcard) in
+        size(list))))) ==
+      5)
 {
   var anon: Ref
   anon := add(list, intToRef(5))

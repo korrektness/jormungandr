@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.embeddings
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.formver.viper.ast.Info
+import org.jetbrains.kotlin.formver.viper.ast.Position
 
 sealed interface SourceRole {
     data class ListElementAccessCheck(val accessType: AccessCheckType) : SourceRole {
@@ -58,7 +59,7 @@ sealed interface SourceRole {
      * A check that an override refines the contract of the declaration it overrides, which [overridden] names as the
      * Kotlin source spells it.
      */
-    data class OverrideRefinement(val overridden: String, val clause: Clause) : SourceRole {
+    data class OverrideRefinement(val overridden: String, val clause: Clause, val position: Position) : SourceRole {
         enum class Clause {
             /** The override's precondition must follow from the overridden precondition. */
             PRECONDITION,
@@ -67,6 +68,9 @@ sealed interface SourceRole {
             POSTCONDITION
         }
     }
+
+    /** The source observation whose receiver footprint is needed. */
+    data class ObserverAccess(val position: Position) : SourceRole
 
     data class ConditionalEffect(val effect: ReturnsEffect, val condition: Condition) : SourceRole
     data class FirSymbolHolder(val firSymbol: FirBasedSymbol<*>) : SourceRole, Condition

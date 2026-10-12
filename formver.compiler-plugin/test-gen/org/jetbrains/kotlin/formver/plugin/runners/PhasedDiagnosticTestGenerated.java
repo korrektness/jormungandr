@@ -1016,6 +1016,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testUntracked_write() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/untracked_write.kt");
       }
+
+      @Test
+      @TestMetadata("zero_law_roundtrip.kt")
+      public void testZero_law_roundtrip() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/zero_law_roundtrip.kt");
+      }
     }
 
     @Nested

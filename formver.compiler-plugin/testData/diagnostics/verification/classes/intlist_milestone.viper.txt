@@ -2305,14 +2305,14 @@ method setNode(node: Ref, i: Ref, par_value: Ref) returns (ret_2: Ref)
 /intlist_milestone.kt: info: Generated Viper text for interfaceClient:
 function IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(IntList_footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(IntList_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2325,10 +2325,17 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate IntList_footprint(this: Ref)
 
 predicate IntList_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  acc(IntList_footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
   boolFromRef(geInts(f_size(this), intToRef(0)))
 }
 
@@ -2336,9 +2343,12 @@ predicate InvariantBuilder_unique(this: Ref) {
   isSubtype(typeOf(this), InvariantBuilder())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate footprint(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method add(this: Ref, value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), IntList())
@@ -2583,14 +2593,14 @@ function arraySize(this: Ref): Int
 
 function c_IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(c_IntList_footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IntList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(c_IntList_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2621,7 +2631,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
@@ -2632,14 +2647,20 @@ predicate InvariantBuilder_unique(this: Ref) {
   isSubtype(typeOf(this), InvariantBuilder())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_IntList_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
-  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
 }
 
-predicate footprint(this: Ref)
+predicate c_IntList_footprint(this: Ref)
+
+predicate c_IntList_unique(this: Ref) {
+  acc(c_IntList_footprint(this), write) &&
+  isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
 
 method ArrayIntList_c_IntList_restore(this: Ref)
   requires acc(c_IntList_unique(this), write)
@@ -2827,14 +2848,14 @@ function NodeIntList_f_size(this: Ref): Ref
 
 function c_IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(c_IntList_footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IntList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(c_IntList_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2878,7 +2899,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate IntNode_unique(this: Ref) {
   isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
@@ -2911,14 +2937,20 @@ predicate NodeIntList_unique(this: Ref) {
           intFromRef(nodeSize(anon_2_0)))))))))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_IntList_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
-  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
 }
 
-predicate footprint(this: Ref)
+predicate c_IntList_footprint(this: Ref)
+
+predicate c_IntList_unique(this: Ref) {
+  acc(c_IntList_footprint(this), write) &&
+  isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
 
 method NodeIntList_c_IntList_restore(this: Ref)
   requires acc(c_IntList_unique(this), write)
@@ -3105,14 +3137,14 @@ function arraySize(this: Ref): Int
 
 function c_IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(c_IntList_footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IntList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(c_IntList_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -3143,7 +3175,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
@@ -3154,14 +3191,20 @@ predicate InvariantBuilder_unique(this: Ref) {
   isSubtype(typeOf(this), InvariantBuilder())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_IntList_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
-  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
 }
 
-predicate footprint(this: Ref)
+predicate c_IntList_footprint(this: Ref)
+
+predicate c_IntList_unique(this: Ref) {
+  acc(c_IntList_footprint(this), write) &&
+  isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
 
 method ArrayIntList_c_IntList_restore(this: Ref)
   requires acc(c_IntList_unique(this), write)
@@ -3386,14 +3429,14 @@ function NodeIntList_f_size(this: Ref): Ref
 
 function c_IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(c_IntList_footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function c_IntList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(c_IntList_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -3437,7 +3480,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate IntNode_unique(this: Ref) {
   isSubtype(typeOf(this), IntNode()) && acc(this.bf_value, write) &&
@@ -3470,14 +3518,20 @@ predicate NodeIntList_unique(this: Ref) {
           intFromRef(nodeSize(anon_2_0)))))))))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_IntList_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
-  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
 }
 
-predicate footprint(this: Ref)
+predicate c_IntList_footprint(this: Ref)
+
+predicate c_IntList_unique(this: Ref) {
+  acc(c_IntList_footprint(this), write) &&
+  isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
 
 method NodeIntList_c_IntList_restore(this: Ref)
   requires acc(c_IntList_unique(this), write)
@@ -3697,14 +3751,14 @@ function ArrayIntList_f_size(this: Ref): Ref
 
 function IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(IntList_footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function IntList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(IntList_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -3739,21 +3793,31 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
   |this.contents| == arraySize(this)
 }
 
+predicate IntList_footprint(this: Ref)
+
 predicate IntList_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  acc(IntList_footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
   boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate footprint(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method arrayConstructionSnapshot() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
@@ -3827,14 +3891,14 @@ field bf_value: Ref
 
 function IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(IntList_footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
 function IntList_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(IntList_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -3898,10 +3962,17 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate IntList_footprint(this: Ref)
 
 predicate IntList_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  acc(IntList_footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
   boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
 }
 
@@ -3932,9 +4003,12 @@ predicate NodeIntList_unique(this: Ref) {
           intFromRef(nodeSize(anon_2_0)))))))))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate footprint(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method con_IntNode(par_value: Ref, par_next: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
@@ -4412,7 +4486,7 @@ method con(par_head: Ref, par_count: Ref) returns (ret_1: Ref)
 /intlist_milestone.kt: info: Generated Viper text for falseClientClaim:
 function f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(IntList_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -4423,7 +4497,7 @@ function g_size(this: Ref): Ref
 
 function get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), IntList())
-  requires acc(footprint(this), wildcard)
+  requires acc(IntList_footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
   ensures isSubtype(typeOf(result), intType())
 
@@ -4432,10 +4506,17 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate IntList_footprint(this: Ref)
 
 predicate IntList_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  acc(IntList_footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
   boolFromRef(geInts(f_size(this), intToRef(0)))
 }
 
@@ -4443,9 +4524,12 @@ predicate InvariantBuilder_unique(this: Ref) {
   isSubtype(typeOf(this), InvariantBuilder())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate footprint(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method add(this: Ref, value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), IntList())

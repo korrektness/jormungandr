@@ -1,0 +1,649 @@
+/zero_law_roundtrip.kt: info: Generated Viper text for observe:
+function observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), ZeroLawBase())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ZeroLawBase_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ZeroLawBase())
+}
+
+predicate footprint(this: Ref)
+
+/zero_law_roundtrip.kt: info: Generated Viper text for advance:
+function observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), ZeroLawBase())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ZeroLawBase_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ZeroLawBase())
+}
+
+predicate footprint(this: Ref)
+
+method advance(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), ZeroLawBase())
+  requires acc(ZeroLawBase_unique(this), write)
+  ensures acc(ZeroLawBase_unique(this), write)
+  ensures isSubtype(typeOf(ret), unitType())
+  ensures (unfolding acc(ZeroLawBase_unique(this), wildcard) in
+      intFromRef(observe(this))) ==
+    old((unfolding acc(ZeroLawBase_unique(this), wildcard) in
+      intFromRef(observe(this)))) +
+    1
+
+
+/zero_law_roundtrip.kt: info: Generated Viper text for observe:
+field value: Ref
+
+function ZeroLawCell_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), ZeroLawCell())
+  requires acc(ZeroLawCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ZeroLawCell_unique(this), write) in this.value)
+}
+
+function ZeroLawDiamond_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawLeft_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawRight_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ZeroLawCell_unique(this: Ref) {
+  isSubtype(typeOf(this), ZeroLawCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate ZeroLawDiamond_footprint(this: Ref)
+
+predicate ZeroLawDiamond_unique(this: Ref) {
+  acc(ZeroLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawDiamond())
+}
+
+predicate ZeroLawLeft_footprint(this: Ref)
+
+predicate ZeroLawLeft_unique(this: Ref) {
+  acc(ZeroLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawLeft())
+}
+
+predicate ZeroLawRight_footprint(this: Ref)
+
+predicate ZeroLawRight_unique(this: Ref) {
+  acc(ZeroLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawRight())
+}
+
+predicate c_ZeroLawBase_footprint(this: Ref)
+
+predicate c_ZeroLawBase_unique(this: Ref) {
+  acc(c_ZeroLawBase_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ZeroLawBase())
+}
+
+/zero_law_roundtrip.kt: info: Generated Viper text for advance:
+field value: Ref
+
+function ZeroLawCell_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), ZeroLawCell())
+  requires acc(ZeroLawCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ZeroLawCell_unique(this), write) in this.value)
+}
+
+function ZeroLawDiamond_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawLeft_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawRight_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ZeroLawCell_unique(this: Ref) {
+  isSubtype(typeOf(this), ZeroLawCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate ZeroLawDiamond_footprint(this: Ref)
+
+predicate ZeroLawDiamond_unique(this: Ref) {
+  acc(ZeroLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawDiamond())
+}
+
+predicate ZeroLawLeft_footprint(this: Ref)
+
+predicate ZeroLawLeft_unique(this: Ref) {
+  acc(ZeroLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawLeft())
+}
+
+predicate ZeroLawRight_footprint(this: Ref)
+
+predicate ZeroLawRight_unique(this: Ref) {
+  acc(ZeroLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawRight())
+}
+
+predicate c_ZeroLawBase_footprint(this: Ref)
+
+predicate c_ZeroLawBase_unique(this: Ref) {
+  acc(c_ZeroLawBase_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ZeroLawBase())
+}
+
+method ZeroLawCell_c_ZeroLawBase_restore(this: Ref)
+  requires acc(c_ZeroLawBase_unique(this), write)
+  requires isSubtype(typeOf(this), ZeroLawCell())
+  ensures acc(ZeroLawCell_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ZeroLawBase())) && true ==>
+    ZeroLawCell_f_observe(this) ==
+    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      c_ZeroLawBase_f_observe(this)))
+
+
+method ZeroLawCell_c_ZeroLawBase_upcast(this: Ref)
+  requires acc(ZeroLawCell_unique(this), write)
+  ensures acc(c_ZeroLawBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ZeroLawCell())) && true ==>
+    (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      c_ZeroLawBase_f_observe(this)) ==
+    old(ZeroLawCell_f_observe(this))
+
+
+method ZeroLawCell_f_advance(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ZeroLawCell())
+  requires acc(ZeroLawCell_unique(this), write)
+  ensures acc(ZeroLawCell_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(ZeroLawCell_f_observe(this)) ==
+    old(intFromRef(ZeroLawCell_f_observe(this))) + 1
+{
+  var anon: Ref
+  unfold acc(ZeroLawCell_unique(this), write)
+  anon := this.value
+  this.value := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(ZeroLawCell_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method c_ZeroLawBase_f_advance(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_unique(this), write)
+  ensures acc(c_ZeroLawBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe(this))) ==
+    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe(this)))) +
+    1
+
+
+method refines_c_ZeroLawBase_f_advance(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_unique(this), write)
+  requires isSubtype(typeOf(this), ZeroLawCell())
+{
+  ZeroLawCell_c_ZeroLawBase_restore(this)
+  ret_1 := ZeroLawCell_f_advance(this)
+  ZeroLawCell_c_ZeroLawBase_upcast(this)
+  assert acc(c_ZeroLawBase_unique(this), write)
+  assert isSubtype(typeOf(ret_1), unitType())
+  assert (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe(this))) ==
+    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe(this)))) +
+    1
+}
+
+/zero_law_roundtrip.kt: info: Generated Viper text for advanceDiamond:
+function ZeroLawDiamond_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawLeft_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawRight_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ZeroLawDiamond_footprint(this: Ref)
+
+predicate ZeroLawDiamond_unique(this: Ref) {
+  acc(ZeroLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawDiamond())
+}
+
+predicate ZeroLawLeft_footprint(this: Ref)
+
+predicate ZeroLawLeft_unique(this: Ref) {
+  acc(ZeroLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawLeft())
+}
+
+predicate ZeroLawRight_footprint(this: Ref)
+
+predicate ZeroLawRight_unique(this: Ref) {
+  acc(ZeroLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawRight())
+}
+
+predicate c_ZeroLawBase_footprint(this: Ref)
+
+predicate c_ZeroLawBase_unique(this: Ref) {
+  acc(c_ZeroLawBase_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ZeroLawBase())
+}
+
+method ZeroLawDiamond_c_ZeroLawBase_restore(this: Ref)
+  requires acc(c_ZeroLawBase_unique(this), write)
+  requires isSubtype(typeOf(this), ZeroLawDiamond())
+  ensures acc(ZeroLawDiamond_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ZeroLawBase())) && true ==>
+    (unfolding acc(ZeroLawDiamond_unique(this), wildcard) in
+      ZeroLawDiamond_c_ZeroLawBase_f_observe(this)) ==
+    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      c_ZeroLawBase_f_observe(this)))
+
+
+method ZeroLawDiamond_c_ZeroLawBase_upcast(this: Ref)
+  requires acc(ZeroLawDiamond_unique(this), write)
+  ensures acc(c_ZeroLawBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ZeroLawBase())) && true ==>
+    (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      c_ZeroLawBase_f_observe(this)) ==
+    old((unfolding acc(ZeroLawDiamond_unique(this), wildcard) in
+      ZeroLawDiamond_c_ZeroLawBase_f_observe(this)))
+
+
+method advance(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_unique(this), write)
+  ensures acc(c_ZeroLawBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe(this))) ==
+    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe(this)))) +
+    1
+
+
+method advanceDiamond(view: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(view), ZeroLawDiamond())
+  requires acc(ZeroLawDiamond_unique(view), write)
+  ensures acc(ZeroLawDiamond_unique(view), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(ZeroLawDiamond_unique(view), wildcard) in
+      intFromRef(ZeroLawDiamond_c_ZeroLawBase_f_observe(view))) ==
+    old((unfolding acc(ZeroLawDiamond_unique(view), wildcard) in
+      intFromRef(ZeroLawDiamond_c_ZeroLawBase_f_observe(view)))) +
+    1
+{
+  var anon: Ref
+  ZeroLawDiamond_c_ZeroLawBase_upcast(view)
+  anon := advance(view)
+  ZeroLawDiamond_c_ZeroLawBase_restore(view)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/zero_law_roundtrip.kt: info: Generated Viper text for borrowedZeroLaws:
+field value: Ref
+
+function ZeroLawCell_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), ZeroLawCell())
+  requires acc(ZeroLawCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ZeroLawCell_unique(this), write) in this.value)
+}
+
+function ZeroLawLeft_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawRight_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate ZeroLawCell_unique(this: Ref) {
+  isSubtype(typeOf(this), ZeroLawCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate ZeroLawLeft_footprint(this: Ref)
+
+predicate ZeroLawLeft_unique(this: Ref) {
+  acc(ZeroLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawLeft())
+}
+
+predicate ZeroLawRight_footprint(this: Ref)
+
+predicate ZeroLawRight_unique(this: Ref) {
+  acc(ZeroLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawRight())
+}
+
+predicate c_ZeroLawBase_footprint(this: Ref)
+
+predicate c_ZeroLawBase_unique(this: Ref) {
+  acc(c_ZeroLawBase_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ZeroLawBase())
+}
+
+predicate c_ZeroLawDiamond_footprint(this: Ref)
+
+predicate c_ZeroLawDiamond_unique(this: Ref) {
+  acc(c_ZeroLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ZeroLawDiamond())
+}
+
+method ZeroLawCell_c_ZeroLawDiamond_restore(this: Ref)
+  requires acc(c_ZeroLawDiamond_unique(this), write)
+  requires isSubtype(typeOf(this), ZeroLawCell())
+  ensures acc(ZeroLawCell_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ZeroLawBase())) && true ==>
+    ZeroLawCell_f_observe(this) ==
+    old((unfolding acc(c_ZeroLawDiamond_unique(this), wildcard) in
+      c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this)))
+
+
+method ZeroLawCell_c_ZeroLawDiamond_upcast(this: Ref)
+  requires acc(ZeroLawCell_unique(this), write)
+  ensures acc(c_ZeroLawDiamond_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ZeroLawCell())) && true ==>
+    (unfolding acc(c_ZeroLawDiamond_unique(this), wildcard) in
+      c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this)) ==
+    old(ZeroLawCell_f_observe(this))
+
+
+method advanceDiamond(view: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(view), c_ZeroLawDiamond())
+  requires acc(c_ZeroLawDiamond_unique(view), write)
+  ensures acc(c_ZeroLawDiamond_unique(view), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(c_ZeroLawDiamond_unique(view), wildcard) in
+      intFromRef(c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(view))) ==
+    old((unfolding acc(c_ZeroLawDiamond_unique(view), wildcard) in
+      intFromRef(c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(view)))) +
+    1
+
+
+method borrowedZeroLaws(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), ZeroLawCell())
+  requires acc(ZeroLawCell_unique(cell), write)
+  ensures acc(ZeroLawCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  unfold acc(ZeroLawCell_unique(cell), write)
+  before := cell.value
+  fold acc(ZeroLawCell_unique(cell), write)
+  ZeroLawCell_c_ZeroLawDiamond_upcast(cell)
+  anon_1 := advanceDiamond(cell)
+  ZeroLawCell_c_ZeroLawDiamond_restore(cell)
+  unfold acc(ZeroLawCell_unique(cell), write)
+  anon_2 := cell.value
+  assert intFromRef(anon_2) == intFromRef(before) + 1
+  fold acc(ZeroLawCell_unique(cell), write)
+  ZeroLawCell_c_ZeroLawDiamond_upcast(cell)
+  anon_3 := advanceDiamond(cell)
+  ZeroLawCell_c_ZeroLawDiamond_restore(cell)
+  unfold acc(ZeroLawCell_unique(cell), write)
+  anon_4 := cell.value
+  assert intFromRef(anon_4) == intFromRef(before) + 2
+  refute false
+  label lbl_ret_0
+  fold acc(ZeroLawCell_unique(cell), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/zero_law_roundtrip.kt: info: Generated Viper text for permanentZeroLaws:
+field value: Ref
+
+function ZeroLawCell_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), ZeroLawCell())
+  requires acc(ZeroLawCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ZeroLawCell_unique(this), write) in this.value)
+}
+
+function ZeroLawLeft_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawRight_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate ZeroLawCell_unique(this: Ref) {
+  isSubtype(typeOf(this), ZeroLawCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate ZeroLawLeft_footprint(this: Ref)
+
+predicate ZeroLawLeft_unique(this: Ref) {
+  acc(ZeroLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawLeft())
+}
+
+predicate ZeroLawRight_footprint(this: Ref)
+
+predicate ZeroLawRight_unique(this: Ref) {
+  acc(ZeroLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawRight())
+}
+
+predicate c_ZeroLawBase_footprint(this: Ref)
+
+predicate c_ZeroLawBase_unique(this: Ref) {
+  acc(c_ZeroLawBase_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ZeroLawBase())
+}
+
+predicate c_ZeroLawDiamond_footprint(this: Ref)
+
+predicate c_ZeroLawDiamond_unique(this: Ref) {
+  acc(c_ZeroLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ZeroLawDiamond())
+}
+
+method ZeroLawCell_c_ZeroLawDiamond_upcast(this: Ref)
+  requires acc(ZeroLawCell_unique(this), write)
+  ensures acc(c_ZeroLawDiamond_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ZeroLawCell())) && true ==>
+    (unfolding acc(c_ZeroLawDiamond_unique(this), wildcard) in
+      c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this)) ==
+    old(ZeroLawCell_f_observe(this))
+
+
+method advance(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_unique(this), write)
+  ensures acc(c_ZeroLawBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this))) ==
+    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this)))) +
+    1
+
+
+method c_ZeroLawDiamond_c_ZeroLawBase_upcast(this: Ref)
+  requires acc(c_ZeroLawDiamond_unique(this), write)
+  ensures acc(c_ZeroLawBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ZeroLawBase())) && true ==>
+    (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this)) ==
+    old((unfolding acc(c_ZeroLawDiamond_unique(this), wildcard) in
+      c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this)))
+
+
+method permanentZeroLaws(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), ZeroLawCell())
+  requires acc(ZeroLawCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var diamond: Ref
+  var base: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  unfold acc(ZeroLawCell_unique(cell), write)
+  before := cell.value
+  fold acc(ZeroLawCell_unique(cell), write)
+  diamond := cell
+  ZeroLawCell_c_ZeroLawDiamond_upcast(diamond)
+  base := diamond
+  c_ZeroLawDiamond_c_ZeroLawBase_upcast(base)
+  anon_1 := advance(base)
+  anon_2 := (unfolding acc(c_ZeroLawBase_unique(base), wildcard) in
+      c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(base))
+  assert intFromRef(anon_2) == intFromRef(before) + 1
+  anon_3 := (unfolding acc(c_ZeroLawBase_unique(base), wildcard) in
+      c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(base))
+  assert intFromRef(anon_3) == intFromRef(before)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

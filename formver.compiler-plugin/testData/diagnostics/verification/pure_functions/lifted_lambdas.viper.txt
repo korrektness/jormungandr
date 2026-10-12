@@ -1,11 +1,15 @@
 /lifted_lambdas.kt: info: Generated Viper text for invoke:
 function state(this: Ref): Ref
   requires isSubtype(typeOf(this), LiftedSpec())
-  requires acc(LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate LiftedSpec_unique(this: Ref)
+predicate LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method invoke(this: Ref, x: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), LiftedSpec())
@@ -19,11 +23,15 @@ method invoke(this: Ref, x: Ref) returns (ret: Ref)
 /lifted_lambdas.kt: info: Generated Viper text for state:
 function state(this: Ref): Ref
   requires isSubtype(typeOf(this), LiftedSpec())
-  requires acc(LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate LiftedSpec_unique(this: Ref)
+predicate LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 /lifted_lambdas.kt: info: Generated Viper text for noCaptures:
 function Lambda0_f_state(this: Ref): Ref
@@ -36,7 +44,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -44,13 +52,19 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method create() returns (ret_1: Ref)
@@ -83,7 +97,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -91,21 +105,29 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
@@ -169,7 +191,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -180,13 +202,19 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture1), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method create(captureArg0: Ref, captureArg1: Ref) returns (ret_1: Ref)
@@ -236,7 +264,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -247,21 +275,29 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture1), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
@@ -344,7 +380,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -352,13 +388,19 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method create() returns (ret_1: Ref)
@@ -391,7 +433,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -399,21 +441,29 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
@@ -477,7 +527,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -495,13 +545,19 @@ predicate LiftedCell_unique(this: Ref) {
   isSubtype(typeOf(this.n), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method captureReceiver(this: Ref) returns (v_ret_0: Ref)
@@ -545,7 +601,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -563,21 +619,29 @@ predicate LiftedCell_unique(this: Ref) {
   isSubtype(typeOf(this.n), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
@@ -660,7 +724,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -678,13 +742,19 @@ predicate LiftedCell_unique(this: Ref) {
   isSubtype(typeOf(this.n), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method captureObject(cell: Ref) returns (v_ret_0: Ref)
@@ -731,7 +801,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -749,21 +819,29 @@ predicate LiftedCell_unique(this: Ref) {
   isSubtype(typeOf(this.n), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
@@ -841,7 +919,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -850,13 +928,19 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method captureLoop(start: Ref) returns (v_ret_0: Ref)
@@ -898,7 +982,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -907,21 +991,29 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
@@ -1016,7 +1108,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(c_LiftedSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1029,21 +1121,38 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_LiftedSpec_footprint(this: Ref)
+
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(c_LiftedSpec_footprint(this), write) &&
+  isSubtype(typeOf(this), c_LiftedSpec())
+}
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method boundObserver() returns (v_ret_0: Ref)
@@ -1051,13 +1160,16 @@ method boundObserver() returns (v_ret_0: Ref)
   ensures acc(c_LiftedSpec_unique(v_ret_0), write)
 {
   var f: Ref
-  var anon: Ref
-  anon := create()
-  fold acc(Lambda0_unique(anon), write)
-  f := anon
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := create()
+  fold acc(Lambda0_unique(anon_0), write)
+  f := anon_0
   inhale isSubtype(typeOf(f), c_LiftedSpec())
   Lambda0_c_LiftedSpec_upcast(f)
-  assert intFromRef(c_LiftedSpec_f_state(f)) == 7
+  anon_1 := (unfolding acc(c_LiftedSpec_unique(f), wildcard) in
+      c_LiftedSpec_f_state(f))
+  assert intFromRef(anon_1) == 7
   v_ret_0 := f
   goto lbl_ret_0
   label lbl_ret_0
@@ -1079,7 +1191,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(c_LiftedSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1092,29 +1204,48 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_LiftedSpec_footprint(this: Ref)
+
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(c_LiftedSpec_footprint(this), write) &&
+  isSubtype(typeOf(this), c_LiftedSpec())
+}
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
@@ -1179,7 +1310,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(c_LiftedSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1192,7 +1323,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
@@ -1202,15 +1338,27 @@ predicate Lambda0_unique(this: Ref) {
     true && isSubtype(typeOf(this.Lambda0_p_capture0), intType()))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_LiftedSpec_footprint(this: Ref)
+
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(c_LiftedSpec_footprint(this), write) &&
+  isSubtype(typeOf(this), c_LiftedSpec())
+}
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method create(captureArg0: Ref) returns (ret_1: Ref)
@@ -1230,12 +1378,15 @@ method exposedOnlyCapture(k: Ref) returns (v_ret_0: Ref)
 {
   var f: Ref
   var anon_1: Ref
+  var anon_2: Ref
   anon_1 := create(k)
   fold acc(Lambda0_unique(anon_1), write)
   f := anon_1
   inhale isSubtype(typeOf(f), c_LiftedSpec())
   Lambda0_c_LiftedSpec_upcast(f)
-  assert intFromRef(c_LiftedSpec_f_state(f)) == intFromRef(k) + 1
+  anon_2 := (unfolding acc(c_LiftedSpec_unique(f), wildcard) in
+      c_LiftedSpec_f_state(f))
+  assert intFromRef(anon_2) == intFromRef(k) + 1
   v_ret_0 := f
   goto lbl_ret_0
   label lbl_ret_0
@@ -1257,7 +1408,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(c_LiftedSpec_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1270,7 +1421,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
@@ -1280,23 +1436,37 @@ predicate Lambda0_unique(this: Ref) {
     true && isSubtype(typeOf(this.Lambda0_p_capture0), intType()))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_LiftedSpec_footprint(this: Ref)
+
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(c_LiftedSpec_footprint(this), write) &&
+  isSubtype(typeOf(this), c_LiftedSpec())
+}
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
@@ -1354,29 +1524,42 @@ method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
 /lifted_lambdas.kt: info: Generated Viper text for invoke:
 function state(this: Ref): Ref
   requires isSubtype(typeOf(this), Counter())
-  requires acc(Counter_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate Counter_unique(this: Ref)
+predicate Counter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Counter())
+}
+
+predicate footprint(this: Ref)
 
 method invoke(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), Counter())
   requires acc(Counter_unique(this), write)
   ensures acc(Counter_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
-  ensures intFromRef(state(this)) == old(intFromRef(state(this))) + 1 &&
-    intFromRef(ret) == intFromRef(state(this))
+  ensures (unfolding acc(Counter_unique(this), wildcard) in
+      intFromRef(state(this)) ==
+      old((unfolding acc(Counter_unique(this), wildcard) in
+        intFromRef(state(this)))) +
+      1) &&
+    (unfolding acc(Counter_unique(this), wildcard) in
+      intFromRef(ret) == intFromRef(state(this)))
 
 
 /lifted_lambdas.kt: info: Generated Viper text for state:
 function state(this: Ref): Ref
   requires isSubtype(typeOf(this), Counter())
-  requires acc(Counter_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate Counter_unique(this: Ref)
+predicate Counter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Counter())
+}
+
+predicate footprint(this: Ref)
 
 /lifted_lambdas.kt: info: Generated Viper text for countFrom:
 field Lambda0_p_capture0: Ref
@@ -1391,7 +1574,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_Counter_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Counter())
-  requires acc(c_Counter_unique(this), wildcard)
+  requires acc(c_Counter_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1404,22 +1587,39 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_Counter_unique(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_Counter_footprint(this: Ref)
+
+predicate c_Counter_unique(this: Ref) {
+  acc(c_Counter_footprint(this), write) &&
+  isSubtype(typeOf(this), c_Counter())
+}
 
 method Lambda0_c_Counter_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_Counter_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_Counter_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_Counter_unique(this), wildcard) in
+      c_Counter_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method countFrom(start: Ref) returns (v_ret_0: Ref)
@@ -1428,18 +1628,24 @@ method countFrom(start: Ref) returns (v_ret_0: Ref)
 {
   var n: Ref
   var c: Ref
-  var anon: Ref
+  var anon_1: Ref
+  var anon_2: Ref
   var first: Ref
+  var anon_3: Ref
   n := start
-  anon := create(n)
-  fold acc(Lambda0_unique(anon), write)
-  c := anon
+  anon_1 := create(n)
+  fold acc(Lambda0_unique(anon_1), write)
+  c := anon_1
   inhale isSubtype(typeOf(c), c_Counter())
   Lambda0_c_Counter_upcast(c)
-  assert intFromRef(c_Counter_f_state(c)) == intFromRef(start)
+  anon_2 := (unfolding acc(c_Counter_unique(c), wildcard) in
+      c_Counter_f_state(c))
+  assert intFromRef(anon_2) == intFromRef(start)
   first := invoke(c)
   assert intFromRef(first) == intFromRef(start) + 1
-  assert intFromRef(c_Counter_f_state(c)) == intFromRef(start) + 1
+  anon_3 := (unfolding acc(c_Counter_unique(c), wildcard) in
+      c_Counter_f_state(c))
+  assert intFromRef(anon_3) == intFromRef(start) + 1
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -1459,9 +1665,13 @@ method invoke(this: Ref) returns (ret_2: Ref)
   requires acc(c_Counter_unique(this), write)
   ensures acc(c_Counter_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(c_Counter_f_state(this)) ==
-    old(intFromRef(c_Counter_f_state(this))) + 1 &&
-    intFromRef(ret_2) == intFromRef(c_Counter_f_state(this))
+  ensures (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(c_Counter_f_state(this)) ==
+      old((unfolding acc(c_Counter_unique(this), wildcard) in
+        intFromRef(c_Counter_f_state(this)))) +
+      1) &&
+    (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(c_Counter_f_state(this)))
 
 
 countFrom.lambda0.invoke:
@@ -1477,7 +1687,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_Counter_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Counter())
-  requires acc(c_Counter_unique(this), wildcard)
+  requires acc(c_Counter_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1490,30 +1700,49 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_Counter_unique(this: Ref)
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_Counter_footprint(this: Ref)
+
+predicate c_Counter_unique(this: Ref) {
+  acc(c_Counter_footprint(this), write) &&
+  isSubtype(typeOf(this), c_Counter())
+}
 
 method Lambda0_c_Counter_restore(this: Ref)
   requires acc(c_Counter_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_Counter())) && true ==>
-    Lambda0_f_state(this) == old(c_Counter_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_Counter_unique(this), wildcard) in
+      c_Counter_f_state(this)))
 
 
 method Lambda0_c_Counter_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_Counter_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_Counter_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_Counter_unique(this), wildcard) in
+      c_Counter_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
@@ -1554,9 +1783,13 @@ method f_invoke(this: Ref) returns (ret_2: Ref)
   requires acc(c_Counter_unique(this), write)
   ensures acc(c_Counter_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(c_Counter_f_state(this)) ==
-    old(intFromRef(c_Counter_f_state(this))) + 1 &&
-    intFromRef(ret_2) == intFromRef(c_Counter_f_state(this))
+  ensures (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(c_Counter_f_state(this)) ==
+      old((unfolding acc(c_Counter_unique(this), wildcard) in
+        intFromRef(c_Counter_f_state(this)))) +
+      1) &&
+    (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(c_Counter_f_state(this)))
 
 
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
@@ -1569,9 +1802,13 @@ method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   Lambda0_c_Counter_upcast(this)
   assert acc(c_Counter_unique(this), write)
   assert isSubtype(typeOf(ret_3), intType())
-  assert intFromRef(c_Counter_f_state(this)) ==
-    old(intFromRef(c_Counter_f_state(this))) + 1 &&
-    intFromRef(ret_3) == intFromRef(c_Counter_f_state(this))
+  assert (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(c_Counter_f_state(this)) ==
+      old((unfolding acc(c_Counter_unique(this), wildcard) in
+        intFromRef(c_Counter_f_state(this)))) +
+      1) &&
+    (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(ret_3) == intFromRef(c_Counter_f_state(this)))
 }
 
 /lifted_lambdas.kt: info: Generated Viper text for stuckCounter:
@@ -1587,7 +1824,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_Counter_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Counter())
-  requires acc(c_Counter_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1596,13 +1833,19 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_Counter_unique(this: Ref)
+predicate c_Counter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_Counter())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_Counter_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_Counter_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_Counter_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_Counter_unique(this), wildcard) in
+      c_Counter_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method create(captureArg0: Ref) returns (ret_1: Ref)
@@ -1644,7 +1887,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_Counter_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Counter())
-  requires acc(c_Counter_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1653,21 +1896,29 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_Counter_unique(this: Ref)
+predicate c_Counter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_Counter())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_Counter_restore(this: Ref)
   requires acc(c_Counter_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_Counter())) && true ==>
-    Lambda0_f_state(this) == old(c_Counter_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_Counter_unique(this), wildcard) in
+      c_Counter_f_state(this)))
 
 
 method Lambda0_c_Counter_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_Counter_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_Counter_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_Counter_unique(this), wildcard) in
+      c_Counter_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref) returns (v_ret_3: Ref)
@@ -1700,9 +1951,13 @@ method f_invoke(this: Ref) returns (ret_2: Ref)
   requires acc(c_Counter_unique(this), write)
   ensures acc(c_Counter_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(c_Counter_f_state(this)) ==
-    old(intFromRef(c_Counter_f_state(this))) + 1 &&
-    intFromRef(ret_2) == intFromRef(c_Counter_f_state(this))
+  ensures (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(c_Counter_f_state(this)) ==
+      old((unfolding acc(c_Counter_unique(this), wildcard) in
+        intFromRef(c_Counter_f_state(this)))) +
+      1) &&
+    (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(c_Counter_f_state(this)))
 
 
 method refines_f_invoke(this: Ref) returns (ret_2: Ref)
@@ -1715,9 +1970,13 @@ method refines_f_invoke(this: Ref) returns (ret_2: Ref)
   Lambda0_c_Counter_upcast(this)
   assert acc(c_Counter_unique(this), write)
   assert isSubtype(typeOf(ret_2), intType())
-  assert intFromRef(c_Counter_f_state(this)) ==
-    old(intFromRef(c_Counter_f_state(this))) + 1 &&
-    intFromRef(ret_2) == intFromRef(c_Counter_f_state(this))
+  assert (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(c_Counter_f_state(this)) ==
+      old((unfolding acc(c_Counter_unique(this), wildcard) in
+        intFromRef(c_Counter_f_state(this)))) +
+      1) &&
+    (unfolding acc(c_Counter_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(c_Counter_f_state(this)))
 }
 
 method stuckCounter(start: Ref) returns (ret_1: Ref)
@@ -1739,7 +1998,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1748,13 +2007,19 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method consume(f: Ref) returns (ret_2: Ref)
@@ -1804,7 +2069,7 @@ function Lambda0_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1813,21 +2078,29 @@ predicate Lambda0_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda0_p_capture0), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_4: Ref)
@@ -1912,7 +2185,7 @@ function Lambda1_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1929,13 +2202,19 @@ predicate Lambda1_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda1_p_capture0), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_1: Ref)
@@ -1997,7 +2276,7 @@ function Lambda1_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2014,21 +2293,29 @@ predicate Lambda1_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda1_p_capture0), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_c_LiftedSpec_restore(this: Ref)
   requires acc(c_LiftedSpec_unique(this), write)
   requires isSubtype(typeOf(this), Lambda0())
   ensures acc(Lambda0_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda0_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda0_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda0_f_state(this))
 
 
 method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
@@ -2070,7 +2357,9 @@ method Lambda1_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda1_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda1_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda1_f_state(this))
 
 
 method Lambda1_create(Lambda1_captureArg0: Ref) returns (ret_1: Ref)
@@ -2135,7 +2424,7 @@ function Lambda1_f_state(this: Ref): Ref
 
 function c_LiftedSpec_f_state(this: Ref): Ref
   requires isSubtype(typeOf(this), c_LiftedSpec())
-  requires acc(c_LiftedSpec_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2152,7 +2441,11 @@ predicate Lambda1_unique(this: Ref) {
   isSubtype(typeOf(this.Lambda1_p_capture0), intType())
 }
 
-predicate c_LiftedSpec_unique(this: Ref)
+predicate c_LiftedSpec_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_LiftedSpec())
+}
+
+predicate footprint(this: Ref)
 
 method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
   requires isSubtype(typeOf(Lambda0_captureArg0), intType())
@@ -2170,14 +2463,18 @@ method Lambda1_c_LiftedSpec_restore(this: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   ensures acc(Lambda1_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
-    Lambda1_f_state(this) == old(c_LiftedSpec_f_state(this))
+    Lambda1_f_state(this) ==
+    old((unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)))
 
 
 method Lambda1_c_LiftedSpec_upcast(this: Ref)
   requires acc(Lambda1_unique(this), write)
   ensures acc(c_LiftedSpec_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
-    c_LiftedSpec_f_state(this) == old(Lambda1_f_state(this))
+    (unfolding acc(c_LiftedSpec_unique(this), wildcard) in
+      c_LiftedSpec_f_state(this)) ==
+    old(Lambda1_f_state(this))
 
 
 method Lambda1_create(Lambda1_captureArg0: Ref) returns (ret_1: Ref)

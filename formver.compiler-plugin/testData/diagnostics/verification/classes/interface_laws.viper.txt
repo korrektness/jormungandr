@@ -563,7 +563,7 @@ function InvariantSizedLaw_f_size(this: Ref): Ref
 
 function SizedLaw_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), SizedLaw())
-  requires acc(footprint(this), wildcard)
+  requires acc(SizedLaw_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -576,7 +576,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate InvariantSizedLaw_unique(this: Ref) {
   isSubtype(typeOf(this), InvariantSizedLaw()) && acc(this.count, write) &&
@@ -586,14 +591,20 @@ predicate InvariantSizedLaw_unique(this: Ref) {
     true && boolFromRef(geInts(this.count, intToRef(0))))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate SizedLaw_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), SizedLaw()) &&
-  boolFromRef(geInts(SizedLaw_f_size(this), intToRef(0)))
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
 }
 
-predicate footprint(this: Ref)
+predicate SizedLaw_footprint(this: Ref)
+
+predicate SizedLaw_unique(this: Ref) {
+  acc(SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLaw()) &&
+  boolFromRef(geInts(SizedLaw_f_size(this), intToRef(0)))
+}
 
 method add(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), InvariantSizedLaw())
@@ -630,7 +641,7 @@ function InvariantSizedLaw_f_size(this: Ref): Ref
 
 function c_SizedLaw_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_SizedLaw())
-  requires acc(footprint(this), wildcard)
+  requires acc(c_SizedLaw_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -643,7 +654,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate InvariantSizedLaw_unique(this: Ref) {
   isSubtype(typeOf(this), InvariantSizedLaw()) && acc(this.bf_count, write) &&
@@ -653,14 +669,20 @@ predicate InvariantSizedLaw_unique(this: Ref) {
     true && boolFromRef(geInts(this.bf_count, intToRef(0))))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-predicate c_SizedLaw_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), c_SizedLaw()) &&
-  boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
 }
 
-predicate footprint(this: Ref)
+predicate c_SizedLaw_footprint(this: Ref)
+
+predicate c_SizedLaw_unique(this: Ref) {
+  acc(c_SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), c_SizedLaw()) &&
+  boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
+}
 
 method InvariantSizedLaw_c_SizedLaw_restore(this: Ref)
   requires acc(c_SizedLaw_unique(this), write)
@@ -776,7 +798,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate GoodSizedLaw_unique(this: Ref) {
   isSubtype(typeOf(this), GoodSizedLaw())
@@ -787,7 +814,12 @@ predicate InheritedSizedLaw_unique(this: Ref) {
   acc(GoodSizedLaw_unique(this), write)
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate SizedLawLeft_footprint(this: Ref)
 
@@ -986,7 +1018,7 @@ method lawPostcondition(view: Ref) returns (v_ret_0: Ref)
 /interface_laws.kt: info: Generated Viper text for lawClient:
 function f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), SizedLaw())
-  requires acc(footprint(this), wildcard)
+  requires acc(SizedLaw_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -999,16 +1031,27 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
-
-predicate SizedLaw_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), SizedLaw()) &&
-  boolFromRef(geInts(f_size(this), intToRef(0)))
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
 }
 
-predicate footprint(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate SizedLaw_footprint(this: Ref)
+
+predicate SizedLaw_unique(this: Ref) {
+  acc(SizedLaw_footprint(this), write) &&
+  isSubtype(typeOf(this), SizedLaw()) &&
+  boolFromRef(geInts(f_size(this), intToRef(0)))
+}
 
 method lawClient(view: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(view), SizedLaw())
@@ -1058,9 +1101,19 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 predicate SizedLawDiamond_footprint(this: Ref)
 

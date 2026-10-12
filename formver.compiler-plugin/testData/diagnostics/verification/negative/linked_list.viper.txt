@@ -52,7 +52,12 @@ predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
 predicate Link_unique(this: Ref) {
   isSubtype(typeOf(this), Link()) && acc(this.bf_data, write) &&
@@ -60,7 +65,12 @@ predicate Link_unique(this: Ref) {
   (g_next(this) != nullValue() ==> acc(Link_unique(g_next(this)), write))
 }
 
-predicate Serializable_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method con(par_data: Ref, par_next: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_data), intType())

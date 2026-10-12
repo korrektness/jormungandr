@@ -1,14 +1,14 @@
 /unsupported_observer_views.kt: info: Generated Viper text for count:
 function count(this: Ref): Ref
   requires isSubtype(typeOf(this), Tally())
-  requires acc(Tally_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
 /unsupported_observer_views.kt: info: Generated Viper text for inc:
 function count(this: Ref): Ref
   requires isSubtype(typeOf(this), Tally())
-  requires acc(Tally_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -17,7 +17,11 @@ method inc(this: Ref) returns (ret: Ref)
   requires acc(Tally_unique(this), write)
   ensures acc(Tally_unique(this), write)
   ensures isSubtype(typeOf(ret), unitType())
-  ensures intFromRef(count(this)) == old(intFromRef(count(this))) + 1
+  ensures (unfolding acc(Tally_unique(this), wildcard) in
+      intFromRef(count(this))) ==
+    old((unfolding acc(Tally_unique(this), wildcard) in
+      intFromRef(count(this)))) +
+    1
 
 
 /unsupported_observer_views.kt: info: Generated Viper text for count:

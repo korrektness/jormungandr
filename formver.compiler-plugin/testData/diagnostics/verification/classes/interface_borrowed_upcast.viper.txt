@@ -1,20 +1,28 @@
 /interface_borrowed_upcast.kt: info: Generated Viper text for observe:
 function observe(this: Ref): Ref
   requires isSubtype(typeOf(this), BorrowedView())
-  requires acc(BorrowedView_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate BorrowedView_unique(this: Ref)
+predicate BorrowedView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BorrowedView())
+}
+
+predicate footprint(this: Ref)
 
 /interface_borrowed_upcast.kt: info: Generated Viper text for touch:
 function observe(this: Ref): Ref
   requires isSubtype(typeOf(this), BorrowedView())
-  requires acc(BorrowedView_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate BorrowedView_unique(this: Ref)
+predicate BorrowedView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BorrowedView())
+}
+
+predicate footprint(this: Ref)
 
 method touch(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), BorrowedView())
@@ -36,7 +44,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), BorrowedView())
-  requires acc(BorrowedView_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -45,7 +53,11 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.value), intType())
 }
 
-predicate BorrowedView_unique(this: Ref)
+predicate BorrowedView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BorrowedView())
+}
+
+predicate footprint(this: Ref)
 
 /interface_borrowed_upcast.kt: info: Generated Viper text for touch:
 field value: Ref
@@ -60,7 +72,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), BorrowedView())
-  requires acc(BorrowedView_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -69,7 +81,11 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.value), intType())
 }
 
-predicate BorrowedView_unique(this: Ref)
+predicate BorrowedView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BorrowedView())
+}
+
+predicate footprint(this: Ref)
 
 method touch(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), BorrowedCell())
@@ -97,7 +113,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -115,25 +131,44 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.value), intType())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method throughThis(this: Ref) returns (v_ret_0: Ref)
@@ -178,7 +213,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -196,25 +231,44 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.value), intType())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method borrowedParameter(cell: Ref) returns (v_ret_0: Ref)
@@ -265,7 +319,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -283,25 +337,44 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.bf_value), intType())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method con(par_value: Ref) returns (ret_1: Ref)
@@ -356,7 +429,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -374,25 +447,44 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.value), intType())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
@@ -429,11 +521,15 @@ method lostField(cell: Ref) returns (v_ret_0: Ref)
 /interface_borrowed_upcast.kt: info: Generated Viper text for inlineLend:
 function observe(this: Ref): Ref
   requires isSubtype(typeOf(this), BorrowedView())
-  requires acc(BorrowedView_unique(this), wildcard)
+  requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
-predicate BorrowedView_unique(this: Ref)
+predicate BorrowedView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BorrowedView())
+}
+
+predicate footprint(this: Ref)
 
 method inlineLend(cell: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(cell), BorrowedView())
@@ -467,7 +563,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -485,25 +581,44 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.value), intType())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method inlineBorrow(cell: Ref) returns (v_ret_0: Ref)
@@ -572,7 +687,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -590,25 +705,44 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.value), intType())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method inlineLend(cell: Ref) returns (ret_1: Ref)
@@ -665,7 +799,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -683,25 +817,44 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.value), intType())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
@@ -748,7 +901,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -766,25 +919,44 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.value), intType())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method nullableBorrow(cell: Ref) returns (v_ret_0: Ref)
@@ -846,7 +1018,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -864,25 +1036,44 @@ predicate BorrowedCell_unique(this: Ref) {
   isSubtype(typeOf(this.bf_value), intType())
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method con(par_value: Ref) returns (ret_2: Ref)
@@ -932,7 +1123,7 @@ function BorrowedCell_f_observe(this: Ref): Ref
 
 function c_BorrowedView_f_observe(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BorrowedView())
-  requires acc(c_BorrowedView_unique(this), wildcard)
+  requires acc(c_BorrowedView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -960,25 +1151,44 @@ predicate CellHolder_unique(this: Ref) {
   acc(BorrowedCell_unique(g_cell(this)), write)
 }
 
-predicate Cloneable_unique(this: Ref)
+predicate Cloneable_footprint(this: Ref)
 
-predicate Serializable_unique(this: Ref)
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
 
-predicate c_BorrowedView_unique(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_BorrowedView_footprint(this: Ref)
+
+predicate c_BorrowedView_unique(this: Ref) {
+  acc(c_BorrowedView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_BorrowedView())
+}
 
 method BorrowedCell_c_BorrowedView_restore(this: Ref)
   requires acc(c_BorrowedView_unique(this), write)
   requires isSubtype(typeOf(this), BorrowedCell())
   ensures acc(BorrowedCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BorrowedView())) && true ==>
-    BorrowedCell_f_observe(this) == old(c_BorrowedView_f_observe(this))
+    BorrowedCell_f_observe(this) ==
+    old((unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)))
 
 
 method BorrowedCell_c_BorrowedView_upcast(this: Ref)
   requires acc(BorrowedCell_unique(this), write)
   ensures acc(c_BorrowedView_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), BorrowedCell())) && true ==>
-    c_BorrowedView_f_observe(this) == old(BorrowedCell_f_observe(this))
+    (unfolding acc(c_BorrowedView_unique(this), wildcard) in
+      c_BorrowedView_f_observe(this)) ==
+    old(BorrowedCell_f_observe(this))
 
 
 method inlineFieldBorrow(holder: Ref) returns (v_ret_0: Ref)
