@@ -81,7 +81,7 @@ function c_Sized_g_size(this: Ref): Ref
 method FixedSize_c_Sized_upcast(this: Ref)
   requires acc(FixedSize_unique(this), write)
   ensures acc(c_Sized_unique(this), write)
-  ensures true && old(isSubtype(typeOf(this), FixedSize())) ==>
+  ensures true && old(isSubtype(typeOf(this), FixedSize())) && true ==>
     (unfolding acc(c_Sized_unique(this), wildcard) in c_Sized_g_size(this)) ==
     old(FixedSize_g_size(this))
 

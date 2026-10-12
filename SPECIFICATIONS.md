@@ -76,7 +76,7 @@ parameter types, ownership annotations included, and type parameters; this picks
 returns `Unit`, has no extension receiver, and its body holds only a `preconditions` block followed by a
 `postconditions` block, whose type is the member's return type. Its parameters stand for the member's parameters
 by position. It is never converted, verified or called. A member has at most one `@SpecOf` function, none if its
-body has a specification, and none if it is `@Pure`. Each violation, and a call to a `@SpecOf` function, is
+body has a specification. Each violation, and a call to a `@SpecOf` function, is
 reported as `INVALID_SPEC_OF`.
 
 ### Overrides
@@ -141,6 +141,10 @@ These are reported as `INVALID_OBSERVER`:
 - a `@Pure` override of a member that is neither an observer nor an override of one;
 - an observer implementation with overridable dispatch;
 - a `@Pure var`.
+
+Observer domains are preconditions supplied by `@SpecOf` (see [Specifications beside a member](#specifications-beside-a-member)).
+Calls must establish them, and implementations are checked under the inherited domain. An implementation's own
+contract must refine the interface contract. Domain expressions select observer bindings for the receiver's view.
 
 An observer function is encoded as a bodiless Viper function; a class override is encoded with its pure body.
 Calls select the function of the receiver's static type. Permissions follow the `@Pure` encoding described in

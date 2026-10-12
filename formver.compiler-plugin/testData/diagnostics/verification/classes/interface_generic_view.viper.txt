@@ -423,7 +423,8 @@ method BooleanView_c_GenericView_upcast(this: Ref)
   ensures (forall candidate: Ref ::
       { c_GenericView_f_same(this, candidate) }
       true && old(isSubtype(typeOf(this), BooleanView())) && true &&
-      old(isSubtype(typeOf(candidate), boolType())) ==>
+      old(isSubtype(typeOf(candidate), boolType())) &&
+      isSubtype(typeOf(candidate), nullable(anyType())) ==>
       (unfolding acc(c_GenericView_unique(this), wildcard) in
         c_GenericView_f_same(this, candidate)) ==
       old(BooleanView_f_same(this, candidate)))

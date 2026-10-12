@@ -20,12 +20,16 @@ import org.jetbrains.kotlin.formver.core.embeddings.asInfo
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CompleteFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toMethodCall
+import org.jetbrains.kotlin.formver.core.embeddings.callables.toFuncApp
+import org.jetbrains.kotlin.formver.core.embeddings.callables.argumentTypeGuards
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.NestedPredicates
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeInvariantEmbedding
 import org.jetbrains.kotlin.formver.core.linearization.hierarchyPredicateAccess
 import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.core.names.RefinementName
+import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.viper.ast.PermExp
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
 import org.jetbrains.kotlin.formver.viper.ast.UserMethod
 
@@ -54,13 +58,19 @@ internal data class Refinement(
         val position = source.asPosition
         fun role(clause: SourceRole.OverrideRefinement.Clause) = SourceRole.OverrideRefinement(spelling, clause, position).asInfo
         val receiverType = override.dispatchReceiver?.provenInvariants().orEmpty()
-        val call = override.toMethodCall(
-            overridden.formalArgs.map { it.toLocalVarUse() },
-            overridden.returns.toLocalVarUse(),
-            position,
-            role(SourceRole.OverrideRefinement.Clause.PRECONDITION),
+        // Kotlin fixes the instantiated argument types of an override of a generic member.
+        val argumentTypes = overridden.argumentTypeGuards(override)
+        val parameters = overridden.formalArgs.map { it.toLocalVarUse() }
+        val returnVariable = if (overridden.isPure) ReturnTarget.createForDepth(0, overridden.returns.type).variable
+            else overridden.returns
+        val target = returnVariable.toLocalVarUse()
+        val call = if (override.isPure) Stmt.LocalVarAssign(
+            target, override.toFuncApp(parameters, position, role(SourceRole.OverrideRefinement.Clause.PRECONDITION)), position,
+        ) else override.toMethodCall(
+            parameters, target, position, role(SourceRole.OverrideRefinement.Clause.PRECONDITION),
         )
-        val assertions = overridden.postconditions.pureToViper(toBuiltin = true, typeResolver).map {
+        val assertions = overridden.postconditions.pureToViper(toBuiltin = true, typeResolver,
+            functionResult = target.takeIf { overridden.isPure }).map {
             Stmt.Assert(it, position, role(SourceRole.OverrideRefinement.Clause.POSTCONDITION))
         }
         val chain = ownedReceiverChain(typeResolver)
@@ -85,7 +95,7 @@ internal data class Refinement(
                 Stmt.Fold(hierarchyPredicateAccess(subject, cls, source), position),
             )
         }
-        val givesBack = receiver?.isBorrowed == true && !overridden.isPure
+        val givesBack = overridden.isPure || receiver?.isBorrowed == true
         val demotion = if (!givesBack) emptyList() else if (transfer != null) listOf(
             transfer.method.toMethodCall(listOf(receiver!!.toLocalVarUse()), emptyList(), position)
         ) else chain.dropLast(1).map { cls ->
@@ -94,8 +104,13 @@ internal data class Refinement(
         return UserMethod(
             RefinementName(overridden.name),
             overridden.formalArgs.map { it.toLocalVarDecl() },
-            overridden.returns.toLocalVarDecl(),
-            (overridden.preconditions + receiverType).pureToViper(toBuiltin = true, typeResolver),
+            returnVariable.toLocalVarDecl(),
+            (argumentTypes + overridden.preconditions + receiverType).pureToViper(toBuiltin = true, typeResolver).map { pre ->
+                // Family restoration consumes full ownership; the proof still ranges over every legal receiver state.
+                if (overridden.isPure && pre is Exp.PredicateAccess &&
+                    (pre.formalArgs.singleOrNull() as? Exp.LocalVar)?.name == receiver?.name)
+                    pre.copy(perm = PermExp.FullPerm()) else pre
+            },
             emptyList(),
             Stmt.Seqn(promotion + call + demotion + assertions),
             position,
@@ -135,6 +150,7 @@ internal val FirFunctionSymbol<*>.isOpenOrOverride: Boolean
 context(checkerContext: CheckerContext)
 @OptIn(SymbolInternals::class)
 internal fun FirNamedFunctionSymbol.specificationOwner(): FirNamedFunctionSymbol? {
+    if (specOfTargetName(checkerContext.session) != null) return null
     if (fir.userSpecification(checkerContext.session) != null) return this
     return directOverriddenSymbolsSafe()
         .filterIsInstance<FirNamedFunctionSymbol>()

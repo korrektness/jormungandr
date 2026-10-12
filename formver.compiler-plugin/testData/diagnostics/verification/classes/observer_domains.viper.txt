@@ -1,0 +1,887 @@
+/observer_domains.kt: info: Generated Viper text for lower:
+function lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), Window())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), Window())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(lower(this)) <= intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+/observer_domains.kt: info: Generated Viper text for read:
+function lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), Window())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), Window())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(lower(this)) <= intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+/observer_domains.kt: info: Generated Viper text for lower:
+field start: Ref
+
+function ChildWindow_c_Window_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ChildWindow_c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function ChildWindow_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), ChildWindow())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), ChildWindow())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function TextWindow_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), TextWindow())
+  requires acc(TextWindow_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(TextWindow_unique(this), write) in this.start)
+}
+
+function TextWindow_f_read(this: Ref, at: Ref, top: Ref, text: Ref): Ref
+  requires isSubtype(typeOf(this), TextWindow())
+  requires acc(TextWindow_unique(this), write)
+  requires isSubtype(typeOf(at), intType())
+  requires isSubtype(typeOf(top), intType())
+  requires isSubtype(typeOf(text), nullable(stringType()))
+  requires intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+    intFromRef(at) < intFromRef(top)
+  ensures isSubtype(typeOf(result), nullable(stringType()))
+  ensures result == text
+{
+  text
+}
+
+function c_Window_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+/observer_domains.kt: info: Generated Viper text for read:
+field start: Ref
+
+function TextWindow_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), TextWindow())
+  requires acc(TextWindow_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(TextWindow_unique(this), write) in this.start)
+}
+
+function TextWindow_f_read(this: Ref, at: Ref, top: Ref, text: Ref): Ref
+  requires isSubtype(typeOf(this), TextWindow())
+  requires acc(TextWindow_unique(this), write)
+  requires isSubtype(typeOf(at), intType())
+  requires isSubtype(typeOf(top), intType())
+  requires isSubtype(typeOf(text), nullable(stringType()))
+  requires intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+    intFromRef(at) < intFromRef(top)
+  ensures isSubtype(typeOf(result), nullable(stringType()))
+  ensures result == text
+{
+  text
+}
+
+function c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref,
+  index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function c_ChildWindow_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChildWindow())
+  requires acc(c_ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChildWindow())
+  requires acc(c_ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function c_Window_f_lower_args_c_Window_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref, index: Ref,
+  limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+method TextWindow_c_ChildWindow_restore(this: Ref)
+  requires acc(c_ChildWindow_unique(this), write)
+  requires isSubtype(typeOf(this), TextWindow())
+  ensures acc(TextWindow_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Window())) && true ==>
+    TextWindow_f_lower(this) ==
+    old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)))
+  ensures true && old(isSubtype(typeOf(this), c_Window())) && true ==>
+    TextWindow_f_lower(this) ==
+    old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)))
+  ensures (forall index: Ref, limit: Ref, fallback: Ref ::
+      { TextWindow_f_read(this, index, limit, fallback) }
+      true && old(isSubtype(typeOf(this), c_Window())) && true &&
+      old(isSubtype(typeOf(index), intType())) &&
+      old(isSubtype(typeOf(limit), intType())) &&
+      old(isSubtype(typeOf(fallback), nullable(anyType()))) &&
+      (old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+        intFromRef(index))) &&
+      old(intFromRef(index) < intFromRef(limit))) &&
+      isSubtype(typeOf(fallback), nullable(stringType())) ==>
+      TextWindow_f_read(this, index, limit, fallback) ==
+      old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+        index, limit, fallback))))
+  ensures (forall index: Ref, limit: Ref, fallback: Ref ::
+      { TextWindow_f_read(this, index, limit, fallback) }
+      true && old(isSubtype(typeOf(this), c_Window())) && true &&
+      old(isSubtype(typeOf(index), intType())) &&
+      old(isSubtype(typeOf(limit), intType())) &&
+      old(isSubtype(typeOf(fallback), nullable(anyType()))) &&
+      (old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+        intFromRef(index))) &&
+      old(intFromRef(index) < intFromRef(limit))) &&
+      isSubtype(typeOf(fallback), nullable(stringType())) ==>
+      TextWindow_f_read(this, index, limit, fallback) ==
+      old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+        index, limit, fallback))))
+
+
+method TextWindow_c_ChildWindow_upcast(this: Ref)
+  requires acc(TextWindow_unique(this), write)
+  ensures acc(c_ChildWindow_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), TextWindow())) && true ==>
+    (unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) ==
+    old(TextWindow_f_lower(this))
+  ensures true && old(isSubtype(typeOf(this), TextWindow())) && true ==>
+    (unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) ==
+    old(TextWindow_f_lower(this))
+  ensures (forall at: Ref, top: Ref, text: Ref ::
+      { c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+      at, top, text) }
+      true && old(isSubtype(typeOf(this), TextWindow())) && true &&
+      old(isSubtype(typeOf(at), intType())) &&
+      old(isSubtype(typeOf(top), intType())) &&
+      old(isSubtype(typeOf(text), nullable(stringType()))) &&
+      (old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at)) &&
+      old(intFromRef(at) < intFromRef(top))) &&
+      (old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at)) &&
+      old(intFromRef(at) < intFromRef(top))) &&
+      isSubtype(typeOf(text), nullable(anyType())) ==>
+      (unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+        at, top, text)) ==
+      old(TextWindow_f_read(this, at, top, text)))
+  ensures (forall at: Ref, top: Ref, text: Ref ::
+      { c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+      at, top, text) }
+      true && old(isSubtype(typeOf(this), TextWindow())) && true &&
+      old(isSubtype(typeOf(at), intType())) &&
+      old(isSubtype(typeOf(top), intType())) &&
+      old(isSubtype(typeOf(text), nullable(stringType()))) &&
+      (old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at)) &&
+      old(intFromRef(at) < intFromRef(top))) &&
+      (old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at)) &&
+      old(intFromRef(at) < intFromRef(top))) &&
+      isSubtype(typeOf(text), nullable(anyType())) ==>
+      (unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+        at, top, text)) ==
+      old(TextWindow_f_read(this, at, top, text)))
+
+
+method refines_c_ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref)
+  returns (ret: Ref)
+  requires isSubtype(typeOf(fallback), nullable(stringType()))
+  requires isSubtype(typeOf(this), c_ChildWindow())
+  requires acc(c_ChildWindow_unique(this), write)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires (unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+      intFromRef(index)) &&
+    intFromRef(index) < intFromRef(limit)
+  requires isSubtype(typeOf(this), TextWindow())
+{
+  TextWindow_c_ChildWindow_restore(this)
+  ret := TextWindow_f_read(this, index, limit, fallback)
+  TextWindow_c_ChildWindow_upcast(this)
+  assert isSubtype(typeOf(ret), nullable(anyType()))
+  assert ret == fallback
+}
+
+/observer_domains.kt: info: Generated Viper text for readWindow:
+function ChildWindow_c_Window_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ChildWindow_c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function ChildWindow_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), ChildWindow())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), ChildWindow())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function c_Window_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+method readWindow(w: Ref, i: Ref, limit: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(w), ChildWindow())
+  requires acc(ChildWindow_unique(w), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires (unfolding acc(ChildWindow_unique(w), wildcard) in
+      intFromRef(ChildWindow_c_Window_f_lower(w)) <= intFromRef(i)) &&
+    intFromRef(i) < intFromRef(limit)
+  ensures acc(ChildWindow_unique(w), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(stringType()))
+  ensures v_ret_0 == nullValue() &&
+    (unfolding acc(ChildWindow_unique(w), wildcard) in
+      intFromRef(ChildWindow_c_Window_f_lower(w))) ==
+    old((unfolding acc(ChildWindow_unique(w), wildcard) in
+      intFromRef(ChildWindow_c_Window_f_lower(w))))
+{
+  var anon: Ref
+  anon := (unfolding acc(ChildWindow_unique(w), wildcard) in
+      ChildWindow_c_Window_f_read(w, i, limit, nullValue()))
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), nullable(stringType()))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/observer_domains.kt: info: Generated Viper text for windowRoundTrip:
+field start: Ref
+
+function TextWindow_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), TextWindow())
+  requires acc(TextWindow_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(TextWindow_unique(this), write) in this.start)
+}
+
+function TextWindow_f_read(this: Ref, at: Ref, top: Ref, text: Ref): Ref
+  requires isSubtype(typeOf(this), TextWindow())
+  requires acc(TextWindow_unique(this), write)
+  requires isSubtype(typeOf(at), intType())
+  requires isSubtype(typeOf(top), intType())
+  requires isSubtype(typeOf(text), nullable(stringType()))
+  requires intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+    intFromRef(at) < intFromRef(top)
+  ensures isSubtype(typeOf(result), nullable(stringType()))
+  ensures result == text
+{
+  text
+}
+
+function c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref,
+  index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function c_ChildWindow_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChildWindow())
+  requires acc(c_ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChildWindow())
+  requires acc(c_ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function c_Window_f_lower_args_c_Window_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref, index: Ref,
+  limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method TextWindow_c_ChildWindow_restore(this: Ref)
+  requires acc(c_ChildWindow_unique(this), write)
+  requires isSubtype(typeOf(this), TextWindow())
+  ensures acc(TextWindow_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Window())) && true ==>
+    TextWindow_f_lower(this) ==
+    old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)))
+  ensures true && old(isSubtype(typeOf(this), c_Window())) && true ==>
+    TextWindow_f_lower(this) ==
+    old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)))
+  ensures (forall index: Ref, limit: Ref, fallback: Ref ::
+      { TextWindow_f_read(this, index, limit, fallback) }
+      true && old(isSubtype(typeOf(this), c_Window())) && true &&
+      old(isSubtype(typeOf(index), intType())) &&
+      old(isSubtype(typeOf(limit), intType())) &&
+      old(isSubtype(typeOf(fallback), nullable(anyType()))) &&
+      (old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+        intFromRef(index))) &&
+      old(intFromRef(index) < intFromRef(limit))) &&
+      isSubtype(typeOf(fallback), nullable(stringType())) ==>
+      TextWindow_f_read(this, index, limit, fallback) ==
+      old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+        index, limit, fallback))))
+  ensures (forall index: Ref, limit: Ref, fallback: Ref ::
+      { TextWindow_f_read(this, index, limit, fallback) }
+      true && old(isSubtype(typeOf(this), c_Window())) && true &&
+      old(isSubtype(typeOf(index), intType())) &&
+      old(isSubtype(typeOf(limit), intType())) &&
+      old(isSubtype(typeOf(fallback), nullable(anyType()))) &&
+      (old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
+        intFromRef(index))) &&
+      old(intFromRef(index) < intFromRef(limit))) &&
+      isSubtype(typeOf(fallback), nullable(stringType())) ==>
+      TextWindow_f_read(this, index, limit, fallback) ==
+      old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+        index, limit, fallback))))
+
+
+method TextWindow_c_ChildWindow_upcast(this: Ref)
+  requires acc(TextWindow_unique(this), write)
+  ensures acc(c_ChildWindow_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), TextWindow())) && true ==>
+    (unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) ==
+    old(TextWindow_f_lower(this))
+  ensures true && old(isSubtype(typeOf(this), TextWindow())) && true ==>
+    (unfolding acc(c_ChildWindow_unique(this), wildcard) in
+      c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) ==
+    old(TextWindow_f_lower(this))
+  ensures (forall at: Ref, top: Ref, text: Ref ::
+      { c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+      at, top, text) }
+      true && old(isSubtype(typeOf(this), TextWindow())) && true &&
+      old(isSubtype(typeOf(at), intType())) &&
+      old(isSubtype(typeOf(top), intType())) &&
+      old(isSubtype(typeOf(text), nullable(stringType()))) &&
+      (old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at)) &&
+      old(intFromRef(at) < intFromRef(top))) &&
+      (old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at)) &&
+      old(intFromRef(at) < intFromRef(top))) &&
+      isSubtype(typeOf(text), nullable(anyType())) ==>
+      (unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+        at, top, text)) ==
+      old(TextWindow_f_read(this, at, top, text)))
+  ensures (forall at: Ref, top: Ref, text: Ref ::
+      { c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+      at, top, text) }
+      true && old(isSubtype(typeOf(this), TextWindow())) && true &&
+      old(isSubtype(typeOf(at), intType())) &&
+      old(isSubtype(typeOf(top), intType())) &&
+      old(isSubtype(typeOf(text), nullable(stringType()))) &&
+      (old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at)) &&
+      old(intFromRef(at) < intFromRef(top))) &&
+      (old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at)) &&
+      old(intFromRef(at) < intFromRef(top))) &&
+      isSubtype(typeOf(text), nullable(anyType())) ==>
+      (unfolding acc(c_ChildWindow_unique(this), wildcard) in
+        c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
+        at, top, text)) ==
+      old(TextWindow_f_read(this, at, top, text)))
+
+
+method readWindow(w: Ref, i: Ref, limit: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(w), c_ChildWindow())
+  requires acc(c_ChildWindow_unique(w), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires (unfolding acc(c_ChildWindow_unique(w), wildcard) in
+      intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(w)) <=
+      intFromRef(i)) &&
+    intFromRef(i) < intFromRef(limit)
+  ensures acc(c_ChildWindow_unique(w), write)
+  ensures isSubtype(typeOf(ret_4), nullable(stringType()))
+  ensures ret_4 == nullValue() &&
+    (unfolding acc(c_ChildWindow_unique(w), wildcard) in
+      intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(w))) ==
+    old((unfolding acc(c_ChildWindow_unique(w), wildcard) in
+      intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(w))))
+
+
+method windowRoundTrip(w: Ref, i: Ref, limit: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(w), TextWindow())
+  requires acc(TextWindow_unique(w), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires intFromRef(TextWindow_f_lower(w)) <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(limit)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var before: Ref
+  var anon_4: Ref
+  var l1_result: Ref
+  var anon_5: Ref
+  var view: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  anon_1 := TextWindow_f_lower(w)
+  anon_2 := TextWindow_f_lower(w)
+  anon_3 := TextWindow_f_read(w, minusInts(anon_1, intToRef(1)), anon_2, stringToRef(Seq(101,
+    100, 103, 101)))
+  assert anon_3 == stringToRef(Seq(101, 100, 103, 101))
+  anon_4 := TextWindow_f_read(w, i, limit, stringToRef(Seq(111, 107)))
+  before := anon_4
+  TextWindow_c_ChildWindow_upcast(w)
+  l1_result := readWindow(w, i, limit)
+  TextWindow_c_ChildWindow_restore(w)
+  assert l1_result == nullValue()
+  anon_5 := TextWindow_f_read(w, i, limit, stringToRef(Seq(111, 107)))
+  assert anon_5 == before
+  view := w
+  TextWindow_c_ChildWindow_upcast(view)
+  anon_7 := (unfolding acc(c_ChildWindow_unique(view), wildcard) in
+      c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(view,
+      i, limit, stringToRef(Seq(111, 107))))
+  anon_6 := anon_7
+  inhale isSubtype(typeOf(anon_6), nullable(stringType()))
+  assert anon_6 == stringToRef(Seq(111, 107))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/observer_domains.kt: info: Generated Viper text for outsideWindow:
+function ChildWindow_c_Window_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ChildWindow_c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function ChildWindow_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), ChildWindow())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), ChildWindow())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
+    intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function c_Window_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(index) &&
+    intFromRef(index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+method outsideWindow(w: Ref, limit: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(w), ChildWindow())
+  requires acc(ChildWindow_unique(w), write)
+  requires isSubtype(typeOf(limit), intType())
+  requires (unfolding acc(ChildWindow_unique(w), wildcard) in
+      intFromRef(ChildWindow_c_Window_f_lower(w)) <= intFromRef(limit))
+  ensures acc(ChildWindow_unique(w), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := (unfolding acc(ChildWindow_unique(w), wildcard) in
+      ChildWindow_c_Window_f_read(w, limit, limit, nullValue()))
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), nullable(stringType()))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/observer_domains.kt: info: Generated Viper text for read:
+function read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+
+
+/observer_domains.kt: info: Generated Viper text for read:
+function PositiveRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+
+
+function WiderRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), WiderRead())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= -1
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(i) + 1
+{
+  plusInts(i, intToRef(1))
+}
+
+method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(PositiveRead_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  requires isSubtype(typeOf(this), WiderRead())
+{
+  ret := WiderRead_f_read(this, i)
+  assert isSubtype(typeOf(ret), intType())
+  assert intFromRef(ret) >= intFromRef(i)
+}
+
+/observer_domains.kt: info: Generated Viper text for read:
+function NarrowRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NarrowRead())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) > 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(i)
+{
+  i
+}
+
+function PositiveRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+
+
+method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(PositiveRead_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  requires isSubtype(typeOf(this), NarrowRead())
+{
+  ret := NarrowRead_f_read(this, i)
+  assert isSubtype(typeOf(ret), intType())
+  assert intFromRef(ret) >= intFromRef(i)
+}
+
+/observer_domains.kt: info: Generated Viper text for read:
+function PositiveRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+
+
+function WrongRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), WrongRead())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(i) - 1
+{
+  minusInts(i, intToRef(1))
+}
+
+method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(PositiveRead_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  requires isSubtype(typeOf(this), WrongRead())
+{
+  ret := WrongRead_f_read(this, i)
+  assert isSubtype(typeOf(ret), intType())
+  assert intFromRef(ret) >= intFromRef(i)
+}
+
+/observer_domains.kt: info: Generated Viper text for read:
+function PositiveRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+
+
+function WrongBody_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), WrongBody())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+{
+  minusInts(i, intToRef(1))
+}
+
+method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(PositiveRead_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  requires isSubtype(typeOf(this), WrongBody())
+{
+  ret := WrongBody_f_read(this, i)
+  assert isSubtype(typeOf(ret), intType())
+  assert intFromRef(ret) >= intFromRef(i)
+}
+
+/observer_domains.kt: info: Generated Viper text for read:
+function read(this: Ref, value: Ref): Ref
+  requires isSubtype(typeOf(this), AnyRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(value), anyType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+
+
+/observer_domains.kt: info: Generated Viper text for read:
+function AnyRead_f_read(this: Ref, value: Ref): Ref
+  requires isSubtype(typeOf(this), AnyRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(value), anyType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+
+
+function NarrowTypeRead_f_read(this: Ref, value: Ref): Ref
+  requires isSubtype(typeOf(this), NarrowTypeRead())
+  requires isSubtype(typeOf(value), anyType())
+  requires isSubtype(typeOf(value), stringType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == 0
+{
+  intToRef(0)
+}
+
+method refines_AnyRead_f_read(this: Ref, value: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), AnyRead())
+  requires acc(AnyRead_unique(this), write)
+  requires isSubtype(typeOf(value), anyType())
+  requires isSubtype(typeOf(this), NarrowTypeRead())
+{
+  ret := NarrowTypeRead_f_read(this, value)
+  assert isSubtype(typeOf(ret), intType())
+  assert intFromRef(ret) >= 0
+}

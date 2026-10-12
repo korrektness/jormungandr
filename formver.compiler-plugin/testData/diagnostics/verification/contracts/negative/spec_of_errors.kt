@@ -55,12 +55,6 @@ abstract class Errors : Base() {
 
     abstract fun result(x: Int): Int
 
-    <!INVALID_SPEC_OF!>@SpecOf("pure")
-    fun pureSpec(x: Int) {}<!>
-
-    @Pure
-    fun pure(x: Int): Int = x
-
     <!INVALID_SPEC_OF!>@SpecOf("owned")
     fun ownedSpec(x: Box) {}<!>
 

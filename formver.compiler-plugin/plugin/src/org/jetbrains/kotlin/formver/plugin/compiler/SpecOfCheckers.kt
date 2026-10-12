@@ -29,7 +29,6 @@ import org.jetbrains.kotlin.formver.core.conversion.specOfTargetName
 import org.jetbrains.kotlin.formver.core.conversion.specOfTargets
 import org.jetbrains.kotlin.formver.core.isBorrowed
 import org.jetbrains.kotlin.formver.core.isFormverFunctionNamed
-import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.isUnique
 
 /** Reports a `@SpecOf` function that fails one of the checks below. */
@@ -60,7 +59,6 @@ class SpecOfDeclarationChecker(private val session: FirSession) : FirSimpleFunct
         val symbol = declaration.symbol
         val name = target.name.asString()
         if (target.specOfSiblings(session).size > 1) return "Invalid @SpecOf: several @SpecOf functions for '$name'."
-        if (target.isPure(session)) return "Invalid @SpecOf: target is @Pure."
         if (target.fir.ownSpecification() != null) return "Invalid @SpecOf: target has its own specification."
         val ownershipMatches = symbol.valueParameterSymbols.zip(target.valueParameterSymbols).all { (own, theirs) ->
             own.isUnique() == theirs.isUnique() && own.isBorrowed() == theirs.isBorrowed()

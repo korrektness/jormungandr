@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariable
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -43,6 +44,11 @@ data class PureExpLinearizer(
     private val scope: LetScope? = null,
     /** Shared by the copies made for nested scopes and positions. */
     private val predicateParameters: MutableSet<PredicateParameter> = mutableSetOf(),
+    /** The ownership view for observations of the contract receiver. */
+    val observerReceiver: Pair<ClassTypeEmbedding, Exp>? = null,
+    val observerFootprintOpen: Boolean = true,
+    val functionResult: Exp? = null,
+    val variableNames: Map<SymbolicName, SymbolicName> = emptyMap(),
 ) : LinearizationContext {
 
     override val logicOperatorPolicy: LogicOperatorPolicy
@@ -171,8 +177,15 @@ data class PureExpLinearizer(
     override fun addModifier(mod: StmtModifier) =
         unsupported("This construct needs a statement, which a specification cannot contain.")
 
+    fun contractObserverApplication(function: SymbolicName, args: List<Exp>): Exp? {
+        val (view, receiver) = observerReceiver ?: return null
+        if ((args.firstOrNull() as? Exp.LocalVar)?.name != (receiver as? Exp.LocalVar)?.name) return null
+        val binding = typeResolver.observerBinding(view, function) ?: return null
+        return if (observerFootprintOpen) binding.trigger(args, source.asPosition) else binding.application(args, source.asPosition)
+    }
+
     override fun resolveVariableName(name: SymbolicName): SymbolicName =
-        name
+        variableNames[name] ?: name
 
     override fun addPredicateParameter(parameter: PredicateParameter) {
         predicateParameters.add(parameter)
@@ -181,8 +194,15 @@ data class PureExpLinearizer(
     fun hoistUnfoldings(exp: Exp): Exp = exp.hoistUnfoldings(predicateParameters)
 }
 
-fun ExpEmbedding.pureToViper(toBuiltin: Boolean, typeResolver: TypeResolver, source: KtSourceElement? = null): Exp {
-    val linearizer = PureExpLinearizer(source, typeResolver)
+fun ExpEmbedding.pureToViper(
+    toBuiltin: Boolean, typeResolver: TypeResolver, source: KtSourceElement? = null,
+    observerReceiver: Pair<ClassTypeEmbedding, Exp>? = null,
+    functionResult: Exp? = null,
+    observerFootprintOpen: Boolean = true,
+    variableNames: Map<SymbolicName, SymbolicName> = emptyMap(),
+): Exp {
+    val linearizer = PureExpLinearizer(source, typeResolver, observerReceiver = observerReceiver,
+        functionResult = functionResult, observerFootprintOpen = observerFootprintOpen, variableNames = variableNames)
     val lin = toLinearizable(source)
     val exp = if (toBuiltin) lin.toViperBuiltinType(linearizer) else lin.toViper(linearizer)
     return linearizer.hoistUnfoldings(exp)
@@ -191,9 +211,13 @@ fun ExpEmbedding.pureToViper(toBuiltin: Boolean, typeResolver: TypeResolver, sou
 fun List<ExpEmbedding>.pureToViper(
     toBuiltin: Boolean,
     typeResolver: TypeResolver,
-    source: KtSourceElement? = null
+    source: KtSourceElement? = null,
+    observerReceiver: Pair<ClassTypeEmbedding, Exp>? = null,
+    functionResult: Exp? = null,
+    observerFootprintOpen: Boolean = true,
+    variableNames: Map<SymbolicName, SymbolicName> = emptyMap(),
 ): List<Exp> =
-    map { it.pureToViper(toBuiltin, typeResolver, source) }
+    map { it.pureToViper(toBuiltin, typeResolver, source, observerReceiver, functionResult, observerFootprintOpen, variableNames) }
 
 /**
  * The locals a block in a specification declares, and the values bound to them, in the order they are bound. Each

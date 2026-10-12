@@ -838,6 +838,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("observer_domains.kt")
+      public void testObserver_domains() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/observer_domains.kt");
+      }
+
+      @Test
       @TestMetadata("override_contracts.kt")
       public void testOverride_contracts() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/override_contracts.kt");

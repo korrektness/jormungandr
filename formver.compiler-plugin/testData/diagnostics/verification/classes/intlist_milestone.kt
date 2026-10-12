@@ -5,10 +5,15 @@ import org.jetbrains.kotlin.formver.plugin.*
 interface IntList {
     @Pure @Unique fun <!VIPER_TEXT!>size<!>(): Int
     @Pure @Unique fun <!VIPER_TEXT!>get<!>(i: Int): Int
+    @SpecOf("get") @Unique
+    fun getSpec(i: Int) {
+        preconditions { 0 <= i && i < size() }
+    }
     @Law @Pure @Unique fun nonnegative(): Boolean = size() >= 0
 
     @SpecOf("add") @Unique @Borrowed
     fun addSpec(value: Int) {
+        preconditions { size() >= 0 }
         postconditions<Unit> {
             size() == old(size()) + 1
             get(old(size())) == value
@@ -29,7 +34,6 @@ interface IntList {
     @Unique @Borrowed fun <!VIPER_TEXT!>set<!>(i: Int, value: Int)
 }
 
-// Observers are total; the checked read operation supplies the index contract.
 fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
     preconditions { 0 <= i && i < list.size() }
     postconditions<Int> { result ->
@@ -43,8 +47,11 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
 <!VIPER_TEXT!>class ArrayIntList<!>(var data: @Unique IntArray, var count: Int) : IntList {
     @Law @Pure @Unique fun representation(): Boolean = 0 <= count && count <= data.size
     @Pure @Unique override fun <!VIPER_TEXT!>size<!>(): Int = count
-    @Pure @Unique override fun <!VIPER_TEXT!>get<!>(i: Int): Int =
-        if (0 <= i && i < count && i < data.size) data[i] else 0
+    @SpecOf("get") @Unique
+    fun concreteGetSpec(i: Int) {
+        preconditions { 0 <= i && i < count && i < data.size }
+    }
+    @Pure @Unique override fun <!VIPER_TEXT!>get<!>(i: Int): Int = data[i]
 
     @Unique @Borrowed override fun <!VIPER_TEXT!>add<!>(value: Int) {
         val n = count
@@ -230,7 +237,7 @@ fun <!VIPER_TEXT!>badSetIndex<!>(list: @Unique @Borrowed IntList) {
 }
 
 fun <!VIPER_TEXT!>badGetIndex<!>(list: @Unique @Borrowed IntList) {
-    <!VIPER_VERIFICATION_ERROR!>get(list, -1)<!>
+    <!VIPER_VERIFICATION_ERROR!>list.get(-1)<!>
 }
 
 fun <!VIPER_TEXT!>badArrayConstruction<!>() {

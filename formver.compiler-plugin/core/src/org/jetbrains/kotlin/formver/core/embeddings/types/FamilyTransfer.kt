@@ -7,6 +7,8 @@ package org.jetbrains.kotlin.formver.core.embeddings.types
 
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
+import org.jetbrains.kotlin.formver.core.embeddings.callables.argumentTypeGuards
+import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.core.names.PredicateName
 import org.jetbrains.kotlin.formver.core.names.ScopedName
@@ -19,13 +21,16 @@ import org.jetbrains.kotlin.formver.viper.ast.Type
 
 /** A trusted consuming change of presentation of one dynamic object's owned footprint. */
 class FamilyTransfer(from: ClassTypeEmbedding, to: ClassTypeEmbedding, private val resolver: TypeResolver) {
-    private fun observations(source: ObserverBinding, target: ObserverBinding): Exp {
+    private fun observations(source: ObserverBinding, target: ObserverBinding, restoring: Boolean): Exp {
         val variables = source.signature.formalArgs.map { it.toLocalVarDecl() }
         val args = variables.map { Exp.LocalVar(it.name, it.type) }
         val current = target.application(args)
         val equality = Exp.EqCmp(current, Exp.Old(source.application(args)))
         // Receiver ownership is supplied by the transfer's precondition. Other preconditions delimit the observer domain.
-        val domain = source.domain()
+        val targetTypes = source.signature.argumentTypeGuards(target.signature).pureToViper(toBuiltin = true, resolver)
+        // The interface domain is expressed through the held view. Refinement establishes the restored implementation's domain.
+        val interfaceDomain = if (restoring) emptyList() else target.domain(through = source, includeDeclaredTypes = false)
+        val domain = (source.domain() + interfaceDomain + targetTypes).distinct()
             .fold<Exp, Exp>(Exp.BoolLit(true)) { acc, exp -> Exp.And(acc, exp) }
         val body = Exp.Implies(domain, equality)
         return if (variables.size == 1) body else
@@ -34,7 +39,7 @@ class FamilyTransfer(from: ClassTypeEmbedding, to: ClassTypeEmbedding, private v
 
     private fun equalities(from: ClassTypeEmbedding, to: ClassTypeEmbedding, restoring: Boolean = false) =
         resolver.observerBindings(from, to).map { (concrete, abstract) ->
-            if (restoring) observations(abstract, concrete) else observations(concrete, abstract)
+            if (restoring) observations(abstract, concrete, restoring = true) else observations(concrete, abstract, restoring = false)
         }
 
     val method: Method = object : Method(ScopedName(from.name.asScope(), ScopedName(to.name.asScope(), PredicateName("upcast")))) {

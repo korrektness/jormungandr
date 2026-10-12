@@ -17,6 +17,8 @@ import org.jetbrains.kotlin.formver.core.conversion.insertInlineFunctionCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.MethodCall
+import org.jetbrains.kotlin.formver.core.embeddings.expression.Is
+import org.jetbrains.kotlin.formver.core.embeddings.expression.PlaceholderVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FunctionTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
@@ -131,6 +133,17 @@ data class NonInlineFunctionSignature(
 
 interface CompleteFunctionSignature : NamedFunctionSignatureWithContract, NamedCallableEmbedding
 
+/** Type guards for instantiated arguments whose contract carries an erased generic type. */
+fun CompleteFunctionSignature.argumentTypeGuards(actual: CompleteFunctionSignature): List<ExpEmbedding> =
+    actual.formalArgs.zip(formalArgs).drop(if (dispatchReceiver != null) 1 else 0).flatMap { (concrete, abstract) ->
+        PlaceholderVariableEmbedding(abstract.name, concrete.type).provenInvariants().filter { invariant ->
+            invariant !is Is || preconditions.none { pre ->
+                pre is Is && (pre.inner as? VariableEmbedding)?.name == abstract.name &&
+                    pre.comparisonType.runtimeType == invariant.comparisonType.runtimeType
+            }
+        }
+    }
+
 fun CompleteFunctionSignature.toViperMethod(ctx: TypeResolver, body: Stmt.Seqn?): Method {
     require(!isPure) {
         "Pure functions should not be converted to methods"
@@ -155,18 +168,19 @@ fun CompleteFunctionSignature.toViperFunction(
     require(isPure) {
         "Impure functions should not be converted to functions"
     }
+    val view = (dispatchReceiver?.type?.pretype as? ClassTypeEmbedding)?.takeIf(ctx::isInterface)
+    val observerReceiver = view?.let { it to dispatchReceiver!!.toLocalVarUse() }
     return UserFunction(
         name,
         formalArgs.map { it.toLocalVarDecl() },
         // TODO: Be explicit about the return types of functions instead of boxing them into a Ref
         Type.Ref,
-        preconditions.pureToViper(toBuiltin = true, ctx).map { pre ->
-            val view = (dispatchReceiver?.type?.pretype as? ClassTypeEmbedding)?.takeIf(ctx::isInterface)
+        preconditions.pureToViper(toBuiltin = true, ctx, observerReceiver = observerReceiver).map { pre ->
             if (pre is Exp.PredicateAccess && pre.predicateName == view?.uniquePredicateName)
                 pre.copy(predicateName = view!!.footprintPredicateName)
             else pre
         },
-        postconditions.pureToViper(toBuiltin = true, ctx) + extraPostconditions,
+        postconditions.pureToViper(toBuiltin = true, ctx, observerReceiver = observerReceiver) + extraPostconditions,
         body,
         declarationSource.asPosition
     )

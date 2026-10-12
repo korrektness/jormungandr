@@ -874,14 +874,21 @@ method pureViewCall(cell: Ref) returns (v_ret_0: Ref)
 {
   var anon_1: Ref
   var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
   inhale isSubtype(typeOf(cell), c_BorrowedView())
+  BorrowedCell_c_BorrowedView_upcast(cell)
+  anon_2 := (unfolding acc(c_BorrowedView_unique(cell), wildcard) in
+      c_BorrowedView_f_observe(cell))
+  BorrowedCell_c_BorrowedView_restore(cell)
+  anon_1 := anon_2
   unfold acc(BorrowedCell_unique(cell), write)
   cell.value := intToRef(9)
-  anon_1 := cell.value
-  assert intFromRef(anon_1) == 9
+  anon_3 := cell.value
+  assert intFromRef(anon_3) == 9
   fold acc(BorrowedCell_unique(cell), write)
   BorrowedCell_c_BorrowedView_upcast(cell)
-  anon_2 := lend(cell, intToRef(10))
+  anon_4 := lend(cell, intToRef(10))
   BorrowedCell_c_BorrowedView_restore(cell)
   refute false
   label lbl_ret_0

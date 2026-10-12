@@ -9,6 +9,8 @@ import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.asInfo
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
+import org.jetbrains.kotlin.formver.core.embeddings.expression.Is
+import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.core.names.asScope
@@ -36,8 +38,11 @@ class ObserverBinding(val view: ClassTypeEmbedding, val signature: NonInlineFunc
         }
     }
 
-    fun domain(): List<Exp> {
-        val receiver = signature.dispatchReceiver!!.toLocalVarUse()
+    fun domain(through: ObserverBinding = this, includeDeclaredTypes: Boolean = true): List<Exp> {
+        val receiver = through.signature.dispatchReceiver!!.toLocalVarUse()
+        val variableNames = signature.formalArgs.zip(through.signature.formalArgs).associate { (formal, actual) ->
+            formal.name to actual.name
+        }
         fun guard(exp: Exp): Exp = when (exp) {
             is Exp.PredicateAccess -> if (exp.formalArgs == listOf(receiver)) Exp.BoolLit(true) else {
                 val available = Exp.PermissionCheck(exp)
@@ -47,19 +52,26 @@ class ObserverBinding(val view: ClassTypeEmbedding, val signature: NonInlineFunc
             is Exp.And -> Exp.And(guard(exp.left), guard(exp.right))
             else -> Exp.Old(exp)
         }
-        return signature.preconditions.pureToViper(toBuiltin = true, resolver).map(::guard)
+        val preconditions = signature.preconditions.filter { pre ->
+            includeDeclaredTypes || pre !is Is || signature.formalArgs.none { formal ->
+                (pre.inner as? VariableEmbedding)?.name == formal.name && pre.comparisonType.runtimeType == formal.type.runtimeType
+            }
+        }
+        return preconditions.pureToViper(toBuiltin = true, resolver,
+            observerReceiver = through.view to receiver, observerFootprintOpen = false, variableNames = variableNames).map(::guard)
     }
 
     fun function(): UserFunction? {
         if (!inheritedInterface) return null
         val receiver = signature.dispatchReceiver!!.toLocalVarUse()
-        val pres = signature.preconditions.pureToViper(toBuiltin = true, resolver).map {
+        val observerReceiver = view to receiver
+        val pres = signature.preconditions.pureToViper(toBuiltin = true, resolver, observerReceiver = observerReceiver).map {
             if (it is Exp.PredicateAccess && it.formalArgs == listOf(receiver))
                 Exp.PredicateAccess(view.footprintPredicateName,
                     listOf(receiver), it.perm)
             else it
         }
         return UserFunction(name, signature.formalArgs.map { it.toLocalVarDecl() }, Type.Ref, pres,
-            signature.postconditions.pureToViper(toBuiltin = true, resolver), null)
+            signature.postconditions.pureToViper(toBuiltin = true, resolver, observerReceiver = observerReceiver), null)
     }
 }

@@ -204,6 +204,11 @@ data class LinearizationVisitor(
         }
 
     override fun visitFunctionCall(e: FunctionCall): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            // Evaluating a discarded observation still checks its domain.
+            toViperStoringIn(ctx.freshAnonVar(e.type), ctx)
+        }
+
         override fun toViper(ctx: LinearizationContext): Exp {
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
             val lawView = (ctx as? PureFunBodyLinearizer)?.lawView
@@ -213,6 +218,7 @@ data class LinearizationVisitor(
                 else binding.application(argsViper, ctx.source.asPosition)
             }
             if (ctx is PureExpLinearizer) {
+                ctx.contractObserverApplication(e.function.name, argsViper)?.let { return it }
                 val view = e.args.firstOrNull()?.type?.pretype as? ClassTypeEmbedding
                 val binding = view?.let { ctx.typeResolver.observerBinding(it, e.function.name) }
                 if (binding != null) {
@@ -402,7 +408,10 @@ data class LinearizationVisitor(
     // region Variables
 
     override fun visitVariableEmbedding(e: VariableEmbedding): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
-        override fun toViper(ctx: LinearizationContext): Exp = e.toViperExp(ctx)
+        override fun toViper(ctx: LinearizationContext): Exp {
+            val exp = e.toViperExp(ctx)
+            return if (exp is Exp.Result && ctx is PureExpLinearizer) ctx.functionResult ?: exp else exp
+        }
     }
 
     // endregion
