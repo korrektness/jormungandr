@@ -115,14 +115,14 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
 <!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class SharedBorrowedInitialization<!> {
     var value = 1
     init { clear() }
-    @Borrowed fun <!VIPER_TEXT!>clear<!>() { value = -1 }
+    @Borrowed fun <!VERIFICATION_SKIPPED!>clear<!>() { <!UNSUPPORTED_FEATURE!>value = -1<!> }
     @Law @Pure fun invariant(): Boolean = value >= 0
 }<!>
 
 <!VIPER_TEXT!>class SharedBorrowedCheckedInitialization<!> {
     var value = 1
     init { preserve(); require(value >= 0) }
-    @Borrowed fun <!VIPER_TEXT!>preserve<!>() { value = 2 }
+    @Borrowed fun <!VERIFICATION_SKIPPED!>preserve<!>() { <!UNSUPPORTED_FEATURE!>value = 2<!> }
     @Law @Pure fun invariant(): Boolean = value >= 0
 }
 
@@ -145,7 +145,7 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
 
 <!UNSUPPORTED_FEATURE!>class BrokenNestedBorrowedInitialization(val child: @Unique LawfulConstructionChild) {
     init { corrupt() }
-    @Borrowed fun <!VIPER_TEXT!>corrupt<!>() { child.value = -1 }
+    @Borrowed fun <!VERIFICATION_SKIPPED!>corrupt<!>() { <!UNSUPPORTED_FEATURE!>child.value = -1<!> }
     @Law @Pure @Unique fun invariant(): Boolean = borrowedChildValue(child) >= 0
 }<!>
 

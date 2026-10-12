@@ -32,7 +32,7 @@ open <!VIPER_TEXT!>class LawBase<!>(var n: Int) : Reading {
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = -1
 }<!>
 
-open class PlainBase(var n: Int = 3) : Reading {
+open class PlainBase(@LawBound var n: Int = 3) : Reading {
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = nested()
     @Pure @Unique fun <!VIPER_TEXT!>nested<!>(): Int = n
 }
@@ -87,7 +87,7 @@ fun <!VIPER_TEXT!>validConstruction<!>() {
     verify(computed.n >= 0)
 }
 
-open class ChangedInitializerBase(<!UNSUPPORTED_FEATURE!>var n: Int<!>) : Reading {
+open class ChangedInitializerBase(<!UNSUPPORTED_FEATURE!>@LawBound var n: Int<!>) : Reading {
     init { n = 1 }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = n
 }

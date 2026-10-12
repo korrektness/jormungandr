@@ -232,6 +232,14 @@ laws use the declaring class's implementation, including inherited bodies, expan
 Field reads and `@Pure` non-member calls retain their ordinary encoding. An observer without a visible body or a
 recursive expansion is rejected with `INVALID_LAW` and a reason.
 
+Class laws must hold whenever an object is reachable through a shared path. A mutable field is **law-bound**
+when its declaring class's own laws read it after observer expansion, or its declaration carries `@LawBound`.
+Shared-path writes to law-bound fields are rejected with `UNSUPPORTED_FEATURE`; this applies to nested owned
+children according to the child's field declaration. `@LawBound` protects storage without asserting a law.
+A class law may read its own fields and inherited `val` fields. It may read an inherited `var` only if that field
+is law-bound in its declaring class; other inherited `var` reads produce `INVALID_LAW` with a pointer to this
+section. This protection applies across superclass and subclass views.
+
 A class carrying its own or inherited class laws requires a primary constructor with no secondary constructors.
 Delegated properties are outside this scope. Unsupported shapes are rejected with `INVALID_LAW`.
 Primary-constructor proofs allocate fresh field permissions, execute superclass initialization and then property
@@ -446,8 +454,9 @@ nullable forms) is rejected, since such values own nothing.
 
 Through a unique path, `var` reads and writes are real, and the verifier
 tracks their values. Through a shared path, every `var` read yields an
-arbitrary value and every `var` write is dropped, because other code may hold
-the same object.
+arbitrary value. Shared `var` writes follow the law-bound field rule in Class laws;
+other shared `var` writes are dropped from the specification, because other code
+may hold the same object.
 
 ```kotlin
 class Counter(var n: Int)

@@ -34,7 +34,12 @@ annotation class Pure
 @Retention(AnnotationRetention.BINARY)
 annotation class GhostObserver
 
-/** Marks an interface law; see "Interface laws" in SPECIFICATIONS.md. */
+/** See "Class laws" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.PROPERTY)
+@Retention(AnnotationRetention.BINARY)
+annotation class LawBound
+
+/** Marks a law; see "Interface laws" and "Class laws" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 annotation class Law
 

@@ -926,29 +926,6 @@ method con() returns (v_ret_0: Ref)
   unfold acc(SharedBorrowedInitialization_unique(v_ret_0), write)
 }
 
-/primary_constructor_bodies.kt: info: Generated Viper text for clear:
-field value: Ref
-
-predicate SharedBorrowedInitialization_unique(this: Ref) {
-  isSubtype(typeOf(this), SharedBorrowedInitialization()) &&
-  acc(this.value, write) &&
-  isSubtype(typeOf(this.value), intType()) &&
-  (let this ==
-    (this) in
-    true &&
-    boolFromRef((let anon_0_0 ==
-      (this.value) in
-      geInts(anon_0_0, intToRef(0)))))
-}
-
-method clear(this: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(this), SharedBorrowedInitialization())
-  ensures isSubtype(typeOf(v_ret_0), unitType())
-{
-  label lbl_ret_0
-  inhale isSubtype(typeOf(v_ret_0), unitType())
-}
-
 /primary_constructor_bodies.kt: info: Generated Viper text for SharedBorrowedCheckedInitialization:
 field bf_value: Ref
 
@@ -1010,29 +987,6 @@ method require(par_value: Ref) returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), unitType())
   ensures true ==> boolFromRef(par_value)
 
-
-/primary_constructor_bodies.kt: info: Generated Viper text for preserve:
-field value: Ref
-
-predicate SharedBorrowedCheckedInitialization_unique(this: Ref) {
-  isSubtype(typeOf(this), SharedBorrowedCheckedInitialization()) &&
-  acc(this.value, write) &&
-  isSubtype(typeOf(this.value), intType()) &&
-  (let this ==
-    (this) in
-    true &&
-    boolFromRef((let anon_0_0 ==
-      (this.value) in
-      geInts(anon_0_0, intToRef(0)))))
-}
-
-method preserve(this: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(this), SharedBorrowedCheckedInitialization())
-  ensures isSubtype(typeOf(v_ret_0), unitType())
-{
-  label lbl_ret_0
-  inhale isSubtype(typeOf(v_ret_0), unitType())
-}
 
 /primary_constructor_bodies.kt: info: Generated Viper text for SharedBorrowedPreservedInitialization:
 field scratch: Ref
@@ -1188,55 +1142,6 @@ predicate LawfulConstructionChild_unique(this: Ref) {
     boolFromRef((let anon_0_0 ==
       (this.value) in
       geInts(anon_0_0, intToRef(0)))))
-}
-
-/primary_constructor_bodies.kt: info: Generated Viper text for corrupt:
-field value: Ref
-
-function borrowedChildValue(par_child: Ref): Ref
-  requires isSubtype(typeOf(par_child), LawfulConstructionChild())
-  requires acc(LawfulConstructionChild_unique(par_child), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures intFromRef(result) >= 0
-{
-  (unfolding acc(LawfulConstructionChild_unique(par_child), write) in
-    par_child.value)
-}
-
-function g_child(this: Ref): Ref
-  requires isSubtype(typeOf(this), BrokenNestedBorrowedInitialization())
-  ensures isSubtype(typeOf(result), LawfulConstructionChild())
-
-
-predicate BrokenNestedBorrowedInitialization_unique(this: Ref) {
-  isSubtype(typeOf(this), BrokenNestedBorrowedInitialization()) &&
-  acc(LawfulConstructionChild_unique(g_child(this)), write) &&
-  (let this ==
-    (this) in
-    true &&
-    boolFromRef((let anon_0_0 ==
-      (g_child(this)) in
-      geInts(borrowedChildValue(anon_0_0), intToRef(0)))))
-}
-
-predicate LawfulConstructionChild_unique(this: Ref) {
-  isSubtype(typeOf(this), LawfulConstructionChild()) &&
-  acc(this.value, write) &&
-  isSubtype(typeOf(this.value), intType()) &&
-  (let this ==
-    (this) in
-    true &&
-    boolFromRef((let anon_1_0 ==
-      (this.value) in
-      geInts(anon_1_0, intToRef(0)))))
-}
-
-method corrupt(this: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(this), BrokenNestedBorrowedInitialization())
-  ensures isSubtype(typeOf(v_ret_0), unitType())
-{
-  label lbl_ret_0
-  inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
 /primary_constructor_bodies.kt: info: Generated Viper text for readAge:

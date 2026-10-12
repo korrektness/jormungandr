@@ -485,6 +485,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val convertedRValue = data.convert(variableAssignment.rValue)
         val assignment = embedding.setValue(convertedRValue, data)
         if (assignment is FieldModification && assignment.dropsWrite) {
+            val field = lValue.toResolvedCallableSymbol() as? FirPropertySymbol
+            if (field?.isLawBound(data.session) == true) {
+                throw UnsupportedFeatureException(variableAssignment.source, "See Class laws.")
+            }
             lValue.dispatchReceiver?.let { data.warnIfUntrackedWrite(variableAssignment, it, assignment.receiverOwned) }
         }
         if (assignment !is Assign) return assignment

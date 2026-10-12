@@ -946,6 +946,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("shared_write_laws.kt")
+      public void testShared_write_laws() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/shared_write_laws.kt");
+      }
+
+      @Test
       @TestMetadata("subtyping.kt")
       public void testSubtyping() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/subtyping.kt");

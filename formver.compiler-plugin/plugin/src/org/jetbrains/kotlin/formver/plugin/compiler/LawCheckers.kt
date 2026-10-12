@@ -44,6 +44,7 @@ import org.jetbrains.kotlin.formver.core.conversion.hasSuperclassLaws
 import org.jetbrains.kotlin.formver.core.conversion.isLawValueOperation
 import org.jetbrains.kotlin.formver.core.conversion.classLawObserverBody
 import org.jetbrains.kotlin.formver.core.conversion.classLawObserverFailure
+import org.jetbrains.kotlin.formver.core.conversion.isLawReadableFrom
 import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 import org.jetbrains.kotlin.formver.core.isGhostObserver
@@ -162,6 +163,11 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
                         val observer = ownAccess && (callee?.isObserverOrOverride() == true ||
                                 callee?.isGhostObserver(context.session) == true ||
                                 (classOwner != null && callee?.isPure(context.session) == true))
+                        if (field) {
+                            if (!(callee as FirPropertySymbol).isLawReadableFrom(classOwner!!, context.session)) {
+                                reject(element, "Invalid inherited var read; see Class laws.")
+                            }
+                        }
                         if (observer && classOwner != null && !field) expand(element, callee!!)
                         val calleeOwner = callee?.getContainingClassSymbol() as? FirRegularClassSymbol
                         val companionHelper = calleeOwner?.fir?.isCompanion == true
