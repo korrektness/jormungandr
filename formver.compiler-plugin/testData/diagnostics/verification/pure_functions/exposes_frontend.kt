@@ -256,12 +256,12 @@ fun placeholderReference(): () -> Int = <!INVALID_OBSERVER!>::ghostObserver<!>
 
 class OverrideGhost : CounterSpec {
     override fun invoke(): Int = 0
-    <!INVALID_OBSERVER, INVALID_OBSERVER!>@Pure override fun value(): Int = 0<!>
+    <!INVALID_OBSERVER!>@Pure override fun value(): Int = 0<!>
 }
 
 open class OpenGhostOverride : CounterSpec {
     override fun invoke(): Int = 0
-    <!INVALID_OBSERVER, INVALID_OBSERVER!>@Pure override fun value(): Int = 0<!>
+    <!INVALID_OBSERVER!>@Pure override fun value(): Int = 0<!>
 }
 
 class PlainGhostOverride : CounterSpec {
@@ -271,11 +271,11 @@ class PlainGhostOverride : CounterSpec {
 
 class AnnotatedGhostOverride : CounterSpec {
     override fun invoke(): Int = 0
-    <!INVALID_OBSERVER, INVALID_OBSERVER!>@GhostObserver override fun value(): Int = 1<!>
+    <!INVALID_OBSERVER!>@GhostObserver override fun value(): Int = 1<!>
 }
 
 fun interface SubInterfaceGhostOverride : CounterSpec {
-    <!INVALID_OBSERVER, INVALID_OBSERVER, INVALID_OBSERVER!>@GhostObserver @Pure override fun value(): Int = 1<!>
+    <!INVALID_OBSERVER!>@GhostObserver @Pure override fun value(): Int = 1<!>
 }
 
 <!INVALID_LAW, INVALID_OBSERVER, INVALID_OBSERVER!>class DelegatedGhostOverride(counter: CounterSpec) : CounterSpec by counter<!>

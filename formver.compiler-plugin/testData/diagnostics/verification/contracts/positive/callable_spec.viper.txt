@@ -1,0 +1,137 @@
+/callable_spec.kt: info: Generated Viper text for value:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate CounterSpec_unique(this: Ref)
+
+/callable_spec.kt: info: Generated Viper text for inc:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate CounterSpec_unique(this: Ref)
+
+/callable_spec.kt: info: Generated Viper text for invoke:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate CounterSpec_unique(this: Ref)
+
+method invoke(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), write)
+  ensures acc(CounterSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(value(this)) ==
+    old(intFromRef(value(this))) + old(intFromRef(inc(this)))
+  ensures intFromRef(inc(this)) == old(intFromRef(inc(this)))
+  ensures intFromRef(ret) == intFromRef(value(this))
+
+
+/callable_spec.kt: info: Generated Viper text for callTwice:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate CounterSpec_unique(this: Ref)
+
+method callTwice(f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), CounterSpec())
+  requires acc(CounterSpec_unique(f), write)
+  ensures acc(CounterSpec_unique(f), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(value(f)) ==
+    old(intFromRef(value(f))) + 2 * old(intFromRef(inc(f)))
+  ensures intFromRef(inc(f)) == old(intFromRef(inc(f)))
+  ensures intFromRef(v_ret_0) == intFromRef(value(f))
+{
+  var anon: Ref
+  anon := invoke(f)
+  v_ret_0 := invoke(f)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method invoke(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), write)
+  ensures acc(CounterSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(value(this)) ==
+    old(intFromRef(value(this))) + old(intFromRef(inc(this)))
+  ensures intFromRef(inc(this)) == old(intFromRef(inc(this)))
+  ensures intFromRef(ret_2) == intFromRef(value(this))
+
+
+/callable_spec.kt: info: Generated Viper text for applyTwice:
+function inc(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate CounterSpec_unique(this: Ref)
+
+method applyTwice(f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), CounterSpec())
+  requires acc(CounterSpec_unique(f), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    old(intFromRef(value(f))) + 2 * old(intFromRef(inc(f)))
+{
+  var anon: Ref
+  anon := invoke(f)
+  v_ret_0 := invoke(f)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method invoke(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), CounterSpec())
+  requires acc(CounterSpec_unique(this), write)
+  ensures acc(CounterSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(value(this)) ==
+    old(intFromRef(value(this))) + old(intFromRef(inc(this)))
+  ensures intFromRef(inc(this)) == old(intFromRef(inc(this)))
+  ensures intFromRef(ret_2) == intFromRef(value(this))

@@ -45,6 +45,11 @@ private val FirCallableSymbol<*>.isInInterface: Boolean
 private val FirCallableSymbol<*>.spelling: String
     get() = callableId?.className?.let { "$it.$name" } ?: name.asString()
 
+context(context: CheckerContext)
+internal fun FirCallableDeclaration.overriddenGhostObserver(): FirCallableSymbol<*>? =
+    if (isOverride) symbol.directOverriddenSymbolsSafe().map { it.unwrapFakeOverrides() }
+        .firstOrNull { it.isGhostObserver(context.session) } else null
+
 /**
  * Reports a member declaration that breaks a rule on observers: a ghost observer has no overrides; an override of an
  * observer is `@Pure`, and in a class it has a body and fixed dispatch; a `@Pure` override overrides only observers and
@@ -56,14 +61,10 @@ object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind
     override fun check(declaration: FirCallableDeclaration) {
         if (declaration !is FirSimpleFunction && declaration !is FirProperty) return
         val overridden = if (declaration.isOverride) declaration.symbol.directOverriddenSymbolsSafe() else emptyList()
-        val violations = listOfNotNull(ghostOverride(overridden), violation(declaration, overridden))
-        for (violation in violations) reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, violation)
+        val violation = declaration.overriddenGhostObserver()?.let { "Ghost observer override: '${it.spelling}'." }
+            ?: violation(declaration, overridden)
+        if (violation != null) reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, violation)
     }
-
-    context(context: CheckerContext)
-    private fun ghostOverride(overridden: List<FirCallableSymbol<*>>): String? =
-        overridden.map { it.unwrapFakeOverrides() }.firstOrNull { it.isGhostObserver(context.session) }
-            ?.let { "Ghost observer override: '${it.spelling}'." }
 
     context(context: CheckerContext)
     @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
@@ -110,8 +111,8 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
                     violations += "Inherited contract implementation: '${it.spelling}'."
                 }
                 val overridden = scope.getDirectOverriddenFunctions(it)
-                implicitGhostOverride(declaration, it, overridden)?.let(violations::add)
-                violation(declaration, it, overridden)?.let(violations::add)
+                (implicitGhostOverride(declaration, it, overridden)
+                    ?: violation(declaration, it, overridden))?.let(violations::add)
             }
             scope.processPropertiesByName(name) { property ->
                 if (property !is FirPropertySymbol) return@processPropertiesByName

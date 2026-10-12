@@ -17,10 +17,10 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 
-/** Whether this member is an abstract `@Pure` function or `val` declared in an interface. */
+/** Whether this member is a pure abstract member or ghost observer declared in an interface. */
 context(context: CheckerContext)
 fun FirCallableSymbol<*>.isObserver(): Boolean =
-    isAbstract && isPure(context.session) &&
+    (isAbstract || isGhostObserver(context.session)) && isPure(context.session) &&
             (this is FirNamedFunctionSymbol || (this is FirPropertySymbol && !isVar)) &&
             (getContainingClassSymbol() as? FirClassSymbol<*>)?.classKind?.isInterface == true
 

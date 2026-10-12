@@ -10,11 +10,13 @@ import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.contracts.description.LogicOperationKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.FirProperty
+import org.jetbrains.kotlin.fir.declarations.utils.isFun
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
 import org.jetbrains.kotlin.fir.expressions.impl.FirUnitExpression
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
+import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.scopes.getFunctions
 import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
 import org.jetbrains.kotlin.fir.references.toResolvedSymbol
@@ -379,6 +381,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         implicitInvokeCall: FirImplicitInvokeCall,
         data: StmtConversionContext,
     ): ExpEmbedding {
+        if (implicitInvokeCall.dispatchReceiver?.resolvedType?.toRegularClassSymbol(data.session)?.isFun == true) {
+            return visitFunctionCall(implicitInvokeCall, data)
+        }
         val receiver =
             implicitInvokeCall.dispatchReceiver as? FirPropertyAccessExpression ?: throw UnsupportedFeatureException(
                 implicitInvokeCall.source, "implicit invoke on a receiver that is not a variable"

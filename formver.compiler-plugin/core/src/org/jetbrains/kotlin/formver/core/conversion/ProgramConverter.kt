@@ -435,8 +435,7 @@ class ProgramConverter(
             symbol.source, "Expected FirSimpleFunction, got unexpected type ${symbol.fir.javaClass.simpleName}"
         )
 
-        if (signature.signature.isPure && declaration.body == null &&
-            context(checkerContext) { symbol.isObserver() }) return
+        if (signature.signature.isPure && context(checkerContext) { symbol.isObserver() }) return
 
         val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis)
         if (signature.signature.isPure) {

@@ -46,6 +46,8 @@ object GhostObserverDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind
     override fun check(declaration: FirSimpleFunction) {
         val symbol = declaration.symbol
         if (!symbol.isGhostObserver(context.session)) return
+        // Override validity belongs to ObserverDeclarationChecker.
+        if (declaration.overriddenGhostObserver() != null) return
         val owner = symbol.getContainingClassSymbol() as? FirRegularClassSymbol
         val placeholder = declaration.body?.statements?.singleOrNull()?.unwrappedResult() as? FirFunctionCall
         val validBody = (placeholder?.toResolvedCallableSymbol() as? FirNamedFunctionSymbol)

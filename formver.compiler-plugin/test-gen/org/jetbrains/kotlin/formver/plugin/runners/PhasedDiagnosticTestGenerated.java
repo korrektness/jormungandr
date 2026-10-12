@@ -1101,6 +1101,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("callable_spec.kt")
+        public void testCallable_spec() {
+          runTest("formver.compiler-plugin/testData/diagnostics/verification/contracts/positive/callable_spec.kt");
+        }
+
+        @Test
         @TestMetadata("contracts_with_receivers.kt")
         public void testContracts_with_receivers() {
           runTest("formver.compiler-plugin/testData/diagnostics/verification/contracts/positive/contracts_with_receivers.kt");
