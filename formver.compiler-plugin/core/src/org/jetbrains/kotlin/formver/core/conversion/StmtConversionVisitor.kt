@@ -342,7 +342,11 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             }
         }
 
+    override fun visitSamConversionExpression(expression: FirSamConversionExpression, data: StmtConversionContext): ExpEmbedding =
+        data.liftedLambda(expression)?.let { data.constructLambda(it) } ?: visitElement(expression, data)
+
     override fun visitFunctionCall(functionCall: FirFunctionCall, data: StmtConversionContext): ExpEmbedding {
+        data.liftedLambda(functionCall)?.let { return data.constructLambda(it) }
         val symbol = functionCall.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
             ?: throw NotImplementedError("Only functions are expected as callables of function calls, got ${functionCall.toResolvedCallableSymbol()}")
         data.typeResolver.classLawExpansion?.let { expansion ->
@@ -363,6 +367,14 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data.convertMultisetIntrinsic(functionCall)?.let { return it }
         functionCall.stringBuilderIntrinsic(data.session)?.let { return data.convertStringBuilderIntrinsic(functionCall, it) }
 
+        return convertOrdinaryFunctionCall(functionCall, data, symbol)
+    }
+
+    private fun convertOrdinaryFunctionCall(
+        functionCall: FirFunctionCall,
+        data: StmtConversionContext,
+        symbol: FirFunctionSymbol<*>,
+    ): ExpEmbedding {
         val callee = data.embedAnyFunction(symbol)
         val returnType = data.embedType(functionCall.resolvedType)
         val mappedParameters = functionCall.resolvedArgumentMapping?.values?.map { it.symbol }
@@ -531,7 +543,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
 
         val symbol = thisReceiverExpression.calleeReference.boundSymbol
-        tryResolve(symbol as FirBasedSymbol<*>)?.let { return it }
+        data.capturedAccess(symbol as FirBasedSymbol<*>)?.let { return it.getValue(data) }
+        tryResolve(symbol)?.let { return it }
         val declSymbol = when (symbol) {
             is FirReceiverParameterSymbol -> symbol.containingDeclarationSymbol
             is FirValueParameterSymbol -> symbol.containingDeclarationSymbol

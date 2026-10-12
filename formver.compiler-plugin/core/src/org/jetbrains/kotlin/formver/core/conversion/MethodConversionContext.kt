@@ -48,6 +48,8 @@ interface MethodConversionContext : ProgramConversionContext {
     /** Uniqueness facts for the body being converted. */
     val ownershipFrame: OwnershipFrame
 
+    fun capturedAccess(symbol: FirBasedSymbol<*>): org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding?
+
     fun resolveParameter(symbol: FirValueParameterSymbol): ExpEmbedding
     fun resolveLocal(symbol: FirVariableSymbol<*>): VariableEmbedding
     fun registerLocalProperty(symbol: FirPropertySymbol)

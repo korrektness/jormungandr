@@ -33,6 +33,8 @@ import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
 import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
+import org.jetbrains.kotlin.formver.core.lambdaPrograms
+import org.jetbrains.kotlin.formver.core.LambdaVerificationProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
@@ -55,69 +57,76 @@ class ViperPoweredDeclarationChecker(
     private val verifierLocator: VerifierLocator,
     private val reportedErrors: ReportedVerifierErrors,
 ) : FirSimpleFunctionChecker(MppCheckerKind.Common) {
+    private val processedLambdas = mutableSetOf<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol>()
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirSimpleFunction) {
-        val inTestRun = System.getProperty("formver.testRun").toBoolean()
         if (!config.shouldConvert(declaration)) return
-        try {
-            val programConversionContext = ProgramConverter(session, config, context, reporter)
-            programConversionContext.register(declaration)
-            programConversionContext.validateAll()
+        declaration.lambdaPrograms = emptyList()
+        val root = ProgramConverter(session, config, context, reporter)
+        reportConversionErrors(declaration) {
+            root.register(declaration)
+            convert(declaration, root, 0)
+        }
+        root.specifiedLambdas.forEachIndexed { index, lambda ->
+            if (!processedLambdas.add(lambda.function.symbol)) return@forEachIndexed
+            reportConversionErrors(declaration) {
+                val converter = ProgramConverter(session, config, context, reporter)
+                converter.registerLambda(lambda, root.specifiedLambdas)
+                convert(declaration, converter, index + 1)
+            }
+        }
+    }
 
-            if (shouldDumpExpEmbeddings(declaration)) {
-                with(SimpleNameResolver()) {
-                    for ((name, embedding) in programConversionContext.debugExpEmbeddings) {
-                        reporter.reportOn(
-                            declaration.source,
-                            PluginErrors.EXP_EMBEDDING,
-                            name.mangled,
-                            embedding.debugTreeView.print()
-                        )
-                    }
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun convert(declaration: FirSimpleFunction, programConversionContext: ProgramConverter, index: Int) {
+        programConversionContext.validateAll()
+        if (shouldDumpExpEmbeddings(declaration)) {
+            with(SimpleNameResolver()) {
+                for ((name, embedding) in programConversionContext.debugExpEmbeddings) {
+                    reporter.reportOn(declaration.source, PluginErrors.EXP_EMBEDDING, name.mangled, embedding.debugTreeView.print())
                 }
             }
-
-            if (programConversionContext.hadConversionError) return
-            programConversionContext.linearizeAll()
-            val program = programConversionContext.buildProgram()
-
-            with(programConversionContext.nameResolver) {
-                program.registerAllNames()
-            }
-            programConversionContext.nameResolver.resolve()
-
-            getProgramForLogging(program)?.let {
-                reporter.reportOn(
-                    declaration.source,
-                    PluginErrors.VIPER_TEXT,
-                    declaration.name.asString(),
-                    with(programConversionContext.nameResolver) { it.toDebugOutput() }
-                )
-            }
-
-            val viperProgram = with(programConversionContext.nameResolver) { program.toSilver() }
-
-
-            val shouldVerify = config.shouldVerify(declaration) && !programConversionContext.skipsVerification
-
-            if (inTestRun) {
-                // The test facade verifies the program later.
+        }
+        if (programConversionContext.hadConversionError) return
+        programConversionContext.linearizeAll()
+        val program = programConversionContext.buildProgram()
+        with(programConversionContext.nameResolver) { program.registerAllNames() }
+        programConversionContext.nameResolver.resolve()
+        getProgramForLogging(program)?.let {
+            reporter.reportOn(
+                declaration.source,
+                PluginErrors.VIPER_TEXT,
+                if (index == 0) declaration.name.asString() else "${declaration.name}.lambda${index - 1}.invoke",
+                with(programConversionContext.nameResolver) { it.toDebugOutput() }
+            )
+        }
+        val viperProgram = with(programConversionContext.nameResolver) { program.toSilver() }
+        val shouldVerify = config.shouldVerify(declaration) && !programConversionContext.skipsVerification
+        if (System.getProperty("formver.testRun").toBoolean()) {
+            // The test facade verifies the program later.
+            if (index == 0) {
                 declaration.viperProgram = viperProgram
                 declaration.shouldVerify = shouldVerify
-            } else if (shouldVerify) {
-                val z3Exe = verifierLocator.z3Exe { reason ->
-                    reporter.reportOn(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, reason)
-                } ?: return
-
-                val onFailure = { err: VerifierError ->
-                    val source = err.position.unwrapOr { declaration.source }
-                    if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
-                }
-
-                SiliconFrontend(z3Exe).use { it.verify(viperProgram, onFailure) }
+            } else {
+                declaration.lambdaPrograms = declaration.lambdaPrograms.orEmpty() + LambdaVerificationProgram(viperProgram, shouldVerify)
             }
+        } else if (shouldVerify) {
+            val z3Exe = verifierLocator.z3Exe { reason ->
+                reporter.reportOn(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, reason)
+            } ?: return
+            val onFailure = { err: VerifierError ->
+                val source = err.position.unwrapOr { declaration.source }
+                if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
+            }
+            SiliconFrontend(z3Exe).use { it.verify(viperProgram, onFailure) }
+        }
+    }
 
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun reportConversionErrors(declaration: FirSimpleFunction, convert: () -> Unit) {
+        try {
+            convert()
         } catch (e: UnsupportedFeatureException) {
             reporter.reportOn(reportingSource(e.source, declaration), ConversionErrors.UNSUPPORTED_FEATURE, e.message)
         } catch (e: SnaktInternalException) {

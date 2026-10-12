@@ -145,8 +145,9 @@ fun FirPropertySymbol.findFinalParentProperty(): FirPropertySymbol? =
 fun StmtConversionContext.embedPropertyAccess(
     accessExpression: FirPropertyAccessExpression,
     accessElement: FirElement = accessExpression,
-): PropertyAccessEmbedding =
-    when (val calleeSymbol = accessExpression.calleeReference.symbol) {
+): PropertyAccessEmbedding {
+    accessExpression.calleeReference.symbol?.let { capturedAccess(it) }?.let { return it }
+    return when (val calleeSymbol = accessExpression.calleeReference.symbol) {
         is FirValueParameterSymbol -> embedParameter(calleeSymbol).asPropertyAccess()
         is FirEnumEntrySymbol -> embedEnumEntry(calleeSymbol).asPropertyAccess()
         is FirPropertySymbol -> {
@@ -173,6 +174,7 @@ fun StmtConversionContext.embedPropertyAccess(
         else ->
             error("Property access symbol $calleeSymbol has unsupported type.")
     }
+}
 
 
 /**
@@ -612,4 +614,4 @@ fun StmtConversionContext.ownedShapes(
             embedProperty(property).ownedStep ?: return@mapNotNull null
         }
     })
-}
+} + ownershipFrame.storageShapes(point)

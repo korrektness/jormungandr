@@ -59,6 +59,11 @@ data class ClassScope(override val parent: NameScope, val className: ClassKotlin
     override val children: List<AnyName> = listOf(parent, className)
 }
 
+data class CallableScope(override val parent: NameScope, val callable: org.jetbrains.kotlin.formver.viper.SymbolicName) : NameScope {
+    override val candidates: List<CandidateName> = nameWithDependentPrefixCandidates(callable, parent)
+    override val children: List<AnyName> = listOf(parent, callable)
+}
+
 data object PublicScope : NameScope {
     override val candidates: List<CandidateName> = nameOnlyCandidates("public")
     override val children: List<AnyName> = emptyList()

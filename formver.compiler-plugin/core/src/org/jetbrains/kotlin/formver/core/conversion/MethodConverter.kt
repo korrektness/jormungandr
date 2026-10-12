@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
@@ -30,6 +32,7 @@ class MethodConverter(
     scopeDepth: ScopeIndex,
     override val ownershipFrame: OwnershipFrame,
     private val parent: MethodConversionContext? = null,
+    private val captures: Map<FirBasedSymbol<*>, PropertyAccessEmbedding> = emptyMap(),
 ) : MethodConversionContext, ProgramConversionContext by programCtx {
     private var propertyResolver = PropertyResolver(scopeDepth)
 
@@ -64,6 +67,9 @@ class MethodConverter(
     override fun registerLocalVariable(symbol: FirVariableSymbol<*>) {
         propertyResolver.registerLocalVariable(symbol, embedType(symbol.resolvedReturnType))
     }
+
+    override fun capturedAccess(symbol: FirBasedSymbol<*>): PropertyAccessEmbedding? =
+        captures[symbol] ?: parent?.capturedAccess(symbol)
 
     override fun resolveParameter(symbol: FirValueParameterSymbol): ExpEmbedding =
         paramResolver.tryResolveParameter(symbol) ?: parent?.resolveParameter(symbol)

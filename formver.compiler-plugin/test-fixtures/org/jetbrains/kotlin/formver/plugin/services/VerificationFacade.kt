@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.visitors.FirDefaultVisitorVoid
 import org.jetbrains.kotlin.formver.common.services.runChecks
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
+import org.jetbrains.kotlin.formver.core.lambdaPrograms
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.*
 import org.jetbrains.kotlin.formver.plugin.runners.*
@@ -74,7 +75,8 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                     }
 
                     override fun visitSimpleFunction(simpleFunction: FirSimpleFunction) {
-                        if (shouldVerify(simpleFunction, testServices)) {
+                        if (shouldVerify(simpleFunction, testServices) ||
+                            !shouldSkipByTestMode(testServices) && simpleFunction.lambdaPrograms.orEmpty().any { it.shouldVerify }) {
                             toVerify.add(Pair(testFile, simpleFunction))
                         }
                     }
@@ -106,7 +108,8 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         module: TestModule
     ): List<KtDiagnostic> {
         val results = mutableListOf<KtDiagnostic>()
-        val program = decl.viperProgram!!
+        val programs = listOfNotNull(decl.viperProgram.takeIf { decl.shouldVerify == true }) +
+            decl.lambdaPrograms.orEmpty().filter { it.shouldVerify }.map { it.program }
         val onFailure: (VerifierError) -> Unit = { err ->
             val source = err.position.unwrapOr { decl.source }!!
             if (reportedErrors.add(err, source)) {
@@ -118,7 +121,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                 )
             }
         }
-        verifier.verify(program, onFailure)
+        programs.forEach { verifier.verify(it, onFailure) }
 
         return results
     }

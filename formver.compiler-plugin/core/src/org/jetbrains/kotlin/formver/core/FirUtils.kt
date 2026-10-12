@@ -122,6 +122,11 @@ val FirFunctionSymbol<*>.shouldBeInlined
 
 private object ViperProgram : FirDeclarationDataKey()
 private object ShouldVerify : FirDeclarationDataKey()
+private object LambdaPrograms : FirDeclarationDataKey()
+
+data class LambdaVerificationProgram(val program: viper.silver.ast.Program, val shouldVerify: Boolean)
+
+var FirDeclaration.lambdaPrograms: List<LambdaVerificationProgram>? by FirDeclarationDataRegistry.data(LambdaPrograms)
 
 var FirDeclaration.viperProgram: viper.silver.ast.Program? by FirDeclarationDataRegistry.data(ViperProgram)
 var FirDeclaration.shouldVerify: Boolean? by FirDeclarationDataRegistry.data(ShouldVerify)

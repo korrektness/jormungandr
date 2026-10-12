@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.BindingMode
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.RootBinding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
+import org.jetbrains.kotlin.formver.core.linearization.OwnedShape
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.Path
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
@@ -35,6 +36,8 @@ class OwnershipFrame private constructor(
     val bindings: List<RootBinding>,
     private val outerScope: List<VariableEmbedding>,
     private val receivers: List<Pair<VariableEmbedding, FirBasedSymbol<*>>>,
+    private val storage: VariableEmbedding? = null,
+    private val storageShape: ((FunctionUniquenessAnalysis, UniquenessState) -> OwnedShape)? = null,
 ) {
     /**
      * A frame for a body inlined at [callSite], which runs while the call holds its arguments. [outerScope] are the
@@ -56,7 +59,7 @@ class OwnershipFrame private constructor(
      * and the function's own receivers.
      */
     fun scopeWith(ownScope: List<VariableEmbedding>): List<VariableEmbedding> =
-        (ownScope + outerScope + receivers.map { it.first }).distinctBy { it.name }
+        (ownScope + outerScope + receivers.map { it.first } + listOfNotNull(storage)).distinctBy { it.name }
 
     /** The path [expression] denotes. */
     fun pathOf(expression: FirExpression): Path? = analysis?.pathOf(expression)
@@ -111,9 +114,28 @@ class OwnershipFrame private constructor(
         return null
     }
 
+    fun storageShapes(point: (FunctionUniquenessAnalysis) -> UniquenessState): List<OwnedShape> = buildList {
+        var frame: OwnershipFrame? = this@OwnershipFrame
+        var state = analysis?.let(point)
+        while (frame != null) {
+            val facts = frame.analysis
+            val currentState = state
+            if (facts != null && currentState != null) frame.storageShape?.let { add(it(facts, currentState)) }
+            state = frame.parent?.analysis?.let(frame.stateInParent)
+            frame = frame.parent
+        }
+    }
+
     companion object {
         /** The frame of a function's own body, whose [receivers] are paired with the symbols they are rooted at. */
         fun root(analysis: FunctionUniquenessAnalysis?, receivers: List<Pair<VariableEmbedding, FirBasedSymbol<*>>>) =
             OwnershipFrame(analysis, null, { error("A function's own body has no caller.") }, emptyList(), emptyList(), receivers)
+
+        fun withStorage(
+            analysis: FunctionUniquenessAnalysis?,
+            storage: VariableEmbedding,
+            shape: (FunctionUniquenessAnalysis, UniquenessState) -> OwnedShape,
+        ) = OwnershipFrame(analysis, null, { error("A function's own body has no caller.") }, emptyList(), emptyList(),
+            emptyList(), storage, shape)
     }
 }

@@ -1,0 +1,2041 @@
+/lifted_lambdas.kt: info: Generated Viper text for invoke:
+function state(this: Ref): Ref
+  requires isSubtype(typeOf(this), LiftedSpec())
+  requires acc(LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate LiftedSpec_unique(this: Ref)
+
+method invoke(this: Ref, x: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), LiftedSpec())
+  requires acc(LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) >= intFromRef(x)
+
+
+/lifted_lambdas.kt: info: Generated Viper text for state:
+function state(this: Ref): Ref
+  requires isSubtype(typeOf(this), LiftedSpec())
+  requires acc(LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate LiftedSpec_unique(this: Ref)
+
+/lifted_lambdas.kt: info: Generated Viper text for noCaptures.lambda0.invoke:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) >= intFromRef(x)
+{
+  v_ret_2 := plusInts(x, intToRef(1))
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_1 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for noCaptures:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method create() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+
+
+method noCaptures() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  ensures acc(c_LiftedSpec_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := create()
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for withCaptures.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+field Lambda0_p_capture1: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType()) &&
+  acc(this.Lambda0_p_capture1, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture1), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) >= intFromRef(x)
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon_1 := this.Lambda0_p_capture0
+  anon_2 := this.Lambda0_p_capture1
+  this.Lambda0_p_capture0 := plusInts(anon_1, anon_2)
+  anon_3 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  if (intFromRef(anon_3) >= intFromRef(x)) {
+    unfold acc(Lambda0_unique(this), write)
+    v_ret_2 := this.Lambda0_p_capture0
+    fold acc(Lambda0_unique(this), write)
+  } else {
+    v_ret_2 := x}
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(anon_0: Ref, anon_1: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  requires isSubtype(typeOf(anon_1), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(anon_0))
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      intFromRef(ret_0.Lambda0_p_capture1) == intFromRef(anon_1))
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_1 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for withCaptures:
+field Lambda0_p_capture0: Ref
+
+field Lambda0_p_capture1: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType()) &&
+  acc(this.Lambda0_p_capture1, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture1), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method create(anon_0: Ref, anon_1: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  requires isSubtype(typeOf(anon_1), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(anon_0))
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda0_p_capture1) == intFromRef(anon_1))
+
+
+method withCaptures(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  ensures acc(c_LiftedSpec_unique(v_ret_0), write)
+{
+  var n: Ref
+  var step: Ref
+  var anon_1: Ref
+  n := start
+  step := intToRef(1)
+  anon_1 := create(n, step)
+  v_ret_0 := anon_1
+  inhale isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for incorrectBody.lambda0.invoke:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) >= intFromRef(x)
+{
+  v_ret_2 := minusInts(x, intToRef(1))
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_1 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for incorrectBody:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method create() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+
+
+method incorrectBody() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  ensures acc(c_LiftedSpec_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := create()
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for captureReceiver.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), LiftedCell()) &&
+  acc(LiftedCell_unique(this.Lambda0_p_capture0), write)
+}
+
+predicate LiftedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), LiftedCell()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) >= intFromRef(x)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon_0 := this.Lambda0_p_capture0
+  unfold acc(LiftedCell_unique(this.Lambda0_p_capture0), write)
+  anon_0.n := x
+  anon_1 := this.Lambda0_p_capture0
+  v_ret_2 := anon_1.n
+  fold acc(LiftedCell_unique(this.Lambda0_p_capture0), write)
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(anon_0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon_0), LiftedCell())
+  requires acc(LiftedCell_unique(anon_0), write)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      ret_0.Lambda0_p_capture0 == anon_0)
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_1 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for captureReceiver:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), LiftedCell()) &&
+  acc(LiftedCell_unique(this.Lambda0_p_capture0), write)
+}
+
+predicate LiftedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), LiftedCell()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method captureReceiver(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), LiftedCell())
+  requires acc(LiftedCell_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  ensures acc(c_LiftedSpec_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := create(this)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method create(anon: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon), LiftedCell())
+  requires acc(LiftedCell_unique(anon), write)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      ret_1.Lambda0_p_capture0 == anon)
+
+
+/lifted_lambdas.kt: info: Generated Viper text for captureObject.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_1_0 ==
+      (this.Lambda0_p_capture0) in
+      (unfolding acc(LiftedCell_unique(anon_1_0), write) in anon_1_0.n)))
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), LiftedCell()) &&
+  acc(LiftedCell_unique(this.Lambda0_p_capture0), write)
+}
+
+predicate LiftedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), LiftedCell()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) >= intFromRef(x)
+{
+  var anon_2: Ref
+  var anon_3: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon_2 := this.Lambda0_p_capture0
+  unfold acc(LiftedCell_unique(this.Lambda0_p_capture0), write)
+  anon_2.n := x
+  anon_3 := this.Lambda0_p_capture0
+  v_ret_2 := anon_3.n
+  fold acc(LiftedCell_unique(this.Lambda0_p_capture0), write)
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(anon_0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon_0), LiftedCell())
+  requires acc(LiftedCell_unique(anon_0), write)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      ret_0.Lambda0_p_capture0 == anon_0)
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_1 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for captureObject:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_1_0 ==
+      (this.Lambda0_p_capture0) in
+      (unfolding acc(LiftedCell_unique(anon_1_0), write) in anon_1_0.n)))
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), LiftedCell()) &&
+  acc(LiftedCell_unique(this.Lambda0_p_capture0), write)
+}
+
+predicate LiftedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), LiftedCell()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method captureObject(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), LiftedCell())
+  requires acc(LiftedCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  ensures acc(c_LiftedSpec_unique(v_ret_0), write)
+{
+  var anon_2: Ref
+  anon_2 := create(cell)
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method create(anon_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon_0), LiftedCell())
+  requires acc(LiftedCell_unique(anon_0), write)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      ret_1.Lambda0_p_capture0 == anon_0)
+
+
+/lifted_lambdas.kt: info: Generated Viper text for captureLoop.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) >= intFromRef(x)
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_4: Ref
+  label cont
+    invariant acc(Lambda0_unique(this), write)
+    invariant isSubtype(typeOf(x), intType())
+    invariant isSubtype(typeOf(this), Lambda0())
+  unfold acc(Lambda0_unique(this), write)
+  anon_2 := this.Lambda0_p_capture0
+  anon_1 := ltInts(anon_2, x)
+  fold acc(Lambda0_unique(this), write)
+  if (boolFromRef(anon_1)) {
+    var anon_3: Ref
+    unfold acc(Lambda0_unique(this), write)
+    anon_3 := this.Lambda0_p_capture0
+    this.Lambda0_p_capture0 := plusInts(anon_3, intToRef(1))
+    fold acc(Lambda0_unique(this), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(x), intType())
+  assert isSubtype(typeOf(this), Lambda0())
+  unfold acc(Lambda0_unique(this), write)
+  anon_4 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  if (intFromRef(anon_4) >= intFromRef(x)) {
+    unfold acc(Lambda0_unique(this), write)
+    v_ret_2 := this.Lambda0_p_capture0
+    fold acc(Lambda0_unique(this), write)
+  } else {
+    v_ret_2 := x}
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(anon_0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_1 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for captureLoop:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method captureLoop(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  ensures acc(c_LiftedSpec_unique(v_ret_0), write)
+{
+  var n: Ref
+  var anon_1: Ref
+  n := start
+  anon_1 := create(n)
+  v_ret_0 := anon_1
+  inhale isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method create(anon_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+/lifted_lambdas.kt: info: Generated Viper text for boundObserver.lambda0.invoke:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(7)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) >= intFromRef(x)
+{
+  v_ret_2 := x
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_1 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for boundObserver:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(7)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method boundObserver() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  ensures acc(c_LiftedSpec_unique(v_ret_0), write)
+{
+  var f: Ref
+  var anon: Ref
+  anon := create()
+  f := anon
+  inhale isSubtype(typeOf(f), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(f)
+  assert intFromRef(c_LiftedSpec_f_state(f)) == 7
+  v_ret_0 := f
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method create() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+
+
+/lifted_lambdas.kt: info: Generated Viper text for exposedOnlyCapture.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_0_0 ==
+      (this.Lambda0_p_capture0) in
+      plusInts(anon_0_0, intToRef(1))))
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) >= intFromRef(x)
+{
+  v_ret_2 := x
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(anon_0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_1 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for exposedOnlyCapture:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_0_0 ==
+      (this.Lambda0_p_capture0) in
+      plusInts(anon_0_0, intToRef(1))))
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method create(anon_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+method exposedOnlyCapture(k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  ensures acc(c_LiftedSpec_unique(v_ret_0), write)
+{
+  var f: Ref
+  var anon_1: Ref
+  anon_1 := create(k)
+  f := anon_1
+  inhale isSubtype(typeOf(f), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(f)
+  assert intFromRef(c_LiftedSpec_f_state(f)) == intFromRef(k) + 1
+  v_ret_0 := f
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for invoke:
+function state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Counter_unique(this: Ref)
+
+method invoke(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), write)
+  ensures acc(Counter_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(state(this)) == old(intFromRef(state(this))) + 1 &&
+    intFromRef(ret) == intFromRef(state(this))
+
+
+/lifted_lambdas.kt: info: Generated Viper text for state:
+function state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  requires acc(Counter_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Counter_unique(this: Ref)
+
+/lifted_lambdas.kt: info: Generated Viper text for countFrom.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Counter_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Counter())
+  requires acc(c_Counter_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_Counter_unique(this: Ref)
+
+method Lambda0_c_Counter_restore(this: Ref)
+  requires acc(c_Counter_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Counter())) && true ==>
+    Lambda0_f_state(this) == old(c_Counter_f_state(this))
+
+
+method Lambda0_c_Counter_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Counter_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Counter_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(Lambda0_f_state(this)) ==
+    old(intFromRef(Lambda0_f_state(this))) + 1 &&
+    intFromRef(v_ret_2) == intFromRef(Lambda0_f_state(this))
+{
+  var anon_1: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon_1 := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon_1, intToRef(1))
+  v_ret_2 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(anon_0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+method f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_Counter())
+  requires acc(c_Counter_unique(this), write)
+  ensures acc(c_Counter_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_Counter_f_state(this)) ==
+    old(intFromRef(c_Counter_f_state(this))) + 1 &&
+    intFromRef(ret_1) == intFromRef(c_Counter_f_state(this))
+
+
+method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_Counter())
+  requires acc(c_Counter_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_Counter_restore(this)
+  ret_1 := Lambda0_invoke(this)
+  Lambda0_c_Counter_upcast(this)
+  assert acc(c_Counter_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_Counter_f_state(this)) ==
+    old(intFromRef(c_Counter_f_state(this))) + 1 &&
+    intFromRef(ret_1) == intFromRef(c_Counter_f_state(this))
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for countFrom:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Counter_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Counter())
+  requires acc(c_Counter_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_Counter_unique(this: Ref)
+
+method Lambda0_c_Counter_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Counter_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Counter_f_state(this) == old(Lambda0_f_state(this))
+
+
+method countFrom(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var c: Ref
+  var anon_1: Ref
+  var first: Ref
+  n := start
+  anon_1 := create(n)
+  c := anon_1
+  inhale isSubtype(typeOf(c), c_Counter())
+  Lambda0_c_Counter_upcast(c)
+  assert intFromRef(c_Counter_f_state(c)) == intFromRef(start)
+  first := invoke(c)
+  assert intFromRef(first) == intFromRef(start) + 1
+  assert intFromRef(c_Counter_f_state(c)) == intFromRef(start) + 1
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method create(anon_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+method invoke(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_Counter())
+  requires acc(c_Counter_unique(this), write)
+  ensures acc(c_Counter_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(c_Counter_f_state(this)) ==
+    old(intFromRef(c_Counter_f_state(this))) + 1 &&
+    intFromRef(ret_2) == intFromRef(c_Counter_f_state(this))
+
+
+/lifted_lambdas.kt: info: Generated Viper text for stuckCounter.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Counter_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Counter())
+  requires acc(c_Counter_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_Counter_unique(this: Ref)
+
+method Lambda0_c_Counter_restore(this: Ref)
+  requires acc(c_Counter_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Counter())) && true ==>
+    Lambda0_f_state(this) == old(c_Counter_f_state(this))
+
+
+method Lambda0_c_Counter_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Counter_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Counter_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(Lambda0_f_state(this)) ==
+    old(intFromRef(Lambda0_f_state(this))) + 1 &&
+    intFromRef(v_ret_2) == intFromRef(Lambda0_f_state(this))
+{
+  unfold acc(Lambda0_unique(this), write)
+  v_ret_2 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(anon: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(anon))
+
+
+method f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_Counter())
+  requires acc(c_Counter_unique(this), write)
+  ensures acc(c_Counter_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_Counter_f_state(this)) ==
+    old(intFromRef(c_Counter_f_state(this))) + 1 &&
+    intFromRef(ret_1) == intFromRef(c_Counter_f_state(this))
+
+
+method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_Counter())
+  requires acc(c_Counter_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_Counter_restore(this)
+  ret_1 := Lambda0_invoke(this)
+  Lambda0_c_Counter_upcast(this)
+  assert acc(c_Counter_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_Counter_f_state(this)) ==
+    old(intFromRef(c_Counter_f_state(this))) + 1 &&
+    intFromRef(ret_1) == intFromRef(c_Counter_f_state(this))
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for stuckCounter:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Counter_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Counter())
+  requires acc(c_Counter_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_Counter_unique(this: Ref)
+
+method Lambda0_c_Counter_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Counter_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Counter_f_state(this) == old(Lambda0_f_state(this))
+
+
+method create(anon_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+method stuckCounter(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_Counter())
+  ensures acc(c_Counter_unique(v_ret_0), write)
+{
+  var n: Ref
+  var anon_1: Ref
+  n := start
+  anon_1 := create(n)
+  v_ret_0 := anon_1
+  inhale isSubtype(typeOf(v_ret_0), c_Counter())
+  Lambda0_c_Counter_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for implicitSam.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) >= intFromRef(x)
+{
+  unfold acc(Lambda0_unique(this), write)
+  this.Lambda0_p_capture0 := x
+  v_ret_2 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(anon: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(anon))
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_1 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for implicitSam:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method consume(f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(f), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(f), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method create(anon_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+method implicitSam(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  n := start
+  anon_3 := create(n)
+  anon_2 := anon_3
+  inhale isSubtype(typeOf(anon_2), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(anon_2)
+  anon_1 := consume(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for nestedSam.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+field Lambda1_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function Lambda1_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda1())
+  requires acc(Lambda1_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda1_unique(this), write) in this.Lambda1_p_capture0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate Lambda1_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda1()) && acc(this.Lambda1_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda1_p_capture0), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda0_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_create(anon_0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) >= intFromRef(x)
+{
+  var n: Ref
+  var inner: Ref
+  var anon_2: Ref
+  unfold acc(Lambda0_unique(this), write)
+  n := this.Lambda0_p_capture0
+  anon_2 := Lambda1_create(n)
+  inner := anon_2
+  inhale isSubtype(typeOf(inner), c_LiftedSpec())
+  Lambda1_c_LiftedSpec_upcast(inner)
+  v_ret_3 := f_invoke(inner, x)
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method Lambda1_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda1_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda1_f_state(this))
+
+
+method Lambda1_create(anon_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda1())
+  ensures acc(Lambda1_unique(ret_1), write)
+  ensures (unfolding acc(Lambda1_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda1_p_capture0) == intFromRef(anon_0))
+
+
+method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_LiftedSpec_restore(this)
+  ret_2 := Lambda0_invoke(this, x)
+  Lambda0_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for nestedSam.lambda1.invoke:
+field Lambda0_p_capture0: Ref
+
+field Lambda1_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function Lambda1_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda1())
+  requires acc(Lambda1_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda1_unique(this), write) in this.Lambda1_p_capture0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate Lambda1_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda1()) && acc(this.Lambda1_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda1_p_capture0), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_create(anon: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(anon), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures acc(Lambda0_unique(ret_0), write)
+  ensures (unfolding acc(Lambda0_unique(ret_0), write) in
+      intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(anon))
+
+
+method Lambda1_c_LiftedSpec_restore(this: Ref)
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda1())
+  ensures acc(Lambda1_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_LiftedSpec())) && true ==>
+    Lambda1_f_state(this) == old(c_LiftedSpec_f_state(this))
+
+
+method Lambda1_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda1_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda1_f_state(this))
+
+
+method Lambda1_create(anon: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda1())
+  ensures acc(Lambda1_unique(ret_1), write)
+  ensures (unfolding acc(Lambda1_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda1_p_capture0) == intFromRef(anon))
+
+
+method Lambda1_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Lambda1())
+  requires acc(Lambda1_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(Lambda1_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) >= intFromRef(x)
+{
+  unfold acc(Lambda1_unique(this), write)
+  this.Lambda1_p_capture0 := x
+  v_ret_3 := this.Lambda1_p_capture0
+  fold acc(Lambda1_unique(this), write)
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(x)
+
+
+method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(this), Lambda1())
+{
+  Lambda1_c_LiftedSpec_restore(this)
+  ret_2 := Lambda1_invoke(this, x)
+  Lambda1_c_LiftedSpec_upcast(this)
+  assert acc(c_LiftedSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) >= intFromRef(x)
+}
+
+/lifted_lambdas.kt: info: Generated Viper text for nestedSam:
+field Lambda0_p_capture0: Ref
+
+field Lambda1_p_capture0: Ref
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function Lambda1_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda1())
+  requires acc(Lambda1_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda1_unique(this), write) in this.Lambda1_p_capture0)
+}
+
+function c_LiftedSpec_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LiftedSpec())
+  requires acc(c_LiftedSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate Lambda1_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda1()) && acc(this.Lambda1_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda1_p_capture0), intType())
+}
+
+predicate c_LiftedSpec_unique(this: Ref)
+
+method Lambda0_c_LiftedSpec_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LiftedSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_LiftedSpec_f_state(this) == old(Lambda0_f_state(this))
+
+
+method Lambda0_create(anon_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures acc(Lambda0_unique(ret_1), write)
+  ensures (unfolding acc(Lambda0_unique(ret_1), write) in
+      intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(anon_0))
+
+
+method Lambda1_create(anon_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(anon_0), intType())
+  ensures isSubtype(typeOf(ret_2), Lambda1())
+  ensures acc(Lambda1_unique(ret_2), write)
+  ensures (unfolding acc(Lambda1_unique(ret_2), write) in
+      intFromRef(ret_2.Lambda1_p_capture0) == intFromRef(anon_0))
+
+
+method nestedSam(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  ensures acc(c_LiftedSpec_unique(v_ret_0), write)
+{
+  var anon_2: Ref
+  anon_2 := Lambda0_create(start)
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), c_LiftedSpec())
+  Lambda0_c_LiftedSpec_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

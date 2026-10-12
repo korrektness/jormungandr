@@ -154,6 +154,7 @@ class ShortNameResolver : NameResolver {
         is NameScope -> when (name) {
             BadScope -> 100
             is ClassScope -> 2
+            is CallableScope -> 2
             FakeScope -> 50
             is LocalScope -> 3
             is PackageScope -> 20

@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionC
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirBasicExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.unsubstitutedScope
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -21,11 +22,13 @@ import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.resolve.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
+import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.uniqueness.plugin.ghostObserverViolation
 import org.jetbrains.kotlin.formver.core.isFormverFunctionNamed
 import org.jetbrains.kotlin.formver.core.isGhostObserver
@@ -146,11 +149,11 @@ object ExposesCallChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
             ?: return "Observer bindings outside a SAM conversion."
         val spec = sam.spec
         if (!spec.fir.isInterface || !spec.fir.status.isFun) return "Invalid callable specification."
-        return argumentsViolation(call, spec)
+        return argumentsViolation(call, spec, lambda)
     }
 
     context(context: CheckerContext)
-    private fun argumentsViolation(call: FirFunctionCall, spec: FirRegularClassSymbol): String? {
+    private fun argumentsViolation(call: FirFunctionCall, spec: FirRegularClassSymbol, lambda: FirAnonymousFunction): String? {
         val arguments = call.resolvedArgumentMapping.orEmpty().entries.associate { (argument, parameter) ->
             parameter.name.asString() to argument.unwrapArgument()
         }
@@ -163,16 +166,20 @@ object ExposesCallChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
         val body = (arguments["body"] as? FirAnonymousFunctionExpression)?.anonymousFunction
             ?: return "Non-literal observer bindings."
         if (!body.isLambda) return "Non-lambda observer bindings."
-        return bindingsViolation(body, spec.ghostObservers())
+        return bindingsViolation(body, spec.ghostObservers(), lambda.valueParameters.map { it.symbol }.toSet())
     }
 
     context(context: CheckerContext)
-    private fun bindingsViolation(body: FirAnonymousFunction, expected: Set<FirNamedFunctionSymbol>): String? {
+    private fun bindingsViolation(
+        body: FirAnonymousFunction,
+        expected: Set<FirNamedFunctionSymbol>,
+        inputs: Set<FirBasedSymbol<*>>,
+    ): String? {
         val bound = mutableSetOf<FirNamedFunctionSymbol>()
         val statements = body.body?.statements.orEmpty()
         var failure: String? = if (statements.isEmpty()) "Empty observer bindings." else null
         for (statement in statements) {
-            val bindingFailure = bindingViolation(statement, body, expected, bound)
+            val bindingFailure = bindingViolation(statement, body, expected, inputs, bound)
             failure = failure ?: bindingFailure
         }
         if (failure == null && bound != expected) failure = "Incomplete observer bindings."
@@ -184,6 +191,7 @@ object ExposesCallChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
         statement: FirStatement,
         body: FirAnonymousFunction,
         expected: Set<FirNamedFunctionSymbol>,
+        inputs: Set<FirBasedSymbol<*>>,
         bound: MutableSet<FirNamedFunctionSymbol>,
     ): String? {
         val explicitReturn = statement is FirReturnExpression && statement.source?.kind == KtRealSourceElementKind
@@ -197,9 +205,23 @@ object ExposesCallChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
             left == null -> "Invalid binding target."
             observer !in expected || !left.isBindingTarget(body) -> "Foreign observer binding."
             right == null || !right.isObserverBindingValue(context.session) -> "Invalid observer binding value."
+            right.readsAny(inputs) -> "Observer binding value reads a lambda parameter."
             !bound.add(observer!!) -> "Duplicate observer binding."
             else -> null
         }
+    }
+
+    /** A binding is evaluated when the lambda is created, before any of [inputs] has a value. */
+    private fun FirExpression.readsAny(inputs: Set<FirBasedSymbol<*>>): Boolean {
+        var reads = false
+        accept(object : FirVisitorVoid() {
+            override fun visitElement(element: FirElement) {
+                val symbol: FirBasedSymbol<*>? = (element as? FirQualifiedAccessExpression)?.toResolvedCallableSymbol()
+                if (symbol in inputs) reads = true
+                element.acceptChildren(this)
+            }
+        })
+        return reads
     }
 
     private fun FirFunctionCall.isBindingTarget(body: FirAnonymousFunction): Boolean {

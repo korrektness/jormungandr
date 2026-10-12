@@ -57,7 +57,7 @@ class ObserverBindingRegistry {
                         fun bind(symbol: FirNamedFunctionSymbol) {
                             if (symbol.isObserver()) {
                                 val observerName = (ctx.embedAnyFunction(symbol) as NamedCallableEmbedding).name
-                                ctx.typeResolver.bindObserver(type, signature(observerName), binding)
+                                ctx.typeResolver.bindObserver(type, observerName, binding)
                             }
                             symbol.directOverriddenSymbolsSafe().filterIsInstance<FirNamedFunctionSymbol>().forEach(::bind)
                         }

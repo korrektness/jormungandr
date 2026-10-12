@@ -122,8 +122,8 @@ class TypeResolver {
 
     private val observerBindings = linkedMapOf<SymbolicName, MutableMap<SymbolicName, ObserverBinding>>()
 
-    fun bindObserver(type: ClassTypeEmbedding, observer: NonInlineFunctionSignature, binding: NonInlineFunctionSignature) {
-        observerBindings.getOrPut(type.name) { linkedMapOf() }[observer.name] = ObserverBinding(type, binding, this)
+    fun bindObserver(type: ClassTypeEmbedding, observer: SymbolicName, binding: NonInlineFunctionSignature) {
+        observerBindings.getOrPut(type.name) { linkedMapOf() }[observer] = ObserverBinding(type, binding, this)
     }
 
     fun observerBinding(view: ClassTypeEmbedding, observer: SymbolicName): ObserverBinding? =

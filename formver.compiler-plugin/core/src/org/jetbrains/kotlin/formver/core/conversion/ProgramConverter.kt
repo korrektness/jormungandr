@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirEnumEntrySymbol
@@ -38,26 +39,16 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.*
 import org.jetbrains.kotlin.formver.core.names.*
-import org.jetbrains.kotlin.formver.core.purity.checkValidity
-import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.core.purity.checkReadOnlyVarReads
 import org.jetbrains.kotlin.formver.core.purity.checkSpecificationVarReads
 import org.jetbrains.kotlin.formver.core.purity.checkNoMultisetValues
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isGuaranteedDefault
 import org.jetbrains.kotlin.formver.uniqueness.plugin.multisetClassId
-import org.jetbrains.kotlin.formver.uniqueness.plugin.uniquenessFacts
-import org.jetbrains.kotlin.formver.core.linearization.FoldStateException
-import org.jetbrains.kotlin.formver.core.linearization.nullBaseCase
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Program
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
-
-/** The functions that encode Kotlin's built-in operators, which take values and read no heap. */
-private val operatorFunctions: Set<SymbolicName> by lazy {
-    (SpecialFunctions.all + SpecialFunctions.multiset).map { it.name }.toSet()
-}
 
 /**
  * Tracks the top-level information about the program.
@@ -119,7 +110,7 @@ class ProgramConverter(
     private val callable: MutableMap<SymbolicName, SignatureWithTarget<NamedCallableEmbedding>> = mutableMapOf()
 
     private data class RegisteredFunction(
-        val declaration: FirSimpleFunction,
+        val declaration: FirFunction,
         val signature: CompleteFunctionSignature,
         val returnTarget: ReturnTarget,
         val hasUniquenessErrors: Boolean,
@@ -197,13 +188,21 @@ class ProgramConverter(
     /** The declaration passed to [register]. */
     private var registeredSymbol: FirFunctionSymbol<*>? = null
 
-    /**
-     * Embed the declaration's signature and embeds the body.
-     */
-    /**
-     * Embeds [declaration]'s signature and body. A `@NeverVerify` function contributes only its signature, so its body
-     * produces no diagnostics.
-     */
+    private val lambdaRegistry = LambdaRegistry(this, fullSignatures)
+
+    val specifiedLambdas: List<SpecifiedLambda>
+        get() = lambdaRegistry.sources
+
+    override fun liftedLambda(expression: FirExpression): LiftedLambda? = lambdaRegistry[expression]
+
+    fun registerLambda(lambda: SpecifiedLambda, lambdas: List<SpecifiedLambda>) {
+        registeredSymbol = lambda.function.symbol
+        val result = lambdaRegistry.register(lambda, lambdas) { embedCompleteSignature(lambda.invoke).signature }
+        registered += RegisteredFunction(lambda.function, result.signature, result.target, uniquenessOutcomeOf(lambda.function).hasErrors)
+        result.refinement?.let { refinements += it }
+    }
+
+    /** Embeds the signature and, unless `@NeverVerify`, the body of [declaration]. */
     fun register(declaration: FirSimpleFunction) {
         registeredSymbol = declaration.symbol
         val signature = embedCompleteSignature(declaration.symbol)
@@ -245,22 +244,7 @@ class ProgramConverter(
     fun validateAll() {
         observerBindingRegistry.registerBindings(this) { fullSignatures.getValue(it) as NonInlineFunctionSignature }
         lawEncoding.prepare()
-        convertedBodyResolver.forEachImpure { name, body ->
-            val source = fullSignatures[name]?.declarationSource
-            body.bodyExp.checkValidity(source, this)
-        }
-        convertedBodyResolver.forEachPure { name, body ->
-            if (!body.isPure()) {
-                val source = fullSignatures[name]?.declarationSource
-                reportPurityViolation(source, "Impure function body detected in pure function")
-            }
-        }
-        for ((_, signature) in fullSignatures) {
-            val source = signature.declarationSource ?: continue
-            for (condition in signature.preconditions + signature.postconditions) {
-                condition.checkValidity(source, this)
-            }
-        }
+        bodyProcessor.validate()
         for (entry in registered) {
             if (entry.declaration.symbol.neverVerify(session)) continue
             val reason = when {
@@ -270,43 +254,21 @@ class ProgramConverter(
             }
             reportVerificationSkipped(
                 entry.declaration.source,
-                "Function '${entry.declaration.name.asString()}' was not verified because of $reason",
+                "Function '${entry.declaration.symbol.name.asString()}' was not verified because of $reason",
             )
         }
     }
 
 
-    private fun linearizePure(name: SymbolicName, signature: CompleteFunctionSignature) {
-        val converted = convertedBodyResolver.lookupPure(name)
-        val linearized = converted?.let { linearizePureBody(signature.declarationSource, it) }
-        val baseCases = linearized?.let { body ->
-            signature.formalArgs.filter { it.isUnique && it.type.isNullable }.mapNotNull { body.nullBaseCase(it.name, operatorFunctions) }
-        }.orEmpty()
-        linearizedBodyResolver.storeFunction(name, signature.toViperFunction(typeResolver, linearized, baseCases))
-    }
-
-    private fun linearizeImpure(name: SymbolicName, signature: CompleteFunctionSignature) {
-        val source = signature.declarationSource
-        val converted = convertedBodyResolver.lookupImpure(name)
-        // The fold state follows the uniqueness checker's facts, which a function with uniqueness errors lacks.
-        val tracksOwnership = signature.symbol?.let { uniquenessOutcomes[it]?.hasErrors } != true
-        val body = converted?.let {
-            try {
-                linearizeImpureBody(source, it, tracksOwnership)
-            } catch (e: FoldStateException) {
-                hadOwnershipError = true
-                context(checkerContext) {
-                    reporter.reportOn(e.source ?: source, ConversionErrors.UNSUPPORTED_OWNERSHIP, e.message)
-                }
-                reportVerificationSkipped(
-                    source,
-                    "Function '${signature.symbol?.name?.asString()}' was not verified because of unsupported ownership",
-                )
-                null
+    private val bodyProcessor by lazy {
+        ProgramBodyProcessor(this, uniquenessOutcomes, fullSignatures, refinements) { error, signature ->
+            hadOwnershipError = true
+            context(checkerContext) {
+                reporter.reportOn(error.source ?: signature.declarationSource, ConversionErrors.UNSUPPORTED_OWNERSHIP, error.message)
             }
+            reportVerificationSkipped(signature.declarationSource,
+                "Function '${signature.symbol?.name?.asString()}' was not verified because of unsupported ownership")
         }
-        val method = body?.toViperMethod(signature, typeResolver) ?: signature.toViperMethod(typeResolver, null)
-        linearizedBodyResolver.storeMethod(name, method)
     }
 
     /**
@@ -316,35 +278,15 @@ class ProgramConverter(
      * Iterates the embedding maps directly (rather than the converted-body map) so that callables
      * without a body still get a Viper header.
      */
-    fun linearizeAll() {
-        val (pure, impure) = fullSignatures.entries.partition { it.value.isPure }
-        pure.forEach { linearizePure(it.key, it.value) }
-        impure.forEach { linearizeImpure(it.key, it.value) }
-        refinements.map { it.toMethod(typeResolver) }.forEach { linearizedBodyResolver.storeMethod(it.name, it) }
-    }
+    fun linearizeAll() = bodyProcessor.linearize()
 
     // endregion
 
     // region Conversion Context
 
-    /**
-     * The uniqueness checker's result for one function. [analysis] is `null` when the function has no body or
-     * [hasErrors] is set.
-     */
-    private data class UniquenessOutcome(val analysis: FunctionUniquenessAnalysis?, val hasErrors: Boolean)
+    private val uniquenessOutcomes = UniquenessOutcomes(session, checkerContext)
 
-    private val uniquenessOutcomes: MutableMap<FirFunctionSymbol<*>, UniquenessOutcome> = mutableMapOf()
-
-    private fun uniquenessOutcomeOf(declaration: FirFunction): UniquenessOutcome =
-        uniquenessOutcomes.getOrPut(declaration.symbol) {
-            // A function without a body, such as a library function, has nothing to analyse.
-            if (declaration.body == null) {
-                UniquenessOutcome(analysis = null, hasErrors = false)
-            } else {
-                val analysis = context(checkerContext) { session.uniquenessFacts.analysis(declaration) }
-                UniquenessOutcome(analysis, hasErrors = analysis == null)
-            }
-        }
+    private fun uniquenessOutcomeOf(declaration: FirFunction): UniquenessOutcome = uniquenessOutcomes[declaration]
 
     @OptIn(SymbolInternals::class)
     override fun uniquenessAnalysisOf(symbol: FirFunctionSymbol<*>): FunctionUniquenessAnalysis? =
@@ -442,6 +384,7 @@ class ProgramConverter(
         )
 
         if (signature.signature.isPure && context(checkerContext) { symbol.isObserver() }) return
+        lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(declaration) })
 
         val context = createBodyConversionContext(symbol, signature, uniquenessOutcomeOf(declaration).analysis)
         if (signature.signature.isPure) {

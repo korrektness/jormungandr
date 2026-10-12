@@ -51,6 +51,8 @@ interface ProgramConversionContext : ErrorCollectionContext {
     val convertedBodyResolver: ConvertedBodyResolver
     val linearizedBodyResolver: LinearizedBodyResolver
 
+    fun liftedLambda(expression: FirExpression): LiftedLambda?
+
     fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding
     fun embedType(type: ConeKotlinType): TypeEmbedding
     fun embedFunctionPretype(symbol: FirFunctionSymbol<*>): FunctionTypeEmbedding

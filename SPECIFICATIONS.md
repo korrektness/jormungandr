@@ -170,10 +170,14 @@ fun counter(start: Int): CounterSpec = CounterSpec {
 `exposes` takes a class-literal specification token and a literal receiver lambda. It is the first statement
 of a lambda SAM-converted to that exact interface. Each statement binds an observer on the block's receiver
 with `observer() == expression`. Every ghost observer, including inherited observers, is bound exactly once.
-Bindings on another receiver, duplicate or missing bindings, other operators and other statements are reported
-as `INVALID_EXPOSES`. The block does nothing at runtime; `ghostObserver()` throws if executed.
+Bindings on another receiver, binding values that read a parameter of the lambda, duplicate or missing bindings,
+other operators and other statements are reported as `INVALID_EXPOSES`. The block does nothing at runtime; `ghostObserver()` throws if executed.
 
-This surface has front-end checking only. Closure lifting and verification of these bindings are unsupported.
+A literal lambda SAM-converted to a fun interface with ghost observers is lifted to a synthetic class. Its captured
+values, receivers and `var`s are fields owned by the class's unique predicate. The lambda body is the class's `invoke`, verified once against the
+interface's `invoke` specification. Each binding defines its observer on the class as the bound expression over the
+captured state, so an observer follows the lambda's later writes to captured `var`s. The creation site constructs the
+object and converts it to an owned value of the interface, carrying each observer's value across.
 
 ### Interface laws
 
