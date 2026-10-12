@@ -30,9 +30,13 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
             ViperPoweredDeclarationChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
             FunctionUniquenessStateRenderingChecker(config),
             SpecOfDeclarationChecker(session),
+            LawDeclarationChecker,
         )
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> = setOf(ObserverDeclarationChecker)
-        override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(ObserverImplementationChecker)
+        override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(
+            ObserverImplementationChecker,
+            LawImplementationChecker,
+        )
     }
 
     override val expressionCheckers: ExpressionCheckers = object : ExpressionCheckers() {

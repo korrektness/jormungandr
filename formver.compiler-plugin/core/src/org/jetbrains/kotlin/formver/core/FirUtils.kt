@@ -102,6 +102,8 @@ fun FirFunctionSymbol<*>.returnsUnique(): Boolean = resolveResultUniqueness() ==
 
 fun FirBasedSymbol<*>.isPure(session: FirSession) = hasAnnotation(annotationId("Pure"), session)
 
+fun FirBasedSymbol<*>.isLaw(session: FirSession) = hasAnnotation(annotationId("Law"), session)
+
 fun FirBasedSymbol<*>.isManual(session: FirSession) = hasAnnotation(annotationId("Manual"), session)
 
 fun FirFunctionSymbol<*>.neverConvert(session: FirSession) = hasAnnotation(annotationId("NeverConvert"), session)

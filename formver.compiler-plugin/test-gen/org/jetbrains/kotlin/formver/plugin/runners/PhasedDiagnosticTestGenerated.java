@@ -1350,6 +1350,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("law_errors.kt")
+      public void testLaw_errors() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/law_errors.kt");
+      }
+
+      @Test
+      @TestMetadata("law_ignored.kt")
+      public void testLaw_ignored() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/law_ignored.kt");
+      }
+
+      @Test
       @TestMetadata("literal_returns.kt")
       public void testLiteral_returns() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/literal_returns.kt");

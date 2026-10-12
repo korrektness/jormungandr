@@ -30,6 +30,10 @@ annotation class Borrowed
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 annotation class Pure
 
+/** Marks an interface law checked by the front end. */
+@Target(AnnotationTarget.FUNCTION)
+annotation class Law
+
 /**
  * Disables automatic permission management for the annotated element.
  *

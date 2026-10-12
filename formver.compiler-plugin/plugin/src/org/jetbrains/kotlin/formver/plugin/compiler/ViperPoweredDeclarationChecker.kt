@@ -32,6 +32,7 @@ import org.jetbrains.kotlin.formver.core.conversion.specOfId
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.print
 import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
+import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
@@ -190,6 +191,7 @@ class ViperPoweredDeclarationChecker(
         declaration.source?.kind == KtFakeSourceElementKind.EnumGeneratedDeclaration -> false
         declaration.hasAnnotation(neverConvertId, session) -> false
         declaration.hasAnnotation(specOfId, session) -> false
+        declaration.symbol.isLaw(session) -> false
         declaration.hasAnnotation(alwaysVerifyId, session) -> true
         else -> conversionSelection.applicable(declaration)
     }

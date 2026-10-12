@@ -18,6 +18,7 @@ object PluginErrors : KtDiagnosticsContainer() {
     val ADT_VIOLATION by error1<PsiElement, String>()
     val INVALID_SPEC_OF by error1<PsiElement, String>()
     val INVALID_OBSERVER by error1<PsiElement, String>()
+    val INVALID_LAW by error1<PsiElement, String>()
     override fun getRendererFactory() = FormalVerificationPluginErrorMessages
 
     fun tags() = listOf(
@@ -30,6 +31,7 @@ object PluginErrors : KtDiagnosticsContainer() {
         ADT_VIOLATION.name,
         INVALID_SPEC_OF.name,
         INVALID_OBSERVER.name,
+        INVALID_LAW.name,
     )
 }
 
