@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.analysis.cfa.util.PathAwareControlFlowInfo
 import org.jetbrains.kotlin.fir.analysis.cfa.util.merge
 import org.jetbrains.kotlin.fir.analysis.cfa.util.transformValues
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
@@ -22,6 +23,7 @@ import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
 import org.jetbrains.kotlin.fir.expressions.allReceiverExpressions
 import org.jetbrains.kotlin.fir.expressions.arguments
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.AnonymousFunctionCaptureNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNodeWithSubgraphs
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
@@ -34,9 +36,13 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ThrowExceptionNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableAssignmentNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableDeclarationNode
+import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.locality.plugin.Locality
 import org.jetbrains.kotlin.formver.locality.plugin.borrowsDispatchReceiver
+import org.jetbrains.kotlin.formver.locality.plugin.resolveCapturedSymbols
 import org.jetbrains.kotlin.formver.locality.plugin.resolveLocality
 import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
 import org.jetbrains.kotlin.formver.readonly.plugin.isPureCall
@@ -118,6 +124,7 @@ class GraphUniquenessStatesAnalyzer(
     private val context: CheckerContext,
     private val callArgumentLocalitiesMapper: CallArgumentTypeFactsMapper<Locality>,
     private val readOnlyContext: ReadOnlyContext,
+    private val specifiedLambdas: Set<FirAnonymousFunction>,
 ) : PathAwareControlFlowGraphVisitor<Unit, UniquenessState>() {
     override fun mergeInfo(
         a: UniquenessStateFlow,
@@ -155,6 +162,30 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
         return data.transformValues { data -> data.put(Unit, data.getOrInitialize()) }
+    }
+
+    override fun visitAnonymousFunctionCaptureNode(
+        node: AnonymousFunctionCaptureNode,
+        data: PathAwareUniquenessStateFlow,
+    ): PathAwareUniquenessStateFlow {
+        val lambda = node.fir.anonymousFunction
+        if (lambda !in specifiedLambdas || node.fir in readOnlyContext) return visitNode(node, data)
+        val graph = lambda.controlFlowGraphReference?.controlFlowGraph ?: error("Specified lambda has no CFG")
+        return context(context) {
+            val captures = graph.resolveCapturedSymbols() + graph.capturedReceivers()
+            data.transformValues { flow ->
+                var state = flow.getOrInitialize()
+                for (symbol in captures) {
+                    val root = state.children[symbol] ?: UniquenessState(symbol.resolveDeclaredUniqueness())
+                    val mutable = (symbol as? FirPropertySymbol)?.isVar == true
+                    val copied = !mutable && (symbol as? FirVariableSymbol<*>)?.resolvedReturnType?.isValueType() == true
+                    if (!copied && (mutable || root.data <= Uniqueness.Unknown)) {
+                        state = state.putChild(symbol, root.copy(data = Uniqueness.Moved))
+                    }
+                }
+                flow.put(Unit, state)
+            }
+        }
     }
 
     override fun visitVariableDeclarationNode(

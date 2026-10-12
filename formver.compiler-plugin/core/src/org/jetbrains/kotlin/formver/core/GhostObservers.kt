@@ -6,11 +6,7 @@
 package org.jetbrains.kotlin.formver.core
 
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
-import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.formver.uniqueness.plugin.isGhostObserver as hasGhostObserverAnnotation
 
-private val ghostObserverId = ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.GhostObserver"))
-
-fun FirCallableSymbol<*>.isGhostObserver(session: FirSession): Boolean = hasAnnotation(ghostObserverId, session)
+fun FirCallableSymbol<*>.isGhostObserver(session: FirSession): Boolean = hasGhostObserverAnnotation(session)

@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
 import org.jetbrains.kotlin.fir.expressions.FirSafeCallExpression
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.fir.expressions.FirThrowExpression
+import org.jetbrains.kotlin.fir.expressions.FirSamConversionExpression
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
@@ -50,6 +51,7 @@ context(context: CheckerContext)
 fun FirExpression.resolveTerminalUniqueness(): Uniqueness {
     return when (this) {
         is FirFunctionCall -> {
+            if (specifiedLambda() != null) return Uniqueness.Unique
             val aliasedReceiver = aliasedStringBuilderReceiver(context.session)
             if (aliasedReceiver != null) {
                 aliasedReceiver.resolveUniqueness()
@@ -59,6 +61,8 @@ fun FirExpression.resolveTerminalUniqueness(): Uniqueness {
                 resolvedType.scopeUniqueness
             }
         }
+
+        is FirSamConversionExpression -> if (specifiedLambda() != null) Uniqueness.Unique else Uniqueness.Shared
 
         is FirThisReceiverExpression -> {
             resolveAccessUniqueness()

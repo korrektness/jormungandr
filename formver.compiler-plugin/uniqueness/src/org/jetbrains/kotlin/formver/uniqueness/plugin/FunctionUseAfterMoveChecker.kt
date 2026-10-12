@@ -9,22 +9,24 @@ import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.AnonymousFunctionCaptureNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ExitSafeCallNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableAssignmentNode
+import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
+import org.jetbrains.kotlin.formver.locality.plugin.resolveCapturedSymbols
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_MOVED_ACCESS
 import org.jetbrains.kotlin.text
 
 /**
- * Resolves expressions that read paths from the uniqueness state at this CFG node.
- *
- * Currently the expressions are extracted from either [QualifiedAccessNode] and [ExitSafeCallNode], as both node types
- * may represent a field access.
+ * Resolves path accesses and assignment targets at this CFG node.
  */
 private fun CFGNode<*>.resolveAccess(): FirExpression? =
     when (this) {
         is QualifiedAccessNode -> fir
         is ExitSafeCallNode -> fir
+        is VariableAssignmentNode -> fir.lValue
         else -> null
     }
 
@@ -75,8 +77,27 @@ object FunctionUseAfterMoveChecker : FirFunctionChecker(MppCheckerKind.Common) {
                     ?: accessedPath.take(1).takeIf { accessExpression.hasImplicitThisReceiver && uniquenessState.isMovedAt(it) }
                     ?: continue
                 val sites = moveSites.readInputMoveSitesOf(node, path)
+                if (node is VariableAssignmentNode && sites.none { it is AnonymousFunctionCaptureNode }) continue
                 if (reported.add(path to sites)) {
                     reporter.reportOn(accessExpression.source, INVALID_MOVED_ACCESS, path, renderMoveSites(sites))
+                }
+            }
+        }
+
+        val specified = declaration.specifiedLambdas()
+        for (node in graph.uniquenessAnalysisTargetNodes.filterIsInstance<AnonymousFunctionCaptureNode>()) {
+            val lambda = node.fir.anonymousFunction
+            if (node.isDead || lambda !in specified) continue
+            val captures = lambda.controlFlowGraphReference?.controlFlowGraph ?: error("Specified lambda has no CFG")
+            val input = uniquenessStateFlows.readInputUniquenessStateOf(node)
+            for (symbol in captures.resolveCapturedSymbols() + captures.capturedReceivers()) {
+                val root = input?.children?.get(symbol) ?: continue
+                for (moved in root.enumerateInconsistentPaths(includeRoot = true)) {
+                    val path = listOf(symbol) + moved
+                    val sites = moveSites.readInputMoveSitesOf(node, path)
+                    if (reported.add(path to sites)) {
+                        reporter.reportOn(node.fir.source, INVALID_MOVED_ACCESS, path, renderMoveSites(sites))
+                    }
                 }
             }
         }

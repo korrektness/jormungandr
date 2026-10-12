@@ -111,6 +111,7 @@ private fun ControlFlowGraph.uniquenessStatesAnalyzer(
         context,
         CallArgumentLocalitiesMapper,
         ReadOnlyContext.of(this, context),
+        context(context) { declaration?.specifiedLambdas().orEmpty() },
     )
 }
 

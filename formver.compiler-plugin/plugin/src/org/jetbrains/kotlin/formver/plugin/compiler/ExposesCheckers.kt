@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
+import org.jetbrains.kotlin.formver.uniqueness.plugin.ghostObserverViolation
 import org.jetbrains.kotlin.formver.core.isFormverFunctionNamed
 import org.jetbrains.kotlin.formver.core.isGhostObserver
 import org.jetbrains.kotlin.formver.core.isLaw
@@ -48,22 +49,7 @@ object GhostObserverDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind
         if (!symbol.isGhostObserver(context.session)) return
         // Override validity belongs to ObserverDeclarationChecker.
         if (declaration.overriddenGhostObserver() != null) return
-        val owner = symbol.getContainingClassSymbol() as? FirRegularClassSymbol
-        val placeholder = declaration.body?.statements?.singleOrNull()?.unwrappedResult() as? FirFunctionCall
-        val validBody = (placeholder?.toResolvedCallableSymbol() as? FirNamedFunctionSymbol)
-            ?.isFormverFunctionNamed("ghostObserver") == true
-        val validOwner = owner?.fir?.isInterface == true && owner.fir.status.isFun
-        val hasValueOrTypeParameters = declaration.valueParameters.isNotEmpty() || declaration.typeParameters.isNotEmpty()
-        val hasReceiverParameters = declaration.receiverParameter != null || declaration.contextParameters.isNotEmpty()
-        val failure = when {
-            !validOwner -> "Ghost observer outside a fun interface."
-            !symbol.isPure(context.session) -> "Missing @Pure on ghost observer."
-            declaration.status.isSuspend -> "Suspend ghost observer."
-            symbol.isLaw(context.session) -> "Ghost observer marked @Law."
-            hasValueOrTypeParameters || hasReceiverParameters -> "Ghost observer parameters."
-            !validBody -> "Non-placeholder ghost observer body."
-            else -> null
-        }
+        val failure = declaration.ghostObserverViolation()
         if (failure != null) reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, failure)
     }
 }

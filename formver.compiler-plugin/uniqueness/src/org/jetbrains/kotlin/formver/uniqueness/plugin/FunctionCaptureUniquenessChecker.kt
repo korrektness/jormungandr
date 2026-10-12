@@ -24,16 +24,9 @@ import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_UNIQUENESS_CAPTURE
 
 /**
- * Checks that no lambda, anonymous object, local class or local function that is analyzed apart from [FirFunction]'s
- * flow captures a root that is [Uniqueness.Unique] or [Uniqueness.Unknown] at any point of that flow. Such a
- * declaration may run at any time, so the analysis cannot account for its uses of the root.
- *
- * Lambdas in specifications are exempt: they are never run.
- */
-/**
  * The classes whose `this` the declaration of [this] graph references, explicitly or as an implicit receiver.
  */
-private fun ControlFlowGraph.capturedReceivers(): Set<FirBasedSymbol<*>> {
+internal fun ControlFlowGraph.capturedReceivers(): Set<FirBasedSymbol<*>> {
     val receivers = mutableSetOf<FirBasedSymbol<*>>()
     declaration?.accept(object : FirVisitorVoid() {
         override fun visitElement(element: FirElement) {
@@ -62,9 +55,10 @@ object FunctionCaptureUniquenessChecker : FirFunctionChecker(MppCheckerKind.Comm
         }
 
         val specifications = ReadOnlyContext.specificationsOf(graph, context)
+        val specifiedLambdas = declaration.specifiedLambdas()
         val separateGraphs = nodes
             .flatMap { node -> (node as? CFGNodeWithSubgraphs<*>)?.subGraphs.orEmpty() }
-            .filterNot { it.extendsLocalFlow }
+            .filterNot { it.extendsLocalFlow || it.declaration in specifiedLambdas }
             .filterNot { separateGraph -> separateGraph.declaration.let { it != null && it in specifications } }
             .toSet()
 

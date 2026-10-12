@@ -112,10 +112,10 @@ fun outside() {
 
 class State(var n: Int)
 
-fun borrowedCapture(state: @Unique @Borrowed State): CounterSpec = CounterSpec <!INVALID_UNIQUENESS_CAPTURE, LOCALITY_MISMATCH!>{
+fun borrowedCapture(state: @Unique @Borrowed State): CounterSpec = <!EXIT_UNIQUENESS_INCONSISTENCY!>CounterSpec <!LOCALITY_MISMATCH!>{
     exposes(CounterSpec::class) { value() == state.n; step() == 1 }
     0
-}<!>
+}<!><!>
 
 fun interface OwnedSpec {
     @Unique @Borrowed fun invoke(): Int

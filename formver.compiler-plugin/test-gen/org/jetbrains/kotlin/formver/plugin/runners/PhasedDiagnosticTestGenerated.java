@@ -489,6 +489,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("specified_capture.kt")
+    public void testSpecified_capture() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/specified_capture.kt");
+    }
+
+    @Test
     @TestMetadata("string_builder.kt")
     public void testString_builder() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/string_builder.kt");
