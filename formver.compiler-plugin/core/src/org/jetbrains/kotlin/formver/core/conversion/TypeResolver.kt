@@ -1,11 +1,13 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FamilyTransfer
+import org.jetbrains.kotlin.formver.core.embeddings.types.ObserverBinding
 import org.jetbrains.kotlin.formver.core.embeddings.types.PretypeEmbedding
 import org.jetbrains.kotlin.formver.core.names.NameMatcher
 import org.jetbrains.kotlin.formver.core.names.NameScope
@@ -82,11 +84,27 @@ class TypeResolver {
         return reaches(subtype.name)
     }
 
+    private val observerBindings = linkedMapOf<SymbolicName, MutableMap<SymbolicName, ObserverBinding>>()
+
+    fun bindObserver(type: ClassTypeEmbedding, observer: NonInlineFunctionSignature, binding: NonInlineFunctionSignature) {
+        observerBindings.getOrPut(type.name) { linkedMapOf() }[observer.name] = ObserverBinding(type, binding, this)
+    }
+
+    fun observerBindings(from: ClassTypeEmbedding, to: ClassTypeEmbedding) =
+        observerBindings[to.name].orEmpty().map { (observer, target) ->
+            val source = observerBindings[from.name]?.get(observer)
+                ?: error("Missing observer binding for ${from.name}: $observer")
+            source to target
+        }
+
+    fun inheritedObserverFunctions() = observerBindings.values.flatMap { it.values }
+        .mapNotNull { it.function() }.distinctBy { it.name }
+
     private val familyTransfers = linkedMapOf<Pair<ClassTypeEmbedding, ClassTypeEmbedding>, FamilyTransfer>()
 
     fun familyTransfer(from: ClassTypeEmbedding, to: ClassTypeEmbedding): FamilyTransfer {
         require(isInterface(to) && isSubtype(from, to) && from != to)
-        return familyTransfers.getOrPut(from to to) { FamilyTransfer(from, to) }
+        return familyTransfers.getOrPut(from to to) { FamilyTransfer(from, to, this) }
     }
 
     private val familyRestores = linkedSetOf<Pair<ClassTypeEmbedding, ClassTypeEmbedding>>()

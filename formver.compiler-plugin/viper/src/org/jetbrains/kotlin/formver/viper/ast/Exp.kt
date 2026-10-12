@@ -774,6 +774,30 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         }
     }
 
+    /** A pure test of whether a predicate's required permission is available. */
+    data class PermissionCheck(val access: PredicateAccess) : Exp {
+        override val type = Type.Bool
+        override val pos = access.pos
+        override val info = access.info
+
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.Exp {
+            val current = viper.silver.ast.CurrentPerm(access.toSilver().loc(), pos.toSilver(), info.toSilver(), silverNoTrafos)
+            return when (access.perm) {
+                is PermExp.FullPerm -> viper.silver.ast.PermGeCmp(
+                    current, access.perm.toSilver(), pos.toSilver(), info.toSilver(), silverNoTrafos
+                )
+                is PermExp.WildcardPerm -> viper.silver.ast.PermGtCmp(
+                    current, viper.silver.ast.NoPerm(pos.toSilver(), info.toSilver(), silverNoTrafos),
+                    pos.toSilver(), info.toSilver(), silverNoTrafos
+                )
+            }
+        }
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() = access.registerNames()
+    }
+
     data class Unfolding(
         val predicateAccess: PredicateAccess,
         val body: Exp,

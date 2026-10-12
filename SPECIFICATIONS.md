@@ -146,7 +146,10 @@ These are reported as `INVALID_OBSERVER`:
 An observer function is encoded as a bodiless Viper function; a class override is encoded with its pure body.
 Calls select the function of the receiver's static type. Permissions follow the `@Pure` encoding described in
 [Pure functions and specifications](#pure-functions-and-specifications). On a shared interface receiver the result
-is arbitrary. The interface predicate contains no binding between an observer and its implementations.
+is arbitrary. A consuming or borrowed ownership transfer between a class and an interface preserves each observer's
+value from the pre-transfer snapshot. Function parameters are quantified over the observer's domain, with the
+destination observer application as the trigger. Returning a borrowed interface view preserves its current
+observations in the restored class view. A bare interface view exposes no class-specific binding.
 
 ## Loop Invariants
 

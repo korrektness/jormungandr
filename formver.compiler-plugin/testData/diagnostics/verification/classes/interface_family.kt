@@ -107,8 +107,10 @@ fun <!VIPER_TEXT!>returnConditional<!>(choose: Boolean): @Unique Family {
 
 @AlwaysVerify
 fun <!VIPER_TEXT!>diamondOwned<!>(value: @Unique Representation) {
+    value.value = 8
     val view: @Unique DiamondFamily = value
     val ancestor: @Unique Family = view
+    verify(ancestor.observe() == 8)
     refute(false)
     consume(ancestor)
 }

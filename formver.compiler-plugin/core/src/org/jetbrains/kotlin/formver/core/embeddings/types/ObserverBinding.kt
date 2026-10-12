@@ -1,0 +1,56 @@
+/*
+ * Copyright 2010-2026 JetBrains s.r.o. and Kotlin Programming Language contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the license/LICENSE.txt file.
+ */
+
+package org.jetbrains.kotlin.formver.core.embeddings.types
+
+import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
+import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
+import org.jetbrains.kotlin.formver.core.linearization.pureToViper
+import org.jetbrains.kotlin.formver.core.names.ScopedName
+import org.jetbrains.kotlin.formver.core.names.asScope
+import org.jetbrains.kotlin.formver.viper.ast.*
+
+/** An observer evaluated through a particular ownership presentation. */
+class ObserverBinding(val view: ClassTypeEmbedding, val signature: NonInlineFunctionSignature, private val resolver: TypeResolver) {
+    private val declaringType = signature.dispatchReceiver!!.type.pretype as ClassTypeEmbedding
+    private val inheritedInterface = resolver.isInterface(view) && view != declaringType
+    private val name = if (inheritedInterface) ScopedName(view.name.asScope(), signature.name) else signature.name
+
+    fun trigger(args: List<Exp>): Exp = Exp.FuncApp(name, args, Type.Ref)
+
+    fun application(args: List<Exp>): Exp {
+        if (inheritedInterface) return trigger(args)
+        val path = generateSequence(view, resolver::superClass).takeWhile { it != declaringType }.toList()
+        return path.foldRight(trigger(args)) { type, body ->
+            Exp.Unfolding(Exp.PredicateAccess(type.uniquePredicateName, listOf(args.first()), PermExp.FullPerm()), body)
+        }
+    }
+
+    fun domain(): List<Exp> {
+        val receiver = signature.dispatchReceiver!!.toLocalVarUse()
+        fun guard(exp: Exp): Exp = when (exp) {
+            is Exp.PredicateAccess -> if (exp.formalArgs == listOf(receiver)) Exp.BoolLit(true) else {
+                val available = Exp.PermissionCheck(exp)
+                Exp.And(Exp.Old(available), available)
+            }
+            is Exp.Implies -> Exp.Implies(Exp.Old(exp.left), guard(exp.right))
+            is Exp.And -> Exp.And(guard(exp.left), guard(exp.right))
+            else -> Exp.Old(exp)
+        }
+        return signature.preconditions.pureToViper(toBuiltin = true, resolver).map(::guard)
+    }
+
+    fun function(): UserFunction? {
+        if (!inheritedInterface) return null
+        val receiver = signature.dispatchReceiver!!.toLocalVarUse()
+        val pres = signature.preconditions.pureToViper(toBuiltin = true, resolver).map {
+            if (it is Exp.PredicateAccess && it.formalArgs == listOf(receiver))
+                Exp.PredicateAccess(view.uniquePredicateName, listOf(receiver), it.perm)
+            else it
+        }
+        return UserFunction(name, signature.formalArgs.map { it.toLocalVarDecl() }, Type.Ref, pres,
+            signature.postconditions.pureToViper(toBuiltin = true, resolver), null)
+    }
+}

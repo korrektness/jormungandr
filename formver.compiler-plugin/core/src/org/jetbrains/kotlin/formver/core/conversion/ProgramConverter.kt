@@ -177,7 +177,7 @@ class ProgramConverter(
         fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
                 listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder }),
         functions = SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
-                linearizedBodyResolver.functions +
+                linearizedBodyResolver.functions + typeResolver.inheritedObserverFunctions() +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray }),
         methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods(),
         predicates = typeResolver.classTypeEmbeddings().map {
@@ -235,6 +235,7 @@ class ProgramConverter(
      * when [skipsVerification] is set after [linearizeAll].
      */
     fun validateAll() {
+        observerBindingRegistry.registerBindings(this) { fullSignatures.getValue(it) as NonInlineFunctionSignature }
         convertedBodyResolver.forEachImpure { name, body ->
             val source = fullSignatures[name]?.declarationSource
             body.bodyExp.checkValidity(source, this)
@@ -758,10 +759,11 @@ class ProgramConverter(
 
     override fun embedType(type: ConeKotlinType): TypeEmbedding = buildType { embedTypeWithBuilder(type) }
 
-    /**
-     * Returns an embedding of the class type, with details set.
-     */
+    private val observerBindingRegistry = ObserverBindingRegistry()
+
+    /** Returns an embedding of the class type, with details set. */
     private fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
+        observerBindingRegistry.registerClass(symbol)
         if (symbol.classId == IntArrayEmbedding.classId) {
             registerBuiltinHierarchy(symbol, IntArrayEmbedding.classType)
             return IntArrayEmbedding.classType

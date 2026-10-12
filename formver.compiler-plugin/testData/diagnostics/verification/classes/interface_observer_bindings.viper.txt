@@ -1,0 +1,1142 @@
+/interface_observer_bindings.kt: info: Generated Viper text for value:
+field number: Ref
+
+function read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingView_unique(this: Ref)
+
+/interface_observer_bindings.kt: info: Generated Viper text for scaled:
+field number: Ref
+
+function read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingView_unique(this: Ref)
+
+/interface_observer_bindings.kt: info: Generated Viper text for read:
+field number: Ref
+
+function read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingView_unique(this: Ref)
+
+/interface_observer_bindings.kt: info: Generated Viper text for value:
+field contents: Ref
+
+field number: Ref
+
+function BindingCell_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      (let anon_2_0 ==
+        (this.contents) in
+        (let anon_3_0 ==
+          (argument.number) in
+          plusInts(anon_2_0, anon_3_0)))))
+}
+
+function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (let anon_1_0 ==
+      (this.contents) in
+      timesInts(anon_1_0, factor)))
+}
+
+function BindingCell_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in this.contents)
+}
+
+function BindingView_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingCell()) && acc(this.contents, write) &&
+  isSubtype(typeOf(this.contents), intType())
+}
+
+predicate BindingView_unique(this: Ref)
+
+/interface_observer_bindings.kt: info: Generated Viper text for scaled:
+field contents: Ref
+
+field number: Ref
+
+function BindingCell_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      (let anon_2_0 ==
+        (this.contents) in
+        (let anon_3_0 ==
+          (argument.number) in
+          plusInts(anon_2_0, anon_3_0)))))
+}
+
+function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (let anon_0_0 ==
+      (this.contents) in
+      timesInts(anon_0_0, factor)))
+}
+
+function BindingCell_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in this.contents)
+}
+
+function BindingView_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingCell()) && acc(this.contents, write) &&
+  isSubtype(typeOf(this.contents), intType())
+}
+
+predicate BindingView_unique(this: Ref)
+
+/interface_observer_bindings.kt: info: Generated Viper text for read:
+field contents: Ref
+
+field number: Ref
+
+function BindingCell_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      (let anon_0_0 ==
+        (this.contents) in
+        (let anon_1_0 ==
+          (argument.number) in
+          plusInts(anon_0_0, anon_1_0)))))
+}
+
+function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (let anon_3_0 ==
+      (this.contents) in
+      timesInts(anon_3_0, factor)))
+}
+
+function BindingCell_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in this.contents)
+}
+
+function BindingView_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingView())
+  requires acc(BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingCell()) && acc(this.contents, write) &&
+  isSubtype(typeOf(this.contents), intType())
+}
+
+predicate BindingView_unique(this: Ref)
+
+/interface_observer_bindings.kt: info: Generated Viper text for inheritedBinding:
+field bf_contents: Ref
+
+field number: Ref
+
+function BindingCell_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      (let anon_2_0 ==
+        (this.bf_contents) in
+        (let anon_3_0 ==
+          (argument.number) in
+          plusInts(anon_2_0, anon_3_0)))))
+}
+
+function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (let anon_1_0 ==
+      (this.bf_contents) in
+      timesInts(anon_1_0, factor)))
+}
+
+function BindingCell_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in this.bf_contents)
+}
+
+function c_BindingView_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingCell()) && acc(this.bf_contents, write) &&
+  isSubtype(typeOf(this.bf_contents), intType())
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate InheritedBindingCell_unique(this: Ref) {
+  isSubtype(typeOf(this), InheritedBindingCell()) &&
+  acc(BindingCell_unique(this), write)
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BindingView_unique(this: Ref)
+
+method InheritedBindingCell_c_BindingView_restore(this: Ref)
+  requires acc(c_BindingView_unique(this), write)
+  requires isSubtype(typeOf(this), InheritedBindingCell())
+  ensures acc(InheritedBindingCell_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BindingView())) && true ==>
+    (unfolding acc(InheritedBindingCell_unique(this), write) in
+      BindingCell_f_value(this)) ==
+    old(c_BindingView_f_value(this))
+  ensures (forall factor: Ref ::
+      { BindingCell_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(InheritedBindingCell_unique(this), write) in
+        BindingCell_f_scaled(this, factor)) ==
+      old(c_BindingView_f_scaled(this, factor)))
+  ensures (forall argument: Ref ::
+      { BindingCell_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old(perm(BindingArgument_unique(argument)) >= write) &&
+      perm(BindingArgument_unique(argument)) >= write) ==>
+      (unfolding acc(InheritedBindingCell_unique(this), write) in
+        BindingCell_f_read(this, argument)) ==
+      old(c_BindingView_f_read(this, argument)))
+
+
+method InheritedBindingCell_c_BindingView_upcast(this: Ref)
+  requires acc(InheritedBindingCell_unique(this), write)
+  ensures acc(c_BindingView_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BindingCell())) && true ==>
+    c_BindingView_f_value(this) ==
+    old((unfolding acc(InheritedBindingCell_unique(this), write) in
+      BindingCell_f_value(this)))
+  ensures (forall factor: Ref ::
+      { c_BindingView_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_BindingView_f_scaled(this, factor) ==
+      old((unfolding acc(InheritedBindingCell_unique(this), write) in
+        BindingCell_f_scaled(this, factor))))
+  ensures (forall argument: Ref ::
+      { c_BindingView_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old(perm(BindingArgument_unique(argument)) >= write) &&
+      perm(BindingArgument_unique(argument)) >= write) ==>
+      c_BindingView_f_read(this, argument) ==
+      old((unfolding acc(InheritedBindingCell_unique(this), write) in
+        BindingCell_f_read(this, argument))))
+
+
+method con(par_contents: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_contents), intType())
+  ensures isSubtype(typeOf(ret_1), InheritedBindingCell())
+  ensures isSubtype(typeOf(ret_1), InheritedBindingCell()) &&
+    (isSubtype(typeOf(ret_1), BindingCell()) &&
+    acc(ret_1.bf_contents, write) &&
+    isSubtype(typeOf(ret_1.bf_contents), intType()))
+  ensures intFromRef(ret_1.bf_contents) == intFromRef(par_contents)
+
+
+method inheritedBinding() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var cell: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var view: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  cell := con(intToRef(1))
+  fold acc(BindingCell_unique(cell), write)
+  fold acc(InheritedBindingCell_unique(cell), write)
+  unfold acc(InheritedBindingCell_unique(cell), write)
+  unfold acc(BindingCell_unique(cell), write)
+  cell.bf_contents := intToRef(6)
+  inhale isSubtype(typeOf(cell), c_BindingView())
+  fold acc(BindingCell_unique(cell), write)
+  fold acc(InheritedBindingCell_unique(cell), write)
+  InheritedBindingCell_c_BindingView_upcast(cell)
+  anon_4 := c_BindingView_f_scaled(cell, intToRef(2))
+  InheritedBindingCell_c_BindingView_restore(cell)
+  assert intFromRef(anon_4) == 12
+  unfold acc(InheritedBindingCell_unique(cell), write)
+  unfold acc(BindingCell_unique(cell), write)
+  anon_5 := cell.bf_contents
+  assert intFromRef(anon_5) == 6
+  fold acc(BindingCell_unique(cell), write)
+  fold acc(InheritedBindingCell_unique(cell), write)
+  view := cell
+  InheritedBindingCell_c_BindingView_upcast(view)
+  anon_6 := c_BindingView_f_value(view)
+  assert intFromRef(anon_6) == 6
+  anon_7 := c_BindingView_f_scaled(view, intToRef(3))
+  assert intFromRef(anon_7) == 18
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_observer_bindings.kt: info: Generated Viper text for moveBinding:
+field bf_contents: Ref
+
+field bf_number: Ref
+
+function BindingCell_f_read(this: Ref, par_argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(par_argument), BindingArgument())
+  requires acc(BindingArgument_unique(par_argument), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (unfolding acc(BindingArgument_unique(par_argument), write) in
+      (let anon_2_0 ==
+        (this.bf_contents) in
+        (let anon_3_0 ==
+          (par_argument.bf_number) in
+          plusInts(anon_2_0, anon_3_0)))))
+}
+
+function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (let anon_1_0 ==
+      (this.bf_contents) in
+      timesInts(anon_1_0, factor)))
+}
+
+function BindingCell_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in this.bf_contents)
+}
+
+function c_BindingView_f_read(this: Ref, par_argument: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(par_argument), BindingArgument())
+  requires acc(BindingArgument_unique(par_argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.bf_number, write) &&
+  isSubtype(typeOf(this.bf_number), intType())
+}
+
+predicate BindingCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingCell()) && acc(this.bf_contents, write) &&
+  isSubtype(typeOf(this.bf_contents), intType())
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BindingView_unique(this: Ref)
+
+method BindingCell_c_BindingView_upcast(this: Ref)
+  requires acc(BindingCell_unique(this), write)
+  ensures acc(c_BindingView_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BindingCell())) && true ==>
+    c_BindingView_f_value(this) == old(BindingCell_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_BindingView_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_BindingView_f_scaled(this, factor) ==
+      old(BindingCell_f_scaled(this, factor)))
+  ensures (forall par_argument: Ref ::
+      { c_BindingView_f_read(this, par_argument) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(par_argument), BindingArgument())) &&
+      (old(perm(BindingArgument_unique(par_argument)) >= write) &&
+      perm(BindingArgument_unique(par_argument)) >= write) ==>
+      c_BindingView_f_read(this, par_argument) ==
+      old(BindingCell_f_read(this, par_argument)))
+
+
+method con_BindingArgument(par_number: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_number), intType())
+  ensures isSubtype(typeOf(ret_2), BindingArgument())
+  ensures isSubtype(typeOf(ret_2), BindingArgument()) &&
+    acc(ret_2.bf_number, write) &&
+    isSubtype(typeOf(ret_2.bf_number), intType())
+  ensures intFromRef(ret_2.bf_number) == intFromRef(par_number)
+
+
+method con_BindingCell(par_contents: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_contents), intType())
+  ensures isSubtype(typeOf(ret_1), BindingCell())
+  ensures isSubtype(typeOf(ret_1), BindingCell()) &&
+    acc(ret_1.bf_contents, write) &&
+    isSubtype(typeOf(ret_1.bf_contents), intType())
+  ensures intFromRef(ret_1.bf_contents) == intFromRef(par_contents)
+
+
+method moveBinding() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var cell: Ref
+  var l0_argument: Ref
+  var view: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  cell := con_BindingCell(intToRef(1))
+  fold acc(BindingCell_unique(cell), write)
+  unfold acc(BindingCell_unique(cell), write)
+  cell.bf_contents := intToRef(7)
+  l0_argument := con_BindingArgument(intToRef(5))
+  fold acc(BindingArgument_unique(l0_argument), write)
+  fold acc(BindingCell_unique(cell), write)
+  view := cell
+  BindingCell_c_BindingView_upcast(view)
+  anon_4 := c_BindingView_f_value(view)
+  assert intFromRef(anon_4) == 7
+  anon_5 := c_BindingView_f_scaled(view, intToRef(3))
+  assert intFromRef(anon_5) == 21
+  anon_6 := c_BindingView_f_read(view, l0_argument)
+  assert intFromRef(anon_6) == 12
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_observer_bindings.kt: info: Generated Viper text for borrowBinding:
+field bf_contents: Ref
+
+field number: Ref
+
+function BindingCell_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      (let anon_2_0 ==
+        (this.bf_contents) in
+        (let anon_3_0 ==
+          (argument.number) in
+          plusInts(anon_2_0, anon_3_0)))))
+}
+
+function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (let anon_1_0 ==
+      (this.bf_contents) in
+      timesInts(anon_1_0, factor)))
+}
+
+function BindingCell_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in this.bf_contents)
+}
+
+function c_BindingView_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingCell()) && acc(this.bf_contents, write) &&
+  isSubtype(typeOf(this.bf_contents), intType())
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BindingView_unique(this: Ref)
+
+method BindingCell_c_BindingView_restore(this: Ref)
+  requires acc(c_BindingView_unique(this), write)
+  requires isSubtype(typeOf(this), BindingCell())
+  ensures acc(BindingCell_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BindingView())) && true ==>
+    BindingCell_f_value(this) == old(c_BindingView_f_value(this))
+  ensures (forall factor: Ref ::
+      { BindingCell_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      BindingCell_f_scaled(this, factor) ==
+      old(c_BindingView_f_scaled(this, factor)))
+  ensures (forall argument: Ref ::
+      { BindingCell_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old(perm(BindingArgument_unique(argument)) >= write) &&
+      perm(BindingArgument_unique(argument)) >= write) ==>
+      BindingCell_f_read(this, argument) ==
+      old(c_BindingView_f_read(this, argument)))
+
+
+method BindingCell_c_BindingView_upcast(this: Ref)
+  requires acc(BindingCell_unique(this), write)
+  ensures acc(c_BindingView_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BindingCell())) && true ==>
+    c_BindingView_f_value(this) == old(BindingCell_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_BindingView_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_BindingView_f_scaled(this, factor) ==
+      old(BindingCell_f_scaled(this, factor)))
+  ensures (forall argument: Ref ::
+      { c_BindingView_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old(perm(BindingArgument_unique(argument)) >= write) &&
+      perm(BindingArgument_unique(argument)) >= write) ==>
+      c_BindingView_f_read(this, argument) ==
+      old(BindingCell_f_read(this, argument)))
+
+
+method borrowBinding() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var cell: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  cell := con(intToRef(1))
+  fold acc(BindingCell_unique(cell), write)
+  unfold acc(BindingCell_unique(cell), write)
+  cell.bf_contents := intToRef(9)
+  inhale isSubtype(typeOf(cell), c_BindingView())
+  fold acc(BindingCell_unique(cell), write)
+  BindingCell_c_BindingView_upcast(cell)
+  anon_4 := c_BindingView_f_value(cell)
+  BindingCell_c_BindingView_restore(cell)
+  assert intFromRef(anon_4) == 9
+  inhale isSubtype(typeOf(cell), c_BindingView())
+  BindingCell_c_BindingView_upcast(cell)
+  anon_5 := c_BindingView_f_scaled(cell, intToRef(2))
+  BindingCell_c_BindingView_restore(cell)
+  assert intFromRef(anon_5) == 18
+  unfold acc(BindingCell_unique(cell), write)
+  anon_6 := cell.bf_contents
+  assert intFromRef(anon_6) == 9
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_contents: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_contents), intType())
+  ensures isSubtype(typeOf(ret_1), BindingCell())
+  ensures isSubtype(typeOf(ret_1), BindingCell()) &&
+    acc(ret_1.bf_contents, write) &&
+    isSubtype(typeOf(ret_1.bf_contents), intType())
+  ensures intFromRef(ret_1.bf_contents) == intFromRef(par_contents)
+
+
+/interface_observer_bindings.kt: info: Generated Viper text for borrowedCallBinding:
+field bf_contents: Ref
+
+field number: Ref
+
+function BindingCell_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      (let anon_2_0 ==
+        (this.bf_contents) in
+        (let anon_3_0 ==
+          (argument.number) in
+          plusInts(anon_2_0, anon_3_0)))))
+}
+
+function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (let anon_1_0 ==
+      (this.bf_contents) in
+      timesInts(anon_1_0, factor)))
+}
+
+function BindingCell_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in this.bf_contents)
+}
+
+function c_BindingView_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingCell()) && acc(this.bf_contents, write) &&
+  isSubtype(typeOf(this.bf_contents), intType())
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BindingView_unique(this: Ref)
+
+method BindingCell_c_BindingView_restore(this: Ref)
+  requires acc(c_BindingView_unique(this), write)
+  requires isSubtype(typeOf(this), BindingCell())
+  ensures acc(BindingCell_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BindingView())) && true ==>
+    BindingCell_f_value(this) == old(c_BindingView_f_value(this))
+  ensures (forall factor: Ref ::
+      { BindingCell_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      BindingCell_f_scaled(this, factor) ==
+      old(c_BindingView_f_scaled(this, factor)))
+  ensures (forall argument: Ref ::
+      { BindingCell_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old(perm(BindingArgument_unique(argument)) >= write) &&
+      perm(BindingArgument_unique(argument)) >= write) ==>
+      BindingCell_f_read(this, argument) ==
+      old(c_BindingView_f_read(this, argument)))
+
+
+method BindingCell_c_BindingView_upcast(this: Ref)
+  requires acc(BindingCell_unique(this), write)
+  ensures acc(c_BindingView_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BindingCell())) && true ==>
+    c_BindingView_f_value(this) == old(BindingCell_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_BindingView_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_BindingView_f_scaled(this, factor) ==
+      old(BindingCell_f_scaled(this, factor)))
+  ensures (forall argument: Ref ::
+      { c_BindingView_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old(perm(BindingArgument_unique(argument)) >= write) &&
+      perm(BindingArgument_unique(argument)) >= write) ==>
+      c_BindingView_f_read(this, argument) ==
+      old(BindingCell_f_read(this, argument)))
+
+
+method borrowedCallBinding() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var cell: Ref
+  var l0_result: Ref
+  var anon_4: Ref
+  cell := con(intToRef(1))
+  fold acc(BindingCell_unique(cell), write)
+  unfold acc(BindingCell_unique(cell), write)
+  cell.bf_contents := intToRef(4)
+  fold acc(BindingCell_unique(cell), write)
+  BindingCell_c_BindingView_upcast(cell)
+  l0_result := readBinding(cell)
+  BindingCell_c_BindingView_restore(cell)
+  assert intFromRef(l0_result) == 12
+  unfold acc(BindingCell_unique(cell), write)
+  anon_4 := cell.bf_contents
+  assert intFromRef(anon_4) == 4
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_contents: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_contents), intType())
+  ensures isSubtype(typeOf(ret_1), BindingCell())
+  ensures isSubtype(typeOf(ret_1), BindingCell()) &&
+    acc(ret_1.bf_contents, write) &&
+    isSubtype(typeOf(ret_1.bf_contents), intType())
+  ensures intFromRef(ret_1.bf_contents) == intFromRef(par_contents)
+
+
+method readBinding(view: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(view), c_BindingView())
+  requires acc(c_BindingView_unique(view), write)
+  ensures acc(c_BindingView_unique(view), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) ==
+    old(intFromRef(c_BindingView_f_value(view))) +
+    old(intFromRef(c_BindingView_f_scaled(view, intToRef(2))))
+  ensures intFromRef(c_BindingView_f_value(view)) ==
+    old(intFromRef(c_BindingView_f_value(view)))
+
+
+/interface_observer_bindings.kt: info: Generated Viper text for bareInterface:
+field bf_contents: Ref
+
+field number: Ref
+
+function BindingCell_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      (let anon_2_0 ==
+        (this.bf_contents) in
+        (let anon_3_0 ==
+          (argument.number) in
+          plusInts(anon_2_0, anon_3_0)))))
+}
+
+function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in
+    (let anon_1_0 ==
+      (this.bf_contents) in
+      timesInts(anon_1_0, factor)))
+}
+
+function BindingCell_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BindingCell())
+  requires acc(BindingCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BindingCell_unique(this), write) in this.bf_contents)
+}
+
+function c_BindingView_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BindingArgument_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingArgument()) && acc(this.number, write) &&
+  isSubtype(typeOf(this.number), intType())
+}
+
+predicate BindingCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BindingCell()) && acc(this.bf_contents, write) &&
+  isSubtype(typeOf(this.bf_contents), intType())
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_BindingView_unique(this: Ref)
+
+method BindingCell_c_BindingView_upcast(this: Ref)
+  requires acc(BindingCell_unique(this), write)
+  ensures acc(c_BindingView_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BindingCell())) && true ==>
+    c_BindingView_f_value(this) == old(BindingCell_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_BindingView_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_BindingView_f_scaled(this, factor) ==
+      old(BindingCell_f_scaled(this, factor)))
+  ensures (forall argument: Ref ::
+      { c_BindingView_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old(perm(BindingArgument_unique(argument)) >= write) &&
+      perm(BindingArgument_unique(argument)) >= write) ==>
+      c_BindingView_f_read(this, argument) ==
+      old(BindingCell_f_read(this, argument)))
+
+
+method bareInterface(view: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(view), c_BindingView())
+  requires acc(c_BindingView_unique(view), write)
+  ensures acc(c_BindingView_unique(view), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var cell: Ref
+  var known: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  cell := con(intToRef(7))
+  fold acc(BindingCell_unique(cell), write)
+  known := cell
+  BindingCell_c_BindingView_upcast(known)
+  anon_4 := c_BindingView_f_value(known)
+  assert intFromRef(anon_4) == 7
+  anon_5 := c_BindingView_f_value(view)
+  assert intFromRef(anon_5) == 7
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_contents: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_contents), intType())
+  ensures isSubtype(typeOf(ret_1), BindingCell())
+  ensures isSubtype(typeOf(ret_1), BindingCell()) &&
+    acc(ret_1.bf_contents, write) &&
+    isSubtype(typeOf(ret_1.bf_contents), intType())
+  ensures intFromRef(ret_1.bf_contents) == intFromRef(par_contents)

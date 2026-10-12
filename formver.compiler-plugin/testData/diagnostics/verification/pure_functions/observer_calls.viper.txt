@@ -1,13 +1,11 @@
 /observer_calls.kt: info: Generated Viper text for scaled:
-function scaled(this: Ref, factor: Ref): Ref
+field value: Ref
+
+function amount(this: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(Measure_unique(this), wildcard)
-  requires isSubtype(typeOf(factor), intType())
   ensures isSubtype(typeOf(result), intType())
 
-
-/observer_calls.kt: info: Generated Viper text for read:
-field value: Ref
 
 function read(this: Ref, cell: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
@@ -17,28 +15,73 @@ function read(this: Ref, cell: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-/observer_calls.kt: info: Generated Viper text for amount:
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/observer_calls.kt: info: Generated Viper text for read:
+field value: Ref
+
 function amount(this: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(Measure_unique(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
+function read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/observer_calls.kt: info: Generated Viper text for amount:
+field value: Ref
+
+function amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
 /observer_calls.kt: info: Generated Viper text for scaled:
 field value: Ref
 
-function scaled(this: Ref, factor: Ref): Ref
+function Fixed_f_amount(this: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
-  requires isSubtype(typeOf(factor), intType())
+  requires acc(Fixed_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  timesInts(factor, intToRef(2))
+  (unfolding acc(Fixed_unique(this), write) in this.value)
 }
 
-/observer_calls.kt: info: Generated Viper text for read:
-field value: Ref
-
-function read(this: Ref, cell: Ref): Ref
+function Fixed_f_read(this: Ref, cell: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(cell), Cell())
   requires acc(Cell_unique(cell), write)
@@ -47,10 +90,39 @@ function read(this: Ref, cell: Ref): Ref
   (unfolding acc(Cell_unique(cell), write) in cell.value)
 }
 
-/observer_calls.kt: info: Generated Viper text for amount:
+function Fixed_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  timesInts(factor, intToRef(2))
+}
+
+function Measure_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/observer_calls.kt: info: Generated Viper text for read:
 field value: Ref
 
-function amount(this: Ref): Ref
+function Fixed_f_amount(this: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires acc(Fixed_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
@@ -58,8 +130,101 @@ function amount(this: Ref): Ref
   (unfolding acc(Fixed_unique(this), write) in this.value)
 }
 
+function Fixed_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Cell_unique(cell), write) in cell.value)
+}
+
+function Fixed_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  timesInts(factor, intToRef(2))
+}
+
+function Measure_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/observer_calls.kt: info: Generated Viper text for amount:
+field value: Ref
+
+function Fixed_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires acc(Fixed_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Fixed_unique(this), write) in this.value)
+}
+
+function Fixed_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Cell_unique(cell), write) in cell.value)
+}
+
+function Fixed_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  timesInts(factor, intToRef(2))
+}
+
+function Measure_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
 /observer_calls.kt: info: Generated Viper text for interfaceCall:
 field value: Ref
+
+function amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
 
 function read(this: Ref, cell: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
@@ -97,7 +262,15 @@ method interfaceCall(m: Ref, cell: Ref) returns (v_ret_0: Ref)
 /observer_calls.kt: info: Generated Viper text for classCall:
 field value: Ref
 
-function read(this: Ref, cell: Ref): Ref
+function Fixed_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires acc(Fixed_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Fixed_unique(this), write) in this.value)
+}
+
+function Fixed_f_read(this: Ref, cell: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(cell), Cell())
   requires acc(Cell_unique(cell), write)
@@ -106,13 +279,34 @@ function read(this: Ref, cell: Ref): Ref
   (unfolding acc(Cell_unique(cell), write) in cell.value)
 }
 
-function scaled(this: Ref, factor: Ref): Ref
+function Fixed_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(factor), intType())
   ensures isSubtype(typeOf(result), intType())
 {
   timesInts(factor, intToRef(2))
 }
+
+function Measure_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
 
 method classCall(m: Ref, cell: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(m), Fixed())
@@ -124,14 +318,31 @@ method classCall(m: Ref, cell: Ref) returns (v_ret_0: Ref)
       intFromRef(v_ret_0) == 6 + intFromRef(cell.value))
 {
   var anon: Ref
-  anon := read(m, cell)
-  v_ret_0 := plusInts(scaled(m, intToRef(3)), anon)
+  anon := Fixed_f_read(m, cell)
+  v_ret_0 := plusInts(Fixed_f_scaled(m, intToRef(3)), anon)
   goto lbl_ret_0
   label lbl_ret_0
 }
 
 /observer_calls.kt: info: Generated Viper text for bothCallShapes:
 field value: Ref
+
+function Fixed_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires acc(Fixed_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Fixed_unique(this), write) in this.value)
+}
+
+function Fixed_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Cell_unique(cell), write) in cell.value)
+}
 
 function Fixed_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
@@ -140,6 +351,20 @@ function Fixed_f_scaled(this: Ref, factor: Ref): Ref
 {
   timesInts(factor, intToRef(2))
 }
+
+function Measure_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
 
 function Measure_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
@@ -163,9 +388,26 @@ method bothCallShapes(m: Ref, i: Ref) returns (v_ret_0: Ref)
 }
 
 /observer_calls.kt: info: Generated Viper text for ownedInterfaceCall:
+field value: Ref
+
 function amount(this: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -186,13 +428,51 @@ method ownedInterfaceCall(m: Ref) returns (v_ret_0: Ref)
 /observer_calls.kt: info: Generated Viper text for ownedClassCall:
 field value: Ref
 
-function amount(this: Ref): Ref
+function Fixed_f_amount(this: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires acc(Fixed_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(Fixed_unique(this), write) in this.value)
 }
+
+function Fixed_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Cell_unique(cell), write) in cell.value)
+}
+
+function Fixed_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  timesInts(factor, intToRef(2))
+}
+
+function Measure_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
 
 method ownedClassCall(m: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(m), Fixed())
@@ -203,7 +483,7 @@ method ownedClassCall(m: Ref) returns (v_ret_0: Ref)
       intFromRef(v_ret_0) == intFromRef(m.value))
 {
   var anon: Ref
-  anon := amount(m)
+  anon := Fixed_f_amount(m)
   v_ret_0 := anon
   goto lbl_ret_0
   label lbl_ret_0
@@ -212,7 +492,46 @@ method ownedClassCall(m: Ref) returns (v_ret_0: Ref)
 /observer_calls.kt: info: Generated Viper text for unboundInterfaceCall:
 field value: Ref
 
-function scaled(this: Ref, factor: Ref): Ref
+function Fixed_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires acc(Fixed_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Fixed_unique(this), write) in this.value)
+}
+
+function Fixed_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Cell_unique(cell), write) in cell.value)
+}
+
+function Fixed_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), Fixed())
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  timesInts(factor, intToRef(2))
+}
+
+function Measure_f_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_read(this: Ref, cell: Ref): Ref
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), wildcard)
+  requires isSubtype(typeOf(cell), Cell())
+  requires acc(Cell_unique(cell), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Measure_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(Measure_unique(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
@@ -226,7 +545,7 @@ method unboundInterfaceCall(m: Ref) returns (v_ret_0: Ref)
 {
   var abstract: Ref
   abstract := m
-  v_ret_0 := scaled(abstract, intToRef(3))
+  v_ret_0 := Measure_f_scaled(abstract, intToRef(3))
   goto lbl_ret_0
   label lbl_ret_0
 }
