@@ -47,3 +47,68 @@ method inc(this: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/unsupported_observer_views.kt: info: Generated Viper text for InheritedTally:
+field bf_v: Ref
+
+function c_TallyBase_f_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_TallyBase())
+  requires acc(c_TallyBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_TallyBase_unique(this), write) in this.bf_v)
+}
+
+function c_Tally_f_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Tally())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method InheritedTally_c_TallyBase_f_inc_inherited_body_c_Tally_f_inc(this: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), InheritedTally())
+  requires acc(InheritedTally_unique(this), write)
+  requires typeOf(this) == InheritedTally()
+  ensures acc(InheritedTally_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(InheritedTally_unique(this), wildcard) in
+      intFromRef(c_TallyBase_f_count(this))) ==
+    old((unfolding acc(InheritedTally_unique(this), wildcard) in
+      intFromRef(c_TallyBase_f_count(this)))) +
+    1
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(this: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), InheritedTally())
+  requires acc(InheritedTally_unique(this), write)
+  requires typeOf(this) == InheritedTally()
+  ensures acc(InheritedTally_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(InheritedTally_unique(this), wildcard) in
+      intFromRef(c_TallyBase_f_count(this))) ==
+    old((unfolding acc(InheritedTally_unique(this), wildcard) in
+      intFromRef(c_TallyBase_f_count(this)))) +
+    1
+
+
+method refines_InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(this: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), InheritedTally())
+  requires acc(InheritedTally_unique(this), write)
+  requires typeOf(this) == InheritedTally()
+  requires isSubtype(typeOf(this), InheritedTally())
+{
+  ret_1 := InheritedTally_c_TallyBase_f_inc_inherited_body_c_Tally_f_inc(this)
+  assert acc(InheritedTally_unique(this), write)
+  assert isSubtype(typeOf(ret_1), unitType())
+  assert (unfolding acc(InheritedTally_unique(this), wildcard) in
+      intFromRef(c_TallyBase_f_count(this))) ==
+    old((unfolding acc(InheritedTally_unique(this), wildcard) in
+      intFromRef(c_TallyBase_f_count(this)))) +
+    1
+}

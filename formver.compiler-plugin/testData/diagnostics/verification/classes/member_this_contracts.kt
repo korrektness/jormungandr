@@ -69,7 +69,7 @@ class DriftingGauge(level: Int) : Gauge(level) {
     }
 }
 
-open class PlainGauge(level: Int) : Gauge(level)
+open <!VIPER_TEXT!>class PlainGauge<!>(level: Int) : Gauge(level)
 
 class FlaggingGauge(level: Int, var flagged: Boolean) : PlainGauge(level) {
     @Unique @Borrowed

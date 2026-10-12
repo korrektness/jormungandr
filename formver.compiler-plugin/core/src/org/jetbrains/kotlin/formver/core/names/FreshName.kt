@@ -195,6 +195,20 @@ data class RefinementName(val overridden: SymbolicName) : FreshName {
     override val children: List<AnyName> = listOf(nameType, overridden)
 }
 
+/** A member's proof-only signature in a runtime class's verification unit. */
+data class InheritedMemberName(val member: SymbolicName, val role: String, val contract: SymbolicName) : FreshName {
+    override val inViper: Boolean = true
+    override val nameType: NameType = NameType.Base.Function
+    override val candidates: List<CandidateName> = buildCandidates {
+        candidate {
+            +member
+            +role
+            +contract
+        }
+    }
+    override val children: List<AnyName> = listOf(nameType, member, contract)
+}
+
 data class PredicateName(val name: String) : FreshName {
     override val inViper: Boolean = false
     override val nameType: NameType = NameType.Base.Predicate

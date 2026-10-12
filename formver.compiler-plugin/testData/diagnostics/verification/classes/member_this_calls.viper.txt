@@ -342,6 +342,72 @@ method finish(this: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), unitType())
 
 
+/member_this_calls.kt: info: Generated Viper text for Tally:
+field count: Ref
+
+field total: Ref
+
+method Tally_c_Counter_f_bump_inherited_body_c_Counter_f_bump(this: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), write)
+  requires typeOf(this) == Tally()
+  ensures acc(Tally_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Tally_unique(this), write) in
+      (unfolding acc(c_Counter_unique(this), write) in
+        intFromRef(this.count) ==
+        old((unfolding acc(Tally_unique(this), write) in
+          (unfolding acc(c_Counter_unique(this), write) in
+            intFromRef(this.count)))) +
+        1))
+{
+  var anon: Ref
+  unfold acc(Tally_unique(this), write)
+  unfold acc(c_Counter_unique(this), write)
+  anon := this.count
+  this.count := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(c_Counter_unique(this), write)
+  fold acc(Tally_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method Tally_c_Counter_f_bump_inherited_contract_c_Counter_f_bump(this: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), write)
+  requires typeOf(this) == Tally()
+  ensures acc(Tally_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Tally_unique(this), write) in
+      (unfolding acc(c_Counter_unique(this), write) in
+        intFromRef(this.count) ==
+        old((unfolding acc(Tally_unique(this), write) in
+          (unfolding acc(c_Counter_unique(this), write) in
+            intFromRef(this.count)))) +
+        1))
+
+
+method refines_Tally_c_Counter_f_bump_inherited_contract_c_Counter_f_bump(this: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), write)
+  requires typeOf(this) == Tally()
+  requires isSubtype(typeOf(this), Tally())
+{
+  ret_2 := Tally_c_Counter_f_bump_inherited_body_c_Counter_f_bump(this)
+  assert acc(Tally_unique(this), write)
+  assert isSubtype(typeOf(ret_2), unitType())
+  assert (unfolding acc(Tally_unique(this), write) in
+      (unfolding acc(c_Counter_unique(this), write) in
+        intFromRef(this.count) ==
+        old((unfolding acc(Tally_unique(this), write) in
+          (unfolding acc(c_Counter_unique(this), write) in
+            intFromRef(this.count)))) +
+        1))
+}
+
 /member_this_calls.kt: info: Generated Viper text for bumpInBase:
 field count: Ref
 

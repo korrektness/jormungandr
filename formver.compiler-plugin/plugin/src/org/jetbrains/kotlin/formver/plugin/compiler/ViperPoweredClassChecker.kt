@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
+import org.jetbrains.kotlin.formver.core.conversion.inheritedImplementationObligations
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.core.conversion.classLawConstructionFailures
 import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
@@ -33,7 +35,7 @@ import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.registerAllNames
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
 
-/** Checks the representation and inherited interface laws at each source implementation. */
+/** Checks concrete implementations' laws and inherited member bodies and contracts. */
 class ViperPoweredClassChecker(
     private val session: FirSession,
     private val config: PluginConfiguration,
@@ -47,15 +49,19 @@ class ViperPoweredClassChecker(
     override fun check(declaration: FirRegularClass) {
         if (declaration.origin != FirDeclarationOrigin.Source) return
         lambdaChecker.checkStandaloneLambdas(declaration, declaration.symbol.classId.embedName())
-        if (declaration.classKind.isInterface) return
-        if (config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) ||
-            (declaration.symbol.interfaceLaws().isEmpty() &&
-                declaration.symbol.declarationSymbols.none { it.isLaw(session) })) return
+        if (declaration.classKind.isInterface || declaration.isAbstract) return
+        if (config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE)) return
+        val inherited = declaration.symbol.inheritedImplementationObligations()
+        if (inherited.isEmpty() && declaration.symbol.interfaceLaws().isEmpty() &&
+            declaration.symbol.declarationSymbols.none { it.isLaw(session) }) return
         if (declaration.symbol.ownClassLaws(session).isNotEmpty() &&
             classLawConstructionFailures(declaration.symbol, session).isNotEmpty()) return
         try {
-            val converter = ProgramConverter(session, config, context, reporter)
+            val converter = ProgramConverter(session, config, context, reporter, implementationObligations = true)
             converter.registerClassLaws(declaration.symbol)
+            for (obligation in inherited) {
+                converter.registerInheritedImplementation(declaration.symbol, obligation.implementation, obligation.contracts)
+            }
             converter.validateAll()
             if (converter.hadConversionError) return
             converter.linearizeAll()

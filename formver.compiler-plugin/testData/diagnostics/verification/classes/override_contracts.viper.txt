@@ -146,6 +146,61 @@ method refines_Base_f_bump(this: Ref, c: Ref) returns (ret_2: Ref)
       old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
 }
 
+/override_contracts.kt: info: Generated Viper text for Inheriting:
+field value: Ref
+
+method Inheriting_c_Base_f_bump_inherited_body_c_Base_f_bump(this: Ref, c: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Inheriting())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  requires typeOf(this) == Inheriting()
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) >
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
+{
+  var anon: Ref
+  unfold acc(Cell_unique(c), write)
+  anon := c.value
+  c.value := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Cell_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method Inheriting_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref,
+  c: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Inheriting())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  requires typeOf(this) == Inheriting()
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) >
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
+
+
+method refines_Inheriting_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref,
+  c: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Inheriting())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  requires typeOf(this) == Inheriting()
+  requires isSubtype(typeOf(this), Inheriting())
+{
+  ret_2 := Inheriting_c_Base_f_bump_inherited_body_c_Base_f_bump(this, c)
+  assert acc(Cell_unique(c), write)
+  assert isSubtype(typeOf(ret_2), unitType())
+  assert (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) >
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
+}
+
 /override_contracts.kt: info: Generated Viper text for positive:
 method Base_f_positive(this: Ref, x: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), Base())
@@ -176,6 +231,60 @@ method refines_Base_f_positive(this: Ref, x: Ref) returns (ret_1: Ref)
   ret_1 := Inheriting_f_positive(this, x)
   assert isSubtype(typeOf(ret_1), intType())
   assert intFromRef(ret_1) > 0
+}
+
+/override_contracts.kt: info: Generated Viper text for Deeper:
+field value: Ref
+
+method Deeper_c_Base_f_bump_inherited_body_c_Base_f_bump(this: Ref, c: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Deeper())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  requires typeOf(this) == Deeper()
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) >
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
+{
+  var anon: Ref
+  unfold acc(Cell_unique(c), write)
+  anon := c.value
+  c.value := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Cell_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method Deeper_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref, c: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Deeper())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  requires typeOf(this) == Deeper()
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) >
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
+
+
+method refines_Deeper_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref,
+  c: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Deeper())
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  requires typeOf(this) == Deeper()
+  requires isSubtype(typeOf(this), Deeper())
+{
+  ret_2 := Deeper_c_Base_f_bump_inherited_body_c_Base_f_bump(this, c)
+  assert acc(Cell_unique(c), write)
+  assert isSubtype(typeOf(ret_2), unitType())
+  assert (unfolding acc(Cell_unique(c), write) in
+      intFromRef(c.value) >
+      old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
 }
 
 /override_contracts.kt: info: Generated Viper text for positive:

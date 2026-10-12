@@ -40,14 +40,14 @@ class Refining : Base(), AtLeastOne {
 }
 
 // An override without a specification of its own is verified against the one it overrides.
-open class Inheriting : Base() {
+open <!VIPER_TEXT!>class Inheriting<!> : Base() {
     override fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
         return x + 1
     }
 }
 
 // Overriding an inherited specification refines it.
-class Deeper : Inheriting() {
+<!VIPER_TEXT!>class Deeper<!> : Inheriting() {
     override fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
         postconditions<Int> { result -> result == x }
         return x

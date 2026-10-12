@@ -320,6 +320,60 @@ method refines_Gauge_f_tick(this: Ref) returns (ret_2: Ref)
         intFromRef(this.level))))
 }
 
+/member_this_contracts.kt: info: Generated Viper text for PlainGauge:
+field level: Ref
+
+method PlainGauge_c_Gauge_f_tick_inherited_body_c_Gauge_f_tick(this: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), PlainGauge())
+  requires acc(PlainGauge_unique(this), write)
+  requires typeOf(this) == PlainGauge()
+  ensures acc(PlainGauge_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(PlainGauge_unique(this), write) in
+      (unfolding acc(c_Gauge_unique(this), write) in
+        intFromRef(this.level) ==
+        old((unfolding acc(PlainGauge_unique(this), write) in
+          (unfolding acc(c_Gauge_unique(this), write) in
+            intFromRef(this.level))))))
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method PlainGauge_c_Gauge_f_tick_inherited_contract_c_Gauge_f_tick(this: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), PlainGauge())
+  requires acc(PlainGauge_unique(this), write)
+  requires typeOf(this) == PlainGauge()
+  ensures acc(PlainGauge_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(PlainGauge_unique(this), write) in
+      (unfolding acc(c_Gauge_unique(this), write) in
+        intFromRef(this.level) ==
+        old((unfolding acc(PlainGauge_unique(this), write) in
+          (unfolding acc(c_Gauge_unique(this), write) in
+            intFromRef(this.level))))))
+
+
+method refines_PlainGauge_c_Gauge_f_tick_inherited_contract_c_Gauge_f_tick(this: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), PlainGauge())
+  requires acc(PlainGauge_unique(this), write)
+  requires typeOf(this) == PlainGauge()
+  requires isSubtype(typeOf(this), PlainGauge())
+{
+  ret_2 := PlainGauge_c_Gauge_f_tick_inherited_body_c_Gauge_f_tick(this)
+  assert acc(PlainGauge_unique(this), write)
+  assert isSubtype(typeOf(ret_2), unitType())
+  assert (unfolding acc(PlainGauge_unique(this), write) in
+      (unfolding acc(c_Gauge_unique(this), write) in
+        intFromRef(this.level) ==
+        old((unfolding acc(PlainGauge_unique(this), write) in
+          (unfolding acc(c_Gauge_unique(this), write) in
+            intFromRef(this.level))))))
+}
+
 /member_this_contracts.kt: info: Generated Viper text for tick:
 field flagged: Ref
 

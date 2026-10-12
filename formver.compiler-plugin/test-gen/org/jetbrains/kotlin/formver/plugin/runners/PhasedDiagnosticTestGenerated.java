@@ -742,6 +742,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("inherited_implementation_obligations.kt")
+      public void testInherited_implementation_obligations() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/inherited_implementation_obligations.kt");
+      }
+
+      @Test
       @TestMetadata("interface_borrowed_upcast.kt")
       public void testInterface_borrowed_upcast() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_borrowed_upcast.kt");

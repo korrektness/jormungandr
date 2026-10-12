@@ -79,7 +79,7 @@ open class Counter(var count: Int) {
     }
 }
 
-class Tally(count: Int, var total: Int) : Counter(count) {
+<!VIPER_TEXT!>class Tally<!>(count: Int, var total: Int) : Counter(count) {
     @Unique @Borrowed
     fun <!VIPER_TEXT!>bumpInBase<!>() {
         count = 2

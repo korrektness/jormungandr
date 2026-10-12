@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 
-/** Inherited bodies have no refinement obligation under the receiving class's observer bindings. */
+/** Identifies the inherited implementation shapes guarded at the public conversion boundary. */
 context(context: CheckerContext)
 fun FirNamedFunctionSymbol.inheritedContractImplementation(owner: FirRegularClassSymbol): Boolean {
     if (origin == FirDeclarationOrigin.Source && getContainingClassSymbol() == owner) return false

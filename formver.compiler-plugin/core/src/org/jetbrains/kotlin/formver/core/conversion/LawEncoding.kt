@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.descriptors.isInterface
+import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
@@ -18,6 +19,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.core.linearization.PureFunBodyLinearizer
 import org.jetbrains.kotlin.formver.core.linearization.toLinearizable
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
+import org.jetbrains.kotlin.formver.core.names.embedName
 import org.jetbrains.kotlin.formver.core.names.PredicateName
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.core.names.asScope
@@ -51,6 +53,7 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
     }
 
     fun registerClass(type: ClassTypeEmbedding, symbol: FirRegularClassSymbol, source: KtSourceElement? = symbol.source) {
+        if (symbol.isAbstract && type.name == symbol.classId.embedName()) return
         implementations[type] = Implementation(type, symbol, source)
     }
 

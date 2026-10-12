@@ -13,5 +13,5 @@ open class TallyBase(var v: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int = v
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>() {}
 }
-<!INVALID_OBSERVER!>class InheritedTally : TallyBase(0), Tally<!>
+<!INVALID_OBSERVER, VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class InheritedTally<!> : TallyBase(0), Tally<!>
 <!UNSUPPORTED_FEATURE!>fun useInherited(t: @Unique InheritedTally): @Unique Tally = t<!>

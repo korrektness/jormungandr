@@ -43,7 +43,11 @@ class ObserverBindingRegistry {
     }
 
     @OptIn(ScopeFunctionRequiresPrewarm::class)
-    fun registerBindings(ctx: ProgramConversionContext, signature: (SymbolicName) -> NonInlineFunctionSignature) {
+    fun registerBindings(
+        ctx: ProgramConversionContext,
+        implementationObligations: Boolean = false,
+        signature: (SymbolicName) -> NonInlineFunctionSignature,
+    ) {
         val visited = mutableSetOf<SymbolicName>()
         while (true) {
             val entry = classSymbols.entries.firstOrNull { it.key !in visited } ?: break
@@ -53,7 +57,7 @@ class ObserverBindingRegistry {
                 val scope = entry.value.unsubstitutedScope()
                 for (name in scope.getCallableNames()) {
                     scope.processFunctionsByName(name) { member ->
-                        if (member.inheritedContractImplementation(entry.value)) {
+                        if (!implementationObligations && member.inheritedContractImplementation(entry.value)) {
                             throw UnsupportedFeatureException(entry.value.source, "an inherited contract implementation")
                         }
                     }

@@ -62,6 +62,7 @@ class ProgramConverter(
     override val config: PluginConfiguration,
     override val checkerContext: CheckerContext,
     private val reporter: DiagnosticReporter,
+    private val implementationObligations: Boolean = false,
 ) : ProgramConversionContext {
 
     /**
@@ -253,6 +254,31 @@ class ProgramConverter(
 
 
 
+    /** Checks inherited bodies and their contracts in the receiving class's representation. */
+    @OptIn(SymbolInternals::class)
+    fun registerInheritedImplementation(
+        owner: FirRegularClassSymbol,
+        implementation: FirNamedFunctionSymbol,
+        contracts: List<FirNamedFunctionSymbol>,
+    ) {
+        registeredSymbol = implementation
+        val ownContract = context(checkerContext) { implementation.specificationOwner() }
+        val bodies = mutableMapOf<FirNamedFunctionSymbol, SignatureWithTarget<NonInlineFunctionSignature>>()
+        for (contract in contracts) {
+            val bodySignature = bodies.getOrPut(ownContract ?: contract) {
+                specializeInheritedMember(owner, implementation, "inherited_body", ownContract ?: contract).also { specialized ->
+                    fullSignatures[specialized.signature.name] = specialized.signature
+                    embedFunctionBody(implementation, specialized)
+                    registered += RegisteredFunction(implementation.fir, specialized.signature, specialized.returnTarget,
+                        uniquenessOutcomeOf(implementation.fir).hasErrors)
+                }
+            }
+            val base = specializeInheritedMember(owner, contract, "inherited_contract")
+            fullSignatures[base.signature.name] = base.signature
+            refinements += Refinement(bodySignature.signature, base.signature, contract.refinementSpelling, owner.source)
+        }
+    }
+
     /**
      * Walk converted bodies to surface validity / purity errors via the diagnostic reporter. If any
      * conversion error has been reported by the time this returns, emit a [ConversionErrors.VERIFICATION_SKIPPED]
@@ -263,7 +289,7 @@ class ProgramConverter(
      * when [skipsVerification] is set after [linearizeAll].
      */
     fun validateAll() {
-        observerBindingRegistry.registerBindings(this) { fullSignatures.getValue(it) as NonInlineFunctionSignature }
+        observerBindingRegistry.registerBindings(this, implementationObligations) { fullSignatures.getValue(it) as NonInlineFunctionSignature }
         lawEncoding.prepare()
         lambdaRegistry.finalizeCreationFacts()
         bodyProcessor.validate()
@@ -350,43 +376,6 @@ class ProgramConverter(
             OwnershipFrame.root(uniquenessAnalysis, symbol.receiverRoots(signature.signature)),
         ).statementCtxt()
         return stmtCtx
-    }
-
-    private fun createContractConversionContext(
-        symbol: FirFunctionSymbol<*>,
-        signature: NamedFunctionSignature,
-        firSpec: FirSpecification,
-        returnTarget: ReturnTarget,
-        uniquenessAnalysis: FunctionUniquenessAnalysis?,
-    ): Pair<StmtConversionContext, StmtConversionContext> {
-        val rootResolver = RootParameterResolver(
-            this@ProgramConverter,
-            signature,
-            symbol.valueParameterSymbols,
-            signature.labelName,
-            returnTarget,
-        )
-
-        val wrappedResolver = firSpec.returnVar?.let { ReturnVarSubstitutor(it, signature.returns) }
-            ?.let { ctx -> SubstitutedReturnParameterResolver(rootResolver, ctx) } ?: rootResolver
-
-        val preconditionContext = MethodConverter(
-            this@ProgramConverter,
-            signature,
-            rootResolver,
-            ScopeIndex.NoScope,
-            OwnershipFrame.root(uniquenessAnalysis, symbol.receiverRoots(signature)),
-        ).statementCtxt()
-
-        val postconditionContext = MethodConverter(
-            this@ProgramConverter,
-            signature,
-            wrappedResolver,
-            ScopeIndex.NoScope,
-            OwnershipFrame.root(uniquenessAnalysis, symbol.receiverRoots(signature)),
-        ).statementCtxt()
-
-        return Pair(preconditionContext, postconditionContext)
     }
 
     // endregion
