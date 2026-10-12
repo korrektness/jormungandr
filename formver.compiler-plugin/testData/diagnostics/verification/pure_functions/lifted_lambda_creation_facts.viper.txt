@@ -4972,7 +4972,6 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method create(captureArg0: Ref, captureArg1: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(captureArg0), intType())
   requires isSubtype(typeOf(captureArg1), ImmutableStep())
-  requires acc(ImmutableStep_unique(captureArg1), write)
   requires isSubtype(typeOf(captureArg1), ImmutableStep())
   requires intFromRef(amount(captureArg1)) > 0
   ensures isSubtype(typeOf(ret_1), Lambda0())
@@ -4980,8 +4979,7 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_1: Ref)
     acc(ret_1.Lambda0_p_capture0, write) &&
     isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType()) &&
     acc(ret_1.Lambda0_p_capture1, write) &&
-    isSubtype(typeOf(ret_1.Lambda0_p_capture1), ImmutableStep()) &&
-    acc(ImmutableStep_unique(ret_1.Lambda0_p_capture1), write)
+    isSubtype(typeOf(ret_1.Lambda0_p_capture1), ImmutableStep())
   ensures intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(captureArg0)
   ensures ret_1.Lambda0_p_capture1 == captureArg1
 
@@ -5085,7 +5083,6 @@ method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
 method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
   requires isSubtype(typeOf(captureArg0), intType())
   requires isSubtype(typeOf(captureArg1), ImmutableStep())
-  requires acc(ImmutableStep_unique(captureArg1), write)
   requires isSubtype(typeOf(captureArg1), ImmutableStep())
   requires intFromRef(amount(captureArg1)) > 0
   ensures isSubtype(typeOf(ret_0), Lambda0())
@@ -5093,8 +5090,7 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
     acc(ret_0.Lambda0_p_capture0, write) &&
     isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType()) &&
     acc(ret_0.Lambda0_p_capture1, write) &&
-    isSubtype(typeOf(ret_0.Lambda0_p_capture1), ImmutableStep()) &&
-    acc(ImmutableStep_unique(ret_0.Lambda0_p_capture1), write)
+    isSubtype(typeOf(ret_0.Lambda0_p_capture1), ImmutableStep())
   ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
   ensures ret_0.Lambda0_p_capture1 == captureArg1
 
@@ -5181,15 +5177,13 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method create(captureArg0: Ref, captureArg1: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(captureArg0), intType())
   requires isSubtype(typeOf(captureArg1), MutableStep())
-  requires acc(MutableStep_unique(captureArg1), write)
   requires isSubtype(typeOf(captureArg1), MutableStep())
   ensures isSubtype(typeOf(ret_1), Lambda0())
   ensures isSubtype(typeOf(ret_1), Lambda0()) &&
     acc(ret_1.Lambda0_p_capture0, write) &&
     isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType()) &&
     acc(ret_1.Lambda0_p_capture1, write) &&
-    isSubtype(typeOf(ret_1.Lambda0_p_capture1), MutableStep()) &&
-    acc(MutableStep_unique(ret_1.Lambda0_p_capture1), write)
+    isSubtype(typeOf(ret_1.Lambda0_p_capture1), MutableStep())
   ensures intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(captureArg0)
   ensures ret_1.Lambda0_p_capture1 == captureArg1
 
@@ -5298,15 +5292,13 @@ method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
 method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
   requires isSubtype(typeOf(captureArg0), intType())
   requires isSubtype(typeOf(captureArg1), MutableStep())
-  requires acc(MutableStep_unique(captureArg1), write)
   requires isSubtype(typeOf(captureArg1), MutableStep())
   ensures isSubtype(typeOf(ret_0), Lambda0())
   ensures isSubtype(typeOf(ret_0), Lambda0()) &&
     acc(ret_0.Lambda0_p_capture0, write) &&
     isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType()) &&
     acc(ret_0.Lambda0_p_capture1, write) &&
-    isSubtype(typeOf(ret_0.Lambda0_p_capture1), MutableStep()) &&
-    acc(MutableStep_unique(ret_0.Lambda0_p_capture1), write)
+    isSubtype(typeOf(ret_0.Lambda0_p_capture1), MutableStep())
   ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
   ensures ret_0.Lambda0_p_capture1 == captureArg1
 
@@ -5405,15 +5397,13 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method create(captureArg0: Ref, captureArg1: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(captureArg0), intType())
   requires isSubtype(typeOf(captureArg1), MutableStep())
-  requires acc(MutableStep_unique(captureArg1), write)
   requires isSubtype(typeOf(captureArg1), MutableStep())
   ensures isSubtype(typeOf(ret_1), Lambda0())
   ensures isSubtype(typeOf(ret_1), Lambda0()) &&
     acc(ret_1.Lambda0_p_capture0, write) &&
     isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType()) &&
     acc(ret_1.Lambda0_p_capture1, write) &&
-    isSubtype(typeOf(ret_1.Lambda0_p_capture1), MutableStep()) &&
-    acc(MutableStep_unique(ret_1.Lambda0_p_capture1), write)
+    isSubtype(typeOf(ret_1.Lambda0_p_capture1), MutableStep())
   ensures intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(captureArg0)
   ensures ret_1.Lambda0_p_capture1 == captureArg1
 
@@ -5532,15 +5522,13 @@ method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
 method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
   requires isSubtype(typeOf(captureArg0), intType())
   requires isSubtype(typeOf(captureArg1), MutableStep())
-  requires acc(MutableStep_unique(captureArg1), write)
   requires isSubtype(typeOf(captureArg1), MutableStep())
   ensures isSubtype(typeOf(ret_0), Lambda0())
   ensures isSubtype(typeOf(ret_0), Lambda0()) &&
     acc(ret_0.Lambda0_p_capture0, write) &&
     isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType()) &&
     acc(ret_0.Lambda0_p_capture1, write) &&
-    isSubtype(typeOf(ret_0.Lambda0_p_capture1), MutableStep()) &&
-    acc(MutableStep_unique(ret_0.Lambda0_p_capture1), write)
+    isSubtype(typeOf(ret_0.Lambda0_p_capture1), MutableStep())
   ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
   ensures ret_0.Lambda0_p_capture1 == captureArg1
 

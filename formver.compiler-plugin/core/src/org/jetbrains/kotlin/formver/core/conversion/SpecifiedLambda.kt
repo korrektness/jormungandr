@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
@@ -37,7 +38,6 @@ import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.util.OperatorNameConventions
 
 /** One literal SAM conversion and the function it implements. */
 data class SpecifiedLambda(
@@ -50,6 +50,7 @@ data class SpecifiedLambda(
 ) {
     companion object {
         context(converter: ProgramConversionContext)
+        @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
         fun collect(declaration: FirSimpleFunction): List<SpecifiedLambda> {
             val result = mutableListOf<SpecifiedLambda>()
             declaration.accept(object : FirVisitorVoid() {
@@ -65,7 +66,8 @@ data class SpecifiedLambda(
                         val scope = cls.unsubstitutedScope(
                             converter.session, converter.checkerContext.scopeSession, false, FirResolvePhase.BODY_RESOLVE,
                         )
-                        val invoke = scope.getFunctions(OperatorNameConventions.INVOKE).single()
+                        val invoke = scope.getCallableNames().flatMap { scope.getFunctions(it) }
+                            .single { it.fir.status.modality == Modality.ABSTRACT }
                         val owner = declaration.symbol.embedName(converter)
                         val source = SpecifiedLambda(expression, declaration, lambda, invoke,
                             ScopedName(CallableScope(owner.scope, owner.name), ClassKotlinName(FqName("Lambda${result.size}"))), parent)
@@ -173,10 +175,14 @@ fun SpecifiedLambda.lift(): LiftedLambda {
         FunctionSignatureImpl(callableType, null, null, params, target.variable, false), target,
     ).toNamedSignature(ScopedName(name.asScope(), PretypeName("create")))
         .toNonInlineSignature(null).toCompleteSignature(expression.source) {
-            userFunctionPreconditions()
+            // Captures are stored without executing user code, so their owned predicates stay with the caller.
+            userFunctionPreconditions(consumes = { !it.isUnique })
             userFunctionPostcondition(resultFolded = false)
+            val stored = properties.values.filter { it.isUnique }.mapTo(mutableSetOf()) {
+                (it.getter as BackingFieldGetter).field.name
+            }
             addPostconditions(listOf(with(resolver) {
-                type.uniquePredicateBody(target.variable, NestedPredicates.Held, includeRepresentationFacts = false)
+                type.openPredicateChain(target.variable, stored)
             }))
             addPostconditions(properties.values.zip(params).map { (property, param) ->
                 EqCmp(PrimitiveFieldAccess(target.variable, (property.getter as BackingFieldGetter).field), param)

@@ -1398,6 +1398,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("callable_generality.kt")
+      public void testCallable_generality() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/callable_generality.kt");
+      }
+
+      @Test
       @TestMetadata("class_law_errors.kt")
       public void testClass_law_errors() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/class_law_errors.kt");

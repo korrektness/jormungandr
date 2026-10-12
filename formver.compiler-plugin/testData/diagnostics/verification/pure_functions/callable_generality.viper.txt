@@ -1,0 +1,2280 @@
+/callable_generality.kt: info: Generated Viper text for total:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Accumulator_unique(this: Ref)
+
+/callable_generality.kt: info: Generated Viper text for invoke:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Accumulator_unique(this: Ref)
+
+method invoke(this: Ref, amount: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret) == intFromRef(total(this))
+
+
+/callable_generality.kt: info: Generated Viper text for ownedCapture:
+field Lambda0_p_capture0: Ref
+
+field bf_n: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_1_0 ==
+      (this.Lambda0_p_capture0) in
+      (unfolding acc(AccumulatorCell_unique(anon_1_0), write) in
+        anon_1_0.bf_n)))
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AccumulatorCell_unique(this: Ref) {
+  isSubtype(typeOf(this), AccumulatorCell()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType())
+}
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), AccumulatorCell()) &&
+  acc(AccumulatorCell_unique(this.Lambda0_p_capture0), write)
+}
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda0_f_total(this))
+
+
+method con(par_n: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_3), AccumulatorCell())
+  ensures isSubtype(typeOf(ret_3), AccumulatorCell()) &&
+    acc(ret_3.bf_n, write) &&
+    isSubtype(typeOf(ret_3.bf_n), intType())
+  ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
+
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), AccumulatorCell())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), AccumulatorCell())
+  ensures ret_1.Lambda0_p_capture0 == captureArg0
+
+
+method ownedCapture() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_Accumulator())
+  ensures acc(c_Accumulator_unique(v_ret_0), write)
+  ensures intFromRef(c_Accumulator_f_total(v_ret_0)) == 0
+{
+  var cell: Ref
+  var anon_2: Ref
+  cell := con(intToRef(0))
+  fold acc(AccumulatorCell_unique(cell), write)
+  anon_2 := create(cell)
+  fold acc(Lambda0_unique(anon_2), write)
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), c_Accumulator())
+  Lambda0_c_Accumulator_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+ownedCapture.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+field bf_n: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_1_0 ==
+      (this.Lambda0_p_capture0) in
+      (unfolding acc(AccumulatorCell_unique(anon_1_0), write) in
+        anon_1_0.bf_n)))
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AccumulatorCell_unique(this: Ref) {
+  isSubtype(typeOf(this), AccumulatorCell()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType())
+}
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), AccumulatorCell()) &&
+  acc(AccumulatorCell_unique(this.Lambda0_p_capture0), write)
+}
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_Accumulator_restore(this: Ref)
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Accumulator())) && true ==>
+    Lambda0_f_total(this) == old(c_Accumulator_f_total(this))
+
+
+method Lambda0_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_5: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_5), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_5) == intFromRef(Lambda0_f_total(this))
+{
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon_2 := this.Lambda0_p_capture0
+  anon_4 := this.Lambda0_p_capture0
+  unfold acc(AccumulatorCell_unique(this.Lambda0_p_capture0), write)
+  anon_3 := anon_4.bf_n
+  anon_2.bf_n := plusInts(anon_3, amount)
+  anon_5 := this.Lambda0_p_capture0
+  v_ret_5 := anon_5.bf_n
+  fold acc(AccumulatorCell_unique(this.Lambda0_p_capture0), write)
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_5
+  label lbl_ret_5
+}
+
+method con(par_n: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_3), AccumulatorCell())
+  ensures isSubtype(typeOf(ret_3), AccumulatorCell()) &&
+    acc(ret_3.bf_n, write) &&
+    isSubtype(typeOf(ret_3.bf_n), intType())
+  ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
+
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), AccumulatorCell())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), AccumulatorCell())
+  ensures ret_0.Lambda0_p_capture0 == captureArg0
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this))
+
+
+method ownedCapture() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_Accumulator())
+  ensures acc(c_Accumulator_unique(ret_1), write)
+  ensures intFromRef(c_Accumulator_f_total(ret_1)) == 0
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_Accumulator_restore(this)
+  ret_4 := Lambda0_invoke(this, amount)
+  Lambda0_c_Accumulator_upcast(this)
+  assert acc(c_Accumulator_unique(this), write)
+  assert isSubtype(typeOf(ret_4), intType())
+  assert intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this))
+}
+
+/callable_generality.kt: info: Generated Viper text for wrongParameterizedBody:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda0_f_total(this))
+
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method wrongParameterizedBody() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_Accumulator())
+  ensures acc(c_Accumulator_unique(v_ret_0), write)
+{
+  var n: Ref
+  var anon: Ref
+  n := intToRef(0)
+  anon := create(n)
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_Accumulator())
+  Lambda0_c_Accumulator_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+wrongParameterizedBody.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_Accumulator_restore(this: Ref)
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Accumulator())) && true ==>
+    Lambda0_f_total(this) == old(c_Accumulator_f_total(this))
+
+
+method Lambda0_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_3) == intFromRef(Lambda0_f_total(this))
+{
+  var anon: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := minusInts(anon, amount)
+  v_ret_3 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_Accumulator_restore(this)
+  ret_2 := Lambda0_invoke(this, amount)
+  Lambda0_c_Accumulator_upcast(this)
+  assert acc(c_Accumulator_unique(this), write)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this))
+}
+
+method wrongParameterizedBody() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_Accumulator())
+  ensures acc(c_Accumulator_unique(ret_1), write)
+
+
+/callable_generality.kt: info: Generated Viper text for parameterClient:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Accumulator_unique(this: Ref)
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_2) == intFromRef(total(this))
+
+
+method ownedCapture() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Accumulator())
+  ensures acc(Accumulator_unique(ret_1), write)
+  ensures intFromRef(total(ret_1)) == 0
+
+
+method parameterClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var first: Ref
+  var second: Ref
+  f := ownedCapture()
+  first := invoke(f, intToRef(3))
+  assert intFromRef(first) == 3
+  second := invoke(f, intToRef(4))
+  assert intFromRef(second) == 7
+  assert intFromRef(total(f)) == 7
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_generality.kt: info: Generated Viper text for badArgument:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Accumulator_unique(this: Ref)
+
+method badArgument() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var anon: Ref
+  f := ownedCapture()
+  anon := invoke(f, intToRef(-1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_2) == intFromRef(total(this))
+
+
+method ownedCapture() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Accumulator())
+  ensures acc(Accumulator_unique(ret_1), write)
+  ensures intFromRef(total(ret_1)) == 0
+
+
+/callable_generality.kt: info: Generated Viper text for badObservation:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda0_f_total(this))
+
+
+method badObservation() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var f: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  n := intToRef(-1)
+  anon_1 := create(n)
+  fold acc(Lambda0_unique(anon_1), write)
+  f := anon_1
+  inhale isSubtype(typeOf(f), c_Accumulator())
+  Lambda0_c_Accumulator_upcast(f)
+  anon_2 := invoke(f, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this))
+
+
+badObservation.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_Accumulator_restore(this: Ref)
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Accumulator())) && true ==>
+    Lambda0_f_total(this) == old(c_Accumulator_f_total(this))
+
+
+method Lambda0_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_4), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(this))
+{
+  var anon: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon, amount)
+  v_ret_4 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_4
+  label lbl_ret_4
+}
+
+method badObservation() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_Accumulator_restore(this)
+  ret_3 := Lambda0_invoke(this, amount)
+  Lambda0_c_Accumulator_upcast(this)
+  assert acc(c_Accumulator_unique(this), write)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(c_Accumulator_f_total(this))
+}
+
+/callable_generality.kt: info: Generated Viper text for apply:
+function action(this: Ref): Ref
+  requires isSubtype(typeOf(this), AccumulatorHolder())
+  ensures isSubtype(typeOf(result), Accumulator())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AccumulatorHolder_unique(this: Ref) {
+  isSubtype(typeOf(this), AccumulatorHolder()) &&
+  acc(Accumulator_unique(action(this)), write)
+}
+
+predicate Accumulator_unique(this: Ref)
+
+method f_apply(this: Ref, amount: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), AccumulatorHolder())
+  requires acc(AccumulatorHolder_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    (unfolding acc(AccumulatorHolder_unique(this), write) in
+      intFromRef(total(action(this))) >= 0)
+  ensures acc(AccumulatorHolder_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures (unfolding acc(AccumulatorHolder_unique(this), write) in
+      intFromRef(total(action(this))) ==
+      old((unfolding acc(AccumulatorHolder_unique(this), write) in
+        intFromRef(total(action(this))))) +
+      intFromRef(amount)) &&
+    (unfolding acc(AccumulatorHolder_unique(this), write) in
+      intFromRef(v_ret_0) == intFromRef(total(action(this))))
+{
+  unfold acc(AccumulatorHolder_unique(this), write)
+  v_ret_0 := invoke(action(this), amount)
+  fold acc(AccumulatorHolder_unique(this), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(total(this))
+
+
+/callable_generality.kt: info: Generated Viper text for fieldClient:
+function g_action(this: Ref): Ref
+  requires isSubtype(typeOf(this), AccumulatorHolder())
+  ensures isSubtype(typeOf(result), Accumulator())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AccumulatorHolder_unique(this: Ref) {
+  isSubtype(typeOf(this), AccumulatorHolder()) &&
+  acc(Accumulator_unique(g_action(this)), write)
+}
+
+predicate Accumulator_unique(this: Ref)
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+method con(par_action: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_action), Accumulator())
+  ensures isSubtype(typeOf(ret_1), AccumulatorHolder())
+  ensures g_action(ret_1) == par_action
+
+
+method f_apply(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), AccumulatorHolder())
+  requires acc(AccumulatorHolder_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    (unfolding acc(AccumulatorHolder_unique(this), write) in
+      intFromRef(total(g_action(this))) >= 0)
+  ensures acc(AccumulatorHolder_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures (unfolding acc(AccumulatorHolder_unique(this), write) in
+      intFromRef(total(g_action(this))) ==
+      old((unfolding acc(AccumulatorHolder_unique(this), write) in
+        intFromRef(total(g_action(this))))) +
+      intFromRef(amount)) &&
+    (unfolding acc(AccumulatorHolder_unique(this), write) in
+      intFromRef(ret_3) == intFromRef(total(g_action(this))))
+
+
+method fieldClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var holder: Ref
+  var anon: Ref
+  var first: Ref
+  var second: Ref
+  anon := ownedCapture()
+  holder := con(anon)
+  fold acc(AccumulatorHolder_unique(holder), write)
+  first := f_apply(holder, intToRef(2))
+  assert intFromRef(first) == 2
+  second := f_apply(holder, intToRef(5))
+  assert intFromRef(second) == 7
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method ownedCapture() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Accumulator())
+  ensures acc(Accumulator_unique(ret_2), write)
+  ensures intFromRef(total(ret_2)) == 0
+
+
+/callable_generality.kt: info: Generated Viper text for initial:
+function initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), AccumulatorFactory())
+  requires acc(AccumulatorFactory_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AccumulatorFactory_unique(this: Ref)
+
+/callable_generality.kt: info: Generated Viper text for invoke:
+function initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), AccumulatorFactory())
+  requires acc(AccumulatorFactory_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AccumulatorFactory_unique(this: Ref)
+
+predicate Accumulator_unique(this: Ref)
+
+method invoke(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), AccumulatorFactory())
+  requires acc(AccumulatorFactory_unique(this), write)
+  ensures acc(AccumulatorFactory_unique(this), write)
+  ensures isSubtype(typeOf(ret), Accumulator())
+  ensures acc(Accumulator_unique(ret), write)
+  ensures intFromRef(total(ret)) == intFromRef(initial(this))
+  ensures intFromRef(initial(this)) == old(intFromRef(initial(this)))
+
+
+/callable_generality.kt: info: Generated Viper text for nestedReturn:
+field Lambda0_p_capture0: Ref
+
+field Lambda1_p_capture0: Ref
+
+function Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Lambda0_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function Lambda1_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda1())
+  requires acc(Lambda1_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda1_unique(this), write) in this.Lambda1_p_capture0)
+}
+
+function c_AccumulatorFactory_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AccumulatorFactory())
+  requires acc(c_AccumulatorFactory_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Accumulator_unique(this: Ref)
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType()) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), intType()))
+}
+
+predicate Lambda1_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda1()) && acc(this.Lambda1_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda1_p_capture0), intType())
+}
+
+predicate c_AccumulatorFactory_unique(this: Ref)
+
+method Lambda0_c_AccumulatorFactory_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_AccumulatorFactory_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_AccumulatorFactory_f_initial(this) == old(Lambda0_f_initial(this))
+
+
+method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(Lambda0_captureArg0), intType())
+  requires isSubtype(typeOf(Lambda0_captureArg0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_1.Lambda0_p_capture0) ==
+    intFromRef(Lambda0_captureArg0)
+
+
+method Lambda1_create(Lambda1_captureArg0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(Lambda1_captureArg0), intType())
+  ensures isSubtype(typeOf(ret_2), Lambda1())
+  ensures isSubtype(typeOf(ret_2), Lambda1()) &&
+    acc(ret_2.Lambda1_p_capture0, write) &&
+    isSubtype(typeOf(ret_2.Lambda1_p_capture0), intType())
+  ensures intFromRef(ret_2.Lambda1_p_capture0) ==
+    intFromRef(Lambda1_captureArg0)
+
+
+method nestedReturn(start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_AccumulatorFactory())
+  ensures acc(c_AccumulatorFactory_unique(v_ret_0), write)
+  ensures intFromRef(c_AccumulatorFactory_f_initial(v_ret_0)) ==
+    intFromRef(start)
+{
+  var anon: Ref
+  anon := Lambda0_create(start)
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_AccumulatorFactory())
+  Lambda0_c_AccumulatorFactory_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+nestedReturn.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+field Lambda1_p_capture0: Ref
+
+function Lambda0_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function Lambda1_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda1())
+  requires acc(Lambda1_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda1_unique(this), write) in this.Lambda1_p_capture0)
+}
+
+function c_AccumulatorFactory_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AccumulatorFactory())
+  requires acc(c_AccumulatorFactory_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType()) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), intType()))
+}
+
+predicate Lambda1_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda1()) && acc(this.Lambda1_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda1_p_capture0), intType())
+}
+
+predicate c_AccumulatorFactory_unique(this: Ref)
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_AccumulatorFactory_restore(this: Ref)
+  requires acc(c_AccumulatorFactory_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_AccumulatorFactory())) &&
+    true ==>
+    Lambda0_f_initial(this) == old(c_AccumulatorFactory_f_initial(this))
+
+
+method Lambda0_c_AccumulatorFactory_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_AccumulatorFactory_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_AccumulatorFactory_f_initial(this) == old(Lambda0_f_initial(this))
+
+
+method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(Lambda0_captureArg0), intType())
+  requires isSubtype(typeOf(Lambda0_captureArg0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) ==
+    intFromRef(Lambda0_captureArg0)
+
+
+method Lambda0_invoke(this: Ref) returns (v_ret_5: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_5), c_Accumulator())
+  ensures acc(c_Accumulator_unique(v_ret_5), write)
+  ensures intFromRef(c_Accumulator_f_total(v_ret_5)) ==
+    intFromRef(Lambda0_f_initial(this))
+  ensures intFromRef(Lambda0_f_initial(this)) ==
+    old(intFromRef(Lambda0_f_initial(this)))
+{
+  var n: Ref
+  var anon: Ref
+  unfold acc(Lambda0_unique(this), write)
+  n := this.Lambda0_p_capture0
+  anon := Lambda1_create(n)
+  fold acc(Lambda1_unique(anon), write)
+  v_ret_5 := anon
+  inhale isSubtype(typeOf(v_ret_5), c_Accumulator())
+  Lambda1_c_Accumulator_upcast(v_ret_5)
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_5
+  label lbl_ret_5
+}
+
+method Lambda1_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda1_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda1_f_total(this))
+
+
+method Lambda1_create(Lambda1_captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(Lambda1_captureArg0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda1())
+  ensures isSubtype(typeOf(ret_1), Lambda1()) &&
+    acc(ret_1.Lambda1_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda1_p_capture0), intType())
+  ensures intFromRef(ret_1.Lambda1_p_capture0) ==
+    intFromRef(Lambda1_captureArg0)
+
+
+method f_invoke(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_AccumulatorFactory())
+  requires acc(c_AccumulatorFactory_unique(this), write)
+  ensures acc(c_AccumulatorFactory_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), c_Accumulator())
+  ensures acc(c_Accumulator_unique(ret_4), write)
+  ensures intFromRef(c_Accumulator_f_total(ret_4)) ==
+    intFromRef(c_AccumulatorFactory_f_initial(this))
+  ensures intFromRef(c_AccumulatorFactory_f_initial(this)) ==
+    old(intFromRef(c_AccumulatorFactory_f_initial(this)))
+
+
+method nestedReturn(start: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(ret_2), c_AccumulatorFactory())
+  ensures acc(c_AccumulatorFactory_unique(ret_2), write)
+  ensures intFromRef(c_AccumulatorFactory_f_initial(ret_2)) ==
+    intFromRef(start)
+
+
+method refines_f_invoke(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_AccumulatorFactory())
+  requires acc(c_AccumulatorFactory_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_AccumulatorFactory_restore(this)
+  ret_4 := Lambda0_invoke(this)
+  Lambda0_c_AccumulatorFactory_upcast(this)
+  assert acc(c_AccumulatorFactory_unique(this), write)
+  assert isSubtype(typeOf(ret_4), c_Accumulator())
+  assert acc(c_Accumulator_unique(ret_4), write)
+  assert intFromRef(c_Accumulator_f_total(ret_4)) ==
+    intFromRef(c_AccumulatorFactory_f_initial(this))
+  assert intFromRef(c_AccumulatorFactory_f_initial(this)) ==
+    old(intFromRef(c_AccumulatorFactory_f_initial(this)))
+}
+
+nestedReturn.lambda1.invoke:
+field Lambda0_p_capture0: Ref
+
+field Lambda1_p_capture0: Ref
+
+function AccumulatorFactory_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), AccumulatorFactory())
+  requires acc(AccumulatorFactory_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Lambda0_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function Lambda1_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda1())
+  requires acc(Lambda1_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda1_unique(this), write) in this.Lambda1_p_capture0)
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AccumulatorFactory_unique(this: Ref)
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType()) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), intType()))
+}
+
+predicate Lambda1_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda1()) && acc(this.Lambda1_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda1_p_capture0), intType())
+}
+
+predicate c_Accumulator_unique(this: Ref)
+
+method AccumulatorFactory_f_invoke(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), AccumulatorFactory())
+  requires acc(AccumulatorFactory_unique(this), write)
+  ensures acc(AccumulatorFactory_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), c_Accumulator())
+  ensures acc(c_Accumulator_unique(ret_4), write)
+  ensures intFromRef(c_Accumulator_f_total(ret_4)) ==
+    intFromRef(AccumulatorFactory_f_initial(this))
+  ensures intFromRef(AccumulatorFactory_f_initial(this)) ==
+    old(intFromRef(AccumulatorFactory_f_initial(this)))
+
+
+method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(Lambda0_captureArg0), intType())
+  requires isSubtype(typeOf(Lambda0_captureArg0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) ==
+    intFromRef(Lambda0_captureArg0)
+
+
+method Lambda1_c_Accumulator_restore(this: Ref)
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda1())
+  ensures acc(Lambda1_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Accumulator())) && true ==>
+    Lambda1_f_total(this) == old(c_Accumulator_f_total(this))
+
+
+method Lambda1_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda1_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda1())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda1_f_total(this))
+
+
+method Lambda1_create(Lambda1_captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(Lambda1_captureArg0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda1())
+  ensures isSubtype(typeOf(ret_1), Lambda1()) &&
+    acc(ret_1.Lambda1_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda1_p_capture0), intType())
+  ensures intFromRef(ret_1.Lambda1_p_capture0) ==
+    intFromRef(Lambda1_captureArg0)
+
+
+method Lambda1_invoke(this: Ref, amount: Ref) returns (v_ret_7: Ref)
+  requires isSubtype(typeOf(this), Lambda1())
+  requires acc(Lambda1_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda1_f_total(this)) >= 0
+  ensures acc(Lambda1_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_7), intType())
+  ensures intFromRef(Lambda1_f_total(this)) ==
+    old(intFromRef(Lambda1_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_7) == intFromRef(Lambda1_f_total(this))
+{
+  var anon: Ref
+  unfold acc(Lambda1_unique(this), write)
+  anon := this.Lambda1_p_capture0
+  this.Lambda1_p_capture0 := plusInts(anon, amount)
+  v_ret_7 := this.Lambda1_p_capture0
+  fold acc(Lambda1_unique(this), write)
+  goto lbl_ret_7
+  label lbl_ret_7
+}
+
+method c_Accumulator_f_invoke(this: Ref, amount: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_6), intType())
+  ensures intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_6) == intFromRef(c_Accumulator_f_total(this))
+
+
+method nestedReturn(start: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(ret_2), AccumulatorFactory())
+  ensures acc(AccumulatorFactory_unique(ret_2), write)
+  ensures intFromRef(AccumulatorFactory_f_initial(ret_2)) ==
+    intFromRef(start)
+
+
+method refines_c_Accumulator_f_invoke(this: Ref, amount: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda1())
+{
+  Lambda1_c_Accumulator_restore(this)
+  ret_6 := Lambda1_invoke(this, amount)
+  Lambda1_c_Accumulator_upcast(this)
+  assert acc(c_Accumulator_unique(this), write)
+  assert isSubtype(typeOf(ret_6), intType())
+  assert intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_6) == intFromRef(c_Accumulator_f_total(this))
+}
+
+/callable_generality.kt: info: Generated Viper text for nestedClient:
+function initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), AccumulatorFactory())
+  requires acc(AccumulatorFactory_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AccumulatorFactory_unique(this: Ref)
+
+predicate Accumulator_unique(this: Ref)
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+method AccumulatorFactory_f_invoke(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), AccumulatorFactory())
+  requires acc(AccumulatorFactory_unique(this), write)
+  ensures acc(AccumulatorFactory_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), Accumulator())
+  ensures acc(Accumulator_unique(ret_2), write)
+  ensures intFromRef(total(ret_2)) == intFromRef(initial(this))
+  ensures intFromRef(initial(this)) == old(intFromRef(initial(this)))
+
+
+method Accumulator_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(total(this))
+
+
+method nestedClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var factory: Ref
+  var first: Ref
+  var second: Ref
+  var r1: Ref
+  var r2: Ref
+  factory := nestedReturn(intToRef(10))
+  first := AccumulatorFactory_f_invoke(factory)
+  second := AccumulatorFactory_f_invoke(factory)
+  r1 := Accumulator_f_invoke(first, intToRef(1))
+  assert intFromRef(r1) == 11
+  r2 := Accumulator_f_invoke(second, intToRef(2))
+  assert intFromRef(r2) == 12
+  assert intFromRef(total(first)) == 11
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method nestedReturn(start: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(ret_1), AccumulatorFactory())
+  ensures acc(AccumulatorFactory_unique(ret_1), write)
+  ensures intFromRef(initial(ret_1)) == intFromRef(start)
+
+
+/callable_generality.kt: info: Generated Viper text for offset:
+function offset(this: Ref): Ref
+  requires isSubtype(typeOf(this), Projection())
+  requires acc(Projection_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Projection_unique(this: Ref)
+
+/callable_generality.kt: info: Generated Viper text for project:
+function offset(this: Ref): Ref
+  requires isSubtype(typeOf(this), Projection())
+  requires acc(Projection_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Projection_unique(this: Ref)
+
+method project(this: Ref, x: Ref, y: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Projection())
+  requires acc(Projection_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) >= intFromRef(offset(this)) &&
+    intFromRef(y) >= intFromRef(x)
+  ensures acc(Projection_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) ==
+    intFromRef(y) - intFromRef(x) + intFromRef(offset(this))
+  ensures intFromRef(offset(this)) == old(intFromRef(offset(this)))
+
+
+/callable_generality.kt: info: Generated Viper text for namedOperation:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_offset(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_DerivedProjection_c_Projection_f_offset_args_c_Projection_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Projection())
+  requires acc(c_DerivedProjection_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Projection_f_offset_args_c_Projection_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Projection())
+  requires acc(c_Projection_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType()) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), intType()))
+}
+
+predicate c_DerivedProjection_unique(this: Ref)
+
+predicate c_Projection_unique(this: Ref)
+
+method Lambda0_c_DerivedProjection_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_DerivedProjection_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_DerivedProjection_c_Projection_f_offset_args_c_Projection_ret_Int(this) ==
+    old(Lambda0_f_offset(this))
+
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method namedOperation(base: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(base), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_DerivedProjection())
+  ensures acc(c_DerivedProjection_unique(v_ret_0), write)
+  ensures intFromRef(c_DerivedProjection_c_Projection_f_offset_args_c_Projection_ret_Int(v_ret_0)) ==
+    intFromRef(base)
+{
+  var anon: Ref
+  anon := create(base)
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_DerivedProjection())
+  Lambda0_c_DerivedProjection_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+namedOperation.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function DerivedProjection_c_Projection_f_offset(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Projection())
+  requires acc(DerivedProjection_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Lambda0_f_offset(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Projection_f_offset(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Projection())
+  requires acc(c_Projection_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate DerivedProjection_unique(this: Ref)
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType()) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), intType()))
+}
+
+predicate c_Projection_unique(this: Ref)
+
+method Lambda0_c_Projection_restore(this: Ref)
+  requires acc(c_Projection_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Projection())) && true ==>
+    Lambda0_f_offset(this) == old(c_Projection_f_offset(this))
+
+
+method Lambda0_c_Projection_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Projection_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Projection_f_offset(this) == old(Lambda0_f_offset(this))
+
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method invoke(this: Ref, x: Ref, y: Ref) returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) >= intFromRef(Lambda0_f_offset(this)) &&
+    intFromRef(y) >= intFromRef(x)
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_4), intType())
+  ensures intFromRef(v_ret_4) ==
+    intFromRef(y) - intFromRef(x) + intFromRef(Lambda0_f_offset(this))
+  ensures intFromRef(Lambda0_f_offset(this)) ==
+    old(intFromRef(Lambda0_f_offset(this)))
+{
+  var anon: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon := this.Lambda0_p_capture0
+  v_ret_4 := plusInts(minusInts(y, x), anon)
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_4
+  label lbl_ret_4
+}
+
+method namedOperation(base: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), intType())
+  ensures isSubtype(typeOf(ret_1), DerivedProjection())
+  ensures acc(DerivedProjection_unique(ret_1), write)
+  ensures intFromRef(DerivedProjection_c_Projection_f_offset(ret_1)) ==
+    intFromRef(base)
+
+
+method project(this: Ref, x: Ref, y: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_Projection())
+  requires acc(c_Projection_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) >= intFromRef(c_Projection_f_offset(this)) &&
+    intFromRef(y) >= intFromRef(x)
+  ensures acc(c_Projection_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) ==
+    intFromRef(y) - intFromRef(x) + intFromRef(c_Projection_f_offset(this))
+  ensures intFromRef(c_Projection_f_offset(this)) ==
+    old(intFromRef(c_Projection_f_offset(this)))
+
+
+method refines_project(this: Ref, x: Ref, y: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_Projection())
+  requires acc(c_Projection_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) >= intFromRef(c_Projection_f_offset(this)) &&
+    intFromRef(y) >= intFromRef(x)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_Projection_restore(this)
+  ret_3 := invoke(this, x, y)
+  Lambda0_c_Projection_upcast(this)
+  assert acc(c_Projection_unique(this), write)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(ret_3) ==
+    intFromRef(y) - intFromRef(x) + intFromRef(c_Projection_f_offset(this))
+  assert intFromRef(c_Projection_f_offset(this)) ==
+    old(intFromRef(c_Projection_f_offset(this)))
+}
+
+/callable_generality.kt: info: Generated Viper text for namedOperationClient:
+function DerivedProjection_c_Projection_f_offset(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Projection())
+  requires acc(DerivedProjection_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Projection_f_offset(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Projection())
+  requires acc(c_Projection_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate DerivedProjection_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_Projection_unique(this: Ref)
+
+method DerivedProjection_c_Projection_restore(this: Ref)
+  requires acc(c_Projection_unique(this), write)
+  requires isSubtype(typeOf(this), DerivedProjection())
+  ensures acc(DerivedProjection_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Projection())) && true ==>
+    DerivedProjection_c_Projection_f_offset(this) ==
+    old(c_Projection_f_offset(this))
+
+
+method DerivedProjection_c_Projection_upcast(this: Ref)
+  requires acc(DerivedProjection_unique(this), write)
+  ensures acc(c_Projection_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Projection())) && true ==>
+    c_Projection_f_offset(this) ==
+    old(DerivedProjection_c_Projection_f_offset(this))
+
+
+method namedOperation(base: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), intType())
+  ensures isSubtype(typeOf(ret_1), DerivedProjection())
+  ensures acc(DerivedProjection_unique(ret_1), write)
+  ensures intFromRef(DerivedProjection_c_Projection_f_offset(ret_1)) ==
+    intFromRef(base)
+
+
+method namedOperationClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var anon_0: Ref
+  var l0_r: Ref
+  var anon_1: Ref
+  f := namedOperation(intToRef(2))
+  anon_0 := DerivedProjection_c_Projection_f_offset(f)
+  assert intFromRef(anon_0) == 2
+  DerivedProjection_c_Projection_upcast(f)
+  l0_r := project(f, intToRef(3), intToRef(7))
+  DerivedProjection_c_Projection_restore(f)
+  assert intFromRef(l0_r) == 6
+  anon_1 := DerivedProjection_c_Projection_f_offset(f)
+  assert intFromRef(anon_1) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method project(this: Ref, x: Ref, y: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_Projection())
+  requires acc(c_Projection_unique(this), write)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) >= intFromRef(c_Projection_f_offset(this)) &&
+    intFromRef(y) >= intFromRef(x)
+  ensures acc(c_Projection_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) ==
+    intFromRef(y) - intFromRef(x) + intFromRef(c_Projection_f_offset(this))
+  ensures intFromRef(c_Projection_f_offset(this)) ==
+    old(intFromRef(c_Projection_f_offset(this)))
+
+
+/callable_generality.kt: info: Generated Viper text for inheritedSam:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Accumulator_f_total_args_c_Accumulator_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_DerivedAccumulator_c_Accumulator_f_total_args_c_Accumulator_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_DerivedAccumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_Accumulator_unique(this: Ref)
+
+predicate c_DerivedAccumulator_unique(this: Ref)
+
+method Lambda0_c_DerivedAccumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_DerivedAccumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_DerivedAccumulator_c_Accumulator_f_total_args_c_Accumulator_ret_Int(this) ==
+    old(Lambda0_f_total(this))
+
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method inheritedSam() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_DerivedAccumulator())
+  ensures acc(c_DerivedAccumulator_unique(v_ret_0), write)
+  ensures intFromRef(c_DerivedAccumulator_c_Accumulator_f_total_args_c_Accumulator_ret_Int(v_ret_0)) ==
+    0
+{
+  var n: Ref
+  var anon: Ref
+  n := intToRef(0)
+  anon := create(n)
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_DerivedAccumulator())
+  Lambda0_c_DerivedAccumulator_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+inheritedSam.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function DerivedAccumulator_c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(DerivedAccumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate DerivedAccumulator_unique(this: Ref)
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_Accumulator_restore(this: Ref)
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Accumulator())) && true ==>
+    Lambda0_f_total(this) == old(c_Accumulator_f_total(this))
+
+
+method Lambda0_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_4), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(this))
+{
+  var anon: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon, amount)
+  v_ret_4 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_4
+  label lbl_ret_4
+}
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(c_Accumulator_f_total(this))
+
+
+method inheritedSam() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), DerivedAccumulator())
+  ensures acc(DerivedAccumulator_unique(ret_1), write)
+  ensures intFromRef(DerivedAccumulator_c_Accumulator_f_total(ret_1)) == 0
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_Accumulator_restore(this)
+  ret_3 := Lambda0_invoke(this, amount)
+  Lambda0_c_Accumulator_upcast(this)
+  assert acc(c_Accumulator_unique(this), write)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(c_Accumulator_f_total(this))
+}
+
+/callable_generality.kt: info: Generated Viper text for inheritedClient:
+function DerivedAccumulator_c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(DerivedAccumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate DerivedAccumulator_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_Accumulator_unique(this: Ref)
+
+method DerivedAccumulator_c_Accumulator_restore(this: Ref)
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(this), DerivedAccumulator())
+  ensures acc(DerivedAccumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Accumulator())) && true ==>
+    DerivedAccumulator_c_Accumulator_f_total(this) ==
+    old(c_Accumulator_f_total(this))
+
+
+method DerivedAccumulator_c_Accumulator_upcast(this: Ref)
+  requires acc(DerivedAccumulator_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Accumulator())) && true ==>
+    c_Accumulator_f_total(this) ==
+    old(DerivedAccumulator_c_Accumulator_f_total(this))
+
+
+method inheritedClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var f: Ref
+  var l0_r: Ref
+  f := inheritedSam()
+  DerivedAccumulator_c_Accumulator_upcast(f)
+  l0_r := invoke(f, intToRef(6))
+  DerivedAccumulator_c_Accumulator_restore(f)
+  assert intFromRef(l0_r) == 6
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method inheritedSam() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), DerivedAccumulator())
+  ensures acc(DerivedAccumulator_unique(ret_1), write)
+  ensures intFromRef(DerivedAccumulator_c_Accumulator_f_total(ret_1)) == 0
+
+
+method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this))
+
+
+/callable_generality.kt: info: Generated Viper text for loopLiteral:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda0_f_total(this))
+
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_1.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this))
+
+
+method loopLiteral(count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(count), intType())
+  requires intFromRef(count) >= 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(count), intType())
+    invariant intFromRef(i) >= 0 && intFromRef(i) <= intFromRef(count)
+  anon_1 := ltInts(i, count)
+  if (boolFromRef(anon_1)) {
+    var n: Ref
+    var f: Ref
+    var anon_2: Ref
+    var l2_r: Ref
+    n := i
+    anon_2 := create(n)
+    fold acc(Lambda0_unique(anon_2), write)
+    f := anon_2
+    inhale isSubtype(typeOf(f), c_Accumulator())
+    Lambda0_c_Accumulator_upcast(f)
+    l2_r := invoke(f, intToRef(1))
+    assert intFromRef(l2_r) == intFromRef(i) + 1
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(count), intType())
+  assert intFromRef(i) >= 0 && intFromRef(i) <= intFromRef(count)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+loopLiteral.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_Accumulator_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_Accumulator_unique(this: Ref)
+
+method Lambda0_c_Accumulator_restore(this: Ref)
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Accumulator())) && true ==>
+    Lambda0_f_total(this) == old(c_Accumulator_f_total(this))
+
+
+method Lambda0_c_Accumulator_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_Accumulator_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_6: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_6), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_6) == intFromRef(Lambda0_f_total(this))
+{
+  var anon: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon, amount)
+  v_ret_6 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_6
+  label lbl_ret_6
+}
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  ensures acc(c_Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this))
+
+
+method loopLiteral(count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(count), intType())
+  requires intFromRef(count) >= 0
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), c_Accumulator())
+  requires acc(c_Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_Accumulator_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_Accumulator_restore(this)
+  ret_5 := Lambda0_invoke(this, amount)
+  Lambda0_c_Accumulator_upcast(this)
+  assert acc(c_Accumulator_unique(this), write)
+  assert isSubtype(typeOf(ret_5), intType())
+  assert intFromRef(c_Accumulator_f_total(this)) ==
+    old(intFromRef(c_Accumulator_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_5) == intFromRef(c_Accumulator_f_total(this))
+}
+
+/callable_generality.kt: info: Generated Viper text for applyForwarded:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Accumulator_unique(this: Ref)
+
+method applyForwarded(f: Ref, amount: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), Accumulator())
+  requires acc(Accumulator_unique(f), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(f)) >= 0
+  ensures acc(Accumulator_unique(f), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(total(f)) ==
+    old(intFromRef(total(f))) + intFromRef(amount) &&
+    intFromRef(v_ret_0) == intFromRef(total(f))
+{
+  v_ret_0 := invoke(f, amount)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(total(this))
+
+
+/callable_generality.kt: info: Generated Viper text for forward:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Accumulator_unique(this: Ref)
+
+method applyForwarded(f: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(f), Accumulator())
+  requires acc(Accumulator_unique(f), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(f)) >= 0
+  ensures acc(Accumulator_unique(f), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(total(f)) ==
+    old(intFromRef(total(f))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(total(f))
+
+
+method forward(f: Ref, amount: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), Accumulator())
+  requires acc(Accumulator_unique(f), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(f)) >= 0
+  ensures acc(Accumulator_unique(f), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(total(f)) ==
+    old(intFromRef(total(f))) + intFromRef(amount) &&
+    intFromRef(v_ret_0) == intFromRef(total(f))
+{
+  v_ret_0 := applyForwarded(f, amount)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/callable_generality.kt: info: Generated Viper text for forwardingClient:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Accumulator_unique(this: Ref)
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+method forward(par_f: Ref, amount: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_f), Accumulator())
+  requires acc(Accumulator_unique(par_f), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(par_f)) >= 0
+  ensures acc(Accumulator_unique(par_f), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(total(par_f)) ==
+    old(intFromRef(total(par_f))) + intFromRef(amount) &&
+    intFromRef(ret_2) == intFromRef(total(par_f))
+
+
+method forwardingClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_f: Ref
+  var first: Ref
+  var second: Ref
+  l0_f := ownedCapture()
+  first := forward(l0_f, intToRef(8))
+  assert intFromRef(first) == 8
+  second := invoke(l0_f, intToRef(1))
+  assert intFromRef(second) == 9
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(Accumulator_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(Accumulator_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(total(this))
+
+
+method ownedCapture() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Accumulator())
+  ensures acc(Accumulator_unique(ret_1), write)
+  ensures intFromRef(total(ret_1)) == 0

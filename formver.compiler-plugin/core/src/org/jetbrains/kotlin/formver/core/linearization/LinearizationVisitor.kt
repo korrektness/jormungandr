@@ -224,8 +224,12 @@ data class LinearizationVisitor(
                 }
             }
             val view = e.args.firstOrNull()?.type?.pretype as? ClassTypeEmbedding
-            val interfaceBinding = view?.takeIf(ctx.typeResolver::hasInterfaceLaws)
-                ?.let { ctx.typeResolver.observerBinding(it, e.function.name) }
+            val interfaceBinding = view?.let { receiverType ->
+                ctx.typeResolver.observerBinding(receiverType, e.function.name)?.takeIf {
+                    ctx.typeResolver.hasInterfaceLaws(receiverType) ||
+                        ctx.typeResolver.isInterface(receiverType) && it.signature.dispatchReceiver!!.type.pretype != receiverType
+                }
+            }
             val formals = if (interfaceBinding == null) e.function.formalArgs else e.function.formalArgs.mapIndexed { index, formal ->
                 if (index == 0) PlaceholderVariableEmbedding(formal.name, view!!.asTypeEmbedding(), isUnique = true) else formal
             }
