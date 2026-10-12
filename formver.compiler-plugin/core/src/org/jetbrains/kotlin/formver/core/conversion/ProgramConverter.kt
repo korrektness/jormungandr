@@ -501,6 +501,7 @@ class ProgramConverter(
      * It will return the callable embedding, if the function was seen the first time, it will embed the full function signature and body (if needed).
      */
     override fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding {
+        context(checkerContext) { symbol.observerDeclaration() }?.let { return embedAnyFunction(it) }
         // NOTE: The order of the embedSpecialFunction and the callable lookup does matter.
 
         // check if it must be handled specially

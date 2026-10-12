@@ -742,6 +742,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("interface_generality.kt")
+      public void testInterface_generality() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_generality.kt");
+      }
+
+      @Test
+      @TestMetadata("interface_generic_view.kt")
+      public void testInterface_generic_view() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_generic_view.kt");
+      }
+
+      @Test
       @TestMetadata("interface_laws.kt")
       public void testInterface_laws() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/interface_laws.kt");

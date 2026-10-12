@@ -6,12 +6,14 @@
 package org.jetbrains.kotlin.formver.core
 
 import org.jetbrains.kotlin.descriptors.isInterface
+import org.jetbrains.kotlin.fir.unwrapUseSiteSubstitutionOverrides
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.resolve.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 
@@ -26,3 +28,10 @@ fun FirCallableSymbol<*>.isObserver(): Boolean =
 context(context: CheckerContext)
 fun FirCallableSymbol<*>.isObserverOrOverride(): Boolean =
     isObserver() || directOverriddenSymbolsSafe().any { it.isObserverOrOverride() }
+
+/** Observer snapshots refer to declarations independently of call-site type arguments. */
+context(context: CheckerContext)
+fun FirFunctionSymbol<*>.observerDeclaration(): FirFunctionSymbol<*>? {
+    val declaration = unwrapUseSiteSubstitutionOverrides()
+    return declaration.takeIf { it != this && it.isObserverOrOverride() }
+}
