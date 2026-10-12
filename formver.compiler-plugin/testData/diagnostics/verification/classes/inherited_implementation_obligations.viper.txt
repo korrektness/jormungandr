@@ -774,8 +774,8 @@ predicate ConcreteTally_unique(this: Ref) {
   acc(AbstractMiddle_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(AbstractMiddle_unique(this), wildcard) in
-      (unfolding acc(AbstractTally_unique(this), wildcard) in
+    (unfolding acc(AbstractMiddle_unique(this), write) in
+      (unfolding acc(AbstractTally_unique(this), write) in
         true &&
         boolFromRef((let anon_0_0 ==
           (this.bf_n) in
@@ -815,22 +815,24 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
 {
   var anon_2: Ref
+  var anon_3: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == ConcreteTally()
-  v_ret_0.bf_n := par_n
-  anon_2 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
   fold acc(AbstractTally_unique(v_ret_0), write)
   fold acc(AbstractMiddle_unique(v_ret_0), write)
+  v_ret_0.bf_n := par_n
+  anon_3 := v_ret_0.bf_n
+  anon_2 := require(geInts(anon_3, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(AbstractMiddle_unique(this), wildcard) in
-        (unfolding acc(AbstractTally_unique(this), wildcard) in
+      (unfolding acc(AbstractMiddle_unique(this), write) in
+        (unfolding acc(AbstractTally_unique(this), write) in
           true &&
           boolFromRef((let anon_0_0 ==
             (this.bf_n) in
             geInts(anon_0_0, intToRef(0)))))))
   fold acc(ConcreteTally_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ConcreteTally_unique(v_ret_0), write)
   unfold acc(AbstractMiddle_unique(v_ret_0), write)
   unfold acc(AbstractTally_unique(v_ret_0), write)
@@ -900,8 +902,8 @@ predicate ConcreteTally_unique(this: Ref) {
   acc(AbstractMiddle_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(AbstractMiddle_unique(this), wildcard) in
-      (unfolding acc(AbstractTally_unique(this), wildcard) in
+    (unfolding acc(AbstractMiddle_unique(this), write) in
+      (unfolding acc(AbstractTally_unique(this), write) in
         true &&
         boolFromRef((let anon_0_0 ==
           (this.n) in
@@ -973,8 +975,8 @@ predicate ConcreteTally_unique(this: Ref) {
   acc(AbstractMiddle_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(AbstractMiddle_unique(this), wildcard) in
-      (unfolding acc(AbstractTally_unique(this), wildcard) in
+    (unfolding acc(AbstractMiddle_unique(this), write) in
+      (unfolding acc(AbstractTally_unique(this), write) in
         true &&
         boolFromRef((let anon_1_0 ==
           (this.n) in
@@ -1030,8 +1032,8 @@ method ConcreteTally_f_inc(this: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   assert (let this ==
       (this) in
-      (unfolding acc(AbstractMiddle_unique(this), wildcard) in
-        (unfolding acc(AbstractTally_unique(this), wildcard) in
+      (unfolding acc(AbstractMiddle_unique(this), write) in
+        (unfolding acc(AbstractTally_unique(this), write) in
           true &&
           boolFromRef((let anon_1_0 ==
             (this.n) in

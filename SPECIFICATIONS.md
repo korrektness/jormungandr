@@ -343,18 +343,22 @@ A class law may read its own fields and inherited `val` fields. It may read an i
 is law-bound in its declaring class; other inherited `var` reads produce `INVALID_LAW` with a pointer to this
 section. This protection applies across superclass and subclass views.
 
-A class carrying its own or inherited class laws requires a primary constructor with no secondary constructors.
-Delegated properties are outside this scope. Unsupported shapes are rejected with `INVALID_LAW`.
-Primary-constructor proofs allocate fresh field permissions, execute superclass initialization and then property
-initializers and init blocks in declaration order, and establish the invariants in the returned open representation.
-The proof starts without assuming those invariants; a violating initialization is a verification error on the class.
-Inherited fields used by class laws must retain their initializer value and owned state throughout construction.
-The returned representation and its opened-predicate description include the invariants.
+Constructor initialization has two phases. Phase one lasts until Kotlin definite assignment establishes every
+property of the declaring class. During this phase, construction may initialize backing fields but may not read,
+pass, capture, or call on `this`. After definite assignment, own-field reads and writes, checks, local computation,
+and calls without `this` or a member reference may execute before establishment. The proof establishes the
+declaring class's laws without assuming them at the first exposure of `this`, or at constructor end, whichever
+comes first. Throws before establishment are abnormal exits. After establishment, ordinary ownership operations
+preserve the constructed representation. In a non-escaping constructor, phase-two `this` is unique.
+An open class may dispatch only to final members on `this`.
 
-Temporary construction-call restrictions: calls passing the object under construction are rejected with
-`UNSUPPORTED_FEATURE` when it has
-law-bearing nested owned children, or when a helper reads uninitialized immutable storage. Calls with unavailable
-helper bodies require initialized immutable storage. These restrictions apply with and without class laws.
+Constructor proofs allocate fresh field permissions, execute delegated construction, and execute property
+initializers and init blocks in declaration order. Secondary constructors execute phase-two bodies after delegation.
+The returned representation and its opened-predicate description include the invariants. A violating proof is a
+verification error on the class. Delegated properties in law-bearing classes are rejected with `INVALID_LAW`.
+
+A construction-discipline violation is reported with its reason: `INVALID_LAW` for classes with own or inherited
+class laws, and `VERIFICATION_SKIPPED` for other classes. The latter retain trusted stable field equalities.
 
 Unfolding an owned class receiver exposes its invariant to the member body. Every refold proves the invariant,
 including refolds for calls and control-flow joins. On member exit, a retained unique receiver with class laws is
@@ -535,14 +539,8 @@ val p: @Unique Parser = Parser("x")  // error: the construction of 'Parser' call
 ```
 
 During non-escaping construction, initialized stored unique fields are owned paths.
-`this` itself is shared, so a member that owns `this` needs the object handed over. Construction code may call a `@Unique @Borrowed` or
-`@Unique @Pure` member on `this` when the class does not let `this` escape,
-the member is final, and every field of the class is initialized at the call:
-every property of the class with a backing field or delegate has an
-initializer, and when the call is in an `init` block, is declared above it.
-Other calls to a member that owns `this` are rejected.
-
-Construction proofs for representation invariants are described in Class laws.
+Construction phases and `this` ownership are described in Class laws. A final `@Unique @Borrowed` or
+`@Unique @Pure` member may borrow the phase-two receiver.
 A constructor call gives the type facts of every field. It also gives the value a parameter stores in a property,
 unless construction code assigns that property or, for a `var`, uses `this`
 other than to read or write a field. An argument stored in a `@Unique`

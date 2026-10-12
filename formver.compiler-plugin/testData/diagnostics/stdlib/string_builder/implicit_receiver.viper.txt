@@ -90,7 +90,10 @@ method cause(v_this: Ref) returns (ret_2: Ref)
 
 method con() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
-  ensures acc(IllegalArgumentException_unique(ret_3), write)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
 
 
 method message(v_this: Ref) returns (ret_1: Ref)
@@ -108,6 +111,10 @@ method throwsAfter(v_this_extension: Ref, n: Ref) returns (v_ret_0: Ref)
   if (intFromRef(n) < 0) {
     var anon: Ref
     anon := con()
+    fold acc(Throwable_unique(anon), write)
+    fold acc(Exception_unique(anon), write)
+    fold acc(RuntimeException_unique(anon), write)
+    fold acc(IllegalArgumentException_unique(anon), write)
     inhale false
   }
   unfold acc(StringBuilder_unique(v_this_extension), write)

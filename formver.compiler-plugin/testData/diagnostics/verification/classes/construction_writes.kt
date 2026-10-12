@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Checked(var a: Int, val b: Int) {
+<!VERIFICATION_SKIPPED!>class Checked<!>(var a: Int, val b: Int) {
     var sum = a + b
 
     init {
@@ -79,11 +79,11 @@ class Derived(a: Int) : Base(a) {
         n = source.age
     }
 }
-class ForwardLoanSource<!UNSUPPORTED_FEATURE!>(sink: @Unique @Borrowed ForwardLoanSink)<!> {
+<!VERIFICATION_SKIPPED!>class ForwardLoanSource<!>(sink: @Unique @Borrowed ForwardLoanSink) {
     init { sink.accept(this) }
     val age = 1
 }
-fun <!VERIFICATION_SKIPPED!>forwardLoanClient<!>() {
+fun <!VIPER_TEXT!>forwardLoanClient<!>() {
     val sink: @Unique ForwardLoanSink = ForwardLoanSink(1)
     val source: @Unique ForwardLoanSource = ForwardLoanSource(sink)
     verify(sink.n >= 1)

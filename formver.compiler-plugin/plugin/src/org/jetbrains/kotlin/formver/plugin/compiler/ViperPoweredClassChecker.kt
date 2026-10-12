@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.formver.core.conversion.InheritedImplementationOblig
 import org.jetbrains.kotlin.formver.core.conversion.inheritedImplementationObligations
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.core.conversion.classLawConstructionFailures
+import org.jetbrains.kotlin.formver.core.conversion.constructionDisciplineFailures
 import org.jetbrains.kotlin.formver.core.conversion.hasSuperclassLaws
 import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
 import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
@@ -63,9 +64,21 @@ class ViperPoweredClassChecker(
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun reportConstructionDiscipline(declaration: FirRegularClass) {
+        if (declaration.classKind.isInterface ||
+            config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE)) return
+        if (declaration.symbol.ownClassLaws(session).isNotEmpty() || declaration.symbol.hasSuperclassLaws(session)) return
+        constructionDisciplineFailures(declaration.symbol, session).forEach {
+            reporter.reportFailure(Failure(FailureKind.VERIFICATION_SKIPPED, declaration.source,
+                KotlinCondition.Law(it, declaration.symbol)))
+        }
+    }
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
         if (shouldSkip(declaration)) return
         lambdaChecker.checkStandaloneLambdas(declaration, declaration.symbol.classId.embedName())
+        reportConstructionDiscipline(declaration)
         val obligations = implementationObligations(declaration) ?: return
         try {
             val (program, verify) = convert(declaration, obligations) ?: return
@@ -85,7 +98,7 @@ class ViperPoweredClassChecker(
     }
 
     private data class Obligations(
-        val primary: FirConstructorSymbol?,
+        val constructors: List<FirConstructorSymbol>,
         val inherited: List<InheritedImplementationObligation>,
     )
 
@@ -98,13 +111,12 @@ class ViperPoweredClassChecker(
         val symbol = declaration.symbol
         val hasClassLaws = symbol.ownClassLaws(session).isNotEmpty() || symbol.hasSuperclassLaws(session)
         val inherited = symbol.inheritedImplementationObligations()
-        val primary = symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>()
-            .singleOrNull { it.isPrimary }?.takeIf { hasClassLaws }
+        val constructors = if (hasClassLaws) symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>() else emptyList()
         val hasLawHarness = symbol.interfaceLaws().isNotEmpty() || symbol.declarationSymbols.any { it.isLaw(session) }
         return when {
-            primary == null && inherited.isEmpty() && !hasLawHarness -> null
+            constructors.isEmpty() && inherited.isEmpty() && !hasLawHarness -> null
             hasClassLaws && classLawConstructionFailures(symbol, session).isNotEmpty() -> null
-            else -> Obligations(primary, inherited)
+            else -> Obligations(constructors, inherited)
         }
     }
 
@@ -113,7 +125,7 @@ class ViperPoweredClassChecker(
     private fun convert(declaration: FirRegularClass, obligations: Obligations): Pair<viper.silver.ast.Program, Boolean>? {
         val converter = ProgramConverter(session, config, context, reporter)
         converter.registerClassLaws(declaration.symbol)
-        obligations.primary?.let { converter.registerPrimaryConstructor(it) }
+        obligations.constructors.forEach { converter.registerConstructor(it) }
         for (obligation in obligations.inherited) {
             converter.registerInheritedImplementation(declaration.symbol, obligation.implementation, obligation.contracts)
         }

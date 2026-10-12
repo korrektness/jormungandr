@@ -11,17 +11,14 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
-import org.jetbrains.kotlin.fir.resolve.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.references.toResolvedConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.core.isLaw
-import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.LawRule
 import org.jetbrains.kotlin.formver.core.isPure
-import org.jetbrains.kotlin.formver.core.isUnique
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineCallable
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
@@ -66,12 +63,6 @@ private fun FirQualifiedAccessExpression.isAllowedInitializerAccess(
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
 private fun ownClassLawConstructionFailures(symbol: FirRegularClassSymbol): List<KotlinCondition.Law> {
     val failures = mutableListOf<KotlinCondition.Law>()
-    val constructors = symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>()
-    val primary = constructors.singleOrNull { it.isPrimary }
-    if (primary == null) failures += KotlinCondition.Law(LawRule.PRIMARY_CONSTRUCTOR, symbol)
-    constructors.filter { !it.isPrimary }.forEach {
-        failures += KotlinCondition.Law(LawRule.SECONDARY_CONSTRUCTOR, it)
-    }
     symbol.fir.declarations.filterIsInstance<FirProperty>().forEach { property ->
         if (property.delegate != null) failures += KotlinCondition.Law(LawRule.DELEGATED_PROPERTY, property.symbol)
     }
@@ -86,6 +77,7 @@ fun classLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSess
         if (current.ownClassLaws(session).isNotEmpty() || current.hasSuperclassLaws(session)) {
             failures += ownClassLawConstructionFailures(current)
         }
+        failures += constructionDisciplineFailures(current, session).map { KotlinCondition.Law(it, current) }
         current.resolvedSuperTypes.mapNotNull { it.toRegularClassSymbol(session) }
             .filter { !it.classKind.isInterface && it.origin == FirDeclarationOrigin.Source }
             .forEach(::visit)
@@ -110,14 +102,15 @@ private fun isStableInitializer(initializer: FirExpression, parameters: Set<FirV
     return stable
 }
 
-/** Stable initializer equalities and checks for inherited law-field substitution. */
+/** Stable initializer equalities exported by constructor contracts. */
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
 context(program: ProgramConversionContext)
 fun constructorInitializerConditions(
     symbol: FirConstructorSymbol, signature: NonInlineCallable, result: ExpEmbedding,
 ): List<ExpEmbedding> {
     val owner = symbol.resolvedReturnType.toRegularClassSymbol(program.session) ?: return emptyList()
-    if (owner.ownClassLaws(program.session).isEmpty() && !owner.hasSuperclassLaws(program.session)) {
+    if (owner.ownClassLaws(program.session).isEmpty() && !owner.hasSuperclassLaws(program.session) &&
+        constructionDisciplineFailures(owner, program.session).isEmpty()) {
         return emptyList()
     }
     val receiver = PlaceholderVariableEmbedding(DispatchReceiverName, program.embedType(symbol.resolvedReturnType), isUnique = true)
@@ -127,7 +120,6 @@ fun constructorInitializerConditions(
     val fields = linkedMapOf<FirPropertySymbol, ExpEmbedding>()
     val initializers = linkedMapOf<FirPropertySymbol, () -> ExpEmbedding>()
     val writes = owner.constructionWrites(program.session)
-    val lawOwners = mutableListOf<FirRegularClassSymbol>()
     fun collect(constructor: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>) {
         val declaringClass = constructor.resolvedReturnType.toRegularClassSymbol(program.session) ?: return
         val target = program.returnTargetProducer.getFresh(signature.callableType.returnType)
@@ -158,28 +150,15 @@ fun constructorInitializerConditions(
             property.initializer?.let { initializer ->
                 if (!isStableInitializer(initializer, constructor.valueParameterSymbols.toSet())) return@let
                 initializers[property.symbol] = {
-                    val nestedStateMayChange = context(program.checkerContext) { property.symbol.isUnique() } &&
-                        writes.mayReach(property.symbol)
-                    if (property.symbol.getContainingClassSymbol() != owner &&
-                        (writes.mayChange(property.symbol) || nestedStateMayChange)) {
-                        throw UnsupportedFeatureException(property.source, "a class-law field changed during construction")
-                    }
                     context.convert(initializer)
                 }
             }
         }
-        if (declaringClass.ownClassLaws(program.session).isNotEmpty()) lawOwners += declaringClass
     }
     collect(symbol, substitutions)
     fun initializedField(property: FirPropertySymbol): ExpEmbedding? =
         fields[property] ?: initializers[property]?.invoke()?.also { fields[property] = it }
-    owner.fir.declarations.filterIsInstance<FirProperty>().forEach { initializedField(it.symbol) }
-    for (declaringClass in lawOwners) {
-        val expansion = ClassLawExpansion(program, declaringClass, ::initializedField)
-        for (law in declaringClass.ownClassLaws(program.session)) {
-            expansion.body(law, mapOf(SubstitutedArgument.DispatchThis to receiver))
-        }
-    }
+    initializers.keys.forEach { initializedField(it) }
     val postconditions = fields.mapNotNull { (property, initializer) ->
         if (writes.mayChange(property)) return@mapNotNull null
         val readsOwnedState = initializer.subtree().any { expression ->

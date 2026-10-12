@@ -81,6 +81,7 @@ interface StmtConversionContext : MethodConversionContext {
     fun loopHeadLabelName(): SymbolicName
     fun addLoopName(targetName: String)
     fun convert(stmt: FirStatement): ExpEmbedding
+    fun convertConstructionStorageReceiver(receiver: FirExpression): ExpEmbedding
 
     fun <R> withNewScope(action: StmtConversionContext.() -> R): R
     fun <R> withNoScope(action: StmtConversionContext.() -> R): R
@@ -164,11 +165,15 @@ fun StmtConversionContext.embedPropertyAccess(
                         embedProperty(it)
                     } ?: embedProperty(calleeSymbol)
                     val receiver = accessExpression.dispatchReceiver!!
-                    val converted = convert(receiver)
                     val field = (property.getter as? BackingFieldGetter)?.field
                     val constructing = constructionReceiver as? VariableEmbedding
                     val hasConstructionStorage = field != null || property.hasDefaultBehaviour && property.isVal
-                    if (constructing != null && converted.ignoringCastsAndMetaNodes() == constructing && hasConstructionStorage) {
+                    val uncast = receiver.withoutCasts()
+                    val converted = if (constructing != null && hasConstructionStorage && uncast is FirThisReceiverExpression)
+                        convertConstructionStorageReceiver(receiver)
+                    else convert(receiver)
+                    val usesConstructionStorage = hasConstructionStorage && constructionPhases?.phaseTwoBefore(accessElement) != true
+                    if (constructing != null && converted.ignoringCastsAndMetaNodes() == constructing && usesConstructionStorage) {
                         object : PropertyAccessEmbedding {
                             override fun getValue(ctx: StmtConversionContext): ExpEmbedding =
                                 if (field != null) PrimitiveFieldAccess(converted, field)
@@ -206,6 +211,12 @@ fun StmtConversionContext.embedPropertyAccess(
     }
 }
 
+
+/** Establishes laws when the construction receiver is used as a value rather than as backing storage. */
+fun StmtConversionContext.establishBeforeExposure(value: ExpEmbedding): ExpEmbedding {
+    val boundary = constructionBoundary ?: return value
+    return if (value.ignoringCastsAndMetaNodes() == constructionReceiver) boundary.copy(result = value) else value
+}
 
 /**
  * Whether the uniqueness checker finds the path [expression] denotes `Unique` on entry to [element]. The checked

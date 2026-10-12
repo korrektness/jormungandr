@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousInitializer
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyGetter
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertySetter
@@ -30,8 +31,8 @@ import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.readonly.plugin.isSpecificationCall
 
 /**
- * What the property initializers and `init` blocks of [this] class and its superclasses may do to the object under
- * construction after a primary constructor stores its parameters. They assign the properties in [assigned], read or
+ * What the constructor bodies, property initializers and `init` blocks of [this] class and its superclasses may do
+ * to the object under construction. They assign the properties in [assigned], read or
  * assign those in [accessed], and when [usesThis], use `this` other than to read or assign a field, so that a member,
  * an accessor or a borrowing callee may read or write any field.
  */
@@ -59,6 +60,7 @@ fun FirRegularClassSymbol.constructionWrites(session: FirSession): ConstructionW
         for (declaration in classSymbol.fir.declarations) {
             when (declaration) {
                 is FirAnonymousInitializer -> declaration.body?.accept(finder)
+                is FirConstructor -> declaration.body?.accept(finder)
                 is FirProperty -> {
                     declaration.initializer?.accept(finder)
                     declaration.delegate?.accept(finder)

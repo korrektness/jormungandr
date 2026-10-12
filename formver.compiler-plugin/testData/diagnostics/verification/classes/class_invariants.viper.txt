@@ -65,7 +65,6 @@ method con(start: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == Positive()
   v_ret_0.bf_value := adjusted(start)
   anon_2 := require(geInts(start, intToRef(0)))
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -75,6 +74,7 @@ method con(start: Ref) returns (v_ret_0: Ref)
           (this.bf_value) in
           andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
   fold acc(Positive_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(Positive_unique(v_ret_0), write)
 }
 
@@ -460,11 +460,11 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   anon_0 := par_value
   inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
   anon_1 := require(geInts(g_value(v_ret_0), intToRef(0)))
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(g_value(this), intToRef(0))))
   fold acc(NestedObservation_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(NestedObservation_unique(v_ret_0), write)
 }
 
@@ -624,11 +624,11 @@ method con(a: Ref, b: Ref) returns (v_ret_0: Ref)
   anon_1 := a
   inhale intFromRef(second(v_ret_0)) == intFromRef(anon_1)
   anon_2 := require(gtInts(b, a))
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(gtInts(first(this), second(this))))
   fold acc(Swapped_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(Swapped_unique(v_ret_0), write)
 }
 

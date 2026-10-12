@@ -321,16 +321,21 @@ method con(par_data: Ref, par_count: Ref) returns (v_ret_0: Ref)
 {
   var anon_6: Ref
   var anon_7: Ref
+  var anon_8: Ref
   v_ret_0 := new(bf_data, bf_count)
   inhale typeOf(v_ret_0) == ArrayIntList()
   v_ret_0.bf_data := par_data
   v_ret_0.bf_count := par_count
-  if (0 <= intFromRef(v_ret_0.bf_count)) {
-    anon_7 := leInts(v_ret_0.bf_count, intToRef(arraySize(v_ret_0.bf_data)))
+  anon_8 := v_ret_0.bf_count
+  if (0 <= intFromRef(anon_8)) {
+    var anon_9: Ref
+    var anon_10: Ref
+    anon_9 := v_ret_0.bf_count
+    anon_10 := v_ret_0.bf_data
+    anon_7 := leInts(anon_9, intToRef(arraySize(anon_10)))
   } else {
     anon_7 := boolToRef(false)}
   anon_6 := require(anon_7)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -342,6 +347,7 @@ method con(par_data: Ref, par_count: Ref) returns (v_ret_0: Ref)
             (this.bf_data) in
             andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
   fold acc(ArrayIntList_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ArrayIntList_unique(v_ret_0), write)
 }
 
@@ -1228,16 +1234,21 @@ method con(par_data: Ref, par_count: Ref) returns (v_ret_0: Ref)
 {
   var anon_3: Ref
   var anon_4: Ref
+  var anon_5: Ref
   v_ret_0 := new(bf_data, bf_count)
   inhale typeOf(v_ret_0) == ArrayBoundProbe()
   v_ret_0.bf_data := par_data
   v_ret_0.bf_count := par_count
-  if (0 <= intFromRef(v_ret_0.bf_count)) {
-    anon_4 := leInts(v_ret_0.bf_count, intToRef(arraySize(v_ret_0.bf_data)))
+  anon_5 := v_ret_0.bf_count
+  if (0 <= intFromRef(anon_5)) {
+    var anon_6: Ref
+    var anon_7: Ref
+    anon_6 := v_ret_0.bf_count
+    anon_7 := v_ret_0.bf_data
+    anon_4 := leInts(anon_6, intToRef(arraySize(anon_7)))
   } else {
     anon_4 := boolToRef(false)}
   anon_3 := require(anon_4)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -1249,6 +1260,7 @@ method con(par_data: Ref, par_count: Ref) returns (v_ret_0: Ref)
             (this.bf_data) in
             andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
   fold acc(ArrayBoundProbe_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ArrayBoundProbe_unique(v_ret_0), write)
 }
 
@@ -1803,19 +1815,23 @@ method con(par_head: Ref, par_count: Ref) returns (v_ret_0: Ref)
 {
   var anon_15: Ref
   var anon_16: Ref
+  var anon_17: Ref
   v_ret_0 := new(bf_head, bf_count)
   inhale typeOf(v_ret_0) == NodeIntList()
   v_ret_0.bf_head := par_head
   v_ret_0.bf_count := par_count
-  if (intFromRef(v_ret_0.bf_count) >= 0) {
-    var anon_17: Ref
-    anon_17 := nodeSize(v_ret_0.bf_head)
-    anon_16 := boolToRef(intFromRef(v_ret_0.bf_count) ==
-      intFromRef(anon_17))
+  anon_17 := v_ret_0.bf_count
+  if (intFromRef(anon_17) >= 0) {
+    var anon_18: Ref
+    var anon_19: Ref
+    var anon_20: Ref
+    anon_18 := v_ret_0.bf_count
+    anon_19 := v_ret_0.bf_head
+    anon_20 := nodeSize(anon_19)
+    anon_16 := boolToRef(intFromRef(anon_18) == intFromRef(anon_20))
   } else {
     anon_16 := boolToRef(false)}
   anon_15 := require(anon_16)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -1828,6 +1844,7 @@ method con(par_head: Ref, par_count: Ref) returns (v_ret_0: Ref)
             andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
             intFromRef(nodeSize(anon_2_0)))))))))
   fold acc(NodeIntList_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(NodeIntList_unique(v_ret_0), write)
 }
 
@@ -1839,9 +1856,9 @@ method laws(this: Ref)
   assert boolFromRef(geInts(NodeIntList_f_size(this), intToRef(0)))
 }
 
-method require(par_value: Ref) returns (ret_4: Ref)
+method require(par_value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures true ==> boolFromRef(par_value)
 
 
@@ -3252,9 +3269,9 @@ function NodeIntList_f_get(this: Ref, i: Ref): Ref
   decreases _
 {
   (unfolding acc(NodeIntList_unique(this), write) in
-    (let anon_7_0 ==
+    (let anon_3_0 ==
       (this.bf_head) in
-      nodeGet(anon_7_0, i)))
+      nodeGet(anon_3_0, i)))
 }
 
 function NodeIntList_f_size(this: Ref): Ref
@@ -3302,9 +3319,9 @@ function nodeGet(node: Ref, i: Ref): Ref
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
         node.value :
-        (let anon_13_0 ==
+        (let anon_9_0 ==
           (node.next) in
-          nodeGet(anon_13_0, minusInts(i, intToRef(1)))))))
+          nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
 }
 
 function nodeSize(node: Ref): Ref
@@ -3317,9 +3334,9 @@ function nodeSize(node: Ref): Ref
   (node == nullValue() ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
-      (let anon_6_0 ==
+      (let anon_14_0 ==
         (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_6_0)))))
+        plusInts(intToRef(1), nodeSize(anon_14_0)))))
 }
 
 predicate BooleanArray_unique(this: Ref) {
@@ -3495,18 +3512,18 @@ method createUpcastNode() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method interfaceClient(par_list: Ref) returns (ret_8: Ref)
+method interfaceClient(par_list: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
   ensures acc(c_IntList_unique(par_list), write)
-  ensures isSubtype(typeOf(ret_8), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
 
 
-method lendClient(par_list: Ref) returns (ret_5: Ref)
+method lendClient(par_list: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
   ensures acc(c_IntList_unique(par_list), write)
-  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
     old((unfolding acc(c_IntList_unique(par_list), wildcard) in
@@ -3858,9 +3875,9 @@ function NodeIntList_f_get(this: Ref, i: Ref): Ref
   decreases _
 {
   (unfolding acc(NodeIntList_unique(this), write) in
-    (let anon_7_0 ==
+    (let anon_3_0 ==
       (this.bf_head) in
-      nodeGet(anon_7_0, i)))
+      nodeGet(anon_3_0, i)))
 }
 
 function NodeIntList_f_size(this: Ref): Ref
@@ -3908,9 +3925,9 @@ function nodeGet(node: Ref, i: Ref): Ref
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
         node.bf_value :
-        (let anon_13_0 ==
+        (let anon_9_0 ==
           (node.next) in
-          nodeGet(anon_13_0, minusInts(i, intToRef(1)))))))
+          nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
 }
 
 function nodeSize(node: Ref): Ref
@@ -3923,9 +3940,9 @@ function nodeSize(node: Ref): Ref
   (node == nullValue() ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
-      (let anon_6_0 ==
+      (let anon_14_0 ==
         (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_6_0)))))
+        plusInts(intToRef(1), nodeSize(anon_14_0)))))
 }
 
 predicate BooleanArray_unique(this: Ref) {
@@ -4025,13 +4042,13 @@ method NodeIntList_c_IntList_upcast(this: Ref)
       old(NodeIntList_f_get(this, i)))
 
 
-method add(this: Ref, par_value: Ref) returns (ret_5: Ref)
+method add(this: Ref, par_value: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), NodeIntList())
   requires acc(NodeIntList_unique(this), write)
   requires isSubtype(typeOf(par_value), intType())
   requires intFromRef(NodeIntList_f_size(this)) >= 0
   ensures acc(NodeIntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
   ensures intFromRef(NodeIntList_f_size(this)) ==
     old(intFromRef(NodeIntList_f_size(this))) + 1
   ensures intFromRef(NodeIntList_f_get(this, old(NodeIntList_f_size(this)))) ==
@@ -4125,11 +4142,11 @@ method concreteNodeOperations() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method lendClient(par_list: Ref) returns (ret_10: Ref)
+method lendClient(par_list: Ref) returns (ret_9: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
   ensures acc(c_IntList_unique(par_list), write)
-  ensures isSubtype(typeOf(ret_10), unitType())
+  ensures isSubtype(typeOf(ret_9), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
     old((unfolding acc(c_IntList_unique(par_list), wildcard) in
@@ -4151,7 +4168,7 @@ method lendClient(par_list: Ref) returns (ret_10: Ref)
           intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_2)))))))
 
 
-method set(this: Ref, i: Ref, par_value: Ref) returns (ret_7: Ref)
+method set(this: Ref, i: Ref, par_value: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(this), NodeIntList())
   requires acc(NodeIntList_unique(this), write)
   requires isSubtype(typeOf(i), intType())
@@ -4159,7 +4176,7 @@ method set(this: Ref, i: Ref, par_value: Ref) returns (ret_7: Ref)
   requires 0 <= intFromRef(i) &&
     intFromRef(i) < intFromRef(NodeIntList_f_size(this))
   ensures acc(NodeIntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_7), unitType())
+  ensures isSubtype(typeOf(ret_6), unitType())
   ensures intFromRef(NodeIntList_f_size(this)) ==
     old(intFromRef(NodeIntList_f_size(this)))
   ensures intFromRef(NodeIntList_f_get(this, i)) == intFromRef(par_value)
@@ -4372,9 +4389,9 @@ function NodeIntList_f_get(this: Ref, i: Ref): Ref
   decreases _
 {
   (unfolding acc(NodeIntList_unique(this), write) in
-    (let anon_7_0 ==
+    (let anon_3_0 ==
       (this.bf_head) in
-      nodeGet(anon_7_0, i)))
+      nodeGet(anon_3_0, i)))
 }
 
 function NodeIntList_f_size(this: Ref): Ref
@@ -4405,9 +4422,9 @@ function nodeGet(node: Ref, i: Ref): Ref
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
         node.bf_value :
-        (let anon_13_0 ==
+        (let anon_9_0 ==
           (node.bf_next) in
-          nodeGet(anon_13_0, minusInts(i, intToRef(1)))))))
+          nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
 }
 
 function nodeSize(node: Ref): Ref
@@ -4420,9 +4437,9 @@ function nodeSize(node: Ref): Ref
   (node == nullValue() ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
-      (let anon_6_0 ==
+      (let anon_14_0 ==
         (node.bf_next) in
-        plusInts(intToRef(1), nodeSize(anon_6_0)))))
+        plusInts(intToRef(1), nodeSize(anon_14_0)))))
 }
 
 predicate BooleanArray_unique(this: Ref) {

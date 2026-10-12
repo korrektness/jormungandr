@@ -1,7 +1,6 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.KtSourceElement
-import org.jetbrains.kotlin.fir.analysis.checkers.isPrimaryConstructor
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.utils.correspondingValueParameterFromPrimaryConstructor
@@ -170,11 +169,10 @@ fun SignatureWithTarget<NamedFunctionSignature>.toNonInlineSignature(symbol: Fir
 
 context(converter: ProgramConversionContext)
 fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<NonInlineFunctionSignature> {
-    if (symbol is FirConstructorSymbol) checkConstructionCalls(symbol)
     return when {
-        symbol.isPrimaryConstructor() -> this.toConstructorSignature(symbol)
         symbol is FirConstructorSymbol && symbol.resolvedReturnType.isStringBuilder(converter.session) ->
             this.toStringBuilderConstructorSignature(symbol)
+        symbol is FirConstructorSymbol -> this.toConstructorSignature(symbol)
         else -> this.toNormalSignature(symbol)
     }
 }
@@ -195,7 +193,7 @@ fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(
  */
 val NamedFunctionSignature.constructedOpen: ClassTypeEmbedding?
     get() = (this as? NonInlineFunctionSignature)?.openConstructedClass ?: (returns.type.pretype as? ClassTypeEmbedding)
-        ?.takeIf { symbol?.isPrimaryConstructor() == true && !it.hasBuiltinPredicate }
+        ?.takeIf { symbol is FirConstructorSymbol && !it.hasBuiltinPredicate }
 
 /**
  * The properties that this primary constructor initializes with each of its parameters: those the parameter declares,
@@ -208,7 +206,7 @@ private fun FirConstructorSymbol.initializedProperties(session: FirSession): Map
     }
     val delegation = fir.delegatedConstructor
     val inherited = delegation?.calleeReference?.toResolvedConstructorSymbol()
-        ?.takeIf { it.isPrimary }?.initializedProperties(session).orEmpty()
+        ?.initializedProperties(session).orEmpty()
     val passedOn = delegation?.resolvedArgumentMapping.orEmpty().flatMap { (argument, superParameter) ->
         val parameter = (argument as? FirPropertyAccessExpression)?.calleeReference?.toResolvedValueParameterSymbol()
             ?: return@flatMap emptyList()
@@ -218,7 +216,7 @@ private fun FirConstructorSymbol.initializedProperties(session: FirSession): Map
 }
 
 /**
- * The signature of a primary constructor. It ensures that each property a parameter initializes equals the parameter,
+ * The signature of a constructor. It ensures that each property a parameter initializes equals the parameter,
  * unless the rest of the construction may change the property.
  * When the class is [constructedOpen], the object is returned with its predicates unfolded. Stored unique parameters
  * retain their predicates when construction cannot reach them and there are no representation laws. Other stored
@@ -227,13 +225,13 @@ private fun FirConstructorSymbol.initializedProperties(session: FirSession): Map
 context(converter: ProgramConversionContext)
 fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<NonInlineFunctionSignature> =
     refineSignature { current ->
-        require(symbol is FirConstructorSymbol) { "Primary constructors are constructor symbols" }
+        require(symbol is FirConstructorSymbol)
         val typeResolver = converter.typeResolver
         val result = returnTarget.variable
         val constructed = current.signature.constructedOpen
         val initialized = symbol.initializedProperties(converter.session)
         val writes = (symbol.resolvedReturnType.toRegularClassSymbol(converter.session)
-            ?: throw SnaktInternalException(symbol.source, "A primary constructor does not construct a class."))
+            ?: throw SnaktInternalException(symbol.source, "A constructor does not construct a class."))
             .constructionWrites(converter.session)
         val parameterProperties = current.signature.params.flatMap { param ->
             require(param is FirVariableEmbedding) { "Constructor parameters must be represented by FirVariableEmbeddings" }

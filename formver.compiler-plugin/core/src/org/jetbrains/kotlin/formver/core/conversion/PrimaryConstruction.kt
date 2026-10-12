@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.locality.plugin.ConstructionPhases
+
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
@@ -61,10 +63,10 @@ private fun constructionFields(owner: FirRegularClassSymbol): List<FieldEmbeddin
     return fields.toList()
 }
 
-/** Executes primary construction on one allocation, in superclass and declaration order. */
+/** Executes construction on one allocation, in delegation and declaration order. */
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
 context(program: ProgramConversionContext)
-fun primaryConstructionBody(
+fun constructionBody(
     constructor: FirConstructorSymbol,
     signature: NonInlineFunctionSignature,
     target: ReturnTarget,
@@ -76,10 +78,14 @@ fun primaryConstructionBody(
     val actions = mutableListOf<ExpEmbedding>(AllocateObject(receiver, type, constructionFields(owner)))
     fun initialize(symbol: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>) {
         val declaring = symbol.resolvedReturnType.toRegularClassSymbol(program.session)!!
+        val phases = ConstructionPhases(declaring)
+        val declaringType = program.embedType(symbol.resolvedReturnType).pretype as ClassTypeEmbedding
+        val boundary = EstablishConstruction(receiver, declaringType)
         val bodyTarget = if (symbol.isPrimary) target else program.returnTargetProducer.getFresh(buildType { unit() })
         val resolver = InlineParameterResolver(arguments + (SubstitutedArgument.DispatchThis to receiver), null, bodyTarget)
         val context = MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(),
-            OwnershipFrame.root(program.uniquenessAnalysisOf(symbol), emptyList()), constructionReceiver = receiver).statementCtxt()
+            OwnershipFrame.root(program.uniquenessAnalysisOf(symbol), emptyList()), constructionReceiver = receiver,
+            constructionPhases = phases, constructionBoundary = boundary).statementCtxt()
         fun initializerContext(declaration: FirDeclaration): StmtConversionContext {
             val analysis = context(program.checkerContext) {
                 program.session.uniquenessFacts.initializationAnalysis(declaration, declaring)
@@ -92,7 +98,7 @@ fun primaryConstructionBody(
                 })
             }
             return MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(), frame,
-                constructionReceiver = receiver).statementCtxt()
+                constructionReceiver = receiver, constructionPhases = phases, constructionBoundary = boundary).statementCtxt()
         }
         val delegation = symbol.fir.delegatedConstructor
         val parent = delegation?.calleeReference?.toResolvedConstructorSymbol()
@@ -133,6 +139,7 @@ fun primaryConstructionBody(
             actions += Declare(bodyTarget.variable, null)
             actions += FunctionExp(null, context.convert(body), bodyTarget.label!!)
         }
+        actions += boundary.withPosition(symbol.fir.source)
     }
     initialize(constructor, constructor.valueParameterSymbols.zip(signature.params).associate { (parameter, value) ->
         SubstitutedArgument.ValueParameter(parameter) to value

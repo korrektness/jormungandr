@@ -28,11 +28,12 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
 {
   var anon_1: Ref
+  var anon_2: Ref
   v_ret_0 := new(bf_value)
   inhale typeOf(v_ret_0) == SharedLaw()
   v_ret_0.bf_value := par_value
-  anon_1 := require(gtInts(v_ret_0.bf_value, intToRef(0)))
-  label lbl_ret_0
+  anon_2 := v_ret_0.bf_value
+  anon_1 := require(gtInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -40,6 +41,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
         (this.bf_value) in
         gtInts(anon_0_0, intToRef(0)))))
   fold acc(SharedLaw_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(SharedLaw_unique(v_ret_0), write)
 }
 
@@ -165,16 +167,18 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
   ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
 {
-  var anon: Ref
+  var anon_1: Ref
+  var anon_2: Ref
   v_ret_0 := new(bf_value)
   inhale typeOf(v_ret_0) == ChildLaw()
   v_ret_0.bf_value := par_value
-  anon := require(gtInts(v_ret_0.bf_value, intToRef(0)))
-  label lbl_ret_0
+  anon_2 := v_ret_0.bf_value
+  anon_1 := require(gtInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(gtInts(this.bf_value, intToRef(0))))
   fold acc(ChildLaw_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ChildLaw_unique(v_ret_0), write)
 }
 
@@ -322,7 +326,7 @@ predicate UnprotectedDerived_unique(this: Ref) {
   acc(c_UnprotectedBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_UnprotectedBase_unique(this), wildcard) in
+    (unfolding acc(c_UnprotectedBase_unique(this), write) in
       true &&
       boolFromRef((let anon_1_0 ==
         (this.bf_value) in
@@ -375,18 +379,18 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == UnprotectedDerived()
   anon_0 := par_value
   v_ret_0.bf_value := anon_0
-  anon_3 := require(gtInts(par_value, intToRef(0)))
-  label lbl_ret_0
   fold acc(c_UnprotectedBase_unique(v_ret_0), write)
+  anon_3 := require(gtInts(par_value, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(c_UnprotectedBase_unique(this), wildcard) in
+      (unfolding acc(c_UnprotectedBase_unique(this), write) in
         true &&
         boolFromRef((let anon_1_0 ==
           (this.bf_value) in
           gtInts(anon_1_0, intToRef(0)))) &&
         boolFromRef(gtInts(this.bf_value, intToRef(0)))))
   fold acc(UnprotectedDerived_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(UnprotectedDerived_unique(v_ret_0), write)
   unfold acc(c_UnprotectedBase_unique(v_ret_0), write)
 }
@@ -429,7 +433,7 @@ predicate UnprotectedDerived_unique(this: Ref) {
   acc(UnprotectedBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(UnprotectedBase_unique(this), wildcard) in
+    (unfolding acc(UnprotectedBase_unique(this), write) in
       true &&
       boolFromRef((let anon_0_0 ==
         (this.value) in
@@ -460,16 +464,18 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
   ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
 {
-  var anon: Ref
+  var anon_1: Ref
+  var anon_2: Ref
   v_ret_0 := new(bf_value)
   inhale typeOf(v_ret_0) == ImplicitBase()
   v_ret_0.bf_value := par_value
-  anon := require(gtInts(v_ret_0.bf_value, intToRef(0)))
-  label lbl_ret_0
+  anon_2 := v_ret_0.bf_value
+  anon_1 := require(gtInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(gtInts(this.bf_value, intToRef(0))))
   fold acc(ImplicitBase_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ImplicitBase_unique(v_ret_0), write)
 }
 
@@ -511,7 +517,7 @@ predicate AnnotatedDerived_unique(this: Ref) {
   acc(AnnotatedBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(AnnotatedBase_unique(this), wildcard) in
+    (unfolding acc(AnnotatedBase_unique(this), write) in
       true &&
       boolFromRef((let anon_1_0 ==
         (this.bf_value) in
@@ -540,17 +546,17 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == AnnotatedDerived()
   anon_0 := par_value
   v_ret_0.bf_value := anon_0
-  anon_2 := require(gtInts(par_value, intToRef(0)))
-  label lbl_ret_0
   fold acc(AnnotatedBase_unique(v_ret_0), write)
+  anon_2 := require(gtInts(par_value, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(AnnotatedBase_unique(this), wildcard) in
+      (unfolding acc(AnnotatedBase_unique(this), write) in
         true &&
         boolFromRef((let anon_1_0 ==
           (this.bf_value) in
           gtInts(anon_1_0, intToRef(0))))))
   fold acc(AnnotatedDerived_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(AnnotatedDerived_unique(v_ret_0), write)
   unfold acc(AnnotatedBase_unique(v_ret_0), write)
 }
@@ -579,7 +585,7 @@ predicate AnnotatedDerived_unique(this: Ref) {
   acc(AnnotatedBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(AnnotatedBase_unique(this), wildcard) in
+    (unfolding acc(AnnotatedBase_unique(this), write) in
       true &&
       boolFromRef((let anon_0_0 ==
         (this.value) in
@@ -661,7 +667,7 @@ predicate UnprotectedPropertyDerived_unique(this: Ref) {
   acc(UnprotectedPropertyBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(UnprotectedPropertyBase_unique(this), wildcard) in
+    (unfolding acc(UnprotectedPropertyBase_unique(this), write) in
       true && boolFromRef(gtInts(this.bf_value, intToRef(0)))))
 }
 
@@ -684,14 +690,14 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == UnprotectedPropertyDerived()
   anon_0 := par_value
   v_ret_0.bf_value := anon_0
-  anon_3 := require(gtInts(par_value, intToRef(0)))
-  label lbl_ret_0
   fold acc(UnprotectedPropertyBase_unique(v_ret_0), write)
+  anon_3 := require(gtInts(par_value, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(UnprotectedPropertyBase_unique(this), wildcard) in
+      (unfolding acc(UnprotectedPropertyBase_unique(this), write) in
         true && boolFromRef(gtInts(this.bf_value, intToRef(0)))))
   fold acc(UnprotectedPropertyDerived_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(UnprotectedPropertyDerived_unique(v_ret_0), write)
   unfold acc(UnprotectedPropertyBase_unique(v_ret_0), write)
 }
@@ -742,7 +748,7 @@ predicate ProtectedPropertyDerived_unique(this: Ref) {
   acc(ProtectedPropertyBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(ProtectedPropertyBase_unique(this), wildcard) in
+    (unfolding acc(ProtectedPropertyBase_unique(this), write) in
       true && boolFromRef(gtInts(this.bf_value, intToRef(0)))))
 }
 
@@ -765,14 +771,14 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == ProtectedPropertyDerived()
   anon_0 := par_value
   v_ret_0.bf_value := anon_0
-  anon_3 := require(gtInts(par_value, intToRef(0)))
-  label lbl_ret_0
   fold acc(ProtectedPropertyBase_unique(v_ret_0), write)
+  anon_3 := require(gtInts(par_value, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(ProtectedPropertyBase_unique(this), wildcard) in
+      (unfolding acc(ProtectedPropertyBase_unique(this), write) in
         true && boolFromRef(gtInts(this.bf_value, intToRef(0)))))
   fold acc(ProtectedPropertyDerived_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ProtectedPropertyDerived_unique(v_ret_0), write)
   unfold acc(ProtectedPropertyBase_unique(v_ret_0), write)
 }
@@ -821,7 +827,7 @@ predicate ProtectedPropertyDerived_unique(this: Ref) {
   acc(ProtectedPropertyBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(ProtectedPropertyBase_unique(this), wildcard) in
+    (unfolding acc(ProtectedPropertyBase_unique(this), write) in
       true && boolFromRef(gtInts(this.value, intToRef(0)))))
 }
 
@@ -862,7 +868,7 @@ predicate StableDerived_unique(this: Ref) {
   acc(StableBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(StableBase_unique(this), wildcard) in
+    (unfolding acc(StableBase_unique(this), write) in
       true && boolFromRef(gtInts(g_stable(this), intToRef(0)))))
 }
 
@@ -885,14 +891,14 @@ method con(par_stable: Ref) returns (v_ret_0: Ref)
   anon_0 := par_stable
   anon_1 := anon_0
   inhale intFromRef(g_stable(v_ret_0)) == intFromRef(anon_1)
-  anon_2 := require(gtInts(par_stable, intToRef(0)))
-  label lbl_ret_0
   fold acc(StableBase_unique(v_ret_0), write)
+  anon_2 := require(gtInts(par_stable, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(StableBase_unique(this), wildcard) in
+      (unfolding acc(StableBase_unique(this), write) in
         true && boolFromRef(gtInts(g_stable(this), intToRef(0)))))
   fold acc(StableDerived_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(StableDerived_unique(v_ret_0), write)
   unfold acc(StableBase_unique(v_ret_0), write)
 }
@@ -1057,12 +1063,13 @@ method con(par_bound: Ref, par_free: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_free) == intFromRef(par_free)
 {
   var anon_1: Ref
+  var anon_2: Ref
   v_ret_0 := new(bf_bound, bf_free)
   inhale typeOf(v_ret_0) == PartlyBound()
   v_ret_0.bf_bound := par_bound
   v_ret_0.bf_free := par_free
-  anon_1 := require(gtInts(v_ret_0.bf_bound, intToRef(0)))
-  label lbl_ret_0
+  anon_2 := v_ret_0.bf_bound
+  anon_1 := require(gtInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -1070,6 +1077,7 @@ method con(par_bound: Ref, par_free: Ref) returns (v_ret_0: Ref)
         (this.bf_bound) in
         gtInts(anon_0_0, intToRef(0)))))
   fold acc(PartlyBound_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(PartlyBound_unique(v_ret_0), write)
 }
 
@@ -1136,16 +1144,18 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
   ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
 {
-  var anon: Ref
+  var anon_2: Ref
+  var anon_3: Ref
   v_ret_0 := new(bf_value)
   inhale typeOf(v_ret_0) == PropertyLaw()
   v_ret_0.bf_value := par_value
-  anon := require(gtInts(v_ret_0.bf_value, intToRef(0)))
-  label lbl_ret_0
+  anon_3 := v_ret_0.bf_value
+  anon_2 := require(gtInts(anon_3, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(gtInts(this.bf_value, intToRef(0))))
   fold acc(PropertyLaw_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(PropertyLaw_unique(v_ret_0), write)
 }
 

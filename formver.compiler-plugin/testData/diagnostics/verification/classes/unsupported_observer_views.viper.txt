@@ -414,7 +414,7 @@ predicate ConcreteLevel_unique(this: Ref) {
   acc(c_AbstractLevel_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_AbstractLevel_unique(this), wildcard) in
+    (unfolding acc(c_AbstractLevel_unique(this), write) in
       true &&
       boolFromRef((let anon_0_0 ==
         (this.bf_l) in
@@ -449,20 +449,22 @@ method con(par_l: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_l) == intFromRef(par_l)
 {
   var anon_2: Ref
+  var anon_3: Ref
   v_ret_0 := new(bf_l)
   inhale typeOf(v_ret_0) == ConcreteLevel()
-  v_ret_0.bf_l := par_l
-  anon_2 := require(geInts(v_ret_0.bf_l, intToRef(0)))
-  label lbl_ret_0
   fold acc(c_AbstractLevel_unique(v_ret_0), write)
+  v_ret_0.bf_l := par_l
+  anon_3 := v_ret_0.bf_l
+  anon_2 := require(geInts(anon_3, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(c_AbstractLevel_unique(this), wildcard) in
+      (unfolding acc(c_AbstractLevel_unique(this), write) in
         true &&
         boolFromRef((let anon_0_0 ==
           (this.bf_l) in
           geInts(anon_0_0, intToRef(0))))))
   fold acc(ConcreteLevel_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ConcreteLevel_unique(v_ret_0), write)
   unfold acc(c_AbstractLevel_unique(v_ret_0), write)
 }
@@ -516,7 +518,7 @@ predicate ConcreteLevel_unique(this: Ref) {
   acc(c_AbstractLevel_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_AbstractLevel_unique(this), wildcard) in
+    (unfolding acc(c_AbstractLevel_unique(this), write) in
       true &&
       boolFromRef((let anon_0_0 ==
         (this.l) in
@@ -839,7 +841,7 @@ predicate ConcreteLevel_unique(this: Ref) {
   acc(c_AbstractLevel_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_AbstractLevel_unique(this), wildcard) in
+    (unfolding acc(c_AbstractLevel_unique(this), write) in
       true &&
       boolFromRef((let anon_0_0 ==
         (this.bf_l) in

@@ -28,11 +28,12 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
 {
   var anon_1: Ref
+  var anon_2: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == TransitiveRoot()
   v_ret_0.bf_n := par_n
-  anon_1 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_2 := v_ret_0.bf_n
+  anon_1 := require(geInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -40,6 +41,7 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
         (this.bf_n) in
         geInts(anon_0_0, intToRef(0)))))
   fold acc(TransitiveRoot_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(TransitiveRoot_unique(v_ret_0), write)
 }
 
@@ -155,12 +157,13 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_3: Ref
+  var anon_4: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == LawFreeMiddle()
   anon_0 := par_n
   v_ret_0.bf_n := anon_0
-  anon_3 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_4 := v_ret_0.bf_n
+  anon_3 := require(geInts(anon_4, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -169,6 +172,7 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
         geInts(anon_2_0, intToRef(0)))))
   fold acc(c_TransitiveRoot_unique(v_ret_0), write)
   fold acc(LawFreeMiddle_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(LawFreeMiddle_unique(v_ret_0), write)
   unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
 }
@@ -271,13 +275,14 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   var anon_0: Ref
   var anon_1: Ref
   var anon_4: Ref
+  var anon_5: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == TransitiveLeaf()
   anon_0 := par_n
   anon_1 := anon_0
   v_ret_0.bf_n := anon_1
-  anon_4 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_5 := v_ret_0.bf_n
+  anon_4 := require(geInts(anon_5, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -287,6 +292,7 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   fold acc(c_TransitiveRoot_unique(v_ret_0), write)
   fold acc(LawFreeMiddle_unique(v_ret_0), write)
   fold acc(TransitiveLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(TransitiveLeaf_unique(v_ret_0), write)
   unfold acc(LawFreeMiddle_unique(v_ret_0), write)
   unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
@@ -484,7 +490,6 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == InvalidConstructionRoot()
   v_ret_0.bf_n := par_n
   v_ret_0.bf_n := intToRef(-1)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -492,8 +497,637 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
         (this.bf_n) in
         geInts(anon_0_0, intToRef(0)))))
   fold acc(InvalidConstructionRoot_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(InvalidConstructionRoot_unique(v_ret_0), write)
 }
+
+/class_law_transitive_hierarchy.kt: info: Generated Viper text for InvalidRootMiddle:
+field bf_n: Ref
+
+predicate InvalidConstructionRoot_unique(this: Ref) {
+  isSubtype(typeOf(this), InvalidConstructionRoot()) &&
+  acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.bf_n) in
+      geInts(anon_1_0, intToRef(0)))))
+}
+
+predicate InvalidRootMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), InvalidRootMiddle()) &&
+  acc(InvalidConstructionRoot_unique(this), write)
+}
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), InvalidRootMiddle())
+  ensures isSubtype(typeOf(v_ret_0), InvalidRootMiddle()) &&
+    (isSubtype(typeOf(v_ret_0), InvalidConstructionRoot()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_n) in
+        geInts(anon_1_0, intToRef(0))))))
+{
+  var anon_0: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == InvalidRootMiddle()
+  anon_0 := par_n
+  v_ret_0.bf_n := anon_0
+  v_ret_0.bf_n := intToRef(-1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_n) in
+        geInts(anon_1_0, intToRef(0)))))
+  fold acc(InvalidConstructionRoot_unique(v_ret_0), write)
+  fold acc(InvalidRootMiddle_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(InvalidRootMiddle_unique(v_ret_0), write)
+  unfold acc(InvalidConstructionRoot_unique(v_ret_0), write)
+}
+
+/class_law_transitive_hierarchy.kt: info: Generated Viper text for InvalidRootLeaf:
+field bf_n: Ref
+
+predicate InvalidConstructionRoot_unique(this: Ref) {
+  isSubtype(typeOf(this), InvalidConstructionRoot()) &&
+  acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_2_0 ==
+      (this.bf_n) in
+      geInts(anon_2_0, intToRef(0)))))
+}
+
+predicate InvalidRootLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), InvalidRootLeaf()) &&
+  acc(InvalidRootMiddle_unique(this), write)
+}
+
+predicate InvalidRootMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), InvalidRootMiddle()) &&
+  acc(InvalidConstructionRoot_unique(this), write)
+}
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), InvalidRootLeaf())
+  ensures isSubtype(typeOf(v_ret_0), InvalidRootLeaf()) &&
+    (isSubtype(typeOf(v_ret_0), InvalidRootMiddle()) &&
+    (isSubtype(typeOf(v_ret_0), InvalidConstructionRoot()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.bf_n) in
+        geInts(anon_2_0, intToRef(0)))))))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == InvalidRootLeaf()
+  anon_0 := par_n
+  anon_1 := anon_0
+  v_ret_0.bf_n := anon_1
+  v_ret_0.bf_n := intToRef(-1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.bf_n) in
+        geInts(anon_2_0, intToRef(0)))))
+  fold acc(InvalidConstructionRoot_unique(v_ret_0), write)
+  fold acc(InvalidRootMiddle_unique(v_ret_0), write)
+  fold acc(InvalidRootLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(InvalidRootLeaf_unique(v_ret_0), write)
+  unfold acc(InvalidRootMiddle_unique(v_ret_0), write)
+  unfold acc(InvalidConstructionRoot_unique(v_ret_0), write)
+}
+
+/class_law_transitive_hierarchy.kt: info: Generated Viper text for InitializingMiddle:
+field bf_n: Ref
+
+predicate InitializingMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), InitializingMiddle()) &&
+  acc(c_TransitiveRoot_unique(this), write)
+}
+
+predicate c_TransitiveRoot_unique(this: Ref) {
+  isSubtype(typeOf(this), c_TransitiveRoot()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_2_0 ==
+      (this.bf_n) in
+      geInts(anon_2_0, intToRef(0)))))
+}
+
+method InitializingMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this: Ref)
+  returns (v_ret_5: Ref)
+  requires isSubtype(typeOf(this), InitializingMiddle())
+  requires acc(InitializingMiddle_unique(this), write)
+  requires typeOf(this) == InitializingMiddle()
+  ensures acc(InitializingMiddle_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_5), unitType())
+{
+  var anon_1: Ref
+  unfold acc(InitializingMiddle_unique(this), write)
+  unfold acc(c_TransitiveRoot_unique(this), write)
+  anon_1 := this.bf_n
+  this.bf_n := plusInts(anon_1, intToRef(1))
+  label lbl_ret_5
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.bf_n) in
+        geInts(anon_2_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(this), write)
+  fold acc(InitializingMiddle_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+}
+
+method InitializingMiddle_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), InitializingMiddle())
+  requires acc(InitializingMiddle_unique(this), write)
+  requires typeOf(this) == InitializingMiddle()
+  ensures acc(InitializingMiddle_unique(this), write)
+  ensures isSubtype(typeOf(ret_6), unitType())
+
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), InitializingMiddle())
+  ensures isSubtype(typeOf(v_ret_0), InitializingMiddle()) &&
+    (isSubtype(typeOf(v_ret_0), c_TransitiveRoot()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.bf_n) in
+        geInts(anon_2_0, intToRef(0))))))
+{
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == InitializingMiddle()
+  anon_0 := par_n
+  v_ret_0.bf_n := anon_0
+  anon_4 := v_ret_0.bf_n
+  anon_3 := require(geInts(anon_4, intToRef(0)))
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.bf_n) in
+        geInts(anon_2_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  v_ret_0.bf_n := intToRef(-1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.bf_n) in
+        geInts(anon_2_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  fold acc(InitializingMiddle_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(InitializingMiddle_unique(v_ret_0), write)
+  unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
+}
+
+method refines_InitializingMiddle_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), InitializingMiddle())
+  requires acc(InitializingMiddle_unique(this), write)
+  requires typeOf(this) == InitializingMiddle()
+  requires isSubtype(typeOf(this), InitializingMiddle())
+{
+  ret_6 := InitializingMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  assert acc(InitializingMiddle_unique(this), write)
+  assert isSubtype(typeOf(ret_6), unitType())
+}
+
+method require(value: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/class_law_transitive_hierarchy.kt: info: Generated Viper text for InitializingLeaf:
+field bf_n: Ref
+
+predicate InitializingLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), InitializingLeaf()) &&
+  acc(InitializingMiddle_unique(this), write)
+}
+
+predicate InitializingMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), InitializingMiddle()) &&
+  acc(c_TransitiveRoot_unique(this), write)
+}
+
+predicate c_TransitiveRoot_unique(this: Ref) {
+  isSubtype(typeOf(this), c_TransitiveRoot()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_3_0 ==
+      (this.bf_n) in
+      geInts(anon_3_0, intToRef(0)))))
+}
+
+method InitializingLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this: Ref)
+  returns (v_ret_6: Ref)
+  requires isSubtype(typeOf(this), InitializingLeaf())
+  requires acc(InitializingLeaf_unique(this), write)
+  requires typeOf(this) == InitializingLeaf()
+  ensures acc(InitializingLeaf_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_6), unitType())
+{
+  var anon_2: Ref
+  unfold acc(InitializingLeaf_unique(this), write)
+  unfold acc(InitializingMiddle_unique(this), write)
+  unfold acc(c_TransitiveRoot_unique(this), write)
+  anon_2 := this.bf_n
+  this.bf_n := plusInts(anon_2, intToRef(1))
+  label lbl_ret_6
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_3_0 ==
+        (this.bf_n) in
+        geInts(anon_3_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(this), write)
+  fold acc(InitializingMiddle_unique(this), write)
+  fold acc(InitializingLeaf_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_6), unitType())
+}
+
+method InitializingLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), InitializingLeaf())
+  requires acc(InitializingLeaf_unique(this), write)
+  requires typeOf(this) == InitializingLeaf()
+  ensures acc(InitializingLeaf_unique(this), write)
+  ensures isSubtype(typeOf(ret_7), unitType())
+
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), InitializingLeaf())
+  ensures isSubtype(typeOf(v_ret_0), InitializingLeaf()) &&
+    (isSubtype(typeOf(v_ret_0), InitializingMiddle()) &&
+    (isSubtype(typeOf(v_ret_0), c_TransitiveRoot()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_3_0 ==
+        (this.bf_n) in
+        geInts(anon_3_0, intToRef(0)))))))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == InitializingLeaf()
+  anon_0 := par_n
+  anon_1 := anon_0
+  v_ret_0.bf_n := anon_1
+  anon_5 := v_ret_0.bf_n
+  anon_4 := require(geInts(anon_5, intToRef(0)))
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_3_0 ==
+        (this.bf_n) in
+        geInts(anon_3_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  v_ret_0.bf_n := intToRef(-1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_3_0 ==
+        (this.bf_n) in
+        geInts(anon_3_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  fold acc(InitializingMiddle_unique(v_ret_0), write)
+  fold acc(InitializingLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(InitializingLeaf_unique(v_ret_0), write)
+  unfold acc(InitializingMiddle_unique(v_ret_0), write)
+  unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
+}
+
+method refines_InitializingLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), InitializingLeaf())
+  requires acc(InitializingLeaf_unique(this), write)
+  requires typeOf(this) == InitializingLeaf()
+  requires isSubtype(typeOf(this), InitializingLeaf())
+{
+  ret_7 := InitializingLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  assert acc(InitializingLeaf_unique(this), write)
+  assert isSubtype(typeOf(ret_7), unitType())
+}
+
+method require(value: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/class_law_transitive_hierarchy.kt: info: Generated Viper text for SecondaryMiddle:
+field bf_n: Ref
+
+predicate c_SecondaryMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), c_SecondaryMiddle()) &&
+  acc(c_TransitiveRoot_unique(this), write)
+}
+
+predicate c_TransitiveRoot_unique(this: Ref) {
+  isSubtype(typeOf(this), c_TransitiveRoot()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_4_0 ==
+      (this.bf_n) in
+      geInts(anon_4_0, intToRef(0)))))
+}
+
+method c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit_inherited_body_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit(this: Ref)
+  returns (v_ret_11: Ref)
+  requires isSubtype(typeOf(this), c_SecondaryMiddle())
+  requires acc(c_SecondaryMiddle_unique(this), write)
+  requires typeOf(this) == c_SecondaryMiddle()
+  ensures acc(c_SecondaryMiddle_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_11), unitType())
+{
+  var anon_3: Ref
+  unfold acc(c_SecondaryMiddle_unique(this), write)
+  unfold acc(c_TransitiveRoot_unique(this), write)
+  anon_3 := this.bf_n
+  this.bf_n := plusInts(anon_3, intToRef(1))
+  label lbl_ret_11
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_4_0 ==
+        (this.bf_n) in
+        geInts(anon_4_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(this), write)
+  fold acc(c_SecondaryMiddle_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_11), unitType())
+}
+
+method c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit_inherited_contract_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit(this: Ref)
+  returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), c_SecondaryMiddle())
+  requires acc(c_SecondaryMiddle_unique(this), write)
+  requires typeOf(this) == c_SecondaryMiddle()
+  ensures acc(c_SecondaryMiddle_unique(this), write)
+  ensures isSubtype(typeOf(ret_12), unitType())
+
+
+method con_c_SecondaryMiddle(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_SecondaryMiddle())
+  ensures isSubtype(typeOf(v_ret_0), c_SecondaryMiddle()) &&
+    (isSubtype(typeOf(v_ret_0), c_TransitiveRoot()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_4_0 ==
+        (this.bf_n) in
+        geInts(anon_4_0, intToRef(0))))))
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  var anon_0: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == c_SecondaryMiddle()
+  anon_0 := par_n
+  v_ret_0.bf_n := anon_0
+  anon_6 := v_ret_0.bf_n
+  anon_5 := require(geInts(anon_6, intToRef(0)))
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_4_0 ==
+        (this.bf_n) in
+        geInts(anon_4_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  fold acc(c_SecondaryMiddle_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_SecondaryMiddle_unique(v_ret_0), write)
+  unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
+}
+
+method con_c_SecondaryMiddle_args() returns (v_ret_5: Ref)
+  ensures isSubtype(typeOf(v_ret_5), c_SecondaryMiddle())
+  ensures isSubtype(typeOf(v_ret_5), c_SecondaryMiddle()) &&
+    (isSubtype(typeOf(v_ret_5), c_TransitiveRoot()) &&
+    acc(v_ret_5.bf_n, write) &&
+    isSubtype(typeOf(v_ret_5.bf_n), intType()) &&
+    (let this ==
+      (v_ret_5) in
+      true &&
+      boolFromRef((let anon_4_0 ==
+        (this.bf_n) in
+        geInts(anon_4_0, intToRef(0))))))
+  ensures intFromRef(v_ret_5.bf_n) == -1
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  v_ret_5 := new(bf_n)
+  inhale typeOf(v_ret_5) == c_SecondaryMiddle()
+  anon_1 := intToRef(-1)
+  anon_2 := anon_1
+  v_ret_5.bf_n := anon_2
+  anon_8 := v_ret_5.bf_n
+  anon_7 := require(geInts(anon_8, intToRef(0)))
+  assert (let this ==
+      (v_ret_5) in
+      true &&
+      boolFromRef((let anon_4_0 ==
+        (this.bf_n) in
+        geInts(anon_4_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(v_ret_5), write)
+  fold acc(c_SecondaryMiddle_unique(v_ret_5), write)
+  label lbl_ret_5
+  unfold acc(c_SecondaryMiddle_unique(v_ret_5), write)
+  unfold acc(c_TransitiveRoot_unique(v_ret_5), write)
+}
+
+method refines_c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit_inherited_contract_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit(this: Ref)
+  returns (ret_12: Ref)
+  requires isSubtype(typeOf(this), c_SecondaryMiddle())
+  requires acc(c_SecondaryMiddle_unique(this), write)
+  requires typeOf(this) == c_SecondaryMiddle()
+  requires isSubtype(typeOf(this), c_SecondaryMiddle())
+{
+  ret_12 := c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit_inherited_body_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit(this)
+  assert acc(c_SecondaryMiddle_unique(this), write)
+  assert isSubtype(typeOf(ret_12), unitType())
+}
+
+method require(value: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/class_law_transitive_hierarchy.kt: info: Generated Viper text for SecondaryLeaf:
+field bf_n: Ref
+
+predicate SecondaryLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), SecondaryLeaf()) &&
+  acc(SecondaryMiddle_unique(this), write)
+}
+
+predicate SecondaryMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), SecondaryMiddle()) &&
+  acc(c_TransitiveRoot_unique(this), write)
+}
+
+predicate c_TransitiveRoot_unique(this: Ref) {
+  isSubtype(typeOf(this), c_TransitiveRoot()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_3_0 ==
+      (this.bf_n) in
+      geInts(anon_3_0, intToRef(0)))))
+}
+
+method SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this: Ref)
+  returns (v_ret_6: Ref)
+  requires isSubtype(typeOf(this), SecondaryLeaf())
+  requires acc(SecondaryLeaf_unique(this), write)
+  requires typeOf(this) == SecondaryLeaf()
+  ensures acc(SecondaryLeaf_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_6), unitType())
+{
+  var anon_2: Ref
+  unfold acc(SecondaryLeaf_unique(this), write)
+  unfold acc(SecondaryMiddle_unique(this), write)
+  unfold acc(c_TransitiveRoot_unique(this), write)
+  anon_2 := this.bf_n
+  this.bf_n := plusInts(anon_2, intToRef(1))
+  label lbl_ret_6
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_3_0 ==
+        (this.bf_n) in
+        geInts(anon_3_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(this), write)
+  fold acc(SecondaryMiddle_unique(this), write)
+  fold acc(SecondaryLeaf_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_6), unitType())
+}
+
+method SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), SecondaryLeaf())
+  requires acc(SecondaryLeaf_unique(this), write)
+  requires typeOf(this) == SecondaryLeaf()
+  ensures acc(SecondaryLeaf_unique(this), write)
+  ensures isSubtype(typeOf(ret_7), unitType())
+
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), SecondaryLeaf())
+  ensures isSubtype(typeOf(v_ret_0), SecondaryLeaf()) &&
+    (isSubtype(typeOf(v_ret_0), SecondaryMiddle()) &&
+    (isSubtype(typeOf(v_ret_0), c_TransitiveRoot()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_3_0 ==
+        (this.bf_n) in
+        geInts(anon_3_0, intToRef(0)))))))
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == SecondaryLeaf()
+  anon_0 := par_n
+  anon_1 := anon_0
+  v_ret_0.bf_n := anon_1
+  anon_5 := v_ret_0.bf_n
+  anon_4 := require(geInts(anon_5, intToRef(0)))
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_3_0 ==
+        (this.bf_n) in
+        geInts(anon_3_0, intToRef(0)))))
+  fold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  fold acc(SecondaryMiddle_unique(v_ret_0), write)
+  fold acc(SecondaryLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(SecondaryLeaf_unique(v_ret_0), write)
+  unfold acc(SecondaryMiddle_unique(v_ret_0), write)
+  unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
+}
+
+method refines_SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), SecondaryLeaf())
+  requires acc(SecondaryLeaf_unique(this), write)
+  requires typeOf(this) == SecondaryLeaf()
+  requires isSubtype(typeOf(this), SecondaryLeaf())
+{
+  ret_7 := SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  assert acc(SecondaryLeaf_unique(this), write)
+  assert isSubtype(typeOf(ret_7), unitType())
+}
+
+method require(value: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures true ==> boolFromRef(value)
+
 
 /class_law_transitive_hierarchy.kt: info: Generated Viper text for effectfulInitializer:
 method effectfulInitializer(n: Ref) returns (v_ret_0: Ref)
@@ -581,15 +1215,14 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_4: Ref
+  var anon_5: Ref
   var anon_1: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == ImpureInitializerMiddle()
   anon_0 := par_n
   v_ret_0.bf_n := anon_0
-  anon_4 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  anon_1 := effectfulInitializer(par_n)
-  inhale intFromRef(extra(v_ret_0)) == intFromRef(anon_1)
-  label lbl_ret_0
+  anon_5 := v_ret_0.bf_n
+  anon_4 := require(geInts(anon_5, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -597,7 +1230,10 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
         (this.bf_n) in
         geInts(anon_3_0, intToRef(0)))))
   fold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  anon_1 := effectfulInitializer(par_n)
+  inhale intFromRef(extra(v_ret_0)) == intFromRef(anon_1)
   fold acc(ImpureInitializerMiddle_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ImpureInitializerMiddle_unique(v_ret_0), write)
   unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
 }
@@ -710,16 +1346,15 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   var anon_0: Ref
   var anon_1: Ref
   var anon_5: Ref
+  var anon_6: Ref
   var anon_2: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == ImpureInitializerLeaf()
   anon_0 := par_n
   anon_1 := anon_0
   v_ret_0.bf_n := anon_1
-  anon_5 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  anon_2 := effectfulInitializer(anon_0)
-  inhale intFromRef(extra(v_ret_0)) == intFromRef(anon_2)
-  label lbl_ret_0
+  anon_6 := v_ret_0.bf_n
+  anon_5 := require(geInts(anon_6, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -727,8 +1362,11 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
         (this.bf_n) in
         geInts(anon_4_0, intToRef(0)))))
   fold acc(c_TransitiveRoot_unique(v_ret_0), write)
+  anon_2 := effectfulInitializer(anon_0)
+  inhale intFromRef(extra(v_ret_0)) == intFromRef(anon_2)
   fold acc(ImpureInitializerMiddle_unique(v_ret_0), write)
   fold acc(ImpureInitializerLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ImpureInitializerLeaf_unique(v_ret_0), write)
   unfold acc(ImpureInitializerMiddle_unique(v_ret_0), write)
   unfold acc(c_TransitiveRoot_unique(v_ret_0), write)
@@ -787,11 +1425,12 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
 {
   var anon_1: Ref
+  var anon_2: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == InheritedBodyRoot()
   v_ret_0.bf_n := par_n
-  anon_1 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_2 := v_ret_0.bf_n
+  anon_1 := require(geInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -799,6 +1438,7 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
         (this.bf_n) in
         geInts(anon_0_0, intToRef(0)))))
   fold acc(InheritedBodyRoot_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(InheritedBodyRoot_unique(v_ret_0), write)
 }
 
@@ -898,12 +1538,13 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_2: Ref
+  var anon_3: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == InheritedBodyMiddle()
   anon_0 := par_n
   v_ret_0.bf_n := anon_0
-  anon_2 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_3 := v_ret_0.bf_n
+  anon_2 := require(geInts(anon_3, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -912,6 +1553,7 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
         geInts(anon_1_0, intToRef(0)))))
   fold acc(c_InheritedBodyRoot_unique(v_ret_0), write)
   fold acc(InheritedBodyMiddle_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(InheritedBodyMiddle_unique(v_ret_0), write)
   unfold acc(c_InheritedBodyRoot_unique(v_ret_0), write)
 }
@@ -1012,13 +1654,14 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   var anon_0: Ref
   var anon_1: Ref
   var anon_3: Ref
+  var anon_4: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == InheritedBodyLeaf()
   anon_0 := par_n
   anon_1 := anon_0
   v_ret_0.bf_n := anon_1
-  anon_3 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_4 := v_ret_0.bf_n
+  anon_3 := require(geInts(anon_4, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -1028,6 +1671,7 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   fold acc(c_InheritedBodyRoot_unique(v_ret_0), write)
   fold acc(InheritedBodyMiddle_unique(v_ret_0), write)
   fold acc(InheritedBodyLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(InheritedBodyLeaf_unique(v_ret_0), write)
   unfold acc(InheritedBodyMiddle_unique(v_ret_0), write)
   unfold acc(c_InheritedBodyRoot_unique(v_ret_0), write)
@@ -1100,13 +1744,13 @@ method con(x: Ref, y: Ref, offset: Ref) returns (v_ret_0: Ref)
   } else {
     anon_3 := boolToRef(false)}
   anon_2 := require(anon_3)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
       boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
       intFromRef(z(this)) + 2))))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(DefaultArgumentRoot_unique(v_ret_0), write)
 }
 
@@ -1175,7 +1819,6 @@ method con(n: Ref) returns (v_ret_0: Ref)
   } else {
     anon_6 := boolToRef(false)}
   anon_5 := require(anon_6)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -1183,6 +1826,7 @@ method con(n: Ref) returns (v_ret_0: Ref)
       intFromRef(z(this)) + 2))))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   fold acc(RenamedArgumentLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(RenamedArgumentLeaf_unique(v_ret_0), write)
   unfold acc(DefaultArgumentRoot_unique(v_ret_0), write)
 }
@@ -1252,7 +1896,6 @@ method con(x: Ref) returns (v_ret_0: Ref)
   } else {
     anon_6 := boolToRef(false)}
   anon_5 := require(anon_6)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -1260,6 +1903,7 @@ method con(x: Ref) returns (v_ret_0: Ref)
       intFromRef(z(this)) + 2))))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   fold acc(SameNameArgumentLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(SameNameArgumentLeaf_unique(v_ret_0), write)
   unfold acc(DefaultArgumentRoot_unique(v_ret_0), write)
 }
@@ -1329,7 +1973,6 @@ method con(x: Ref) returns (v_ret_0: Ref)
   } else {
     anon_6 := boolToRef(false)}
   anon_5 := require(anon_6)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -1337,6 +1980,7 @@ method con(x: Ref) returns (v_ret_0: Ref)
       intFromRef(z(this)) + 2))))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   fold acc(ExplicitDefaultLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ExplicitDefaultLeaf_unique(v_ret_0), write)
   unfold acc(DefaultArgumentRoot_unique(v_ret_0), write)
 }

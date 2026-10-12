@@ -131,7 +131,7 @@ class TypeResolver {
             classLawBodies[type.name].orEmpty().fold<Exp, Exp>(Exp.BoolLit(true)) { acc, law -> Exp.And(acc, law) },
         ) { parent, law ->
             Exp.Unfolding(Exp.PredicateAccess(parent.uniquePredicateName,
-                listOf(Exp.LocalVar(DispatchReceiverName, Type.Ref)), PermExp.WildcardPerm()), law)
+                listOf(Exp.LocalVar(DispatchReceiverName, Type.Ref)), PermExp.FullPerm()), law)
         },
     )
 

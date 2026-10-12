@@ -7,7 +7,10 @@ method cause(this: Ref) returns (ret_3: Ref)
 method con(p0: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(p0), nullable(stringType()))
   ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
-  ensures acc(IllegalArgumentException_unique(ret_4), write)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
 
 
 method message(this: Ref) returns (ret_2: Ref)
@@ -33,6 +36,10 @@ method templateInThrow(x: Ref, c: Ref) returns (v_ret_0: Ref)
     anon_1 := plus(stringToRef(Seq(98, 97, 100, 32)), x)
     anon_0 := con(addStringChar(addStrings(anon_1, stringToRef(Seq(32, 97, 116,
       32))), c))
+    fold acc(Throwable_unique(anon_0), write)
+    fold acc(Exception_unique(anon_0), write)
+    fold acc(RuntimeException_unique(anon_0), write)
+    fold acc(IllegalArgumentException_unique(anon_0), write)
     inhale false
   }
   v_ret_0 := x

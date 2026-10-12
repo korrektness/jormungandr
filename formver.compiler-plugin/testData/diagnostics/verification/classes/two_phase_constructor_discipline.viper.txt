@@ -1,0 +1,461 @@
+/two_phase_constructor_discipline.kt: info: Generated Viper text for observe:
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), EarlyThisArgument())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function observe(value: Ref): Ref
+  requires isSubtype(typeOf(value), EarlyThisArgument())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function second(this: Ref): Ref
+  requires isSubtype(typeOf(this), EarlyThisArgument())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for value:
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), EarlyMemberCall())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function second(this: Ref): Ref
+  requires isSubtype(typeOf(this), EarlyMemberCall())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), EarlyMemberCall())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for observe:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), EarlyVirtualDispatch())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method observe(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), EarlyVirtualDispatch())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for observe:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), TrustedVirtualDispatch())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method observe(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), TrustedVirtualDispatch())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for CompletedFinalCall:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CompletedFinalCall())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), CompletedFinalCall())
+  ensures isSubtype(typeOf(v_ret_0), CompletedFinalCall()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(value(this), intToRef(0))))
+  ensures intFromRef(value(v_ret_0)) == 1
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CompletedFinalCall()
+  anon_0 := intToRef(1)
+  inhale intFromRef(value(v_ret_0)) == intFromRef(anon_0)
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(value(this), intToRef(0))))
+  fold acc(CompletedFinalCall_unique(v_ret_0), write)
+  anon_1 := observe(v_ret_0)
+  label lbl_ret_0
+}
+
+method observe(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), CompletedFinalCall())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for observe:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CompletedFinalCall())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method observe(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), CompletedFinalCall())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for CompletedAssignments:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CompletedAssignments())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(flag: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(flag), boolType())
+  ensures isSubtype(typeOf(v_ret_0), CompletedAssignments())
+  ensures isSubtype(typeOf(v_ret_0), CompletedAssignments()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+{
+  var anon_2: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CompletedAssignments()
+  if (boolFromRef(flag)) {
+    var anon_0: Ref
+    anon_0 := intToRef(1)
+    inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  } else {
+    var anon_1: Ref
+    anon_1 := intToRef(2)
+    inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_1)
+  }
+  anon_2 := require(gtInts(g_value(v_ret_0), intToRef(0)))
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  fold acc(CompletedAssignments_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CompletedAssignments_unique(v_ret_0), write)
+}
+
+method require(par_value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(par_value)
+
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for observe:
+method observe(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), DispatchBase())
+  requires acc(DispatchBase_unique(this), write)
+  ensures acc(DispatchBase_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for observe:
+method observe(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), DispatchFinal())
+  requires acc(DispatchFinal_unique(this), write)
+  ensures acc(DispatchFinal_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for InheritedFinalDispatch:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), InheritedFinalDispatch())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method InheritedFinalDispatch_c_DispatchFinal_f_observe_inherited_body_c_DispatchFinal_f_observe(this: Ref)
+  returns (v_ret_6: Ref)
+  requires isSubtype(typeOf(this), InheritedFinalDispatch())
+  requires acc(InheritedFinalDispatch_unique(this), write)
+  requires typeOf(this) == InheritedFinalDispatch()
+  ensures acc(InheritedFinalDispatch_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_6), unitType())
+{
+  label lbl_ret_6
+  inhale isSubtype(typeOf(v_ret_6), unitType())
+}
+
+method InheritedFinalDispatch_c_DispatchFinal_f_observe_inherited_contract_c_DispatchFinal_f_observe(this: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), InheritedFinalDispatch())
+  requires acc(InheritedFinalDispatch_unique(this), write)
+  requires typeOf(this) == InheritedFinalDispatch()
+  ensures acc(InheritedFinalDispatch_unique(this), write)
+  ensures isSubtype(typeOf(ret_7), unitType())
+
+
+method c_DispatchFinal_f_observe(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), c_DispatchFinal())
+  requires acc(c_DispatchFinal_unique(this), write)
+  ensures acc(c_DispatchFinal_unique(this), write)
+  ensures isSubtype(typeOf(ret_5), unitType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), InheritedFinalDispatch())
+  ensures isSubtype(typeOf(v_ret_0), InheritedFinalDispatch()) &&
+    (isSubtype(typeOf(v_ret_0), c_DispatchFinal()) &&
+    isSubtype(typeOf(v_ret_0), DispatchBase())) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(value(this), intToRef(0))))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == InheritedFinalDispatch()
+  fold acc(DispatchBase_unique(v_ret_0), write)
+  fold acc(c_DispatchFinal_unique(v_ret_0), write)
+  anon_0 := intToRef(1)
+  inhale intFromRef(value(v_ret_0)) == intFromRef(anon_0)
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_DispatchFinal_unique(this), write) in
+        (unfolding acc(DispatchBase_unique(this), write) in
+          true && boolFromRef(gtInts(value(this), intToRef(0))))))
+  fold acc(InheritedFinalDispatch_unique(v_ret_0), write)
+  unfold acc(InheritedFinalDispatch_unique(v_ret_0), write)
+  anon_1 := c_DispatchFinal_f_observe(v_ret_0)
+  exhale isSubtype(typeOf(v_ret_0), InheritedFinalDispatch()) &&
+    (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_DispatchFinal_unique(this), write) in
+        (unfolding acc(DispatchBase_unique(this), write) in
+          true && boolFromRef(gtInts(value(this), intToRef(0))))))
+  inhale isSubtype(typeOf(v_ret_0), InheritedFinalDispatch()) &&
+    (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_DispatchFinal_unique(this), write) in
+        (unfolding acc(DispatchBase_unique(this), write) in
+          true && boolFromRef(gtInts(value(this), intToRef(0))))))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_DispatchFinal_unique(this), write) in
+        (unfolding acc(DispatchBase_unique(this), write) in
+          true && boolFromRef(gtInts(value(this), intToRef(0))))))
+  fold acc(InheritedFinalDispatch_unique(v_ret_0), write)
+  unfold acc(InheritedFinalDispatch_unique(v_ret_0), write)
+  unfold acc(c_DispatchFinal_unique(v_ret_0), write)
+  unfold acc(DispatchBase_unique(v_ret_0), write)
+}
+
+method refines_InheritedFinalDispatch_c_DispatchFinal_f_observe_inherited_contract_c_DispatchFinal_f_observe(this: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), InheritedFinalDispatch())
+  requires acc(InheritedFinalDispatch_unique(this), write)
+  requires typeOf(this) == InheritedFinalDispatch()
+  requires isSubtype(typeOf(this), InheritedFinalDispatch())
+{
+  ret_7 := InheritedFinalDispatch_c_DispatchFinal_f_observe_inherited_body_c_DispatchFinal_f_observe(this)
+  assert acc(InheritedFinalDispatch_unique(this), write)
+  assert isSubtype(typeOf(ret_7), unitType())
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for FinalClassDispatch:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), FinalClassDispatch())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method FinalClassDispatch_c_DispatchBase_f_observe_inherited_body_c_DispatchBase_f_observe(this: Ref)
+  returns (v_ret_5: Ref)
+  requires isSubtype(typeOf(this), FinalClassDispatch())
+  requires acc(FinalClassDispatch_unique(this), write)
+  requires typeOf(this) == FinalClassDispatch()
+  ensures acc(FinalClassDispatch_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_5), unitType())
+{
+  label lbl_ret_5
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+}
+
+method FinalClassDispatch_c_DispatchBase_f_observe_inherited_contract_c_DispatchBase_f_observe(this: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), FinalClassDispatch())
+  requires acc(FinalClassDispatch_unique(this), write)
+  requires typeOf(this) == FinalClassDispatch()
+  ensures acc(FinalClassDispatch_unique(this), write)
+  ensures isSubtype(typeOf(ret_6), unitType())
+
+
+method c_DispatchBase_f_observe(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_DispatchBase())
+  requires acc(c_DispatchBase_unique(this), write)
+  ensures acc(c_DispatchBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), FinalClassDispatch())
+  ensures isSubtype(typeOf(v_ret_0), FinalClassDispatch()) &&
+    isSubtype(typeOf(v_ret_0), c_DispatchBase()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(value(this), intToRef(0))))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == FinalClassDispatch()
+  fold acc(c_DispatchBase_unique(v_ret_0), write)
+  anon_0 := intToRef(1)
+  inhale intFromRef(value(v_ret_0)) == intFromRef(anon_0)
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_DispatchBase_unique(this), write) in
+        true && boolFromRef(gtInts(value(this), intToRef(0)))))
+  fold acc(FinalClassDispatch_unique(v_ret_0), write)
+  unfold acc(FinalClassDispatch_unique(v_ret_0), write)
+  anon_1 := c_DispatchBase_f_observe(v_ret_0)
+  exhale isSubtype(typeOf(v_ret_0), FinalClassDispatch()) &&
+    (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_DispatchBase_unique(this), write) in
+        true && boolFromRef(gtInts(value(this), intToRef(0)))))
+  inhale isSubtype(typeOf(v_ret_0), FinalClassDispatch()) &&
+    (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_DispatchBase_unique(this), write) in
+        true && boolFromRef(gtInts(value(this), intToRef(0)))))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_DispatchBase_unique(this), write) in
+        true && boolFromRef(gtInts(value(this), intToRef(0)))))
+  fold acc(FinalClassDispatch_unique(v_ret_0), write)
+  unfold acc(FinalClassDispatch_unique(v_ret_0), write)
+  unfold acc(c_DispatchBase_unique(v_ret_0), write)
+}
+
+method refines_FinalClassDispatch_c_DispatchBase_f_observe_inherited_contract_c_DispatchBase_f_observe(this: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), FinalClassDispatch())
+  requires acc(FinalClassDispatch_unique(this), write)
+  requires typeOf(this) == FinalClassDispatch()
+  requires isSubtype(typeOf(this), FinalClassDispatch())
+{
+  ret_6 := FinalClassDispatch_c_DispatchBase_f_observe_inherited_body_c_DispatchBase_f_observe(this)
+  assert acc(FinalClassDispatch_unique(this), write)
+  assert isSubtype(typeOf(ret_6), unitType())
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for observe:
+method observe(this: Ref, argument: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), GenericFinalDispatch())
+  requires acc(GenericFinalDispatch_unique(this), write)
+  requires isSubtype(typeOf(argument), nullable(anyType()))
+  ensures acc(GenericFinalDispatch_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for SubstitutedFinalDispatch:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), SubstitutedFinalDispatch())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method SubstitutedFinalDispatch_c_GenericFinalDispatch_f_observe_inherited_body_c_GenericFinalDispatch_f_observe(this: Ref,
+  argument: Ref)
+  returns (v_ret_5: Ref)
+  requires isSubtype(typeOf(this), SubstitutedFinalDispatch())
+  requires acc(SubstitutedFinalDispatch_unique(this), write)
+  requires isSubtype(typeOf(argument), nullable(anyType()))
+  requires typeOf(this) == SubstitutedFinalDispatch()
+  ensures acc(SubstitutedFinalDispatch_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_5), unitType())
+{
+  label lbl_ret_5
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+}
+
+method SubstitutedFinalDispatch_c_GenericFinalDispatch_f_observe_inherited_contract_c_GenericFinalDispatch_f_observe(this: Ref,
+  argument: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), SubstitutedFinalDispatch())
+  requires acc(SubstitutedFinalDispatch_unique(this), write)
+  requires isSubtype(typeOf(argument), nullable(anyType()))
+  requires typeOf(this) == SubstitutedFinalDispatch()
+  ensures acc(SubstitutedFinalDispatch_unique(this), write)
+  ensures isSubtype(typeOf(ret_6), unitType())
+
+
+method SubstitutedFinalDispatch_f_observe(this: Ref, argument: Ref)
+  returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), SubstitutedFinalDispatch())
+  requires acc(SubstitutedFinalDispatch_unique(this), write)
+  requires isSubtype(typeOf(argument), intType())
+  ensures acc(SubstitutedFinalDispatch_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SubstitutedFinalDispatch())
+  ensures isSubtype(typeOf(v_ret_0), SubstitutedFinalDispatch()) &&
+    isSubtype(typeOf(v_ret_0), c_GenericFinalDispatch()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(value(this), intToRef(0))))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == SubstitutedFinalDispatch()
+  fold acc(c_GenericFinalDispatch_unique(v_ret_0), write)
+  anon_0 := intToRef(1)
+  inhale intFromRef(value(v_ret_0)) == intFromRef(anon_0)
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_GenericFinalDispatch_unique(this), write) in
+        true && boolFromRef(gtInts(value(this), intToRef(0)))))
+  fold acc(SubstitutedFinalDispatch_unique(v_ret_0), write)
+  anon_1 := SubstitutedFinalDispatch_f_observe(v_ret_0, value(v_ret_0))
+  label lbl_ret_0
+  unfold acc(SubstitutedFinalDispatch_unique(v_ret_0), write)
+  unfold acc(c_GenericFinalDispatch_unique(v_ret_0), write)
+}
+
+method refines_SubstitutedFinalDispatch_c_GenericFinalDispatch_f_observe_inherited_contract_c_GenericFinalDispatch_f_observe(this: Ref,
+  argument: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), SubstitutedFinalDispatch())
+  requires acc(SubstitutedFinalDispatch_unique(this), write)
+  requires isSubtype(typeOf(argument), nullable(anyType()))
+  requires typeOf(this) == SubstitutedFinalDispatch()
+  requires isSubtype(typeOf(this), SubstitutedFinalDispatch())
+{
+  ret_6 := SubstitutedFinalDispatch_c_GenericFinalDispatch_f_observe_inherited_body_c_GenericFinalDispatch_f_observe(this,
+    argument)
+  assert acc(SubstitutedFinalDispatch_unique(this), write)
+  assert isSubtype(typeOf(ret_6), unitType())
+}
+
+/two_phase_constructor_discipline.kt: info: Generated Viper text for observe:
+method observe(this: Ref, argument: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), GenericOpenDispatch())
+  requires acc(GenericOpenDispatch_unique(this), write)
+  requires isSubtype(typeOf(argument), nullable(anyType()))
+  ensures acc(GenericOpenDispatch_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

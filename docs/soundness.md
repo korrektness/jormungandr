@@ -123,16 +123,16 @@ owned paths only.
 
 ### Unconverted bodies
 
-Callers use the header of a constructor or an initializer. SnaKt converts a
-primary constructor's body when the class has laws. It does not convert `init`
-blocks and initializers of a class without laws, secondary constructors, or
-top-level initializers, and it gives no warning for them.
+Callers use constructor headers. For classes with own or inherited laws, SnaKt
+verifies constructors, property initializers and `init` blocks against those
+headers (SPECIFICATIONS.md, "Class laws"). Bodies of law-free classes and
+top-level initializers are unconverted.
 
 Property accessor bodies are verified against their callers' header
 (SPECIFICATIONS.md, "Verification Control").
 
-Tests: `verification/soundness/accessors.kt` covers accessors; constructors and
-initializers have none.
+Tests: `verification/soundness/accessors.kt`,
+`verification/soundness/constructor_bodies.kt`.
 
 ### Family transfers and observer views
 

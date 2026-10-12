@@ -294,16 +294,16 @@ class ProgramConverter(
         registered += RegisteredFunction(declaration, header, returnTarget, uniquenessOutcomeOf(declaration).hasErrors)
     }
 
-    /** Registers the proof of a source primary constructor against its exported contract. */
+    /** Registers the proof of a source constructor against its exported contract. */
     @OptIn(SymbolInternals::class)
-    fun registerPrimaryConstructor(symbol: FirConstructorSymbol) {
+    fun registerConstructor(symbol: FirConstructorSymbol) {
         registeredSymbol = symbol
         val signature = embedCompleteSignature(symbol)
         val contract = signature.signature as NonInlineFunctionSignature
         val owner = symbol.resolvedReturnType.toRegularClassSymbol(session)!!
         lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(owner.fir, owner.classId.embedName()) })
         var hasInitializationErrors = false
-        val body = with(this) { primaryConstructionBody(symbol, contract, signature.returnTarget) { hasInitializationErrors = true } }
+        val body = with(this) { constructionBody(symbol, contract, signature.returnTarget) { hasInitializationErrors = true } }
         convertedBodyResolver.storeImpure(contract.name, body)
         registered += RegisteredFunction(symbol.fir, contract, signature.returnTarget,
             hasInitializationErrors || uniquenessOutcomeOf(symbol.fir).hasErrors)

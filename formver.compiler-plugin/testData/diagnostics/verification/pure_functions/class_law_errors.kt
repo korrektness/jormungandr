@@ -52,10 +52,10 @@ class InvalidExpandedBody {
     @Law @Pure fun invariant(): Boolean = <!INVALID_LAW!>observation()<!> >= 0
 }
 
-<!INVALID_LAW!>class SecondaryInvariant(val value: Int) {
+class SecondaryInvariant(val value: Int) {
     constructor() : this(1)
     @Law @Pure fun invariant(): Boolean = value >= 0
-}<!>
+}
 
 class InitInvariant(val value: Int) {
     init { require(value >= 0) }
@@ -81,11 +81,11 @@ open class SuperInvariant(val value: Int) {
 
 class SubInvariant(value: Int) : SuperInvariant(value)
 
-class PropertyInitializerInvariant(value: Int) {
+<!INVALID_LAW!>class PropertyInitializerInvariant(value: Int) {
     val first = value
     val second = first
     @Law @Pure fun invariant(): Boolean = second >= 0
-}
+}<!>
 
 class LambdaInitializerInvariant(value: Int) {
     val function = { parameter: Int -> parameter + value }

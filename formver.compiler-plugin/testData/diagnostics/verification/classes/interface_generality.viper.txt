@@ -267,17 +267,19 @@ method con(par_enabled: Ref, par_stored: Ref) returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_4: Ref
+  var anon_5: Ref
   v_ret_0 := new(bf_enabled)
   inhale typeOf(v_ret_0) == GeneralCell()
   v_ret_0.bf_enabled := par_enabled
   anon_0 := par_stored
   inhale g_stored(v_ret_0) == anon_0
-  anon_4 := require(v_ret_0.bf_enabled)
-  label lbl_ret_0
+  anon_5 := v_ret_0.bf_enabled
+  anon_4 := require(anon_5)
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(this.bf_enabled))
   fold acc(GeneralCell_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(GeneralCell_unique(v_ret_0), write)
 }
 

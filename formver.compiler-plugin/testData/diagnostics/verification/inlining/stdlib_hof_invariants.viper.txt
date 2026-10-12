@@ -334,7 +334,10 @@ method cause(this: Ref) returns (ret_4: Ref)
 
 method con() returns (ret_5: Ref)
   ensures isSubtype(typeOf(ret_5), IllegalArgumentException())
-  ensures acc(IllegalArgumentException_unique(ret_5), write)
+  ensures isSubtype(typeOf(ret_5), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_5), RuntimeException()) &&
+    (isSubtype(typeOf(ret_5), Exception()) &&
+    isSubtype(typeOf(ret_5), Throwable())))
 
 
 method message(this: Ref) returns (ret_3: Ref)
@@ -365,6 +368,10 @@ method throwInside(s: Ref) returns (v_ret_0: Ref)
     if (charFromRef(anon_2) == 10) {
       var anon_4: Ref
       anon_4 := con()
+      fold acc(Throwable_unique(anon_4), write)
+      fold acc(Exception_unique(anon_4), write)
+      fold acc(RuntimeException_unique(anon_4), write)
+      fold acc(IllegalArgumentException_unique(anon_4), write)
       inhale false
     }
     label lbl_ret_2

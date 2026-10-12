@@ -24,18 +24,18 @@ fun <!VIPER_TEXT!>validTransitiveConstruction<!>() {
     init { n = -1 }
     @Law @Pure @Unique fun nonnegative(): Boolean = n >= 0
 }<!>
-<!UNSUPPORTED_FEATURE!>open class InvalidRootMiddle(n: Int) : InvalidConstructionRoot(n)<!>
-<!UNSUPPORTED_FEATURE!>class InvalidRootLeaf(n: Int) : InvalidRootMiddle(n)<!>
+<!VIPER_VERIFICATION_ERROR!>open <!VIPER_TEXT!>class InvalidRootMiddle<!>(n: Int) : InvalidConstructionRoot(n)<!>
+<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class InvalidRootLeaf<!>(n: Int) : InvalidRootMiddle(n)<!>
 
-<!UNSUPPORTED_FEATURE!>open class InitializingMiddle(n: Int) : TransitiveRoot(n) {
+<!VIPER_VERIFICATION_ERROR!>open <!VIPER_TEXT!>class InitializingMiddle<!>(n: Int) : TransitiveRoot(n) {
     init { this.n = -1 }
 }<!>
-<!UNSUPPORTED_FEATURE!>class InitializingLeaf(n: Int) : InitializingMiddle(n)<!>
+<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class InitializingLeaf<!>(n: Int) : InitializingMiddle(n)<!>
 
-<!INVALID_LAW!>open class SecondaryMiddle(n: Int) : TransitiveRoot(n) {
+open <!VIPER_TEXT!>class SecondaryMiddle<!>(n: Int) : TransitiveRoot(n) {
     constructor() : this(-1)
-}<!>
-<!INVALID_LAW!>class SecondaryLeaf(n: Int) : SecondaryMiddle(n)<!>
+}
+<!VIPER_TEXT!>class SecondaryLeaf<!>(n: Int) : SecondaryMiddle(n)
 
 fun <!VIPER_TEXT!>effectfulInitializer<!>(n: Int): Int = n
 open <!VIPER_TEXT!>class ImpureInitializerMiddle<!>(n: Int) : TransitiveRoot(n) {

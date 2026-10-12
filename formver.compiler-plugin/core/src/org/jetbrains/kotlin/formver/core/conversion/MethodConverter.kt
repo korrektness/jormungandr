@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.locality.plugin.ConstructionPhases
+
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
@@ -12,6 +14,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.EstablishConstruction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 
 /**
@@ -34,6 +37,8 @@ class MethodConverter(
     private val parent: MethodConversionContext? = null,
     private val captures: Map<FirBasedSymbol<*>, PropertyAccessEmbedding> = emptyMap(),
     override val constructionReceiver: ExpEmbedding? = null,
+    override val constructionPhases: ConstructionPhases? = null,
+    override val constructionBoundary: EstablishConstruction? = null,
 ) : MethodConversionContext, ProgramConversionContext by programCtx {
     private var propertyResolver = PropertyResolver(scopeDepth)
 

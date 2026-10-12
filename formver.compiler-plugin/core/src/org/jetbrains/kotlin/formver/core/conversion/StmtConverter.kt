@@ -8,7 +8,9 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.expressions.FirCatch
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirStatement
+import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.formver.common.attributingFailuresTo
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -38,11 +40,17 @@ data class StmtConverter(
     override var creationPathFacts: List<ExpEmbedding> =
         (methodCtx.signature as? NamedFunctionSignatureWithContract)?.preconditions.orEmpty().toList(),
     override val creationPathAliases: Map<SymbolicName, ExpEmbedding> = emptyMap(),
+    private val suppressConstructionExposure: Boolean = false,
 ) : StmtConversionContext, MethodConversionContext by methodCtx {
     override fun convert(stmt: FirStatement): ExpEmbedding =
         attributingFailuresTo(stmt.source) { stmt.accept(StmtConversionVisitor, this) }.also { converted ->
             rememberContinuationFacts(converted)
+        }.let { converted ->
+            if (stmt is FirThisReceiverExpression && !suppressConstructionExposure) establishBeforeExposure(converted) else converted
         }.withPosition(stmt.source)
+
+    override fun convertConstructionStorageReceiver(receiver: FirExpression): ExpEmbedding =
+        copy(suppressConstructionExposure = true).convert(receiver)
 
     // A context is one straight-line region; nested regions use copies with immutable fact lists.
     // Facts recorded here therefore hold on every later path through this context.

@@ -115,9 +115,12 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 LawRule.INHERITED_VAR_READ -> "Invalid inherited var read; see Class laws."
                 LawRule.ABSTRACT_OBSERVER -> "Abstract observer in class law."
                 LawRule.RECURSIVE_OBSERVER -> "Recursive observer in class law."
-                LawRule.PRIMARY_CONSTRUCTOR -> "Missing primary constructor."
-                LawRule.SECONDARY_CONSTRUCTOR -> "Secondary constructor in invariant class."
                 LawRule.DELEGATED_PROPERTY -> "Delegated property in invariant class."
+                LawRule.CONSTRUCTION_THIS_USE -> "Phase-one this use; see Class laws."
+                LawRule.CONSTRUCTION_CALL -> "Phase-one member call; see Class laws."
+                LawRule.CONSTRUCTION_READ -> "Phase-one property read; see Class laws."
+                LawRule.CONSTRUCTION_VIRTUAL_DISPATCH -> "Overridable constructor dispatch; see Class laws."
+                LawRule.CONSTRUCTION_INCOMPLETE -> "Incomplete constructor assignment; see Class laws."
             }
 
     private fun observerMessage(condition: KotlinCondition.Observer): String = when (condition.rule) {

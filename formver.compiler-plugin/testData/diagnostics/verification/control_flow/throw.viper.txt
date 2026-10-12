@@ -7,7 +7,10 @@ method cause(this: Ref) returns (ret_3: Ref)
 method con(p0: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(p0), nullable(stringType()))
   ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
-  ensures acc(IllegalArgumentException_unique(ret_4), write)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
 
 
 method message(this: Ref) returns (ret_2: Ref)
@@ -24,6 +27,10 @@ method requirePositive(x: Ref) returns (v_ret_0: Ref)
     var anon: Ref
     anon := con(stringToRef(Seq(110, 111, 116, 32, 112, 111, 115, 105, 116,
       105, 118, 101)))
+    fold acc(Throwable_unique(anon), write)
+    fold acc(Exception_unique(anon), write)
+    fold acc(RuntimeException_unique(anon), write)
+    fold acc(IllegalArgumentException_unique(anon), write)
     inhale false
   }
   v_ret_0 := x
@@ -39,7 +46,10 @@ method cause(this: Ref) returns (ret_3: Ref)
 
 method con() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), IllegalStateException())
-  ensures acc(IllegalStateException_unique(ret_4), write)
+  ensures isSubtype(typeOf(ret_4), IllegalStateException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
 
 
 method message(this: Ref) returns (ret_2: Ref)
@@ -59,6 +69,10 @@ method throwFromElvis(x: Ref) returns (v_ret_0: Ref)
     var anon_0: Ref
     var anon_1: Ref
     anon_1 := con()
+    fold acc(Throwable_unique(anon_1), write)
+    fold acc(Exception_unique(anon_1), write)
+    fold acc(RuntimeException_unique(anon_1), write)
+    fold acc(IllegalStateException_unique(anon_1), write)
     inhale false
     y := anon_0
   }
@@ -80,7 +94,10 @@ method cause(this: Ref) returns (ret_2: Ref)
 
 method con() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
-  ensures acc(IllegalArgumentException_unique(ret_3), write)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
 
 
 method falseAssertionAfterThrow(x: Ref) returns (v_ret_0: Ref)
@@ -90,6 +107,10 @@ method falseAssertionAfterThrow(x: Ref) returns (v_ret_0: Ref)
   if (intFromRef(x) > 0) {
     var anon: Ref
     anon := con()
+    fold acc(Throwable_unique(anon), write)
+    fold acc(Exception_unique(anon), write)
+    fold acc(RuntimeException_unique(anon), write)
+    fold acc(IllegalArgumentException_unique(anon), write)
     inhale false
     assert false
   }
@@ -116,7 +137,10 @@ method cause(this: Ref) returns (ret_2: Ref)
 
 method con() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
-  ensures acc(IllegalArgumentException_unique(ret_3), write)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
 
 
 method message(this: Ref) returns (ret_1: Ref)
@@ -140,6 +164,10 @@ method throwCaughtWithState() returns (v_ret_0: Ref)
   }
   x := intToRef(1)
   anon_1 := con()
+  fold acc(Throwable_unique(anon_1), write)
+  fold acc(Exception_unique(anon_1), write)
+  fold acc(RuntimeException_unique(anon_1), write)
+  fold acc(IllegalArgumentException_unique(anon_1), write)
   if (boolFromRef(anon_2)) {
     goto catch
   }
@@ -173,7 +201,10 @@ method cause(this: Ref) returns (ret_2: Ref)
 
 method con() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
-  ensures acc(IllegalArgumentException_unique(ret_3), write)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
 
 
 method message(this: Ref) returns (ret_1: Ref)
@@ -196,6 +227,10 @@ method throwCaughtSkipsState() returns (v_ret_0: Ref)
   }
   x := intToRef(1)
   anon_1 := con()
+  fold acc(Throwable_unique(anon_1), write)
+  fold acc(Exception_unique(anon_1), write)
+  fold acc(RuntimeException_unique(anon_1), write)
+  fold acc(IllegalArgumentException_unique(anon_1), write)
   if (boolFromRef(anon_2)) {
     goto catch
   }
@@ -225,7 +260,10 @@ method cause(this: Ref) returns (ret_2: Ref)
 
 method con() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), IllegalStateException())
-  ensures acc(IllegalStateException_unique(ret_3), write)
+  ensures isSubtype(typeOf(ret_3), IllegalStateException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
 
 
 method message(this: Ref) returns (ret_1: Ref)
@@ -255,6 +293,10 @@ method throwReachesOuterCatch() returns (v_ret_0: Ref)
   }
   x := intToRef(1)
   anon_2 := con()
+  fold acc(Throwable_unique(anon_2), write)
+  fold acc(Exception_unique(anon_2), write)
+  fold acc(RuntimeException_unique(anon_2), write)
+  fold acc(IllegalStateException_unique(anon_2), write)
   if (boolFromRef(anon_3)) {
     goto catch_0
   }

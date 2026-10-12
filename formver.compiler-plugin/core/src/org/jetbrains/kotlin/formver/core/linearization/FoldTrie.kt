@@ -148,6 +148,7 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
     class Snapshot<R, F, C, S> internal constructor(
         internal val roots: Map<Any, Pair<R, FoldNode<R, F, C, S>>>?,
         internal val absentRoots: Map<Any, Absence<R, F, S>>,
+        internal val constructionRoots: Map<Any, List<C>>,
     )
 
     private var roots: MutableMap<Any, Pair<R, FoldNode<R, F, C, S>>>? = mutableMapOf()
@@ -183,6 +184,17 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
         check(path.fields.isEmpty())
         constructionRoots[hierarchy.rootKey(path.root)] = opened
         place(sink, path, FoldNode(cls, FoldStatus.Open(opened)))
+    }
+
+    fun isConstructing(path: FoldPath<R, F>, cls: C? = null): Boolean =
+        path.fields.isEmpty() && constructionRoots[hierarchy.rootKey(path.root)]?.let { cls == null || cls in it } == true
+
+    /** Establishes one class's representation while subclasses retain their fresh storage. */
+    fun establishConstruction(sink: FoldSink<R, F, C, S>, path: FoldPath<R, F>, cls: C) {
+        expose(sink, path, cls)
+        val key = hierarchy.rootKey(path.root)
+        val remaining = constructionRoots[key].orEmpty().filter { it != cls }
+        if (remaining.isEmpty()) constructionRoots.remove(key) else constructionRoots[key] = remaining
     }
 
     /** Refreshes a building root's open classes without folding its representation invariant. */
@@ -340,11 +352,13 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
         }
     }
 
-    fun snapshot(): Snapshot<R, F, C, S> = Snapshot(roots?.copyRoots(), absentRoots.toMap())
+    fun snapshot(): Snapshot<R, F, C, S> = Snapshot(roots?.copyRoots(), absentRoots.toMap(), constructionRoots.toMap())
 
     fun restore(snapshot: Snapshot<R, F, C, S>) {
         roots = snapshot.roots?.copyRoots()
         absentRoots = snapshot.absentRoots.toMutableMap()
+        constructionRoots.clear()
+        constructionRoots.putAll(snapshot.constructionRoots)
     }
 
     private fun Map<Any, Pair<R, FoldNode<R, F, C, S>>>.copyRoots() =
@@ -368,7 +382,10 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
         }
         val absent = b.absentRoots + a.absentRoots
         val dropped = (left.keys + right.keys - kept.keys).associateWith { absent[it] ?: Absence.Forgotten(site) }
-        return Snapshot(kept, absent - kept.keys + dropped)
+        val building = (a.constructionRoots.keys + b.constructionRoots.keys).associateWith { key ->
+            (a.constructionRoots[key].orEmpty() + b.constructionRoots[key].orEmpty()).distinct()
+        }
+        return Snapshot(kept, absent - kept.keys + dropped, building)
     }
 
     /**
@@ -575,7 +592,11 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
         if (holes.isEmpty()) {
             if (construction == null) return closeNode(sink, node, path)
             if (!openChain(sink, node, path) { construction }) notHeld(sink, path)
-            return closeChildren(sink, node, path)
+            closeChildren(sink, node, path)
+            val opened = (node.status as FoldStatus.Open).opened
+            for (unneeded in opened.drop(construction.size).reversed()) sink.fold(path, unneeded)
+            node.status = FoldStatus.Open(opened.take(construction.size))
+            return
         }
         val cls = node.cls ?: notHeld(sink, path)
         val byField = holes.groupBy { hierarchy.fieldKey(it.first()) }

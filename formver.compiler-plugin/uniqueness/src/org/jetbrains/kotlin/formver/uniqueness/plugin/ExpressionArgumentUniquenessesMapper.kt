@@ -19,7 +19,7 @@ val QualifiedAccessArgumentUniquenessMapper = QualifiedAccessArgumentTypeFactMap
     { access, callee ->
         when {
             callee.resolveDispatchReceiverUniqueness() != Uniqueness.Unique -> Uniqueness.Shared
-            access.dispatchReceiver?.isLendableConstructionReceiver(callee) == true -> Uniqueness.Shared
+            access.dispatchReceiver?.isLendableConstructionReceiver(callee, access) == true -> Uniqueness.Shared
             else -> Uniqueness.Unique
         }
     },

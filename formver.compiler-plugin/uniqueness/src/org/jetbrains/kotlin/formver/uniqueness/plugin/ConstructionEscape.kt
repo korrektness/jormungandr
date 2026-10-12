@@ -7,6 +7,9 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.ConstructionEscapeFact
+import org.jetbrains.kotlin.formver.locality.plugin.ConstructionPhases
+import org.jetbrains.kotlin.formver.locality.plugin.effectiveConstructionMember
+import org.jetbrains.kotlin.formver.locality.plugin.isFixedConstructionDispatch
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
@@ -28,7 +31,6 @@ import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyGetter
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertySetter
 import org.jetbrains.kotlin.fir.declarations.utils.hasBackingField
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
-import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
@@ -114,29 +116,28 @@ fun FirConstructorSymbol.resolveConstructionEscape(session: FirSession): Constru
  * Whether [this] receiver of a call to [callee] is `this` of a class under construction that the call may lend as
  * owned. Nobody else holds the object, since its construction does not let `this` escape. [callee] borrows `this`, so
  * it cannot keep the object, and nothing overrides it, so no override sees subclass fields that are not yet
- * initialized. Every field of the class is initialized before the declaration that makes the call.
+ * initialized. Kotlin definite assignment places the call in phase two.
  */
 context(context: CheckerContext)
-fun FirExpression.isLendableConstructionReceiver(callee: FirCallableSymbol<*>): Boolean {
+fun FirExpression.isLendableConstructionReceiver(callee: FirCallableSymbol<*>, access: FirQualifiedAccessExpression): Boolean {
     val classSymbol = (this as? FirThisReceiverExpression)?.calleeReference?.symbol as? FirRegularClassSymbol ?: return false
     val owner = classSymbol.receiverOwner() ?: return false
     if (owner is FirFunction && owner !is FirConstructor) return false
-    if (!callee.borrowsDispatchReceiver(context.session) || !callee.isFinal) return false
+    if (!callee.borrowsDispatchReceiver(context.session) || !classSymbol.isFixedConstructionDispatch(callee, context.session)) return false
     if (context.session.constructionEscapeResolver.resolve(classSymbol) != null) return false
-    return classSymbol.initializesEveryFieldBefore(owner)
+    return ConstructionPhases(classSymbol).phaseTwoBefore(access) == true
 }
 
-/**
- * Whether every field of [this] class is initialized when [owner] runs: a constructor body runs after every
- * initializer, and an `init` block or a property initializer runs after those declared above it.
- */
-@OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
-private fun FirRegularClassSymbol.initializesEveryFieldBefore(owner: FirDeclaration): Boolean {
-    val ownerIndex = if (owner is FirConstructor) fir.declarations.size else fir.declarations.indexOf(owner)
-    return fir.declarations.withIndex().all { (index, declaration) ->
-        declaration !is FirProperty || !(declaration.hasBackingField || declaration.delegate != null) ||
-                index < ownerIndex && (declaration.initializer != null || declaration.delegate != null)
-    }
+/** Whether this receiver denotes the fully initialized, non-escaping construction object. */
+context(context: CheckerContext)
+fun FirThisReceiverExpression.isOwnedPhaseTwoConstructionReceiver(): Boolean {
+    val cls = calleeReference.symbol as? FirRegularClassSymbol ?: return false
+    val owner = cls.receiverOwner() ?: return false
+    if (owner is FirFunction && owner !is FirConstructor) return false
+    if (context.session.constructionEscapeResolver.resolve(cls) != null) return false
+    val phases = ConstructionPhases(cls)
+    return (phases.phaseTwoBefore(this)
+        ?: context.containingElements.asReversed().firstNotNullOfOrNull(phases::phaseTwoBefore)) == true
 }
 
 /** Whether this field access runs on an exclusive receiver during construction. */
@@ -147,14 +148,16 @@ fun FirPropertyAccessExpression.isOwnedConstructionField(): Boolean {
     val owner = cls.receiverOwner() ?: return false
     if (owner is FirFunction && owner !is FirConstructor) return false
     val field = toResolvedCallableSymbol() as? FirPropertySymbol ?: return false
-    return field.isConstructionField(cls) && context.session.constructionEscapeResolver.resolve(cls) == null
+    return field.isConstructionField(cls, context.session) && context.session.constructionEscapeResolver.resolve(cls) == null
 }
 
 @OptIn(SymbolInternals::class)
-private fun FirPropertySymbol.isConstructionField(cls: FirRegularClassSymbol): Boolean =
-    !isAbstract && (isFinal || cls.isFinal) &&
-        getterSymbol?.fir.let { it == null || it is FirDefaultPropertyGetter } &&
-        setterSymbol?.fir.let { it == null || it is FirDefaultPropertySetter }
+private fun FirPropertySymbol.isConstructionField(cls: FirRegularClassSymbol, session: FirSession): Boolean {
+    val member = cls.effectiveConstructionMember(this, session) as FirPropertySymbol
+    return !member.isAbstract && cls.isFixedConstructionDispatch(member, session) &&
+        member.getterSymbol?.fir.let { it == null || it is FirDefaultPropertyGetter } &&
+        member.setterSymbol?.fir.let { it == null || it is FirDefaultPropertySetter }
+}
 
 private class EscapeFinder(
     private val classSymbol: FirRegularClassSymbol,
@@ -176,7 +179,7 @@ private class EscapeFinder(
      */
     private val FirPropertySymbol.isField: Boolean
         @OptIn(SymbolInternals::class)
-        get() = isConstructionField(classSymbol)
+        get() = isConstructionField(classSymbol, session)
 
     override fun visitElement(element: FirElement) {
         if (escape != null || element.isSpecificationCall()) return

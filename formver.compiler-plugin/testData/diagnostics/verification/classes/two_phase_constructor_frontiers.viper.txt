@@ -1,0 +1,826 @@
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for BranchFrontier:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BranchFrontier())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BranchFrontier_unique(this: Ref) {
+  isSubtype(typeOf(this), BranchFrontier()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+}
+
+method con(flag: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(flag), boolType())
+  ensures isSubtype(typeOf(v_ret_0), BranchFrontier())
+  ensures isSubtype(typeOf(v_ret_0), BranchFrontier()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+{
+  var anon_2: Ref
+  var anon_3: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == BranchFrontier()
+  if (boolFromRef(flag)) {
+    var anon_0: Ref
+    anon_0 := intToRef(1)
+    inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  } else {
+    var anon_1: Ref
+    anon_1 := intToRef(2)
+    inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_1)
+  }
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  fold acc(BranchFrontier_unique(v_ret_0), write)
+  anon_2 := touch(v_ret_0)
+  anon_3 := require(gtInts(g_value(v_ret_0), intToRef(0)))
+  label lbl_ret_0
+  unfold acc(BranchFrontier_unique(v_ret_0), write)
+}
+
+method require(par_value: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures true ==> boolFromRef(par_value)
+
+
+method touch(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), BranchFrontier())
+  requires acc(BranchFrontier_unique(this), write)
+  ensures acc(BranchFrontier_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for touch:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BranchFrontier())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BranchFrontier_unique(this: Ref) {
+  isSubtype(typeOf(this), BranchFrontier()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(value(this), intToRef(0))))
+}
+
+method touch(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), BranchFrontier())
+  requires acc(BranchFrontier_unique(this), write)
+  ensures acc(BranchFrontier_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for LocalRepair:
+field value: Ref
+
+predicate LocalRepair_unique(this: Ref) {
+  isSubtype(typeOf(this), LocalRepair()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      gtInts(anon_0_0, intToRef(0)))))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), LocalRepair())
+  ensures isSubtype(typeOf(v_ret_0), LocalRepair()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+{
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == LocalRepair()
+  v_ret_0.value := intToRef(-1)
+  v_ret_0.value := intToRef(1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(LocalRepair_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(LocalRepair_unique(v_ret_0), write)
+}
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for PositiveParameter:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveParameter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate PositiveParameter_unique(this: Ref) {
+  isSubtype(typeOf(this), PositiveParameter()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), PositiveParameter())
+  ensures isSubtype(typeOf(v_ret_0), PositiveParameter()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == PositiveParameter()
+  anon_0 := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := require(gtInts(g_value(v_ret_0), intToRef(0)))
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  fold acc(PositiveParameter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(PositiveParameter_unique(v_ret_0), write)
+}
+
+method require(par_value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(par_value)
+
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for LeakBeforeRequire:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), LeakBeforeRequire())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate LeakBeforeRequire_unique(this: Ref) {
+  isSubtype(typeOf(this), LeakBeforeRequire()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), LeakBeforeRequire())
+  ensures isSubtype(typeOf(v_ret_0), LeakBeforeRequire()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == LeakBeforeRequire()
+  anon_0 := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  fold acc(LeakBeforeRequire_unique(v_ret_0), write)
+  anon_1 := observeConstruction(v_ret_0)
+  exhale acc(LeakBeforeRequire_unique(v_ret_0), write)
+  inhale acc(LeakBeforeRequire_unique(v_ret_0), write)
+  anon_2 := require(gtInts(g_value(v_ret_0), intToRef(0)))
+  label lbl_ret_0
+  unfold acc(LeakBeforeRequire_unique(v_ret_0), write)
+}
+
+method observeConstruction(par_value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), LeakBeforeRequire())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method require(par_value: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures true ==> boolFromRef(par_value)
+
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for observeConstruction:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), LeakBeforeRequire())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate LeakBeforeRequire_unique(this: Ref) {
+  isSubtype(typeOf(this), LeakBeforeRequire()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+}
+
+method observeConstruction(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), LeakBeforeRequire())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for AbnormalExit:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), AbnormalExit())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AbnormalExit_unique(this: Ref) {
+  isSubtype(typeOf(this), AbnormalExit()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), AbnormalExit())
+  ensures isSubtype(typeOf(v_ret_0), AbnormalExit()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+{
+  var anon_0: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == AbnormalExit()
+  anon_0 := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  if (intFromRef(g_value(v_ret_0)) <= 0) {
+    var anon_1: Ref
+    anon_1 := error(stringToRef(Seq(105, 110, 118, 97, 108, 105, 100)))
+  }
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  fold acc(AbnormalExit_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(AbnormalExit_unique(v_ret_0), write)
+}
+
+method error(message: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(message), anyType())
+  ensures false
+  ensures isSubtype(typeOf(ret_3), nothingType())
+
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for positiveParameterClient:
+field bf_value: Ref
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveParameter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate LocalRepair_unique(this: Ref) {
+  isSubtype(typeOf(this), LocalRepair()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      gtInts(anon_0_0, intToRef(0)))))
+}
+
+predicate PositiveParameter_unique(this: Ref) {
+  isSubtype(typeOf(this), PositiveParameter()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method con_LocalRepair() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), LocalRepair())
+  ensures isSubtype(typeOf(ret_4), LocalRepair()) &&
+    acc(ret_4.bf_value, write) &&
+    isSubtype(typeOf(ret_4.bf_value), intType()) &&
+    (let this ==
+      (ret_4) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        gtInts(anon_0_0, intToRef(0)))))
+
+
+method con_PositiveParameter(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_1), PositiveParameter())
+  ensures isSubtype(typeOf(ret_1), PositiveParameter()) &&
+    (let this ==
+      (ret_1) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  ensures intFromRef(g_value(ret_1)) == intFromRef(par_value)
+  ensures intFromRef(g_value(ret_1)) == intFromRef(par_value)
+
+
+method positiveParameterClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var positive: Ref
+  var repaired: Ref
+  var anon_1: Ref
+  positive := con_PositiveParameter(intToRef(3))
+  fold acc(PositiveParameter_unique(positive), write)
+  assert intFromRef(g_value(positive)) > 0
+  repaired := con_LocalRepair()
+  fold acc(LocalRepair_unique(repaired), write)
+  unfold acc(LocalRepair_unique(repaired), write)
+  anon_1 := repaired.bf_value
+  assert intFromRef(anon_1) > 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for PhaseTwoCall:
+field value: Ref
+
+predicate PhaseTwoCall_unique(this: Ref) {
+  isSubtype(typeOf(this), PhaseTwoCall()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      gtInts(anon_0_0, intToRef(0)))))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), PhaseTwoCall())
+  ensures isSubtype(typeOf(v_ret_0), PhaseTwoCall()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+{
+  var anon_1: Ref
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == PhaseTwoCall()
+  v_ret_0.value := intToRef(1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(PhaseTwoCall_unique(v_ret_0), write)
+  anon_1 := increase(v_ret_0)
+  label lbl_ret_0
+  unfold acc(PhaseTwoCall_unique(v_ret_0), write)
+}
+
+method increase(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), PhaseTwoCall())
+  requires acc(PhaseTwoCall_unique(this), write)
+  ensures acc(PhaseTwoCall_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for increase:
+field value: Ref
+
+predicate PhaseTwoCall_unique(this: Ref) {
+  isSubtype(typeOf(this), PhaseTwoCall()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.value) in
+      gtInts(anon_1_0, intToRef(0)))))
+}
+
+method increase(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), PhaseTwoCall())
+  requires acc(PhaseTwoCall_unique(this), write)
+  ensures acc(PhaseTwoCall_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  unfold acc(PhaseTwoCall_unique(this), write)
+  anon_0 := this.value
+  this.value := plusInts(anon_0, intToRef(1))
+  label lbl_ret_0
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.value) in
+        gtInts(anon_1_0, intToRef(0)))))
+  fold acc(PhaseTwoCall_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for SecondaryPhaseTwo:
+field bf_value: Ref
+
+predicate c_SecondaryPhaseTwo_unique(this: Ref) {
+  isSubtype(typeOf(this), c_SecondaryPhaseTwo()) &&
+  acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      gtInts(anon_0_0, intToRef(0)))))
+}
+
+method con_c_SecondaryPhaseTwo(start: Ref) returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(start), intType())
+  ensures isSubtype(typeOf(v_ret_4), c_SecondaryPhaseTwo())
+  ensures isSubtype(typeOf(v_ret_4), c_SecondaryPhaseTwo()) &&
+    acc(v_ret_4.bf_value, write) &&
+    isSubtype(typeOf(v_ret_4.bf_value), intType()) &&
+    (let this ==
+      (v_ret_4) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        gtInts(anon_0_0, intToRef(0)))))
+{
+  var v_ret_8: Ref
+  var anon_1: Ref
+  v_ret_4 := new(bf_value)
+  inhale typeOf(v_ret_4) == c_SecondaryPhaseTwo()
+  v_ret_4.bf_value := intToRef(1)
+  assert (let this ==
+      (v_ret_4) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(c_SecondaryPhaseTwo_unique(v_ret_4), write)
+  anon_1 := require(gtInts(start, intToRef(0)))
+  unfold acc(c_SecondaryPhaseTwo_unique(v_ret_4), write)
+  v_ret_4.bf_value := start
+  label lbl_ret_8
+  label lbl_ret_4
+  assert (let this ==
+      (v_ret_4) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(c_SecondaryPhaseTwo_unique(v_ret_4), write)
+  unfold acc(c_SecondaryPhaseTwo_unique(v_ret_4), write)
+}
+
+method con_c_SecondaryPhaseTwo_args() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_SecondaryPhaseTwo())
+  ensures isSubtype(typeOf(v_ret_0), c_SecondaryPhaseTwo()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        gtInts(anon_0_0, intToRef(0)))))
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == c_SecondaryPhaseTwo()
+  v_ret_0.bf_value := intToRef(1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(c_SecondaryPhaseTwo_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_SecondaryPhaseTwo_unique(v_ret_0), write)
+}
+
+method require(par_value: Ref) returns (ret_10: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_10), unitType())
+  ensures true ==> boolFromRef(par_value)
+
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for SecondaryBroken:
+field value: Ref
+
+predicate c_SecondaryBroken_unique(this: Ref) {
+  isSubtype(typeOf(this), c_SecondaryBroken()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      gtInts(anon_0_0, intToRef(0)))))
+}
+
+method con_c_SecondaryBroken(broken: Ref) returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(broken), boolType())
+  ensures isSubtype(typeOf(v_ret_4), c_SecondaryBroken())
+  ensures isSubtype(typeOf(v_ret_4), c_SecondaryBroken()) &&
+    acc(v_ret_4.value, write) &&
+    isSubtype(typeOf(v_ret_4.value), intType()) &&
+    (let this ==
+      (v_ret_4) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+{
+  var v_ret_8: Ref
+  v_ret_4 := new(value)
+  inhale typeOf(v_ret_4) == c_SecondaryBroken()
+  v_ret_4.value := intToRef(1)
+  assert (let this ==
+      (v_ret_4) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(c_SecondaryBroken_unique(v_ret_4), write)
+  if (boolFromRef(broken)) {
+    unfold acc(c_SecondaryBroken_unique(v_ret_4), write)
+    v_ret_4.value := intToRef(-1)
+    assert (let this ==
+        (v_ret_4) in
+        true &&
+        boolFromRef((let anon_0_0 ==
+          (this.value) in
+          gtInts(anon_0_0, intToRef(0)))))
+    fold acc(c_SecondaryBroken_unique(v_ret_4), write)
+  }
+  label lbl_ret_8
+  label lbl_ret_4
+  unfold acc(c_SecondaryBroken_unique(v_ret_4), write)
+}
+
+method con_c_SecondaryBroken_args() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_SecondaryBroken())
+  ensures isSubtype(typeOf(v_ret_0), c_SecondaryBroken()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+{
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == c_SecondaryBroken()
+  v_ret_0.value := intToRef(1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(c_SecondaryBroken_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_SecondaryBroken_unique(v_ret_0), write)
+}
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for EstablishedParent:
+field value: Ref
+
+predicate EstablishedParent_unique(this: Ref) {
+  isSubtype(typeOf(this), EstablishedParent()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.value) in
+      gtInts(anon_0_0, intToRef(0)))))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), EstablishedParent())
+  ensures isSubtype(typeOf(v_ret_0), EstablishedParent()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+{
+  var anon_1: Ref
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == EstablishedParent()
+  v_ret_0.value := intToRef(1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.value) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(EstablishedParent_unique(v_ret_0), write)
+  anon_1 := increase(v_ret_0)
+  label lbl_ret_0
+  unfold acc(EstablishedParent_unique(v_ret_0), write)
+}
+
+method increase(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), EstablishedParent())
+  requires acc(EstablishedParent_unique(this), write)
+  ensures acc(EstablishedParent_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for increase:
+field value: Ref
+
+predicate EstablishedParent_unique(this: Ref) {
+  isSubtype(typeOf(this), EstablishedParent()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.value) in
+      gtInts(anon_1_0, intToRef(0)))))
+}
+
+method increase(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), EstablishedParent())
+  requires acc(EstablishedParent_unique(this), write)
+  ensures acc(EstablishedParent_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  unfold acc(EstablishedParent_unique(this), write)
+  anon_0 := this.value
+  this.value := plusInts(anon_0, intToRef(1))
+  label lbl_ret_0
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.value) in
+        gtInts(anon_1_0, intToRef(0)))))
+  fold acc(EstablishedParent_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/two_phase_constructor_frontiers.kt: info: Generated Viper text for EstablishedChild:
+field value: Ref
+
+predicate EstablishedChild_unique(this: Ref) {
+  isSubtype(typeOf(this), EstablishedChild()) &&
+  acc(c_EstablishedParent_unique(this), write)
+}
+
+predicate c_EstablishedParent_unique(this: Ref) {
+  isSubtype(typeOf(this), c_EstablishedParent()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_2_0 ==
+      (this.value) in
+      gtInts(anon_2_0, intToRef(0)))))
+}
+
+method EstablishedChild_c_EstablishedParent_f_increase_inherited_body_c_EstablishedParent_f_increase(this: Ref)
+  returns (v_ret_5: Ref)
+  requires isSubtype(typeOf(this), EstablishedChild())
+  requires acc(EstablishedChild_unique(this), write)
+  requires typeOf(this) == EstablishedChild()
+  ensures acc(EstablishedChild_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_5), unitType())
+{
+  var anon_1: Ref
+  unfold acc(EstablishedChild_unique(this), write)
+  unfold acc(c_EstablishedParent_unique(this), write)
+  anon_1 := this.value
+  this.value := plusInts(anon_1, intToRef(1))
+  label lbl_ret_5
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.value) in
+        gtInts(anon_2_0, intToRef(0)))))
+  fold acc(c_EstablishedParent_unique(this), write)
+  fold acc(EstablishedChild_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+}
+
+method EstablishedChild_c_EstablishedParent_f_increase_inherited_contract_c_EstablishedParent_f_increase(this: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), EstablishedChild())
+  requires acc(EstablishedChild_unique(this), write)
+  requires typeOf(this) == EstablishedChild()
+  ensures acc(EstablishedChild_unique(this), write)
+  ensures isSubtype(typeOf(ret_6), unitType())
+
+
+method c_EstablishedParent_f_increase(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_EstablishedParent())
+  requires acc(c_EstablishedParent_unique(this), write)
+  ensures acc(c_EstablishedParent_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), EstablishedChild())
+  ensures isSubtype(typeOf(v_ret_0), EstablishedChild()) &&
+    (isSubtype(typeOf(v_ret_0), c_EstablishedParent()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.value) in
+        gtInts(anon_2_0, intToRef(0))))))
+{
+  var anon_3: Ref
+  var anon_0: Ref
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == EstablishedChild()
+  v_ret_0.value := intToRef(1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.value) in
+        gtInts(anon_2_0, intToRef(0)))))
+  fold acc(c_EstablishedParent_unique(v_ret_0), write)
+  anon_3 := c_EstablishedParent_f_increase(v_ret_0)
+  exhale isSubtype(typeOf(v_ret_0), EstablishedChild())
+  inhale isSubtype(typeOf(v_ret_0), EstablishedChild())
+  unfold acc(c_EstablishedParent_unique(v_ret_0), write)
+  anon_0 := v_ret_0.value
+  v_ret_0.value := plusInts(anon_0, intToRef(1))
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.value) in
+        gtInts(anon_2_0, intToRef(0)))))
+  fold acc(c_EstablishedParent_unique(v_ret_0), write)
+  fold acc(EstablishedChild_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(EstablishedChild_unique(v_ret_0), write)
+  unfold acc(c_EstablishedParent_unique(v_ret_0), write)
+}
+
+method refines_EstablishedChild_c_EstablishedParent_f_increase_inherited_contract_c_EstablishedParent_f_increase(this: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), EstablishedChild())
+  requires acc(EstablishedChild_unique(this), write)
+  requires typeOf(this) == EstablishedChild()
+  requires isSubtype(typeOf(this), EstablishedChild())
+{
+  ret_6 := EstablishedChild_c_EstablishedParent_f_increase_inherited_body_c_EstablishedParent_f_increase(this)
+  assert acc(EstablishedChild_unique(this), write)
+  assert isSubtype(typeOf(ret_6), unitType())
+}

@@ -402,7 +402,7 @@ fun StmtConversionContext.constructLambda(lambda: LiftedLambda): ExpEmbedding {
         }
     }
     establishCaptureFacts(lambda, arguments)
-    return lambda.constructor.insertCall(arguments).withNewTypeInvariants(lambda.interfaceType, typeResolver) {
+    return lambda.constructor.insertCall(arguments.map(::establishBeforeExposure)).withNewTypeInvariants(lambda.interfaceType, typeResolver) {
         proven = true
         access = true
     }

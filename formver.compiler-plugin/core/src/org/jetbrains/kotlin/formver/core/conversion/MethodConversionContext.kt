@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.locality.plugin.ConstructionPhases
+
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
@@ -12,6 +14,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.EstablishConstruction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PlaceholderVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
@@ -50,6 +53,8 @@ interface MethodConversionContext : ProgramConversionContext {
 
     /** The freshly allocated receiver whose fields construction can access before its invariant holds. */
     val constructionReceiver: ExpEmbedding? get() = null
+    val constructionPhases: ConstructionPhases? get() = null
+    val constructionBoundary: EstablishConstruction? get() = null
 
     fun capturedAccess(symbol: FirBasedSymbol<*>): org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding?
 

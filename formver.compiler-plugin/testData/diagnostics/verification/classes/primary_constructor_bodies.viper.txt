@@ -25,13 +25,14 @@ method con(start: Ref) returns (v_ret_0: Ref)
         (this.value) in
         geInts(anon_0_0, intToRef(0)))))
 {
+  var anon_1: Ref
   v_ret_0 := new(value)
   inhale typeOf(v_ret_0) == Initialized()
   v_ret_0.value := start
-  if (intFromRef(v_ret_0.value) < 0) {
+  anon_1 := v_ret_0.value
+  if (intFromRef(anon_1) < 0) {
     v_ret_0.value := intToRef(0)
   }
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -39,6 +40,7 @@ method con(start: Ref) returns (v_ret_0: Ref)
         (this.value) in
         geInts(anon_0_0, intToRef(0)))))
   fold acc(Initialized_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(Initialized_unique(v_ret_0), write)
 }
 
@@ -72,7 +74,6 @@ method con() returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == BrokenInitialization()
   v_ret_0.value := intToRef(1)
   v_ret_0.value := intToRef(-1)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -80,61 +81,8 @@ method con() returns (v_ret_0: Ref)
         (this.value) in
         geInts(anon_0_0, intToRef(0)))))
   fold acc(BrokenInitialization_unique(v_ret_0), write)
-  unfold acc(BrokenInitialization_unique(v_ret_0), write)
-}
-
-/primary_constructor_bodies.kt: info: Generated Viper text for OrderedInitialization:
-field value: Ref
-
-function snapshot(this: Ref): Ref
-  requires isSubtype(typeOf(this), OrderedInitialization())
-  ensures isSubtype(typeOf(result), intType())
-
-
-predicate OrderedInitialization_unique(this: Ref) {
-  isSubtype(typeOf(this), OrderedInitialization()) &&
-  acc(this.value, write) &&
-  isSubtype(typeOf(this.value), intType()) &&
-  (let this ==
-    (this) in
-    true &&
-    boolFromRef((let anon_1_0 ==
-      (this.value) in
-      andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
-      3)))))
-}
-
-method con() returns (v_ret_0: Ref)
-  ensures isSubtype(typeOf(v_ret_0), OrderedInitialization())
-  ensures isSubtype(typeOf(v_ret_0), OrderedInitialization()) &&
-    acc(v_ret_0.value, write) &&
-    isSubtype(typeOf(v_ret_0.value), intType()) &&
-    (let this ==
-      (v_ret_0) in
-      true &&
-      boolFromRef((let anon_1_0 ==
-        (this.value) in
-        andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
-        3)))))
-{
-  var anon_0: Ref
-  v_ret_0 := new(value)
-  inhale typeOf(v_ret_0) == OrderedInitialization()
-  v_ret_0.value := intToRef(1)
-  v_ret_0.value := plusInts(v_ret_0.value, intToRef(2))
-  anon_0 := v_ret_0.value
-  inhale intFromRef(snapshot(v_ret_0)) == intFromRef(anon_0)
-  v_ret_0.value := plusInts(v_ret_0.value, snapshot(v_ret_0))
   label lbl_ret_0
-  assert (let this ==
-      (v_ret_0) in
-      true &&
-      boolFromRef((let anon_1_0 ==
-        (this.value) in
-        andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
-        3)))))
-  fold acc(OrderedInitialization_unique(v_ret_0), write)
-  unfold acc(OrderedInitialization_unique(v_ret_0), write)
+  unfold acc(BrokenInitialization_unique(v_ret_0), write)
 }
 
 /primary_constructor_bodies.kt: info: Generated Viper text for InitializedLater:
@@ -146,9 +94,9 @@ predicate InitializedLater_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef((let anon_1_0 ==
+    boolFromRef((let anon_0_0 ==
       (this.value) in
-      gtInts(anon_1_0, intToRef(0)))))
+      gtInts(anon_0_0, intToRef(0)))))
 }
 
 method con(start: Ref) returns (v_ret_0: Ref)
@@ -160,26 +108,26 @@ method con(start: Ref) returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef((let anon_1_0 ==
+      boolFromRef((let anon_0_0 ==
         (this.value) in
-        gtInts(anon_1_0, intToRef(0)))))
+        gtInts(anon_0_0, intToRef(0)))))
 {
-  var anon_2: Ref
+  var anon_1: Ref
   v_ret_0 := new(value)
   inhale typeOf(v_ret_0) == InitializedLater()
   if (intFromRef(start) > 0) {
-    anon_2 := start
+    anon_1 := start
   } else {
-    anon_2 := intToRef(1)}
-  v_ret_0.value := anon_2
-  label lbl_ret_0
+    anon_1 := intToRef(1)}
+  v_ret_0.value := anon_1
   assert (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef((let anon_1_0 ==
+      boolFromRef((let anon_0_0 ==
         (this.value) in
-        gtInts(anon_1_0, intToRef(0)))))
+        gtInts(anon_0_0, intToRef(0)))))
   fold acc(InitializedLater_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(InitializedLater_unique(v_ret_0), write)
 }
 
@@ -213,11 +161,11 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   anon_0 := par_value
   inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
   anon_1 := require(geInts(g_value(v_ret_0), intToRef(0)))
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(g_value(this), intToRef(0))))
   fold acc(CheckedInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(CheckedInitialization_unique(v_ret_0), write)
 }
 
@@ -267,11 +215,11 @@ method con(start: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == EffectfulInitialization()
   anon := positiveInitializer(start)
   inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(gtInts(g_value(this), intToRef(0))))
   fold acc(EffectfulInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(EffectfulInitialization_unique(v_ret_0), write)
 }
 
@@ -308,11 +256,11 @@ method con(start: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == BrokenInitializer()
   anon := minusInts(start, intToRef(1))
   inhale intFromRef(value(v_ret_0)) == intFromRef(anon)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(gtInts(value(this), intToRef(0))))
   fold acc(BrokenInitializer_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(BrokenInitializer_unique(v_ret_0), write)
 }
 
@@ -402,7 +350,6 @@ method con(par_data: Ref) returns (v_ret_0: Ref)
   assert 0 < arraySize(g_data(v_ret_0))
   unfold acc(IntArray_unique(g_data(v_ret_0)), write)
   g_data(v_ret_0).contents := g_data(v_ret_0).contents[0 := 1]
-  label lbl_ret_0
   fold acc(IntArray_unique(g_data(v_ret_0)), write)
   assert (let this ==
       (v_ret_0) in
@@ -411,6 +358,7 @@ method con(par_data: Ref) returns (v_ret_0: Ref)
         (g_data(this)) in
         gtInts(initializedHead(anon_1_0), intToRef(0)))))
   fold acc(OwnedInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(OwnedInitialization_unique(v_ret_0), write)
 }
 
@@ -476,15 +424,18 @@ method con(par_data: Ref) returns (v_ret_0: Ref)
   ensures v_ret_0.bf_data == par_data
 {
   var anon_5: Ref
+  var anon_6: Ref
+  var anon_7: Ref
   v_ret_0 := new(bf_data)
   inhale typeOf(v_ret_0) == BrokenOwnedInitialization()
   v_ret_0.bf_data := par_data
-  anon_5 := require(gtInts(intToRef(arraySize(v_ret_0.bf_data)), intToRef(0)))
+  anon_6 := v_ret_0.bf_data
+  anon_5 := require(gtInts(intToRef(arraySize(anon_6)), intToRef(0)))
+  anon_7 := v_ret_0.bf_data
   assert 0 >= 0
-  assert 0 < arraySize(v_ret_0.bf_data)
+  assert 0 < arraySize(anon_7)
   unfold acc(IntArray_unique(v_ret_0.bf_data), write)
-  v_ret_0.bf_data.contents := v_ret_0.bf_data.contents[0 := -1]
-  label lbl_ret_0
+  anon_7.contents := anon_7.contents[0 := -1]
   fold acc(IntArray_unique(v_ret_0.bf_data), write)
   assert (let this ==
       (v_ret_0) in
@@ -493,6 +444,7 @@ method con(par_data: Ref) returns (v_ret_0: Ref)
         (this.bf_data) in
         gtInts(initializedHead(anon_0_0), intToRef(0)))))
   fold acc(BrokenOwnedInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(BrokenOwnedInitialization_unique(v_ret_0), write)
 }
 
@@ -531,11 +483,11 @@ method con(start: Ref) returns (v_ret_0: Ref)
   } else {
     anon := intToRef(1)}
   inhale intFromRef(value(v_ret_0)) == intFromRef(anon)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(gtInts(value(this), intToRef(0))))
   fold acc(AssignedImmutable_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(AssignedImmutable_unique(v_ret_0), write)
 }
 
@@ -594,7 +546,6 @@ method con() returns (v_ret_0: Ref)
   assert isSubtype(typeOf(v_ret_0), LoopInitialization())
   assert intFromRef(index) >= 0 && intFromRef(index) <= 3 &&
     intFromRef(v_ret_0.value) == intFromRef(index)
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -602,6 +553,7 @@ method con() returns (v_ret_0: Ref)
         (this.value) in
         boolToRef(intFromRef(anon_2_0) == 3))))
   fold acc(LoopInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(LoopInitialization_unique(v_ret_0), write)
 }
 
@@ -638,9 +590,9 @@ predicate LocalOwnedInitialization_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef((let anon_1_0 ==
+    boolFromRef((let anon_0_0 ==
       (this.bf_data) in
-      gtInts(initializedHead(anon_1_0), intToRef(0)))))
+      gtInts(initializedHead(anon_0_0), intToRef(0)))))
 }
 
 method con_IntArray(size: Ref) returns (ret_3: Ref)
@@ -664,16 +616,16 @@ method con_LocalOwnedInitialization() returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef((let anon_1_0 ==
+      boolFromRef((let anon_0_0 ==
         (this.bf_data) in
-        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+        gtInts(initializedHead(anon_0_0), intToRef(0)))))
 {
-  var anon_6: Ref
+  var anon_5: Ref
   var replacement: Ref
   v_ret_0 := new(bf_data)
   inhale typeOf(v_ret_0) == LocalOwnedInitialization()
-  anon_6 := con_IntArray(intToRef(1))
-  v_ret_0.bf_data := anon_6
+  anon_5 := con_IntArray(intToRef(1))
+  v_ret_0.bf_data := anon_5
   replacement := con_IntArray(intToRef(1))
   assert 0 >= 0
   assert 0 < arraySize(replacement)
@@ -681,14 +633,14 @@ method con_LocalOwnedInitialization() returns (v_ret_0: Ref)
   replacement.contents := replacement.contents[0 := 1]
   fold acc(IntArray_unique(replacement), write)
   v_ret_0.bf_data := replacement
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef((let anon_1_0 ==
+      boolFromRef((let anon_0_0 ==
         (this.bf_data) in
-        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+        gtInts(initializedHead(anon_0_0), intToRef(0)))))
   fold acc(LocalOwnedInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(LocalOwnedInitialization_unique(v_ret_0), write)
 }
 
@@ -720,9 +672,9 @@ predicate BrokenLocalOwnedInitialization_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef((let anon_1_0 ==
+    boolFromRef((let anon_0_0 ==
       (this.bf_data) in
-      gtInts(initializedHead(anon_1_0), intToRef(0)))))
+      gtInts(initializedHead(anon_0_0), intToRef(0)))))
 }
 
 predicate IntArray_unique(this: Ref) {
@@ -739,16 +691,16 @@ method con_BrokenLocalOwnedInitialization() returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef((let anon_1_0 ==
+      boolFromRef((let anon_0_0 ==
         (this.bf_data) in
-        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+        gtInts(initializedHead(anon_0_0), intToRef(0)))))
 {
-  var anon_6: Ref
+  var anon_5: Ref
   var replacement: Ref
   v_ret_0 := new(bf_data)
   inhale typeOf(v_ret_0) == BrokenLocalOwnedInitialization()
-  anon_6 := con_IntArray(intToRef(1))
-  v_ret_0.bf_data := anon_6
+  anon_5 := con_IntArray(intToRef(1))
+  v_ret_0.bf_data := anon_5
   replacement := con_IntArray(intToRef(1))
   assert 0 >= 0
   assert 0 < arraySize(replacement)
@@ -756,14 +708,14 @@ method con_BrokenLocalOwnedInitialization() returns (v_ret_0: Ref)
   replacement.contents := replacement.contents[0 := -1]
   fold acc(IntArray_unique(replacement), write)
   v_ret_0.bf_data := replacement
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef((let anon_1_0 ==
+      boolFromRef((let anon_0_0 ==
         (this.bf_data) in
-        gtInts(initializedHead(anon_1_0), intToRef(0)))))
+        gtInts(initializedHead(anon_0_0), intToRef(0)))))
   fold acc(BrokenLocalOwnedInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(BrokenLocalOwnedInitialization_unique(v_ret_0), write)
 }
 
@@ -777,99 +729,6 @@ method con_IntArray(size: Ref) returns (ret_3: Ref)
       (forall j: Int ::
         { ret_3.contents[j] }
         j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
-
-
-/primary_constructor_bodies.kt: info: Generated Viper text for ObservedBeforeInitialization:
-field contents: Seq[Int]
-
-function arraySize(this: Ref): Int
-  ensures result >= 0
-
-
-function g_data(this: Ref): Ref
-  requires isSubtype(typeOf(this), ObservedBeforeInitialization())
-  ensures isSubtype(typeOf(result), IntArray())
-
-
-function initializedHead(par_data: Ref): Ref
-  requires isSubtype(typeOf(par_data), IntArray())
-  requires acc(IntArray_unique(par_data), write)
-  ensures isSubtype(typeOf(result), intType())
-{
-  (unfolding acc(IntArray_unique(par_data), write) in
-    (arraySize(par_data) > 0 ?
-      intToRef(par_data.contents[0]) :
-      intToRef(0)))
-}
-
-function snapshot(this: Ref): Ref
-  requires isSubtype(typeOf(this), ObservedBeforeInitialization())
-  ensures isSubtype(typeOf(result), intType())
-
-
-predicate IntArray_unique(this: Ref) {
-  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
-}
-
-predicate ObservedBeforeInitialization_unique(this: Ref) {
-  isSubtype(typeOf(this), ObservedBeforeInitialization()) &&
-  acc(IntArray_unique(g_data(this)), write) &&
-  (let this ==
-    (this) in
-    true &&
-    boolFromRef((let anon_2_0 ==
-      (g_data(this)) in
-      gtInts(initializedHead(anon_2_0), intToRef(0)))))
-}
-
-method con(par_data: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(par_data), IntArray())
-  requires acc(IntArray_unique(par_data), write)
-  ensures isSubtype(typeOf(v_ret_0), ObservedBeforeInitialization())
-  ensures isSubtype(typeOf(v_ret_0), ObservedBeforeInitialization()) &&
-    acc(IntArray_unique(g_data(v_ret_0)), write) &&
-    (let this ==
-      (v_ret_0) in
-      true &&
-      boolFromRef((let anon_2_0 ==
-        (g_data(this)) in
-        gtInts(initializedHead(anon_2_0), intToRef(0)))))
-  ensures g_data(v_ret_0) == par_data
-  ensures g_data(v_ret_0) == par_data
-{
-  var anon_0: Ref
-  var anon_1: Ref
-  var anon_7: Ref
-  var anon_8: Ref
-  v_ret_0 := new()
-  inhale typeOf(v_ret_0) == ObservedBeforeInitialization()
-  anon_0 := par_data
-  inhale g_data(v_ret_0) == anon_0
-  anon_7 := initializedHead(g_data(v_ret_0))
-  anon_1 := anon_7
-  inhale intFromRef(snapshot(v_ret_0)) == intFromRef(anon_1)
-  anon_8 := require(gtInts(intToRef(arraySize(g_data(v_ret_0))), intToRef(0)))
-  assert 0 >= 0
-  assert 0 < arraySize(g_data(v_ret_0))
-  unfold acc(IntArray_unique(g_data(v_ret_0)), write)
-  g_data(v_ret_0).contents := g_data(v_ret_0).contents[0 := 1]
-  label lbl_ret_0
-  fold acc(IntArray_unique(g_data(v_ret_0)), write)
-  assert (let this ==
-      (v_ret_0) in
-      true &&
-      boolFromRef((let anon_2_0 ==
-        (g_data(this)) in
-        gtInts(initializedHead(anon_2_0), intToRef(0)))))
-  fold acc(ObservedBeforeInitialization_unique(v_ret_0), write)
-  unfold acc(ObservedBeforeInitialization_unique(v_ret_0), write)
-}
-
-method require(value: Ref) returns (ret_3: Ref)
-  requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
-  ensures true ==> boolFromRef(value)
 
 
 /primary_constructor_bodies.kt: info: Generated Viper text for SharedBorrowedInitialization:
@@ -908,14 +767,6 @@ method con() returns (v_ret_0: Ref)
   v_ret_0 := new(value)
   inhale typeOf(v_ret_0) == SharedBorrowedInitialization()
   v_ret_0.value := intToRef(1)
-  anon_1 := clear(v_ret_0)
-  exhale isSubtype(typeOf(v_ret_0), SharedBorrowedInitialization()) &&
-    acc(v_ret_0.value, write) &&
-    isSubtype(typeOf(v_ret_0.value), intType())
-  inhale isSubtype(typeOf(v_ret_0), SharedBorrowedInitialization()) &&
-    acc(v_ret_0.value, write) &&
-    isSubtype(typeOf(v_ret_0.value), intType())
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -923,6 +774,10 @@ method con() returns (v_ret_0: Ref)
         (this.value) in
         geInts(anon_0_0, intToRef(0)))))
   fold acc(SharedBorrowedInitialization_unique(v_ret_0), write)
+  anon_1 := clear(v_ret_0)
+  exhale acc(SharedBorrowedInitialization_unique(v_ret_0), write)
+  inhale acc(SharedBorrowedInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(SharedBorrowedInitialization_unique(v_ret_0), write)
 }
 
@@ -955,17 +810,23 @@ method con() returns (v_ret_0: Ref)
 {
   var anon_1: Ref
   var anon_2: Ref
+  var anon_3: Ref
   v_ret_0 := new(bf_value)
   inhale typeOf(v_ret_0) == SharedBorrowedCheckedInitialization()
   v_ret_0.bf_value := intToRef(1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(SharedBorrowedCheckedInitialization_unique(v_ret_0), write)
   anon_1 := preserve(v_ret_0)
-  exhale isSubtype(typeOf(v_ret_0), SharedBorrowedCheckedInitialization()) &&
-    acc(v_ret_0.bf_value, write) &&
-    isSubtype(typeOf(v_ret_0.bf_value), intType())
-  inhale isSubtype(typeOf(v_ret_0), SharedBorrowedCheckedInitialization()) &&
-    acc(v_ret_0.bf_value, write) &&
-    isSubtype(typeOf(v_ret_0.bf_value), intType())
-  anon_2 := require(geInts(v_ret_0.bf_value, intToRef(0)))
+  exhale acc(SharedBorrowedCheckedInitialization_unique(v_ret_0), write)
+  inhale acc(SharedBorrowedCheckedInitialization_unique(v_ret_0), write)
+  unfold acc(SharedBorrowedCheckedInitialization_unique(v_ret_0), write)
+  anon_3 := v_ret_0.bf_value
+  anon_2 := require(geInts(anon_3, intToRef(0)))
   label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
@@ -1022,18 +883,14 @@ method con() returns (v_ret_0: Ref)
   anon_0 := intToRef(1)
   inhale intFromRef(value(v_ret_0)) == intFromRef(anon_0)
   v_ret_0.scratch := intToRef(0)
-  anon_1 := preserve(v_ret_0)
-  exhale isSubtype(typeOf(v_ret_0), SharedBorrowedPreservedInitialization()) &&
-    acc(v_ret_0.scratch, write) &&
-    isSubtype(typeOf(v_ret_0.scratch), intType())
-  inhale isSubtype(typeOf(v_ret_0), SharedBorrowedPreservedInitialization()) &&
-    acc(v_ret_0.scratch, write) &&
-    isSubtype(typeOf(v_ret_0.scratch), intType())
-  label lbl_ret_0
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(value(this), intToRef(0))))
   fold acc(SharedBorrowedPreservedInitialization_unique(v_ret_0), write)
+  anon_1 := preserve(v_ret_0)
+  exhale acc(SharedBorrowedPreservedInitialization_unique(v_ret_0), write)
+  inhale acc(SharedBorrowedPreservedInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(SharedBorrowedPreservedInitialization_unique(v_ret_0), write)
 }
 
@@ -1098,11 +955,12 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
 {
   var anon_1: Ref
+  var anon_2: Ref
   v_ret_0 := new(bf_value)
   inhale typeOf(v_ret_0) == LawfulConstructionChild()
   v_ret_0.bf_value := par_value
-  anon_1 := require(geInts(v_ret_0.bf_value, intToRef(0)))
-  label lbl_ret_0
+  anon_2 := v_ret_0.bf_value
+  anon_1 := require(geInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -1110,6 +968,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
         (this.bf_value) in
         geInts(anon_0_0, intToRef(0)))))
   fold acc(LawfulConstructionChild_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(LawfulConstructionChild_unique(v_ret_0), write)
 }
 
@@ -1143,6 +1002,87 @@ predicate LawfulConstructionChild_unique(this: Ref) {
       (this.value) in
       geInts(anon_0_0, intToRef(0)))))
 }
+
+/primary_constructor_bodies.kt: info: Generated Viper text for BrokenNestedBorrowedInitialization:
+field value: Ref
+
+function borrowedChildValue(par_child: Ref): Ref
+  requires isSubtype(typeOf(par_child), LawfulConstructionChild())
+  requires acc(LawfulConstructionChild_unique(par_child), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+{
+  (unfolding acc(LawfulConstructionChild_unique(par_child), write) in
+    par_child.value)
+}
+
+function g_child(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenNestedBorrowedInitialization())
+  ensures isSubtype(typeOf(result), LawfulConstructionChild())
+
+
+predicate BrokenNestedBorrowedInitialization_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenNestedBorrowedInitialization()) &&
+  acc(LawfulConstructionChild_unique(g_child(this)), write) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (g_child(this)) in
+      geInts(borrowedChildValue(anon_1_0), intToRef(0)))))
+}
+
+predicate LawfulConstructionChild_unique(this: Ref) {
+  isSubtype(typeOf(this), LawfulConstructionChild()) &&
+  acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_2_0 ==
+      (this.value) in
+      geInts(anon_2_0, intToRef(0)))))
+}
+
+method con(par_child: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_child), LawfulConstructionChild())
+  requires acc(LawfulConstructionChild_unique(par_child), write)
+  ensures isSubtype(typeOf(v_ret_0), BrokenNestedBorrowedInitialization())
+  ensures isSubtype(typeOf(v_ret_0), BrokenNestedBorrowedInitialization()) &&
+    acc(LawfulConstructionChild_unique(g_child(v_ret_0)), write) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (g_child(this)) in
+        geInts(borrowedChildValue(anon_1_0), intToRef(0)))))
+  ensures g_child(v_ret_0) == par_child
+  ensures g_child(v_ret_0) == par_child
+{
+  var anon_0: Ref
+  var anon_4: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == BrokenNestedBorrowedInitialization()
+  anon_0 := par_child
+  inhale g_child(v_ret_0) == anon_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (g_child(this)) in
+        geInts(borrowedChildValue(anon_1_0), intToRef(0)))))
+  fold acc(BrokenNestedBorrowedInitialization_unique(v_ret_0), write)
+  anon_4 := corrupt(v_ret_0)
+  exhale acc(BrokenNestedBorrowedInitialization_unique(v_ret_0), write)
+  inhale acc(BrokenNestedBorrowedInitialization_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BrokenNestedBorrowedInitialization_unique(v_ret_0), write)
+}
+
+method corrupt(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), BrokenNestedBorrowedInitialization())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
 
 /primary_constructor_bodies.kt: info: Generated Viper text for readAge:
 field before: Ref
@@ -1243,9 +1183,9 @@ predicate InitializedLater_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef((let anon_3_0 ==
+    boolFromRef((let anon_2_0 ==
       (this.bf_value) in
-      gtInts(anon_3_0, intToRef(0)))))
+      gtInts(anon_2_0, intToRef(0)))))
 }
 
 predicate Initialized_unique(this: Ref) {
@@ -1254,9 +1194,9 @@ predicate Initialized_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef((let anon_1_0 ==
+    boolFromRef((let anon_0_0 ==
       (this.bf_value) in
-      geInts(anon_1_0, intToRef(0)))))
+      geInts(anon_0_0, intToRef(0)))))
 }
 
 predicate LoopInitialization_unique(this: Ref) {
@@ -1266,9 +1206,9 @@ predicate LoopInitialization_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef((let anon_4_0 ==
+    boolFromRef((let anon_3_0 ==
       (this.bf_value) in
-      boolToRef(intFromRef(anon_4_0) == 3))))
+      boolToRef(intFromRef(anon_3_0) == 3))))
 }
 
 predicate OrderedInitialization_unique(this: Ref) {
@@ -1278,9 +1218,9 @@ predicate OrderedInitialization_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef((let anon_2_0 ==
+    boolFromRef((let anon_1_0 ==
       (this.bf_value) in
-      andBools(boolToRef(intFromRef(anon_2_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
+      andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
       3)))))
 }
 
@@ -1334,9 +1274,9 @@ method con_Initialized(start: Ref) returns (ret_1: Ref)
     (let this ==
       (ret_1) in
       true &&
-      boolFromRef((let anon_1_0 ==
+      boolFromRef((let anon_0_0 ==
         (this.bf_value) in
-        geInts(anon_1_0, intToRef(0)))))
+        geInts(anon_0_0, intToRef(0)))))
 
 
 method con_InitializedLater(start: Ref) returns (ret_7: Ref)
@@ -1348,9 +1288,9 @@ method con_InitializedLater(start: Ref) returns (ret_7: Ref)
     (let this ==
       (ret_7) in
       true &&
-      boolFromRef((let anon_3_0 ==
+      boolFromRef((let anon_2_0 ==
         (this.bf_value) in
-        gtInts(anon_3_0, intToRef(0)))))
+        gtInts(anon_2_0, intToRef(0)))))
 
 
 method con_LoopInitialization() returns (ret_19: Ref)
@@ -1361,9 +1301,9 @@ method con_LoopInitialization() returns (ret_19: Ref)
     (let this ==
       (ret_19) in
       true &&
-      boolFromRef((let anon_4_0 ==
+      boolFromRef((let anon_3_0 ==
         (this.bf_value) in
-        boolToRef(intFromRef(anon_4_0) == 3))))
+        boolToRef(intFromRef(anon_3_0) == 3))))
 
 
 method con_OrderedInitialization() returns (ret_4: Ref)
@@ -1374,9 +1314,9 @@ method con_OrderedInitialization() returns (ret_4: Ref)
     (let this ==
       (ret_4) in
       true &&
-      boolFromRef((let anon_2_0 ==
+      boolFromRef((let anon_1_0 ==
         (this.bf_value) in
-        andBools(boolToRef(intFromRef(anon_2_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
+        andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
         3)))))
 
 
@@ -1385,51 +1325,51 @@ method initializedClient(start: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var instance: Ref
-  var anon_5: Ref
+  var anon_4: Ref
   var ordered: Ref
+  var anon_5: Ref
   var anon_6: Ref
-  var anon_7: Ref
   var later: Ref
-  var anon_8: Ref
+  var anon_7: Ref
   var checked: Ref
   var effectful: Ref
   var assigned: Ref
   var loop: Ref
-  var anon_9: Ref
+  var anon_8: Ref
   instance := con_Initialized(start)
   fold acc(Initialized_unique(instance), write)
   unfold acc(Initialized_unique(instance), write)
-  anon_5 := instance.bf_value
-  assert intFromRef(anon_5) >= 0
+  anon_4 := instance.bf_value
+  assert intFromRef(anon_4) >= 0
   ordered := con_OrderedInitialization()
   fold acc(OrderedInitialization_unique(ordered), write)
   unfold acc(OrderedInitialization_unique(ordered), write)
-  anon_7 := ordered.bf_value
+  anon_6 := ordered.bf_value
   assert (let this ==
       (instance) in
       true &&
-      boolFromRef((let anon_1_0 ==
+      boolFromRef((let anon_0_0 ==
         (this.bf_value) in
-        geInts(anon_1_0, intToRef(0)))))
+        geInts(anon_0_0, intToRef(0)))))
   fold acc(Initialized_unique(instance), write)
   assert (let this ==
       (ordered) in
       true &&
-      boolFromRef((let anon_2_0 ==
+      boolFromRef((let anon_1_0 ==
         (this.bf_value) in
-        andBools(boolToRef(intFromRef(anon_2_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
+        andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
         3)))))
   fold acc(OrderedInitialization_unique(ordered), write)
-  if (intFromRef(anon_7) == 6) {
-    anon_6 := boolToRef(intFromRef(snapshot(ordered)) == 3)
+  if (intFromRef(anon_6) == 6) {
+    anon_5 := boolToRef(intFromRef(snapshot(ordered)) == 3)
   } else {
-    anon_6 := boolToRef(false)}
-  assert boolFromRef(anon_6)
+    anon_5 := boolToRef(false)}
+  assert boolFromRef(anon_5)
   later := con_InitializedLater(start)
   fold acc(InitializedLater_unique(later), write)
   unfold acc(InitializedLater_unique(later), write)
-  anon_8 := later.bf_value
-  assert intFromRef(anon_8) > 0
+  anon_7 := later.bf_value
+  assert intFromRef(anon_7) > 0
   checked := con_CheckedInitialization(start)
   fold acc(CheckedInitialization_unique(checked), write)
   assert intFromRef(CheckedInitialization_g_value(checked)) >= 0
@@ -1442,8 +1382,8 @@ method initializedClient(start: Ref) returns (v_ret_0: Ref)
   loop := con_LoopInitialization()
   fold acc(LoopInitialization_unique(loop), write)
   unfold acc(LoopInitialization_unique(loop), write)
-  anon_9 := loop.bf_value
-  assert intFromRef(anon_9) == 3
+  anon_8 := loop.bf_value
+  assert intFromRef(anon_8) == 3
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

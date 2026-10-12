@@ -72,6 +72,18 @@ data class AllocateObject(
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitAllocateObject(this)
 }
 
+/** Establishes the declaring class's laws before exposing the receiver or completing construction. */
+data class EstablishConstruction(
+    val receiver: VariableEmbedding,
+    val declaring: ClassTypeEmbedding,
+    val result: ExpEmbedding = UnitLit,
+) : ExpEmbedding {
+    override val type: TypeEmbedding = result.type
+    override fun ignoringCastsAndMetaNodes(): ExpEmbedding = result.ignoringCastsAndMetaNodes()
+    override fun children(): Sequence<ExpEmbedding> = sequenceOf(result)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitEstablishConstruction(this)
+}
+
 /** Moves an evaluated unique initializer into immutable storage whose getter equality is established. */
 data class BindOwnedField(
     val receiver: VariableEmbedding,

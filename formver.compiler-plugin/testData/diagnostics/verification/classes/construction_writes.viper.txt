@@ -84,11 +84,12 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
 {
   var anon_1: Ref
+  var anon_2: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == ForwardLoanSink()
   v_ret_0.bf_n := par_n
-  anon_1 := require(geInts(v_ret_0.bf_n, intToRef(1)))
-  label lbl_ret_0
+  anon_2 := v_ret_0.bf_n
+  anon_1 := require(geInts(anon_2, intToRef(1)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -96,6 +97,7 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
         (this.bf_n) in
         geInts(anon_0_0, intToRef(1)))))
   fold acc(ForwardLoanSink_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ForwardLoanSink_unique(v_ret_0), write)
 }
 
@@ -134,6 +136,60 @@ method accept(this: Ref, source: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/construction_writes.kt: info: Generated Viper text for forwardLoanClient:
+field bf_n: Ref
+
+function age(this: Ref): Ref
+  requires isSubtype(typeOf(this), ForwardLoanSource())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_ForwardLoanSink(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), ForwardLoanSink())
+  ensures isSubtype(typeOf(ret_1), ForwardLoanSink()) &&
+    acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        geInts(anon_0_0, intToRef(1)))))
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+
+
+method con_ForwardLoanSource(par_sink: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_sink), ForwardLoanSink())
+  requires acc(ForwardLoanSink_unique(par_sink), write)
+  ensures acc(ForwardLoanSink_unique(par_sink), write)
+  ensures isSubtype(typeOf(ret_4), ForwardLoanSource())
+  ensures intFromRef(age(ret_4)) == 1
+
+
+method forwardLoanClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_sink: Ref
+  var source: Ref
+  var anon_1: Ref
+  l0_sink := con_ForwardLoanSink(intToRef(1))
+  fold acc(ForwardLoanSink_unique(l0_sink), write)
+  source := con_ForwardLoanSource(l0_sink)
+  fold acc(ForwardLoanSource_unique(source), write)
+  unfold acc(ForwardLoanSink_unique(l0_sink), write)
+  anon_1 := l0_sink.bf_n
+  assert intFromRef(anon_1) >= 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /construction_writes.kt: info: Generated Viper text for keepsParameters:
 field bf_a: Ref
 
@@ -157,6 +213,8 @@ method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.bf_a), intType()) &&
     acc(ret_1.sum, write) &&
     isSubtype(typeOf(ret_1.sum), intType())
+  ensures intFromRef(ret_1.bf_a) == intFromRef(par_a)
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
   ensures intFromRef(ret_1.bf_a) == intFromRef(par_a)
   ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
 

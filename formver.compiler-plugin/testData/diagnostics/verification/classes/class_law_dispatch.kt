@@ -87,18 +87,18 @@ fun <!VIPER_TEXT!>validConstruction<!>() {
     verify(computed.n >= 0)
 }
 
-open class ChangedInitializerBase(<!UNSUPPORTED_FEATURE!>@LawBound var n: Int<!>) : Reading {
+open class ChangedInitializerBase(@LawBound var n: Int) : Reading {
     init { n = 1 }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = n
 }
-<!UNSUPPORTED_FEATURE!>class ChangedInitializerLaw(n: Int) : ChangedInitializerBase(n) {
+<!VIPER_TEXT!>class ChangedInitializerLaw<!>(n: Int) : ChangedInitializerBase(n) {
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
-}<!>
+}
 <!VIPER_TEXT!>class UnrelatedInitializerLaw<!>(n: Int, val m: Int) : ChangedInitializerBase(n) {
     init { require(m >= 0) }
     @Law @Pure fun nonnegative(): Boolean = m >= 0
 }
-fun <!VERIFICATION_SKIPPED!>changedInitializerConstruction<!>() {
+fun <!VIPER_TEXT!>changedInitializerConstruction<!>() {
     val value: @Unique ChangedInitializerLaw = ChangedInitializerLaw(0)
 }
 fun <!VIPER_TEXT!>unrelatedInitializerConstruction<!>() {
@@ -107,13 +107,13 @@ fun <!VIPER_TEXT!>unrelatedInitializerConstruction<!>() {
 }
 
 @Pure fun <!VIPER_TEXT!>first<!>(data: @Unique IntArray): Int = if (data.size > 0) data[0] else 0
-open class ChangedOwnedStateBase(<!UNSUPPORTED_FEATURE!>val data: @Unique IntArray<!>) : Reading {
+open class ChangedOwnedStateBase(val data: @Unique IntArray) : Reading {
     init { if (data.size > 0) data[0] = 1 }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = first(data)
 }
-<!UNSUPPORTED_FEATURE!>class ChangedOwnedStateLaw(data: @Unique IntArray) : ChangedOwnedStateBase(data) {
+<!VIPER_TEXT!>class ChangedOwnedStateLaw<!>(data: @Unique IntArray) : ChangedOwnedStateBase(data) {
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
-}<!>
-fun <!VERIFICATION_SKIPPED!>changedOwnedStateConstruction<!>(data: @Unique IntArray) {
+}
+fun <!VIPER_TEXT!>changedOwnedStateConstruction<!>(data: @Unique IntArray) {
     val value: @Unique ChangedOwnedStateLaw = ChangedOwnedStateLaw(data)
 }

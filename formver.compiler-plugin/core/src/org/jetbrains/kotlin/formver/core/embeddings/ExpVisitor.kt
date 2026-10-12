@@ -55,6 +55,7 @@ interface ExpVisitor<R> {
     fun visitGoto(e: Goto): R
     fun visitBindOwnedField(e: BindOwnedField): R
     fun visitAllocateObject(e: AllocateObject): R
+    fun visitEstablishConstruction(e: EstablishConstruction): R
     fun visitInhaleDirect(e: InhaleDirect): R
     fun visitInhaleInvariants(e: InhaleInvariants): R
     fun visitNonDeterministically(e: NonDeterministically): R
@@ -135,6 +136,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitGoto(e: Goto): R = visitDefault(e)
     override fun visitBindOwnedField(e: BindOwnedField): R = visitDefault(e)
     override fun visitAllocateObject(e: AllocateObject): R = visitDefault(e)
+    override fun visitEstablishConstruction(e: EstablishConstruction): R = visitDefault(e)
     override fun visitInhaleDirect(e: InhaleDirect): R = visitDefault(e)
     override fun visitInhaleInvariants(e: InhaleInvariants): R = visitDefault(e)
     override fun visitNonDeterministically(e: NonDeterministically): R = visitDefault(e)

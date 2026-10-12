@@ -1058,6 +1058,24 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("two_phase_constructor_discipline.kt")
+      public void testTwo_phase_constructor_discipline() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/two_phase_constructor_discipline.kt");
+      }
+
+      @Test
+      @TestMetadata("two_phase_constructor_frontiers.kt")
+      public void testTwo_phase_constructor_frontiers() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/two_phase_constructor_frontiers.kt");
+      }
+
+      @Test
+      @TestMetadata("two_phase_constructor_unique_this.kt")
+      public void testTwo_phase_constructor_unique_this() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/two_phase_constructor_unique_this.kt");
+      }
+
+      @Test
       @TestMetadata("unique_accessor_receiver.kt")
       public void testUnique_accessor_receiver() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/unique_accessor_receiver.kt");
@@ -1773,6 +1791,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("construction.kt")
       public void testConstruction() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/construction.kt");
+      }
+
+      @Test
+      @TestMetadata("constructor_bodies.kt")
+      public void testConstructor_bodies() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/constructor_bodies.kt");
       }
 
       @Test

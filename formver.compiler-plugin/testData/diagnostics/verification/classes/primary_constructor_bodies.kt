@@ -15,13 +15,13 @@ import org.jetbrains.kotlin.formver.plugin.*
     @Law @Pure fun invariant(): Boolean = value >= 0
 }<!>
 
-<!VIPER_TEXT!>class OrderedInitialization<!> {
+<!INVALID_LAW!>class OrderedInitialization {
     var value = 1
     init { value += 2 }
     val snapshot = value
     init { value += snapshot }
     @Law @Pure fun invariant(): Boolean = value == 6 && snapshot == 3
-}
+}<!>
 
 <!VIPER_TEXT!>class InitializedLater<!>(start: Int) {
     var value: Int
@@ -106,18 +106,18 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
     @Law @Pure @Unique fun invariant(): Boolean = initializedHead(data) > 0
 }<!>
 
-<!VIPER_TEXT!>class ObservedBeforeInitialization<!>(val data: @Unique IntArray) {
+<!INVALID_LAW!>class ObservedBeforeInitialization(val data: @Unique IntArray) {
     val snapshot = initializedHead(data)
     init { require(data.size > 0); data[0] = 1 }
     @Law @Pure @Unique fun invariant(): Boolean = initializedHead(data) > 0
-}
+}<!>
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class SharedBorrowedInitialization<!> {
+<!VIPER_TEXT!>class SharedBorrowedInitialization<!> {
     var value = 1
     init { clear() }
     @Borrowed fun <!VERIFICATION_SKIPPED!>clear<!>() { <!UNSUPPORTED_FEATURE!>value = -1<!> }
     @Law @Pure fun invariant(): Boolean = value >= 0
-}<!>
+}
 
 <!VIPER_TEXT!>class SharedBorrowedCheckedInitialization<!> {
     var value = 1
@@ -143,13 +143,13 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
     return child.value
 }
 
-<!UNSUPPORTED_FEATURE!>class BrokenNestedBorrowedInitialization(val child: @Unique LawfulConstructionChild) {
+<!VIPER_TEXT!>class BrokenNestedBorrowedInitialization<!>(val child: @Unique LawfulConstructionChild) {
     init { corrupt() }
     @Borrowed fun <!VERIFICATION_SKIPPED!>corrupt<!>() { <!UNSUPPORTED_FEATURE!>child.value = -1<!> }
     @Law @Pure @Unique fun invariant(): Boolean = borrowedChildValue(child) >= 0
-}<!>
+}
 
-<!UNSUPPORTED_FEATURE!>class ForwardBorrowedImmutableInitialization {
+<!INVALID_LAW!>class ForwardBorrowedImmutableInitialization {
     var before = 0
     init { before = readAge() }
     val age = 1

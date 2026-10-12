@@ -1,0 +1,118 @@
+/two_phase_constructor_unique_this.kt: info: Generated Viper text for PhaseTwoPassing:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), PhaseTwoPassing())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate PhaseTwoPassing_unique(this: Ref) {
+  isSubtype(typeOf(this), PhaseTwoPassing()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), PhaseTwoPassing())
+  ensures isSubtype(typeOf(v_ret_0), PhaseTwoPassing()) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  ensures intFromRef(g_value(v_ret_0)) == 1
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == PhaseTwoPassing()
+  anon_0 := intToRef(1)
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  assert (let this ==
+      (v_ret_0) in
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+  fold acc(PhaseTwoPassing_unique(v_ret_0), write)
+  anon_1 := observe(v_ret_0)
+  label lbl_ret_0
+  unfold acc(PhaseTwoPassing_unique(v_ret_0), write)
+}
+
+method observe(par_value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), PhaseTwoPassing())
+  requires acc(PhaseTwoPassing_unique(par_value), write)
+  ensures acc(PhaseTwoPassing_unique(par_value), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+/two_phase_constructor_unique_this.kt: info: Generated Viper text for observe:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), PhaseTwoPassing())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate PhaseTwoPassing_unique(this: Ref) {
+  isSubtype(typeOf(this), PhaseTwoPassing()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+}
+
+method observe(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), PhaseTwoPassing())
+  requires acc(PhaseTwoPassing_unique(par_value), write)
+  ensures acc(PhaseTwoPassing_unique(par_value), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := require(gtInts(g_value(par_value), intToRef(0)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method require(par_value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures true ==> boolFromRef(par_value)
+
+
+/two_phase_constructor_unique_this.kt: info: Generated Viper text for fallbackFacts:
+function early(this: Ref): Ref
+  requires isSubtype(typeOf(this), LawFreeFallback())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function later(this: Ref): Ref
+  requires isSubtype(typeOf(this), LawFreeFallback())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function stored(this: Ref): Ref
+  requires isSubtype(typeOf(this), LawFreeFallback())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate LawFreeFallback_unique(this: Ref) {
+  isSubtype(typeOf(this), LawFreeFallback())
+}
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), LawFreeFallback())
+  ensures intFromRef(stored(ret_1)) == 1
+  ensures intFromRef(later(ret_1)) == 2
+
+
+method fallbackFacts() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_value: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  l0_value := con()
+  fold acc(LawFreeFallback_unique(l0_value), write)
+  anon_0 := require(boolToRef(intFromRef(stored(l0_value)) == 1))
+  anon_1 := require(boolToRef(intFromRef(later(l0_value)) == 2))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method require(par_value: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures true ==> boolFromRef(par_value)

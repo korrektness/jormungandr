@@ -168,11 +168,12 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
 {
   var anon_1: Ref
+  var anon_2: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == CountedBox()
   v_ret_0.bf_n := par_n
-  anon_1 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_2 := v_ret_0.bf_n
+  anon_1 := require(geInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -180,6 +181,7 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
         (this.bf_n) in
         geInts(anon_0_0, intToRef(0)))))
   fold acc(CountedBox_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(CountedBox_unique(v_ret_0), write)
 }
 

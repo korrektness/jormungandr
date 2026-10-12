@@ -62,16 +62,18 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
 {
-  var anon: Ref
+  var anon_2: Ref
+  var anon_3: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == c_LawBase()
   v_ret_0.bf_n := par_n
-  anon := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_3 := v_ret_0.bf_n
+  anon_2 := require(geInts(anon_3, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0))))
   fold acc(c_LawBase_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(c_LawBase_unique(v_ret_0), write)
 }
 
@@ -292,7 +294,7 @@ predicate LawDerived_unique(this: Ref) {
   acc(c_LawBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_LawBase_unique(this), wildcard) in
+    (unfolding acc(c_LawBase_unique(this), write) in
       true && boolFromRef(geInts(this.bf_m, intToRef(0)))))
 }
 
@@ -318,11 +320,11 @@ method LawDerived_c_LawBase_f_copyObservation_inherited_body_c_LawBase_f_copyObs
   ensures acc(LawDerived_unique(this), write)
   ensures isSubtype(typeOf(v_ret_7), unitType())
 {
-  var anon_8: Ref
-  anon_8 := LawDerived_f_read(this)
+  var anon_10: Ref
+  anon_10 := LawDerived_f_read(this)
   unfold acc(LawDerived_unique(this), write)
   unfold acc(c_LawBase_unique(this), write)
-  this.bf_n := anon_8
+  this.bf_n := anon_10
   label lbl_ret_7
   assert (let this ==
       (this) in
@@ -330,7 +332,7 @@ method LawDerived_c_LawBase_f_copyObservation_inherited_body_c_LawBase_f_copyObs
   fold acc(c_LawBase_unique(this), write)
   assert (let this ==
       (this) in
-      (unfolding acc(c_LawBase_unique(this), wildcard) in
+      (unfolding acc(c_LawBase_unique(this), write) in
         true && boolFromRef(geInts(this.bf_m, intToRef(0)))))
   fold acc(LawDerived_unique(this), write)
   inhale isSubtype(typeOf(v_ret_7), unitType())
@@ -365,7 +367,7 @@ method LawDerived_c_LawBase_f_increment_inherited_body_c_LawBase_f_increment(thi
   fold acc(c_LawBase_unique(this), write)
   assert (let this ==
       (this) in
-      (unfolding acc(c_LawBase_unique(this), wildcard) in
+      (unfolding acc(c_LawBase_unique(this), write) in
         true && boolFromRef(geInts(this.bf_m, intToRef(0)))))
   fold acc(LawDerived_unique(this), write)
   inhale isSubtype(typeOf(v_ret_5), unitType())
@@ -395,31 +397,35 @@ method con(par_n: Ref, par_m: Ref) returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(this.bf_m, intToRef(0))))
-  ensures intFromRef(v_ret_0.bf_m) == intFromRef(par_m)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_m) == intFromRef(par_m)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
   ensures intFromRef(v_ret_0.bf_m) == intFromRef(par_m)
 {
   var anon_0: Ref
   var anon_6: Ref
   var anon_7: Ref
+  var anon_8: Ref
+  var anon_9: Ref
   v_ret_0 := new(bf_n, bf_m)
   inhale typeOf(v_ret_0) == LawDerived()
   anon_0 := par_n
   v_ret_0.bf_n := anon_0
-  anon_6 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  v_ret_0.bf_m := par_m
-  anon_7 := require(geInts(v_ret_0.bf_m, intToRef(0)))
-  label lbl_ret_0
+  anon_7 := v_ret_0.bf_n
+  anon_6 := require(geInts(anon_7, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0))))
   fold acc(c_LawBase_unique(v_ret_0), write)
+  v_ret_0.bf_m := par_m
+  anon_9 := v_ret_0.bf_m
+  anon_8 := require(geInts(anon_9, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(c_LawBase_unique(this), wildcard) in
+      (unfolding acc(c_LawBase_unique(this), write) in
         true && boolFromRef(geInts(this.bf_m, intToRef(0)))))
   fold acc(LawDerived_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(LawDerived_unique(v_ret_0), write)
   unfold acc(c_LawBase_unique(v_ret_0), write)
 }
@@ -495,7 +501,7 @@ predicate LawDerived_unique(this: Ref) {
   acc(c_LawBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_LawBase_unique(this), wildcard) in
+    (unfolding acc(c_LawBase_unique(this), write) in
       true && boolFromRef(geInts(this.m, intToRef(0)))))
 }
 
@@ -554,7 +560,7 @@ predicate LawDerived_unique(this: Ref) {
   acc(c_LawBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_LawBase_unique(this), wildcard) in
+    (unfolding acc(c_LawBase_unique(this), write) in
       true && boolFromRef(geInts(this.m, intToRef(0)))))
 }
 
@@ -585,7 +591,7 @@ method incrementOther(this: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   assert (let this ==
       (this) in
-      (unfolding acc(c_LawBase_unique(this), wildcard) in
+      (unfolding acc(c_LawBase_unique(this), write) in
         true && boolFromRef(geInts(this.m, intToRef(0)))))
   fold acc(LawDerived_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -632,7 +638,7 @@ predicate LawDerived_unique(this: Ref) {
   acc(c_LawBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_LawBase_unique(this), wildcard) in
+    (unfolding acc(c_LawBase_unique(this), write) in
       true && boolFromRef(geInts(this.m, intToRef(0)))))
 }
 
@@ -666,7 +672,7 @@ method breakBase(this: Ref) returns (v_ret_0: Ref)
   fold acc(c_LawBase_unique(this), write)
   assert (let this ==
       (this) in
-      (unfolding acc(c_LawBase_unique(this), wildcard) in
+      (unfolding acc(c_LawBase_unique(this), write) in
         true && boolFromRef(geInts(this.m, intToRef(0)))))
   fold acc(LawDerived_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -729,7 +735,7 @@ predicate LawDerived_unique(this: Ref) {
   acc(c_LawBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_LawBase_unique(this), wildcard) in
+    (unfolding acc(c_LawBase_unique(this), write) in
       true && boolFromRef(geInts(this.m, intToRef(0)))))
 }
 
@@ -776,7 +782,7 @@ method inspect(this: Ref) returns (v_ret_0: Ref)
   fold acc(c_LawBase_unique(this), write)
   assert (let this ==
       (this) in
-      (unfolding acc(c_LawBase_unique(this), wildcard) in
+      (unfolding acc(c_LawBase_unique(this), write) in
         true && boolFromRef(geInts(this.m, intToRef(0)))))
   fold acc(LawDerived_unique(this), write)
   anon_6 := LawDerived_f_read(this)
@@ -786,7 +792,7 @@ method inspect(this: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   assert (let this ==
       (this) in
-      (unfolding acc(c_LawBase_unique(this), wildcard) in
+      (unfolding acc(c_LawBase_unique(this), write) in
         true && boolFromRef(geInts(this.m, intToRef(0)))))
   fold acc(LawDerived_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -852,11 +858,11 @@ method NegativeDispatch_c_LawBase_f_copyObservation_inherited_body_c_LawBase_f_c
   ensures acc(NegativeDispatch_unique(this), write)
   ensures isSubtype(typeOf(v_ret_7), unitType())
 {
-  var anon_5: Ref
-  anon_5 := NegativeDispatch_f_read(this)
+  var anon_6: Ref
+  anon_6 := NegativeDispatch_f_read(this)
   unfold acc(NegativeDispatch_unique(this), write)
   unfold acc(c_LawBase_unique(this), write)
-  this.bf_n := anon_5
+  this.bf_n := anon_6
   label lbl_ret_7
   assert (let this ==
       (this) in
@@ -920,17 +926,19 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_4: Ref
+  var anon_5: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == NegativeDispatch()
   anon_0 := par_n
   v_ret_0.bf_n := anon_0
-  anon_4 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_5 := v_ret_0.bf_n
+  anon_4 := require(geInts(anon_5, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0))))
   fold acc(c_LawBase_unique(v_ret_0), write)
   fold acc(NegativeDispatch_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(NegativeDispatch_unique(v_ret_0), write)
   unfold acc(c_LawBase_unique(v_ret_0), write)
 }
@@ -1143,7 +1151,7 @@ predicate InheritedLaw_unique(this: Ref) {
   acc(c_PlainBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_PlainBase_unique(this), wildcard) in
+    (unfolding acc(c_PlainBase_unique(this), write) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
 }
 
@@ -1176,14 +1184,14 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == InheritedLaw()
   anon_0 := par_n
   v_ret_0.bf_n := anon_0
-  anon_3 := require(geInts(par_n, intToRef(0)))
-  label lbl_ret_0
   fold acc(c_PlainBase_unique(v_ret_0), write)
+  anon_3 := require(geInts(par_n, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(c_PlainBase_unique(this), wildcard) in
+      (unfolding acc(c_PlainBase_unique(this), write) in
         true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
   fold acc(InheritedLaw_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(InheritedLaw_unique(v_ret_0), write)
   unfold acc(c_PlainBase_unique(v_ret_0), write)
 }
@@ -1232,7 +1240,7 @@ predicate InheritedLaw_unique(this: Ref) {
   acc(c_PlainBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_PlainBase_unique(this), wildcard) in
+    (unfolding acc(c_PlainBase_unique(this), write) in
       true && boolFromRef(geInts(this.n, intToRef(0)))))
 }
 
@@ -1262,7 +1270,7 @@ method increment(this: Ref) returns (v_ret_0: Ref)
   fold acc(c_PlainBase_unique(this), write)
   assert (let this ==
       (this) in
-      (unfolding acc(c_PlainBase_unique(this), wildcard) in
+      (unfolding acc(c_PlainBase_unique(this), write) in
         true && boolFromRef(geInts(this.n, intToRef(0)))))
   fold acc(InheritedLaw_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -1306,7 +1314,7 @@ predicate InheritedLaw_unique(this: Ref) {
   acc(c_PlainBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_PlainBase_unique(this), wildcard) in
+    (unfolding acc(c_PlainBase_unique(this), write) in
       true && boolFromRef(geInts(this.n, intToRef(0)))))
 }
 
@@ -1334,7 +1342,7 @@ method breakInvariant(this: Ref) returns (v_ret_0: Ref)
   fold acc(c_PlainBase_unique(this), write)
   assert (let this ==
       (this) in
-      (unfolding acc(c_PlainBase_unique(this), wildcard) in
+      (unfolding acc(c_PlainBase_unique(this), write) in
         true && boolFromRef(geInts(this.n, intToRef(0)))))
   fold acc(InheritedLaw_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -1378,7 +1386,7 @@ predicate DefaultInheritedLaw_unique(this: Ref) {
   acc(c_PlainBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_PlainBase_unique(this), wildcard) in
+    (unfolding acc(c_PlainBase_unique(this), write) in
       true && boolFromRef(geInts(this.n, intToRef(0)))))
 }
 
@@ -1408,13 +1416,13 @@ method con() returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == DefaultInheritedLaw()
   anon := intToRef(3)
   v_ret_0.n := anon
-  label lbl_ret_0
   fold acc(c_PlainBase_unique(v_ret_0), write)
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(c_PlainBase_unique(this), wildcard) in
+      (unfolding acc(c_PlainBase_unique(this), write) in
         true && boolFromRef(geInts(this.n, intToRef(0)))))
   fold acc(DefaultInheritedLaw_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(DefaultInheritedLaw_unique(v_ret_0), write)
   unfold acc(c_PlainBase_unique(v_ret_0), write)
 }
@@ -1457,7 +1465,7 @@ predicate ComputedInheritedLaw_unique(this: Ref) {
   acc(c_PlainBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_PlainBase_unique(this), wildcard) in
+    (unfolding acc(c_PlainBase_unique(this), write) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
 }
 
@@ -1489,14 +1497,14 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   inhale typeOf(v_ret_0) == ComputedInheritedLaw()
   anon_0 := plusInts(par_n, intToRef(1))
   v_ret_0.bf_n := anon_0
-  anon_3 := require(geInts(par_n, intToRef(-1)))
-  label lbl_ret_0
   fold acc(c_PlainBase_unique(v_ret_0), write)
+  anon_3 := require(geInts(par_n, intToRef(-1)))
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(c_PlainBase_unique(this), wildcard) in
+      (unfolding acc(c_PlainBase_unique(this), write) in
         true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
   fold acc(ComputedInheritedLaw_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(ComputedInheritedLaw_unique(v_ret_0), write)
   unfold acc(c_PlainBase_unique(v_ret_0), write)
 }
@@ -1558,16 +1566,18 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
   ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
 {
-  var anon: Ref
+  var anon_2: Ref
+  var anon_3: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == c_StableLawBase()
   v_ret_0.bf_n := par_n
-  anon := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_3 := v_ret_0.bf_n
+  anon_2 := require(geInts(anon_3, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0))))
   fold acc(c_StableLawBase_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(c_StableLawBase_unique(v_ret_0), write)
 }
 
@@ -1683,17 +1693,19 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_3: Ref
+  var anon_4: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == StableOverride()
   anon_0 := par_n
   v_ret_0.bf_n := anon_0
-  anon_3 := require(geInts(v_ret_0.bf_n, intToRef(0)))
-  label lbl_ret_0
+  anon_4 := v_ret_0.bf_n
+  anon_3 := require(geInts(anon_4, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0))))
   fold acc(c_StableLawBase_unique(v_ret_0), write)
   fold acc(StableOverride_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(StableOverride_unique(v_ret_0), write)
   unfold acc(c_StableLawBase_unique(v_ret_0), write)
 }
@@ -1917,7 +1929,7 @@ predicate InheritedLaw_unique(this: Ref) {
   acc(c_PlainBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_PlainBase_unique(this), wildcard) in
+    (unfolding acc(c_PlainBase_unique(this), write) in
       true && boolFromRef(geInts(this.n, intToRef(0)))))
 }
 
@@ -1967,7 +1979,7 @@ method loopWithInheritedLaw(value: Ref) returns (v_ret_0: Ref)
     fold acc(c_PlainBase_unique(value), write)
     assert (let this ==
         (value) in
-        (unfolding acc(c_PlainBase_unique(this), wildcard) in
+        (unfolding acc(c_PlainBase_unique(this), write) in
           true && boolFromRef(geInts(this.n, intToRef(0)))))
     fold acc(InheritedLaw_unique(value), write)
     goto cont
@@ -1984,7 +1996,7 @@ method loopWithInheritedLaw(value: Ref) returns (v_ret_0: Ref)
   fold acc(c_PlainBase_unique(value), write)
   assert (let this ==
       (value) in
-      (unfolding acc(c_PlainBase_unique(this), wildcard) in
+      (unfolding acc(c_PlainBase_unique(this), write) in
         true && boolFromRef(geInts(this.n, intToRef(0)))))
   fold acc(InheritedLaw_unique(value), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -2070,7 +2082,7 @@ predicate ComputedInheritedLaw_unique(this: Ref) {
   acc(c_PlainBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_PlainBase_unique(this), wildcard) in
+    (unfolding acc(c_PlainBase_unique(this), write) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
 }
 
@@ -2079,7 +2091,7 @@ predicate DefaultInheritedLaw_unique(this: Ref) {
   acc(c_PlainBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_PlainBase_unique(this), wildcard) in
+    (unfolding acc(c_PlainBase_unique(this), write) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
 }
 
@@ -2088,7 +2100,7 @@ predicate InheritedLaw_unique(this: Ref) {
   acc(c_PlainBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_PlainBase_unique(this), wildcard) in
+    (unfolding acc(c_PlainBase_unique(this), write) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
 }
 
@@ -2098,7 +2110,7 @@ predicate LawDerived_unique(this: Ref) {
   acc(c_LawBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_LawBase_unique(this), wildcard) in
+    (unfolding acc(c_LawBase_unique(this), write) in
       true && boolFromRef(geInts(this.bf_m, intToRef(0)))))
 }
 
@@ -2209,8 +2221,8 @@ method con_LawDerived(par_n: Ref, par_m: Ref) returns (ret_1: Ref)
     (let this ==
       (ret_1) in
       true && boolFromRef(geInts(this.bf_m, intToRef(0))))
-  ensures intFromRef(ret_1.bf_m) == intFromRef(par_m)
   ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_m) == intFromRef(par_m)
   ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
   ensures intFromRef(ret_1.bf_m) == intFromRef(par_m)
 
@@ -2314,6 +2326,82 @@ predicate c_ChangedInitializerBase_unique(this: Ref) {
 
 predicate footprint(this: Ref)
 
+/class_law_dispatch.kt: info: Generated Viper text for ChangedInitializerLaw:
+field bf_n: Ref
+
+function Reading_f_read(this: Ref): Ref
+  requires isSubtype(typeOf(this), Reading())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ChangedInitializerBase_c_ChangedInitializerBase_f_read_args_c_ChangedInitializerBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedInitializerBase())
+  requires acc(c_ChangedInitializerBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_ChangedInitializerBase() ==>
+    result ==
+    c_ChangedInitializerBase_f_read_args_c_ChangedInitializerBase_ret_Int(this)
+
+
+function c_ChangedInitializerBase_f_read_args_c_ChangedInitializerBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedInitializerBase())
+  requires acc(c_ChangedInitializerBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ChangedInitializerBase_unique(this), write) in
+    this.bf_n)
+}
+
+predicate ChangedInitializerLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), ChangedInitializerLaw()) &&
+  acc(c_ChangedInitializerBase_unique(this), write) &&
+  (let this ==
+    (this) in
+    (unfolding acc(c_ChangedInitializerBase_unique(this), write) in
+      true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
+}
+
+predicate Reading_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Reading())
+}
+
+predicate c_ChangedInitializerBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ChangedInitializerBase()) &&
+  acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), ChangedInitializerLaw())
+  ensures isSubtype(typeOf(v_ret_0), ChangedInitializerLaw()) &&
+    (isSubtype(typeOf(v_ret_0), c_ChangedInitializerBase()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())) &&
+    (let this ==
+      (v_ret_0) in
+      true && boolFromRef(geInts(this.bf_n, intToRef(0))))
+{
+  var anon: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == ChangedInitializerLaw()
+  anon := par_n
+  v_ret_0.bf_n := anon
+  v_ret_0.bf_n := intToRef(1)
+  fold acc(c_ChangedInitializerBase_unique(v_ret_0), write)
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_ChangedInitializerBase_unique(this), write) in
+        true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
+  fold acc(ChangedInitializerLaw_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ChangedInitializerLaw_unique(v_ret_0), write)
+  unfold acc(c_ChangedInitializerBase_unique(v_ret_0), write)
+}
+
 /class_law_dispatch.kt: info: Generated Viper text for UnrelatedInitializerLaw:
 field bf_n: Ref
 
@@ -2355,7 +2443,7 @@ predicate UnrelatedInitializerLaw_unique(this: Ref) {
   acc(c_ChangedInitializerBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_ChangedInitializerBase_unique(this), wildcard) in
+    (unfolding acc(c_ChangedInitializerBase_unique(this), write) in
       true && boolFromRef(geInts(g_m(this), intToRef(0)))))
 }
 
@@ -2389,16 +2477,16 @@ method con(par_n: Ref, par_m: Ref) returns (v_ret_0: Ref)
   anon_0 := par_n
   v_ret_0.bf_n := anon_0
   v_ret_0.bf_n := intToRef(1)
+  fold acc(c_ChangedInitializerBase_unique(v_ret_0), write)
   anon_1 := par_m
   inhale intFromRef(g_m(v_ret_0)) == intFromRef(anon_1)
   anon_3 := require(geInts(g_m(v_ret_0), intToRef(0)))
-  label lbl_ret_0
-  fold acc(c_ChangedInitializerBase_unique(v_ret_0), write)
   assert (let this ==
       (v_ret_0) in
-      (unfolding acc(c_ChangedInitializerBase_unique(this), wildcard) in
+      (unfolding acc(c_ChangedInitializerBase_unique(this), write) in
         true && boolFromRef(geInts(g_m(this), intToRef(0)))))
   fold acc(UnrelatedInitializerLaw_unique(v_ret_0), write)
+  label lbl_ret_0
   unfold acc(UnrelatedInitializerLaw_unique(v_ret_0), write)
   unfold acc(c_ChangedInitializerBase_unique(v_ret_0), write)
 }
@@ -2407,6 +2495,77 @@ method require(value: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(value), boolType())
   ensures isSubtype(typeOf(ret_4), unitType())
   ensures true ==> boolFromRef(value)
+
+
+/class_law_dispatch.kt: info: Generated Viper text for changedInitializerConstruction:
+field bf_n: Ref
+
+function Reading_f_read(this: Ref): Ref
+  requires isSubtype(typeOf(this), Reading())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ChangedInitializerBase_c_ChangedInitializerBase_f_read_args_c_ChangedInitializerBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedInitializerBase())
+  requires acc(c_ChangedInitializerBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_ChangedInitializerBase() ==>
+    result ==
+    c_ChangedInitializerBase_f_read_args_c_ChangedInitializerBase_ret_Int(this)
+
+
+function c_ChangedInitializerBase_f_read_args_c_ChangedInitializerBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedInitializerBase())
+  requires acc(c_ChangedInitializerBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ChangedInitializerBase_unique(this), write) in
+    this.bf_n)
+}
+
+predicate ChangedInitializerLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), ChangedInitializerLaw()) &&
+  acc(c_ChangedInitializerBase_unique(this), write) &&
+  (let this ==
+    (this) in
+    (unfolding acc(c_ChangedInitializerBase_unique(this), write) in
+      true && boolFromRef(geInts(this.bf_n, intToRef(0)))))
+}
+
+predicate Reading_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Reading())
+}
+
+predicate c_ChangedInitializerBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ChangedInitializerBase()) &&
+  acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType())
+}
+
+predicate footprint(this: Ref)
+
+method changedInitializerConstruction() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var value: Ref
+  value := con(intToRef(0))
+  fold acc(c_ChangedInitializerBase_unique(value), write)
+  fold acc(ChangedInitializerLaw_unique(value), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), ChangedInitializerLaw())
+  ensures isSubtype(typeOf(ret_1), ChangedInitializerLaw()) &&
+    (isSubtype(typeOf(ret_1), c_ChangedInitializerBase()) &&
+    acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType())) &&
+    (let this ==
+      (ret_1) in
+      true && boolFromRef(geInts(this.bf_n, intToRef(0))))
 
 
 /class_law_dispatch.kt: info: Generated Viper text for unrelatedInitializerConstruction:
@@ -2475,7 +2634,7 @@ predicate UnrelatedInitializerLaw_unique(this: Ref) {
   acc(c_ChangedInitializerBase_unique(this), write) &&
   (let this ==
     (this) in
-    (unfolding acc(c_ChangedInitializerBase_unique(this), wildcard) in
+    (unfolding acc(c_ChangedInitializerBase_unique(this), write) in
       true && boolFromRef(geInts(g_m(this), intToRef(0)))))
 }
 
@@ -2597,3 +2756,230 @@ predicate c_ChangedOwnedStateBase_unique(this: Ref) {
 }
 
 predicate footprint(this: Ref)
+
+/class_law_dispatch.kt: info: Generated Viper text for ChangedOwnedStateLaw:
+field contents: Seq[Int]
+
+function Reading_f_read(this: Ref): Ref
+  requires isSubtype(typeOf(this), Reading())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function c_ChangedOwnedStateBase_c_ChangedOwnedStateBase_f_read_args_c_ChangedOwnedStateBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedOwnedStateBase())
+  requires acc(c_ChangedOwnedStateBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_ChangedOwnedStateBase() ==>
+    result ==
+    c_ChangedOwnedStateBase_f_read_args_c_ChangedOwnedStateBase_ret_Int(this)
+
+
+function c_ChangedOwnedStateBase_f_read_args_c_ChangedOwnedStateBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedOwnedStateBase())
+  requires acc(c_ChangedOwnedStateBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ChangedOwnedStateBase_unique(this), write) in
+    (let anon_3_0 ==
+      (g_data(this)) in
+      first(anon_3_0)))
+}
+
+function first(par_data: Ref): Ref
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(IntArray_unique(par_data), write) in
+    (arraySize(par_data) > 0 ?
+      intToRef(par_data.contents[0]) :
+      intToRef(0)))
+}
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedOwnedStateBase())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+predicate ChangedOwnedStateLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), ChangedOwnedStateLaw()) &&
+  acc(c_ChangedOwnedStateBase_unique(this), write) &&
+  (let this ==
+    (this) in
+    (unfolding acc(c_ChangedOwnedStateBase_unique(this), write) in
+      true &&
+      boolFromRef(geInts((let anon_2_0 ==
+        (g_data(this)) in
+        first(anon_2_0)), intToRef(0)))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate Reading_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Reading())
+}
+
+predicate c_ChangedOwnedStateBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ChangedOwnedStateBase()) &&
+  acc(IntArray_unique(g_data(this)), write)
+}
+
+predicate footprint(this: Ref)
+
+method con(par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(v_ret_0), ChangedOwnedStateLaw())
+  ensures isSubtype(typeOf(v_ret_0), ChangedOwnedStateLaw()) &&
+    (isSubtype(typeOf(v_ret_0), c_ChangedOwnedStateBase()) &&
+    acc(IntArray_unique(g_data(v_ret_0)), write)) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef(geInts((let anon_2_0 ==
+        (g_data(this)) in
+        first(anon_2_0)), intToRef(0))))
+  ensures g_data(v_ret_0) == par_data
+  ensures g_data(v_ret_0) == par_data
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ChangedOwnedStateLaw()
+  anon_0 := par_data
+  anon_1 := anon_0
+  inhale g_data(v_ret_0) == anon_1
+  if (arraySize(g_data(v_ret_0)) > 0) {
+    assert 0 >= 0
+    assert 0 < arraySize(g_data(v_ret_0))
+    unfold acc(IntArray_unique(g_data(v_ret_0)), write)
+    g_data(v_ret_0).contents := g_data(v_ret_0).contents[0 := 1]
+    fold acc(IntArray_unique(g_data(v_ret_0)), write)
+  }
+  fold acc(c_ChangedOwnedStateBase_unique(v_ret_0), write)
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_ChangedOwnedStateBase_unique(this), write) in
+        true &&
+        boolFromRef(geInts((let anon_2_0 ==
+          (g_data(this)) in
+          first(anon_2_0)), intToRef(0)))))
+  fold acc(ChangedOwnedStateLaw_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ChangedOwnedStateLaw_unique(v_ret_0), write)
+  unfold acc(c_ChangedOwnedStateBase_unique(v_ret_0), write)
+}
+
+/class_law_dispatch.kt: info: Generated Viper text for changedOwnedStateConstruction:
+field contents: Seq[Int]
+
+function Reading_f_read(this: Ref): Ref
+  requires isSubtype(typeOf(this), Reading())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function c_ChangedOwnedStateBase_c_ChangedOwnedStateBase_f_read_args_c_ChangedOwnedStateBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedOwnedStateBase())
+  requires acc(c_ChangedOwnedStateBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_ChangedOwnedStateBase() ==>
+    result ==
+    c_ChangedOwnedStateBase_f_read_args_c_ChangedOwnedStateBase_ret_Int(this)
+
+
+function c_ChangedOwnedStateBase_f_read_args_c_ChangedOwnedStateBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedOwnedStateBase())
+  requires acc(c_ChangedOwnedStateBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ChangedOwnedStateBase_unique(this), write) in
+    (let anon_1_0 ==
+      (g_data(this)) in
+      first(anon_1_0)))
+}
+
+function first(par_data: Ref): Ref
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(IntArray_unique(par_data), write) in
+    (arraySize(par_data) > 0 ?
+      intToRef(par_data.contents[0]) :
+      intToRef(0)))
+}
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ChangedOwnedStateBase())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+predicate ChangedOwnedStateLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), ChangedOwnedStateLaw()) &&
+  acc(c_ChangedOwnedStateBase_unique(this), write) &&
+  (let this ==
+    (this) in
+    (unfolding acc(c_ChangedOwnedStateBase_unique(this), write) in
+      true &&
+      boolFromRef(geInts((let anon_0_0 ==
+        (g_data(this)) in
+        first(anon_0_0)), intToRef(0)))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate Reading_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Reading())
+}
+
+predicate c_ChangedOwnedStateBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ChangedOwnedStateBase()) &&
+  acc(IntArray_unique(g_data(this)), write)
+}
+
+predicate footprint(this: Ref)
+
+method changedOwnedStateConstruction(par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var value: Ref
+  value := con(par_data)
+  fold acc(c_ChangedOwnedStateBase_unique(value), write)
+  fold acc(ChangedOwnedStateLaw_unique(value), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_data: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  ensures isSubtype(typeOf(ret_1), ChangedOwnedStateLaw())
+  ensures isSubtype(typeOf(ret_1), ChangedOwnedStateLaw()) &&
+    (isSubtype(typeOf(ret_1), c_ChangedOwnedStateBase()) &&
+    acc(IntArray_unique(g_data(ret_1)), write)) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef(geInts((let anon_0_0 ==
+        (g_data(this)) in
+        first(anon_0_0)), intToRef(0))))
+  ensures g_data(ret_1) == par_data
+  ensures g_data(ret_1) == par_data

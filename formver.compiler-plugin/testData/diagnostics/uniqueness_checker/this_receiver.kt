@@ -167,7 +167,7 @@ class ConstructedInInitializer(var count: Int) {
 
 open class ConstructedOpen(var count: Int) {
     init {
-        <!UNIQUENESS_MISMATCH!>reset()<!>
+        reset()
     }
 
     @Unique @Borrowed

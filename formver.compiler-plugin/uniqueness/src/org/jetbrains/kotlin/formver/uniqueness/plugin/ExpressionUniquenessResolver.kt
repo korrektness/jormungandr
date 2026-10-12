@@ -65,7 +65,7 @@ fun FirExpression.resolveTerminalUniqueness(): Uniqueness {
         is FirSamConversionExpression -> if (specifiedLambda() != null) Uniqueness.Unique else Uniqueness.Shared
 
         is FirThisReceiverExpression -> {
-            resolveAccessUniqueness()
+            if (isOwnedPhaseTwoConstructionReceiver()) Uniqueness.Unique else resolveAccessUniqueness()
         }
 
         is FirPropertyAccessExpression -> {

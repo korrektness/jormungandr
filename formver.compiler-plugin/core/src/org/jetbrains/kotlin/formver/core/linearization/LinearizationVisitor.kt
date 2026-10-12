@@ -489,6 +489,18 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitEstablishConstruction(e: EstablishConstruction): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp {
+            ctx.foldState?.establishConstruction(ctx, OwnedPath(e.receiver), e.declaring)
+            return e.result.linearize().toViper(ctx)
+        }
+
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            ctx.foldState?.establishConstruction(ctx, OwnedPath(e.receiver), e.declaring)
+            e.result.linearize().toViperUnusedResult(ctx)
+        }
+    }
+
     override fun visitInhaleDirect(e: InhaleDirect): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addStatement { Stmt.Inhale(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition) }
