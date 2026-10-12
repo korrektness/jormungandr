@@ -149,6 +149,33 @@ value from the pre-transfer snapshot. Function parameters are quantified over th
 destination observer application as the trigger. Returning a borrowed interface view preserves its current
 observations in the restored class view. A bare interface view exposes no class-specific binding.
 
+### Callable specifications
+
+A `fun interface` has one executable abstract operation. Its ghost observers are zero-argument
+`@GhostObserver @Pure` functions with the placeholder body `ghostObserver()`. Ghost observers have binary
+annotation retention, cannot be overridden, and can be called only in specification blocks or laws.
+
+```kotlin
+fun interface CounterSpec {
+    fun invoke(): Int
+    @GhostObserver @Pure fun value(): Int = ghostObserver()
+    @GhostObserver @Pure fun step(): Int = ghostObserver()
+}
+
+fun counter(start: Int): CounterSpec = CounterSpec {
+    exposes(CounterSpec::class) { value() == start; step() == 1 }
+    start + 1
+}
+```
+
+`exposes` takes a class-literal specification token and a literal receiver lambda. It is the first statement
+of a lambda SAM-converted to that exact interface. Each statement binds an observer on the block's receiver
+with `observer() == expression`. Every ghost observer, including inherited observers, is bound exactly once.
+Bindings on another receiver, duplicate or missing bindings, other operators and other statements are reported
+as `INVALID_EXPOSES`. The block does nothing at runtime; `ghostObserver()` throws if executed.
+
+This surface has front-end checking only. Closure lifting and verification of these bindings are unsupported.
+
 ### Interface laws
 
 Declare a Boolean `@Law @Pure` interface member with a body to state a law. Laws have no value, type, extension,

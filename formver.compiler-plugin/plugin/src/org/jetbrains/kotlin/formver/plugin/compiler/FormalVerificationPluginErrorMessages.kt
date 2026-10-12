@@ -34,6 +34,11 @@ object FormalVerificationPluginErrorMessages : BaseDiagnosticRendererFactory() {
             CommonRenderers.STRING,
         )
         map.put(
+            PluginErrors.INVALID_EXPOSES,
+            "{0}",
+            CommonRenderers.STRING,
+        )
+        map.put(
             PluginErrors.INVALID_SPEC_OF,
             "{0}",
             CommonRenderers.STRING,

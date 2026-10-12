@@ -46,6 +46,7 @@ import org.jetbrains.kotlin.formver.core.conversion.classLawObserverBody
 import org.jetbrains.kotlin.formver.core.conversion.classLawObserverFailure
 import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
+import org.jetbrains.kotlin.formver.core.isGhostObserver
 import org.jetbrains.kotlin.formver.core.isPure
 
 context(context: CheckerContext)
@@ -159,6 +160,7 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
                                 callee.fir.backingField != null && callee.fir.getter?.body == null &&
                                 callee.getContainingClassSymbol() == classOwner
                         val observer = ownAccess && (callee?.isObserverOrOverride() == true ||
+                                callee?.isGhostObserver(context.session) == true ||
                                 (classOwner != null && callee?.isPure(context.session) == true))
                         if (observer && classOwner != null && !field) expand(element, callee!!)
                         val calleeOwner = callee?.getContainingClassSymbol() as? FirRegularClassSymbol

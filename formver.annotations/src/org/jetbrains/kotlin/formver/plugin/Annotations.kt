@@ -30,6 +30,11 @@ annotation class Borrowed
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 annotation class Pure
 
+/** Marks a callable ghost observer; see "Callable specifications" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class GhostObserver
+
 /** Marks an interface law; see "Interface laws" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 annotation class Law

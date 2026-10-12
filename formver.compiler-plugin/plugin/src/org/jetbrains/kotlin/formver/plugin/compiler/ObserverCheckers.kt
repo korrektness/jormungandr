@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
+import org.jetbrains.kotlin.formver.core.isGhostObserver
 import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.conversion.inheritedContractImplementation
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
@@ -45,23 +46,30 @@ private val FirCallableSymbol<*>.spelling: String
     get() = callableId?.className?.let { "$it.$name" } ?: name.asString()
 
 /**
- * Reports a member declaration that breaks a rule on observers: an override of an observer is `@Pure`, and in a class it
- * has a body and fixed dispatch; a `@Pure` override overrides only observers and their overrides.
+ * Reports a member declaration that breaks a rule on observers: a ghost observer has no overrides; an override of an
+ * observer is `@Pure`, and in a class it has a body and fixed dispatch; a `@Pure` override overrides only observers and
+ * their overrides.
  * Property observers are unsupported.
  */
 object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirCallableDeclaration) {
         if (declaration !is FirSimpleFunction && declaration !is FirProperty) return
-        violation(declaration)?.let { reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, it) }
+        val overridden = if (declaration.isOverride) declaration.symbol.directOverriddenSymbolsSafe() else emptyList()
+        val violations = listOfNotNull(ghostOverride(overridden), violation(declaration, overridden))
+        for (violation in violations) reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, violation)
     }
 
     context(context: CheckerContext)
+    private fun ghostOverride(overridden: List<FirCallableSymbol<*>>): String? =
+        overridden.map { it.unwrapFakeOverrides() }.firstOrNull { it.isGhostObserver(context.session) }
+            ?.let { "Ghost observer override: '${it.spelling}'." }
+
+    context(context: CheckerContext)
     @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
-    private fun violation(declaration: FirCallableDeclaration): String? {
+    private fun violation(declaration: FirCallableDeclaration, overridden: List<FirCallableSymbol<*>>): String? {
         val symbol = declaration.symbol
         val isPure = symbol.isPure(context.session)
-        val overridden = if (declaration.isOverride) symbol.directOverriddenSymbolsSafe() else emptyList()
         val overridesObserver = overridden.any { it.isObserverOrOverride() }
         val isPureProperty = declaration is FirProperty && isPure
         if (isPureProperty) return "Invalid @Pure property: unsupported observer property."
@@ -101,7 +109,9 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
                 if (it.inheritedContractImplementation(declaration.symbol)) {
                     violations += "Inherited contract implementation: '${it.spelling}'."
                 }
-                violation(declaration, it, scope.getDirectOverriddenFunctions(it))?.let(violations::add)
+                val overridden = scope.getDirectOverriddenFunctions(it)
+                implicitGhostOverride(declaration, it, overridden)?.let(violations::add)
+                violation(declaration, it, overridden)?.let(violations::add)
             }
             scope.processPropertiesByName(name) { property ->
                 if (property !is FirPropertySymbol) return@processPropertiesByName
@@ -111,14 +121,29 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
         for (violation in violations) reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, violation)
     }
 
+    // A member a superclass declares or creates is checked with the superclass.
+    private fun FirCallableSymbol<*>.isCreatedIn(declaration: FirRegularClass): Boolean =
+        getContainingClassSymbol() == declaration.symbol
+
+    context(context: CheckerContext)
+    private fun implicitGhostOverride(
+        declaration: FirRegularClass,
+        member: FirCallableSymbol<*>,
+        overridden: List<FirCallableSymbol<*>>,
+    ): String? {
+        val implicitOverride = member.origin == FirDeclarationOrigin.Delegated || member.isIntersectionOverride
+        if (!member.isCreatedIn(declaration) || !implicitOverride) return null
+        val ghost = overridden.map { it.unwrapFakeOverrides() }.firstOrNull { it.isGhostObserver(context.session) }
+        return ghost?.let { "Ghost observer override: '${it.spelling}'." }
+    }
+
     context(context: CheckerContext)
     private fun violation(
         declaration: FirRegularClass,
         member: FirCallableSymbol<*>,
         overridden: List<FirCallableSymbol<*>>,
     ): String? {
-        // A member a superclass declares or creates is checked with the superclass.
-        if (member.getContainingClassSymbol() != declaration.symbol) return null
+        if (!member.isCreatedIn(declaration)) return null
         if (overridden.none { it.isObserverOrOverride() }) return null
         if (member.origin == FirDeclarationOrigin.Delegated) {
             return "Invalid observer override: '${member.spelling}' is delegated, so it has no body."

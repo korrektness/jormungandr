@@ -29,6 +29,15 @@ fun preconditions(@Suppress("UNUSED_PARAMETER") body: () -> Unit) = Unit
 
 fun <T> postconditions(@Suppress("UNUSED_PARAMETER") body: (T) -> Unit) = Unit
 
+/** Placeholder body for [GhostObserver]; see "Callable specifications" in SPECIFICATIONS.md. */
+fun <T> ghostObserver(): T = throw FormverFunctionCalledInRuntimeException("ghostObserver")
+
+/** Binds callable ghost observers; see "Callable specifications" in SPECIFICATIONS.md. */
+fun <S : Any> exposes(
+    @Suppress("UNUSED_PARAMETER") spec: kotlin.reflect.KClass<S>,
+    @Suppress("UNUSED_PARAMETER") body: (@Unique S).() -> Unit,
+) = Unit
+
 
 fun <T> forAll(@Suppress("UNUSED_PARAMETER") body: InvariantBuilder.(T) -> Unit): Boolean =
     throw FormverFunctionCalledInRuntimeException("forAll")

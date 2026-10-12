@@ -42,7 +42,7 @@ val postconditionsId = builtinId("postconditions")
 private val specificationFunctionIds: Set<CallableId> =
     setOf(builtinId("preconditions"), postconditionsId, builtinId("loopInvariants"), builtinId("verify"),
         builtinId("forAll"), builtinId("exists"), builtinId("old"), builtinId("acc"), builtinId("fold"),
-        builtinId("unfold"))
+        builtinId("unfold"), builtinId("exposes"), builtinId("refute"))
 
 private val uniquePredClassId = ClassId(formverPluginPackage, Name.identifier("UniquePred"))
 

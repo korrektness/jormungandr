@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.DeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirCallableDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirBasicExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
@@ -31,6 +32,7 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
             FunctionUniquenessStateRenderingChecker(config),
             SpecOfDeclarationChecker(session),
             LawDeclarationChecker,
+            GhostObserverDeclarationChecker,
         )
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> = setOf(ObserverDeclarationChecker)
         override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(
@@ -41,6 +43,7 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
     }
 
     override val expressionCheckers: ExpressionCheckers = object : ExpressionCheckers() {
-        override val functionCallCheckers: Set<FirFunctionCallChecker> = setOf(SpecOfCallChecker(session))
+        override val basicExpressionCheckers: Set<FirBasicExpressionChecker> = setOf(ExposesPlacementChecker)
+        override val functionCallCheckers: Set<FirFunctionCallChecker> = setOf(SpecOfCallChecker(session), ExposesCallChecker)
     }
 }

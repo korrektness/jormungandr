@@ -16,6 +16,7 @@ object PluginErrors : KtDiagnosticsContainer() {
     val UNIQUENESS_VIOLATION by error1<PsiElement, String>()
     val UNIQUENESS_CFG by info1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
     val ADT_VIOLATION by error1<PsiElement, String>()
+    val INVALID_EXPOSES by error1<PsiElement, String>()
     val INVALID_SPEC_OF by error1<PsiElement, String>()
     val INVALID_OBSERVER by error1<PsiElement, String>()
     val INVALID_LAW by error1<PsiElement, String>()
@@ -29,6 +30,7 @@ object PluginErrors : KtDiagnosticsContainer() {
         UNIQUENESS_VIOLATION.name,
         UNIQUENESS_CFG.name,
         ADT_VIOLATION.name,
+        INVALID_EXPOSES.name,
         INVALID_SPEC_OF.name,
         INVALID_OBSERVER.name,
         INVALID_LAW.name,

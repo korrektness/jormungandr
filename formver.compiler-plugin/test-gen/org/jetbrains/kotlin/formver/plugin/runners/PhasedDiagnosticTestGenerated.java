@@ -1386,6 +1386,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("exposes_frontend.kt")
+      public void testExposes_frontend() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/exposes_frontend.kt");
+      }
+
+      @Test
       @TestMetadata("heap_dependent_specifications.kt")
       public void testHeap_dependent_specifications() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/heap_dependent_specifications.kt");
