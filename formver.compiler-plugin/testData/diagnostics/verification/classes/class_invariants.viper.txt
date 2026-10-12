@@ -24,6 +24,246 @@ function nonnegative(par_value: Ref): Ref
   geInts(par_value, intToRef(0))
 }
 
+predicate Positive_unique(this: Ref) {
+  isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      (let anon_1_0 ==
+        (this.bf_value) in
+        andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
+}
+
+/class_invariants.kt: info: Generated Viper text for increment:
+field bf_value: Ref
+
+function nonnegative(par_value: Ref): Ref
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(par_value, intToRef(0))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Positive_unique(this: Ref) {
+  isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.bf_value) in
+      (let anon_2_0 ==
+        (this.bf_value) in
+        andBools(gtInts(anon_1_0, intToRef(0)), nonnegative(anon_2_0))))))
+}
+
+predicate Serializable_unique(this: Ref)
+
+method increment(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires acc(Positive_unique(this), write)
+  ensures acc(Positive_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_3: Ref
+  var anon_0: Ref
+  unfold acc(Positive_unique(this), write)
+  anon_3 := this.bf_value
+  assert intFromRef(anon_3) > 0
+  anon_0 := this.bf_value
+  this.bf_value := plusInts(anon_0, intToRef(1))
+  refute false
+  label lbl_ret_0
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_value) in
+        (let anon_2_0 ==
+          (this.bf_value) in
+          andBools(gtInts(anon_1_0, intToRef(0)), nonnegative(anon_2_0))))))
+  fold acc(Positive_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/class_invariants.kt: info: Generated Viper text for reset:
+field bf_value: Ref
+
+function nonnegative(par_value: Ref): Ref
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(par_value, intToRef(0))
+}
+
+predicate Positive_unique(this: Ref) {
+  isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      (let anon_1_0 ==
+        (this.bf_value) in
+        andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
+}
+
+method reset(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires acc(Positive_unique(this), write)
+  ensures acc(Positive_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(Positive_unique(this), write)
+  this.bf_value := intToRef(0)
+  label lbl_ret_0
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        (let anon_1_0 ==
+          (this.bf_value) in
+          andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
+  fold acc(Positive_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/class_invariants.kt: info: Generated Viper text for consumeBroken:
+field bf_value: Ref
+
+function nonnegative(par_value: Ref): Ref
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(par_value, intToRef(0))
+}
+
+predicate Positive_unique(this: Ref) {
+  isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      (let anon_1_0 ==
+        (this.bf_value) in
+        andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
+}
+
+method consumeBroken(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires acc(Positive_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(Positive_unique(this), write)
+  this.bf_value := intToRef(-1)
+  label lbl_ret_0
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        (let anon_1_0 ==
+          (this.bf_value) in
+          andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
+  fold acc(Positive_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/class_invariants.kt: info: Generated Viper text for restore:
+field bf_value: Ref
+
+function nonnegative(par_value: Ref): Ref
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  geInts(par_value, intToRef(0))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Positive_unique(this: Ref) {
+  isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      (let anon_1_0 ==
+        (this.bf_value) in
+        andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
+}
+
+predicate Serializable_unique(this: Ref)
+
+method restore(this: Ref, early: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Positive())
+  requires acc(Positive_unique(this), write)
+  requires isSubtype(typeOf(early), boolType())
+  ensures acc(Positive_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_2: Ref
+  unfold acc(Positive_unique(this), write)
+  anon_2 := this.bf_value
+  assert intFromRef(anon_2) > 0
+  this.bf_value := intToRef(0)
+  this.bf_value := intToRef(1)
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        (let anon_1_0 ==
+          (this.bf_value) in
+          andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
+  fold acc(Positive_unique(this), write)
+  if (boolFromRef(early)) {
+    goto lbl_ret_0
+  }
+  unfold acc(Positive_unique(this), write)
+  this.bf_value := intToRef(2)
+  refute false
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_value) in
+        (let anon_1_0 ==
+          (this.bf_value) in
+          andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
+  fold acc(Positive_unique(this), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /class_invariants.kt: info: Generated Viper text for createPositive:
 field bf_value: Ref
 
@@ -45,6 +285,27 @@ function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
 
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Positive_unique(this: Ref) {
+  isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      (let anon_1_0 ==
+        (this.bf_value) in
+        andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
+}
+
+predicate Serializable_unique(this: Ref)
 
 method con(start: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(start), intType())
@@ -79,6 +340,14 @@ method createPositive(start: Ref) returns (v_ret_0: Ref)
     assert intFromRef(anon_2) == intFromRef(start) + 1
     anon_3 := p.bf_value
     assert intFromRef(anon_3) > 0
+    assert (let this ==
+        (p) in
+        true &&
+        boolFromRef((let anon_0_0 ==
+          (this.bf_value) in
+          (let anon_1_0 ==
+            (this.bf_value) in
+            andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
     fold acc(Positive_unique(p), write)
   }
   label lbl_ret_0
@@ -100,6 +369,19 @@ function nonnegative(par_value: Ref): Ref
   ensures isSubtype(typeOf(result), boolType())
 {
   geInts(par_value, intToRef(0))
+}
+
+predicate Positive_unique(this: Ref) {
+  isSubtype(typeOf(this), Positive()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_value) in
+      (let anon_1_0 ==
+        (this.bf_value) in
+        andBools(gtInts(anon_0_0, intToRef(0)), nonnegative(anon_1_0))))))
 }
 
 method con(start: Ref) returns (ret_1: Ref)
@@ -136,6 +418,13 @@ function value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+predicate NestedObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), NestedObservation()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(geInts(value(this), intToRef(0))))
+}
+
 /class_invariants.kt: info: Generated Viper text for observed:
 function observed(this: Ref): Ref
   requires isSubtype(typeOf(this), NestedObservation())
@@ -149,6 +438,13 @@ function value(this: Ref): Ref
   requires isSubtype(typeOf(this), NestedObservation())
   ensures isSubtype(typeOf(result), intType())
 
+
+predicate NestedObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), NestedObservation()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(geInts(value(this), intToRef(0))))
+}
 
 /class_invariants.kt: info: Generated Viper text for nested:
 function nested(this: Ref): Ref
@@ -172,6 +468,13 @@ function value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+predicate NestedObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), NestedObservation()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(geInts(value(this), intToRef(0))))
+}
+
 /class_invariants.kt: info: Generated Viper text for createNestedObservation:
 function g_value(this: Ref): Ref
   requires isSubtype(typeOf(this), NestedObservation())
@@ -182,6 +485,21 @@ function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
 
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate NestedObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), NestedObservation()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(geInts(g_value(this), intToRef(0))))
+}
+
+predicate Serializable_unique(this: Ref)
 
 method con(par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
@@ -223,6 +541,13 @@ function second(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+predicate Swapped_unique(this: Ref) {
+  isSubtype(typeOf(this), Swapped()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(first(this), second(this))))
+}
+
 /class_invariants.kt: info: Generated Viper text for createSwapped:
 function first(this: Ref): Ref
   requires isSubtype(typeOf(this), Swapped())
@@ -238,6 +563,21 @@ function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
 
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+predicate Swapped_unique(this: Ref) {
+  isSubtype(typeOf(this), Swapped()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(first(this), second(this))))
+}
 
 method con(a: Ref, b: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(a), intType())

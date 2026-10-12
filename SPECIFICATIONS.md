@@ -153,8 +153,10 @@ observations in the restored class view. A bare interface view exposes no class-
 
 ### Interface laws
 
-Declare a Boolean `@Law @Pure` interface member with a body to state a law. Use `@Unique` when it calls observers
-that require an owned receiver:
+Declare a Boolean `@Law @Pure` interface member with a body to state a law. Laws have no value, type, extension,
+or context parameters and cannot be overridden. Their bodies admit immutable locals, value operations, observers
+on `this`, and `@Pure` top-level or companion helpers; assignments and mutable locals are rejected with
+`INVALID_LAW`. Use `@Unique` when a law calls observers that require an owned receiver:
 
 ```kotlin
 interface Sized {
@@ -172,15 +174,27 @@ the class. Law declarations are specification bodies and have no standalone veri
 ### Class laws
 
 A class may declare `@Law @Pure` Boolean members with the signature and expression rules of interface laws.
-Its unique predicate conjoins these representation invariants with its field permissions. Observer calls on `this`
-in a class law expand recursively to bodies declared in that class, exposing field reads. Abstract, inherited,
-recursive, and overridable observers are rejected with `INVALID_LAW`; a final class or final member fixes dispatch.
+Its unique predicate conjoins these representation invariants with its field permissions. Inside the predicate,
+observer calls on `this` in a class law expand recursively to the class's own pure observer bodies. Field reads and
+`@Pure` non-member calls retain their ordinary encoding. An abstract observer, an inherited observer without a body
+in the class, a recursive expansion, or an overridable observer is rejected with `INVALID_LAW` and a reason.
+A final class or final member fixes dispatch.
 
 Class laws require a primary constructor with no secondary constructors or init blocks. Stored properties must
 have initializers that are constructor parameters or pure expressions over those parameters. Delegated properties
 and superclasses carrying class laws are outside this scope. Unsupported shapes are rejected with `INVALID_LAW`.
 The constructor requires the invariant with field reads substituted by their initializers. Each call site proves
 this precondition; the returned representation and its opened-predicate description include the invariant.
+
+Unfolding an owned class receiver exposes its invariant to the member body. Every refold proves the invariant,
+including refolds for calls and control-flow joins. On member exit, a retained unique receiver with class laws is
+refolded even when the receiver is consumed rather than borrowed. Ownership transfers prove the invariant before
+moving the representation. An invariant violation is a verification error.
+
+For an owned receiver, a concrete observer's function definition reads its pure body under an unfolding of the
+class's unique predicate. The interface-law harness connects the invariant's expanded field expression to the
+concrete observer through that definition. It proves inherited interface laws from the class invariant without
+an additional observer axiom.
 
 ## Loop Invariants
 

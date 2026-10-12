@@ -9,10 +9,13 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FamilyTransfer
 import org.jetbrains.kotlin.formver.core.embeddings.types.ObserverBinding
 import org.jetbrains.kotlin.formver.core.embeddings.types.PretypeEmbedding
+import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.core.names.NameMatcher
 import org.jetbrains.kotlin.formver.core.names.NameScope
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
+import org.jetbrains.kotlin.formver.viper.ast.Declaration
+import org.jetbrains.kotlin.formver.viper.ast.Type
 import org.jetbrains.kotlin.formver.viper.ast.Method
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.name.Name
@@ -96,8 +99,12 @@ class TypeResolver {
         classLawBodies[type.name] = laws
     }
 
-    fun classLaws(type: ClassTypeEmbedding) = classLawBodies[type.name].orEmpty()
     fun hasClassLaws(type: ClassTypeEmbedding) = type.name in classLawBodies
+
+    fun classLawAssertion(type: ClassTypeEmbedding, receiver: Exp): Exp = Exp.LetBinding(
+        Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref), receiver,
+        classLawBodies[type.name].orEmpty().fold<Exp, Exp>(Exp.BoolLit(true)) { acc, law -> Exp.And(acc, law) },
+    )
 
     private val interfaceLawBodies = linkedMapOf<SymbolicName, List<Exp>>()
 

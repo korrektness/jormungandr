@@ -1,3 +1,4 @@
+// RENDER_PREDICATES
 // FULL_JDK
 
 import org.jetbrains.kotlin.formver.plugin.*
@@ -8,6 +9,35 @@ import org.jetbrains.kotlin.formver.plugin.*
 <!VIPER_TEXT!>class Positive<!>(start: Int) {
     var value: Int = adjusted(start)
     @Law @Pure fun invariant(): Boolean = value > 0 && nonnegative(value)
+
+    @AlwaysVerify @Unique @Borrowed
+    fun <!VIPER_TEXT!>increment<!>() {
+        verify(value > 0)
+        value++
+        refute(false)
+    }
+
+    <!VIPER_VERIFICATION_ERROR!>@AlwaysVerify @Unique @Borrowed
+    fun <!VIPER_TEXT!>reset<!>() {
+        value = 0
+    }<!>
+
+    <!VIPER_VERIFICATION_ERROR!>@AlwaysVerify @Unique
+    fun <!VIPER_TEXT!>consumeBroken<!>() {
+        value = -1
+    }<!>
+
+    @AlwaysVerify @Unique @Borrowed
+    fun <!VIPER_TEXT!>restore<!>(early: Boolean) {
+        verify(value > 0)
+        value = 0
+        value = 1
+        if (early) {
+            return
+        }
+        value = 2
+        refute(false)
+    }
 }
 
 @AlwaysVerify

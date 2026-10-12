@@ -279,6 +279,13 @@ data class LinearizationVisitor(
             ctx.addLabel(e.returnLabel.toViper(ctx))
             if (foldState != null && signature != null) {
                 signature.formalArgs.filter { it.isUnique && it.isBorrowed }.forEach { foldState.close(ctx, OwnedPath(it)) }
+                val receiver = signature.dispatchReceiver
+                val receiverClass = receiver?.type?.pretype as? ClassTypeEmbedding
+                if (receiver?.isUnique == true && !receiver.isBorrowed &&
+                    receiverClass?.let(ctx.typeResolver::hasClassLaws) == true) {
+                    val path = OwnedPath(receiver)
+                    if (foldState.holds(path)) foldState.close(ctx, path)
+                }
                 if (signature.callableType.returnsUnique) foldState.close(ctx, OwnedPath(signature.returns))
             }
         }

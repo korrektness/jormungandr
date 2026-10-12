@@ -108,10 +108,8 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
             includeInvariant(TypeInvariantEmbedding { subject ->
                 val boolean = buildType { boolean() }
                 ExpWrapper.deferred(boolean) {
-                    val laws = ctx.classLaws(this@ClassTypeEmbedding).fold<Exp, Exp>(Exp.BoolLit(true)) { acc, law -> Exp.And(acc, law) }
-                    boolean.injection.toRef(Exp.LetBinding(
-                        Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref),
-                        subject.pureToViper(toBuiltin = false, ctx), laws,
+                    boolean.injection.toRef(ctx.classLawAssertion(
+                        this@ClassTypeEmbedding, subject.pureToViper(toBuiltin = false, ctx),
                     ))
                 }
             })

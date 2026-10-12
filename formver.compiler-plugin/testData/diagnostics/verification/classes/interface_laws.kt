@@ -37,6 +37,32 @@ open <!VIPER_TEXT!>class GoodSizedLaw<!> : SizedLawDiamond {
     override fun <!VIPER_TEXT!>size<!>(): Int = count
 }<!>
 
+<!VIPER_TEXT!>class InvariantSizedLaw<!>(var count: Int) : SizedLaw {
+    @Pure @Unique
+    override fun <!VIPER_TEXT!>size<!>(): Int = count
+
+    @Law @Pure @Unique
+    fun representation(): Boolean = size() >= 0
+
+    @AlwaysVerify @Unique @Borrowed
+    fun <!VIPER_TEXT!>add<!>() {
+        verify(count >= 0)
+        count++
+        refute(false)
+    }
+}
+
+@AlwaysVerify
+fun <!VIPER_TEXT!>invariantLawTransfer<!>() {
+    val value: @Unique InvariantSizedLaw = InvariantSizedLaw(0)
+    value.add()
+    lawClient(value)
+    verify(value.size() >= 0)
+    val view: @Unique SizedLaw = value
+    lawClient(view)
+    refute(false)
+}
+
 @AlwaysVerify
 fun <!VIPER_TEXT!>borrowedLawTransfer<!>() {
     val value: @Unique InheritedSizedLaw = InheritedSizedLaw()
