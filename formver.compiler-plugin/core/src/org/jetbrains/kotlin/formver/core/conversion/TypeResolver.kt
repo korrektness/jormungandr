@@ -1,5 +1,7 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.viper.ast.PermExp
+
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
@@ -123,9 +125,14 @@ class TypeResolver {
 
     fun hasClassLaws(type: ClassTypeEmbedding) = type.name in classLawBodies
 
-    fun classLawAssertion(type: ClassTypeEmbedding, receiver: Exp): Exp = Exp.LetBinding(
+    fun classLawAssertion(type: ClassTypeEmbedding, receiver: Exp, openSuperclasses: Set<ClassTypeEmbedding> = emptySet()): Exp = Exp.LetBinding(
         Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref), receiver,
-        classLawBodies[type.name].orEmpty().fold<Exp, Exp>(Exp.BoolLit(true)) { acc, law -> Exp.And(acc, law) },
+        generateSequence(superClass(type), ::superClass).filter { it !in openSuperclasses }.toList().foldRight(
+            classLawBodies[type.name].orEmpty().fold<Exp, Exp>(Exp.BoolLit(true)) { acc, law -> Exp.And(acc, law) },
+        ) { parent, law ->
+            Exp.Unfolding(Exp.PredicateAccess(parent.uniquePredicateName,
+                listOf(Exp.LocalVar(DispatchReceiverName, Type.Ref)), PermExp.WildcardPerm()), law)
+        },
     )
 
     private val interfaceLawBodies = linkedMapOf<SymbolicName, List<Exp>>()
@@ -183,6 +190,9 @@ class TypeResolver {
                 ?: error("Missing observer binding for ${from.name}: $observer")
             source to target
         }.distinctBy { it.second.functionName }
+
+    fun hasRuntimeObserverDispatch(type: ClassTypeEmbedding): Boolean = !isInterface(type) &&
+        observerBindings[type.name].orEmpty().values.any { it.functionName != it.signature.name }
 
     fun observerViewFunctions() = observerBindings.values.flatMap { it.values }
         .mapNotNull { it.function() }.distinctBy { it.name }

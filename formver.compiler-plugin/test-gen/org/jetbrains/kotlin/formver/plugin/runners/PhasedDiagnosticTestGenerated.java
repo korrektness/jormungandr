@@ -718,6 +718,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("class_law_dispatch.kt")
+      public void testClass_law_dispatch() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/class_law_dispatch.kt");
+      }
+
+      @Test
+      @TestMetadata("class_law_transitive_hierarchy.kt")
+      public void testClass_law_transitive_hierarchy() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/class_law_transitive_hierarchy.kt");
+      }
+
+      @Test
       @TestMetadata("class_observer_views.kt")
       public void testClass_observer_views() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/class_observer_views.kt");

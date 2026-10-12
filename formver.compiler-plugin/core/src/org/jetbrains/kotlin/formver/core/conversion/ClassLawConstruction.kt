@@ -11,11 +11,15 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
+import org.jetbrains.kotlin.fir.resolve.getContainingClassSymbol
+import org.jetbrains.kotlin.fir.references.toResolvedConstructorSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.core.isLaw
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.isPure
+import org.jetbrains.kotlin.formver.core.isUnique
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineCallable
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
@@ -58,14 +62,13 @@ private fun FirQualifiedAccessExpression.isAllowedInitializerAccess(
 }
 
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
-fun classLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSession): List<String> {
+private fun ownClassLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSession): List<String> {
     val failures = mutableListOf<String>()
     val constructors = symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>()
     val primary = constructors.singleOrNull { it.isPrimary }
     if (primary == null) failures += "Missing primary constructor"
     if (constructors.any { !it.isPrimary }) failures += "Secondary constructor in invariant class"
     if (symbol.fir.declarations.any { it is FirAnonymousInitializer }) failures += "Init block in invariant class"
-    if (symbol.hasSuperclassLaws(session)) failures += "Superclass carries class laws"
     val parameters = primary?.valueParameterSymbols.orEmpty().toSet()
     symbol.fir.declarations.filterIsInstance<FirProperty>().forEach { property ->
         if (property.delegate != null) failures += "Delegated property in invariant class"
@@ -88,6 +91,22 @@ fun classLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSess
             if (!valid) failures += "Property initializer is not a pure expression over constructor parameters"
         }
     }
+    return failures
+}
+
+fun classLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSession): List<String> {
+    val failures = mutableListOf<String>()
+    val visited = mutableSetOf<FirRegularClassSymbol>()
+    fun visit(current: FirRegularClassSymbol) {
+        if (!visited.add(current)) return
+        if (current.ownClassLaws(session).isNotEmpty() || current.hasSuperclassLaws(session)) {
+            failures += ownClassLawConstructionFailures(current, session)
+        }
+        current.resolvedSuperTypes.mapNotNull { it.toRegularClassSymbol(session) }
+            .filter { !it.classKind.isInterface && it.origin == FirDeclarationOrigin.Source }
+            .forEach(::visit)
+    }
+    visit(symbol)
     return failures.distinct()
 }
 
@@ -98,24 +117,68 @@ fun classLawConstructorConditions(
     symbol: FirConstructorSymbol, signature: NonInlineCallable, result: ExpEmbedding,
 ): Pair<List<ExpEmbedding>, List<ExpEmbedding>> {
     val owner = symbol.resolvedReturnType.toRegularClassSymbol(program.session) ?: return emptyList<ExpEmbedding>() to emptyList()
-    val laws = owner.ownClassLaws(program.session)
-    if (laws.isEmpty()) return emptyList<ExpEmbedding>() to emptyList()
+    if (owner.ownClassLaws(program.session).isEmpty() && !owner.hasSuperclassLaws(program.session)) {
+        return emptyList<ExpEmbedding>() to emptyList()
+    }
     val receiver = PlaceholderVariableEmbedding(DispatchReceiverName, program.embedType(symbol.resolvedReturnType), isUnique = true)
     val substitutions = symbol.valueParameterSymbols.zip(signature.params).associate { (symbol, value) ->
         SubstitutedArgument.ValueParameter(symbol) to value
     } + (SubstitutedArgument.DispatchThis to receiver)
-    val target = program.returnTargetProducer.getFresh(signature.callableType.returnType)
-    val resolver = InlineParameterResolver(substitutions, null, target)
-    val context = MethodConverter(
-        program, signature, resolver, program.scopeIndexProducer.getFresh(), OwnershipFrame.root(null, emptyList()),
-    ).statementCtxt()
-    val fields = owner.fir.declarations.filterIsInstance<FirProperty>().mapNotNull { property ->
-        property.initializer?.let { property.symbol to context.convert(it) }
-    }.toMap()
-    val expansion = ClassLawExpansion(program, owner, fields)
-    val preconditions = laws.map { law ->
-        val resultType = with(program) { law.toFunctionSignature() }.signature.returns.type
-        ExpWrapper(expansion.body(law, mapOf(SubstitutedArgument.DispatchThis to receiver)), resultType)
+    val fields = linkedMapOf<FirPropertySymbol, ExpEmbedding>()
+    val initializers = linkedMapOf<FirPropertySymbol, () -> ExpEmbedding>()
+    val writes = owner.constructionWrites(program.session)
+    val lawOwners = mutableListOf<FirRegularClassSymbol>()
+    fun collect(constructor: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>) {
+        val declaringClass = constructor.resolvedReturnType.toRegularClassSymbol(program.session) ?: return
+        val target = program.returnTargetProducer.getFresh(signature.callableType.returnType)
+        val resolver = InlineParameterResolver(arguments, null, target)
+        val context = MethodConverter(
+            program, signature, resolver, program.scopeIndexProducer.getFresh(), OwnershipFrame.root(null, emptyList()),
+        ).statementCtxt()
+        val delegation = constructor.fir.delegatedConstructor
+        val superConstructor = delegation?.calleeReference?.toResolvedConstructorSymbol()
+        if (superConstructor != null) {
+            val superArguments = delegation.resolvedArgumentMapping.orEmpty().map { (argument, parameter) ->
+                SubstitutedArgument.ValueParameter(parameter.symbol) to context.convert(argument)
+            }.toMap().toMutableMap<SubstitutedArgument, ExpEmbedding>()
+            superArguments[SubstitutedArgument.DispatchThis] = receiver
+            for (parameter in superConstructor.valueParameterSymbols) {
+                val key = SubstitutedArgument.ValueParameter(parameter)
+                if (key in superArguments) continue
+                val defaultValue = parameter.fir.defaultValue ?: error("Missing superclass constructor argument")
+                val defaultContext = MethodConverter(program, signature,
+                    InlineParameterResolver(superArguments.toMap(), null, target),
+                    program.scopeIndexProducer.getFresh(), OwnershipFrame.root(null, emptyList()),
+                ).statementCtxt()
+                superArguments[key] = defaultContext.convert(defaultValue)
+            }
+            collect(superConstructor, superArguments)
+        }
+        declaringClass.fir.declarations.filterIsInstance<FirProperty>().forEach { property ->
+            property.initializer?.let { initializer ->
+                initializers[property.symbol] = {
+                    val nestedStateMayChange = context(program.checkerContext) { property.symbol.isUnique() } &&
+                        writes.mayReach(property.symbol)
+                    if (property.symbol.getContainingClassSymbol() != owner &&
+                        (writes.mayChange(property.symbol) || nestedStateMayChange)) {
+                        throw UnsupportedFeatureException(property.source, "a class-law field changed during construction")
+                    }
+                    context.convert(initializer)
+                }
+            }
+        }
+        if (declaringClass.ownClassLaws(program.session).isNotEmpty()) lawOwners += declaringClass
+    }
+    collect(symbol, substitutions)
+    fun initializedField(property: FirPropertySymbol): ExpEmbedding? =
+        fields[property] ?: initializers[property]?.invoke()?.also { fields[property] = it }
+    owner.fir.declarations.filterIsInstance<FirProperty>().forEach { initializedField(it.symbol) }
+    val preconditions = lawOwners.flatMap { declaringClass ->
+        val expansion = ClassLawExpansion(program, declaringClass, ::initializedField)
+        declaringClass.ownClassLaws(program.session).map { law ->
+            val resultType = with(program) { law.toFunctionSignature() }.signature.returns.type
+            ExpWrapper(expansion.body(law, mapOf(SubstitutedArgument.DispatchThis to receiver)), resultType)
+        }
     }
     val postconditions = fields.mapNotNull { (property, initializer) ->
         val getter = program.embedProperty(property).getter ?: return@mapNotNull null

@@ -8,6 +8,8 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.fir.references.symbol
+import org.jetbrains.kotlin.fir.resolve.getContainingClassSymbol
+import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
@@ -25,18 +27,21 @@ import org.jetbrains.kotlin.formver.viper.ast.Exp
 class ClassLawExpansion(
     private val program: ProgramConversionContext,
     private val owner: FirRegularClassSymbol,
-    private val initializers: Map<org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol, ExpEmbedding> = emptyMap(),
+    private val initializer: (org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol) -> ExpEmbedding? = { null },
 ) {
-    fun initializedField(symbol: org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol): ExpEmbedding? = initializers[symbol]
+    fun initializedField(symbol: org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol): ExpEmbedding? =
+        initializer(symbol.unwrapFakeOverrides())
     private val active = mutableSetOf<FirFunctionSymbol<*>>()
 
     fun isOwnAccess(access: FirQualifiedAccessExpression): Boolean =
-        (access.dispatchReceiver as? FirThisReceiverExpression)?.calleeReference?.symbol == owner &&
-                access.extensionReceiver == null
+        access.extensionReceiver == null &&
+            (access.dispatchReceiver as? FirThisReceiverExpression)?.calleeReference?.symbol?.let { receiver ->
+                receiver == owner || active.any { it.getContainingClassSymbol() == receiver }
+            } == true
 
     @OptIn(SymbolInternals::class)
     fun call(symbol: FirCallableSymbol<*>, args: List<ExpEmbedding>): ExpEmbedding {
-        check(classLawObserverFailure(symbol, owner) == null) { "Invalid class-law observer reached conversion" }
+        check(classLawObserverFailure(symbol) == null) { "Invalid class-law observer reached conversion" }
         val function = classLawObserverBody(symbol)!!
         val signature = with(program) { function.toFunctionSignature() }.signature
         val keys = listOf(SubstitutedArgument.DispatchThis) + function.valueParameterSymbols.map {

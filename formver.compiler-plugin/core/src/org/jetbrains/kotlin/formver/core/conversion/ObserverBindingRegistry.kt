@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
-import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.analysis.checkers.unsubstitutedScope
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
@@ -45,7 +44,6 @@ class ObserverBindingRegistry {
     @OptIn(ScopeFunctionRequiresPrewarm::class)
     fun registerBindings(
         ctx: ProgramConversionContext,
-        implementationObligations: Boolean = false,
         signature: (SymbolicName) -> NonInlineFunctionSignature,
     ) {
         val visited = mutableSetOf<SymbolicName>()
@@ -55,13 +53,6 @@ class ObserverBindingRegistry {
             val type = ctx.typeResolver.lookupClassTypeEmbedding(entry.key)!!
             context(ctx.checkerContext) {
                 val scope = entry.value.unsubstitutedScope()
-                for (name in scope.getCallableNames()) {
-                    scope.processFunctionsByName(name) { member ->
-                        if (!implementationObligations && member.inheritedContractImplementation(entry.value)) {
-                            throw UnsupportedFeatureException(entry.value.source, "an inherited contract implementation")
-                        }
-                    }
-                }
                 for (name in scope.getCallableNames()) {
                     scope.processPropertiesByName(name) { member ->
                         if (member !is FirPropertySymbol || !member.isObserverOrOverride()) return@processPropertiesByName

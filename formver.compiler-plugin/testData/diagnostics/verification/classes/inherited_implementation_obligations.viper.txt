@@ -516,6 +516,60 @@ method refines_ChangedBinding_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeT
     old(intFromRef(ChangedBinding_f_count(this))) + 1
 }
 
+/inherited_implementation_obligations.kt: info: Generated Viper text for count:
+field n: Ref
+
+field other: Ref
+
+function ChangedBinding_f_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), ChangedBinding())
+  requires acc(ChangedBinding_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ChangedBinding_unique(this), write) in
+    (unfolding acc(c_BoundBase_unique(this), write) in this.other))
+}
+
+function RuntimeTally_f_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), RuntimeTally())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BoundBase_c_BoundBase_f_count_args_c_BoundBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BoundBase())
+  requires acc(c_BoundBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_BoundBase() ==>
+    result == c_BoundBase_f_count_args_c_BoundBase_ret_Int(this)
+
+
+function c_BoundBase_f_count_args_c_BoundBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BoundBase())
+  requires acc(c_BoundBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_BoundBase_unique(this), write) in this.n)
+}
+
+predicate ChangedBinding_unique(this: Ref) {
+  isSubtype(typeOf(this), ChangedBinding()) &&
+  acc(c_BoundBase_unique(this), write)
+}
+
+predicate RuntimeTally_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), RuntimeTally())
+}
+
+predicate c_BoundBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_BoundBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType()) &&
+  acc(this.other, write) &&
+  isSubtype(typeOf(this.other), intType())
+}
+
+predicate footprint(this: Ref)
+
 /inherited_implementation_obligations.kt: info: Generated Viper text for SameBinding:
 field n: Ref
 
@@ -616,6 +670,60 @@ method refines_SameBinding_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTall
     old(intFromRef(SameBinding_f_count(this))) + 1
 }
 
+/inherited_implementation_obligations.kt: info: Generated Viper text for count:
+field n: Ref
+
+field other: Ref
+
+function RuntimeTally_f_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), RuntimeTally())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SameBinding_f_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), SameBinding())
+  requires acc(SameBinding_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(SameBinding_unique(this), write) in
+    (unfolding acc(c_BoundBase_unique(this), write) in this.n))
+}
+
+function c_BoundBase_c_BoundBase_f_count_args_c_BoundBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BoundBase())
+  requires acc(c_BoundBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_BoundBase() ==>
+    result == c_BoundBase_f_count_args_c_BoundBase_ret_Int(this)
+
+
+function c_BoundBase_f_count_args_c_BoundBase_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BoundBase())
+  requires acc(c_BoundBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_BoundBase_unique(this), write) in this.n)
+}
+
+predicate RuntimeTally_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), RuntimeTally())
+}
+
+predicate SameBinding_unique(this: Ref) {
+  isSubtype(typeOf(this), SameBinding()) &&
+  acc(c_BoundBase_unique(this), write)
+}
+
+predicate c_BoundBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_BoundBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType()) &&
+  acc(this.other, write) &&
+  isSubtype(typeOf(this.other), intType())
+}
+
+predicate footprint(this: Ref)
+
 /inherited_implementation_obligations.kt: info: Generated Viper text for ConcreteTally:
 field n: Ref
 
@@ -663,13 +771,15 @@ predicate AbstractTally_unique(this: Ref) {
 predicate ConcreteTally_unique(this: Ref) {
   isSubtype(typeOf(this), ConcreteTally()) && acc(this.n, write) &&
   isSubtype(typeOf(this.n), intType()) &&
+  acc(AbstractMiddle_unique(this), write) &&
   (let this ==
     (this) in
-    true &&
-    boolFromRef((let anon_0_0 ==
-      (this.n) in
-      geInts(anon_0_0, intToRef(0))))) &&
-  acc(AbstractMiddle_unique(this), write)
+    (unfolding acc(AbstractMiddle_unique(this), wildcard) in
+      (unfolding acc(AbstractTally_unique(this), wildcard) in
+        true &&
+        boolFromRef((let anon_0_0 ==
+          (this.n) in
+          geInts(anon_0_0, intToRef(0)))))))
 }
 
 predicate NonnegativeTally_footprint(this: Ref)
@@ -742,13 +852,15 @@ predicate AbstractTally_unique(this: Ref) {
 predicate ConcreteTally_unique(this: Ref) {
   isSubtype(typeOf(this), ConcreteTally()) && acc(this.n, write) &&
   isSubtype(typeOf(this.n), intType()) &&
+  acc(AbstractMiddle_unique(this), write) &&
   (let this ==
     (this) in
-    true &&
-    boolFromRef((let anon_0_0 ==
-      (this.n) in
-      geInts(anon_0_0, intToRef(0))))) &&
-  acc(AbstractMiddle_unique(this), write)
+    (unfolding acc(AbstractMiddle_unique(this), wildcard) in
+      (unfolding acc(AbstractTally_unique(this), wildcard) in
+        true &&
+        boolFromRef((let anon_0_0 ==
+          (this.n) in
+          geInts(anon_0_0, intToRef(0)))))))
 }
 
 predicate NonnegativeTally_footprint(this: Ref)
@@ -813,13 +925,15 @@ predicate AbstractTally_unique(this: Ref) {
 predicate ConcreteTally_unique(this: Ref) {
   isSubtype(typeOf(this), ConcreteTally()) && acc(this.n, write) &&
   isSubtype(typeOf(this.n), intType()) &&
+  acc(AbstractMiddle_unique(this), write) &&
   (let this ==
     (this) in
-    true &&
-    boolFromRef((let anon_1_0 ==
-      (this.n) in
-      geInts(anon_1_0, intToRef(0))))) &&
-  acc(AbstractMiddle_unique(this), write)
+    (unfolding acc(AbstractMiddle_unique(this), wildcard) in
+      (unfolding acc(AbstractTally_unique(this), wildcard) in
+        true &&
+        boolFromRef((let anon_1_0 ==
+          (this.n) in
+          geInts(anon_1_0, intToRef(0)))))))
 }
 
 predicate NonnegativeTally_footprint(this: Ref)
@@ -871,10 +985,12 @@ method ConcreteTally_f_inc(this: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   assert (let this ==
       (this) in
-      true &&
-      boolFromRef((let anon_1_0 ==
-        (this.n) in
-        geInts(anon_1_0, intToRef(0)))))
+      (unfolding acc(AbstractMiddle_unique(this), wildcard) in
+        (unfolding acc(AbstractTally_unique(this), wildcard) in
+          true &&
+          boolFromRef((let anon_1_0 ==
+            (this.n) in
+            geInts(anon_1_0, intToRef(0)))))))
   fold acc(ConcreteTally_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

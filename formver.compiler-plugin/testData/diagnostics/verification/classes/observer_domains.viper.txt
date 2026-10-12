@@ -58,25 +58,6 @@ function ChildWindow_c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback
   ensures result == fallback
 
 
-function ChildWindow_f_lower(this: Ref): Ref
-  requires isSubtype(typeOf(this), ChildWindow())
-  requires acc(ChildWindow_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
-function ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
-  requires isSubtype(typeOf(this), ChildWindow())
-  requires acc(ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
-  requires isSubtype(typeOf(limit), intType())
-  requires isSubtype(typeOf(fallback), nullable(anyType()))
-  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
-  ensures result == fallback
-
-
 function TextWindow_f_lower(this: Ref): Ref
   requires isSubtype(typeOf(this), TextWindow())
   requires acc(TextWindow_unique(this), write)
@@ -160,12 +141,6 @@ function c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this:
     intFromRef(index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
-
-
-function c_ChildWindow_f_lower(this: Ref): Ref
-  requires isSubtype(typeOf(this), c_ChildWindow())
-  requires acc(c_ChildWindow_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
 
 
 function c_ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
@@ -292,25 +267,6 @@ function ChildWindow_c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback
   ensures result == fallback
 
 
-function ChildWindow_f_lower(this: Ref): Ref
-  requires isSubtype(typeOf(this), ChildWindow())
-  requires acc(ChildWindow_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
-function ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
-  requires isSubtype(typeOf(this), ChildWindow())
-  requires acc(ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
-  requires isSubtype(typeOf(limit), intType())
-  requires isSubtype(typeOf(fallback), nullable(anyType()))
-  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
-  ensures result == fallback
-
-
 function c_Window_f_lower(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(c_Window_footprint(this), wildcard)
@@ -388,25 +344,6 @@ function c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this: Ref): Ref
 function c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref,
   index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
-  requires acc(c_ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
-  requires isSubtype(typeOf(limit), intType())
-  requires isSubtype(typeOf(fallback), nullable(anyType()))
-  requires intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
-  ensures result == fallback
-
-
-function c_ChildWindow_f_lower(this: Ref): Ref
-  requires isSubtype(typeOf(this), c_ChildWindow())
-  requires acc(c_ChildWindow_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
-function c_ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
-  requires isSubtype(typeOf(this), c_ChildWindow())
   requires acc(c_ChildWindow_footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   requires isSubtype(typeOf(limit), intType())
@@ -564,25 +501,6 @@ function ChildWindow_c_Window_f_lower(this: Ref): Ref
 
 function ChildWindow_c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
-  requires acc(ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
-  requires isSubtype(typeOf(limit), intType())
-  requires isSubtype(typeOf(fallback), nullable(anyType()))
-  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
-  ensures isSubtype(typeOf(result), nullable(anyType()))
-  ensures result == fallback
-
-
-function ChildWindow_f_lower(this: Ref): Ref
-  requires isSubtype(typeOf(this), ChildWindow())
-  requires acc(ChildWindow_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
-function ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
-  requires isSubtype(typeOf(this), ChildWindow())
   requires acc(ChildWindow_footprint(this), wildcard)
   requires isSubtype(typeOf(index), intType())
   requires isSubtype(typeOf(limit), intType())

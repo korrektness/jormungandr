@@ -2924,16 +2924,16 @@ method con_ArrayIntList(par_data: Ref, par_count: Ref) returns (ret_1: Ref)
   ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
 
 
-method con_IntArray(par_size: Ref) returns (ret_3: Ref)
+method con_IntArray(par_size: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_size), intType())
   requires intFromRef(par_size) >= 0
-  ensures isSubtype(typeOf(ret_3), IntArray())
-  ensures acc(IntArray_unique(ret_3), write)
-  ensures arraySize(ret_3) == intFromRef(par_size)
-  ensures (unfolding acc(IntArray_unique(ret_3), write) in
+  ensures isSubtype(typeOf(ret_4), IntArray())
+  ensures acc(IntArray_unique(ret_4), write)
+  ensures arraySize(ret_4) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_4), write) in
       (forall j: Int ::
-        { ret_3.contents[j] }
-        j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
+        { ret_4.contents[j] }
+        j >= 0 && j < arraySize(ret_4) ==> ret_4.contents[j] == 0))
 
 
 method createUpcastArray() returns (v_ret_0: Ref)
@@ -2984,18 +2984,18 @@ method createUpcastArray() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method interfaceClient(par_list: Ref) returns (ret_6: Ref)
+method interfaceClient(par_list: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
   ensures acc(c_IntList_unique(par_list), write)
-  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
 
 
-method lendClient(par_list: Ref) returns (ret_4: Ref)
+method lendClient(par_list: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
   ensures acc(c_IntList_unique(par_list), write)
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_5), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
     old((unfolding acc(c_IntList_unique(par_list), wildcard) in
@@ -3274,18 +3274,18 @@ method createUpcastNode() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method interfaceClient(par_list: Ref) returns (ret_5: Ref)
+method interfaceClient(par_list: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
   ensures acc(c_IntList_unique(par_list), write)
-  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures isSubtype(typeOf(ret_6), unitType())
 
 
-method lendClient(par_list: Ref) returns (ret_3: Ref)
+method lendClient(par_list: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
   ensures acc(c_IntList_unique(par_list), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
     old((unfolding acc(c_IntList_unique(par_list), wildcard) in
@@ -3460,13 +3460,13 @@ method ArrayIntList_c_IntList_upcast(this: Ref)
       old(ArrayIntList_f_get(this, i)))
 
 
-method add(this: Ref, value: Ref) returns (ret_4: Ref)
+method add(this: Ref, value: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), ArrayIntList())
   requires acc(ArrayIntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
   requires intFromRef(ArrayIntList_f_size(this)) >= 0
   ensures acc(ArrayIntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_5), unitType())
   ensures intFromRef(ArrayIntList_f_size(this)) ==
     old(intFromRef(ArrayIntList_f_size(this))) + 1
   ensures intFromRef(ArrayIntList_f_get(this, old(ArrayIntList_f_size(this)))) ==
@@ -3508,16 +3508,16 @@ method con_ArrayIntList(par_data: Ref, par_count: Ref) returns (ret_1: Ref)
   ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
 
 
-method con_IntArray(par_size: Ref) returns (ret_3: Ref)
+method con_IntArray(par_size: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_size), intType())
   requires intFromRef(par_size) >= 0
-  ensures isSubtype(typeOf(ret_3), IntArray())
-  ensures acc(IntArray_unique(ret_3), write)
-  ensures arraySize(ret_3) == intFromRef(par_size)
-  ensures (unfolding acc(IntArray_unique(ret_3), write) in
+  ensures isSubtype(typeOf(ret_4), IntArray())
+  ensures acc(IntArray_unique(ret_4), write)
+  ensures arraySize(ret_4) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_4), write) in
       (forall j: Int ::
-        { ret_3.contents[j] }
-        j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
+        { ret_4.contents[j] }
+        j >= 0 && j < arraySize(ret_4) ==> ret_4.contents[j] == 0))
 
 
 method concreteArrayOperations() returns (v_ret_0: Ref)
@@ -3573,11 +3573,11 @@ method concreteArrayOperations() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method lendClient(par_list: Ref) returns (ret_8: Ref)
+method lendClient(par_list: Ref) returns (ret_9: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
   ensures acc(c_IntList_unique(par_list), write)
-  ensures isSubtype(typeOf(ret_8), unitType())
+  ensures isSubtype(typeOf(ret_9), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
     old((unfolding acc(c_IntList_unique(par_list), wildcard) in
@@ -3599,7 +3599,7 @@ method lendClient(par_list: Ref) returns (ret_8: Ref)
           intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_2)))))))
 
 
-method set(this: Ref, i: Ref, value: Ref) returns (ret_6: Ref)
+method set(this: Ref, i: Ref, value: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(this), ArrayIntList())
   requires acc(ArrayIntList_unique(this), write)
   requires isSubtype(typeOf(i), intType())
@@ -3607,7 +3607,7 @@ method set(this: Ref, i: Ref, value: Ref) returns (ret_6: Ref)
   requires 0 <= intFromRef(i) &&
     intFromRef(i) < intFromRef(ArrayIntList_f_size(this))
   ensures acc(ArrayIntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
   ensures intFromRef(ArrayIntList_f_size(this)) ==
     old(intFromRef(ArrayIntList_f_size(this)))
   ensures intFromRef(ArrayIntList_f_get(this, i)) == intFromRef(value)
@@ -3799,13 +3799,13 @@ method NodeIntList_c_IntList_upcast(this: Ref)
       old(NodeIntList_f_get(this, i)))
 
 
-method add(this: Ref, par_value: Ref) returns (ret_3: Ref)
+method add(this: Ref, par_value: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), NodeIntList())
   requires acc(NodeIntList_unique(this), write)
   requires isSubtype(typeOf(par_value), intType())
   requires intFromRef(NodeIntList_f_size(this)) >= 0
   ensures acc(NodeIntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
   ensures intFromRef(NodeIntList_f_size(this)) ==
     old(intFromRef(NodeIntList_f_size(this))) + 1
   ensures intFromRef(NodeIntList_f_get(this, old(NodeIntList_f_size(this)))) ==
@@ -3901,11 +3901,11 @@ method concreteNodeOperations() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method lendClient(par_list: Ref) returns (ret_7: Ref)
+method lendClient(par_list: Ref) returns (ret_8: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
   ensures acc(c_IntList_unique(par_list), write)
-  ensures isSubtype(typeOf(ret_7), unitType())
+  ensures isSubtype(typeOf(ret_8), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
     old((unfolding acc(c_IntList_unique(par_list), wildcard) in
@@ -3927,7 +3927,7 @@ method lendClient(par_list: Ref) returns (ret_7: Ref)
           intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_2)))))))
 
 
-method set(this: Ref, i: Ref, par_value: Ref) returns (ret_5: Ref)
+method set(this: Ref, i: Ref, par_value: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(this), NodeIntList())
   requires acc(NodeIntList_unique(this), write)
   requires isSubtype(typeOf(i), intType())
@@ -3935,7 +3935,7 @@ method set(this: Ref, i: Ref, par_value: Ref) returns (ret_5: Ref)
   requires 0 <= intFromRef(i) &&
     intFromRef(i) < intFromRef(NodeIntList_f_size(this))
   ensures acc(NodeIntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures isSubtype(typeOf(ret_6), unitType())
   ensures intFromRef(NodeIntList_f_size(this)) ==
     old(intFromRef(NodeIntList_f_size(this)))
   ensures intFromRef(NodeIntList_f_get(this, i)) == intFromRef(par_value)
@@ -4535,16 +4535,16 @@ method con_ArrayIntList(par_data: Ref, par_count: Ref) returns (ret_1: Ref)
   ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
 
 
-method con_IntArray(par_size: Ref) returns (ret_3: Ref)
+method con_IntArray(par_size: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_size), intType())
   requires intFromRef(par_size) >= 0
-  ensures isSubtype(typeOf(ret_3), IntArray())
-  ensures acc(IntArray_unique(ret_3), write)
-  ensures arraySize(ret_3) == intFromRef(par_size)
-  ensures (unfolding acc(IntArray_unique(ret_3), write) in
+  ensures isSubtype(typeOf(ret_4), IntArray())
+  ensures acc(IntArray_unique(ret_4), write)
+  ensures arraySize(ret_4) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_4), write) in
       (forall j: Int ::
-        { ret_3.contents[j] }
-        j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
+        { ret_4.contents[j] }
+        j >= 0 && j < arraySize(ret_4) ==> ret_4.contents[j] == 0))
 
 
 /intlist_milestone.kt: info: Generated Viper text for badNodeConstruction:

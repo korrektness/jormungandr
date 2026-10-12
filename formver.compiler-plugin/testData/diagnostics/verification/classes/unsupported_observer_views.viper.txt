@@ -5,12 +5,24 @@ function count(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+predicate Tally_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Tally())
+}
+
+predicate footprint(this: Ref)
+
 /unsupported_observer_views.kt: info: Generated Viper text for inc:
 function count(this: Ref): Ref
   requires isSubtype(typeOf(this), Tally())
   requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
+
+predicate Tally_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Tally())
+}
+
+predicate footprint(this: Ref)
 
 method inc(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), Tally())
@@ -35,8 +47,18 @@ function count(this: Ref): Ref
   (unfolding acc(TallyBase_unique(this), write) in this.bf_v)
 }
 
+predicate TallyBase_unique(this: Ref) {
+  isSubtype(typeOf(this), TallyBase()) && acc(this.bf_v, write) &&
+  isSubtype(typeOf(this.bf_v), intType())
+}
+
 /unsupported_observer_views.kt: info: Generated Viper text for inc:
 field bf_v: Ref
+
+predicate TallyBase_unique(this: Ref) {
+  isSubtype(typeOf(this), TallyBase()) && acc(this.bf_v, write) &&
+  isSubtype(typeOf(this.bf_v), intType())
+}
 
 method inc(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), TallyBase())
@@ -64,6 +86,22 @@ function c_Tally_f_count(this: Ref): Ref
   requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
+
+predicate InheritedTally_unique(this: Ref) {
+  isSubtype(typeOf(this), InheritedTally()) &&
+  acc(c_TallyBase_unique(this), write)
+}
+
+predicate c_TallyBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_TallyBase()) && acc(this.bf_v, write) &&
+  isSubtype(typeOf(this.bf_v), intType())
+}
+
+predicate c_Tally_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_Tally())
+}
+
+predicate footprint(this: Ref)
 
 method InheritedTally_c_TallyBase_f_inc_inherited_body_c_Tally_f_inc(this: Ref)
   returns (v_ret_0: Ref)
@@ -111,4 +149,723 @@ method refines_InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(thi
     old((unfolding acc(InheritedTally_unique(this), wildcard) in
       intFromRef(c_TallyBase_f_count(this)))) +
     1
+}
+
+/unsupported_observer_views.kt: info: Generated Viper text for tallyClient:
+function count(this: Ref): Ref
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate Tally_footprint(this: Ref)
+
+predicate Tally_unique(this: Ref) {
+  acc(Tally_footprint(this), write) && isSubtype(typeOf(this), Tally())
+}
+
+method inc(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), write)
+  ensures acc(Tally_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Tally_unique(this), wildcard) in
+      intFromRef(count(this))) ==
+    old((unfolding acc(Tally_unique(this), wildcard) in
+      intFromRef(count(this)))) +
+    1
+
+
+method tallyClient(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), Tally())
+  requires acc(Tally_unique(par_t), write)
+  ensures acc(Tally_unique(par_t), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Tally_unique(par_t), wildcard) in
+      intFromRef(count(par_t))) ==
+    old((unfolding acc(Tally_unique(par_t), wildcard) in
+      intFromRef(count(par_t)))) +
+    1
+{
+  var before: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := (unfolding acc(Tally_unique(par_t), wildcard) in count(par_t))
+  before := anon_0
+  anon_1 := inc(par_t)
+  anon_2 := (unfolding acc(Tally_unique(par_t), wildcard) in count(par_t))
+  assert intFromRef(anon_2) == intFromRef(before) + 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsupported_observer_views.kt: info: Generated Viper text for useInherited:
+field bf_v: Ref
+
+function TallyBase_f_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), TallyBase())
+  requires acc(TallyBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(TallyBase_unique(this), write) in this.bf_v)
+}
+
+function c_Tally_f_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Tally())
+  requires acc(c_Tally_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate InheritedTally_unique(this: Ref) {
+  isSubtype(typeOf(this), InheritedTally()) &&
+  acc(TallyBase_unique(this), write)
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate TallyBase_unique(this: Ref) {
+  isSubtype(typeOf(this), TallyBase()) && acc(this.bf_v, write) &&
+  isSubtype(typeOf(this.bf_v), intType())
+}
+
+predicate c_Tally_footprint(this: Ref)
+
+predicate c_Tally_unique(this: Ref) {
+  acc(c_Tally_footprint(this), write) && isSubtype(typeOf(this), c_Tally())
+}
+
+method InheritedTally_c_Tally_restore(this: Ref)
+  requires acc(c_Tally_unique(this), write)
+  requires isSubtype(typeOf(this), InheritedTally())
+  ensures acc(InheritedTally_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Tally())) && true ==>
+    (unfolding acc(InheritedTally_unique(this), wildcard) in
+      TallyBase_f_count(this)) ==
+    old((unfolding acc(c_Tally_unique(this), wildcard) in
+      c_Tally_f_count(this)))
+
+
+method InheritedTally_c_Tally_upcast(this: Ref)
+  requires acc(InheritedTally_unique(this), write)
+  ensures acc(c_Tally_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), TallyBase())) && true ==>
+    (unfolding acc(c_Tally_unique(this), wildcard) in
+      c_Tally_f_count(this)) ==
+    old((unfolding acc(InheritedTally_unique(this), wildcard) in
+      TallyBase_f_count(this)))
+
+
+method tallyClient(par_t: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_t), c_Tally())
+  requires acc(c_Tally_unique(par_t), write)
+  ensures acc(c_Tally_unique(par_t), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(c_Tally_unique(par_t), wildcard) in
+      intFromRef(c_Tally_f_count(par_t))) ==
+    old((unfolding acc(c_Tally_unique(par_t), wildcard) in
+      intFromRef(c_Tally_f_count(par_t)))) +
+    1
+
+
+method useInherited(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), InheritedTally())
+  requires acc(InheritedTally_unique(par_t), write)
+  ensures acc(InheritedTally_unique(par_t), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_1 := (unfolding acc(InheritedTally_unique(par_t), wildcard) in
+      TallyBase_f_count(par_t))
+  before := anon_1
+  InheritedTally_c_Tally_upcast(par_t)
+  anon_2 := tallyClient(par_t)
+  InheritedTally_c_Tally_restore(par_t)
+  anon_3 := (unfolding acc(InheritedTally_unique(par_t), wildcard) in
+      TallyBase_f_count(par_t))
+  assert intFromRef(anon_3) == intFromRef(before) + 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsupported_observer_views.kt: info: Generated Viper text for level:
+function level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Level())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Level_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Level()) &&
+  boolFromRef(geInts(level(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/unsupported_observer_views.kt: info: Generated Viper text for level:
+function Level_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Level())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Level_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Level()) &&
+  boolFromRef(geInts(Level_f_level(this), intToRef(0)))
+}
+
+predicate c_AbstractLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), c_AbstractLevel())
+}
+
+predicate footprint(this: Ref)
+
+/unsupported_observer_views.kt: info: Generated Viper text for ConcreteLevel:
+field l: Ref
+
+function ConcreteLevel_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), ConcreteLevel())
+  requires acc(ConcreteLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ConcreteLevel_unique(this), write) in this.l)
+}
+
+function Level_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Level())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ConcreteLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), ConcreteLevel()) && acc(this.l, write) &&
+  isSubtype(typeOf(this.l), intType()) &&
+  acc(c_AbstractLevel_unique(this), write) &&
+  (let this ==
+    (this) in
+    (unfolding acc(c_AbstractLevel_unique(this), wildcard) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.l) in
+        geInts(anon_0_0, intToRef(0))))))
+}
+
+predicate Level_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Level()) &&
+  boolFromRef(geInts(Level_f_level(this), intToRef(0)))
+}
+
+predicate c_AbstractLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), c_AbstractLevel())
+}
+
+predicate footprint(this: Ref)
+
+method laws(this: Ref)
+  requires acc(ConcreteLevel_unique(this), write)
+{
+  unfold acc(ConcreteLevel_unique(this), write)
+  fold acc(ConcreteLevel_unique(this), write)
+  assert boolFromRef(geInts(ConcreteLevel_f_level(this), intToRef(0)))
+}
+
+/unsupported_observer_views.kt: info: Generated Viper text for level:
+field l: Ref
+
+function ConcreteLevel_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), ConcreteLevel())
+  requires acc(ConcreteLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ConcreteLevel_unique(this), write) in this.l)
+}
+
+function Level_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Level())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ConcreteLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), ConcreteLevel()) && acc(this.l, write) &&
+  isSubtype(typeOf(this.l), intType()) &&
+  acc(c_AbstractLevel_unique(this), write) &&
+  (let this ==
+    (this) in
+    (unfolding acc(c_AbstractLevel_unique(this), wildcard) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.l) in
+        geInts(anon_0_0, intToRef(0))))))
+}
+
+predicate Level_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Level()) &&
+  boolFromRef(geInts(Level_f_level(this), intToRef(0)))
+}
+
+predicate c_AbstractLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), c_AbstractLevel())
+}
+
+predicate footprint(this: Ref)
+
+/unsupported_observer_views.kt: info: Generated Viper text for NegativeLevel:
+function Level_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Level())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function NegativeLevel_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), NegativeLevel())
+  requires acc(NegativeLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(-1)
+}
+
+function c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Level_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Level()) &&
+  boolFromRef(geInts(Level_f_level(this), intToRef(0)))
+}
+
+predicate NegativeLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), NegativeLevel()) &&
+  acc(c_AbstractLevel_unique(this), write)
+}
+
+predicate c_AbstractLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), c_AbstractLevel())
+}
+
+predicate footprint(this: Ref)
+
+method laws(this: Ref)
+  requires acc(NegativeLevel_unique(this), write)
+{
+  unfold acc(NegativeLevel_unique(this), write)
+  fold acc(NegativeLevel_unique(this), write)
+  assert boolFromRef(geInts(NegativeLevel_f_level(this), intToRef(0)))
+}
+
+/unsupported_observer_views.kt: info: Generated Viper text for level:
+function Level_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Level())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function NegativeLevel_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), NegativeLevel())
+  requires acc(NegativeLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(-1)
+}
+
+function c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Level_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Level()) &&
+  boolFromRef(geInts(Level_f_level(this), intToRef(0)))
+}
+
+predicate NegativeLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), NegativeLevel()) &&
+  acc(c_AbstractLevel_unique(this), write)
+}
+
+predicate c_AbstractLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), c_AbstractLevel())
+}
+
+predicate footprint(this: Ref)
+
+/unsupported_observer_views.kt: info: Generated Viper text for levelClient:
+function level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Level())
+  requires acc(Level_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Level_footprint(this: Ref)
+
+predicate Level_unique(this: Ref) {
+  acc(Level_footprint(this), write) && isSubtype(typeOf(this), Level()) &&
+  boolFromRef(geInts(level(this), intToRef(0)))
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method levelClient(l: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), Level())
+  requires acc(Level_unique(l), write)
+  ensures acc(Level_unique(l), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Level_unique(l), wildcard) in
+      intFromRef(level(l))) ==
+    old((unfolding acc(Level_unique(l), wildcard) in intFromRef(level(l))))
+{
+  var anon: Ref
+  anon := (unfolding acc(Level_unique(l), wildcard) in level(l))
+  assert intFromRef(anon) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsupported_observer_views.kt: info: Generated Viper text for upcastAbstract:
+function c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Level_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Level())
+  requires acc(c_Level_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_AbstractLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), c_AbstractLevel())
+}
+
+predicate c_Level_footprint(this: Ref)
+
+predicate c_Level_unique(this: Ref) {
+  acc(c_Level_footprint(this), write) && isSubtype(typeOf(this), c_Level()) &&
+  boolFromRef(geInts(c_Level_f_level(this), intToRef(0)))
+}
+
+method c_AbstractLevel_c_Level_restore(this: Ref)
+  requires acc(c_Level_unique(this), write)
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  ensures acc(c_AbstractLevel_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Level())) && true ==>
+    c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this) ==
+    old((unfolding acc(c_Level_unique(this), wildcard) in
+      c_Level_f_level(this)))
+
+
+method c_AbstractLevel_c_Level_upcast(this: Ref)
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures acc(c_Level_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_AbstractLevel())) && true ==>
+    (unfolding acc(c_Level_unique(this), wildcard) in
+      c_Level_f_level(this)) ==
+    old(c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this))
+
+
+method levelClient(l: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(l), c_Level())
+  requires acc(c_Level_unique(l), write)
+  ensures acc(c_Level_unique(l), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(c_Level_unique(l), wildcard) in
+      intFromRef(c_Level_f_level(l))) ==
+    old((unfolding acc(c_Level_unique(l), wildcard) in
+      intFromRef(c_Level_f_level(l))))
+
+
+method upcastAbstract(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(a), write)
+  ensures acc(c_AbstractLevel_unique(a), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(a)
+  before := anon_0
+  c_AbstractLevel_c_Level_upcast(a)
+  anon_1 := levelClient(a)
+  c_AbstractLevel_c_Level_restore(a)
+  anon_2 := c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(a)
+  assert intFromRef(anon_2) == intFromRef(before)
+  anon_3 := c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(a)
+  assert intFromRef(anon_3) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unsupported_observer_views.kt: info: Generated Viper text for upcastConcrete:
+field bf_l: Ref
+
+function ConcreteLevel_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), ConcreteLevel())
+  requires acc(ConcreteLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ConcreteLevel_unique(this), write) in this.bf_l)
+}
+
+function c_AbstractLevel_c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractLevel_f_level_args_c_AbstractLevel_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractLevel())
+  requires acc(c_AbstractLevel_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Level_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Level())
+  requires acc(c_Level_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate ConcreteLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), ConcreteLevel()) && acc(this.bf_l, write) &&
+  isSubtype(typeOf(this.bf_l), intType()) &&
+  acc(c_AbstractLevel_unique(this), write) &&
+  (let this ==
+    (this) in
+    (unfolding acc(c_AbstractLevel_unique(this), wildcard) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_l) in
+        geInts(anon_0_0, intToRef(0))))))
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_AbstractLevel_unique(this: Ref) {
+  isSubtype(typeOf(this), c_AbstractLevel())
+}
+
+predicate c_Level_footprint(this: Ref)
+
+predicate c_Level_unique(this: Ref) {
+  acc(c_Level_footprint(this), write) && isSubtype(typeOf(this), c_Level()) &&
+  boolFromRef(geInts(c_Level_f_level(this), intToRef(0)))
+}
+
+method ConcreteLevel_c_Level_restore(this: Ref)
+  requires acc(c_Level_unique(this), write)
+  requires isSubtype(typeOf(this), ConcreteLevel())
+  ensures acc(ConcreteLevel_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Level())) && true ==>
+    ConcreteLevel_f_level(this) ==
+    old((unfolding acc(c_Level_unique(this), wildcard) in
+      c_Level_f_level(this)))
+
+
+method ConcreteLevel_c_Level_upcast(this: Ref)
+  requires acc(ConcreteLevel_unique(this), write)
+  ensures acc(c_Level_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ConcreteLevel())) && true ==>
+    (unfolding acc(c_Level_unique(this), wildcard) in
+      c_Level_f_level(this)) ==
+    old(ConcreteLevel_f_level(this))
+
+
+method levelClient(par_l: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_l), c_Level())
+  requires acc(c_Level_unique(par_l), write)
+  ensures acc(c_Level_unique(par_l), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(c_Level_unique(par_l), wildcard) in
+      intFromRef(c_Level_f_level(par_l))) ==
+    old((unfolding acc(c_Level_unique(par_l), wildcard) in
+      intFromRef(c_Level_f_level(par_l))))
+
+
+method upcastConcrete(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), ConcreteLevel())
+  requires acc(ConcreteLevel_unique(c), write)
+  ensures acc(ConcreteLevel_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_2: Ref
+  var anon_3: Ref
+  ConcreteLevel_c_Level_upcast(c)
+  anon_2 := levelClient(c)
+  ConcreteLevel_c_Level_restore(c)
+  anon_3 := ConcreteLevel_f_level(c)
+  assert intFromRef(anon_3) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
 }

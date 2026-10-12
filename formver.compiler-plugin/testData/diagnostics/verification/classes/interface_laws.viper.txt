@@ -703,11 +703,11 @@ method InvariantSizedLaw_c_SizedLaw_upcast(this: Ref)
     old(InvariantSizedLaw_f_size(this))
 
 
-method add(this: Ref) returns (ret_3: Ref)
+method add(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), InvariantSizedLaw())
   requires acc(InvariantSizedLaw_unique(this), write)
   ensures acc(InvariantSizedLaw_unique(this), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
 
 
 method con(par_count: Ref) returns (ret_1: Ref)
@@ -749,11 +749,11 @@ method invariantLawTransfer() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method lawClient(par_view: Ref) returns (ret_4: Ref)
+method lawClient(par_view: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(par_view), c_SizedLaw())
   requires acc(c_SizedLaw_unique(par_view), write)
   ensures acc(c_SizedLaw_unique(par_view), write)
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_5), unitType())
 
 
 /interface_laws.kt: info: Generated Viper text for borrowedLawTransfer:

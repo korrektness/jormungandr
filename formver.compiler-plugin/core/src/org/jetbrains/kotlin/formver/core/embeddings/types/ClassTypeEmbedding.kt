@@ -77,6 +77,8 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
     context(ctx: TypeResolver)
     fun openPredicateChain(subject: ExpEmbedding, omitted: Set<SymbolicName>): ExpEmbedding =
         uniquePredicateBody(subject, object : NestedPredicates {
+            override fun isSuperclassOpen(type: ClassTypeEmbedding): Boolean = true
+
             override fun ofField(step: PathStep, access: TypeInvariantEmbedding) =
                 access.takeUnless { step.name in omitted }
 
@@ -115,20 +117,22 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
                 }
             })
         }
+        forEachSuperType {
+            val superType = type.pretype as ClassTypeEmbedding
+            if (ctx.isInterface(superType)) return@forEachSuperType
+            addAccessToUniquePredicate { access -> nested.ofSuperType(superType, access) }
+        }
         if (includeRepresentationFacts && ctx.hasClassLaws(this@ClassTypeEmbedding)) {
             includeInvariant(TypeInvariantEmbedding { subject ->
                 val boolean = buildType { boolean() }
                 ExpWrapper.deferred(boolean) {
                     boolean.injection.toRef(ctx.classLawAssertion(
                         this@ClassTypeEmbedding, subject.pureToViper(toBuiltin = false, ctx),
+                        generateSequence(ctx.superClass(this@ClassTypeEmbedding), ctx::superClass)
+                            .filter(nested::isSuperclassOpen).toSet(),
                     ))
                 }
             })
-        }
-        forEachSuperType {
-            val superType = type.pretype as ClassTypeEmbedding
-            if (ctx.isInterface(superType)) return@forEachSuperType
-            addAccessToUniquePredicate { access -> nested.ofSuperType(superType, access) }
         }
     }
 
@@ -150,6 +154,8 @@ fun ClassTypeEmbedding.embedClassTypeFunc(): DomainFunc = RuntimeTypeDomain.clas
  * the nested predicate and returns the assertion that stands for it, `null` to leave it out.
  */
 interface NestedPredicates {
+    fun isSuperclassOpen(type: ClassTypeEmbedding): Boolean = false
+
     /** The predicate of the value of the `@Unique` property [step]. */
     fun ofField(step: PathStep, access: TypeInvariantEmbedding): TypeInvariantEmbedding? = access
 

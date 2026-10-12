@@ -5,13 +5,10 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
-import org.jetbrains.kotlin.fir.declarations.utils.isFinal
-import org.jetbrains.kotlin.fir.resolve.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 
 /** The body that can replace an observation inside a representation predicate. */
@@ -23,12 +20,5 @@ fun classLawObserverBody(symbol: FirCallableSymbol<*>): FirFunctionSymbol<*>? = 
 }
 
 @OptIn(SymbolInternals::class)
-fun classLawObserverFailure(symbol: FirCallableSymbol<*>, owner: FirRegularClassSymbol): String? {
-    val body = classLawObserverBody(symbol)
-    return when {
-        symbol.unwrapFakeOverrides().getContainingClassSymbol() != owner -> "Observer has no body in the invariant's class"
-        !owner.fir.isFinal && !symbol.isFinal -> "Open observer in class law"
-        body?.fir?.body == null -> "Abstract observer in class law"
-        else -> null
-    }
-}
+fun classLawObserverFailure(symbol: FirCallableSymbol<*>): String? =
+    if (classLawObserverBody(symbol)?.fir?.body == null) "Abstract observer in class law" else null

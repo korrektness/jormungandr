@@ -19,7 +19,6 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
-import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.declarations.utils.isInterface
 import org.jetbrains.kotlin.fir.declarations.utils.isOverride
@@ -35,7 +34,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.isGhostObserver
 import org.jetbrains.kotlin.formver.core.isPure
-import org.jetbrains.kotlin.formver.core.conversion.inheritedContractImplementation
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 
 private val FirCallableSymbol<*>.isInInterface: Boolean
@@ -52,7 +50,7 @@ internal fun FirCallableDeclaration.overriddenGhostObserver(): FirCallableSymbol
 
 /**
  * Reports a member declaration that breaks a rule on observers: a ghost observer has no interface overrides; an override of an
- * observer is `@Pure`, and in a class it has a body and fixed dispatch; a `@Pure` override overrides only observers and
+ * observer is `@Pure`, and a concrete implementation has a body; a `@Pure` override overrides only observers and
  * their overrides.
  */
 object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind.Common) {
@@ -78,14 +76,6 @@ object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind
                 return "Invalid @Pure override: '${it.spelling}' is not an observer."
             }
         }
-        val owner = symbol.getContainingClassSymbol() as? FirClassSymbol<*>
-        val dispatchIsFixed = declaration.isFinal || owner?.fir?.isFinal == true
-        if (overridesObserver && !symbol.isInInterface && !dispatchIsFixed) {
-            return "Invalid observer override: open implementation."
-        }
-        if (overridesObserver && declaration.isAbstract && !symbol.isInInterface) {
-            return "Invalid observer override: no body."
-        }
         return null
     }
 }
@@ -93,7 +83,6 @@ object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind
 /**
  * Reports a class that implements an observer without declaring the implementation: by delegation, which gives the
  * implementation no body, or by inheriting a member that is not `@Pure` from a superclass.
- * Inherited contract implementations are rejected because their refinements require the receiving class's bindings.
  */
 object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Common) {
     // Each member's overrides are read right after the scope processes the member by name.
@@ -105,9 +94,6 @@ object ObserverImplementationChecker : FirRegularClassChecker(MppCheckerKind.Com
         val violations = mutableListOf<String>()
         for (name in scope.getCallableNames()) {
             scope.processFunctionsByName(name) {
-                if (it.inheritedContractImplementation(declaration.symbol)) {
-                    violations += "Inherited contract implementation: '${it.spelling}'."
-                }
                 val overridden = scope.getDirectOverriddenFunctions(it)
                 (implicitGhostOverride(declaration, it, overridden)
                     ?: violation(declaration, it, overridden))?.let(violations::add)

@@ -1,48 +1,96 @@
 // FULL_JDK
-// UNIQUE_CHECK_ONLY
+// RENDER_PREDICATES
 
 import org.jetbrains.kotlin.formver.plugin.*
 
 interface Meter {
-    @Pure @Unique fun level(): Int
+    @Pure @Unique fun <!VIPER_TEXT!>level<!>(): Int
     @SpecOf("bump") @Unique @Borrowed fun bumpSpec() {
         postconditions<Unit> { level() == old(level()) + 1 }
     }
-    @Unique @Borrowed fun bump()
+    @Unique @Borrowed fun <!VIPER_TEXT!>bump<!>()
 }
 
 open class BaseMeter(var a: Int, var b: Int) : Meter {
-    <!INVALID_OBSERVER!>@Pure @Unique override fun level(): Int = a<!>
-    @Unique @Borrowed override fun bump() { a++ }
+    @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = a
+    @Unique @Borrowed override fun <!VIPER_TEXT!>bump<!>() { a++ }
 }
 
-<!INVALID_OBSERVER!>class DerivedMeter : BaseMeter(0, 5) {
-    @Pure @Unique override fun level(): Int = b
+<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class DerivedMeter<!> : BaseMeter(0, 5) {
+    @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = b
 }<!>
 
-open class TallyBase(var v: Int) {
-    @Pure @Unique fun level(): Int = v
-    @Unique @Borrowed fun bump() {}
+class GoodDerivedMeter : BaseMeter(0, 5) {
+    @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = b
+    @Unique @Borrowed override fun <!VIPER_TEXT!>bump<!>() { b++ }
 }
 
-<!INVALID_OBSERVER!>class InheritedMeter : TallyBase(0), Meter<!>
+fun <!VIPER_TEXT!>staticBinding<!>(x: @Unique @Borrowed BaseMeter) {
+    verify(<!VIPER_VERIFICATION_ERROR!>x.level() == x.a<!>)
+}
+
+fun <!VIPER_TEXT!>meterClient<!>(m: @Unique @Borrowed Meter) {
+    postconditions<Unit> { m.level() == old(m.level()) + 1 }
+    val before = m.level()
+    m.bump()
+    verify(m.level() == before + 1)
+}
+
+fun <!VIPER_TEXT!>derivedThroughInterface<!>(d: @Unique @Borrowed DerivedMeter) {
+    meterClient(d)
+}
+
+fun <!VIPER_TEXT!>goodDerivedThroughBase<!>(d: @Unique GoodDerivedMeter) {
+    val base: @Unique BaseMeter = d
+    meterClient(base)
+    verify(<!VIPER_VERIFICATION_ERROR!>base.level() == base.a<!>)
+}
+
+fun <!VIPER_TEXT!>baseRoundTrip<!>(base: @Unique @Borrowed BaseMeter) {
+    val before = base.level()
+    meterClient(base)
+    verify(base.level() == before + 1)
+    verify(<!VIPER_VERIFICATION_ERROR!>base.level() == base.a<!>)
+}
 
 open class FinalObserver(var a: Int) : Meter {
-    @Pure @Unique final override fun level(): Int = a
-    @Unique @Borrowed override fun bump() { a++ }
+    @Pure @Unique final override fun <!VIPER_TEXT!>level<!>(): Int = a
+    @Unique @Borrowed override fun <!VIPER_TEXT!>bump<!>() { a++ }
 }
 
 interface DefaultMeter {
     @SpecOf("bump") fun bumpSpec() { postconditions<Unit> { true } }
-    fun bump() {}
+    fun <!VIPER_TEXT!>bump<!>() {}
 }
 class ExplicitDefaultOverride : DefaultMeter {
-    override fun bump() {}
+    override fun <!VIPER_TEXT!>bump<!>() {}
 }
 
 interface PropertyMeter {
     @Pure val size: Int
 }
-class FixedSize : PropertyMeter {
-    @Pure override val size: Int get() = 3
+open class OpenSize : PropertyMeter {
+    @Pure override val size: Int <!VIPER_TEXT!>get<!>() = 3
 }
+class DerivedSize : OpenSize() {
+    @Pure override val size: Int <!VIPER_TEXT!>get<!>() = 4
+}
+fun <!VIPER_TEXT!>propertyBinding<!>(s: @Unique @Borrowed OpenSize) {
+    verify(<!VIPER_VERIFICATION_ERROR!>s.size == 3<!>)
+}
+abstract class AbstractSize : PropertyMeter {
+    @Pure abstract override val size: Int
+}
+class ConcreteSize : AbstractSize() {
+    @Pure override val size: Int <!VIPER_TEXT!>get<!>() = 4
+}
+fun <!VIPER_TEXT!>abstractProperty<!>(s: @Unique @Borrowed AbstractSize): Int = s.size
+fun <!VIPER_TEXT!>concreteProperty<!>(s: @Unique @Borrowed ConcreteSize) {
+    verify(s.size == 4)
+}
+
+open <!VIPER_TEXT!>class ObserverMiddle<!>(a: Int, b: Int) : BaseMeter(a, b)
+<!VIPER_TEXT!>class GoodObserverLeaf<!>(a: Int, b: Int) : ObserverMiddle(a, b)
+<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BadObserverLeaf<!>(a: Int, b: Int) : ObserverMiddle(a, b) {
+    @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = b
+}<!>

@@ -57,7 +57,7 @@ class ViperPoweredClassChecker(
         if (declaration.symbol.ownClassLaws(session).isNotEmpty() &&
             classLawConstructionFailures(declaration.symbol, session).isNotEmpty()) return
         try {
-            val converter = ProgramConverter(session, config, context, reporter, implementationObligations = true)
+            val converter = ProgramConverter(session, config, context, reporter)
             converter.registerClassLaws(declaration.symbol)
             for (obligation in inherited) {
                 converter.registerInheritedImplementation(declaration.symbol, obligation.implementation, obligation.contracts)

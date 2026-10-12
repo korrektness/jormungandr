@@ -13,20 +13,20 @@ abstract class AbstractObservation : Observation {
 }
 
 open class InheritedObservation : Observation {
-    <!INVALID_OBSERVER!>@Pure override fun size(): Int = 1<!>
-    <!INVALID_OBSERVER!>@Pure override val amount: Int = 1<!>
+    @Pure override fun size(): Int = 1
+    @Pure override val amount: Int = 1
 }
 
 class InheritedInvariant : InheritedObservation() {
-    @Law @Pure fun invariant(): Boolean = <!INVALID_LAW!>size()<!> >= 0
-    @Law @Pure fun propertyInvariant(): Boolean = <!INVALID_LAW!>amount<!> >= 0
+    @Law @Pure fun invariant(): Boolean = size() >= 0
+    @Law @Pure fun propertyInvariant(): Boolean = amount >= 0
 }
 
 open class OpenObservation : Observation {
-    <!INVALID_OBSERVER!>@Pure override fun size(): Int = 1<!>
-    <!INVALID_OBSERVER!>@Pure override val amount: Int get() = 1<!>
-    @Law @Pure fun invariant(): Boolean = <!INVALID_LAW!>size()<!> >= 0
-    @Law @Pure fun propertyInvariant(): Boolean = <!INVALID_LAW!>amount<!> >= 0
+    @Pure override fun size(): Int = 1
+    @Pure override val amount: Int get() = 1
+    @Law @Pure fun invariant(): Boolean = size() >= 0
+    @Law @Pure fun propertyInvariant(): Boolean = amount >= 0
 }
 
 class RecursiveObservation : Observation {
@@ -79,7 +79,7 @@ open class SuperInvariant(val value: Int) {
     @Law @Pure fun invariant(): Boolean = value >= 0
 }
 
-<!INVALID_LAW!>class SubInvariant(value: Int) : SuperInvariant(value)<!>
+class SubInvariant(value: Int) : SuperInvariant(value)
 
 <!INVALID_LAW!>class PropertyInitializerInvariant(value: Int) {
     val first = value

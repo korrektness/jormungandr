@@ -48,11 +48,11 @@ class NotPure : Measure {
 }
 
 abstract class Bodiless : Measure {
-    <!INVALID_OBSERVER!>@Pure
-    abstract override fun scaled(factor: Int): Int<!>
+    @Pure
+    abstract override fun scaled(factor: Int): Int
 
-    <!INVALID_OBSERVER!>@Pure
-    abstract override val size: Int<!>
+    @Pure
+    abstract override val size: Int
 }
 
 interface Sized {
@@ -71,8 +71,8 @@ open class Base {
 }
 
 <!INVALID_OBSERVER!>open class Inheriting : Base(), Measure {
-    <!INVALID_OBSERVER!>@Pure
-    override val size: Int = 2<!>
+    @Pure
+    override val size: Int = 2
 
     override fun plain(x: Int): Int = x
 

@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
+
 import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderClassIds
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.descriptors.isInterface
@@ -62,7 +64,6 @@ class ProgramConverter(
     override val config: PluginConfiguration,
     override val checkerContext: CheckerContext,
     private val reporter: DiagnosticReporter,
-    private val implementationObligations: Boolean = false,
 ) : ProgramConversionContext {
 
     /**
@@ -289,7 +290,7 @@ class ProgramConverter(
      * when [skipsVerification] is set after [linearizeAll].
      */
     fun validateAll() {
-        observerBindingRegistry.registerBindings(this, implementationObligations) { fullSignatures.getValue(it) as NonInlineFunctionSignature }
+        observerBindingRegistry.registerBindings(this) { fullSignatures.getValue(it) as NonInlineFunctionSignature }
         lawEncoding.prepare()
         lambdaRegistry.finalizeCreationFacts()
         bodyProcessor.validate()
@@ -392,7 +393,9 @@ class ProgramConverter(
     ) {
         val declaration = symbol.fir
 
-        if (signature.signature.isPure && context(checkerContext) { symbol.isObserver() }) return
+        val abstractObserverOverride = context(checkerContext) { symbol.isAbstract && symbol.isObserverOrOverride() }
+        val observerDeclaration = context(checkerContext) { symbol.isObserver() }
+        if (signature.signature.isPure && (observerDeclaration || abstractObserverOverride)) return
         if (declaration is FirSimpleFunction) {
             lambdaRegistry.prepare(with(this) { SpecifiedLambda.collect(declaration) })
         }

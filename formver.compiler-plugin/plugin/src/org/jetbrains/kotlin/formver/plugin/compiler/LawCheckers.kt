@@ -116,7 +116,7 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
             }
 
             private fun expand(element: FirQualifiedAccessExpression, callee: FirCallableSymbol<*>) {
-                val failure = classLawObserverFailure(callee, classOwner!!)
+                val failure = classLawObserverFailure(callee)
                 if (failure != null) {
                     reject(element, "$failure.")
                     return
@@ -138,7 +138,8 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
             }
 
             private fun FirExpression?.isOwnThis(): Boolean =
-                this is FirThisReceiverExpression && calleeReference.symbol == owner
+                this is FirThisReceiverExpression &&
+                    (calleeReference.symbol == owner || expanding.any { it.getContainingClassSymbol() == calleeReference.symbol })
 
             override fun visitElement(element: FirElement) {
                 when (element) {
@@ -157,8 +158,7 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
                         // Observers reached through another observer's result are deliberately out of scope.
                         val ownAccess = element.dispatchReceiver.isOwnThis() && element.extensionReceiver == null
                         val field = classOwner != null && ownAccess && callee is FirPropertySymbol &&
-                                callee.fir.backingField != null && callee.fir.getter?.body == null &&
-                                callee.getContainingClassSymbol() == classOwner
+                                callee.fir.backingField != null && callee.fir.getter?.body == null
                         val observer = ownAccess && (callee?.isObserverOrOverride() == true ||
                                 callee?.isGhostObserver(context.session) == true ||
                                 (classOwner != null && callee?.isPure(context.session) == true))

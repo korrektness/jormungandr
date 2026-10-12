@@ -109,15 +109,19 @@ An override without a specification of its own has the specification of the decl
 is verified against it. When several declarations it overrides have one, it has none and must write its own.
 
 The check runs when the override is converted. An implementation left unverified by the plugin's selection or by
-`@NeverVerify` is trusted; interface-law harnesses do not certify these method bodies. A class inheriting an implementation of a contract-bearing member is rejected with
-`INVALID_OBSERVER`, because no refinement check runs under that class's bindings.
+`@NeverVerify` is trusted. Each concrete class inheriting a contract-bearing implementation has a separate
+obligation that verifies its body and contract refinements under that class's observer bindings, including an
+implementation inherited from a superclass when the class adds an interface. This obligation checks the inherited
+body even when its declaration has `@NeverVerify`. Abstract intermediate classes carry no implementation harness;
+their concrete subclasses carry the obligations.
 A `@Pure` function outside the observer mechanism cannot be open or override another; such a function, and a call to it,
 is reported as an unsupported construct.
 
 ### Observers
 
 An observer is an abstract `@Pure` function or `val` of an interface. A class implements it with a
-`@Pure` override whose function body or getter has fixed dispatch (see [Class laws](#class-laws)).
+`@Pure` function body or getter, declared in that class or inherited from a superclass. Open and abstract classes
+may participate in the hierarchy, and subclasses may override observer implementations.
 Property getters use the same binding, ownership-transfer and law encoding as function observers.
 Use `@get:Unique` for a getter that reads mutable owned state.
 
@@ -136,23 +140,24 @@ class Fixed : Measure {
 These are reported as `INVALID_OBSERVER`:
 
 - an override of an observer that is not `@Pure`;
-- an override of an observer in a class that has no body, including one the class implements by delegation;
+- an observer implementation supplied by delegation;
 - a class that implements an observer by inheriting a member that is not `@Pure` from a superclass;
 - a `@Pure` override of a member that is neither an observer nor an override of one;
-- an observer implementation with overridable dispatch;
 - a `@Pure var`.
 
 Observer domains are preconditions supplied by `@SpecOf` (see [Specifications beside a member](#specifications-beside-a-member)).
 Calls must establish them, and implementations are checked under the inherited domain. An implementation's own
-contract must refine the interface contract. Domain expressions select observer bindings for the receiver's view.
+contract must refine the interface contract. Domain expressions use the same observer dispatch as other observations.
 
-An observer function is encoded as a bodiless Viper function; a class override is encoded with its pure body.
-Calls select the function of the receiver's static type. Permissions follow the `@Pure` encoding described in
+Observer bindings follow the object's runtime class. Interface and overridable class views use bodiless Viper
+observer functions; an exact runtime-class fact connects a class view to its registered pure implementation.
+A superclass view of a subclass does not expose the superclass's observer body as its runtime interpretation.
+Permissions follow the `@Pure` encoding described in
 [Pure functions and specifications](#pure-functions-and-specifications). On a shared interface receiver the result
-is arbitrary. A consuming or borrowed ownership transfer between a class and an interface preserves each observer's
-value from the pre-transfer snapshot. Function parameters are quantified over the observer's domain, with the
-destination observer application as the trigger. Returning a borrowed interface view preserves its current
-observations in the restored class view. A bare interface view exposes no class-specific binding.
+is arbitrary. A consuming or borrowed ownership transfer between class views or between a class and an interface
+preserves each observer's value from the pre-transfer snapshot. Function parameters are quantified over the
+observer's domain, with the destination observer application as the trigger. Returning a borrowed view preserves
+its current observations and runtime binding in the restored view. A bare interface view exposes no class-specific binding.
 
 ### Callable specifications
 
@@ -222,17 +227,18 @@ bindings substituted. They check arbitrary legal representation states; a failur
 ### Class laws
 
 A class may declare `@Law @Pure` Boolean members with the signature and expression rules of interface laws.
-Its unique predicate conjoins these representation invariants with its field permissions. Inside the predicate,
-observer calls on `this` in a class law expand recursively to the class's own pure observer bodies. Field reads and
-`@Pure` non-member calls retain their ordinary encoding. An abstract observer, an inherited observer without a body
-in the class, a recursive expansion, or an overridable observer is rejected with `INVALID_LAW` and a reason.
-A final class or final member fixes dispatch.
+Its unique predicate conjoins these representation invariants with its field permissions. Observer calls in class
+laws use the declaring class's implementation, including inherited bodies, expanded recursively to field reads.
+Field reads and `@Pure` non-member calls retain their ordinary encoding. An observer without a visible body or a
+recursive expansion is rejected with `INVALID_LAW` and a reason.
 
-Class laws require a primary constructor with no secondary constructors or init blocks. Stored properties must
-have initializers that are constructor parameters or pure expressions over those parameters. Delegated properties
-and superclasses carrying class laws are outside this scope. Unsupported shapes are rejected with `INVALID_LAW`.
-The constructor requires the invariant with field reads substituted by their initializers. Each call site proves
-this precondition; the returned representation and its opened-predicate description include the invariant.
+A class carrying its own or inherited class laws requires a primary constructor with no secondary constructors
+or init blocks. Stored properties must have initializers that are constructor parameters or pure expressions over
+those parameters. Delegated properties are outside this scope. Unsupported shapes are rejected with `INVALID_LAW`.
+The constructor requires its own and superclass invariants with field reads substituted by their initializers and
+superclass constructor arguments, including defaults. An inherited field used in this substitution must retain its
+initializer value and owned state throughout construction. Each call site proves the constructor precondition; the returned
+representation and its opened-predicate description include the invariants.
 
 Unfolding an owned class receiver exposes its invariant to the member body. Every refold proves the invariant,
 including refolds for calls and control-flow joins. On member exit, a retained unique receiver with class laws is

@@ -6,6 +6,11 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CompleteFunctionSignature
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
+import org.jetbrains.kotlin.formver.core.names.InheritedMemberName
+import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.viper.ast.UserMethod
 import org.jetbrains.kotlin.formver.core.embeddings.callables.SpecialFunctions
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toViperFunction
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toViperMethod
@@ -65,7 +70,19 @@ internal class ProgramBodyProcessor(
             }
         }
         val method = body?.toViperMethod(signature, converter.typeResolver) ?: signature.toViperMethod(converter.typeResolver, null)
-        converter.linearizedBodyResolver.storeMethod(name, method)
+        val receiver = signature.dispatchReceiver
+        val view = receiver?.type?.pretype as? ClassTypeEmbedding
+        if (body != null && view != null && converter.typeResolver.hasRuntimeObserverDispatch(view)) {
+            // The declaration proves this runtime class; inherited-body obligations cover each concrete subclass.
+            val proofName = InheritedMemberName(name, "runtime_body", name)
+            val proof = UserMethod(proofName, method.formalArgs, method.formalReturns.single(),
+                method.pres + Exp.EqCmp(RuntimeTypeDomain.typeOf(receiver.toLocalVarUse()), view.runtimeType),
+                method.posts, method.body, method.pos, method.info)
+            converter.linearizedBodyResolver.storeMethod(proofName, proof)
+            converter.linearizedBodyResolver.storeMethod(name, signature.toViperMethod(converter.typeResolver, null))
+        } else {
+            converter.linearizedBodyResolver.storeMethod(name, method)
+        }
     }
 
     fun linearize() {

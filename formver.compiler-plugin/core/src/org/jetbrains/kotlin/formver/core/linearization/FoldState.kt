@@ -288,6 +288,8 @@ class FoldState(private val typeResolver: TypeResolver) {
                         if (step.name in children) children[step.name]
                         else access.withAccessRole((path + step).loopHeadRole())
 
+                    override fun isSuperclassOpen(type: ClassTypeEmbedding): Boolean = type in opened
+
                     override fun ofSuperType(type: ClassTypeEmbedding, access: TypeInvariantEmbedding) =
                         if (type in opened) TypeInvariantEmbedding { bodyOf(type, it) }
                         else access.withAccessRole(path.loopHeadRole())

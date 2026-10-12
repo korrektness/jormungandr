@@ -261,7 +261,7 @@ class OverrideGhost : CounterSpec {
 
 open class OpenGhostOverride : CounterSpec {
     override fun invoke(): Int = 0
-    <!INVALID_OBSERVER!>@Pure override fun value(): Int = 0<!>
+    @Pure override fun value(): Int = 0
 }
 
 class PlainGhostOverride : CounterSpec {

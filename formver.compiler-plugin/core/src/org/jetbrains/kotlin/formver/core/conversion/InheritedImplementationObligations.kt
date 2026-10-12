@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
+import org.jetbrains.kotlin.formver.core.isPure
 
 /** A runtime implementation and the contracts inherited by its receiving class. */
 data class InheritedImplementationObligation(
@@ -28,9 +29,15 @@ context(context: CheckerContext)
 fun FirRegularClassSymbol.inheritedImplementationObligations(): List<InheritedImplementationObligation> {
     val scope = unsubstitutedScope()
     val obligations = mutableListOf<InheritedImplementationObligation>()
+    var hasObserver = false
+    for (name in scope.getCallableNames()) {
+        scope.processFunctionsByName(name) { if (it.isObserverOrOverride()) hasObserver = true }
+        scope.processPropertiesByName(name) { if (it.isObserverOrOverride()) hasObserver = true }
+    }
+    val checksImplicitContracts = hasObserver || ownClassLaws(context.session).isNotEmpty() || hasSuperclassLaws(context.session)
     for (name in scope.getCallableNames()) {
         scope.processFunctionsByName(name) { member ->
-            if (member.isObserverOrOverride()) return@processFunctionsByName
+            if (member.isObserverOrOverride() || member.specOfTargetName(context.session) != null) return@processFunctionsByName
             val declarations = linkedSetOf<FirNamedFunctionSymbol>()
             fun collect(symbol: FirNamedFunctionSymbol) {
                 if (!declarations.add(symbol)) return
@@ -39,8 +46,10 @@ fun FirRegularClassSymbol.inheritedImplementationObligations(): List<InheritedIm
             collect(member)
             val implementation = declarations.asSequence().map { it.unwrapFakeOverrides() }
                 .firstOrNull { !it.isAbstract && it.fir.body != null } ?: return@processFunctionsByName
-            if (implementation.getContainingClassSymbol() == this) return@processFunctionsByName
-            val contracts = declarations.mapNotNull { it.specificationOwner() }.distinct()
+            if (implementation.getContainingClassSymbol() == this || implementation.isPure(context.session)) return@processFunctionsByName
+            val contracts = declarations.mapNotNull { it.specificationOwner() }.distinct().ifEmpty {
+                if (checksImplicitContracts) listOf(implementation) else emptyList()
+            }
             if (contracts.isNotEmpty()) obligations += InheritedImplementationObligation(implementation, contracts)
         }
     }
