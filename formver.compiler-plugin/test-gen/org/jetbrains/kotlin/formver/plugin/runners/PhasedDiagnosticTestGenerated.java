@@ -760,6 +760,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("intlist_milestone.kt")
+      public void testIntlist_milestone() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/intlist_milestone.kt");
+      }
+
+      @Test
       @TestMetadata("list_reverse.kt")
       public void testList_reverse() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/list_reverse.kt");

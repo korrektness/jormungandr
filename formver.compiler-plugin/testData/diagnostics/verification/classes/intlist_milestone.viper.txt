@@ -1,0 +1,4997 @@
+/intlist_milestone.kt: info: Generated Viper text for size:
+function get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/intlist_milestone.kt: info: Generated Viper text for get:
+function get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/intlist_milestone.kt: info: Generated Viper text for add:
+function get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(size(this), intToRef(0)))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate footprint(this: Ref)
+
+method add(this: Ref, value: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(IntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  ensures acc(IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret), unitType())
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this))) ==
+    old((unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this)))) +
+    1
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(get(this, old((unfolding acc(IntList_unique(this), wildcard) in
+        size(this))))) ==
+      intFromRef(value))
+  ensures (forall anon: Int ::
+      { get(this, intToRef(anon)) }
+      0 <= anon &&
+      anon <
+      old((unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(size(this)))) ==>
+      (unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(get(this, intToRef(anon))) ==
+        old((unfolding acc(IntList_unique(this), wildcard) in
+          intFromRef(get(this, intToRef(anon)))))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for set:
+function get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(size(this), intToRef(0)))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate footprint(this: Ref)
+
+method set(this: Ref, i: Ref, value: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(IntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(size(this)))
+  ensures acc(IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret), unitType())
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this))) ==
+    old((unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this))))
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(get(this, i)) == intFromRef(value))
+  ensures (forall anon: Int ::
+      { get(this, intToRef(anon)) }
+      0 <= anon &&
+      (unfolding acc(IntList_unique(this), wildcard) in
+        anon < intFromRef(size(this))) &&
+      !(anon == intFromRef(i)) ==>
+      (unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(get(this, intToRef(anon))) ==
+        old((unfolding acc(IntList_unique(this), wildcard) in
+          intFromRef(get(this, intToRef(anon)))))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for get:
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(size(this), intToRef(0)))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate footprint(this: Ref)
+
+method f_get_Int(list: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(list), IntList())
+  requires acc(IntList_unique(list), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(i) < intFromRef(size(list)))
+  ensures acc(IntList_unique(list), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    old((unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(IntList_f_get(list, i))))
+  ensures (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(size(list))) ==
+    old((unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(size(list))))
+  ensures (forall anon_builtin: Int ::
+      { IntList_f_get(list, intToRef(anon_builtin)) }
+      0 <= anon_builtin &&
+      (unfolding acc(IntList_unique(list), wildcard) in
+        anon_builtin < intFromRef(size(list))) ==>
+      (unfolding acc(IntList_unique(list), wildcard) in
+        intFromRef(IntList_f_get(list, intToRef(anon_builtin))) ==
+        old((unfolding acc(IntList_unique(list), wildcard) in
+          intFromRef(IntList_f_get(list, intToRef(anon_builtin)))))))
+{
+  var anon_0: Ref
+  anon_0 := (unfolding acc(IntList_unique(list), wildcard) in
+      IntList_f_get(list, i))
+  v_ret_0 := anon_0
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/intlist_milestone.kt: info: Generated Viper text for ArrayIntList:
+field contents: Seq[Int]
+
+field count: Ref
+
+field data: Ref
+
+function ArrayIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in
+    (let anon_5_0 ==
+      (this.count) in
+      (let anon_6_0 ==
+        (this.data) in
+        (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_5_0) &&
+        intFromRef(i) < arraySize(anon_6_0) ?
+          (let anon_8_0 ==
+            (this.data) in
+            (unfolding acc(IntArray_unique(anon_8_0), write) in
+              intToRef(anon_8_0.contents[intFromRef(i)]))) :
+          intToRef(0)))))
+}
+
+function ArrayIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in this.count)
+}
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+predicate ArrayIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayIntList()) && acc(this.data, write) &&
+  isSubtype(typeOf(this.data), IntArray()) &&
+  acc(IntArray_unique(this.data), write) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method laws(this: Ref)
+  requires acc(ArrayIntList_unique(this), write)
+{
+  unfold acc(ArrayIntList_unique(this), write)
+  fold acc(ArrayIntList_unique(this), write)
+  assert boolFromRef(geInts(ArrayIntList_f_size(this), intToRef(0)))
+}
+
+/intlist_milestone.kt: info: Generated Viper text for size:
+field contents: Seq[Int]
+
+field count: Ref
+
+field data: Ref
+
+function ArrayIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in
+    (let anon_5_0 ==
+      (this.count) in
+      (let anon_6_0 ==
+        (this.data) in
+        (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_5_0) &&
+        intFromRef(i) < arraySize(anon_6_0) ?
+          (let anon_8_0 ==
+            (this.data) in
+            (unfolding acc(IntArray_unique(anon_8_0), write) in
+              intToRef(anon_8_0.contents[intFromRef(i)]))) :
+          intToRef(0)))))
+}
+
+function ArrayIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in this.count)
+}
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+predicate ArrayIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayIntList()) && acc(this.data, write) &&
+  isSubtype(typeOf(this.data), IntArray()) &&
+  acc(IntArray_unique(this.data), write) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/intlist_milestone.kt: info: Generated Viper text for get:
+field contents: Seq[Int]
+
+field count: Ref
+
+field data: Ref
+
+function ArrayIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in
+    (let anon_4_0 ==
+      (this.count) in
+      (let anon_5_0 ==
+        (this.data) in
+        (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_4_0) &&
+        intFromRef(i) < arraySize(anon_5_0) ?
+          (let anon_7_0 ==
+            (this.data) in
+            (unfolding acc(IntArray_unique(anon_7_0), write) in
+              intToRef(anon_7_0.contents[intFromRef(i)]))) :
+          intToRef(0)))))
+}
+
+function ArrayIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in this.count)
+}
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+predicate ArrayIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayIntList()) && acc(this.data, write) &&
+  isSubtype(typeOf(this.data), IntArray()) &&
+  acc(IntArray_unique(this.data), write) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/intlist_milestone.kt: info: Generated Viper text for add:
+field contents: Seq[Int]
+
+field count: Ref
+
+field data: Ref
+
+function ArrayIntList_f_get(this: Ref, par_i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(par_i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in
+    (let anon_6_0 ==
+      (this.count) in
+      (let anon_7_0 ==
+        (this.data) in
+        (0 <= intFromRef(par_i) && intFromRef(par_i) < intFromRef(anon_6_0) &&
+        intFromRef(par_i) < arraySize(anon_7_0) ?
+          (let anon_9_0 ==
+            (this.data) in
+            (unfolding acc(IntArray_unique(anon_9_0), write) in
+              intToRef(anon_9_0.contents[intFromRef(par_i)]))) :
+          intToRef(0)))))
+}
+
+function ArrayIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in this.count)
+}
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function c_IntList_f_get(this: Ref, par_i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArrayIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayIntList()) && acc(this.data, write) &&
+  isSubtype(typeOf(this.data), IntArray()) &&
+  acc(IntArray_unique(this.data), write) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.count) in
+      (let anon_2_0 ==
+        (this.count) in
+        (let anon_3_0 ==
+          (this.data) in
+          andBools(leInts(intToRef(0), anon_1_0), leInts(anon_2_0, intToRef(arraySize(anon_3_0)))))))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method ArrayIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), ArrayIntList())
+  ensures acc(ArrayIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    ArrayIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall par_i: Ref ::
+      { ArrayIntList_f_get(this, par_i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(par_i), intType())) ==>
+      ArrayIntList_f_get(this, par_i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, par_i))))
+
+
+method ArrayIntList_c_IntList_upcast(this: Ref)
+  requires acc(ArrayIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ArrayIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(ArrayIntList_f_size(this))
+  ensures (forall par_i: Ref ::
+      { c_IntList_f_get(this, par_i) }
+      true && old(isSubtype(typeOf(this), ArrayIntList())) && true &&
+      old(isSubtype(typeOf(par_i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, par_i)) ==
+      old(ArrayIntList_f_get(this, par_i)))
+
+
+method ArrayIntList_f_add(this: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  ensures acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(ArrayIntList_f_size(this)) ==
+    old(intFromRef(ArrayIntList_f_size(this))) + 1
+  ensures intFromRef(ArrayIntList_f_get(this, old(ArrayIntList_f_size(this)))) ==
+    intFromRef(value)
+  ensures (forall anon_builtin_0: Int ::
+      { ArrayIntList_f_get(this, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < old(intFromRef(ArrayIntList_f_size(this))) ==>
+      intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_0))) ==
+      old(intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_0)))))
+{
+  var n: Ref
+  var replacement: Ref
+  var l0_i: Ref
+  var anon_12: Ref
+  unfold acc(ArrayIntList_unique(this), write)
+  n := this.count
+  replacement := con(plusInts(n, intToRef(1)))
+  l0_i := intToRef(0)
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.count) in
+          (let anon_3_0 ==
+            (this.data) in
+            andBools(leInts(intToRef(0), anon_1_0), leInts(anon_2_0, intToRef(arraySize(anon_3_0)))))))))
+  fold acc(ArrayIntList_unique(this), write)
+  label cont
+    invariant acc(IntArray_unique(replacement), write)
+    invariant acc(ArrayIntList_unique(this), write)
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(replacement), IntArray())
+    invariant isSubtype(typeOf(l0_i), intType())
+    invariant isSubtype(typeOf(value), intType())
+    invariant isSubtype(typeOf(this), ArrayIntList())
+    invariant 0 <= intFromRef(l0_i) && intFromRef(l0_i) <= intFromRef(n)
+    invariant (unfolding acc(ArrayIntList_unique(this), write) in
+        intFromRef(this.count) == intFromRef(n))
+    invariant (unfolding acc(IntArray_unique(replacement), write) in
+        (unfolding acc(ArrayIntList_unique(this), write) in
+          (unfolding acc(IntArray_unique(this.data), write) in
+            (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+              anon_builtin_1 < intFromRef(l0_i) ==>
+              replacement.contents[anon_builtin_1] ==
+              this.data.contents[anon_builtin_1]))))
+    invariant (unfolding acc(ArrayIntList_unique(this), write) in
+        (unfolding acc(IntArray_unique(this.data), write) in
+          (forall anon_builtin_2: Int ::
+            { this.data.contents[anon_builtin_2] }
+            0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(n) ==>
+            this.data.contents[anon_builtin_2] ==
+            old((unfolding acc(ArrayIntList_unique(this), write) in
+              (unfolding acc(IntArray_unique(this.data), write) in
+                this.data.contents[anon_builtin_2]))))))
+  anon_12 := ltInts(l0_i, n)
+  if (boolFromRef(anon_12)) {
+    var anon_13: Ref
+    var anon_14: Ref
+    var anon_0: Ref
+    unfold acc(ArrayIntList_unique(this), write)
+    anon_13 := this.data
+    assert intFromRef(l0_i) >= 0
+    assert intFromRef(l0_i) < arraySize(anon_13)
+    unfold acc(IntArray_unique(this.data), write)
+    anon_14 := intToRef(anon_13.contents[intFromRef(l0_i)])
+    assert intFromRef(l0_i) >= 0
+    assert intFromRef(l0_i) < arraySize(replacement)
+    unfold acc(IntArray_unique(replacement), write)
+    replacement.contents := replacement.contents[intFromRef(l0_i) :=
+      intFromRef(anon_14)]
+    anon_0 := l0_i
+    l0_i := plusInts(anon_0, intToRef(1))
+    fold acc(IntArray_unique(replacement), write)
+    fold acc(IntArray_unique(this.data), write)
+    assert (let this ==
+        (this) in
+        true &&
+        boolFromRef((let anon_1_0 ==
+          (this.count) in
+          (let anon_2_0 ==
+            (this.count) in
+            (let anon_3_0 ==
+              (this.data) in
+              andBools(leInts(intToRef(0), anon_1_0), leInts(anon_2_0, intToRef(arraySize(anon_3_0)))))))))
+    fold acc(ArrayIntList_unique(this), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(n), intType())
+  assert isSubtype(typeOf(replacement), IntArray())
+  assert isSubtype(typeOf(l0_i), intType())
+  assert isSubtype(typeOf(value), intType())
+  assert isSubtype(typeOf(this), ArrayIntList())
+  assert 0 <= intFromRef(l0_i) && intFromRef(l0_i) <= intFromRef(n)
+  assert (unfolding acc(ArrayIntList_unique(this), write) in
+      intFromRef(this.count) == intFromRef(n))
+  assert (unfolding acc(IntArray_unique(replacement), write) in
+      (unfolding acc(ArrayIntList_unique(this), write) in
+        (unfolding acc(IntArray_unique(this.data), write) in
+          (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+            anon_builtin_1 < intFromRef(l0_i) ==>
+            replacement.contents[anon_builtin_1] ==
+            this.data.contents[anon_builtin_1]))))
+  assert (unfolding acc(ArrayIntList_unique(this), write) in
+      (unfolding acc(IntArray_unique(this.data), write) in
+        (forall anon_builtin_2: Int ::
+          { this.data.contents[anon_builtin_2] }
+          0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(n) ==>
+          this.data.contents[anon_builtin_2] ==
+          old((unfolding acc(ArrayIntList_unique(this), write) in
+            (unfolding acc(IntArray_unique(this.data), write) in
+              this.data.contents[anon_builtin_2]))))))
+  assert intFromRef(n) >= 0
+  assert intFromRef(n) < arraySize(replacement)
+  unfold acc(IntArray_unique(replacement), write)
+  replacement.contents := replacement.contents[intFromRef(n) :=
+    intFromRef(value)]
+  fold acc(IntArray_unique(replacement), write)
+  unfold acc(ArrayIntList_unique(this), write)
+  this.data := replacement
+  this.count := plusInts(n, intToRef(1))
+  label lbl_ret_0
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.count) in
+          (let anon_3_0 ==
+            (this.data) in
+            andBools(leInts(intToRef(0), anon_1_0), leInts(anon_2_0, intToRef(arraySize(anon_3_0)))))))))
+  fold acc(ArrayIntList_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method c_IntList_f_add(this: Ref, value: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  ensures acc(c_IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)))) +
+    1
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))))) ==
+      intFromRef(value))
+  ensures (forall anon_builtin_3: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_3)) }
+      0 <= anon_builtin_3 &&
+      anon_builtin_3 <
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_size(this)))) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_3))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_3)))))))
+
+
+method con(par_size: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_2), IntArray())
+  ensures acc(IntArray_unique(ret_2), write)
+  ensures arraySize(ret_2) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_2), write) in
+      (forall j: Int ::
+        { ret_2.contents[j] }
+        j >= 0 && j < arraySize(ret_2) ==> ret_2.contents[j] == 0))
+
+
+method refines_c_IntList_f_add(this: Ref, value: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  requires isSubtype(typeOf(this), ArrayIntList())
+{
+  ArrayIntList_c_IntList_restore(this)
+  ret_6 := ArrayIntList_f_add(this, value)
+  ArrayIntList_c_IntList_upcast(this)
+  assert acc(c_IntList_unique(this), write)
+  assert isSubtype(typeOf(ret_6), unitType())
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)))) +
+    1
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))))) ==
+      intFromRef(value))
+  assert (forall anon_builtin_3: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_3)) }
+      0 <= anon_builtin_3 &&
+      anon_builtin_3 <
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_size(this)))) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_3))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_3)))))))
+}
+
+/intlist_milestone.kt: info: Generated Viper text for set:
+field contents: Seq[Int]
+
+field count: Ref
+
+field data: Ref
+
+function ArrayIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in
+    (let anon_5_0 ==
+      (this.count) in
+      (let anon_6_0 ==
+        (this.data) in
+        (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_5_0) &&
+        intFromRef(i) < arraySize(anon_6_0) ?
+          (let anon_8_0 ==
+            (this.data) in
+            (unfolding acc(IntArray_unique(anon_8_0), write) in
+              intToRef(anon_8_0.contents[intFromRef(i)]))) :
+          intToRef(0)))))
+}
+
+function ArrayIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in this.count)
+}
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function c_IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArrayIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayIntList()) && acc(this.data, write) &&
+  isSubtype(typeOf(this.data), IntArray()) &&
+  acc(IntArray_unique(this.data), write) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method ArrayIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), ArrayIntList())
+  ensures acc(ArrayIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    ArrayIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall i: Ref ::
+      { ArrayIntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      ArrayIntList_f_get(this, i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i))))
+
+
+method ArrayIntList_c_IntList_upcast(this: Ref)
+  requires acc(ArrayIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ArrayIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(ArrayIntList_f_size(this))
+  ensures (forall i: Ref ::
+      { c_IntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), ArrayIntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i)) ==
+      old(ArrayIntList_f_get(this, i)))
+
+
+method ArrayIntList_f_set(this: Ref, i: Ref, value: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(ArrayIntList_f_size(this))
+  ensures acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(ArrayIntList_f_size(this)) ==
+    old(intFromRef(ArrayIntList_f_size(this)))
+  ensures intFromRef(ArrayIntList_f_get(this, i)) == intFromRef(value)
+  ensures (forall anon_builtin_0: Int ::
+      { ArrayIntList_f_get(this, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < intFromRef(ArrayIntList_f_size(this)) &&
+      !(anon_builtin_0 == intFromRef(i)) ==>
+      intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_0))) ==
+      old(intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_0)))))
+{
+  var anon_11: Ref
+  unfold acc(ArrayIntList_unique(this), write)
+  anon_11 := this.data
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < arraySize(anon_11)
+  unfold acc(IntArray_unique(this.data), write)
+  anon_11.contents := anon_11.contents[intFromRef(i) := intFromRef(value)]
+  label lbl_ret_0
+  fold acc(IntArray_unique(this.data), write)
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.count) in
+        (let anon_1_0 ==
+          (this.count) in
+          (let anon_2_0 ==
+            (this.data) in
+            andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+  fold acc(ArrayIntList_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method c_IntList_f_set(this: Ref, i: Ref, value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(c_IntList_f_size(this)))
+  ensures acc(c_IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))))
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, i)) == intFromRef(value))
+  ensures (forall anon_builtin_1: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        anon_builtin_1 < intFromRef(c_IntList_f_size(this))) &&
+      !(anon_builtin_1 == intFromRef(i)) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1)))))))
+
+
+method refines_c_IntList_f_set(this: Ref, i: Ref, value: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(c_IntList_f_size(this)))
+  requires isSubtype(typeOf(this), ArrayIntList())
+{
+  ArrayIntList_c_IntList_restore(this)
+  ret_2 := ArrayIntList_f_set(this, i, value)
+  ArrayIntList_c_IntList_upcast(this)
+  assert acc(c_IntList_unique(this), write)
+  assert isSubtype(typeOf(ret_2), unitType())
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))))
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, i)) == intFromRef(value))
+  assert (forall anon_builtin_1: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        anon_builtin_1 < intFromRef(c_IntList_f_size(this))) &&
+      !(anon_builtin_1 == intFromRef(i)) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1)))))))
+}
+
+/intlist_milestone.kt: info: Generated Viper text for ArrayBoundProbe:
+field contents: Seq[Int]
+
+field count: Ref
+
+field data: Ref
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+predicate ArrayBoundProbe_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayBoundProbe()) && acc(this.data, write) &&
+  isSubtype(typeOf(this.data), IntArray()) &&
+  acc(IntArray_unique(this.data), write) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+/intlist_milestone.kt: info: Generated Viper text for getByCount:
+field contents: Seq[Int]
+
+field count: Ref
+
+field data: Ref
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function getByCount(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayBoundProbe())
+  requires acc(ArrayBoundProbe_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayBoundProbe_unique(this), write) in
+    (let anon_4_0 ==
+      (this.count) in
+      (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_4_0) ?
+        (let anon_6_0 ==
+          (this.data) in
+          (unfolding acc(IntArray_unique(anon_6_0), write) in
+            intToRef(anon_6_0.contents[intFromRef(i)]))) :
+        intToRef(0))))
+}
+
+predicate ArrayBoundProbe_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayBoundProbe()) && acc(this.data, write) &&
+  isSubtype(typeOf(this.data), IntArray()) &&
+  acc(IntArray_unique(this.data), write) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+/intlist_milestone.kt: info: Generated Viper text for nodeSize:
+field next: Ref
+
+field value: Ref
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_3_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_3_0)))))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+/intlist_milestone.kt: info: Generated Viper text for nodeGet:
+field next: Ref
+
+field value: Ref
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.value :
+        (let anon_5_0 ==
+          (node.next) in
+          nodeGet(anon_5_0, minusInts(i, intToRef(1)))))))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+/intlist_milestone.kt: info: Generated Viper text for nonnegativeNodes:
+field next: Ref
+
+field value: Ref
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.value :
+        (let anon_9_0 ==
+          (node.next) in
+          nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_3_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_3_0)))))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+method nonnegativeNodes(node: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(nodeSize(node)) >= 0
+  ensures intFromRef(nodeSize(node)) == old(intFromRef(nodeSize(node)))
+  ensures (forall anon_builtin: Int ::
+      { nodeGet(node, intToRef(anon_builtin)) }
+      intFromRef(nodeGet(node, intToRef(anon_builtin))) ==
+      old(intFromRef(nodeGet(node, intToRef(anon_builtin)))))
+{
+  if (!(node == nullValue())) {
+    var anon_10: Ref
+    var anon_11: Ref
+    if (node != nullValue()) {
+      unfold acc(IntNode_unique(node), write)
+    }
+    anon_11 := node.next
+    anon_10 := nonnegativeNodes(anon_11)
+    if (node != nullValue()) {
+      fold acc(IntNode_unique(node), write)
+    }
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/intlist_milestone.kt: info: Generated Viper text for appendNode:
+field bf_next: Ref
+
+field bf_value: Ref
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.bf_value :
+        (let anon_9_0 ==
+          (node.bf_next) in
+          nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_3_0 ==
+        (node.bf_next) in
+        plusInts(intToRef(1), nodeSize(anon_3_0)))))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  acc(this.bf_next, write) &&
+  isSubtype(typeOf(this.bf_next), nullable(IntNode())) &&
+  (this.bf_next != nullValue() ==> acc(IntNode_unique(this.bf_next), write))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+method appendNode(node: Ref, par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), IntNode())
+  ensures acc(IntNode_unique(v_ret_0), write)
+  ensures intFromRef(nodeSize(v_ret_0)) ==
+    old(intFromRef(nodeSize(node))) + 1
+  ensures intFromRef(nodeGet(v_ret_0, old(nodeSize(node)))) ==
+    intFromRef(par_value)
+  ensures (forall anon_builtin_0: Int ::
+      { nodeGet(v_ret_0, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < old(intFromRef(nodeSize(node))) ==>
+      intFromRef(nodeGet(v_ret_0, intToRef(anon_builtin_0))) ==
+      old(intFromRef(nodeGet(node, intToRef(anon_builtin_0)))))
+{
+  var anon_10: Ref
+  var anon_11: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  if (node == nullValue()) {
+    v_ret_0 := con(par_value, nullValue())
+    fold acc(IntNode_unique(v_ret_0), write)
+    goto lbl_ret_0
+  }
+  if (node != nullValue()) {
+    unfold acc(IntNode_unique(node), write)
+  }
+  anon_11 := node.bf_next
+  anon_10 := nonnegativeNodes(anon_11)
+  anon_13 := node.bf_next
+  anon_12 := appendNode(anon_13, par_value)
+  node.bf_next := anon_12
+  if (node != nullValue()) {
+    fold acc(IntNode_unique(node), write)
+  }
+  v_ret_0 := node
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(IntNode()))
+  ensures isSubtype(typeOf(ret_3), IntNode())
+  ensures isSubtype(typeOf(ret_3), IntNode()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(IntNode()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
+
+
+method nonnegativeNodes(node: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures intFromRef(nodeSize(node)) >= 0
+  ensures intFromRef(nodeSize(node)) == old(intFromRef(nodeSize(node)))
+  ensures (forall anon_builtin_1: Int ::
+      { nodeGet(node, intToRef(anon_builtin_1)) }
+      intFromRef(nodeGet(node, intToRef(anon_builtin_1))) ==
+      old(intFromRef(nodeGet(node, intToRef(anon_builtin_1)))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for setNode:
+field bf_value: Ref
+
+field next: Ref
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.bf_value :
+        (let anon_9_0 ==
+          (node.next) in
+          nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_3_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_3_0)))))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+method setNode(node: Ref, i: Ref, par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(par_value), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < intFromRef(nodeSize(node))
+  ensures node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(nodeSize(node)) == old(intFromRef(nodeSize(node)))
+  ensures intFromRef(nodeGet(node, i)) == intFromRef(par_value)
+  ensures (forall anon_builtin: Int ::
+      { nodeGet(node, intToRef(anon_builtin)) }
+      0 <= anon_builtin && anon_builtin < intFromRef(nodeSize(node)) &&
+      !(anon_builtin == intFromRef(i)) ==>
+      intFromRef(nodeGet(node, intToRef(anon_builtin))) ==
+      old(intFromRef(nodeGet(node, intToRef(anon_builtin)))))
+{
+  if (!(node == nullValue())) {
+    if (intFromRef(i) == 0) {
+      if (node != nullValue()) {
+        unfold acc(IntNode_unique(node), write)
+      }
+      node.bf_value := par_value
+      if (node != nullValue()) {
+        fold acc(IntNode_unique(node), write)
+      }
+    } else {
+      var anon_10: Ref
+      var anon_11: Ref
+      if (node != nullValue()) {
+        unfold acc(IntNode_unique(node), write)
+      }
+      anon_11 := node.next
+      anon_10 := setNode(anon_11, minusInts(i, intToRef(1)), par_value)
+      if (node != nullValue()) {
+        fold acc(IntNode_unique(node), write)
+      }
+    }
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/intlist_milestone.kt: info: Generated Viper text for NodeIntList:
+field count: Ref
+
+field head: Ref
+
+field next: Ref
+
+field value: Ref
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function NodeIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in
+    (let anon_4_0 ==
+      (this.head) in
+      nodeGet(anon_4_0, i)))
+}
+
+function NodeIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in this.count)
+}
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.value :
+        (let anon_10_0 ==
+          (node.next) in
+          nodeGet(anon_10_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_14_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_14_0)))))
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate NodeIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), NodeIntList()) && acc(this.head, write) &&
+  isSubtype(typeOf(this.head), nullable(IntNode())) &&
+  (this.head != nullValue() ==> acc(IntNode_unique(this.head), write)) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.head) in
+          andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+          intFromRef(nodeSize(anon_2_0)))))))))
+}
+
+predicate footprint(this: Ref)
+
+method laws(this: Ref)
+  requires acc(NodeIntList_unique(this), write)
+{
+  unfold acc(NodeIntList_unique(this), write)
+  fold acc(NodeIntList_unique(this), write)
+  assert boolFromRef(geInts(NodeIntList_f_size(this), intToRef(0)))
+}
+
+/intlist_milestone.kt: info: Generated Viper text for size:
+field count: Ref
+
+field head: Ref
+
+field next: Ref
+
+field value: Ref
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function NodeIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in
+    (let anon_4_0 ==
+      (this.head) in
+      nodeGet(anon_4_0, i)))
+}
+
+function NodeIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in this.count)
+}
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.value :
+        (let anon_10_0 ==
+          (node.next) in
+          nodeGet(anon_10_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_14_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_14_0)))))
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate NodeIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), NodeIntList()) && acc(this.head, write) &&
+  isSubtype(typeOf(this.head), nullable(IntNode())) &&
+  (this.head != nullValue() ==> acc(IntNode_unique(this.head), write)) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.head) in
+          andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+          intFromRef(nodeSize(anon_2_0)))))))))
+}
+
+predicate footprint(this: Ref)
+
+/intlist_milestone.kt: info: Generated Viper text for get:
+field count: Ref
+
+field head: Ref
+
+field next: Ref
+
+field value: Ref
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function NodeIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in
+    (let anon_3_0 ==
+      (this.head) in
+      nodeGet(anon_3_0, i)))
+}
+
+function NodeIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in this.count)
+}
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.value :
+        (let anon_9_0 ==
+          (node.next) in
+          nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_14_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_14_0)))))
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate NodeIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), NodeIntList()) && acc(this.head, write) &&
+  isSubtype(typeOf(this.head), nullable(IntNode())) &&
+  (this.head != nullValue() ==> acc(IntNode_unique(this.head), write)) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.head) in
+          andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+          intFromRef(nodeSize(anon_2_0)))))))))
+}
+
+predicate footprint(this: Ref)
+
+/intlist_milestone.kt: info: Generated Viper text for add:
+field bf_value: Ref
+
+field count: Ref
+
+field head: Ref
+
+field next: Ref
+
+function NodeIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in
+    (let anon_15_0 ==
+      (this.head) in
+      nodeGet(anon_15_0, i)))
+}
+
+function NodeIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in this.count)
+}
+
+function c_IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.bf_value :
+        (let anon_13_0 ==
+          (node.next) in
+          nodeGet(anon_13_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_7_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_7_0)))))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate NodeIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), NodeIntList()) && acc(this.head, write) &&
+  isSubtype(typeOf(this.head), nullable(IntNode())) &&
+  (this.head != nullValue() ==> acc(IntNode_unique(this.head), write)) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_1_0 ==
+      (this.count) in
+      (let anon_2_0 ==
+        (this.count) in
+        (let anon_3_0 ==
+          (this.head) in
+          andBools(geInts(anon_1_0, intToRef(0)), boolToRef(intFromRef(anon_2_0) ==
+          intFromRef(nodeSize(anon_3_0)))))))))
+}
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method NodeIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), NodeIntList())
+  ensures acc(NodeIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    NodeIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall i: Ref ::
+      { NodeIntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      NodeIntList_f_get(this, i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i))))
+
+
+method NodeIntList_c_IntList_upcast(this: Ref)
+  requires acc(NodeIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), NodeIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(NodeIntList_f_size(this))
+  ensures (forall i: Ref ::
+      { c_IntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), NodeIntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i)) ==
+      old(NodeIntList_f_get(this, i)))
+
+
+method NodeIntList_f_add(this: Ref, par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(NodeIntList_f_size(this)) ==
+    old(intFromRef(NodeIntList_f_size(this))) + 1
+  ensures intFromRef(NodeIntList_f_get(this, old(NodeIntList_f_size(this)))) ==
+    intFromRef(par_value)
+  ensures (forall anon_builtin_0: Int ::
+      { NodeIntList_f_get(this, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < old(intFromRef(NodeIntList_f_size(this))) ==>
+      intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_0))) ==
+      old(intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_0)))))
+{
+  var anon_16: Ref
+  var anon_17: Ref
+  var anon_0: Ref
+  unfold acc(NodeIntList_unique(this), write)
+  anon_17 := this.head
+  anon_16 := appendNode(anon_17, par_value)
+  this.head := anon_16
+  anon_0 := this.count
+  this.count := plusInts(anon_0, intToRef(1))
+  label lbl_ret_0
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.count) in
+          (let anon_3_0 ==
+            (this.head) in
+            andBools(geInts(anon_1_0, intToRef(0)), boolToRef(intFromRef(anon_2_0) ==
+            intFromRef(nodeSize(anon_3_0)))))))))
+  fold acc(NodeIntList_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method appendNode(node: Ref, par_value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_2), IntNode())
+  ensures acc(IntNode_unique(ret_2), write)
+  ensures intFromRef(nodeSize(ret_2)) ==
+    old(intFromRef(nodeSize(node))) + 1
+  ensures intFromRef(nodeGet(ret_2, old(nodeSize(node)))) ==
+    intFromRef(par_value)
+  ensures (forall anon_builtin_1: Int ::
+      { nodeGet(ret_2, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      anon_builtin_1 < old(intFromRef(nodeSize(node))) ==>
+      intFromRef(nodeGet(ret_2, intToRef(anon_builtin_1))) ==
+      old(intFromRef(nodeGet(node, intToRef(anon_builtin_1)))))
+
+
+method c_IntList_f_add(this: Ref, par_value: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures acc(c_IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)))) +
+    1
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))))) ==
+      intFromRef(par_value))
+  ensures (forall anon_builtin_2: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_2)) }
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 <
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_size(this)))) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_2))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_2)))))))
+
+
+method refines_c_IntList_f_add(this: Ref, par_value: Ref)
+  returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(this), NodeIntList())
+{
+  NodeIntList_c_IntList_restore(this)
+  ret_4 := NodeIntList_f_add(this, par_value)
+  NodeIntList_c_IntList_upcast(this)
+  assert acc(c_IntList_unique(this), write)
+  assert isSubtype(typeOf(ret_4), unitType())
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)))) +
+    1
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))))) ==
+      intFromRef(par_value))
+  assert (forall anon_builtin_2: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_2)) }
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 <
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_size(this)))) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_2))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_2)))))))
+}
+
+/intlist_milestone.kt: info: Generated Viper text for set:
+field bf_value: Ref
+
+field count: Ref
+
+field head: Ref
+
+field next: Ref
+
+function NodeIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in
+    (let anon_14_0 ==
+      (this.head) in
+      nodeGet(anon_14_0, i)))
+}
+
+function NodeIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in this.count)
+}
+
+function c_IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.bf_value :
+        (let anon_12_0 ==
+          (node.next) in
+          nodeGet(anon_12_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_6_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_6_0)))))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate NodeIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), NodeIntList()) && acc(this.head, write) &&
+  isSubtype(typeOf(this.head), nullable(IntNode())) &&
+  (this.head != nullValue() ==> acc(IntNode_unique(this.head), write)) &&
+  acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.count) in
+      (let anon_1_0 ==
+        (this.count) in
+        (let anon_2_0 ==
+          (this.head) in
+          andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+          intFromRef(nodeSize(anon_2_0)))))))))
+}
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method NodeIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), NodeIntList())
+  ensures acc(NodeIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    NodeIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall i: Ref ::
+      { NodeIntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      NodeIntList_f_get(this, i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i))))
+
+
+method NodeIntList_c_IntList_upcast(this: Ref)
+  requires acc(NodeIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), NodeIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(NodeIntList_f_size(this))
+  ensures (forall i: Ref ::
+      { c_IntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), NodeIntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i)) ==
+      old(NodeIntList_f_get(this, i)))
+
+
+method NodeIntList_f_set(this: Ref, i: Ref, par_value: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(par_value), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(NodeIntList_f_size(this))
+  ensures acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(NodeIntList_f_size(this)) ==
+    old(intFromRef(NodeIntList_f_size(this)))
+  ensures intFromRef(NodeIntList_f_get(this, i)) == intFromRef(par_value)
+  ensures (forall anon_builtin_0: Int ::
+      { NodeIntList_f_get(this, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < intFromRef(NodeIntList_f_size(this)) &&
+      !(anon_builtin_0 == intFromRef(i)) ==>
+      intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_0))) ==
+      old(intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_0)))))
+{
+  var anon_15: Ref
+  var anon_16: Ref
+  unfold acc(NodeIntList_unique(this), write)
+  anon_16 := this.head
+  anon_15 := setNode(anon_16, i, par_value)
+  label lbl_ret_0
+  assert (let this ==
+      (this) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.count) in
+        (let anon_1_0 ==
+          (this.count) in
+          (let anon_2_0 ==
+            (this.head) in
+            andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+            intFromRef(nodeSize(anon_2_0)))))))))
+  fold acc(NodeIntList_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method c_IntList_f_set(this: Ref, i: Ref, par_value: Ref)
+  returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(par_value), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(c_IntList_f_size(this)))
+  ensures acc(c_IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))))
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, i)) == intFromRef(par_value))
+  ensures (forall anon_builtin_2: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_2)) }
+      0 <= anon_builtin_2 &&
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        anon_builtin_2 < intFromRef(c_IntList_f_size(this))) &&
+      !(anon_builtin_2 == intFromRef(i)) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_2))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_2)))))))
+
+
+method refines_c_IntList_f_set(this: Ref, i: Ref, par_value: Ref)
+  returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(par_value), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(c_IntList_f_size(this)))
+  requires isSubtype(typeOf(this), NodeIntList())
+{
+  NodeIntList_c_IntList_restore(this)
+  ret_4 := NodeIntList_f_set(this, i, par_value)
+  NodeIntList_c_IntList_upcast(this)
+  assert acc(c_IntList_unique(this), write)
+  assert isSubtype(typeOf(ret_4), unitType())
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))))
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, i)) == intFromRef(par_value))
+  assert (forall anon_builtin_2: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_2)) }
+      0 <= anon_builtin_2 &&
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        anon_builtin_2 < intFromRef(c_IntList_f_size(this))) &&
+      !(anon_builtin_2 == intFromRef(i)) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_2))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_2)))))))
+}
+
+method setNode(node: Ref, i: Ref, par_value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(par_value), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < intFromRef(nodeSize(node))
+  ensures node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures intFromRef(nodeSize(node)) == old(intFromRef(nodeSize(node)))
+  ensures intFromRef(nodeGet(node, i)) == intFromRef(par_value)
+  ensures (forall anon_builtin_1: Int ::
+      { nodeGet(node, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(nodeSize(node)) &&
+      !(anon_builtin_1 == intFromRef(i)) ==>
+      intFromRef(nodeGet(node, intToRef(anon_builtin_1))) ==
+      old(intFromRef(nodeGet(node, intToRef(anon_builtin_1)))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for interfaceClient:
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(f_size(this), intToRef(0)))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate footprint(this: Ref)
+
+method add(this: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(IntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  ensures acc(IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(f_size(this))) ==
+    old((unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(f_size(this)))) +
+    1
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(IntList_f_get(this, old((unfolding acc(IntList_unique(this), wildcard) in
+        f_size(this))))) ==
+      intFromRef(value))
+  ensures (forall anon_builtin_0: Int ::
+      { IntList_f_get(this, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
+      old((unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(f_size(this)))) ==>
+      (unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(IntList_f_get(this, intToRef(anon_builtin_0))) ==
+        old((unfolding acc(IntList_unique(this), wildcard) in
+          intFromRef(IntList_f_get(this, intToRef(anon_builtin_0)))))))
+
+
+method f_get_Int(list: Ref, i: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(list), IntList())
+  requires acc(IntList_unique(list), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(i) < intFromRef(f_size(list)))
+  ensures acc(IntList_unique(list), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) ==
+    old((unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(IntList_f_get(list, i))))
+  ensures (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(f_size(list))) ==
+    old((unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(f_size(list))))
+  ensures (forall anon_builtin_1: Int ::
+      { IntList_f_get(list, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      (unfolding acc(IntList_unique(list), wildcard) in
+        anon_builtin_1 < intFromRef(f_size(list))) ==>
+      (unfolding acc(IntList_unique(list), wildcard) in
+        intFromRef(IntList_f_get(list, intToRef(anon_builtin_1))) ==
+        old((unfolding acc(IntList_unique(list), wildcard) in
+          intFromRef(IntList_f_get(list, intToRef(anon_builtin_1)))))))
+
+
+method interfaceClient(list: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(list), IntList())
+  requires acc(IntList_unique(list), write)
+  ensures acc(IntList_unique(list), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var first: Ref
+  var second: Ref
+  var anon_3: Ref
+  var changed: Ref
+  var unchanged: Ref
+  var anon_4: Ref
+  anon_0 := (unfolding acc(IntList_unique(list), wildcard) in f_size(list))
+  n := anon_0
+  assert intFromRef(n) >= 0
+  anon_1 := add(list, intToRef(7))
+  anon_2 := add(list, intToRef(8))
+  first := f_get_Int(list, n)
+  second := f_get_Int(list, plusInts(n, intToRef(1)))
+  assert intFromRef(first) == 7
+  assert intFromRef(second) == 8
+  anon_3 := set(list, n, intToRef(9))
+  changed := f_get_Int(list, n)
+  unchanged := f_get_Int(list, plusInts(n, intToRef(1)))
+  assert intFromRef(changed) == 9
+  assert intFromRef(unchanged) == 8
+  anon_4 := (unfolding acc(IntList_unique(list), wildcard) in f_size(list))
+  assert intFromRef(anon_4) == intFromRef(n) + 2
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method set(this: Ref, i: Ref, value: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(IntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(f_size(this)))
+  ensures acc(IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(f_size(this))) ==
+    old((unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(f_size(this))))
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(IntList_f_get(this, i)) == intFromRef(value))
+  ensures (forall anon_builtin_2: Int ::
+      { IntList_f_get(this, intToRef(anon_builtin_2)) }
+      0 <= anon_builtin_2 &&
+      (unfolding acc(IntList_unique(this), wildcard) in
+        anon_builtin_2 < intFromRef(f_size(this))) &&
+      !(anon_builtin_2 == intFromRef(i)) ==>
+      (unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(IntList_f_get(this, intToRef(anon_builtin_2))) ==
+        old((unfolding acc(IntList_unique(this), wildcard) in
+          intFromRef(IntList_f_get(this, intToRef(anon_builtin_2)))))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for lendClient:
+function get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(size(this), intToRef(0)))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate footprint(this: Ref)
+
+method add(this: Ref, value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(IntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  ensures acc(IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this))) ==
+    old((unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this)))) +
+    1
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(get(this, old((unfolding acc(IntList_unique(this), wildcard) in
+        size(this))))) ==
+      intFromRef(value))
+  ensures (forall anon_builtin_1: Int ::
+      { get(this, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      anon_builtin_1 <
+      old((unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(size(this)))) ==>
+      (unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(get(this, intToRef(anon_builtin_1))) ==
+        old((unfolding acc(IntList_unique(this), wildcard) in
+          intFromRef(get(this, intToRef(anon_builtin_1)))))))
+
+
+method lendClient(list: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(list), IntList())
+  requires acc(IntList_unique(list), write)
+  ensures acc(IntList_unique(list), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(size(list))) ==
+    old((unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(size(list)))) +
+    1
+  ensures (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(get(list, old((unfolding acc(IntList_unique(list), wildcard) in
+        size(list))))) ==
+      42)
+  ensures (forall anon_builtin_0: Int ::
+      { get(list, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
+      old((unfolding acc(IntList_unique(list), wildcard) in
+        intFromRef(size(list)))) ==>
+      (unfolding acc(IntList_unique(list), wildcard) in
+        intFromRef(get(list, intToRef(anon_builtin_0))) ==
+        old((unfolding acc(IntList_unique(list), wildcard) in
+          intFromRef(get(list, intToRef(anon_builtin_0)))))))
+{
+  var anon_0: Ref
+  anon_0 := add(list, intToRef(42))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/intlist_milestone.kt: info: Generated Viper text for createUpcastArray:
+field bf_count: Ref
+
+field bf_data: Ref
+
+field contents: Seq[Int]
+
+function ArrayIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in
+    (let anon_4_0 ==
+      (this.bf_count) in
+      (let anon_5_0 ==
+        (this.bf_data) in
+        (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_4_0) &&
+        intFromRef(i) < arraySize(anon_5_0) ?
+          (let anon_7_0 ==
+            (this.bf_data) in
+            (unfolding acc(IntArray_unique(anon_7_0), write) in
+              intToRef(anon_7_0.contents[intFromRef(i)]))) :
+          intToRef(0)))))
+}
+
+function ArrayIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in this.bf_count)
+}
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function c_IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArrayIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayIntList()) && acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), IntArray()) &&
+  acc(IntArray_unique(this.bf_data), write) &&
+  acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_count) in
+      (let anon_1_0 ==
+        (this.bf_count) in
+        (let anon_2_0 ==
+          (this.bf_data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method ArrayIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), ArrayIntList())
+  ensures acc(ArrayIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    ArrayIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall i: Ref ::
+      { ArrayIntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      ArrayIntList_f_get(this, i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i))))
+
+
+method ArrayIntList_c_IntList_upcast(this: Ref)
+  requires acc(ArrayIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ArrayIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(ArrayIntList_f_size(this))
+  ensures (forall i: Ref ::
+      { c_IntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), ArrayIntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i)) ==
+      old(ArrayIntList_f_get(this, i)))
+
+
+method con_ArrayIntList(par_data: Ref, par_count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  requires isSubtype(typeOf(par_count), intType())
+  requires boolFromRef(andBools(leInts(intToRef(0), par_count), leInts(par_count,
+    intToRef(arraySize(par_data)))))
+  ensures isSubtype(typeOf(ret_1), ArrayIntList())
+  ensures isSubtype(typeOf(ret_1), ArrayIntList()) &&
+    acc(ret_1.bf_data, write) &&
+    isSubtype(typeOf(ret_1.bf_data), IntArray()) &&
+    acc(IntArray_unique(ret_1.bf_data), write) &&
+    acc(ret_1.bf_count, write) &&
+    isSubtype(typeOf(ret_1.bf_count), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_data) in
+            andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+  ensures ret_1.bf_data == par_data
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+  ensures ret_1.bf_data == par_data
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+
+
+method con_IntArray(par_size: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_3), IntArray())
+  ensures acc(IntArray_unique(ret_3), write)
+  ensures arraySize(ret_3) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_3), write) in
+      (forall j: Int ::
+        { ret_3.contents[j] }
+        j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
+
+
+method createUpcastArray() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_list: Ref
+  var anon_11: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_14: Ref
+  var view: Ref
+  var anon_15: Ref
+  var anon_16: Ref
+  var anon_17: Ref
+  anon_11 := con_IntArray(intToRef(0))
+  l0_list := con_ArrayIntList(anon_11, intToRef(0))
+  fold acc(ArrayIntList_unique(l0_list), write)
+  ArrayIntList_c_IntList_upcast(l0_list)
+  anon_12 := lendClient(l0_list)
+  ArrayIntList_c_IntList_restore(l0_list)
+  unfold acc(ArrayIntList_unique(l0_list), write)
+  anon_13 := l0_list.bf_count
+  assert intFromRef(anon_13) == 1
+  assert (let this ==
+      (l0_list) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_data) in
+            andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+  fold acc(ArrayIntList_unique(l0_list), write)
+  anon_14 := ArrayIntList_f_get(l0_list, intToRef(0))
+  assert intFromRef(anon_14) == 42
+  view := l0_list
+  ArrayIntList_c_IntList_upcast(view)
+  anon_15 := (unfolding acc(c_IntList_unique(view), wildcard) in
+      c_IntList_f_size(view))
+  assert intFromRef(anon_15) == 1
+  anon_16 := (unfolding acc(c_IntList_unique(view), wildcard) in
+      c_IntList_f_get(view, intToRef(0)))
+  assert intFromRef(anon_16) == 42
+  anon_17 := interfaceClient(view)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method interfaceClient(par_list: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(par_list), c_IntList())
+  requires acc(c_IntList_unique(par_list), write)
+  ensures acc(c_IntList_unique(par_list), write)
+  ensures isSubtype(typeOf(ret_6), unitType())
+
+
+method lendClient(par_list: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_list), c_IntList())
+  requires acc(c_IntList_unique(par_list), write)
+  ensures acc(c_IntList_unique(par_list), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list))) ==
+    old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)))) +
+    1
+  ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_get(par_list, old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list))))) ==
+      42)
+  ensures (forall anon_builtin: Int ::
+      { c_IntList_f_get(par_list, intToRef(anon_builtin)) }
+      0 <= anon_builtin &&
+      anon_builtin <
+      old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        intFromRef(c_IntList_f_size(par_list)))) ==>
+      (unfolding acc(c_IntList_unique(par_list), wildcard) in
+        intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin))) ==
+        old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+          intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin)))))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for createUpcastNode:
+field bf_count: Ref
+
+field bf_head: Ref
+
+field next: Ref
+
+field value: Ref
+
+function NodeIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in
+    (let anon_7_0 ==
+      (this.bf_head) in
+      nodeGet(anon_7_0, i)))
+}
+
+function NodeIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in this.bf_count)
+}
+
+function c_IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.value :
+        (let anon_13_0 ==
+          (node.next) in
+          nodeGet(anon_13_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_6_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_6_0)))))
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate NodeIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), NodeIntList()) && acc(this.bf_head, write) &&
+  isSubtype(typeOf(this.bf_head), nullable(IntNode())) &&
+  (this.bf_head != nullValue() ==> acc(IntNode_unique(this.bf_head), write)) &&
+  acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_count) in
+      (let anon_1_0 ==
+        (this.bf_count) in
+        (let anon_2_0 ==
+          (this.bf_head) in
+          andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+          intFromRef(nodeSize(anon_2_0)))))))))
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method NodeIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), NodeIntList())
+  ensures acc(NodeIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    NodeIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall i: Ref ::
+      { NodeIntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      NodeIntList_f_get(this, i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i))))
+
+
+method NodeIntList_c_IntList_upcast(this: Ref)
+  requires acc(NodeIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), NodeIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(NodeIntList_f_size(this))
+  ensures (forall i: Ref ::
+      { c_IntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), NodeIntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i)) ==
+      old(NodeIntList_f_get(this, i)))
+
+
+method con(par_head: Ref, par_count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_head), nullable(IntNode()))
+  requires par_head != nullValue() ==> acc(IntNode_unique(par_head), write)
+  requires isSubtype(typeOf(par_count), intType())
+  requires boolFromRef(andBools(geInts(par_count, intToRef(0)), boolToRef(intFromRef(par_count) ==
+    intFromRef(nodeSize(par_head)))))
+  ensures isSubtype(typeOf(ret_1), NodeIntList())
+  ensures isSubtype(typeOf(ret_1), NodeIntList()) &&
+    acc(ret_1.bf_head, write) &&
+    isSubtype(typeOf(ret_1.bf_head), nullable(IntNode())) &&
+    (ret_1.bf_head != nullValue() ==>
+    acc(IntNode_unique(ret_1.bf_head), write)) &&
+    acc(ret_1.bf_count, write) &&
+    isSubtype(typeOf(ret_1.bf_count), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_head) in
+            andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+            intFromRef(nodeSize(anon_2_0)))))))))
+  ensures ret_1.bf_head == par_head
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+  ensures ret_1.bf_head == par_head
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+
+
+method createUpcastNode() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_list: Ref
+  var anon_15: Ref
+  var anon_16: Ref
+  var anon_17: Ref
+  var view: Ref
+  var anon_18: Ref
+  var anon_19: Ref
+  var anon_20: Ref
+  l0_list := con(nullValue(), intToRef(0))
+  fold acc(NodeIntList_unique(l0_list), write)
+  NodeIntList_c_IntList_upcast(l0_list)
+  anon_15 := lendClient(l0_list)
+  NodeIntList_c_IntList_restore(l0_list)
+  unfold acc(NodeIntList_unique(l0_list), write)
+  anon_16 := l0_list.bf_count
+  assert intFromRef(anon_16) == 1
+  assert (let this ==
+      (l0_list) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_head) in
+            andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+            intFromRef(nodeSize(anon_2_0)))))))))
+  fold acc(NodeIntList_unique(l0_list), write)
+  anon_17 := NodeIntList_f_get(l0_list, intToRef(0))
+  assert intFromRef(anon_17) == 42
+  view := l0_list
+  NodeIntList_c_IntList_upcast(view)
+  anon_18 := (unfolding acc(c_IntList_unique(view), wildcard) in
+      c_IntList_f_size(view))
+  assert intFromRef(anon_18) == 1
+  anon_19 := (unfolding acc(c_IntList_unique(view), wildcard) in
+      c_IntList_f_get(view, intToRef(0)))
+  assert intFromRef(anon_19) == 42
+  anon_20 := interfaceClient(view)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method interfaceClient(par_list: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(par_list), c_IntList())
+  requires acc(c_IntList_unique(par_list), write)
+  ensures acc(c_IntList_unique(par_list), write)
+  ensures isSubtype(typeOf(ret_5), unitType())
+
+
+method lendClient(par_list: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_list), c_IntList())
+  requires acc(c_IntList_unique(par_list), write)
+  ensures acc(c_IntList_unique(par_list), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list))) ==
+    old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)))) +
+    1
+  ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_get(par_list, old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list))))) ==
+      42)
+  ensures (forall anon_builtin: Int ::
+      { c_IntList_f_get(par_list, intToRef(anon_builtin)) }
+      0 <= anon_builtin &&
+      anon_builtin <
+      old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        intFromRef(c_IntList_f_size(par_list)))) ==>
+      (unfolding acc(c_IntList_unique(par_list), wildcard) in
+        intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin))) ==
+        old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+          intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin)))))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for concreteArrayOperations:
+field bf_count: Ref
+
+field bf_data: Ref
+
+field contents: Seq[Int]
+
+function ArrayIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in
+    (let anon_4_0 ==
+      (this.bf_count) in
+      (let anon_5_0 ==
+        (this.bf_data) in
+        (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_4_0) &&
+        intFromRef(i) < arraySize(anon_5_0) ?
+          (let anon_7_0 ==
+            (this.bf_data) in
+            (unfolding acc(IntArray_unique(anon_7_0), write) in
+              intToRef(anon_7_0.contents[intFromRef(i)]))) :
+          intToRef(0)))))
+}
+
+function ArrayIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in this.bf_count)
+}
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function c_IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArrayIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayIntList()) && acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), IntArray()) &&
+  acc(IntArray_unique(this.bf_data), write) &&
+  acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_count) in
+      (let anon_1_0 ==
+        (this.bf_count) in
+        (let anon_2_0 ==
+          (this.bf_data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method ArrayIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), ArrayIntList())
+  ensures acc(ArrayIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    ArrayIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall i: Ref ::
+      { ArrayIntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      ArrayIntList_f_get(this, i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i))))
+
+
+method ArrayIntList_c_IntList_upcast(this: Ref)
+  requires acc(ArrayIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ArrayIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(ArrayIntList_f_size(this))
+  ensures (forall i: Ref ::
+      { c_IntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), ArrayIntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i)) ==
+      old(ArrayIntList_f_get(this, i)))
+
+
+method add(this: Ref, value: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  ensures acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures intFromRef(ArrayIntList_f_size(this)) ==
+    old(intFromRef(ArrayIntList_f_size(this))) + 1
+  ensures intFromRef(ArrayIntList_f_get(this, old(ArrayIntList_f_size(this)))) ==
+    intFromRef(value)
+  ensures (forall anon_builtin_0: Int ::
+      { ArrayIntList_f_get(this, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < old(intFromRef(ArrayIntList_f_size(this))) ==>
+      intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_0))) ==
+      old(intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_0)))))
+
+
+method con_ArrayIntList(par_data: Ref, par_count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  requires isSubtype(typeOf(par_count), intType())
+  requires boolFromRef(andBools(leInts(intToRef(0), par_count), leInts(par_count,
+    intToRef(arraySize(par_data)))))
+  ensures isSubtype(typeOf(ret_1), ArrayIntList())
+  ensures isSubtype(typeOf(ret_1), ArrayIntList()) &&
+    acc(ret_1.bf_data, write) &&
+    isSubtype(typeOf(ret_1.bf_data), IntArray()) &&
+    acc(IntArray_unique(ret_1.bf_data), write) &&
+    acc(ret_1.bf_count, write) &&
+    isSubtype(typeOf(ret_1.bf_count), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_data) in
+            andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+  ensures ret_1.bf_data == par_data
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+  ensures ret_1.bf_data == par_data
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+
+
+method con_IntArray(par_size: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_3), IntArray())
+  ensures acc(IntArray_unique(ret_3), write)
+  ensures arraySize(ret_3) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_3), write) in
+      (forall j: Int ::
+        { ret_3.contents[j] }
+        j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
+
+
+method concreteArrayOperations() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_list: Ref
+  var anon_11: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_14: Ref
+  var anon_15: Ref
+  var anon_16: Ref
+  var anon_17: Ref
+  var anon_18: Ref
+  var anon_19: Ref
+  var anon_20: Ref
+  var anon_21: Ref
+  anon_11 := con_IntArray(intToRef(0))
+  l0_list := con_ArrayIntList(anon_11, intToRef(0))
+  fold acc(ArrayIntList_unique(l0_list), write)
+  anon_12 := add(l0_list, intToRef(11))
+  anon_13 := add(l0_list, intToRef(12))
+  anon_14 := set(l0_list, intToRef(0), intToRef(13))
+  unfold acc(ArrayIntList_unique(l0_list), write)
+  anon_15 := l0_list.bf_count
+  assert intFromRef(anon_15) == 2
+  assert (let this ==
+      (l0_list) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_data) in
+            andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+  fold acc(ArrayIntList_unique(l0_list), write)
+  anon_16 := ArrayIntList_f_get(l0_list, intToRef(0))
+  assert intFromRef(anon_16) == 13
+  anon_17 := ArrayIntList_f_get(l0_list, intToRef(1))
+  assert intFromRef(anon_17) == 12
+  ArrayIntList_c_IntList_upcast(l0_list)
+  anon_18 := lendClient(l0_list)
+  ArrayIntList_c_IntList_restore(l0_list)
+  anon_19 := ArrayIntList_f_get(l0_list, intToRef(0))
+  assert intFromRef(anon_19) == 13
+  anon_20 := ArrayIntList_f_get(l0_list, intToRef(1))
+  assert intFromRef(anon_20) == 12
+  anon_21 := ArrayIntList_f_get(l0_list, intToRef(2))
+  assert intFromRef(anon_21) == 42
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method lendClient(par_list: Ref) returns (ret_8: Ref)
+  requires isSubtype(typeOf(par_list), c_IntList())
+  requires acc(c_IntList_unique(par_list), write)
+  ensures acc(c_IntList_unique(par_list), write)
+  ensures isSubtype(typeOf(ret_8), unitType())
+  ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list))) ==
+    old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)))) +
+    1
+  ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_get(par_list, old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list))))) ==
+      42)
+  ensures (forall anon_builtin_2: Int ::
+      { c_IntList_f_get(par_list, intToRef(anon_builtin_2)) }
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 <
+      old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        intFromRef(c_IntList_f_size(par_list)))) ==>
+      (unfolding acc(c_IntList_unique(par_list), wildcard) in
+        intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_2))) ==
+        old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+          intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_2)))))))
+
+
+method set(this: Ref, i: Ref, value: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(ArrayIntList_f_size(this))
+  ensures acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures intFromRef(ArrayIntList_f_size(this)) ==
+    old(intFromRef(ArrayIntList_f_size(this)))
+  ensures intFromRef(ArrayIntList_f_get(this, i)) == intFromRef(value)
+  ensures (forall anon_builtin_1: Int ::
+      { ArrayIntList_f_get(this, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(ArrayIntList_f_size(this)) &&
+      !(anon_builtin_1 == intFromRef(i)) ==>
+      intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_1))) ==
+      old(intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_1)))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for concreteNodeOperations:
+field bf_count: Ref
+
+field bf_head: Ref
+
+field bf_value: Ref
+
+field next: Ref
+
+function NodeIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in
+    (let anon_7_0 ==
+      (this.bf_head) in
+      nodeGet(anon_7_0, i)))
+}
+
+function NodeIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in this.bf_count)
+}
+
+function c_IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.bf_value :
+        (let anon_13_0 ==
+          (node.next) in
+          nodeGet(anon_13_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_6_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_6_0)))))
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate NodeIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), NodeIntList()) && acc(this.bf_head, write) &&
+  isSubtype(typeOf(this.bf_head), nullable(IntNode())) &&
+  (this.bf_head != nullValue() ==> acc(IntNode_unique(this.bf_head), write)) &&
+  acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_count) in
+      (let anon_1_0 ==
+        (this.bf_count) in
+        (let anon_2_0 ==
+          (this.bf_head) in
+          andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+          intFromRef(nodeSize(anon_2_0)))))))))
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method NodeIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), NodeIntList())
+  ensures acc(NodeIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    NodeIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall i: Ref ::
+      { NodeIntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      NodeIntList_f_get(this, i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i))))
+
+
+method NodeIntList_c_IntList_upcast(this: Ref)
+  requires acc(NodeIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), NodeIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(NodeIntList_f_size(this))
+  ensures (forall i: Ref ::
+      { c_IntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), NodeIntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i)) ==
+      old(NodeIntList_f_get(this, i)))
+
+
+method add(this: Ref, par_value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures intFromRef(NodeIntList_f_size(this)) ==
+    old(intFromRef(NodeIntList_f_size(this))) + 1
+  ensures intFromRef(NodeIntList_f_get(this, old(NodeIntList_f_size(this)))) ==
+    intFromRef(par_value)
+  ensures (forall anon_builtin_0: Int ::
+      { NodeIntList_f_get(this, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < old(intFromRef(NodeIntList_f_size(this))) ==>
+      intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_0))) ==
+      old(intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_0)))))
+
+
+method con(par_head: Ref, par_count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_head), nullable(IntNode()))
+  requires par_head != nullValue() ==> acc(IntNode_unique(par_head), write)
+  requires isSubtype(typeOf(par_count), intType())
+  requires boolFromRef(andBools(geInts(par_count, intToRef(0)), boolToRef(intFromRef(par_count) ==
+    intFromRef(nodeSize(par_head)))))
+  ensures isSubtype(typeOf(ret_1), NodeIntList())
+  ensures isSubtype(typeOf(ret_1), NodeIntList()) &&
+    acc(ret_1.bf_head, write) &&
+    isSubtype(typeOf(ret_1.bf_head), nullable(IntNode())) &&
+    (ret_1.bf_head != nullValue() ==>
+    acc(IntNode_unique(ret_1.bf_head), write)) &&
+    acc(ret_1.bf_count, write) &&
+    isSubtype(typeOf(ret_1.bf_count), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_head) in
+            andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+            intFromRef(nodeSize(anon_2_0)))))))))
+  ensures ret_1.bf_head == par_head
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+  ensures ret_1.bf_head == par_head
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+
+
+method concreteNodeOperations() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_list: Ref
+  var anon_15: Ref
+  var anon_16: Ref
+  var anon_17: Ref
+  var anon_18: Ref
+  var anon_19: Ref
+  var anon_20: Ref
+  var anon_21: Ref
+  var anon_22: Ref
+  var anon_23: Ref
+  var anon_24: Ref
+  l0_list := con(nullValue(), intToRef(0))
+  fold acc(NodeIntList_unique(l0_list), write)
+  anon_15 := add(l0_list, intToRef(11))
+  anon_16 := add(l0_list, intToRef(12))
+  anon_17 := set(l0_list, intToRef(0), intToRef(13))
+  unfold acc(NodeIntList_unique(l0_list), write)
+  anon_18 := l0_list.bf_count
+  assert intFromRef(anon_18) == 2
+  assert (let this ==
+      (l0_list) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_head) in
+            andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+            intFromRef(nodeSize(anon_2_0)))))))))
+  fold acc(NodeIntList_unique(l0_list), write)
+  anon_19 := NodeIntList_f_get(l0_list, intToRef(0))
+  assert intFromRef(anon_19) == 13
+  anon_20 := NodeIntList_f_get(l0_list, intToRef(1))
+  assert intFromRef(anon_20) == 12
+  NodeIntList_c_IntList_upcast(l0_list)
+  anon_21 := lendClient(l0_list)
+  NodeIntList_c_IntList_restore(l0_list)
+  anon_22 := NodeIntList_f_get(l0_list, intToRef(0))
+  assert intFromRef(anon_22) == 13
+  anon_23 := NodeIntList_f_get(l0_list, intToRef(1))
+  assert intFromRef(anon_23) == 12
+  anon_24 := NodeIntList_f_get(l0_list, intToRef(2))
+  assert intFromRef(anon_24) == 42
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method lendClient(par_list: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(par_list), c_IntList())
+  requires acc(c_IntList_unique(par_list), write)
+  ensures acc(c_IntList_unique(par_list), write)
+  ensures isSubtype(typeOf(ret_7), unitType())
+  ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list))) ==
+    old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)))) +
+    1
+  ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_get(par_list, old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list))))) ==
+      42)
+  ensures (forall anon_builtin_2: Int ::
+      { c_IntList_f_get(par_list, intToRef(anon_builtin_2)) }
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 <
+      old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        intFromRef(c_IntList_f_size(par_list)))) ==>
+      (unfolding acc(c_IntList_unique(par_list), wildcard) in
+        intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_2))) ==
+        old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+          intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_2)))))))
+
+
+method set(this: Ref, i: Ref, par_value: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(par_value), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(NodeIntList_f_size(this))
+  ensures acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures intFromRef(NodeIntList_f_size(this)) ==
+    old(intFromRef(NodeIntList_f_size(this)))
+  ensures intFromRef(NodeIntList_f_get(this, i)) == intFromRef(par_value)
+  ensures (forall anon_builtin_1: Int ::
+      { NodeIntList_f_get(this, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(NodeIntList_f_size(this)) &&
+      !(anon_builtin_1 == intFromRef(i)) ==>
+      intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_1))) ==
+      old(intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_1)))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for arrayConstructionSnapshot:
+field bf_count: Ref
+
+field bf_data: Ref
+
+field contents: Seq[Int]
+
+function ArrayIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in
+    (let anon_4_0 ==
+      (this.bf_count) in
+      (let anon_5_0 ==
+        (this.bf_data) in
+        (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_4_0) &&
+        intFromRef(i) < arraySize(anon_5_0) ?
+          (let anon_7_0 ==
+            (this.bf_data) in
+            (unfolding acc(IntArray_unique(anon_7_0), write) in
+              intToRef(anon_7_0.contents[intFromRef(i)]))) :
+          intToRef(0)))))
+}
+
+function ArrayIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in this.bf_count)
+}
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ArrayIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayIntList()) && acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), IntArray()) &&
+  acc(IntArray_unique(this.bf_data), write) &&
+  acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_count) in
+      (let anon_1_0 ==
+        (this.bf_count) in
+        (let anon_2_0 ==
+          (this.bf_data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate footprint(this: Ref)
+
+method arrayConstructionSnapshot() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_data: Ref
+  var list: Ref
+  var anon_11: Ref
+  l0_data := con_IntArray(intToRef(1))
+  assert 0 >= 0
+  assert 0 < arraySize(l0_data)
+  unfold acc(IntArray_unique(l0_data), write)
+  l0_data.contents := l0_data.contents[0 := 11]
+  fold acc(IntArray_unique(l0_data), write)
+  list := con_ArrayIntList(l0_data, intToRef(1))
+  fold acc(ArrayIntList_unique(list), write)
+  anon_11 := ArrayIntList_f_get(list, intToRef(0))
+  assert intFromRef(anon_11) == 11
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con_ArrayIntList(par_data: Ref, par_count: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  requires isSubtype(typeOf(par_count), intType())
+  requires boolFromRef(andBools(leInts(intToRef(0), par_count), leInts(par_count,
+    intToRef(arraySize(par_data)))))
+  ensures isSubtype(typeOf(ret_2), ArrayIntList())
+  ensures isSubtype(typeOf(ret_2), ArrayIntList()) &&
+    acc(ret_2.bf_data, write) &&
+    isSubtype(typeOf(ret_2.bf_data), IntArray()) &&
+    acc(IntArray_unique(ret_2.bf_data), write) &&
+    acc(ret_2.bf_count, write) &&
+    isSubtype(typeOf(ret_2.bf_count), intType()) &&
+    (let this ==
+      (ret_2) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_data) in
+            andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+  ensures ret_2.bf_data == par_data
+  ensures intFromRef(ret_2.bf_count) == intFromRef(par_count)
+  ensures ret_2.bf_data == par_data
+  ensures intFromRef(ret_2.bf_count) == intFromRef(par_count)
+
+
+method con_IntArray(par_size: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_1), IntArray())
+  ensures acc(IntArray_unique(ret_1), write)
+  ensures arraySize(ret_1) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_1), write) in
+      (forall j: Int ::
+        { ret_1.contents[j] }
+        j >= 0 && j < arraySize(ret_1) ==> ret_1.contents[j] == 0))
+
+
+/intlist_milestone.kt: info: Generated Viper text for nodeConstructionSnapshot:
+field bf_count: Ref
+
+field bf_head: Ref
+
+field bf_next: Ref
+
+field bf_value: Ref
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function NodeIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in
+    (let anon_7_0 ==
+      (this.bf_head) in
+      nodeGet(anon_7_0, i)))
+}
+
+function NodeIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in this.bf_count)
+}
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.bf_value :
+        (let anon_13_0 ==
+          (node.bf_next) in
+          nodeGet(anon_13_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_6_0 ==
+        (node.bf_next) in
+        plusInts(intToRef(1), nodeSize(anon_6_0)))))
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType()) &&
+  acc(this.bf_next, write) &&
+  isSubtype(typeOf(this.bf_next), nullable(IntNode())) &&
+  (this.bf_next != nullValue() ==> acc(IntNode_unique(this.bf_next), write))
+}
+
+predicate NodeIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), NodeIntList()) && acc(this.bf_head, write) &&
+  isSubtype(typeOf(this.bf_head), nullable(IntNode())) &&
+  (this.bf_head != nullValue() ==> acc(IntNode_unique(this.bf_head), write)) &&
+  acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_count) in
+      (let anon_1_0 ==
+        (this.bf_count) in
+        (let anon_2_0 ==
+          (this.bf_head) in
+          andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+          intFromRef(nodeSize(anon_2_0)))))))))
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate footprint(this: Ref)
+
+method con_IntNode(par_value: Ref, par_next: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(IntNode()))
+  ensures isSubtype(typeOf(ret_1), IntNode())
+  ensures isSubtype(typeOf(ret_1), IntNode()) && acc(ret_1.bf_value, write) &&
+    isSubtype(typeOf(ret_1.bf_value), intType()) &&
+    acc(ret_1.bf_next, write) &&
+    isSubtype(typeOf(ret_1.bf_next), nullable(IntNode()))
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+  ensures ret_1.bf_next == par_next
+
+
+method con_NodeIntList(par_head: Ref, par_count: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_head), nullable(IntNode()))
+  requires par_head != nullValue() ==> acc(IntNode_unique(par_head), write)
+  requires isSubtype(typeOf(par_count), intType())
+  requires boolFromRef(andBools(geInts(par_count, intToRef(0)), boolToRef(intFromRef(par_count) ==
+    intFromRef(nodeSize(par_head)))))
+  ensures isSubtype(typeOf(ret_2), NodeIntList())
+  ensures isSubtype(typeOf(ret_2), NodeIntList()) &&
+    acc(ret_2.bf_head, write) &&
+    isSubtype(typeOf(ret_2.bf_head), nullable(IntNode())) &&
+    (ret_2.bf_head != nullValue() ==>
+    acc(IntNode_unique(ret_2.bf_head), write)) &&
+    acc(ret_2.bf_count, write) &&
+    isSubtype(typeOf(ret_2.bf_count), intType()) &&
+    (let this ==
+      (ret_2) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_head) in
+            andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+            intFromRef(nodeSize(anon_2_0)))))))))
+  ensures ret_2.bf_head == par_head
+  ensures intFromRef(ret_2.bf_count) == intFromRef(par_count)
+  ensures ret_2.bf_head == par_head
+  ensures intFromRef(ret_2.bf_count) == intFromRef(par_count)
+
+
+method nodeConstructionSnapshot() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_head: Ref
+  var list: Ref
+  var anon_15: Ref
+  l0_head := con_IntNode(intToRef(11), nullValue())
+  fold acc(IntNode_unique(l0_head), write)
+  list := con_NodeIntList(l0_head, intToRef(1))
+  fold acc(NodeIntList_unique(list), write)
+  anon_15 := NodeIntList_f_get(list, intToRef(0))
+  assert intFromRef(anon_15) == 11
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/intlist_milestone.kt: info: Generated Viper text for badSetIndex:
+function get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(size(this), intToRef(0)))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate footprint(this: Ref)
+
+method badSetIndex(list: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(list), IntList())
+  requires acc(IntList_unique(list), write)
+  ensures acc(IntList_unique(list), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := (unfolding acc(IntList_unique(list), wildcard) in size(list))
+  anon_0 := set(list, anon_1, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method set(this: Ref, i: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(IntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(size(this)))
+  ensures acc(IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this))) ==
+    old((unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this))))
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(get(this, i)) == intFromRef(value))
+  ensures (forall anon_builtin: Int ::
+      { get(this, intToRef(anon_builtin)) }
+      0 <= anon_builtin &&
+      (unfolding acc(IntList_unique(this), wildcard) in
+        anon_builtin < intFromRef(size(this))) &&
+      !(anon_builtin == intFromRef(i)) ==>
+      (unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(get(this, intToRef(anon_builtin))) ==
+        old((unfolding acc(IntList_unique(this), wildcard) in
+          intFromRef(get(this, intToRef(anon_builtin)))))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for badGetIndex:
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(size(this), intToRef(0)))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate footprint(this: Ref)
+
+method badGetIndex(list: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(list), IntList())
+  requires acc(IntList_unique(list), write)
+  ensures acc(IntList_unique(list), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  anon_0 := f_get_Int(list, intToRef(-1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method f_get_Int(list: Ref, i: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(list), IntList())
+  requires acc(IntList_unique(list), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(i) < intFromRef(size(list)))
+  ensures acc(IntList_unique(list), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) ==
+    old((unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(IntList_f_get(list, i))))
+  ensures (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(size(list))) ==
+    old((unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(size(list))))
+  ensures (forall anon_builtin: Int ::
+      { IntList_f_get(list, intToRef(anon_builtin)) }
+      0 <= anon_builtin &&
+      (unfolding acc(IntList_unique(list), wildcard) in
+        anon_builtin < intFromRef(size(list))) ==>
+      (unfolding acc(IntList_unique(list), wildcard) in
+        intFromRef(IntList_f_get(list, intToRef(anon_builtin))) ==
+        old((unfolding acc(IntList_unique(list), wildcard) in
+          intFromRef(IntList_f_get(list, intToRef(anon_builtin)))))))
+
+
+/intlist_milestone.kt: info: Generated Viper text for badArrayConstruction:
+field bf_count: Ref
+
+field bf_data: Ref
+
+field contents: Seq[Int]
+
+function ArrayIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in
+    (let anon_5_0 ==
+      (this.bf_count) in
+      (let anon_6_0 ==
+        (this.bf_data) in
+        (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_5_0) &&
+        intFromRef(i) < arraySize(anon_6_0) ?
+          (let anon_8_0 ==
+            (this.bf_data) in
+            (unfolding acc(IntArray_unique(anon_8_0), write) in
+              intToRef(anon_8_0.contents[intFromRef(i)]))) :
+          intToRef(0)))))
+}
+
+function ArrayIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayIntList())
+  requires acc(ArrayIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayIntList_unique(this), write) in this.bf_count)
+}
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+
+
+predicate ArrayIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), ArrayIntList()) && acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), IntArray()) &&
+  acc(IntArray_unique(this.bf_data), write) &&
+  acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_count) in
+      (let anon_1_0 ==
+        (this.bf_count) in
+        (let anon_2_0 ==
+          (this.bf_data) in
+          andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this)
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method badArrayConstruction() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var array: Ref
+  var anon_11: Ref
+  anon_11 := con_IntArray(intToRef(1))
+  array := con_ArrayIntList(anon_11, intToRef(2))
+  fold acc(ArrayIntList_unique(array), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con_ArrayIntList(par_data: Ref, par_count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  requires isSubtype(typeOf(par_count), intType())
+  requires boolFromRef(andBools(leInts(intToRef(0), par_count), leInts(par_count,
+    intToRef(arraySize(par_data)))))
+  ensures isSubtype(typeOf(ret_1), ArrayIntList())
+  ensures isSubtype(typeOf(ret_1), ArrayIntList()) &&
+    acc(ret_1.bf_data, write) &&
+    isSubtype(typeOf(ret_1.bf_data), IntArray()) &&
+    acc(IntArray_unique(ret_1.bf_data), write) &&
+    acc(ret_1.bf_count, write) &&
+    isSubtype(typeOf(ret_1.bf_count), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_data) in
+            andBools(leInts(intToRef(0), anon_0_0), leInts(anon_1_0, intToRef(arraySize(anon_2_0)))))))))
+  ensures ret_1.bf_data == par_data
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+  ensures ret_1.bf_data == par_data
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+
+
+method con_IntArray(par_size: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_size), intType())
+  requires intFromRef(par_size) >= 0
+  ensures isSubtype(typeOf(ret_3), IntArray())
+  ensures acc(IntArray_unique(ret_3), write)
+  ensures arraySize(ret_3) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_3), write) in
+      (forall j: Int ::
+        { ret_3.contents[j] }
+        j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
+
+
+/intlist_milestone.kt: info: Generated Viper text for badNodeConstruction:
+field bf_count: Ref
+
+field bf_head: Ref
+
+field next: Ref
+
+field value: Ref
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function NodeIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in
+    (let anon_8_0 ==
+      (this.bf_head) in
+      nodeGet(anon_8_0, i)))
+}
+
+function NodeIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NodeIntList())
+  requires acc(NodeIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NodeIntList_unique(this), write) in this.bf_count)
+}
+
+function nodeGet(node: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (intFromRef(i) == 0 ?
+        node.value :
+        (let anon_14_0 ==
+          (node.next) in
+          nodeGet(anon_14_0, minusInts(i, intToRef(1)))))))
+}
+
+function nodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures node == nullValue() ==> result == intToRef(0)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_6_0 ==
+        (node.next) in
+        plusInts(intToRef(1), nodeSize(anon_6_0)))))
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
+predicate NodeIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), NodeIntList()) && acc(this.bf_head, write) &&
+  isSubtype(typeOf(this.bf_head), nullable(IntNode())) &&
+  (this.bf_head != nullValue() ==> acc(IntNode_unique(this.bf_head), write)) &&
+  acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  (let this ==
+    (this) in
+    true &&
+    boolFromRef((let anon_0_0 ==
+      (this.bf_count) in
+      (let anon_1_0 ==
+        (this.bf_count) in
+        (let anon_2_0 ==
+          (this.bf_head) in
+          andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+          intFromRef(nodeSize(anon_2_0)))))))))
+}
+
+predicate footprint(this: Ref)
+
+method badNodeConstruction() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var nodes: Ref
+  nodes := con(nullValue(), intToRef(1))
+  fold acc(NodeIntList_unique(nodes), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_head: Ref, par_count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_head), nullable(IntNode()))
+  requires par_head != nullValue() ==> acc(IntNode_unique(par_head), write)
+  requires isSubtype(typeOf(par_count), intType())
+  requires boolFromRef(andBools(geInts(par_count, intToRef(0)), boolToRef(intFromRef(par_count) ==
+    intFromRef(nodeSize(par_head)))))
+  ensures isSubtype(typeOf(ret_1), NodeIntList())
+  ensures isSubtype(typeOf(ret_1), NodeIntList()) &&
+    acc(ret_1.bf_head, write) &&
+    isSubtype(typeOf(ret_1.bf_head), nullable(IntNode())) &&
+    (ret_1.bf_head != nullValue() ==>
+    acc(IntNode_unique(ret_1.bf_head), write)) &&
+    acc(ret_1.bf_count, write) &&
+    isSubtype(typeOf(ret_1.bf_count), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_count) in
+        (let anon_1_0 ==
+          (this.bf_count) in
+          (let anon_2_0 ==
+            (this.bf_head) in
+            andBools(geInts(anon_0_0, intToRef(0)), boolToRef(intFromRef(anon_1_0) ==
+            intFromRef(nodeSize(anon_2_0)))))))))
+  ensures ret_1.bf_head == par_head
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+  ensures ret_1.bf_head == par_head
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+
+
+/intlist_milestone.kt: info: Generated Viper text for falseClientClaim:
+function f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(f_size(this), intToRef(0)))
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate footprint(this: Ref)
+
+method add(this: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(IntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  ensures acc(IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(f_size(this))) ==
+    old((unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(f_size(this)))) +
+    1
+  ensures (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(get(this, old((unfolding acc(IntList_unique(this), wildcard) in
+        f_size(this))))) ==
+      intFromRef(value))
+  ensures (forall anon_builtin: Int ::
+      { get(this, intToRef(anon_builtin)) }
+      0 <= anon_builtin &&
+      anon_builtin <
+      old((unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(f_size(this)))) ==>
+      (unfolding acc(IntList_unique(this), wildcard) in
+        intFromRef(get(this, intToRef(anon_builtin))) ==
+        old((unfolding acc(IntList_unique(this), wildcard) in
+          intFromRef(get(this, intToRef(anon_builtin)))))))
+
+
+method falseClientClaim(list: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(list), IntList())
+  requires acc(IntList_unique(list), write)
+  ensures acc(IntList_unique(list), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := (unfolding acc(IntList_unique(list), wildcard) in f_size(list))
+  n := anon_0
+  anon_1 := add(list, intToRef(7))
+  anon_2 := (unfolding acc(IntList_unique(list), wildcard) in get(list, n))
+  assert intFromRef(anon_2) == 8
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/intlist_milestone.kt: info: Generated Viper text for BrokenIntList:
+field count: Ref
+
+field item: Ref
+
+function BrokenIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.item)
+}
+
+function BrokenIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.count)
+}
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenIntList()) && acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  acc(this.item, write) &&
+  isSubtype(typeOf(this.item), intType())
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method laws(this: Ref)
+  requires acc(BrokenIntList_unique(this), write)
+{
+  unfold acc(BrokenIntList_unique(this), write)
+  fold acc(BrokenIntList_unique(this), write)
+  assert boolFromRef(geInts(BrokenIntList_f_size(this), intToRef(0)))
+}
+
+/intlist_milestone.kt: info: Generated Viper text for size:
+field count: Ref
+
+field item: Ref
+
+function BrokenIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.item)
+}
+
+function BrokenIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.count)
+}
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenIntList()) && acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  acc(this.item, write) &&
+  isSubtype(typeOf(this.item), intType())
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/intlist_milestone.kt: info: Generated Viper text for get:
+field count: Ref
+
+field item: Ref
+
+function BrokenIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.item)
+}
+
+function BrokenIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.count)
+}
+
+function IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenIntList()) && acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  acc(this.item, write) &&
+  isSubtype(typeOf(this.item), intType())
+}
+
+predicate IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), IntList()) &&
+  boolFromRef(geInts(IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/intlist_milestone.kt: info: Generated Viper text for add:
+field count: Ref
+
+field item: Ref
+
+function BrokenIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.item)
+}
+
+function BrokenIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.count)
+}
+
+function c_IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenIntList()) && acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  acc(this.item, write) &&
+  isSubtype(typeOf(this.item), intType())
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method BrokenIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), BrokenIntList())
+  ensures acc(BrokenIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    BrokenIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall i: Ref ::
+      { BrokenIntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      BrokenIntList_f_get(this, i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i))))
+
+
+method BrokenIntList_c_IntList_upcast(this: Ref)
+  requires acc(BrokenIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BrokenIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(BrokenIntList_f_size(this))
+  ensures (forall i: Ref ::
+      { c_IntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), BrokenIntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i)) ==
+      old(BrokenIntList_f_get(this, i)))
+
+
+method BrokenIntList_f_add(this: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  ensures acc(BrokenIntList_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(BrokenIntList_f_size(this)) ==
+    old(intFromRef(BrokenIntList_f_size(this))) + 1
+  ensures intFromRef(BrokenIntList_f_get(this, old(BrokenIntList_f_size(this)))) ==
+    intFromRef(value)
+  ensures (forall anon_builtin_0: Int ::
+      { BrokenIntList_f_get(this, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < old(intFromRef(BrokenIntList_f_size(this))) ==>
+      intFromRef(BrokenIntList_f_get(this, intToRef(anon_builtin_0))) ==
+      old(intFromRef(BrokenIntList_f_get(this, intToRef(anon_builtin_0)))))
+{
+  var anon_0: Ref
+  unfold acc(BrokenIntList_unique(this), write)
+  anon_0 := this.count
+  this.count := plusInts(anon_0, intToRef(1))
+  this.item := value
+  label lbl_ret_0
+  fold acc(BrokenIntList_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method c_IntList_f_add(this: Ref, value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  ensures acc(c_IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)))) +
+    1
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))))) ==
+      intFromRef(value))
+  ensures (forall anon_builtin_1: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      anon_builtin_1 <
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_size(this)))) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1)))))))
+
+
+method refines_c_IntList_f_add(this: Ref, value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(value), intType())
+  requires isSubtype(typeOf(this), BrokenIntList())
+{
+  BrokenIntList_c_IntList_restore(this)
+  ret_2 := BrokenIntList_f_add(this, value)
+  BrokenIntList_c_IntList_upcast(this)
+  assert acc(c_IntList_unique(this), write)
+  assert isSubtype(typeOf(ret_2), unitType())
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)))) +
+    1
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))))) ==
+      intFromRef(value))
+  assert (forall anon_builtin_1: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      anon_builtin_1 <
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_size(this)))) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1)))))))
+}
+
+/intlist_milestone.kt: info: Generated Viper text for set:
+field count: Ref
+
+field item: Ref
+
+function BrokenIntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.item)
+}
+
+function BrokenIntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenIntList_unique(this), write) in this.count)
+}
+
+function c_IntList_f_get(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IntList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenIntList_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenIntList()) && acc(this.count, write) &&
+  isSubtype(typeOf(this.count), intType()) &&
+  acc(this.item, write) &&
+  isSubtype(typeOf(this.item), intType())
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate c_IntList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_IntList()) &&
+  boolFromRef(geInts(c_IntList_f_size(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method BrokenIntList_c_IntList_restore(this: Ref)
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(this), BrokenIntList())
+  ensures acc(BrokenIntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_IntList())) && true ==>
+    BrokenIntList_f_size(this) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)))
+  ensures (forall i: Ref ::
+      { BrokenIntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), c_IntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      BrokenIntList_f_get(this, i) ==
+      old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i))))
+
+
+method BrokenIntList_c_IntList_upcast(this: Ref)
+  requires acc(BrokenIntList_unique(this), write)
+  ensures acc(c_IntList_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BrokenIntList())) && true ==>
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      c_IntList_f_size(this)) ==
+    old(BrokenIntList_f_size(this))
+  ensures (forall i: Ref ::
+      { c_IntList_f_get(this, i) }
+      true && old(isSubtype(typeOf(this), BrokenIntList())) && true &&
+      old(isSubtype(typeOf(i), intType())) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_get(this, i)) ==
+      old(BrokenIntList_f_get(this, i)))
+
+
+method BrokenIntList_f_set(this: Ref, i: Ref, value: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), BrokenIntList())
+  requires acc(BrokenIntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(BrokenIntList_f_size(this))
+  ensures acc(BrokenIntList_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(BrokenIntList_f_size(this)) ==
+    old(intFromRef(BrokenIntList_f_size(this)))
+  ensures intFromRef(BrokenIntList_f_get(this, i)) == intFromRef(value)
+  ensures (forall anon_builtin_0: Int ::
+      { BrokenIntList_f_get(this, intToRef(anon_builtin_0)) }
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < intFromRef(BrokenIntList_f_size(this)) &&
+      !(anon_builtin_0 == intFromRef(i)) ==>
+      intFromRef(BrokenIntList_f_get(this, intToRef(anon_builtin_0))) ==
+      old(intFromRef(BrokenIntList_f_get(this, intToRef(anon_builtin_0)))))
+{
+  unfold acc(BrokenIntList_unique(this), write)
+  this.item := value
+  label lbl_ret_0
+  fold acc(BrokenIntList_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method c_IntList_f_set(this: Ref, i: Ref, value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(c_IntList_f_size(this)))
+  ensures acc(c_IntList_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))))
+  ensures (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, i)) == intFromRef(value))
+  ensures (forall anon_builtin_1: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        anon_builtin_1 < intFromRef(c_IntList_f_size(this))) &&
+      !(anon_builtin_1 == intFromRef(i)) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1)))))))
+
+
+method refines_c_IntList_f_set(this: Ref, i: Ref, value: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_IntList())
+  requires acc(c_IntList_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(value), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(c_IntList_f_size(this)))
+  requires isSubtype(typeOf(this), BrokenIntList())
+{
+  BrokenIntList_c_IntList_restore(this)
+  ret_2 := BrokenIntList_f_set(this, i, value)
+  BrokenIntList_c_IntList_upcast(this)
+  assert acc(c_IntList_unique(this), write)
+  assert isSubtype(typeOf(ret_2), unitType())
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))) ==
+    old((unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this))))
+  assert (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_get(this, i)) == intFromRef(value))
+  assert (forall anon_builtin_1: Int ::
+      { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      0 <= anon_builtin_1 &&
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        anon_builtin_1 < intFromRef(c_IntList_f_size(this))) &&
+      !(anon_builtin_1 == intFromRef(i)) ==>
+      (unfolding acc(c_IntList_unique(this), wildcard) in
+        intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1))) ==
+        old((unfolding acc(c_IntList_unique(this), wildcard) in
+          intFromRef(c_IntList_f_get(this, intToRef(anon_builtin_1)))))))
+}

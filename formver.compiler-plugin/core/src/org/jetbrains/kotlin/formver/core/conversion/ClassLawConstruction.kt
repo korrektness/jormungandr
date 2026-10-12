@@ -44,7 +44,9 @@ fun FirQualifiedAccessExpression.isLawValueOperation(): Boolean = toResolvedCall
     )
     it.packageName.asString() == "kotlin" &&
             ((this is FirFunctionCall && it.className?.asString() in classes && it.callableName.asString() in operations) ||
-                    (it.className?.asString() == "String" && it.callableName.asString() == "length"))
+                    (it.className?.asString() == "String" && it.callableName.asString() == "length") ||
+                    (it.className?.asString() == "IntArray" &&
+                            it.callableName.asString() == "size"))
 } == true
 
 private fun FirQualifiedAccessExpression.isAllowedInitializerAccess(

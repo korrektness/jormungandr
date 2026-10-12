@@ -187,8 +187,8 @@ fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(
 
 /**
  * The class whose object a call of this function returns open: this is a primary constructor of a class whose predicate
- * is built from its properties. The caller folds the predicates of the object, so that the predicate of each argument
- * the object stores in a `@Unique` property moves into it intact. `null` for every other function.
+ * is built from its properties. The caller folds the returned representation into the object's predicates.
+ * `null` for every other function.
  */
 val NamedFunctionSignature.constructedOpen: ClassTypeEmbedding?
     get() = (returns.type.pretype as? ClassTypeEmbedding)
@@ -217,10 +217,9 @@ private fun FirConstructorSymbol.initializedProperties(session: FirSession): Map
 /**
  * The signature of a primary constructor. It ensures that each property a parameter initializes equals the parameter,
  * unless the rest of the construction may change the property.
- * When the class is [constructedOpen], the object is returned with its predicates unfolded, and a `@Unique` parameter
- * stored in a `@Unique` property keeps its predicate: the caller's fold moves it into the object. When the rest of the
- * construction may reach the property, the constructor consumes the parameter's predicate and returns a fresh one for
- * the property instead, since the stored value may have changed.
+ * When the class is [constructedOpen], the object is returned with its predicates unfolded. Stored unique parameters
+ * retain their predicates when construction cannot reach them and there are no representation laws. Other stored
+ * predicates are taken by the constructor and returned inside the open representation.
  */
 context(converter: ProgramConversionContext)
 fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFunctionSymbol<*>): SignatureWithTarget<NonInlineFunctionSignature> =
@@ -255,11 +254,12 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
 
         val (lawPreconditions, initializerPostconditions) = classLawConstructorConditions(symbol, current.signature, result)
         val contract = current.signature.buildConditions(typeResolver) {
-            userFunctionPreconditions(consumes = { param -> stored.none { it.first == param } })
+            userFunctionPreconditions(consumes = { param -> lawPreconditions.isNotEmpty() || stored.none { it.first == param } })
             addPreconditions(lawPreconditions)
             userFunctionPostcondition(resultFolded = constructed == null)
             if (constructed != null) {
-                val omitted = stored.mapTo(mutableSetOf()) { it.second.name }
+                // Laws may read nested ownership before the stored-field equalities are available.
+                val omitted = if (lawPreconditions.isEmpty()) stored.mapTo(mutableSetOf()) { it.second.name } else emptySet()
                 addPostconditions(listOf(with(typeResolver) { constructed.openPredicateChain(result, omitted) }))
             }
             addPostconditions(initializerPostconditions)
