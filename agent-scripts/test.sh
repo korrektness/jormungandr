@@ -244,13 +244,14 @@ changed() {
 }
 
 # What the golden now says, not just that it changed: going to look at the file
-# is the step that gets skipped. An untracked golden has no diff, so its whole
-# body is the new content.
+# is the step that gets skipped. Diffs are against HEAD so staged and unstaged
+# changes are both covered. An untracked golden has no diff, so its whole body
+# is the new content.
 show() {
     local cap="$1" file="$2" body
     if git ls-files --error-unmatch "$file" >/dev/null 2>&1; then
-        # Drop git's four header lines; the path is printed above.
-        body="$(git diff --no-prefix -- "$file" | tail -n +5)"
+        # Drop git's header lines; the path is printed above.
+        body="$(git diff HEAD --no-prefix -- "$file" | sed -n '/^@@/,$p')"
     else
         body="$(sed 's/^/+/' "$file")"
     fi
@@ -292,7 +293,7 @@ report_stat() {
     echo "$header"
     while IFS= read -r file; do
         if git ls-files --error-unmatch "$file" >/dev/null 2>&1; then
-            read -r added removed _ < <(git diff --numstat -- "$file")
+            read -r added removed _ < <(git diff HEAD --numstat -- "$file")
         else
             added="$(wc -l <"$file")"
             removed=0
