@@ -201,10 +201,13 @@ class ProgramConverter(
         registeredSymbol = lambda.function.symbol
         lambdaRegistry.prepare(lambdas)
         // Each lifted body has its own verification unit; lower its creation path in that unit's symbol context.
-        val ownerSignature = embedCompleteSignature(lambda.owner.symbol)
-        val ownerContext = createBodyConversionContext(lambda.owner.symbol, ownerSignature, uniquenessOutcomeOf(lambda.owner).analysis)
-        if (ownerSignature.signature.isPure) ownerContext.convertPureBody(lambda.owner)
-        else ownerContext.convertImpureBody(lambda.owner, ownerSignature.signature, ownerSignature.returnTarget)
+        val owner = lambda.owner as? FirSimpleFunction
+        if (owner != null) {
+            val ownerSignature = embedCompleteSignature(owner.symbol)
+            val ownerContext = createBodyConversionContext(owner.symbol, ownerSignature, uniquenessOutcomeOf(owner).analysis)
+            if (ownerSignature.signature.isPure) ownerContext.convertPureBody(owner)
+            else ownerContext.convertImpureBody(owner, ownerSignature.signature, ownerSignature.returnTarget)
+        }
         for (parent in generateSequence(lambda.parent) { it.parent }.toList().asReversed()) {
             val lifted = lambdaRegistry[parent.expression]!!
             val (signature, target) = with(this) { lifted.invokeSignature(embedCompleteSignature(parent.invoke).signature) }

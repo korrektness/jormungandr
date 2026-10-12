@@ -51,7 +51,7 @@ internal fun FirCallableDeclaration.overriddenGhostObserver(): FirCallableSymbol
         .firstOrNull { it.isGhostObserver(context.session) } else null
 
 /**
- * Reports a member declaration that breaks a rule on observers: a ghost observer has no overrides; an override of an
+ * Reports a member declaration that breaks a rule on observers: a ghost observer has no interface overrides; an override of an
  * observer is `@Pure`, and in a class it has a body and fixed dispatch; a `@Pure` override overrides only observers and
  * their overrides.
  * Property observers are unsupported.
@@ -61,8 +61,8 @@ object ObserverDeclarationChecker : FirCallableDeclarationChecker(MppCheckerKind
     override fun check(declaration: FirCallableDeclaration) {
         if (declaration !is FirSimpleFunction && declaration !is FirProperty) return
         val overridden = if (declaration.isOverride) declaration.symbol.directOverriddenSymbolsSafe() else emptyList()
-        val violation = declaration.overriddenGhostObserver()?.let { "Ghost observer override: '${it.spelling}'." }
-            ?: violation(declaration, overridden)
+        val violation = declaration.overriddenGhostObserver()?.takeIf { declaration.symbol.isInInterface }
+            ?.let { "Ghost observer override: '${it.spelling}'." } ?: violation(declaration, overridden)
         if (violation != null) reporter.reportOn(declaration.source, PluginErrors.INVALID_OBSERVER, violation)
     }
 

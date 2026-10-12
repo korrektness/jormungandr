@@ -152,7 +152,9 @@ observations in the restored class view. A bare interface view exposes no class-
 
 A `fun interface` has one executable abstract operation. Its ghost observers are zero-argument
 `@GhostObserver @Pure` functions with the placeholder body `ghostObserver()`. Ghost observers have binary
-annotation retention, cannot be overridden, and can be called only in specification blocks or laws.
+annotation retention and can be called only in specification blocks or laws. A named class implements them
+through the observer implementation and binding mechanism described in [Observers](#observers).
+An interface cannot override a ghost observer.
 
 ```kotlin
 fun interface CounterSpec {

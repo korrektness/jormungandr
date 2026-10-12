@@ -11,6 +11,8 @@ import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
@@ -42,7 +44,7 @@ import org.jetbrains.kotlin.name.FqName
 /** One literal SAM conversion and the function it implements. */
 data class SpecifiedLambda(
     val expression: FirExpression,
-    val owner: FirSimpleFunction,
+    val owner: FirDeclaration,
     val function: FirAnonymousFunction,
     val invoke: FirNamedFunctionSymbol,
     val name: ScopedName,
@@ -51,13 +53,18 @@ data class SpecifiedLambda(
     companion object {
         context(converter: ProgramConversionContext)
         @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
-        fun collect(declaration: FirSimpleFunction): List<SpecifiedLambda> {
+        fun collect(declaration: FirSimpleFunction): List<SpecifiedLambda> =
+            collect(declaration, declaration.symbol.embedName(converter))
+
+        context(converter: ProgramConversionContext)
+        @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
+        fun collect(declaration: FirDeclaration, scopeName: ScopedName): List<SpecifiedLambda> {
             val result = mutableListOf<SpecifiedLambda>()
             declaration.accept(object : FirVisitorVoid() {
                 private var enclosing: SpecifiedLambda? = null
 
                 override fun visitElement(element: FirElement) {
-                    if (element is FirSimpleFunction && element !== declaration) return
+                    if ((element is FirSimpleFunction || element is FirRegularClass) && element !== declaration) return
                     val parent = enclosing
                     val lambda = context(converter.checkerContext) { element.specifiedLambda() }
                     if (lambda != null) {
@@ -68,9 +75,8 @@ data class SpecifiedLambda(
                         )
                         val invoke = scope.getCallableNames().flatMap { scope.getFunctions(it) }
                             .single { it.fir.status.modality == Modality.ABSTRACT }
-                        val owner = declaration.symbol.embedName(converter)
                         val source = SpecifiedLambda(expression, declaration, lambda, invoke,
-                            ScopedName(CallableScope(owner.scope, owner.name), ClassKotlinName(FqName("Lambda${result.size}"))), parent)
+                            ScopedName(CallableScope(scopeName.scope, scopeName.name), ClassKotlinName(FqName("Lambda${result.size}"))), parent)
                         result += source
                         enclosing = source
                     }
@@ -121,13 +127,18 @@ private fun SpecifiedLambda.captureTypes(): Map<FirBasedSymbol<*>, org.jetbrains
         }
     }
     val receiverTypes = mutableMapOf<FirBasedSymbol<*>, org.jetbrains.kotlin.fir.types.ConeKotlinType>()
+    val localReceivers = mutableSetOf<FirBasedSymbol<*>>()
     function.accept(object : FirVisitorVoid() {
         override fun visitElement(element: FirElement) {
-            if (element is FirFunctionCall &&
-                (element.toResolvedCallableSymbol() as? FirNamedFunctionSymbol)?.isFormverFunctionNamed("exposes") == true) return
+            if (element is FirAnonymousFunction) element.receiverParameter?.symbol?.let(localReceivers::add)
+            element.acceptChildren(this)
+        }
+    })
+    function.accept(object : FirVisitorVoid() {
+        override fun visitElement(element: FirElement) {
             if (element is FirThisReceiverExpression) {
                 val symbol = element.calleeReference.symbol
-                if (symbol is FirClassSymbol<*> || symbol is FirReceiverParameterSymbol && symbol != function.receiverParameter?.symbol) {
+                if (symbol is FirClassSymbol<*> || symbol is FirReceiverParameterSymbol && symbol !in localReceivers) {
                     captures += symbol!!
                     receiverTypes[symbol] = element.resolvedType
                 }
@@ -155,7 +166,9 @@ fun SpecifiedLambda.lift(): LiftedLambda {
     val properties = captureTypes().entries.mapIndexed { index, (symbol, coneType) ->
         val field = CaptureField(ScopedName(name.asScope(), SpecialFieldName("capture$index")), converter.embedType(coneType), type,
             context(converter.checkerContext) { symbol.isUnique() } ||
-                symbol == owner.symbol.dispatchReceiverRoot && owner.symbol.ownsDispatchReceiver(converter.session))
+                (owner as? FirSimpleFunction)?.symbol?.let {
+                    symbol == it.dispatchReceiverRoot && it.ownsDispatchReceiver(converter.session)
+                } == true)
         val property = PropertyEmbedding(BackingFieldGetter(field), BackingFieldSetter(field), true, field.isUnique,
             symbol !is FirPropertySymbol || symbol.isVal, field.type)
         resolver.getOrPutProperty(ClassPropertyPair(name, PropertyKotlinName(name.asScope(), Name.identifier("capture$index")))) { property }
@@ -293,10 +306,10 @@ fun LiftedLambda.invokeBody(
         org.jetbrains.kotlin.formver.core.linearization.OwnedShape(dispatch, captures.flatMap { (symbol, property) ->
             val step = property.ownedStep ?: return@flatMap emptyList()
             if (!facts.owns(state, listOf(symbol))) listOf(listOf(step))
-            else facts.movedBelow(state, symbol).mapNotNull { path ->
+            else facts.movedBelow(state, symbol).map { path ->
                 val steps = path.map { part ->
-                    val field = part as? FirPropertySymbol ?: return@mapNotNull null
-                    converter.embedProperty(field).ownedStep ?: return@mapNotNull null
+                    val field = part as? FirPropertySymbol ?: error("A moved capture sub-path must be a property chain")
+                    converter.embedProperty(field).ownedStep ?: error("A moved capture sub-path must have owned storage")
                 }
                 listOf(step) + steps
             }

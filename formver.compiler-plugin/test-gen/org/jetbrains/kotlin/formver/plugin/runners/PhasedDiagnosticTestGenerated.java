@@ -1404,6 +1404,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("callable_review_regressions.kt")
+      public void testCallable_review_regressions() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/callable_review_regressions.kt");
+      }
+
+      @Test
       @TestMetadata("class_law_errors.kt")
       public void testClass_law_errors() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/class_law_errors.kt");

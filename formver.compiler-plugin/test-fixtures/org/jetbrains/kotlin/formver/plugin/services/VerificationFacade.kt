@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.visitors.FirDefaultVisitorVoid
 import org.jetbrains.kotlin.formver.common.services.runChecks
 import org.jetbrains.kotlin.formver.core.shouldVerify
@@ -70,8 +71,18 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                     }
 
                     override fun visitRegularClass(regularClass: FirRegularClass) {
-                        if (shouldVerify(regularClass, testServices)) toVerify.add(Pair(testFile, regularClass))
+                        if (shouldVerify(regularClass, testServices) ||
+                            !shouldSkipByTestMode(testServices) && regularClass.lambdaPrograms.orEmpty().any { it.shouldVerify }) {
+                            toVerify.add(Pair(testFile, regularClass))
+                        }
                         regularClass.acceptChildren(this)
+                    }
+
+                    override fun visitProperty(property: FirProperty) {
+                        if (!shouldSkipByTestMode(testServices) && property.lambdaPrograms.orEmpty().any { it.shouldVerify }) {
+                            toVerify.add(Pair(testFile, property))
+                        }
+                        property.acceptChildren(this)
                     }
 
                     override fun visitSimpleFunction(simpleFunction: FirSimpleFunction) {

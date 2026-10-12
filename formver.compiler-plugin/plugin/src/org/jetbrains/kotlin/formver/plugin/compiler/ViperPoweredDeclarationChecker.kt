@@ -18,6 +18,11 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.FirDeclaration
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
+import org.jetbrains.kotlin.fir.declarations.FirProperty
+import org.jetbrains.kotlin.formver.core.conversion.SpecifiedLambda
+import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.formver.common.LogLevel
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
@@ -83,7 +88,35 @@ class ViperPoweredDeclarationChecker(
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun convert(declaration: FirSimpleFunction, programConversionContext: ProgramConverter, index: Int, dumps: MutableList<String>) {
+    fun checkStandaloneLambdas(declaration: FirDeclaration, scopeName: ScopedName) {
+        if (config.conversionSelection != TargetsSelection.ALL_TARGETS || declaration.hasAnnotation(neverConvertId, session)) return
+        val collector = ProgramConverter(session, config, context, reporter)
+        val lambdas = with(collector) { SpecifiedLambda.collect(declaration, scopeName) }
+        declaration.lambdaPrograms = emptyList()
+        val dumps = mutableListOf<String>()
+        lambdas.forEachIndexed { index, lambda ->
+            if (!processedLambdas.add(lambda.function.symbol)) return@forEachIndexed
+            reportConversionErrors(declaration) {
+                val converter = ProgramConverter(session, config, context, reporter)
+                converter.registerLambda(lambda, lambdas)
+                convert(declaration, converter, index + 1, dumps)
+            }
+        }
+        if (dumps.isNotEmpty()) {
+            reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.verificationName, dumps.joinToString("\n\n"))
+        }
+    }
+
+    private val FirDeclaration.verificationName: String
+        get() = when (this) {
+            is FirSimpleFunction -> name.asString()
+            is FirRegularClass -> name.asString()
+            is FirProperty -> name.asString()
+            else -> error("Unexpected verification owner: ${this::class.simpleName}")
+        }
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun convert(declaration: FirDeclaration, programConversionContext: ProgramConverter, index: Int, dumps: MutableList<String>) {
         programConversionContext.validateAll()
         if (shouldDumpExpEmbeddings(declaration)) {
             with(SimpleNameResolver()) {
@@ -98,7 +131,7 @@ class ViperPoweredDeclarationChecker(
         with(programConversionContext.nameResolver) { program.registerAllNames() }
         programConversionContext.nameResolver.resolve()
         getProgramForLogging(program)?.let {
-            val heading = if (index == 0) "" else "${declaration.name}.lambda${index - 1}.invoke:\n"
+            val heading = if (index == 0) "" else "${declaration.verificationName}.lambda${index - 1}.invoke:\n"
             dumps += heading + with(programConversionContext.nameResolver) { it.toDebugOutput() }
         }
         val viperProgram = with(programConversionContext.nameResolver) { program.toSilver() }
@@ -125,7 +158,7 @@ class ViperPoweredDeclarationChecker(
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun reportConversionErrors(declaration: FirSimpleFunction, convert: () -> Unit) {
+    private fun reportConversionErrors(declaration: FirDeclaration, convert: () -> Unit) {
         try {
             convert()
         } catch (e: UnsupportedFeatureException) {
@@ -140,7 +173,7 @@ class ViperPoweredDeclarationChecker(
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun reportInternalError(e: SnaktInternalException, declaration: FirSimpleFunction) {
+    private fun reportInternalError(e: SnaktInternalException, declaration: FirDeclaration) {
         reporter.reportOn(reportingSource(e.source, declaration), PluginErrors.INTERNAL_ERROR, e.message)
         config.messageCollector.report(CompilerMessageSeverity.LOGGING, e.stackTraceToString())
     }
@@ -150,7 +183,7 @@ class ViperPoweredDeclarationChecker(
      * a library declaration that the conversion embeds; it is reported at [source] only when that lies inside
      * [declaration], so that the function whose conversion stopped always carries it.
      */
-    private fun reportingSource(source: KtSourceElement?, declaration: FirSimpleFunction): KtSourceElement? {
+    private fun reportingSource(source: KtSourceElement?, declaration: FirDeclaration): KtSourceElement? {
         val outer = declaration.source ?: return source
         return source?.takeIf { it.isWithin(outer) } ?: outer
     }
@@ -189,12 +222,12 @@ class ViperPoweredDeclarationChecker(
         else -> conversionSelection == TargetsSelection.ALL_TARGETS
     }
 
-    private fun PluginConfiguration.shouldVerify(declaration: FirSimpleFunction): Boolean = when {
+    private fun PluginConfiguration.shouldVerify(declaration: FirDeclaration): Boolean = when {
         declaration.hasAnnotation(neverConvertId, session) -> false
         declaration.hasAnnotation(neverVerifyId, session) -> false
         else -> verificationSelection == TargetsSelection.ALL_TARGETS
     }
 
-    private fun shouldDumpExpEmbeddings(declaration: FirSimpleFunction): Boolean =
+    private fun shouldDumpExpEmbeddings(declaration: FirDeclaration): Boolean =
         declaration.hasAnnotation(dumpExpEmbeddingsId, session)
 }

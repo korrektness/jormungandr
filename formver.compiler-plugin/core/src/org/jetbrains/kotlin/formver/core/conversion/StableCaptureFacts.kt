@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.SpecialFunctions
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.linearization.subExps
+import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 
@@ -29,6 +30,9 @@ private class StableCaptureFacts(private val context: ProgramConversionContext) 
 
     private fun stableFunction(name: SymbolicName): Boolean {
         if (!visitedFunctions.add(name)) return true
+        val signature = context.lookupFunctionSignature(name)
+        if (signature != null && signature.preconditions.pureToViper(toBuiltin = true, context.typeResolver)
+                .any { it.hasOwnershipAssertion() }) return false
         val body = context.convertedBodyResolver.lookupPure(name)
         if (body != null) return body.subtree().all { node ->
             when (node) {
@@ -42,7 +46,6 @@ private class StableCaptureFacts(private val context: ProgramConversionContext) 
         val special = (SpecialFunctions.all + SpecialFunctions.multiset + IntArrayEmbedding.arraySizeFunction)
             .firstOrNull { it.name == name }
         if (special != null) return special.body?.let(::stable) ?: special.pres.none { it.hasOwnershipAssertion() }
-        // An abstract function with no owned arguments cannot observe mutable heap state.
-        return context.lookupFunctionSignature(name)?.formalArgs?.none { it.isUnique || it.isBorrowed } == true
+        return signature?.formalArgs?.none { it.isUnique || it.isBorrowed } == true
     }
 }

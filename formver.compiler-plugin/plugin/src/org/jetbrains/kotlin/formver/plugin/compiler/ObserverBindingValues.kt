@@ -11,6 +11,9 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
 import org.jetbrains.kotlin.fir.references.FirReference
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
@@ -62,11 +65,15 @@ private fun FirEqualityOperatorCall.isBuiltinEquality(): Boolean {
  * Checks every subtree, including receivers and arguments, without evaluating the binding.
  * Only the node kinds listed here are accepted; every other node, including any that can throw or write, is rejected.
  */
-internal fun FirExpression.isObserverBindingValue(session: FirSession): Boolean {
+internal fun FirExpression.isObserverBindingValue(session: FirSession, bindingReceiver: FirBasedSymbol<*>?): Boolean {
     var valid = true
     accept(object : FirVisitorVoid() {
         override fun visitElement(element: FirElement) {
             val allowed = when (element) {
+                is FirThisReceiverExpression -> {
+                    val symbol = element.calleeReference.boundSymbol
+                    symbol != bindingReceiver && (symbol is FirClassSymbol<*> || symbol is FirReceiverParameterSymbol)
+                }
                 is FirQualifiedAccessExpression -> element.isBindingValueAccess(session)
                 is FirTypeOperatorCall -> element.operation in nonThrowingTypeOperators
                 is FirEqualityOperatorCall -> element.isBuiltinEquality()

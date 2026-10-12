@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.formver.core.conversion.interfaceLaws
 import org.jetbrains.kotlin.formver.core.conversion.registerClassLaws
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.core.isLaw
+import org.jetbrains.kotlin.formver.core.names.embedName
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
@@ -38,10 +39,14 @@ class ViperPoweredClassChecker(
     private val verifierLocator: VerifierLocator,
     private val reportedErrors: ReportedVerifierErrors,
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
+    private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors)
+
     context(context: CheckerContext, reporter: DiagnosticReporter)
     @OptIn(DirectDeclarationsAccess::class)
     override fun check(declaration: FirRegularClass) {
-        if (declaration.origin != FirDeclarationOrigin.Source || declaration.classKind.isInterface) return
+        if (declaration.origin != FirDeclarationOrigin.Source) return
+        lambdaChecker.checkStandaloneLambdas(declaration, declaration.symbol.classId.embedName())
+        if (declaration.classKind.isInterface) return
         if (config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) ||
             (declaration.symbol.interfaceLaws().isEmpty() &&
                 declaration.symbol.declarationSymbols.none { it.isLaw(session) })) return

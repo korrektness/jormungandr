@@ -204,7 +204,7 @@ object ExposesCallChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
             equality.operation != FirOperation.EQ -> "Invalid observer binding operator."
             left == null -> "Invalid binding target."
             observer !in expected || !left.isBindingTarget(body) -> "Foreign observer binding."
-            right == null || !right.isObserverBindingValue(context.session) -> "Invalid observer binding value."
+            right == null || !right.isObserverBindingValue(context.session, body.receiverParameter?.symbol) -> "Invalid observer binding value."
             right.readsAny(inputs) -> "Observer binding value reads a lambda parameter."
             !bound.add(observer!!) -> "Duplicate observer binding."
             else -> null

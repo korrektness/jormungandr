@@ -256,7 +256,7 @@ fun placeholderReference(): () -> Int = <!INVALID_OBSERVER!>::ghostObserver<!>
 
 class OverrideGhost : CounterSpec {
     override fun invoke(): Int = 0
-    <!INVALID_OBSERVER!>@Pure override fun value(): Int = 0<!>
+    @Pure override fun value(): Int = 0
 }
 
 open class OpenGhostOverride : CounterSpec {

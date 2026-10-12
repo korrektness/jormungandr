@@ -1,0 +1,2363 @@
+/callable_review_regressions.kt: info: Generated Viper text for total:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReviewAcc())
+  requires acc(ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ReviewAcc_unique(this: Ref)
+
+/callable_review_regressions.kt: info: Generated Viper text for invoke:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReviewAcc())
+  requires acc(ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ReviewAcc_unique(this: Ref)
+
+method invoke(this: Ref, amount: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), ReviewAcc())
+  requires acc(ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret) == intFromRef(total(this))
+
+
+/callable_review_regressions.kt: info: Generated Viper text for wrap:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_0_0 ==
+      (this.Lambda0_p_capture0) in
+      c_ReviewAcc_f_total(anon_0_0)))
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), c_ReviewAcc()) &&
+  acc(c_ReviewAcc_unique(this.Lambda0_p_capture0), write) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), c_ReviewAcc()))
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), c_ReviewAcc())
+  requires isSubtype(typeOf(captureArg0), c_ReviewAcc())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), c_ReviewAcc())
+  ensures ret_1.Lambda0_p_capture0 == captureArg0
+
+
+method wrap(g: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(g), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(g), write)
+  requires intFromRef(c_ReviewAcc_f_total(g)) >= 0
+  ensures isSubtype(typeOf(v_ret_0), c_ReviewAcc())
+  ensures acc(c_ReviewAcc_unique(v_ret_0), write)
+  ensures intFromRef(c_ReviewAcc_f_total(v_ret_0)) ==
+    old(intFromRef(c_ReviewAcc_f_total(g)))
+{
+  var anon_1: Ref
+  anon_1 := create(g)
+  fold acc(Lambda0_unique(anon_1), write)
+  v_ret_0 := anon_1
+  inhale isSubtype(typeOf(v_ret_0), c_ReviewAcc())
+  Lambda0_c_ReviewAcc_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+wrap.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_0_0 ==
+      (this.Lambda0_p_capture0) in
+      c_ReviewAcc_f_total(anon_0_0)))
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), c_ReviewAcc()) &&
+  acc(c_ReviewAcc_unique(this.Lambda0_p_capture0), write) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), c_ReviewAcc()))
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_5: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_5), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_5) == intFromRef(Lambda0_f_total(this))
+{
+  var anon_1: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon_1 := this.Lambda0_p_capture0
+  v_ret_5 := f_invoke(anon_1, amount)
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_5
+  label lbl_ret_5
+}
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), c_ReviewAcc())
+  requires isSubtype(typeOf(captureArg0), c_ReviewAcc())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), c_ReviewAcc())
+  ensures ret_0.Lambda0_p_capture0 == captureArg0
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_4) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_4 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_4), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_4) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+method wrap(g: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(g), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(g), write)
+  requires intFromRef(c_ReviewAcc_f_total(g)) >= 0
+  ensures isSubtype(typeOf(ret_1), c_ReviewAcc())
+  ensures acc(c_ReviewAcc_unique(ret_1), write)
+  ensures intFromRef(c_ReviewAcc_f_total(ret_1)) ==
+    old(intFromRef(c_ReviewAcc_f_total(g)))
+
+
+/callable_review_regressions.kt: info: Generated Viper text for wrapClient:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReviewAcc())
+  requires acc(ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate ReviewAcc_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), ReviewAcc())
+  requires acc(ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(total(this))
+
+
+method wrap(g: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(g), ReviewAcc())
+  requires acc(ReviewAcc_unique(g), write)
+  requires intFromRef(total(g)) >= 0
+  ensures isSubtype(typeOf(ret_2), ReviewAcc())
+  ensures acc(ReviewAcc_unique(ret_2), write)
+  ensures intFromRef(total(ret_2)) == old(intFromRef(total(g)))
+
+
+method wrapClient(g: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(g), ReviewAcc())
+  requires acc(ReviewAcc_unique(g), write)
+  requires intFromRef(total(g)) == 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var w: Ref
+  var l0_r: Ref
+  w := wrap(g)
+  l0_r := invoke(w, intToRef(2))
+  assert intFromRef(l0_r) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for implicitReceiver:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_1_0 ==
+      (this.Lambda0_p_capture0) in
+      (unfolding acc(ReviewOwned_unique(anon_1_0), write) in anon_1_0.n)))
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), ReviewOwned()) &&
+  acc(ReviewOwned_unique(this.Lambda0_p_capture0), write) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), ReviewOwned()))
+}
+
+predicate ReviewOwned_unique(this: Ref) {
+  isSubtype(typeOf(this), ReviewOwned()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), ReviewOwned())
+  ensures ret_1.Lambda0_p_capture0 == captureArg0
+
+
+method implicitReceiver(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReviewOwned())
+  requires acc(ReviewOwned_unique(this), write)
+  requires (unfolding acc(ReviewOwned_unique(this), write) in
+      intFromRef(this.n) >= 0)
+  ensures isSubtype(typeOf(v_ret_0), c_ReviewAcc())
+  ensures acc(c_ReviewAcc_unique(v_ret_0), write)
+{
+  var anon_2: Ref
+  anon_2 := create(this)
+  fold acc(Lambda0_unique(anon_2), write)
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), c_ReviewAcc())
+  Lambda0_c_ReviewAcc_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+implicitReceiver.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_1_0 ==
+      (this.Lambda0_p_capture0) in
+      (unfolding acc(ReviewOwned_unique(anon_1_0), write) in anon_1_0.n)))
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), ReviewOwned()) &&
+  acc(ReviewOwned_unique(this.Lambda0_p_capture0), write) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), ReviewOwned()))
+}
+
+predicate ReviewOwned_unique(this: Ref) {
+  isSubtype(typeOf(this), ReviewOwned()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_4), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(this))
+{
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon_2 := this.Lambda0_p_capture0
+  anon_4 := this.Lambda0_p_capture0
+  unfold acc(ReviewOwned_unique(this.Lambda0_p_capture0), write)
+  anon_3 := anon_4.n
+  anon_2.n := plusInts(anon_3, amount)
+  anon_5 := this.Lambda0_p_capture0
+  v_ret_4 := anon_5.n
+  fold acc(ReviewOwned_unique(this.Lambda0_p_capture0), write)
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_4
+  label lbl_ret_4
+}
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), ReviewOwned())
+  ensures ret_0.Lambda0_p_capture0 == captureArg0
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method implicitReceiver(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), ReviewOwned())
+  requires acc(ReviewOwned_unique(this), write)
+  requires (unfolding acc(ReviewOwned_unique(this), write) in
+      intFromRef(this.n) >= 0)
+  ensures isSubtype(typeOf(ret_1), c_ReviewAcc())
+  ensures acc(c_ReviewAcc_unique(ret_1), write)
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_3 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for explicitReceiver:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_1_0 ==
+      (this.Lambda0_p_capture0) in
+      (unfolding acc(ReviewOwned_unique(anon_1_0), write) in anon_1_0.n)))
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), ReviewOwned()) &&
+  acc(ReviewOwned_unique(this.Lambda0_p_capture0), write) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), ReviewOwned()))
+}
+
+predicate ReviewOwned_unique(this: Ref) {
+  isSubtype(typeOf(this), ReviewOwned()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), ReviewOwned())
+  ensures ret_1.Lambda0_p_capture0 == captureArg0
+
+
+method explicitReceiver(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReviewOwned())
+  requires acc(ReviewOwned_unique(this), write)
+  requires (unfolding acc(ReviewOwned_unique(this), write) in
+      intFromRef(this.n) >= 0)
+  ensures isSubtype(typeOf(v_ret_0), c_ReviewAcc())
+  ensures acc(c_ReviewAcc_unique(v_ret_0), write)
+{
+  var anon_2: Ref
+  anon_2 := create(this)
+  fold acc(Lambda0_unique(anon_2), write)
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), c_ReviewAcc())
+  Lambda0_c_ReviewAcc_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+explicitReceiver.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in
+    (let anon_1_0 ==
+      (this.Lambda0_p_capture0) in
+      (unfolding acc(ReviewOwned_unique(anon_1_0), write) in anon_1_0.n)))
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), ReviewOwned()) &&
+  acc(ReviewOwned_unique(this.Lambda0_p_capture0), write) &&
+  (let this ==
+    (this) in
+    true && isSubtype(typeOf(this.Lambda0_p_capture0), ReviewOwned()))
+}
+
+predicate ReviewOwned_unique(this: Ref) {
+  isSubtype(typeOf(this), ReviewOwned()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_4), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(this))
+{
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon_2 := this.Lambda0_p_capture0
+  anon_4 := this.Lambda0_p_capture0
+  unfold acc(ReviewOwned_unique(this.Lambda0_p_capture0), write)
+  anon_3 := anon_4.n
+  anon_2.n := plusInts(anon_3, amount)
+  anon_5 := this.Lambda0_p_capture0
+  v_ret_4 := anon_5.n
+  fold acc(ReviewOwned_unique(this.Lambda0_p_capture0), write)
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_4
+  label lbl_ret_4
+}
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), ReviewOwned())
+  ensures ret_0.Lambda0_p_capture0 == captureArg0
+
+
+method explicitReceiver(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), ReviewOwned())
+  requires acc(ReviewOwned_unique(this), write)
+  requires (unfolding acc(ReviewOwned_unique(this), write) in
+      intFromRef(this.n) >= 0)
+  ensures isSubtype(typeOf(ret_1), c_ReviewAcc())
+  ensures acc(c_ReviewAcc_unique(ret_1), write)
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_3 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for ReviewHolder:
+ReviewHolder.lambda0.invoke:
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
+{
+  v_ret_2 := intToRef(-5)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_1 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for holderClient:
+function action(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReviewHolder())
+  ensures isSubtype(typeOf(result), ReviewAcc())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReviewAcc())
+  requires acc(ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate ReviewAcc_unique(this: Ref)
+
+predicate ReviewHolder_unique(this: Ref) {
+  isSubtype(typeOf(this), ReviewHolder()) &&
+  acc(ReviewAcc_unique(action(this)), write)
+}
+
+predicate Serializable_unique(this: Ref)
+
+method holderClient(h: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), ReviewHolder())
+  requires acc(ReviewHolder_unique(h), write)
+  requires (unfolding acc(ReviewHolder_unique(h), write) in
+      intFromRef(total(action(h))) == 0)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  unfold acc(ReviewHolder_unique(h), write)
+  l0_r := invoke(action(h), intToRef(1))
+  assert intFromRef(l0_r) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), ReviewAcc())
+  requires acc(ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_2) == intFromRef(total(this))
+
+
+/callable_review_regressions.kt: info: Generated Viper text for ReviewCtorHolder:
+ReviewCtorHolder.lambda0.invoke:
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
+{
+  v_ret_2 := intToRef(-5)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_1 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for ReviewInitHolder:
+ReviewInitHolder.lambda0.invoke:
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
+{
+  v_ret_2 := intToRef(-5)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_1 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for ReviewSecondaryHolder:
+ReviewSecondaryHolder.lambda0.invoke:
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
+{
+  v_ret_2 := intToRef(-5)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_1 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for total:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), NamedCounterSpec())
+  requires acc(NamedCounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate NamedCounterSpec_unique(this: Ref)
+
+/callable_review_regressions.kt: info: Generated Viper text for invoke:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), NamedCounterSpec())
+  requires acc(NamedCounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate NamedCounterSpec_unique(this: Ref)
+
+method invoke(this: Ref, amount: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), NamedCounterSpec())
+  requires acc(NamedCounterSpec_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(NamedCounterSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret) == intFromRef(total(this))
+
+
+/callable_review_regressions.kt: info: Generated Viper text for total:
+field n: Ref
+
+function NamedCounterSpec_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), NamedCounterSpec())
+  requires acc(NamedCounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function NamedReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), NamedReviewAcc())
+  requires acc(NamedReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NamedReviewAcc_unique(this), write) in this.n)
+}
+
+predicate NamedCounterSpec_unique(this: Ref)
+
+predicate NamedReviewAcc_unique(this: Ref) {
+  isSubtype(typeOf(this), NamedReviewAcc()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for invoke:
+field n: Ref
+
+function NamedReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), NamedReviewAcc())
+  requires acc(NamedReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NamedReviewAcc_unique(this), write) in this.n)
+}
+
+function c_NamedCounterSpec_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_NamedCounterSpec())
+  requires acc(c_NamedCounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate NamedReviewAcc_unique(this: Ref) {
+  isSubtype(typeOf(this), NamedReviewAcc()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_NamedCounterSpec_unique(this: Ref)
+
+method NamedReviewAcc_c_NamedCounterSpec_restore(this: Ref)
+  requires acc(c_NamedCounterSpec_unique(this), write)
+  requires isSubtype(typeOf(this), NamedReviewAcc())
+  ensures acc(NamedReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_NamedCounterSpec())) &&
+    true ==>
+    NamedReviewAcc_f_total(this) == old(c_NamedCounterSpec_f_total(this))
+
+
+method NamedReviewAcc_c_NamedCounterSpec_upcast(this: Ref)
+  requires acc(NamedReviewAcc_unique(this), write)
+  ensures acc(c_NamedCounterSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), NamedReviewAcc())) && true ==>
+    c_NamedCounterSpec_f_total(this) == old(NamedReviewAcc_f_total(this))
+
+
+method NamedReviewAcc_f_invoke(this: Ref, amount: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), NamedReviewAcc())
+  requires acc(NamedReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(NamedReviewAcc_f_total(this)) >= 0
+  ensures acc(NamedReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(NamedReviewAcc_f_total(this)) ==
+    old(intFromRef(NamedReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_0) == intFromRef(NamedReviewAcc_f_total(this))
+{
+  var anon: Ref
+  unfold acc(NamedReviewAcc_unique(this), write)
+  anon := this.n
+  this.n := plusInts(anon, amount)
+  v_ret_0 := this.n
+  fold acc(NamedReviewAcc_unique(this), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_NamedCounterSpec())
+  requires acc(c_NamedCounterSpec_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_NamedCounterSpec_f_total(this)) >= 0
+  ensures acc(c_NamedCounterSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_NamedCounterSpec_f_total(this)) ==
+    old(intFromRef(c_NamedCounterSpec_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_NamedCounterSpec_f_total(this))
+
+
+method refines_c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_NamedCounterSpec())
+  requires acc(c_NamedCounterSpec_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_NamedCounterSpec_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), NamedReviewAcc())
+{
+  NamedReviewAcc_c_NamedCounterSpec_restore(this)
+  ret_1 := NamedReviewAcc_f_invoke(this, amount)
+  NamedReviewAcc_c_NamedCounterSpec_upcast(this)
+  assert acc(c_NamedCounterSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_NamedCounterSpec_f_total(this)) ==
+    old(intFromRef(c_NamedCounterSpec_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_NamedCounterSpec_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for total:
+field n: Ref
+
+function BrokenNamedReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenNamedReviewAcc())
+  requires acc(BrokenNamedReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenNamedReviewAcc_unique(this), write) in this.n)
+}
+
+function NamedCounterSpec_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), NamedCounterSpec())
+  requires acc(NamedCounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenNamedReviewAcc_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenNamedReviewAcc()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate NamedCounterSpec_unique(this: Ref)
+
+/callable_review_regressions.kt: info: Generated Viper text for invoke:
+field n: Ref
+
+function BrokenNamedReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenNamedReviewAcc())
+  requires acc(BrokenNamedReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenNamedReviewAcc_unique(this), write) in this.n)
+}
+
+function c_NamedCounterSpec_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_NamedCounterSpec())
+  requires acc(c_NamedCounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenNamedReviewAcc_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenNamedReviewAcc()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_NamedCounterSpec_unique(this: Ref)
+
+method BrokenNamedReviewAcc_c_NamedCounterSpec_restore(this: Ref)
+  requires acc(c_NamedCounterSpec_unique(this), write)
+  requires isSubtype(typeOf(this), BrokenNamedReviewAcc())
+  ensures acc(BrokenNamedReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_NamedCounterSpec())) &&
+    true ==>
+    BrokenNamedReviewAcc_f_total(this) ==
+    old(c_NamedCounterSpec_f_total(this))
+
+
+method BrokenNamedReviewAcc_c_NamedCounterSpec_upcast(this: Ref)
+  requires acc(BrokenNamedReviewAcc_unique(this), write)
+  ensures acc(c_NamedCounterSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BrokenNamedReviewAcc())) &&
+    true ==>
+    c_NamedCounterSpec_f_total(this) ==
+    old(BrokenNamedReviewAcc_f_total(this))
+
+
+method BrokenNamedReviewAcc_f_invoke(this: Ref, amount: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), BrokenNamedReviewAcc())
+  requires acc(BrokenNamedReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(BrokenNamedReviewAcc_f_total(this)) >= 0
+  ensures acc(BrokenNamedReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(BrokenNamedReviewAcc_f_total(this)) ==
+    old(intFromRef(BrokenNamedReviewAcc_f_total(this))) +
+    intFromRef(amount) &&
+    intFromRef(v_ret_0) == intFromRef(BrokenNamedReviewAcc_f_total(this))
+{
+  v_ret_0 := intToRef(-7)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_NamedCounterSpec())
+  requires acc(c_NamedCounterSpec_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_NamedCounterSpec_f_total(this)) >= 0
+  ensures acc(c_NamedCounterSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_NamedCounterSpec_f_total(this)) ==
+    old(intFromRef(c_NamedCounterSpec_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_NamedCounterSpec_f_total(this))
+
+
+method refines_c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_NamedCounterSpec())
+  requires acc(c_NamedCounterSpec_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_NamedCounterSpec_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), BrokenNamedReviewAcc())
+{
+  BrokenNamedReviewAcc_c_NamedCounterSpec_restore(this)
+  ret_1 := BrokenNamedReviewAcc_f_invoke(this, amount)
+  BrokenNamedReviewAcc_c_NamedCounterSpec_upcast(this)
+  assert acc(c_NamedCounterSpec_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_NamedCounterSpec_f_total(this)) ==
+    old(intFromRef(c_NamedCounterSpec_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_NamedCounterSpec_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for callTwice:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), NamedCounterSpec())
+  requires acc(NamedCounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate NamedCounterSpec_unique(this: Ref)
+
+method callTwice(f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), NamedCounterSpec())
+  requires acc(NamedCounterSpec_unique(f), write)
+  requires intFromRef(total(f)) == 0
+  ensures acc(NamedCounterSpec_unique(f), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2 && intFromRef(total(f)) == 2
+{
+  var anon: Ref
+  anon := invoke(f, intToRef(1))
+  v_ret_0 := invoke(f, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), NamedCounterSpec())
+  requires acc(NamedCounterSpec_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 && intFromRef(total(this)) >= 0
+  ensures acc(NamedCounterSpec_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(total(this))
+
+
+/callable_review_regressions.kt: info: Generated Viper text for namedCounterClient:
+field bf_n: Ref
+
+function NamedReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), NamedReviewAcc())
+  requires acc(NamedReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(NamedReviewAcc_unique(this), write) in this.bf_n)
+}
+
+function c_NamedCounterSpec_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_NamedCounterSpec())
+  requires acc(c_NamedCounterSpec_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate NamedReviewAcc_unique(this: Ref) {
+  isSubtype(typeOf(this), NamedReviewAcc()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType())
+}
+
+predicate Serializable_unique(this: Ref)
+
+predicate c_NamedCounterSpec_unique(this: Ref)
+
+method NamedReviewAcc_c_NamedCounterSpec_restore(this: Ref)
+  requires acc(c_NamedCounterSpec_unique(this), write)
+  requires isSubtype(typeOf(this), NamedReviewAcc())
+  ensures acc(NamedReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_NamedCounterSpec())) &&
+    true ==>
+    NamedReviewAcc_f_total(this) == old(c_NamedCounterSpec_f_total(this))
+
+
+method NamedReviewAcc_c_NamedCounterSpec_upcast(this: Ref)
+  requires acc(NamedReviewAcc_unique(this), write)
+  ensures acc(c_NamedCounterSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), NamedReviewAcc())) && true ==>
+    c_NamedCounterSpec_f_total(this) == old(NamedReviewAcc_f_total(this))
+
+
+method callTwice(f: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(f), c_NamedCounterSpec())
+  requires acc(c_NamedCounterSpec_unique(f), write)
+  requires intFromRef(c_NamedCounterSpec_f_total(f)) == 0
+  ensures acc(c_NamedCounterSpec_unique(f), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == 2 &&
+    intFromRef(c_NamedCounterSpec_f_total(f)) == 2
+
+
+method namedCounterClient(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), NamedReviewAcc())
+  requires acc(NamedReviewAcc_unique(par_n), write)
+  requires (unfolding acc(NamedReviewAcc_unique(par_n), write) in
+      intFromRef(par_n.bf_n) == 0)
+  ensures acc(NamedReviewAcc_unique(par_n), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon: Ref
+  NamedReviewAcc_c_NamedCounterSpec_upcast(par_n)
+  l0_r := callTwice(par_n)
+  NamedReviewAcc_c_NamedCounterSpec_restore(par_n)
+  assert intFromRef(l0_r) == 2
+  unfold acc(NamedReviewAcc_unique(par_n), write)
+  anon := par_n.bf_n
+  assert intFromRef(anon) == 2
+  label lbl_ret_0
+  fold acc(NamedReviewAcc_unique(par_n), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for total:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), OrdinarySharedAcc())
+  requires acc(OrdinarySharedAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate OrdinarySharedAcc_unique(this: Ref)
+
+/callable_review_regressions.kt: info: Generated Viper text for invoke:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), OrdinarySharedAcc())
+  requires acc(OrdinarySharedAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate OrdinarySharedAcc_unique(this: Ref)
+
+method invoke(this: Ref, amount: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), OrdinarySharedAcc())
+  requires isSubtype(typeOf(amount), intType())
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret) == intFromRef(total(this))
+
+
+/callable_review_regressions.kt: info: Generated Viper text for total:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), GhostSharedAcc())
+  requires acc(GhostSharedAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate GhostSharedAcc_unique(this: Ref)
+
+/callable_review_regressions.kt: info: Generated Viper text for invoke:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), GhostSharedAcc())
+  requires acc(GhostSharedAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate GhostSharedAcc_unique(this: Ref)
+
+method invoke(this: Ref, amount: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), GhostSharedAcc())
+  requires isSubtype(typeOf(amount), intType())
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret) == intFromRef(total(this))
+
+
+/callable_review_regressions.kt: info: Generated Viper text for ordinarySharedClient:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), OrdinarySharedAcc())
+  requires acc(OrdinarySharedAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate OrdinarySharedAcc_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+method invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), OrdinarySharedAcc())
+  requires isSubtype(typeOf(amount), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(total(this))
+
+
+method ordinarySharedClient(f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), OrdinarySharedAcc())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var r1: Ref
+  var r2: Ref
+  r1 := invoke(f, intToRef(1))
+  r2 := invoke(f, intToRef(1))
+  assert intFromRef(r2) == intFromRef(r1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for ghostSharedClient:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), GhostSharedAcc())
+  requires acc(GhostSharedAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_unique(this: Ref)
+
+predicate GhostSharedAcc_unique(this: Ref)
+
+predicate Serializable_unique(this: Ref)
+
+method ghostSharedClient(f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(f), GhostSharedAcc())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var r1: Ref
+  var r2: Ref
+  r1 := invoke(f, intToRef(1))
+  r2 := invoke(f, intToRef(1))
+  assert intFromRef(r2) == intFromRef(r1)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), GhostSharedAcc())
+  requires isSubtype(typeOf(amount), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(total(this)) ==
+    old(intFromRef(total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(total(this))
+
+
+/callable_review_regressions.kt: info: Generated Viper text for topLevelBadAction:
+topLevelBadAction.lambda0.invoke:
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
+{
+  v_ret_2 := intToRef(-5)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_1 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for ReviewRefinementHolder:
+ReviewRefinementHolder.lambda0.invoke:
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) == -5
+{
+  v_ret_2 := intToRef(-5)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_1 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for initial:
+function initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReviewRead())
+  requires acc(ReviewRead_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ReviewRead_unique(this: Ref)
+
+/callable_review_regressions.kt: info: Generated Viper text for invoke:
+function initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReviewRead())
+  requires acc(ReviewRead_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ReviewRead_unique(this: Ref)
+
+method invoke(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), ReviewRead())
+  requires acc(ReviewRead_unique(this), write)
+  requires intFromRef(initial(this)) >= 0
+  ensures acc(ReviewRead_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) == intFromRef(initial(this))
+
+
+/callable_review_regressions.kt: info: Generated Viper text for ReviewGoodCtor:
+ReviewGoodCtor.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_ReviewRead_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewRead())
+  requires acc(c_ReviewRead_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_ReviewRead_unique(this: Ref)
+
+method Lambda0_c_ReviewRead_restore(this: Ref)
+  requires acc(c_ReviewRead_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewRead())) && true ==>
+    Lambda0_f_initial(this) == old(c_ReviewRead_f_initial(this))
+
+
+method Lambda0_c_ReviewRead_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewRead_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewRead_f_initial(this) == old(Lambda0_f_initial(this))
+
+
+method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_initial(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) == intFromRef(Lambda0_f_initial(this))
+{
+  unfold acc(Lambda0_unique(this), write)
+  v_ret_2 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewRead())
+  requires acc(c_ReviewRead_unique(this), write)
+  requires intFromRef(c_ReviewRead_f_initial(this)) >= 0
+  ensures acc(c_ReviewRead_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(c_ReviewRead_f_initial(this))
+
+
+method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewRead())
+  requires acc(c_ReviewRead_unique(this), write)
+  requires intFromRef(c_ReviewRead_f_initial(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewRead_restore(this)
+  ret_1 := Lambda0_invoke(this)
+  Lambda0_c_ReviewRead_upcast(this)
+  assert acc(c_ReviewRead_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) == intFromRef(c_ReviewRead_f_initial(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for ReviewGoodInit:
+ReviewGoodInit.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(this), write) in this.Lambda0_p_capture0)
+}
+
+function c_ReviewAcc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0()) && acc(this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(this.Lambda0_p_capture0), intType())
+}
+
+predicate c_ReviewAcc_unique(this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(this: Ref)
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(this) == old(c_ReviewAcc_f_total(this))
+
+
+method Lambda0_c_ReviewAcc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(this) == old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) >= 0
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
+{
+  var anon: Ref
+  unfold acc(Lambda0_unique(this), write)
+  anon := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon, amount)
+  v_ret_2 := this.Lambda0_p_capture0
+  fold acc(Lambda0_unique(this), write)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), intType())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), intType())
+  ensures intFromRef(ret_0.Lambda0_p_capture0) == intFromRef(captureArg0)
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  ensures acc(c_ReviewAcc_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(this)) >= 0
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(this)
+  ret_1 := Lambda0_invoke(this, amount)
+  Lambda0_c_ReviewAcc_upcast(this)
+  assert acc(c_ReviewAcc_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(c_ReviewAcc_f_total(this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(this))) + intFromRef(amount) &&
+    intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this))
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for initial:
+function initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReviewLawful())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ReviewLawful_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ReviewLawful()) &&
+  boolFromRef(geInts(initial(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+/callable_review_regressions.kt: info: Generated Viper text for invoke:
+function initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReviewLawful())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ReviewLawful_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ReviewLawful()) &&
+  boolFromRef(geInts(initial(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method invoke(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), ReviewLawful())
+  requires acc(ReviewLawful_unique(this), write)
+  ensures acc(ReviewLawful_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) == 1
+
+
+/callable_review_regressions.kt: info: Generated Viper text for ReviewBrokenLawHolder:
+ReviewBrokenLawHolder.lambda0.invoke:
+function Lambda0_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(-1)
+}
+
+function c_ReviewLawful_f_initial(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ReviewLawful())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(this: Ref) {
+  isSubtype(typeOf(this), Lambda0())
+}
+
+predicate c_ReviewLawful_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_ReviewLawful()) &&
+  boolFromRef(geInts(c_ReviewLawful_f_initial(this), intToRef(0)))
+}
+
+predicate footprint(this: Ref)
+
+method Lambda0_c_ReviewLawful_restore(this: Ref)
+  requires acc(c_ReviewLawful_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ReviewLawful())) && true ==>
+    Lambda0_f_initial(this) ==
+    old((unfolding acc(c_ReviewLawful_unique(this), wildcard) in
+      c_ReviewLawful_f_initial(this)))
+
+
+method Lambda0_c_ReviewLawful_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_ReviewLawful_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_ReviewLawful_unique(this), wildcard) in
+      c_ReviewLawful_f_initial(this)) ==
+    old(Lambda0_f_initial(this))
+
+
+method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) == 1
+{
+  v_ret_2 := intToRef(1)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewLawful())
+  requires acc(c_ReviewLawful_unique(this), write)
+  ensures acc(c_ReviewLawful_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == 1
+
+
+method laws(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+{
+  unfold acc(Lambda0_unique(this), write)
+  fold acc(Lambda0_unique(this), write)
+  assert boolFromRef(geInts(Lambda0_f_initial(this), intToRef(0)))
+}
+
+method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_ReviewLawful())
+  requires acc(c_ReviewLawful_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_ReviewLawful_restore(this)
+  ret_1 := Lambda0_invoke(this)
+  Lambda0_c_ReviewLawful_upcast(this)
+  assert acc(c_ReviewLawful_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) == 1
+}
+
+/callable_review_regressions.kt: info: Generated Viper text for extensionReceiver:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_total(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Lambda0())
+  requires acc(Lambda0_unique(v_this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(v_this), write) in
+    (let anon_1_0 ==
+      (v_this.Lambda0_p_capture0) in
+      (unfolding acc(ReviewOwned_unique(anon_1_0), write) in anon_1_0.n)))
+}
+
+function c_ReviewAcc_f_total(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(v_this: Ref) {
+  isSubtype(typeOf(v_this), Lambda0()) &&
+  acc(v_this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(v_this.Lambda0_p_capture0), ReviewOwned()) &&
+  acc(ReviewOwned_unique(v_this.Lambda0_p_capture0), write) &&
+  (let v_this ==
+    (v_this) in
+    true && isSubtype(typeOf(v_this.Lambda0_p_capture0), ReviewOwned()))
+}
+
+predicate ReviewOwned_unique(v_this: Ref) {
+  isSubtype(typeOf(v_this), ReviewOwned()) && acc(v_this.n, write) &&
+  isSubtype(typeOf(v_this.n), intType())
+}
+
+predicate c_ReviewAcc_unique(v_this: Ref)
+
+method Lambda0_c_ReviewAcc_upcast(v_this: Ref)
+  requires acc(Lambda0_unique(v_this), write)
+  ensures acc(c_ReviewAcc_unique(v_this), write)
+  ensures true && old(isSubtype(typeOf(v_this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(v_this) == old(Lambda0_f_total(v_this))
+
+
+method create(captureArg0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0()) &&
+    acc(ret_1.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_1.Lambda0_p_capture0), ReviewOwned())
+  ensures ret_1.Lambda0_p_capture0 == captureArg0
+
+
+method extensionReceiver(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), ReviewOwned())
+  requires acc(ReviewOwned_unique(v_this_extension), write)
+  requires (unfolding acc(ReviewOwned_unique(v_this_extension), write) in
+      intFromRef(v_this_extension.n) >= 0)
+  ensures isSubtype(typeOf(v_ret_0), c_ReviewAcc())
+  ensures acc(c_ReviewAcc_unique(v_ret_0), write)
+{
+  var anon_2: Ref
+  anon_2 := create(v_this_extension)
+  fold acc(Lambda0_unique(anon_2), write)
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), c_ReviewAcc())
+  Lambda0_c_ReviewAcc_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+extensionReceiver.lambda0.invoke:
+field Lambda0_p_capture0: Ref
+
+field n: Ref
+
+function Lambda0_f_total(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Lambda0())
+  requires acc(Lambda0_unique(v_this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Lambda0_unique(v_this), write) in
+    (let anon_1_0 ==
+      (v_this.Lambda0_p_capture0) in
+      (unfolding acc(ReviewOwned_unique(anon_1_0), write) in anon_1_0.n)))
+}
+
+function c_ReviewAcc_f_total(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Lambda0_unique(v_this: Ref) {
+  isSubtype(typeOf(v_this), Lambda0()) &&
+  acc(v_this.Lambda0_p_capture0, write) &&
+  isSubtype(typeOf(v_this.Lambda0_p_capture0), ReviewOwned()) &&
+  acc(ReviewOwned_unique(v_this.Lambda0_p_capture0), write) &&
+  (let v_this ==
+    (v_this) in
+    true && isSubtype(typeOf(v_this.Lambda0_p_capture0), ReviewOwned()))
+}
+
+predicate ReviewOwned_unique(v_this: Ref) {
+  isSubtype(typeOf(v_this), ReviewOwned()) && acc(v_this.n, write) &&
+  isSubtype(typeOf(v_this.n), intType())
+}
+
+predicate c_ReviewAcc_unique(v_this: Ref)
+
+method Lambda0_c_ReviewAcc_restore(v_this: Ref)
+  requires acc(c_ReviewAcc_unique(v_this), write)
+  requires isSubtype(typeOf(v_this), Lambda0())
+  ensures acc(Lambda0_unique(v_this), write)
+  ensures true && old(isSubtype(typeOf(v_this), c_ReviewAcc())) && true ==>
+    Lambda0_f_total(v_this) == old(c_ReviewAcc_f_total(v_this))
+
+
+method Lambda0_c_ReviewAcc_upcast(v_this: Ref)
+  requires acc(Lambda0_unique(v_this), write)
+  ensures acc(c_ReviewAcc_unique(v_this), write)
+  ensures true && old(isSubtype(typeOf(v_this), Lambda0())) && true ==>
+    c_ReviewAcc_f_total(v_this) == old(Lambda0_f_total(v_this))
+
+
+method Lambda0_invoke(v_this: Ref, amount: Ref) returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(v_this), Lambda0())
+  requires acc(Lambda0_unique(v_this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(Lambda0_f_total(v_this)) >= 0
+  ensures acc(Lambda0_unique(v_this), write)
+  ensures isSubtype(typeOf(v_ret_4), intType())
+  ensures intFromRef(Lambda0_f_total(v_this)) ==
+    old(intFromRef(Lambda0_f_total(v_this))) + intFromRef(amount) &&
+    intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(v_this))
+{
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  unfold acc(Lambda0_unique(v_this), write)
+  anon_2 := v_this.Lambda0_p_capture0
+  anon_4 := v_this.Lambda0_p_capture0
+  unfold acc(ReviewOwned_unique(v_this.Lambda0_p_capture0), write)
+  anon_3 := anon_4.n
+  anon_2.n := plusInts(anon_3, amount)
+  anon_5 := v_this.Lambda0_p_capture0
+  v_ret_4 := anon_5.n
+  fold acc(ReviewOwned_unique(v_this.Lambda0_p_capture0), write)
+  fold acc(Lambda0_unique(v_this), write)
+  goto lbl_ret_4
+  label lbl_ret_4
+}
+
+method create(captureArg0: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  requires isSubtype(typeOf(captureArg0), ReviewOwned())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0()) &&
+    acc(ret_0.Lambda0_p_capture0, write) &&
+    isSubtype(typeOf(ret_0.Lambda0_p_capture0), ReviewOwned())
+  ensures ret_0.Lambda0_p_capture0 == captureArg0
+
+
+method extensionReceiver(v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), ReviewOwned())
+  requires acc(ReviewOwned_unique(v_this_extension), write)
+  requires (unfolding acc(ReviewOwned_unique(v_this_extension), write) in
+      intFromRef(v_this_extension.n) >= 0)
+  ensures isSubtype(typeOf(ret_1), c_ReviewAcc())
+  ensures acc(c_ReviewAcc_unique(ret_1), write)
+
+
+method f_invoke(v_this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(v_this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(v_this)) >= 0
+  ensures acc(c_ReviewAcc_unique(v_this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(c_ReviewAcc_f_total(v_this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(v_this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(v_this))
+
+
+method refines_f_invoke(v_this: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), c_ReviewAcc())
+  requires acc(c_ReviewAcc_unique(v_this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0 &&
+    intFromRef(c_ReviewAcc_f_total(v_this)) >= 0
+  requires isSubtype(typeOf(v_this), Lambda0())
+{
+  Lambda0_c_ReviewAcc_restore(v_this)
+  ret_3 := Lambda0_invoke(v_this, amount)
+  Lambda0_c_ReviewAcc_upcast(v_this)
+  assert acc(c_ReviewAcc_unique(v_this), write)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(c_ReviewAcc_f_total(v_this)) ==
+    old(intFromRef(c_ReviewAcc_f_total(v_this))) + intFromRef(amount) &&
+    intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(v_this))
+}
