@@ -292,7 +292,7 @@ fun StmtConversionContext.insertInlineFunctionCall(
         val arg = args[index]
         val from = arg.ownedPath()?.let { it.fields.lastOrNull()?.type ?: it.root.type }?.pretype as? ClassTypeEmbedding
         val to = formal.type.pretype as? ClassTypeEmbedding
-        val familyUpcast = mode == BindingMode.Borrowed && from != null && to != null && from != to && typeResolver.isInterface(to)
+        val familyUpcast = mode == BindingMode.Borrowed && from != null && to != null && from != to && typeResolver.isFamilyView(to)
         val (declaration, usage) = if (familyUpcast) {
             val temporary = declareAnonVar(formal.type, arg).copy(targetOwned = null)
             temporary to temporary.variable

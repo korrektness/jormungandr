@@ -449,7 +449,7 @@ method InheritedBindingCell_c_BindingView_restore(this: Ref)
   requires isSubtype(typeOf(this), InheritedBindingCell())
   ensures acc(InheritedBindingCell_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_BindingView())) && true ==>
-    (unfolding acc(InheritedBindingCell_unique(this), write) in
+    (unfolding acc(InheritedBindingCell_unique(this), wildcard) in
       BindingCell_f_value(this)) ==
     old((unfolding acc(c_BindingView_unique(this), wildcard) in
       c_BindingView_f_value(this)))
@@ -457,7 +457,7 @@ method InheritedBindingCell_c_BindingView_restore(this: Ref)
       { BindingCell_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
       old(isSubtype(typeOf(factor), intType())) ==>
-      (unfolding acc(InheritedBindingCell_unique(this), write) in
+      (unfolding acc(InheritedBindingCell_unique(this), wildcard) in
         BindingCell_f_scaled(this, factor)) ==
       old((unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_scaled(this, factor))))
@@ -469,7 +469,7 @@ method InheritedBindingCell_c_BindingView_restore(this: Ref)
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) ==>
-      (unfolding acc(InheritedBindingCell_unique(this), write) in
+      (unfolding acc(InheritedBindingCell_unique(this), wildcard) in
         BindingCell_f_read(this, argument)) ==
       old((unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_read(this, argument))))
@@ -481,7 +481,7 @@ method InheritedBindingCell_c_BindingView_upcast(this: Ref)
   ensures true && old(isSubtype(typeOf(this), BindingCell())) && true ==>
     (unfolding acc(c_BindingView_unique(this), wildcard) in
       c_BindingView_f_value(this)) ==
-    old((unfolding acc(InheritedBindingCell_unique(this), write) in
+    old((unfolding acc(InheritedBindingCell_unique(this), wildcard) in
       BindingCell_f_value(this)))
   ensures (forall factor: Ref ::
       { c_BindingView_f_scaled(this, factor) }
@@ -489,7 +489,7 @@ method InheritedBindingCell_c_BindingView_upcast(this: Ref)
       old(isSubtype(typeOf(factor), intType())) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_scaled(this, factor)) ==
-      old((unfolding acc(InheritedBindingCell_unique(this), write) in
+      old((unfolding acc(InheritedBindingCell_unique(this), wildcard) in
         BindingCell_f_scaled(this, factor))))
   ensures (forall argument: Ref ::
       { c_BindingView_f_read(this, argument) }
@@ -505,7 +505,7 @@ method InheritedBindingCell_c_BindingView_upcast(this: Ref)
       perm(BindingArgument_unique(argument)) >= write]) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_read(this, argument)) ==
-      old((unfolding acc(InheritedBindingCell_unique(this), write) in
+      old((unfolding acc(InheritedBindingCell_unique(this), wildcard) in
         BindingCell_f_read(this, argument))))
 
 

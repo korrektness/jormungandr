@@ -8,6 +8,8 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.analysis.checkers.unsubstitutedScope
+import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
+import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.scopes.ScopeFunctionRequiresPrewarm
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
@@ -25,8 +27,19 @@ import org.jetbrains.kotlin.formver.viper.SymbolicName
 class ObserverBindingRegistry {
     private val classSymbols = linkedMapOf<SymbolicName, FirRegularClassSymbol>()
 
-    fun registerClass(symbol: FirRegularClassSymbol) {
-        classSymbols.putIfAbsent(symbol.classId.embedName(), symbol)
+    @OptIn(ScopeFunctionRequiresPrewarm::class)
+    fun registerClass(ctx: ProgramConversionContext, symbol: FirRegularClassSymbol) {
+        val name = symbol.classId.embedName()
+        if (classSymbols.putIfAbsent(name, symbol) != null) return
+        context(ctx.checkerContext) {
+            val scope = symbol.unsubstitutedScope()
+            var hasObserver = false
+            for (memberName in scope.getCallableNames()) {
+                scope.processFunctionsByName(memberName) { if (it.isObserverOrOverride()) hasObserver = true }
+                scope.processPropertiesByName(memberName) { if (it.isObserverOrOverride()) hasObserver = true }
+            }
+            if (hasObserver) ctx.typeResolver.markClassFamilyView(name)
+        }
     }
 
     @OptIn(ScopeFunctionRequiresPrewarm::class)
@@ -48,12 +61,15 @@ class ObserverBindingRegistry {
                 for (name in scope.getCallableNames()) {
                     scope.processPropertiesByName(name) { member ->
                         if (member !is FirPropertySymbol || !member.isObserverOrOverride()) return@processPropertiesByName
-                        val getter = ctx.embedProperty(member.unwrapFakeOverrides()).getter as CustomGetter
+                        val implementation = member.unwrapFakeOverrides()
+                        val getter = ctx.embedProperty(implementation).getter as CustomGetter
                         val binding = signature(getter.getterMethod.name)
                         fun bind(symbol: FirPropertySymbol) {
-                            if (symbol.isObserver()) {
-                                val observer = ctx.embedProperty(symbol).getter as CustomGetter
-                                ctx.typeResolver.bindObserver(type, observer.getterMethod.name, binding)
+                            if (symbol.isObserverOrOverride()) {
+                                val observer = ctx.embedProperty(if (symbol.isObserver()) symbol else symbol.unwrapFakeOverrides()).getter as CustomGetter
+                                ctx.typeResolver.bindObserver(type, observer.getterMethod.name, binding,
+                                    dynamicDispatch = !entry.value.isFinal && !implementation.isFinal,
+                                    hasImplementation = !implementation.isAbstract)
                             }
                             symbol.directOverriddenSymbolsSafe().filterIsInstance<FirPropertySymbol>().forEach(::bind)
                         }
@@ -61,12 +77,16 @@ class ObserverBindingRegistry {
                     }
                     scope.processFunctionsByName(name) { member ->
                         if (!member.isObserverOrOverride()) return@processFunctionsByName
-                        val bindingName = (ctx.embedAnyFunction(member.unwrapFakeOverrides()) as NamedCallableEmbedding).name
+                        val implementation = member.unwrapFakeOverrides()
+                        val bindingName = (ctx.embedAnyFunction(implementation) as NamedCallableEmbedding).name
                         val binding = signature(bindingName)
                         fun bind(symbol: FirNamedFunctionSymbol) {
-                            if (symbol.isObserver()) {
-                                val observerName = (ctx.embedAnyFunction(symbol) as NamedCallableEmbedding).name
-                                ctx.typeResolver.bindObserver(type, observerName, binding)
+                            if (symbol.isObserverOrOverride()) {
+                                val declaration = if (symbol.isObserver()) symbol else symbol.unwrapFakeOverrides()
+                                val observerName = (ctx.embedAnyFunction(declaration) as NamedCallableEmbedding).name
+                                ctx.typeResolver.bindObserver(type, observerName, binding,
+                                    dynamicDispatch = !entry.value.isFinal && !implementation.isFinal,
+                                    hasImplementation = !implementation.isAbstract)
                             }
                             symbol.directOverriddenSymbolsSafe().filterIsInstance<FirNamedFunctionSymbol>().forEach(::bind)
                         }

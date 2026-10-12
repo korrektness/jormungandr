@@ -1,0 +1,3575 @@
+/class_observer_views.kt: info: Generated Viper text for value:
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for scaled:
+function scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for value:
+field n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for scaled:
+field n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_1_0 ==
+      (this.n) in
+      timesInts(anon_1_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for size:
+field n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for throughThis:
+field extra: Ref
+
+field n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function throughThis(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationLeaf())
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+    (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+      plusInts(ObservationBase_f_value(this), ObservationBase_g_size(this))))
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.extra, write) &&
+  isSubtype(typeOf(this.extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(ObservationBase_unique(this), write)
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for updateBase:
+field n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate footprint(this: Ref)
+
+method updateBase(base: Ref, delta: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(base), ObservationBase())
+  requires acc(ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(ObservationBase_f_value(base)) ==
+    old(intFromRef(ObservationBase_f_value(base))) + intFromRef(delta) &&
+    intFromRef(ObservationBase_f_scaled(base, intToRef(2))) ==
+    intFromRef(ObservationBase_f_value(base)) * 2 &&
+    intFromRef(ObservationBase_g_size(base)) ==
+    intFromRef(ObservationBase_f_value(base))
+{
+  var anon_3: Ref
+  unfold acc(ObservationBase_unique(base), write)
+  anon_3 := base.n
+  base.n := plusInts(anon_3, delta)
+  label lbl_ret_0
+  fold acc(ObservationBase_unique(base), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/class_observer_views.kt: info: Generated Viper text for borrowClassView:
+field extra: Ref
+
+field n: Ref
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function c_ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+function c_ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate ClassObservation_footprint(this: Ref)
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(ClassObservation_footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.extra, write) &&
+  isSubtype(typeOf(this.extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(c_ObservationBase_unique(this), write)
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+method ObservationLeaf_c_ObservationBase_restore(this: Ref)
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(this), ObservationLeaf())
+  ensures acc(ObservationLeaf_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))) ==
+    old(c_ObservationBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor))) ==
+      old(c_ObservationBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))) ==
+    old(c_ObservationBase_g_size(this))
+
+
+method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures acc(c_ObservationBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_f_value(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_ObservationBase_f_scaled(this, factor) ==
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor)))))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_g_size(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))))
+
+
+method borrowClassView(leaf: Ref, delta: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(leaf), ObservationLeaf())
+  requires acc(ObservationLeaf_unique(leaf), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(ObservationLeaf_unique(leaf), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  var anon_9: Ref
+  var anon_10: Ref
+  anon_3 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_f_value(leaf)))
+  before := anon_3
+  ObservationLeaf_c_ObservationBase_upcast(leaf)
+  anon_4 := updateBase(leaf, delta)
+  ObservationLeaf_c_ObservationBase_restore(leaf)
+  anon_5 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_f_value(leaf)))
+  assert intFromRef(anon_5) == intFromRef(before) + intFromRef(delta)
+  anon_6 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_f_scaled(leaf, intToRef(2))))
+  anon_7 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_f_value(leaf)))
+  assert intFromRef(anon_6) == intFromRef(anon_7) * 2
+  anon_8 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_g_size(leaf)))
+  anon_9 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_f_value(leaf)))
+  assert intFromRef(anon_8) == intFromRef(anon_9)
+  unfold acc(ObservationLeaf_unique(leaf), write)
+  leaf.extra := intToRef(9)
+  anon_10 := leaf.extra
+  assert intFromRef(anon_10) == 9
+  label lbl_ret_0
+  fold acc(ObservationLeaf_unique(leaf), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(c_ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures intFromRef(c_ObservationBase_f_value(base)) ==
+    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
+    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    intFromRef(c_ObservationBase_g_size(base)) ==
+    intFromRef(c_ObservationBase_f_value(base))
+
+
+/class_observer_views.kt: info: Generated Viper text for permanentClassView:
+field extra: Ref
+
+field n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function c_ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+function c_ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.extra, write) &&
+  isSubtype(typeOf(this.extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(c_ObservationBase_unique(this), write)
+}
+
+predicate c_ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate footprint(this: Ref)
+
+method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures acc(c_ObservationBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_f_value(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_ObservationBase_f_scaled(this, factor) ==
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor)))))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_g_size(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))))
+
+
+method permanentClassView(leaf: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(leaf), ObservationLeaf())
+  requires acc(ObservationLeaf_unique(leaf), write)
+  ensures isSubtype(typeOf(v_ret_0), c_ObservationBase())
+  ensures acc(c_ObservationBase_unique(v_ret_0), write)
+  ensures intFromRef(c_ObservationBase_f_value(v_ret_0)) ==
+    old((unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        intFromRef(c_ObservationBase_f_value(leaf)))))
+{
+  v_ret_0 := leaf
+  ObservationLeaf_c_ObservationBase_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/class_observer_views.kt: info: Generated Viper text for middleView:
+field extra: Ref
+
+field n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.extra, write) &&
+  isSubtype(typeOf(this.extra), intType()) &&
+  acc(c_ObservationMiddle_unique(this), write)
+}
+
+predicate c_ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ObservationMiddle()) &&
+  acc(ObservationBase_unique(this), write)
+}
+
+predicate footprint(this: Ref)
+
+method ObservationLeaf_c_ObservationMiddle_upcast(this: Ref)
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures acc(c_ObservationMiddle_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ObservationBase())) && true ==>
+    (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+      ObservationBase_f_value(this)) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+        ObservationBase_f_value(this))))
+  ensures (forall factor: Ref ::
+      { ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+        ObservationBase_f_scaled(this, factor)) ==
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+          ObservationBase_f_scaled(this, factor)))))
+  ensures true && old(isSubtype(typeOf(this), ObservationBase())) && true ==>
+    (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+      ObservationBase_g_size(this)) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+        ObservationBase_g_size(this))))
+
+
+method middleView(leaf: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(leaf), ObservationLeaf())
+  requires acc(ObservationLeaf_unique(leaf), write)
+  ensures isSubtype(typeOf(v_ret_0), c_ObservationMiddle())
+  ensures acc(c_ObservationMiddle_unique(v_ret_0), write)
+  ensures (unfolding acc(c_ObservationMiddle_unique(v_ret_0), wildcard) in
+      intFromRef(ObservationBase_f_value(v_ret_0)) ==
+      old((unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+        (unfolding acc(c_ObservationMiddle_unique(leaf), wildcard) in
+          intFromRef(ObservationBase_f_value(leaf))))))
+{
+  v_ret_0 := leaf
+  ObservationLeaf_c_ObservationMiddle_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/class_observer_views.kt: info: Generated Viper text for classToInterface:
+field n: Ref
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate c_ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_ClassObservation())
+}
+
+predicate footprint(this: Ref)
+
+method ObservationBase_c_ClassObservation_upcast(this: Ref)
+  requires acc(ObservationBase_unique(this), write)
+  ensures acc(c_ClassObservation_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ObservationBase())) && true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_f_value(this)) ==
+    old(ObservationBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ClassObservation_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        c_ClassObservation_f_scaled(this, factor)) ==
+      old(ObservationBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), ObservationBase())) && true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_g_size(this)) ==
+    old(ObservationBase_g_size(this))
+
+
+method classToInterface(base: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(base), ObservationBase())
+  requires acc(ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(v_ret_0), c_ClassObservation())
+  ensures acc(c_ClassObservation_unique(v_ret_0), write)
+  ensures (unfolding acc(c_ClassObservation_unique(v_ret_0), wildcard) in
+      intFromRef(c_ClassObservation_f_value(v_ret_0)) ==
+      old(intFromRef(ObservationBase_f_value(base))))
+{
+  v_ret_0 := base
+  ObservationBase_c_ClassObservation_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/class_observer_views.kt: info: Generated Viper text for inlineClassView:
+field n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate footprint(this: Ref)
+
+method inlineClassView(base: Ref, delta: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(base), ObservationBase())
+  requires acc(ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_3: Ref
+  anon_3 := updateBase(base, delta)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), ObservationBase())
+  requires acc(ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures intFromRef(ObservationBase_f_value(base)) ==
+    old(intFromRef(ObservationBase_f_value(base))) + intFromRef(delta) &&
+    intFromRef(ObservationBase_f_scaled(base, intToRef(2))) ==
+    intFromRef(ObservationBase_f_value(base)) * 2 &&
+    intFromRef(ObservationBase_g_size(base)) ==
+    intFromRef(ObservationBase_f_value(base))
+
+
+/class_observer_views.kt: info: Generated Viper text for inlineClassBorrow:
+field extra: Ref
+
+field n: Ref
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in
+    (let anon_4_0 ==
+      (this.n) in
+      timesInts(anon_4_0, factor)))
+}
+
+function c_ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+function c_ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate ClassObservation_footprint(this: Ref)
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(ClassObservation_footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.extra, write) &&
+  isSubtype(typeOf(this.extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(c_ObservationBase_unique(this), write)
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+method ObservationLeaf_c_ObservationBase_restore(this: Ref)
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(this), ObservationLeaf())
+  ensures acc(ObservationLeaf_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))) ==
+    old(c_ObservationBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor))) ==
+      old(c_ObservationBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))) ==
+    old(c_ObservationBase_g_size(this))
+
+
+method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures acc(c_ObservationBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_f_value(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_ObservationBase_f_scaled(this, factor) ==
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor)))))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_g_size(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))))
+
+
+method inlineClassBorrow(leaf: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(leaf), ObservationLeaf())
+  requires acc(ObservationLeaf_unique(leaf), write)
+  ensures acc(ObservationLeaf_unique(leaf), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_5: Ref
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  anon_5 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_f_value(leaf)))
+  before := anon_5
+  anon_0 := leaf
+  anon_1 := intToRef(3)
+  ObservationLeaf_c_ObservationBase_upcast(anon_0)
+  anon_6 := updateBase(anon_0, anon_1)
+  label lbl_ret_2
+  ObservationLeaf_c_ObservationBase_restore(anon_0)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  anon_7 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_f_value(leaf)))
+  assert intFromRef(anon_7) == intFromRef(before) + 3
+  unfold acc(ObservationLeaf_unique(leaf), write)
+  leaf.extra := intToRef(7)
+  anon_8 := leaf.extra
+  assert intFromRef(anon_8) == 7
+  label lbl_ret_0
+  fold acc(ObservationLeaf_unique(leaf), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method inlineClassView(base: Ref, delta: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(c_ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method updateBase(base: Ref, delta: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(base), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(c_ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures intFromRef(c_ObservationBase_f_value(base)) ==
+    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
+    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    intFromRef(c_ObservationBase_g_size(base)) ==
+    intFromRef(c_ObservationBase_f_value(base))
+
+
+/class_observer_views.kt: info: Generated Viper text for classFieldBorrow:
+field extra: Ref
+
+field n: Ref
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in
+    (let anon_4_0 ==
+      (this.n) in
+      timesInts(anon_4_0, factor)))
+}
+
+function c_ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+function c_ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+function leaf(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationHolder())
+  ensures isSubtype(typeOf(result), ObservationLeaf())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate ClassObservation_footprint(this: Ref)
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(ClassObservation_footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate ObservationHolder_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationHolder()) &&
+  acc(ObservationLeaf_unique(leaf(this)), write)
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.extra, write) &&
+  isSubtype(typeOf(this.extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(c_ObservationBase_unique(this), write)
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+method ObservationLeaf_c_ObservationBase_restore(this: Ref)
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(this), ObservationLeaf())
+  ensures acc(ObservationLeaf_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))) ==
+    old(c_ObservationBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor))) ==
+      old(c_ObservationBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))) ==
+    old(c_ObservationBase_g_size(this))
+
+
+method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures acc(c_ObservationBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_f_value(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_ObservationBase_f_scaled(this, factor) ==
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor)))))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_g_size(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))))
+
+
+method classFieldBorrow(holder: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(holder), ObservationHolder())
+  requires acc(ObservationHolder_unique(holder), write)
+  ensures acc(ObservationHolder_unique(holder), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_5: Ref
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  unfold acc(ObservationHolder_unique(holder), write)
+  anon_5 := (unfolding acc(ObservationLeaf_unique(leaf(holder)), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf(holder)), wildcard) in
+        c_ObservationBase_f_value(leaf(holder))))
+  before := anon_5
+  anon_0 := leaf(holder)
+  anon_1 := intToRef(4)
+  ObservationLeaf_c_ObservationBase_upcast(anon_0)
+  anon_6 := updateBase(anon_0, anon_1)
+  label lbl_ret_2
+  ObservationLeaf_c_ObservationBase_restore(anon_0)
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  anon_7 := (unfolding acc(ObservationLeaf_unique(leaf(holder)), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf(holder)), wildcard) in
+        c_ObservationBase_f_value(leaf(holder))))
+  assert intFromRef(anon_7) == intFromRef(before) + 4
+  unfold acc(ObservationLeaf_unique(leaf(holder)), write)
+  leaf(holder).extra := intToRef(8)
+  anon_8 := leaf(holder).extra
+  assert intFromRef(anon_8) == 8
+  label lbl_ret_0
+  fold acc(ObservationLeaf_unique(leaf(holder)), write)
+  fold acc(ObservationHolder_unique(holder), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method inlineClassView(base: Ref, delta: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(c_ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method updateBase(base: Ref, delta: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(base), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(c_ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures intFromRef(c_ObservationBase_f_value(base)) ==
+    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
+    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    intFromRef(c_ObservationBase_g_size(base)) ==
+    intFromRef(c_ObservationBase_f_value(base))
+
+
+/class_observer_views.kt: info: Generated Viper text for nullableClassBorrow:
+field extra: Ref
+
+field n: Ref
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function c_ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+function c_ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate ClassObservation_footprint(this: Ref)
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(ClassObservation_footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.extra, write) &&
+  isSubtype(typeOf(this.extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(c_ObservationBase_unique(this), write)
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+method ObservationLeaf_c_ObservationBase_restore(this: Ref)
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(this), ObservationLeaf())
+  ensures acc(ObservationLeaf_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))) ==
+    old(c_ObservationBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor))) ==
+      old(c_ObservationBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))) ==
+    old(c_ObservationBase_g_size(this))
+
+
+method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures acc(c_ObservationBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_f_value(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_ObservationBase_f_scaled(this, factor) ==
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor)))))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_g_size(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))))
+
+
+method nullableClassBorrow(leaf: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(leaf), nullable(ObservationLeaf()))
+  requires leaf != nullValue() ==> acc(ObservationLeaf_unique(leaf), write)
+  ensures leaf != nullValue() ==> acc(ObservationLeaf_unique(leaf), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (!(leaf == nullValue())) {
+    var before: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    var anon_5: Ref
+    var anon_6: Ref
+    anon_3 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+          c_ObservationBase_f_value(leaf)))
+    before := anon_3
+    if (leaf != nullValue()) {
+      ObservationLeaf_c_ObservationBase_upcast(leaf)
+    }
+    anon_4 := updateBase(leaf, intToRef(2))
+    if (leaf != nullValue()) {
+      ObservationLeaf_c_ObservationBase_restore(leaf)
+    }
+    anon_5 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+          c_ObservationBase_f_value(leaf)))
+    assert intFromRef(anon_5) == intFromRef(before) + 2
+    if (leaf != nullValue()) {
+      unfold acc(ObservationLeaf_unique(leaf), write)
+    }
+    leaf.extra := intToRef(6)
+    anon_6 := leaf.extra
+    assert intFromRef(anon_6) == 6
+    if (leaf != nullValue()) {
+      fold acc(ObservationLeaf_unique(leaf), write)
+    }
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(c_ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures intFromRef(c_ObservationBase_f_value(base)) ==
+    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
+    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    intFromRef(c_ObservationBase_g_size(base)) ==
+    intFromRef(c_ObservationBase_f_value(base))
+
+
+/class_observer_views.kt: info: Generated Viper text for pureInheritedObservation:
+field extra: Ref
+
+field n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function pureInheritedObservation(leaf: Ref): Ref
+  requires isSubtype(typeOf(leaf), ObservationLeaf())
+  requires acc(ObservationLeaf_unique(leaf), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+    (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+      plusInts(ObservationBase_f_value(leaf), ObservationBase_g_size(leaf))))
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.extra, write) &&
+  isSubtype(typeOf(this.extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(ObservationBase_unique(this), write)
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for wrongClassObservation:
+field extra: Ref
+
+field n: Ref
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function c_ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+function c_ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.n)
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate ClassObservation_footprint(this: Ref)
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(ClassObservation_footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.extra, write) &&
+  isSubtype(typeOf(this.extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(c_ObservationBase_unique(this), write)
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+method ObservationLeaf_c_ObservationBase_restore(this: Ref)
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(this), ObservationLeaf())
+  ensures acc(ObservationLeaf_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))) ==
+    old(c_ObservationBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor))) ==
+      old(c_ObservationBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))) ==
+    old(c_ObservationBase_g_size(this))
+
+
+method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures acc(c_ObservationBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_f_value(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_ObservationBase_f_scaled(this, factor) ==
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor)))))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_g_size(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))))
+
+
+method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(c_ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures intFromRef(c_ObservationBase_f_value(base)) ==
+    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
+    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    intFromRef(c_ObservationBase_g_size(base)) ==
+    intFromRef(c_ObservationBase_f_value(base))
+
+
+method wrongClassObservation(leaf: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(leaf), ObservationLeaf())
+  requires acc(ObservationLeaf_unique(leaf), write)
+  ensures acc(ObservationLeaf_unique(leaf), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_3 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_f_value(leaf)))
+  before := anon_3
+  ObservationLeaf_c_ObservationBase_upcast(leaf)
+  anon_4 := updateBase(leaf, intToRef(2))
+  ObservationLeaf_c_ObservationBase_restore(leaf)
+  anon_5 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
+        c_ObservationBase_f_value(leaf)))
+  assert intFromRef(anon_5) == intFromRef(before) + 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/class_observer_views.kt: info: Generated Viper text for freshClassBorrow:
+field bf_extra: Ref
+
+field bf_n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.bf_n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function c_ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.bf_n)
+}
+
+function c_ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.bf_n)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.bf_extra, write) &&
+  isSubtype(typeOf(this.bf_extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(c_ObservationBase_unique(this), write)
+}
+
+predicate c_ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ObservationBase()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType())
+}
+
+predicate footprint(this: Ref)
+
+method ObservationLeaf_c_ObservationBase_restore(this: Ref)
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(this), ObservationLeaf())
+  ensures acc(ObservationLeaf_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))) ==
+    old(c_ObservationBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor))) ==
+      old(c_ObservationBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))) ==
+    old(c_ObservationBase_g_size(this))
+
+
+method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures acc(c_ObservationBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_f_value(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_ObservationBase_f_scaled(this, factor) ==
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor)))))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_g_size(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))))
+
+
+method con(par_n: Ref, par_extra: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  requires isSubtype(typeOf(par_extra), intType())
+  ensures isSubtype(typeOf(ret_2), ObservationLeaf())
+  ensures isSubtype(typeOf(ret_2), ObservationLeaf()) &&
+    acc(ret_2.bf_extra, write) &&
+    isSubtype(typeOf(ret_2.bf_extra), intType()) &&
+    (isSubtype(typeOf(ret_2), ObservationMiddle()) &&
+    (isSubtype(typeOf(ret_2), c_ObservationBase()) &&
+    acc(ret_2.bf_n, write) &&
+    isSubtype(typeOf(ret_2.bf_n), intType())))
+  ensures intFromRef(ret_2.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_2.bf_extra) == intFromRef(par_extra)
+
+
+method freshClassBorrow() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_3: Ref
+  var anon_4: Ref
+  anon_4 := con(intToRef(1), intToRef(0))
+  fold acc(c_ObservationBase_unique(anon_4), write)
+  fold acc(ObservationMiddle_unique(anon_4), write)
+  fold acc(ObservationLeaf_unique(anon_4), write)
+  ObservationLeaf_c_ObservationBase_upcast(anon_4)
+  anon_3 := updateBase(anon_4, intToRef(2))
+  ObservationLeaf_c_ObservationBase_restore(anon_4)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(base), write)
+  requires isSubtype(typeOf(delta), intType())
+  ensures acc(c_ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures intFromRef(c_ObservationBase_f_value(base)) ==
+    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
+    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    intFromRef(c_ObservationBase_g_size(base)) ==
+    intFromRef(c_ObservationBase_f_value(base))
+
+
+/class_observer_views.kt: info: Generated Viper text for freshClassView:
+field bf_extra: Ref
+
+field bf_n: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.bf_n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function c_ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.bf_n)
+}
+
+function c_ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ObservationBase())
+  requires acc(c_ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_ObservationBase_unique(this), write) in this.bf_n)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate ObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationLeaf()) && acc(this.bf_extra, write) &&
+  isSubtype(typeOf(this.bf_extra), intType()) &&
+  acc(ObservationMiddle_unique(this), write)
+}
+
+predicate ObservationMiddle_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationMiddle()) &&
+  acc(c_ObservationBase_unique(this), write)
+}
+
+predicate c_ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_ObservationBase()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType())
+}
+
+predicate footprint(this: Ref)
+
+method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
+  requires acc(ObservationLeaf_unique(this), write)
+  ensures acc(c_ObservationBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_f_value(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_f_value(this))))
+  ensures (forall factor: Ref ::
+      { c_ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_ObservationBase_f_scaled(this, factor) ==
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          c_ObservationBase_f_scaled(this, factor)))))
+  ensures true && old(isSubtype(typeOf(this), c_ObservationBase())) && true ==>
+    c_ObservationBase_g_size(this) ==
+    old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+      (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+        c_ObservationBase_g_size(this))))
+
+
+method con(par_n: Ref, par_extra: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  requires isSubtype(typeOf(par_extra), intType())
+  ensures isSubtype(typeOf(ret_1), ObservationLeaf())
+  ensures isSubtype(typeOf(ret_1), ObservationLeaf()) &&
+    acc(ret_1.bf_extra, write) &&
+    isSubtype(typeOf(ret_1.bf_extra), intType()) &&
+    (isSubtype(typeOf(ret_1), ObservationMiddle()) &&
+    (isSubtype(typeOf(ret_1), c_ObservationBase()) &&
+    acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType())))
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_extra) == intFromRef(par_extra)
+
+
+method freshClassView() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_ObservationBase())
+  ensures acc(c_ObservationBase_unique(v_ret_0), write)
+{
+  var anon_3: Ref
+  anon_3 := con(intToRef(1), intToRef(0))
+  fold acc(c_ObservationBase_unique(anon_3), write)
+  fold acc(ObservationMiddle_unique(anon_3), write)
+  fold acc(ObservationLeaf_unique(anon_3), write)
+  v_ret_0 := anon_3
+  ObservationLeaf_c_ObservationBase_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/class_observer_views.kt: info: Generated Viper text for value:
+field n: Ref
+
+function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function DirectObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function DirectObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in this.n)
+}
+
+function DirectObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in this.n)
+}
+
+function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AbstractObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), AbstractObservation())
+}
+
+predicate DirectObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), DirectObservation()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType()) &&
+  acc(AbstractObservation_unique(this), write)
+}
+
+predicate c_ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_ClassObservation())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for scaled:
+field n: Ref
+
+function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function DirectObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in
+    (let anon_1_0 ==
+      (this.n) in
+      timesInts(anon_1_0, factor)))
+}
+
+function DirectObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in this.n)
+}
+
+function DirectObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in this.n)
+}
+
+function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AbstractObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), AbstractObservation())
+}
+
+predicate DirectObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), DirectObservation()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType()) &&
+  acc(AbstractObservation_unique(this), write)
+}
+
+predicate c_ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_ClassObservation())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for size:
+field n: Ref
+
+function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function DirectObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function DirectObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in this.n)
+}
+
+function DirectObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in this.n)
+}
+
+function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AbstractObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), AbstractObservation())
+}
+
+predicate DirectObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), DirectObservation()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType()) &&
+  acc(AbstractObservation_unique(this), write)
+}
+
+predicate c_ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_ClassObservation())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for abstractValue:
+function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AbstractObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), AbstractObservation())
+}
+
+predicate c_ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_ClassObservation())
+}
+
+predicate footprint(this: Ref)
+
+method abstractValue(base: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(base), AbstractObservation())
+  requires acc(AbstractObservation_unique(base), write)
+  ensures acc(AbstractObservation_unique(base), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    old(intFromRef(AbstractObservation_c_ClassObservation_f_value(base))) &&
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(base)) ==
+    old(intFromRef(AbstractObservation_c_ClassObservation_f_value(base)))
+{
+  var anon: Ref
+  anon := AbstractObservation_c_ClassObservation_f_value(base)
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/class_observer_views.kt: info: Generated Viper text for abstractBorrow:
+field n: Ref
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function DirectObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function DirectObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in this.n)
+}
+
+function DirectObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectObservation())
+  requires acc(DirectObservation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DirectObservation_unique(this), write) in this.n)
+}
+
+function c_AbstractObservation_c_ClassObservation_f_scaled_args_c_ClassObservation_Int_ret_Int(this: Ref,
+  factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(c_AbstractObservation_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(c_AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractObservation_c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(c_AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_scaled_args_c_ClassObservation_Int_ret_Int(this: Ref,
+  factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(c_ClassObservation_footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(c_ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(c_ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate DirectObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), DirectObservation()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType()) &&
+  acc(c_AbstractObservation_unique(this), write)
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_AbstractObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), c_AbstractObservation())
+}
+
+predicate c_ClassObservation_footprint(this: Ref)
+
+predicate c_ClassObservation_unique(this: Ref) {
+  acc(c_ClassObservation_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ClassObservation())
+}
+
+method DirectObservation_c_AbstractObservation_restore(this: Ref)
+  requires acc(c_AbstractObservation_unique(this), write)
+  requires isSubtype(typeOf(this), DirectObservation())
+  ensures acc(DirectObservation_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    DirectObservation_f_value(this) ==
+    old(c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this))
+  ensures (forall factor: Ref ::
+      { DirectObservation_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ClassObservation())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      DirectObservation_f_scaled(this, factor) ==
+      old(c_AbstractObservation_c_ClassObservation_f_scaled_args_c_ClassObservation_Int_ret_Int(this,
+      factor)))
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    DirectObservation_g_size(this) ==
+    old(c_AbstractObservation_c_ClassObservation_g_size(this))
+
+
+method DirectObservation_c_AbstractObservation_upcast(this: Ref)
+  requires acc(DirectObservation_unique(this), write)
+  ensures acc(c_AbstractObservation_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), DirectObservation())) && true ==>
+    c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this) ==
+    old(DirectObservation_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_AbstractObservation_c_ClassObservation_f_scaled_args_c_ClassObservation_Int_ret_Int(this,
+      factor) }
+      true && old(isSubtype(typeOf(this), DirectObservation())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_AbstractObservation_c_ClassObservation_f_scaled_args_c_ClassObservation_Int_ret_Int(this,
+      factor) ==
+      old(DirectObservation_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), DirectObservation())) && true ==>
+    c_AbstractObservation_c_ClassObservation_g_size(this) ==
+    old(DirectObservation_g_size(this))
+
+
+method abstractBorrow(leaf: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(leaf), DirectObservation())
+  requires acc(DirectObservation_unique(leaf), write)
+  ensures acc(DirectObservation_unique(leaf), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_3: Ref
+  var l1_result: Ref
+  var anon_4: Ref
+  anon_3 := DirectObservation_f_value(leaf)
+  before := anon_3
+  DirectObservation_c_AbstractObservation_upcast(leaf)
+  l1_result := abstractValue(leaf)
+  DirectObservation_c_AbstractObservation_restore(leaf)
+  assert intFromRef(l1_result) == intFromRef(before)
+  anon_4 := DirectObservation_f_value(leaf)
+  assert intFromRef(anon_4) == intFromRef(before)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method abstractValue(base: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(base), c_AbstractObservation())
+  requires acc(c_AbstractObservation_unique(base), write)
+  ensures acc(c_AbstractObservation_unique(base), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) ==
+    old(intFromRef(c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(base))) &&
+    intFromRef(c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(base)) ==
+    old(intFromRef(c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(base)))
+
+
+/class_observer_views.kt: info: Generated Viper text for abstractToInterface:
+function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function AbstractObservation_c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(AbstractObservation_unique(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AbstractObservation_unique(this: Ref) {
+  isSubtype(typeOf(this), AbstractObservation())
+}
+
+predicate c_ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_ClassObservation())
+}
+
+predicate footprint(this: Ref)
+
+method AbstractObservation_c_ClassObservation_upcast(this: Ref)
+  requires acc(AbstractObservation_unique(this), write)
+  ensures acc(c_ClassObservation_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_f_value(this)) ==
+    old(AbstractObservation_c_ClassObservation_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ClassObservation_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ClassObservation())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        c_ClassObservation_f_scaled(this, factor)) ==
+      old(AbstractObservation_c_ClassObservation_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_g_size(this)) ==
+    old(AbstractObservation_c_ClassObservation_g_size(this))
+
+
+method abstractToInterface(base: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(base), AbstractObservation())
+  requires acc(AbstractObservation_unique(base), write)
+  ensures isSubtype(typeOf(v_ret_0), c_ClassObservation())
+  ensures acc(c_ClassObservation_unique(v_ret_0), write)
+  ensures (unfolding acc(c_ClassObservation_unique(v_ret_0), wildcard) in
+      intFromRef(c_ClassObservation_f_value(v_ret_0)) ==
+      old(intFromRef(AbstractObservation_c_ClassObservation_f_value(base))))
+{
+  v_ret_0 := base
+  AbstractObservation_c_ClassObservation_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/class_observer_views.kt: info: Generated Viper text for value:
+field state: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.state) in
+      timesInts(anon_2_0, factor)))
+}
+
+function RefinementBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+function RefinementBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate RefinementBase_unique(this: Ref) {
+  isSubtype(typeOf(this), RefinementBase()) && acc(this.state, write) &&
+  isSubtype(typeOf(this.state), intType())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for scaled:
+field state: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in
+    (let anon_1_0 ==
+      (this.state) in
+      timesInts(anon_1_0, factor)))
+}
+
+function RefinementBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+function RefinementBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate RefinementBase_unique(this: Ref) {
+  isSubtype(typeOf(this), RefinementBase()) && acc(this.state, write) &&
+  isSubtype(typeOf(this.state), intType())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for size:
+field state: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.state) in
+      timesInts(anon_2_0, factor)))
+}
+
+function RefinementBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+function RefinementBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate RefinementBase_unique(this: Ref) {
+  isSubtype(typeOf(this), RefinementBase()) && acc(this.state, write) &&
+  isSubtype(typeOf(this.state), intType())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for advance:
+field state: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in
+    (let anon_3_0 ==
+      (this.state) in
+      timesInts(anon_3_0, factor)))
+}
+
+function RefinementBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+function RefinementBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate RefinementBase_unique(this: Ref) {
+  isSubtype(typeOf(this), RefinementBase()) && acc(this.state, write) &&
+  isSubtype(typeOf(this.state), intType())
+}
+
+predicate footprint(this: Ref)
+
+method advance(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(RefinementBase_f_value(this)) ==
+    old(intFromRef(RefinementBase_f_value(this))) + 1
+{
+  var anon_0: Ref
+  unfold acc(RefinementBase_unique(this), write)
+  anon_0 := this.state
+  this.state := plusInts(anon_0, intToRef(1))
+  label lbl_ret_0
+  fold acc(RefinementBase_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/class_observer_views.kt: info: Generated Viper text for advance:
+field state: Ref
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_RefinementBase())
+  requires acc(c_RefinementBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_RefinementBase_unique(this), write) in
+    (let anon_3_0 ==
+      (this.state) in
+      timesInts(anon_3_0, factor)))
+}
+
+function c_RefinementBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_RefinementBase())
+  requires acc(c_RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_RefinementBase_unique(this), write) in this.state)
+}
+
+function c_RefinementBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_RefinementBase())
+  requires acc(c_RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_RefinementBase_unique(this), write) in this.state)
+}
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate RefinementLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), RefinementLeaf()) &&
+  acc(c_RefinementBase_unique(this), write)
+}
+
+predicate c_RefinementBase_unique(this: Ref) {
+  isSubtype(typeOf(this), c_RefinementBase()) && acc(this.state, write) &&
+  isSubtype(typeOf(this.state), intType())
+}
+
+predicate footprint(this: Ref)
+
+method RefinementLeaf_c_RefinementBase_restore(this: Ref)
+  requires acc(c_RefinementBase_unique(this), write)
+  requires isSubtype(typeOf(this), RefinementLeaf())
+  ensures acc(RefinementLeaf_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_RefinementBase())) && true ==>
+    (unfolding acc(RefinementLeaf_unique(this), wildcard) in
+      c_RefinementBase_f_value(this)) ==
+    old(c_RefinementBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_RefinementBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_RefinementBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      (unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        c_RefinementBase_f_scaled(this, factor)) ==
+      old(c_RefinementBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), c_RefinementBase())) && true ==>
+    (unfolding acc(RefinementLeaf_unique(this), wildcard) in
+      c_RefinementBase_g_size(this)) ==
+    old(c_RefinementBase_g_size(this))
+
+
+method RefinementLeaf_c_RefinementBase_upcast(this: Ref)
+  requires acc(RefinementLeaf_unique(this), write)
+  ensures acc(c_RefinementBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_RefinementBase())) && true ==>
+    c_RefinementBase_f_value(this) ==
+    old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+      c_RefinementBase_f_value(this)))
+  ensures (forall factor: Ref ::
+      { c_RefinementBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_RefinementBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) ==>
+      c_RefinementBase_f_scaled(this, factor) ==
+      old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        c_RefinementBase_f_scaled(this, factor))))
+  ensures true && old(isSubtype(typeOf(this), c_RefinementBase())) && true ==>
+    c_RefinementBase_g_size(this) ==
+    old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+      c_RefinementBase_g_size(this)))
+
+
+method RefinementLeaf_f_advance(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), RefinementLeaf())
+  requires acc(RefinementLeaf_unique(this), write)
+  ensures acc(RefinementLeaf_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(RefinementLeaf_unique(this), wildcard) in
+      intFromRef(c_RefinementBase_f_value(this))) ==
+    old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+      intFromRef(c_RefinementBase_f_value(this)))) +
+    1
+{
+  var anon_0: Ref
+  unfold acc(RefinementLeaf_unique(this), write)
+  unfold acc(c_RefinementBase_unique(this), write)
+  anon_0 := this.state
+  this.state := plusInts(anon_0, intToRef(1))
+  label lbl_ret_0
+  fold acc(c_RefinementBase_unique(this), write)
+  fold acc(RefinementLeaf_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method c_RefinementBase_f_advance(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_RefinementBase())
+  requires acc(c_RefinementBase_unique(this), write)
+  ensures acc(c_RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures intFromRef(c_RefinementBase_f_value(this)) ==
+    old(intFromRef(c_RefinementBase_f_value(this))) + 1
+
+
+method refines_c_RefinementBase_f_advance(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_RefinementBase())
+  requires acc(c_RefinementBase_unique(this), write)
+  requires isSubtype(typeOf(this), RefinementLeaf())
+{
+  RefinementLeaf_c_RefinementBase_restore(this)
+  ret_1 := RefinementLeaf_f_advance(this)
+  RefinementLeaf_c_RefinementBase_upcast(this)
+  assert acc(c_RefinementBase_unique(this), write)
+  assert isSubtype(typeOf(ret_1), unitType())
+  assert intFromRef(c_RefinementBase_f_value(this)) ==
+    old(intFromRef(c_RefinementBase_f_value(this))) + 1
+}
+
+/class_observer_views.kt: info: Generated Viper text for refinementClassClient:
+field state: Ref
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.state) in
+      timesInts(anon_2_0, factor)))
+}
+
+function RefinementBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+function RefinementBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), RefinementBase())
+  requires acc(RefinementBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(RefinementBase_unique(this), write) in this.state)
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate ClassObservation_footprint(this: Ref)
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(ClassObservation_footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate RefinementBase_unique(this: Ref) {
+  isSubtype(typeOf(this), RefinementBase()) && acc(this.state, write) &&
+  isSubtype(typeOf(this.state), intType())
+}
+
+predicate RefinementLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), RefinementLeaf()) &&
+  acc(RefinementBase_unique(this), write)
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method advance(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), RefinementLeaf())
+  requires acc(RefinementLeaf_unique(this), write)
+  ensures acc(RefinementLeaf_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(RefinementLeaf_unique(this), wildcard) in
+      intFromRef(RefinementBase_f_value(this))) ==
+    old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+      intFromRef(RefinementBase_f_value(this)))) +
+    1
+
+
+method refinementClassClient(leaf: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(leaf), RefinementLeaf())
+  requires acc(RefinementLeaf_unique(leaf), write)
+  ensures acc(RefinementLeaf_unique(leaf), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_3 := (unfolding acc(RefinementLeaf_unique(leaf), wildcard) in
+      RefinementBase_f_value(leaf))
+  before := anon_3
+  anon_4 := advance(leaf)
+  anon_5 := (unfolding acc(RefinementLeaf_unique(leaf), wildcard) in
+      RefinementBase_f_value(leaf))
+  assert intFromRef(anon_5) == intFromRef(before) + 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/class_observer_views.kt: info: Generated Viper text for constant:
+function constant(this: Ref): Ref
+  requires isSubtype(typeOf(this), SharedObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate SharedObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), SharedObservation())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for constant:
+function SharedObservationBase_f_constant(this: Ref): Ref
+  requires isSubtype(typeOf(this), SharedObservationBase())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(4)
+}
+
+function SharedObservation_f_constant(this: Ref): Ref
+  requires isSubtype(typeOf(this), SharedObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate SharedObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), SharedObservationBase())
+}
+
+predicate SharedObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), SharedObservation())
+}
+
+predicate footprint(this: Ref)
+
+/class_observer_views.kt: info: Generated Viper text for sharedInheritedObservation:
+function SharedObservationBase_f_constant(this: Ref): Ref
+  requires isSubtype(typeOf(this), SharedObservationBase())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(4)
+}
+
+function SharedObservation_f_constant(this: Ref): Ref
+  requires isSubtype(typeOf(this), SharedObservation())
+  requires acc(SharedObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate SharedObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), SharedObservationBase())
+}
+
+predicate SharedObservationLeaf_unique(this: Ref) {
+  isSubtype(typeOf(this), SharedObservationLeaf()) &&
+  acc(SharedObservationBase_unique(this), write)
+}
+
+predicate SharedObservation_footprint(this: Ref)
+
+predicate SharedObservation_unique(this: Ref) {
+  acc(SharedObservation_footprint(this), write) &&
+  isSubtype(typeOf(this), SharedObservation())
+}
+
+method sharedInheritedObservation(leaf: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(leaf), SharedObservationLeaf())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(SharedObservationBase_f_constant(leaf)) == 4
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/class_observer_views.kt: info: Generated Viper text for baseFieldAccess:
+field n: Ref
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassObservation())
+  requires acc(ClassObservation_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in
+    (let anon_2_0 ==
+      (this.n) in
+      timesInts(anon_2_0, factor)))
+}
+
+function ObservationBase_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+function ObservationBase_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservationBase())
+  requires acc(ObservationBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservationBase_unique(this), write) in this.n)
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate ClassObservation_footprint(this: Ref)
+
+predicate ClassObservation_unique(this: Ref) {
+  acc(ClassObservation_footprint(this), write) &&
+  isSubtype(typeOf(this), ClassObservation())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate ObservationBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
+  isSubtype(typeOf(this.n), intType())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method baseFieldAccess(base: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(base), ObservationBase())
+  requires acc(ObservationBase_unique(base), write)
+  ensures acc(ObservationBase_unique(base), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  anon_3 := ObservationBase_f_value(base)
+  unfold acc(ObservationBase_unique(base), write)
+  anon_4 := base.n
+  assert intFromRef(anon_3) == intFromRef(anon_4)
+  fold acc(ObservationBase_unique(base), write)
+  anon_5 := ObservationBase_f_scaled(base, intToRef(3))
+  unfold acc(ObservationBase_unique(base), write)
+  anon_6 := base.n
+  assert intFromRef(anon_5) == intFromRef(anon_6) * 3
+  fold acc(ObservationBase_unique(base), write)
+  anon_7 := ObservationBase_g_size(base)
+  unfold acc(ObservationBase_unique(base), write)
+  anon_8 := base.n
+  assert intFromRef(anon_7) == intFromRef(anon_8)
+  label lbl_ret_0
+  fold acc(ObservationBase_unique(base), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

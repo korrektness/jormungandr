@@ -174,7 +174,7 @@ class ProgramConverter(
         fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
                 listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder }),
         functions = SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
-                linearizedBodyResolver.functions + typeResolver.inheritedObserverFunctions() +
+                linearizedBodyResolver.functions + typeResolver.observerViewFunctions() +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray }),
         methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods,
         predicates = typeResolver.classTypeEmbeddings().flatMap {
@@ -749,7 +749,7 @@ class ProgramConverter(
 
     /** Returns an embedding of the class type, with details set. */
     internal fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
-        observerBindingRegistry.registerClass(symbol)
+        observerBindingRegistry.registerClass(this, symbol)
         if (symbol.classId == IntArrayEmbedding.classId) {
             registerBuiltinHierarchy(symbol, IntArrayEmbedding.classType)
             return IntArrayEmbedding.classType

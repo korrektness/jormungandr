@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.embeddings.types
 
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.asInfo
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
@@ -17,14 +18,20 @@ import org.jetbrains.kotlin.formver.core.names.asScope
 import org.jetbrains.kotlin.formver.viper.ast.*
 
 /** An observer evaluated through a particular ownership presentation. */
-class ObserverBinding(val view: ClassTypeEmbedding, val signature: NonInlineFunctionSignature, private val resolver: TypeResolver) {
+class ObserverBinding(
+    val view: ClassTypeEmbedding,
+    val signature: NonInlineFunctionSignature,
+    private val resolver: TypeResolver,
+    private val abstractDispatch: Boolean = false,
+) {
     private val declaringType = signature.dispatchReceiver!!.type.pretype as ClassTypeEmbedding
-    private val inheritedInterface = resolver.isInterface(view) && view != declaringType
-    private val name = if (inheritedInterface) ScopedName(view.name.asScope(), signature.name) else signature.name
+    private val introducesFunction = abstractDispatch && (view != declaringType || !resolver.isInterface(view))
+    val functionName = if (introducesFunction) ScopedName(view.name.asScope(), signature.name) else signature.name
 
-    fun trigger(args: List<Exp>, position: Position = Position.NoPosition): Exp.FuncApp = Exp.FuncApp(name, args, Type.Ref, position)
+    fun trigger(args: List<Exp>, position: Position = Position.NoPosition): Exp.FuncApp = Exp.FuncApp(functionName, args, Type.Ref, position)
 
     fun application(args: List<Exp>, position: Position = Position.NoPosition): Exp {
+        if (abstractDispatch && !resolver.isInterface(view)) return trigger(args, position)
         if (resolver.isInterface(view)) {
             val access = SourceRole.ObserverAccess(position).asInfo
             return Exp.Unfolding(
@@ -32,9 +39,10 @@ class ObserverBinding(val view: ClassTypeEmbedding, val signature: NonInlineFunc
                 trigger(args, position), position, access,
             )
         }
+        if (!signature.dispatchReceiver!!.isUnique) return trigger(args, position)
         val path = generateSequence(view, resolver::superClass).takeWhile { it != declaringType }.toList()
         return path.foldRight<ClassTypeEmbedding, Exp>(trigger(args, position)) { type, body ->
-            Exp.Unfolding(Exp.PredicateAccess(type.uniquePredicateName, listOf(args.first()), PermExp.FullPerm()), body, position)
+            Exp.Unfolding(Exp.PredicateAccess(type.uniquePredicateName, listOf(args.first()), PermExp.WildcardPerm()), body, position)
         }
     }
 
@@ -62,16 +70,25 @@ class ObserverBinding(val view: ClassTypeEmbedding, val signature: NonInlineFunc
     }
 
     fun function(): UserFunction? {
-        if (!inheritedInterface) return null
+        if (!introducesFunction) return null
         val receiver = signature.dispatchReceiver!!.toLocalVarUse()
         val observerReceiver = view to receiver
         val pres = signature.preconditions.pureToViper(toBuiltin = true, resolver, observerReceiver = observerReceiver).map {
             if (it is Exp.PredicateAccess && it.formalArgs == listOf(receiver))
-                Exp.PredicateAccess(view.footprintPredicateName,
+                Exp.PredicateAccess(if (resolver.isInterface(view)) view.footprintPredicateName else view.uniquePredicateName,
                     listOf(receiver), it.perm)
             else it
         }
-        return UserFunction(name, signature.formalArgs.map { it.toLocalVarDecl() }, Type.Ref, pres,
-            signature.postconditions.pureToViper(toBuiltin = true, resolver, observerReceiver = observerReceiver), null)
+        val implementation = resolver.observerImplementation(view, signature.name)
+        val exactBinding = implementation?.let {
+            val args = signature.formalArgs.map { formal -> formal.toLocalVarUse() }
+            // A class view hides subclass dispatch; its own runtime class has the registered implementation.
+            Exp.Implies(
+                Exp.EqCmp(RuntimeTypeDomain.typeOf(receiver), view.runtimeType),
+                Exp.EqCmp(Exp.Result(Type.Ref), it.application(args)),
+            )
+        }
+        return UserFunction(functionName, signature.formalArgs.map { it.toLocalVarDecl() }, Type.Ref, pres,
+            signature.postconditions.pureToViper(toBuiltin = true, resolver, observerReceiver = observerReceiver) + listOfNotNull(exactBinding), null)
     }
 }

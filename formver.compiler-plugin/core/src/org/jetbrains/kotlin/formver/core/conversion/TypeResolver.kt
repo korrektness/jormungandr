@@ -137,30 +137,60 @@ class TypeResolver {
     fun interfaceLaws(type: ClassTypeEmbedding) = interfaceLawBodies[type.name].orEmpty()
 
     private val observerBindings = linkedMapOf<SymbolicName, MutableMap<SymbolicName, ObserverBinding>>()
+    private val observerImplementations = linkedMapOf<SymbolicName, MutableMap<SymbolicName, ObserverBinding>>()
 
-    fun bindObserver(type: ClassTypeEmbedding, observer: SymbolicName, binding: NonInlineFunctionSignature) {
-        observerBindings.getOrPut(type.name) { linkedMapOf() }[observer] = ObserverBinding(type, binding, this)
+    fun bindObserver(
+        type: ClassTypeEmbedding,
+        observer: SymbolicName,
+        binding: NonInlineFunctionSignature,
+        dynamicDispatch: Boolean = false,
+        hasImplementation: Boolean = true,
+    ) {
+        observerBindings.getOrPut(type.name) { linkedMapOf() }[observer] =
+            ObserverBinding(type, binding, this, abstractDispatch = isInterface(type) || dynamicDispatch)
+        if (!isInterface(type) && hasImplementation) {
+            observerImplementations.getOrPut(type.name) { linkedMapOf() }[observer] = ObserverBinding(type, binding, this)
+        }
     }
 
+    private fun bindingIn(
+        bindings: Map<SymbolicName, MutableMap<SymbolicName, ObserverBinding>>,
+        view: ClassTypeEmbedding,
+        observer: SymbolicName,
+    ): ObserverBinding? = bindings[view.name]?.let {
+        it[observer] ?: it.values.firstOrNull { binding -> binding.signature.name == observer }
+    }
+
+    /** An observation through the caller's ownership presentation. */
     fun observerBinding(view: ClassTypeEmbedding, observer: SymbolicName): ObserverBinding? =
-        observerBindings[view.name]?.let { bindings ->
-            bindings[observer] ?: bindings.values.firstOrNull { it.signature.name == observer }
-        }
+        bindingIn(observerBindings, view, observer)
+
+    /** The concrete body selected by a runtime class, for implementation proof obligations. */
+    fun observerImplementation(runtimeClass: ClassTypeEmbedding, observer: SymbolicName): ObserverBinding? =
+        bindingIn(observerImplementations, runtimeClass, observer)
+
+    private val classFamilyViews = mutableSetOf<SymbolicName>()
+
+    fun markClassFamilyView(name: SymbolicName) {
+        classFamilyViews += name
+    }
+
+    fun isFamilyView(type: ClassTypeEmbedding): Boolean = isInterface(type) || type.name in classFamilyViews
 
     fun observerBindings(from: ClassTypeEmbedding, to: ClassTypeEmbedding) =
         observerBindings[to.name].orEmpty().map { (observer, target) ->
             val source = observerBindings[from.name]?.get(observer)
                 ?: error("Missing observer binding for ${from.name}: $observer")
             source to target
-        }
+        }.distinctBy { it.second.functionName }
 
-    fun inheritedObserverFunctions() = observerBindings.values.flatMap { it.values }
+    fun observerViewFunctions() = observerBindings.values.flatMap { it.values }
         .mapNotNull { it.function() }.distinctBy { it.name }
 
     private val familyTransfers = linkedMapOf<Pair<ClassTypeEmbedding, ClassTypeEmbedding>, FamilyTransfer>()
 
     fun familyTransfer(from: ClassTypeEmbedding, to: ClassTypeEmbedding): FamilyTransfer {
-        require(isInterface(to) && isSubtype(from, to) && from != to)
+        require(isFamilyView(to) && isSubtype(from, to) && from != to)
         return familyTransfers.getOrPut(from to to) { FamilyTransfer(from, to, this) }
     }
 

@@ -213,7 +213,8 @@ data class LinearizationVisitor(
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
             val lawView = (ctx as? PureFunBodyLinearizer)?.lawView
             if (lawView != null) {
-                val binding = ctx.typeResolver.observerBinding(lawView, e.function.name)
+                val binding = if (ctx.typeResolver.isInterface(lawView)) ctx.typeResolver.observerBinding(lawView, e.function.name)
+                else ctx.typeResolver.observerImplementation(lawView, e.function.name)
                 if (binding != null) return if (ctx.typeResolver.isInterface(lawView)) binding.trigger(argsViper, ctx.source.asPosition)
                 else binding.application(argsViper, ctx.source.asPosition)
             }
@@ -230,17 +231,14 @@ data class LinearizationVisitor(
                 }
             }
             val view = e.args.firstOrNull()?.type?.pretype as? ClassTypeEmbedding
-            val interfaceBinding = view?.let { receiverType ->
-                ctx.typeResolver.observerBinding(receiverType, e.function.name)?.takeIf {
-                    ctx.typeResolver.isInterface(receiverType)
-                }
-            }
-            val formals = if (interfaceBinding == null) e.function.formalArgs else e.function.formalArgs.mapIndexed { index, formal ->
-                if (index == 0) PlaceholderVariableEmbedding(formal.name, view!!.asTypeEmbedding(), isUnique = true) else formal
+            val viewBinding = view?.let { receiverType -> ctx.typeResolver.observerBinding(receiverType, e.function.name) }
+            val formals = if (viewBinding == null) e.function.formalArgs else e.function.formalArgs.mapIndexed { index, formal ->
+                if (index == 0) PlaceholderVariableEmbedding(formal.name, view!!.asTypeEmbedding(),
+                    isUnique = formal.isUnique || ctx.typeResolver.isInterface(view)) else formal
             }
             val exposed = ctx.heldPaths(e.args, formals).filter { (_, formal) -> formal.isUnique }
             for ((path, formal) in exposed) ctx.exposeFor(path, formal)
-            val app = interfaceBinding?.application(argsViper, ctx.source.asPosition)
+            val app = viewBinding?.application(argsViper, ctx.source.asPosition)
                 ?: e.function.toFuncApp(argsViper, ctx.source.asPosition)
             if (app is Exp.FuncApp) e.function.formalArgs.forEachIndexed { index, formal ->
                 if (formal.isUnique) ctx.addPredicateParameter(PredicateParameter(app.functionName, index))
@@ -254,7 +252,7 @@ data class LinearizationVisitor(
                 val state = ctx.foldState ?: continue
                 val cls = state.trackedClass(formal.type) ?: continue
                 val own = state.trackedClass(path.fields.lastOrNull()?.type ?: path.root.type)
-                if (own != cls && ctx.typeResolver.isInterface(cls)) state.restoreBorrowed(ctx, path, cls)
+                if (own != cls && ctx.typeResolver.isFamilyView(cls)) state.restoreBorrowed(ctx, path, cls)
             }
             return result.toViperExp(ctx)
         }
@@ -1223,7 +1221,7 @@ private fun LinearizationContext.exitBinding(binding: RootBinding, state: FoldSt
     }
 }
 
-/** Transfer fresh concrete arguments into their interface presentation, recording the ones lent to the callee. */
+/** Transfer fresh concrete arguments into the callee's ownership presentation, recording loans. */
 private fun LinearizationContext.coerceFreshArguments(
     args: List<ExpEmbedding>,
     formals: List<VariableEmbedding>,
@@ -1235,7 +1233,7 @@ private fun LinearizationContext.coerceFreshArguments(
         if (!formal.isUnique || !arg.isFreshUnique()) return@forEachIndexed
         val from = arg.ignoringCastsAndMetaNodes().type.pretype as? ClassTypeEmbedding ?: return@forEachIndexed
         val to = formal.type.pretype as? ClassTypeEmbedding ?: return@forEachIndexed
-        if (from == to || !typeResolver.isInterface(to)) return@forEachIndexed
+        if (from == to || !typeResolver.isFamilyView(to)) return@forEachIndexed
         if (!typeResolver.isSubtype(from, to)) throw FoldStateException(source, "Ownership cannot be downcast to `${to.name.sourceSpelling}`.")
         val method = typeResolver.familyTransfer(from, to).method
         addFamilyCall(values[index], arg.type.isNullable, method)
@@ -1329,7 +1327,7 @@ private fun LinearizationContext.finishMove(
         value.isFreshUnique() -> {
             val from = state.trackedClass(value.ignoringCastsAndMetaNodes().type)
             val to = state.trackedClass(target.fields.lastOrNull()?.type ?: target.root.type)
-            val changesPresentation = from != to && to?.let(typeResolver::isInterface) == true
+            val changesPresentation = from != to && to?.let(typeResolver::isFamilyView) == true
             if (from != null && to != null && changesPresentation) {
                 state.transferFamily(this, from, to, target)
             }

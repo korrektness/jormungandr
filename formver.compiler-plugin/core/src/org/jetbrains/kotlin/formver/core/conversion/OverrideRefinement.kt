@@ -51,8 +51,8 @@ internal data class Refinement(
      * When the overridden declaration owns `this`, its precondition holds the predicate of its own class, and the
      * override's needs the predicate of the override's class. The rest of the override's predicate belongs to no other
      * owner, so the method assumes it and folds the override's predicate before the call. When the call gives `this`
-     * back, the method unfolds down to the overridden class's predicate again before the assertions. Interface
-     * presentations use family transfers, which carry the observer equalities across the call.
+     * back, the method unfolds down to the overridden class's predicate again before the assertions. Observer-family
+     * presentations use transfers, which carry the observer equalities across the call.
      */
     fun toMethod(typeResolver: TypeResolver): UserMethod {
         val position = source.asPosition
@@ -75,12 +75,12 @@ internal data class Refinement(
         }
         val chain = ownedReceiverChain(typeResolver)
         val receiver = overridden.dispatchReceiver
-        val interfaceView = chain.lastOrNull()?.takeIf(typeResolver::isInterface)
+        val familyView = chain.lastOrNull()?.takeIf(typeResolver::isFamilyView)
         val concreteView = chain.firstOrNull()
-        val transfer = if (interfaceView != null && concreteView != interfaceView)
-            typeResolver.familyTransfer(concreteView!!, interfaceView) else null
+        val transfer = if (familyView != null && concreteView != familyView)
+            typeResolver.familyTransfer(concreteView!!, familyView) else null
         val promotion = if (transfer != null) listOf(
-            typeResolver.familyRestore(concreteView!!, interfaceView!!)
+            typeResolver.familyRestore(concreteView!!, familyView!!)
                 .toMethodCall(listOf(receiver!!.toLocalVarUse()), emptyList(), position)
         ) else chain.zipWithNext().reversed().flatMap { (cls, held) ->
             val rest = with(typeResolver) {

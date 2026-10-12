@@ -404,11 +404,11 @@ method laws(this: Ref)
 {
   unfold acc(InheritedSizedLaw_unique(this), write)
   fold acc(InheritedSizedLaw_unique(this), write)
-  assert boolFromRef((unfolding acc(InheritedSizedLaw_unique(this), write) in
+  assert boolFromRef((unfolding acc(InheritedSizedLaw_unique(this), wildcard) in
       (let v_l6_count_0 ==
         (GoodSizedLaw_f_size(this)) in
         leInts(v_l6_count_0, intToRef(10)))))
-  assert boolFromRef((unfolding acc(InheritedSizedLaw_unique(this), write) in
+  assert boolFromRef((unfolding acc(InheritedSizedLaw_unique(this), wildcard) in
       geInts(GoodSizedLaw_f_size(this), intToRef(0))))
 }
 
@@ -865,7 +865,7 @@ method InheritedSizedLaw_c_SizedLawDiamond_upcast(this: Ref)
   ensures true && old(isSubtype(typeOf(this), GoodSizedLaw())) && true ==>
     (unfolding acc(c_SizedLawDiamond_unique(this), wildcard) in
       c_SizedLawDiamond_c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this)) ==
-    old((unfolding acc(InheritedSizedLaw_unique(this), write) in
+    old((unfolding acc(InheritedSizedLaw_unique(this), wildcard) in
       GoodSizedLaw_f_size(this)))
 
 
@@ -874,7 +874,7 @@ method InheritedSizedLaw_c_SizedLaw_restore(this: Ref)
   requires isSubtype(typeOf(this), InheritedSizedLaw())
   ensures acc(InheritedSizedLaw_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), c_SizedLaw())) && true ==>
-    (unfolding acc(InheritedSizedLaw_unique(this), write) in
+    (unfolding acc(InheritedSizedLaw_unique(this), wildcard) in
       GoodSizedLaw_f_size(this)) ==
     old((unfolding acc(c_SizedLaw_unique(this), wildcard) in
       c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this)))
@@ -886,7 +886,7 @@ method InheritedSizedLaw_c_SizedLaw_upcast(this: Ref)
   ensures true && old(isSubtype(typeOf(this), GoodSizedLaw())) && true ==>
     (unfolding acc(c_SizedLaw_unique(this), wildcard) in
       c_SizedLaw_f_size_args_c_SizedLaw_ret_Int(this)) ==
-    old((unfolding acc(InheritedSizedLaw_unique(this), write) in
+    old((unfolding acc(InheritedSizedLaw_unique(this), wildcard) in
       GoodSizedLaw_f_size(this)))
 
 
@@ -905,10 +905,9 @@ method borrowedLawTransfer() returns (v_ret_0: Ref)
   InheritedSizedLaw_c_SizedLaw_upcast(value)
   anon_0 := lawClient(value)
   InheritedSizedLaw_c_SizedLaw_restore(value)
-  unfold acc(InheritedSizedLaw_unique(value), write)
-  anon_1 := GoodSizedLaw_f_size(value)
+  anon_1 := (unfolding acc(InheritedSizedLaw_unique(value), wildcard) in
+      GoodSizedLaw_f_size(value))
   assert intFromRef(anon_1) == 3
-  fold acc(InheritedSizedLaw_unique(value), write)
   l0_view := value
   InheritedSizedLaw_c_SizedLawDiamond_upcast(l0_view)
   anon_2 := inheritedLawClient(l0_view)

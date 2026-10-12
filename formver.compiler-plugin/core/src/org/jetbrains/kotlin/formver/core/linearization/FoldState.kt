@@ -152,7 +152,7 @@ class FoldState(private val typeResolver: TypeResolver) {
 
     fun expose(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding) {
         val own = trackedClass(path.fields.lastOrNull()?.type ?: path.root.type) ?: return
-        if (own != cls && typeResolver.isInterface(cls)) {
+        if (own != cls && typeResolver.isFamilyView(cls)) {
             trie.expose(ctx.foldSink(), path, own)
             transferFamily(ctx, own, cls, path)
             release(ctx, path)
@@ -166,7 +166,7 @@ class FoldState(private val typeResolver: TypeResolver) {
     /** Returns the presentation lent to [cls], forgetting the concrete footprint across the call. */
     fun restoreBorrowed(ctx: LinearizationContext, path: OwnedPath, cls: ClassTypeEmbedding?) {
         val own = trackedClass(path.fields.lastOrNull()?.type ?: path.root.type) ?: return
-        if (cls != null && own != cls && typeResolver.isInterface(cls)) {
+        if (cls != null && own != cls && typeResolver.isFamilyView(cls)) {
             restoreFamily(ctx, own, cls, path)
             acquire(ctx, path)
         } else refreshRetained(ctx, path)
@@ -183,7 +183,7 @@ class FoldState(private val typeResolver: TypeResolver) {
     fun transfer(ctx: LinearizationContext, src: OwnedPath, dst: OwnedPath) {
         val from = trackedClass(src.fields.lastOrNull()?.type ?: src.root.type)
         val to = trackedClass(dst.fields.lastOrNull()?.type ?: dst.root.type)
-        val changesPresentation = from != to && to?.let(typeResolver::isInterface) == true
+        val changesPresentation = from != to && to?.let(typeResolver::isFamilyView) == true
         if (from != null && to != null && changesPresentation) {
             trie.expose(ctx.foldSink(), src, from)
             transferFamily(ctx, from, to, dst)
