@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignatureWithContract
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
+import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldSetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
@@ -186,6 +187,18 @@ fun StmtConversionContext.embedPropertyAccess(
 
                 else -> embedLocalProperty(calleeSymbol)
             }
+        }
+
+        is FirBackingFieldSymbol -> {
+            val field = embedBackingField(calleeSymbol.propertySymbol)
+            val property = PropertyEmbedding(
+                BackingFieldGetter(field), BackingFieldSetter(field), hasDefaultBehaviour = true,
+                isUnique = field.isUnique, isVal = calleeSymbol.propertySymbol.isVal, type = field.type,
+            )
+            val receiver = resolveDispatchReceiver() ?: throw SnaktInternalException(
+                accessExpression.source, "`field` without a dispatch receiver"
+            )
+            ClassPropertyAccess(receiver, property, embedType(calleeSymbol.resolvedReturnType))
         }
 
         else ->
@@ -412,15 +425,17 @@ internal fun StmtConversionContext.insertQuantifierFunctionCall(
 }
 
 
+/** Converts the body of [declaration], preceded by [entry]. */
 fun StmtConversionContext.convertImpureBody(
-    declaration: FirSimpleFunction,
+    declaration: FirFunction,
     signature: NamedFunctionSignatureWithContract,
     returnTarget: ReturnTarget,
+    entry: List<ExpEmbedding> = emptyList(),
 ): ConvertedMethodBody? {
     val firBody = declaration.body ?: return null
-    val body = convert(firBody)
+    val body = if (entry.isEmpty()) convert(firBody) else (entry + convert(firBody)).toBlock()
     val returnLabel = returnTarget.label ?: throw SnaktInternalException(
-        declaration.source, "Return target label not found for method ${declaration.name}"
+        declaration.source, "Return target label not found for method ${declaration.symbol}"
     )
     val bodyExp = FunctionExp(signature, body, returnLabel)
     return ConvertedMethodBody(bodyExp, returnTarget)

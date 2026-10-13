@@ -2,12 +2,12 @@
 
 class PrimitiveProperty {
     val nProp: Int
-        get() {
+        <!VIPER_TEXT!>get<!>() {
             return 0
         }
 
     var aProp: Int = 0
-        set(v) {}
+        <!VIPER_TEXT!>set<!>(v) {}
 }
 
 fun <!VIPER_TEXT!>testPrimitivePropertyGetter<!>(pp: PrimitiveProperty) : Int = pp.nProp
@@ -18,12 +18,12 @@ fun <!VIPER_TEXT!>testPrimitivePropertySetter<!>(pp: PrimitiveProperty) {
 
 class ReferenceProperty {
     val rProp: PrimitiveProperty
-        get() {
+        <!VIPER_TEXT!>get<!>() {
             return PrimitiveProperty()
         }
 
     var ppProp: PrimitiveProperty = PrimitiveProperty()
-        set(v) {}
+        <!VIPER_TEXT!>set<!>(v) {}
 }
 
 fun <!VIPER_TEXT!>testReferencePropertyGetter<!>(rp: ReferenceProperty) {

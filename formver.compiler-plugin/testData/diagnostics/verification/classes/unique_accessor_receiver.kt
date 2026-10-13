@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 class Box(var value: Int) {
     val doubled: Int
-        get() = value * 2
+        <!VIPER_TEXT!>get<!>() = value * 2
 }
 
 fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>readCustomGetter<!>(b: @Unique Box): Int {

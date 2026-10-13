@@ -7,7 +7,7 @@ open class B(val b: Int) : A(0)
 
 interface D {
     val d: Int
-        get() = 2
+        <!VIPER_TEXT!>get<!>() = 2
 }
 
 class C(val x: A, var y: A) : D, B(0)

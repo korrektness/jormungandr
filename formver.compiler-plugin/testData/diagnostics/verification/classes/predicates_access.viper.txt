@@ -1,3 +1,20 @@
+/predicates_access.kt: info: Generated Viper text for d:
+predicate D_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), D())
+}
+
+predicate footprint(this: Ref)
+
+method d(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), D())
+  v_ret_0 := intToRef(2)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
 /predicates_access.kt: info: Generated Viper text for accessSuperTypeProperty:
 field y: Ref
 

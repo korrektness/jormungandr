@@ -1,3 +1,18 @@
+/unique_accessor_receiver.kt: info: Generated Viper text for doubled:
+field value: Ref
+
+method doubled(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(this), Box())
+  anon := havoc(intType())
+  v_ret_0 := timesInts(anon, intToRef(2))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
 /unique_accessor_receiver.kt: info: Generated Viper text for readCustomGetter:
 field value: Ref
 

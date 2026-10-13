@@ -4,9 +4,9 @@ method g_varProp(this: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), nullable(anyType()))
 
 
-method s_varProp(this: Ref, anon_0: Ref) returns (ret_2: Ref)
+method s_varProp(this: Ref, arg_0: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), anyType())
-  requires isSubtype(typeOf(anon_0), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
   ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
@@ -37,6 +37,28 @@ method valProp(this: Ref) returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), nullable(anyType()))
 
 
+/interfaces.kt: info: Generated Viper text for number:
+method number(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), First())
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/interfaces.kt: info: Generated Viper text for number:
+method number(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), Second())
+  v_ret_0 := intToRef(2)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
 /interfaces.kt: info: Generated Viper text for createImpl:
 function Impl_g_number(this: Ref): Ref
   requires isSubtype(typeOf(this), Impl())
@@ -65,6 +87,17 @@ method public_g_number(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), anyType())
   ensures isSubtype(typeOf(ret_1), nullable(anyType()))
 
+
+/interfaces.kt: info: Generated Viper text for field:
+method g_field(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), InterfaceWithImplementation1())
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
 
 /interfaces.kt: info: Generated Viper text for take1:
 method g_field(this: Ref) returns (ret_1: Ref)
@@ -306,6 +339,17 @@ method take4(obj: Ref) returns (ret_13: Ref)
   ensures isSubtype(typeOf(ret_13), unitType())
 
 
+/interfaces.kt: info: Generated Viper text for field:
+method g_field(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), A())
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
 /interfaces.kt: info: Generated Viper text for testDiamond:
 method con() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), D())
@@ -332,6 +376,24 @@ method testDiamond() returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
+/interfaces.kt: info: Generated Viper text for field:
+method g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_field(this: Ref, arg_0: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var value: Ref
+  inhale isSubtype(typeOf(this), H())
+  value := arg_0
+  inhale isSubtype(typeOf(value), intType())
+  label lbl_ret_1
+}
+
 /interfaces.kt: info: Generated Viper text for testVarVal:
 method con_G() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), G())
@@ -348,9 +410,9 @@ method g_field(this: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), nullable(anyType()))
 
 
-method s_field(this: Ref, anon_0: Ref) returns (ret_3: Ref)
+method s_field(this: Ref, arg_0: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), anyType())
-  requires isSubtype(typeOf(anon_0), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
   ensures isSubtype(typeOf(ret_3), nullable(anyType()))
 
 

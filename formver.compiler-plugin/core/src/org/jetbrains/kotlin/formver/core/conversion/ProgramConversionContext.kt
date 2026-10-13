@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousBuiltinV
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FunctionTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
@@ -61,6 +62,9 @@ interface ProgramConversionContext : ErrorCollectionContext {
     fun embedFunctionPretype(symbol: FirFunctionSymbol<*>): FunctionTypeEmbedding
     fun embedType(exp: FirExpression): TypeEmbedding = embedType(exp.resolvedType)
     fun embedProperty(symbol: FirPropertySymbol): PropertyEmbedding
+
+    /** The backing field of the member property [symbol], which its accessors read and write as `field`. */
+    fun embedBackingField(symbol: FirPropertySymbol): FieldEmbedding
 
     /**
      * An enum entry as an opaque value of its enum type: a call of an abstract pure function without arguments.

@@ -137,7 +137,7 @@ fun FunctionTypeEmbedding.toGenericAccessorSignature(isPure: Boolean): Signature
     val extensionVariable = extensionReceiverType?.let { PlaceholderVariableEmbedding(ExtensionReceiverName, it) }
     val dispatchVariable = dispatchReceiverType?.let { PlaceholderVariableEmbedding(DispatchReceiverName, it) }
     val parameterVariables =
-        paramTypes.mapIndexed { index, embedding -> PlaceholderVariableEmbedding(AnonymousName(index), embedding) }
+        paramTypes.mapIndexed { index, embedding -> PlaceholderVariableEmbedding(PlaceholderArgumentName(index), embedding) }
     val signature = FunctionSignatureImpl(
         this,
         dispatchVariable,

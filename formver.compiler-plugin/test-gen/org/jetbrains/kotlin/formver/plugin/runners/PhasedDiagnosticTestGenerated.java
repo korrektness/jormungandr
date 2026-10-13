@@ -1711,6 +1711,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestDataPath("$PROJECT_ROOT")
     public class Soundness {
       @Test
+      @TestMetadata("accessors.kt")
+      public void testAccessors() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/accessors.kt");
+      }
+
+      @Test
       public void testAllFilesPresentInSoundness() {
         KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics/verification/soundness"), Pattern.compile("^(.+)\\.kt$"), null, true);
       }

@@ -15,12 +15,12 @@ fun <!VIPER_TEXT!>testProperties<!>(foo: Foo) {
 
 interface First {
     val number: Int
-        get() = 1
+        <!VIPER_TEXT!>get<!>() = 1
 }
 
 interface Second {
     val number: Int
-        get() = 2
+        <!VIPER_TEXT!>get<!>() = 2
 }
 
 class Impl(override val number: Int) : First, Second
@@ -37,7 +37,7 @@ keep names of implementation classes laconic.
 
 interface InterfaceWithImplementation1 {
     val field: Int
-        get() {
+        <!VIPER_TEXT!>get<!>() {
             return 0
         }
 }
@@ -141,7 +141,7 @@ fun <!VIPER_TEXT!>createImpls<!>() {
 
 interface A {
     val field: Int
-        get() = 0
+        <!VIPER_TEXT!>get<!>() = 0
 }
 
 interface B : A
@@ -164,7 +164,7 @@ abstract class F {
 
 abstract class H {
     var field: Int = 0
-        set(value) {
+        <!VIPER_TEXT!>set<!>(value) {
             Unit
         }
 }

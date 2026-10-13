@@ -1,3 +1,49 @@
+/extension_properties.kt: info: Generated Viper text for intValProp:
+method intValProp(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), intType())
+  v_ret_0 := this
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/extension_properties.kt: info: Generated Viper text for intVarProp:
+method eg_intVarProp(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), intType())
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method es_intVarProp(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/extension_properties.kt: info: Generated Viper text for intVarProp:
+method eg_intVarProp(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method es_intVarProp(this: Ref, arg_0: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var par_v: Ref
+  inhale isSubtype(typeOf(this), intType())
+  par_v := arg_0
+  inhale isSubtype(typeOf(par_v), intType())
+  label lbl_ret_1
+}
+
 /extension_properties.kt: info: Generated Viper text for extensionGetterProperty:
 method extensionGetterProperty() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
@@ -32,9 +78,9 @@ method eg_intVarProp(this: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), nullable(anyType()))
 
 
-method es_intVarProp(this: Ref, anon: Ref) returns (ret_2: Ref)
+method es_intVarProp(this: Ref, arg_0: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), nullable(anyType()))
-  requires isSubtype(typeOf(anon), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
   ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
@@ -45,6 +91,68 @@ method extensionSetterProperty() returns (v_ret_0: Ref)
   anon := es_intVarProp(intToRef(42), intToRef(0))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/extension_properties.kt: info: Generated Viper text for pfValProp:
+function x(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), PrimitiveField())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method pfValProp(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(v_this_extension), PrimitiveField())
+  v_ret_0 := x(v_this_extension)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/extension_properties.kt: info: Generated Viper text for pfVarProp:
+function x(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), PrimitiveField())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method eg_pfVarProp(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(v_this_extension), PrimitiveField())
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method es_pfVarProp(v_this_extension: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/extension_properties.kt: info: Generated Viper text for pfVarProp:
+function x(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), PrimitiveField())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method eg_pfVarProp(v_this_extension: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method es_pfVarProp(v_this_extension: Ref, arg_0: Ref)
+  returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var par_v: Ref
+  inhale isSubtype(typeOf(v_this_extension), PrimitiveField())
+  par_v := arg_0
+  inhale isSubtype(typeOf(par_v), intType())
+  label lbl_ret_1
 }
 
 /extension_properties.kt: info: Generated Viper text for extensionGetterPropertyUserDefinedClass:
@@ -83,9 +191,9 @@ method eg_pfVarProp(v_this_extension: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), nullable(anyType()))
 
 
-method es_pfVarProp(v_this_extension: Ref, anon: Ref) returns (ret_2: Ref)
+method es_pfVarProp(v_this_extension: Ref, arg_0: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
-  requires isSubtype(typeOf(anon), nullable(anyType()))
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
   ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 

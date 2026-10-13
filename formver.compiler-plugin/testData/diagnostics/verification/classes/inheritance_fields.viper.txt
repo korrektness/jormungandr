@@ -43,6 +43,17 @@ method g_fieldOverride(this: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
+/inheritance_fields.kt: info: Generated Viper text for x:
+method x(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), NoBackingFieldClass())
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
 /inheritance_fields.kt: info: Generated Viper text for createBFsAndNoBF:
 function SecondBackingFieldClass_g_x(this: Ref): Ref
   requires isSubtype(typeOf(this), SecondBackingFieldClass())

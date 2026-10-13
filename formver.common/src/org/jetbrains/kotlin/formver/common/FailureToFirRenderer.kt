@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
 import org.jetbrains.kotlin.fir.declarations.utils.memberDeclarationNameOrNull
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
 import org.jetbrains.kotlin.fir.types.renderReadable
 
 /** The FIR and test adapters share this rendering boundary. */
@@ -237,7 +238,11 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             KotlinCondition.SkipReason.INTERNAL_ERROR -> "an internal error"
             KotlinCondition.SkipReason.MISSING_TERMINATION_MEASURE -> "recursion without a termination measure"
         }
-        val name = condition.function?.let { FirDiagnosticRenderers.DECLARATION_NAME.render(it) } ?: "<anonymous>"
+        val name = when (val function = condition.function) {
+            null -> "<anonymous>"
+            is FirPropertyAccessorSymbol -> "<${if (function.isGetter) "get" else "set"}-${function.propertySymbol.name}>"
+            else -> FirDiagnosticRenderers.DECLARATION_NAME.render(function)
+        }
         return "Verification skipped [${condition.reason.name}]: Function '$name' was not verified because of $reason"
     }
 

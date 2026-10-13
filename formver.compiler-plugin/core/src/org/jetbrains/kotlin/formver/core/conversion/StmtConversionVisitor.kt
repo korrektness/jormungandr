@@ -546,6 +546,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 is FirClassSymbol<*> -> data.resolveDispatchReceiver()
                 is FirAnonymousFunctionSymbol -> data.resolveExtensionReceiver(symbol.label!!.name)
                 is FirFunctionSymbol<*> -> data.resolveExtensionReceiver(symbol.name.asString())
+                is FirPropertySymbol -> data.resolveExtensionReceiver(symbol.name.asString())
                 else -> return null
             }
 

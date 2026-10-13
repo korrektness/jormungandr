@@ -23,6 +23,10 @@ fun divide(numerator: Int, denominator: Int): Int {
   converted for its callers, and problems in them are reported.
 - `@NeverConvert` — skip Viper conversion entirely
 
+The body of a custom property getter or setter is verified too, against the contract its callers use, which states
+nothing beyond the Kotlin types of its receivers, parameters and result. A `@Pure` getter is a pure function instead.
+A custom accessor of a top-level property is an unsupported construct.
+
 A function that uses a construct SnaKt does not translate gets an `UNSUPPORTED_FEATURE` warning at the construct and a
 `VERIFICATION_SKIPPED` warning at its name, and is not verified. Compilation continues.
 

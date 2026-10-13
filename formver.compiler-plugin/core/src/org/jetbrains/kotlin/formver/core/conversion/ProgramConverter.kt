@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
@@ -52,6 +53,9 @@ import org.jetbrains.kotlin.formver.core.embeddings.callables.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousBuiltinVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.Declare
+import org.jetbrains.kotlin.formver.core.embeddings.expression.InhaleDirect
+import org.jetbrains.kotlin.formver.core.embeddings.expression.toConjunction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.withProofClause
 import org.jetbrains.kotlin.formver.core.embeddings.properties.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.*
@@ -127,6 +131,9 @@ class ProgramConverter(
     private val registered: MutableList<RegisteredFunction> = mutableListOf()
 
     private val refinements: MutableList<Refinement> = mutableListOf()
+
+    /** The return target of each header [embedAccessorFunction] creates, by header name. */
+    private val accessorReturnTargets: MutableMap<SymbolicName, ReturnTarget> = mutableMapOf()
 
 
     /**
@@ -244,6 +251,47 @@ class ProgramConverter(
         val hasUniquenessErrors = uniquenessOutcomeOf(declaration).hasErrors
         registered += RegisteredFunction(declaration, signature.signature, signature.returnTarget, hasUniquenessErrors)
         if (declaration is FirSimpleFunction) registerRefinements(declaration, signature.signature)
+    }
+
+    /**
+     * Registers the body of the accessor [declaration] against the method header its callers call. The header types
+     * the receivers and parameters as `Any` or `Any?`. The body reads them with their Kotlin types, which it assumes on
+     * entry: the JVM enforces them on every call.
+     */
+    fun registerAccessor(declaration: FirPropertyAccessor) {
+        registeredSymbol = declaration.symbol
+        val property = declaration.propertySymbol
+        if (property.receiverParameterSymbol == null && property.dispatchReceiverType == null) {
+            throw UnsupportedFeatureException(declaration.source, "a custom accessor of a top-level property")
+        }
+        val embedding = embedProperty(property)
+        val header = if (declaration.isGetter) (embedding.getter as? CustomGetter)?.getterMethod
+            else (embedding.setter as? CustomSetter)?.setterMethod
+        val returnTarget = header?.let { accessorReturnTargets[it.name] } ?: throw UnsupportedFeatureException(
+            declaration.source, "a custom accessor that its callers do not call"
+        )
+        if (declaration.symbol.neverVerify(session)) return
+        val typed = with(this) { declaration.symbol.toFunctionSignature().toNamedSignature(declaration.symbol).signature }
+        val entry = buildList {
+            // The header and the body name the receivers alike, so only the parameters need copying.
+            listOfNotNull(typed.dispatchReceiver, typed.extensionReceiver).forEach {
+                add(InhaleDirect(it.provenInvariants().toConjunction()))
+            }
+            require(typed.params.size == header.params.size)
+            typed.params.zip(header.params).forEach { (parameter, argument) ->
+                add(Declare(parameter, argument))
+                add(InhaleDirect(parameter.provenInvariants().toConjunction()))
+            }
+        }
+        val context = createBodyConversionContext(
+            declaration.symbol, SignatureWithTarget(typed, returnTarget), uniquenessOutcomeOf(declaration).analysis,
+            labelName = property.name.asString(),
+        )
+        val body = context.convertImpureBody(declaration, header, returnTarget, entry)
+        checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
+        declaration.source?.let { source -> body?.bodyExp?.checkNoMultisetValues(source, this) }
+        body?.let { convertedBodyResolver.storeImpure(header.name, it) }
+        registered += RegisteredFunction(declaration, header, returnTarget, uniquenessOutcomeOf(declaration).hasErrors)
     }
 
     /** Registers the proof of a source primary constructor against its exported contract. */
@@ -400,12 +448,13 @@ class ProgramConverter(
         symbol: FirFunctionSymbol<*>,
         signature: SignatureWithTarget<NamedFunctionSignature>,
         uniquenessAnalysis: FunctionUniquenessAnalysis?,
+        labelName: String? = signature.signature.labelName,
     ): StmtConversionContext {
         val paramResolver = RootParameterResolver(
             this@ProgramConverter,
             signature.signature,
             symbol.valueParameterSymbols,
-            signature.signature.labelName,
+            labelName,
             signature.returnTarget
         )
         val stmtCtx = MethodConverter(
@@ -688,6 +737,13 @@ class ProgramConverter(
         return symbol.isGuaranteedDefault(session)
     }
 
+    override fun embedBackingField(symbol: FirPropertySymbol): FieldEmbedding {
+        val classSymbol = symbol.dispatchReceiverType?.toRegularClassSymbol(session) ?: throw SnaktInternalException(
+            symbol.source, "A backing field outside a class"
+        )
+        return embedBackingField(symbol, classSymbol)
+    }
+
     /**
      * Construct and register the field embedding for this property's backing field, if any exists.
      */
@@ -727,6 +783,7 @@ class ProgramConverter(
             }
     }.also {
         fullSignatures.putIfAbsent(it.signature.name, it.signature)
+        accessorReturnTargets.putIfAbsent(it.signature.name, it.returnTarget)
     }.signature
 
     override fun embedEnumEntry(symbol: FirEnumEntrySymbol): ExpEmbedding {

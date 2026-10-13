@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.formver.plugin.verify
 
 open class A {
     private var field: Boolean = false
-        get() {
+        <!VIPER_TEXT!>get<!>() {
             return !field
         }
 

@@ -83,9 +83,7 @@ class ViperPoweredDeclarationChecker(
         if (shouldSkip()) return
         when (declaration) {
             is FirSimpleFunction -> {}
-            is FirPropertyAccessor -> {
-                if (!declaration.isGetter || declaration.body == null || !declaration.symbol.isPure(session)) return
-            }
+            is FirPropertyAccessor -> if (declaration.body == null) return
             else -> return
         }
         if (!config.shouldConvert(declaration)) return
@@ -93,7 +91,9 @@ class ViperPoweredDeclarationChecker(
         val root = ProgramConverter(session, config, context, reporter)
         val dumps = mutableListOf<String>()
         reportConversionErrors(declaration, root) {
-            root.register(declaration)
+            val pureGetter = declaration is FirPropertyAccessor && declaration.isGetter && declaration.symbol.isPure(session)
+            if (declaration is FirPropertyAccessor && !pureGetter) root.registerAccessor(declaration)
+            else root.register(declaration)
             convert(declaration, root, 0, dumps)
         }
         root.specifiedLambdas.forEachIndexed { index, lambda ->

@@ -23,7 +23,7 @@ open class FirstBackingFieldClass {
 
 open class NoBackingFieldClass: FirstBackingFieldClass() {
     override val x: Int
-        get() = 1
+        <!VIPER_TEXT!>get<!>() = 1
 }
 
 class SecondBackingFieldClass(override val x: Int) : NoBackingFieldClass()

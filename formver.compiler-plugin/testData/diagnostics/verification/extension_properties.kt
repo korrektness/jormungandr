@@ -2,11 +2,11 @@
 
 
 
-val Int.intValProp: Int get() = this
+val Int.intValProp: Int <!VIPER_TEXT!>get<!>() = this
 
 var Int.intVarProp: Int
-    get() = 0
-    set(v) {}
+    <!VIPER_TEXT!>get<!>() = 0
+    <!VIPER_TEXT!>set<!>(v) {}
 
 fun <!VIPER_TEXT!>extensionGetterProperty<!>() {
     val a = 0.intValProp
@@ -19,11 +19,11 @@ fun <!VIPER_TEXT!>extensionSetterProperty<!>() {
 
 class PrimitiveField(val x: Int)
 
-val PrimitiveField.pfValProp: Int get() = this.x
+val PrimitiveField.pfValProp: Int <!VIPER_TEXT!>get<!>() = this.x
 
 var PrimitiveField.pfVarProp: Int
-    get() = 0
-    set(v) {}
+    <!VIPER_TEXT!>get<!>() = 0
+    <!VIPER_TEXT!>set<!>(v) {}
 
 fun <!VIPER_TEXT!>extensionGetterPropertyUserDefinedClass<!>(pf: PrimitiveField) {
     val x = pf.pfValProp
