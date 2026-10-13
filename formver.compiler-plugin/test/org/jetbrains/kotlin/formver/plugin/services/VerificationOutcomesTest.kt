@@ -100,4 +100,18 @@ class VerificationOutcomesTest {
             changes(clean, fStopped, verified = false).map { it.actual },
         )
     }
+
+    @Test
+    fun `update mode refuses an internal error spanning a verified function`() {
+        val fThrew = """
+            <!INTERNAL_ERROR!>fun f() { verify(false) }<!>
+            fun g() { verify(true) }
+        """.trimIndent()
+        val changes = changes(clean, fThrew)
+        assertEquals(
+            listOf(OutcomeChange("f", VerificationOutcome.CLEAN, VerificationOutcome.SKIPPED, listOf("INTERNAL_ERROR: message"))),
+            changes,
+        )
+        assertFailsWith<OutcomeChangeRefused> { checkOutcomeChanges(changes, updating = true, recordOutcomes = false) }
+    }
 }
