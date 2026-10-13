@@ -10,6 +10,15 @@ fun <!VIPER_TEXT!>testAnd<!>(a : Boolean, b : Boolean) : Boolean = (a and b) && 
 fun <!VIPER_TEXT!>testOr<!>(a : Boolean, b : Boolean) : Boolean = (a or b) || (a.or(b))
 
 @Pure
+fun <!VIPER_TEXT!>testShortCircuitAnd<!>(a : Int, b : Int) : Boolean = b != 0 && a / b > 0
+
+@Pure
+fun <!VIPER_TEXT!>testShortCircuitOr<!>(a : Int, b : Int) : Boolean = b == 0 || a / b > 0
+
+@Pure
+fun <!VIPER_TEXT!>testShortCircuitIf<!>(a : Int, b : Int) : Int = if (b != 0) a / b else 0
+
+@Pure
 fun <!VIPER_TEXT!>testXor<!>(a : Boolean, b: Boolean) : Boolean = a xor a.xor(b)
 
 @Pure

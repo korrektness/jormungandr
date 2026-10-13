@@ -82,8 +82,8 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
 <!VIPER_TEXT!>class ArrayBoundProbe<!>(var data: @Unique IntArray, var count: Int) {
     init { require(0 <= count && count <= data.size) }
     @Law @Pure @Unique fun representation(): Boolean = 0 <= count && count <= data.size
-    <!VIPER_VERIFICATION_ERROR!>@Pure @Unique fun <!VIPER_TEXT!>getByCount<!>(i: Int): Int =
-        if (0 <= i && i < count) data[i] else 0<!>
+    @Pure @Unique fun <!VIPER_TEXT!>getByCount<!>(i: Int): Int =
+        if (0 <= i && i < count) data[i] else 0
 }
 
 class IntNode(var value: Int, var next: @Unique IntNode?)

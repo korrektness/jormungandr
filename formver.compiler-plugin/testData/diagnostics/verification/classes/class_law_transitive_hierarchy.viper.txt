@@ -1711,8 +1711,8 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-    intFromRef(z(this)) + 2))))
+    boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
 }
 
 method con(x: Ref, y: Ref, offset: Ref) returns (v_ret_0: Ref)
@@ -1724,8 +1724,8 @@ method con(x: Ref, y: Ref, offset: Ref) returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
   ensures intFromRef(z(v_ret_0)) == intFromRef(y)
   ensures intFromRef(w(v_ret_0)) == intFromRef(offset)
 {
@@ -1747,8 +1747,8 @@ method con(x: Ref, y: Ref, offset: Ref) returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(DefaultArgumentRoot_unique(v_ret_0), write)
@@ -1776,8 +1776,8 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-    intFromRef(z(this)) + 2))))
+    boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
 }
 
 predicate RenamedArgumentLeaf_unique(this: Ref) {
@@ -1793,8 +1793,8 @@ method con(n: Ref) returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2)))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
   ensures intFromRef(z(v_ret_0)) == intFromRef(n) * 2 + 1
   ensures intFromRef(w(v_ret_0)) == intFromRef(n) * 2 + 1 + 2
 {
@@ -1822,8 +1822,8 @@ method con(n: Ref) returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   fold acc(RenamedArgumentLeaf_unique(v_ret_0), write)
   label lbl_ret_0
@@ -1853,8 +1853,8 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-    intFromRef(z(this)) + 2))))
+    boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
 }
 
 predicate SameNameArgumentLeaf_unique(this: Ref) {
@@ -1870,8 +1870,8 @@ method con(x: Ref) returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2)))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
   ensures intFromRef(z(v_ret_0)) == intFromRef(x) * 2 + 1
   ensures intFromRef(w(v_ret_0)) == intFromRef(x) * 2 + 1 + 2
 {
@@ -1899,8 +1899,8 @@ method con(x: Ref) returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   fold acc(SameNameArgumentLeaf_unique(v_ret_0), write)
   label lbl_ret_0
@@ -1930,8 +1930,8 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-    intFromRef(z(this)) + 2))))
+    boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
 }
 
 predicate ExplicitDefaultLeaf_unique(this: Ref) {
@@ -1947,8 +1947,8 @@ method con(x: Ref) returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2)))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
   ensures intFromRef(z(v_ret_0)) == intFromRef(x) + 10
   ensures intFromRef(w(v_ret_0)) == intFromRef(x) + 10 + 2
 {
@@ -1976,8 +1976,8 @@ method con(x: Ref) returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   fold acc(ExplicitDefaultLeaf_unique(v_ret_0), write)
   label lbl_ret_0
@@ -2023,8 +2023,8 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
   (let this ==
     (this) in
     true &&
-    boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-    intFromRef(z(this)) + 2))))
+    boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
 }
 
 predicate ExplicitDefaultLeaf_unique(this: Ref) {
@@ -2057,8 +2057,8 @@ method con_ExplicitDefaultLeaf(x: Ref) returns (ret_9: Ref)
     (let this ==
       (ret_9) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2)))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
   ensures intFromRef(z(ret_9)) == intFromRef(x) + 10
   ensures intFromRef(w(ret_9)) == intFromRef(x) + 10 + 2
 
@@ -2071,8 +2071,8 @@ method con_RenamedArgumentLeaf(n: Ref) returns (ret_1: Ref)
     (let this ==
       (ret_1) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2)))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
   ensures intFromRef(z(ret_1)) == intFromRef(n) * 2 + 1
   ensures intFromRef(w(ret_1)) == intFromRef(n) * 2 + 1 + 2
 
@@ -2085,8 +2085,8 @@ method con_SameNameArgumentLeaf(x: Ref) returns (ret_5: Ref)
     (let this ==
       (ret_5) in
       true &&
-      boolFromRef(andBools(geInts(z(this), intToRef(0)), boolToRef(intFromRef(w(this)) ==
-      intFromRef(z(this)) + 2)))))
+      boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
+      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
   ensures intFromRef(z(ret_5)) == intFromRef(x) * 2 + 1
   ensures intFromRef(w(ret_5)) == intFromRef(x) * 2 + 1 + 2
 

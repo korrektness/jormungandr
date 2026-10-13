@@ -164,8 +164,8 @@ function GeneralCell_f_matches(this: Ref, first: Ref, second: Ref, par_token: Re
   requires isSubtype(typeOf(par_token), nullable(GeneralToken()))
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(boolToRef(boolFromRef(first) == boolFromRef(second)), boolToRef(par_token ==
-  g_stored(this)))
+  boolToRef(boolFromRef(first) == boolFromRef(second) &&
+  par_token == g_stored(this))
 }
 
 function GeneralCell_f_other(this: Ref): Ref
@@ -330,8 +330,8 @@ function GeneralCell_f_matches(this: Ref, first: Ref, second: Ref, par_token: Re
   requires isSubtype(typeOf(par_token), nullable(GeneralToken()))
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(boolToRef(boolFromRef(first) == boolFromRef(second)), boolToRef(par_token ==
-  stored(this)))
+  boolToRef(boolFromRef(first) == boolFromRef(second) &&
+  par_token == stored(this))
 }
 
 function GeneralCell_f_other(this: Ref): Ref
@@ -448,8 +448,8 @@ function GeneralCell_f_matches(this: Ref, first: Ref, second: Ref, par_token: Re
   requires isSubtype(typeOf(par_token), nullable(GeneralToken()))
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(boolToRef(boolFromRef(first) == boolFromRef(second)), boolToRef(par_token ==
-  stored(this)))
+  boolToRef(boolFromRef(first) == boolFromRef(second) &&
+  par_token == stored(this))
 }
 
 function GeneralCell_f_other(this: Ref): Ref
@@ -566,8 +566,8 @@ function GeneralCell_f_matches(this: Ref, first: Ref, second: Ref, par_token: Re
   requires isSubtype(typeOf(par_token), nullable(GeneralToken()))
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(boolToRef(boolFromRef(first) == boolFromRef(second)), boolToRef(par_token ==
-  stored(this)))
+  boolToRef(boolFromRef(first) == boolFromRef(second) &&
+  par_token == stored(this))
 }
 
 function GeneralCell_f_other(this: Ref): Ref
@@ -684,8 +684,8 @@ function GeneralCell_f_matches(this: Ref, first: Ref, second: Ref, par_token: Re
   requires isSubtype(typeOf(par_token), nullable(GeneralToken()))
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(boolToRef(boolFromRef(first) == boolFromRef(second)), boolToRef(par_token ==
-  stored(this)))
+  boolToRef(boolFromRef(first) == boolFromRef(second) &&
+  par_token == stored(this))
 }
 
 function GeneralCell_f_other(this: Ref): Ref
@@ -924,8 +924,8 @@ function GeneralCell_f_matches(this: Ref, first: Ref, second: Ref, par_token: Re
   requires isSubtype(typeOf(par_token), nullable(GeneralToken()))
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(boolToRef(boolFromRef(first) == boolFromRef(second)), boolToRef(par_token ==
-  g_stored(this)))
+  boolToRef(boolFromRef(first) == boolFromRef(second) &&
+  par_token == g_stored(this))
 }
 
 function GeneralCell_f_other(this: Ref): Ref
@@ -1201,8 +1201,8 @@ function GeneralCell_f_matches(this: Ref, first: Ref, second: Ref, par_token: Re
   requires isSubtype(typeOf(par_token), nullable(GeneralToken()))
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(boolToRef(boolFromRef(first) == boolFromRef(second)), boolToRef(par_token ==
-  g_stored(this)))
+  boolToRef(boolFromRef(first) == boolFromRef(second) &&
+  par_token == g_stored(this))
 }
 
 function GeneralCell_f_other(this: Ref): Ref
@@ -2671,9 +2671,11 @@ function allTrue(node: Ref): Ref
     (unfolding acc(BoolNode_unique(node), write) in
       (let anon_3_0 ==
         (node.flag) in
-        (let anon_4_0 ==
-          (node.next) in
-          andBools(anon_3_0, allTrue(anon_4_0))))))
+        boolToRef(boolFromRef(anon_3_0) &&
+        (unfolding acc(BoolNode_unique(node), write) in
+          (let anon_4_0 ==
+            (node.next) in
+            boolFromRef(allTrue(anon_4_0))))))))
 }
 
 predicate BoolNode_unique(this: Ref) {
@@ -2735,9 +2737,11 @@ function allTrue(node: Ref): Ref
     (unfolding acc(BoolNode_unique(node), write) in
       (let anon_4_0 ==
         (node.flag) in
-        (let anon_5_0 ==
-          (node.next) in
-          andBools(anon_4_0, allTrue(anon_5_0))))))
+        boolToRef(boolFromRef(anon_4_0) &&
+        (unfolding acc(BoolNode_unique(node), write) in
+          (let anon_5_0 ==
+            (node.next) in
+            boolFromRef(allTrue(anon_5_0))))))))
 }
 
 predicate BoolChain_unique(this: Ref) {
@@ -2791,9 +2795,11 @@ function allTrue(node: Ref): Ref
     (unfolding acc(BoolNode_unique(node), write) in
       (let anon_4_0 ==
         (node.flag) in
-        (let anon_5_0 ==
-          (node.next) in
-          andBools(anon_4_0, allTrue(anon_5_0))))))
+        boolToRef(boolFromRef(anon_4_0) &&
+        (unfolding acc(BoolNode_unique(node), write) in
+          (let anon_5_0 ==
+            (node.next) in
+            boolFromRef(allTrue(anon_5_0))))))))
 }
 
 function c_ChainView_f_all(this: Ref): Ref
@@ -2923,9 +2929,11 @@ function allTrue(node: Ref): Ref
     (unfolding acc(BoolNode_unique(node), write) in
       (let anon_4_0 ==
         (node.bf_flag) in
-        (let anon_5_0 ==
-          (node.bf_next) in
-          andBools(anon_4_0, allTrue(anon_5_0))))))
+        boolToRef(boolFromRef(anon_4_0) &&
+        (unfolding acc(BoolNode_unique(node), write) in
+          (let anon_5_0 ==
+            (node.bf_next) in
+            boolFromRef(allTrue(anon_5_0))))))))
 }
 
 function c_ChainView_f_all(this: Ref): Ref
@@ -3068,9 +3076,11 @@ function allTrue(par_node: Ref): Ref
     (unfolding acc(BoolNode_unique(par_node), write) in
       (let anon_4_0 ==
         (par_node.bf_flag) in
-        (let anon_5_0 ==
-          (par_node.bf_next) in
-          andBools(anon_4_0, allTrue(anon_5_0))))))
+        boolToRef(boolFromRef(anon_4_0) &&
+        (unfolding acc(BoolNode_unique(par_node), write) in
+          (let anon_5_0 ==
+            (par_node.bf_next) in
+            boolFromRef(allTrue(anon_5_0))))))))
 }
 
 function c_ChainView_f_all(this: Ref): Ref

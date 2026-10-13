@@ -732,6 +732,13 @@ borrows its arguments too, so `c.let { it.x }` may read a `@Borrowed` `c`. A `@P
 only through its `@Unique` parameters, and specifications may read them only
 through unique paths.
 
+Specifications, laws and `@Pure` function bodies evaluate `&&`, `||` and `if`
+as Kotlin does. The preconditions and reads in the right operand of `&&` need
+to hold only where the left operand is true, in the right operand of `||` only
+where it is false, and in a branch of an `if` only where the condition selects
+that branch. A law `size <= 0 || at(0) != null` needs the precondition of `at`
+only when `size > 0`.
+
 A `@Pure` function cannot return an alias into data its caller still owns. Its
 result cannot be `@Unique`, and when it has a `@Unique` parameter its result
 must be a value type.

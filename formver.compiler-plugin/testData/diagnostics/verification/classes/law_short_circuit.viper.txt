@@ -1,0 +1,701 @@
+/law_short_circuit.kt: info: Generated Viper text for at:
+function at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/law_short_circuit.kt: info: Generated Viper text for Single:
+function Single_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  requires acc(Single_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Single_g_size(this))
+  ensures isSubtype(typeOf(result), anyType())
+{
+  x(this)
+}
+
+function Single_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  requires acc(Single_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_Seq_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_Seq_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_Seq_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+method laws(this: Ref)
+  requires acc(Single_unique(this), write)
+{
+  unfold acc(Single_unique(this), write)
+  fold acc(Single_unique(this), write)
+  assert boolFromRef(geInts(Single_g_size(this), intToRef(0)))
+  assert boolFromRef(boolToRef(intFromRef(Single_g_size(this)) <= 0 ||
+    !(Single_f_at(this, intToRef(0)) == nullValue())))
+  assert boolFromRef((intFromRef(Single_g_size(this)) > 0 ?
+      notBool(boolToRef(Single_f_at(this, intToRef(0)) == nullValue())) :
+      boolToRef(true)))
+}
+
+/law_short_circuit.kt: info: Generated Viper text for size:
+function Single_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  requires acc(Single_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Single_g_size(this))
+  ensures isSubtype(typeOf(result), anyType())
+{
+  x(this)
+}
+
+function Single_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  requires acc(Single_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_Seq_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_Seq_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_Seq_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+/law_short_circuit.kt: info: Generated Viper text for at:
+function Single_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  requires acc(Single_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Single_g_size(this))
+  ensures isSubtype(typeOf(result), anyType())
+{
+  x(this)
+}
+
+function Single_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  requires acc(Single_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_Seq_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_Seq_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_Seq_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+method Single_c_Seq_restore(this: Ref)
+  requires acc(c_Seq_unique(this), write)
+  requires isSubtype(typeOf(this), Single())
+  ensures acc(Single_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Seq())) && true ==>
+    Single_g_size(this) ==
+    old((unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_g_size(this)))
+  ensures (forall i: Ref ::
+      { Single_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), c_Seq())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(0 <= intFromRef(i) &&
+      (unfolding acc(c_Seq_unique(this), wildcard) in
+        intFromRef(i) < intFromRef(c_Seq_g_size(this)))) ==>
+      Single_f_at(this, i) ==
+      old((unfolding acc(c_Seq_unique(this), wildcard) in
+        c_Seq_f_at(this, i))))
+
+
+method Single_c_Seq_upcast(this: Ref)
+  requires acc(Single_unique(this), write)
+  ensures acc(c_Seq_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Single())) && true ==>
+    (unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_g_size(this)) ==
+    old(Single_g_size(this))
+  ensures (forall i: Ref ::
+      { c_Seq_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), Single())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(Single_g_size(this))) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(Single_g_size(this))) ==>
+      (unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_f_at(this, i)) ==
+      old(Single_f_at(this, i)))
+
+
+method refines_c_Seq_f_at(this: Ref, i: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(c_Seq_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(c_Seq_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(c_Seq_g_size(this)))
+  requires isSubtype(typeOf(this), Single())
+{
+  Single_c_Seq_restore(this)
+  ret := Single_f_at(this, i)
+  Single_c_Seq_upcast(this)
+  assert isSubtype(typeOf(ret), nullable(anyType()))
+}
+
+/law_short_circuit.kt: info: Generated Viper text for NullSingle:
+function NullSingle_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  requires acc(NullSingle_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(NullSingle_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  x(this)
+}
+
+function NullSingle_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  requires acc(NullSingle_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_Seq_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_Seq_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_Seq_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method laws(this: Ref)
+  requires acc(NullSingle_unique(this), write)
+{
+  unfold acc(NullSingle_unique(this), write)
+  fold acc(NullSingle_unique(this), write)
+  assert boolFromRef(geInts(NullSingle_g_size(this), intToRef(0)))
+  assert boolFromRef(boolToRef(intFromRef(NullSingle_g_size(this)) <= 0 ||
+    !(NullSingle_f_at(this, intToRef(0)) == nullValue())))
+  assert boolFromRef((intFromRef(NullSingle_g_size(this)) > 0 ?
+      notBool(boolToRef(NullSingle_f_at(this, intToRef(0)) == nullValue())) :
+      boolToRef(true)))
+}
+
+/law_short_circuit.kt: info: Generated Viper text for size:
+function NullSingle_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  requires acc(NullSingle_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(NullSingle_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  x(this)
+}
+
+function NullSingle_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  requires acc(NullSingle_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_Seq_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_Seq_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_Seq_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+/law_short_circuit.kt: info: Generated Viper text for at:
+function NullSingle_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  requires acc(NullSingle_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(NullSingle_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  x(this)
+}
+
+function NullSingle_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  requires acc(NullSingle_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_Seq_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_Seq_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_Seq_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method NullSingle_c_Seq_restore(this: Ref)
+  requires acc(c_Seq_unique(this), write)
+  requires isSubtype(typeOf(this), NullSingle())
+  ensures acc(NullSingle_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Seq())) && true ==>
+    NullSingle_g_size(this) ==
+    old((unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_g_size(this)))
+  ensures (forall i: Ref ::
+      { NullSingle_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), c_Seq())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(0 <= intFromRef(i) &&
+      (unfolding acc(c_Seq_unique(this), wildcard) in
+        intFromRef(i) < intFromRef(c_Seq_g_size(this)))) ==>
+      NullSingle_f_at(this, i) ==
+      old((unfolding acc(c_Seq_unique(this), wildcard) in
+        c_Seq_f_at(this, i))))
+
+
+method NullSingle_c_Seq_upcast(this: Ref)
+  requires acc(NullSingle_unique(this), write)
+  ensures acc(c_Seq_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), NullSingle())) && true ==>
+    (unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_g_size(this)) ==
+    old(NullSingle_g_size(this))
+  ensures (forall i: Ref ::
+      { c_Seq_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), NullSingle())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(NullSingle_g_size(this))) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(NullSingle_g_size(this))) ==>
+      (unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_f_at(this, i)) ==
+      old(NullSingle_f_at(this, i)))
+
+
+method refines_c_Seq_f_at(this: Ref, i: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(c_Seq_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(c_Seq_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(c_Seq_g_size(this)))
+  requires isSubtype(typeOf(this), NullSingle())
+{
+  NullSingle_c_Seq_restore(this)
+  ret := NullSingle_f_at(this, i)
+  NullSingle_c_Seq_upcast(this)
+  assert isSubtype(typeOf(ret), nullable(anyType()))
+}
+
+/law_short_circuit.kt: info: Generated Viper text for headOrNull:
+function at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method headOrNull(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), nullable(c_Seq()))
+  requires s != nullValue() ==> acc(c_Seq_unique(s), write)
+  ensures s != nullValue() ==> acc(c_Seq_unique(s), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(stringType()))
+  ensures s == nullValue() ||
+    (unfolding acc(c_Seq_unique(s), wildcard) in intFromRef(size(s)) == 0) ||
+    !(v_ret_0 == nullValue())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  if (s == nullValue()) {
+    v_ret_0 := nullValue()
+    goto lbl_ret_0
+  }
+  anon_0 := (unfolding acc(c_Seq_unique(s), wildcard) in size(s))
+  if (intFromRef(anon_0) == 0) {
+    v_ret_0 := nullValue()
+    goto lbl_ret_0
+  }
+  anon_1 := (unfolding acc(c_Seq_unique(s), wildcard) in
+      at(s, intToRef(0)))
+  v_ret_0 := anon_1
+  inhale isSubtype(typeOf(v_ret_0), nullable(stringType()))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/law_short_circuit.kt: info: Generated Viper text for nullableClient:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(c_Seq_footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_Seq_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_Seq_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(c_Seq_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method headOrNull(s: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(s), nullable(c_Seq()))
+  requires s != nullValue() ==> acc(c_Seq_unique(s), write)
+  ensures s != nullValue() ==> acc(c_Seq_unique(s), write)
+  ensures isSubtype(typeOf(ret_1), nullable(stringType()))
+  ensures s == nullValue() ||
+    (unfolding acc(c_Seq_unique(s), wildcard) in
+      intFromRef(c_Seq_g_size(s)) == 0) ||
+    !(ret_1 == nullValue())
+
+
+method nullableClient(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), nullable(c_Seq()))
+  requires s != nullValue() ==> acc(c_Seq_unique(s), write)
+  ensures s != nullValue() ==> acc(c_Seq_unique(s), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  l0_r := headOrNull(s)
+  if (s == nullValue()) {
+    anon_1 := boolToRef(true)
+  } else {
+    var anon_2: Ref
+    anon_2 := (unfolding acc(c_Seq_unique(s), wildcard) in c_Seq_g_size(s))
+    anon_1 := boolToRef(intFromRef(anon_2) == 0)
+  }
+  if (boolFromRef(anon_1)) {
+    anon_0 := boolToRef(true)
+  } else {
+    anon_0 := notBool(boolToRef(l0_r == nullValue()))}
+  assert boolFromRef(anon_0)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_short_circuit.kt: info: Generated Viper text for singleClient:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Single_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  requires acc(Single_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Single_g_size(this))
+  ensures isSubtype(typeOf(result), anyType())
+{
+  g_x(this)
+}
+
+function Single_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  requires acc(Single_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_Seq_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(c_Seq_footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_Seq_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_Seq_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(c_Seq_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Single())
+  ensures isSubtype(typeOf(result), anyType())
+
+
+method Single_c_Seq_upcast(this: Ref)
+  requires acc(Single_unique(this), write)
+  ensures acc(c_Seq_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Single())) && true ==>
+    (unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_g_size(this)) ==
+    old(Single_g_size(this))
+  ensures (forall i: Ref ::
+      { c_Seq_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), Single())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(Single_g_size(this))) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(Single_g_size(this))) ==>
+      (unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_f_at(this, i)) ==
+      old(Single_f_at(this, i)))
+
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), anyType())
+  ensures isSubtype(typeOf(ret_1), Single())
+  ensures g_x(ret_1) == par_x
+
+
+method singleClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var s: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  c := con(stringToRef(Seq(97)))
+  fold acc(Single_unique(c), write)
+  s := c
+  Single_c_Seq_upcast(s)
+  anon_0 := (unfolding acc(c_Seq_unique(s), wildcard) in c_Seq_g_size(s))
+  assert intFromRef(anon_0) == 1
+  anon_2 := (unfolding acc(c_Seq_unique(s), wildcard) in
+      c_Seq_f_at(s, intToRef(0)))
+  anon_1 := anon_2
+  inhale isSubtype(typeOf(anon_1), stringType())
+  assert stringFromRef(anon_1) == Seq(97)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_short_circuit.kt: info: Generated Viper text for nullSingleClient:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function NullSingle_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  requires acc(NullSingle_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(NullSingle_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  g_x(this)
+}
+
+function NullSingle_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  requires acc(NullSingle_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(1)
+}
+
+function c_Seq_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(c_Seq_footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_Seq_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_Seq_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(c_Seq_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullSingle())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method NullSingle_c_Seq_upcast(this: Ref)
+  requires acc(NullSingle_unique(this), write)
+  ensures acc(c_Seq_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), NullSingle())) && true ==>
+    (unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_g_size(this)) ==
+    old(NullSingle_g_size(this))
+  ensures (forall i: Ref ::
+      { c_Seq_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), NullSingle())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(NullSingle_g_size(this))) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(NullSingle_g_size(this))) ==>
+      (unfolding acc(c_Seq_unique(this), wildcard) in c_Seq_f_at(this, i)) ==
+      old(NullSingle_f_at(this, i)))
+
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), NullSingle())
+  ensures g_x(ret_1) == par_x
+
+
+method nullSingleClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var s: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  c := con(nullValue())
+  fold acc(NullSingle_unique(c), write)
+  s := c
+  NullSingle_c_Seq_upcast(s)
+  anon_1 := (unfolding acc(c_Seq_unique(s), wildcard) in
+      c_Seq_f_at(s, intToRef(0)))
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), nullable(stringType()))
+  assert !(anon_0 == nullValue())
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_short_circuit.kt: info: Generated Viper text for outOfDomain:
+function at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Seq())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method outOfDomain(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), c_Seq())
+  requires acc(c_Seq_unique(s), write)
+  ensures acc(c_Seq_unique(s), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := (unfolding acc(c_Seq_unique(s), wildcard) in size(s))
+  anon_1 := (unfolding acc(c_Seq_unique(s), wildcard) in at(s, anon_0))
+  l0_v := anon_1
+  inhale isSubtype(typeOf(l0_v), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

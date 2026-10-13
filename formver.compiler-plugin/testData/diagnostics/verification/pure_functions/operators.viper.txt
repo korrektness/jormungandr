@@ -4,7 +4,8 @@ function testAnd(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(andBools(a, b), andBools(a, b))
+  boolToRef(boolFromRef(a) && boolFromRef(b) &&
+  (boolFromRef(a) && boolFromRef(b)))
 }
 
 /operators.kt: info: Generated Viper text for testOr:
@@ -13,7 +14,47 @@ function testOr(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(result), boolType())
 {
-  orBools(orBools(a, b), orBools(a, b))
+  boolToRef(boolFromRef(a) || boolFromRef(b) ||
+  (boolFromRef(a) || boolFromRef(b)))
+}
+
+/operators.kt: info: Generated Viper text for testShortCircuitAnd:
+function testShortCircuitAnd(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(!(intFromRef(b) == 0) &&
+  (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+    -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+    (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+    (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+    (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) >
+  0)
+}
+
+/operators.kt: info: Generated Viper text for testShortCircuitOr:
+function testShortCircuitOr(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(intFromRef(b) == 0 ||
+  (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+    -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+    (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+    (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+    (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) >
+  0)
+}
+
+/operators.kt: info: Generated Viper text for testShortCircuitIf:
+function testShortCircuitIf(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (!(intFromRef(b) == 0) ? divInts(a, b) : intToRef(0))
 }
 
 /operators.kt: info: Generated Viper text for testXor:

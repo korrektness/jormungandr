@@ -143,6 +143,8 @@ data class PureExpLinearizer(
         source.asPosition,
     )
 
+    override fun addGuarded(condition: Exp, value: LinearizationContext.() -> Exp): Exp = inNewScope(value)
+
     override fun addFieldAccessStoringIn(
         receiver: Linearizable,
         receiverType: TypeEmbedding,

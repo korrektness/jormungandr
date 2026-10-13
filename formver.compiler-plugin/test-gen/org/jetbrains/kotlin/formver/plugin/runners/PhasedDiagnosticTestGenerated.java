@@ -926,6 +926,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("law_short_circuit.kt")
+      public void testLaw_short_circuit() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/law_short_circuit.kt");
+      }
+
+      @Test
       @TestMetadata("list_reverse.kt")
       public void testList_reverse() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/list_reverse.kt");

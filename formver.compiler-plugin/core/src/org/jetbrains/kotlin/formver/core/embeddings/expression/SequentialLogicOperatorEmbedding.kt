@@ -7,12 +7,13 @@ package org.jetbrains.kotlin.formver.core.embeddings.expression
 
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
-import org.jetbrains.kotlin.formver.core.linearization.LinearizationContext
-import org.jetbrains.kotlin.formver.core.linearization.LogicOperatorPolicy
+import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.viper.ast.Position
 
 /**
- * In pure contexts these operators can be written as simple binary operators.
- * However, regularly their semantics is different: evaluate the first argument and then maybe the second one (not necessarily)
+ * `&&` and `||`: the first operand is evaluated, and the second only when the first does not decide the result.
+ * Where statements are available they become an [If]; in a single Viper expression they become Viper's own
+ * short-circuiting operator.
  */
 sealed class SequentialLogicOperatorEmbedding : ExpEmbedding {
     abstract val left: ExpEmbedding
@@ -21,13 +22,13 @@ sealed class SequentialLogicOperatorEmbedding : ExpEmbedding {
     override val type
         get() = buildType { boolean() }
 
-    protected abstract val ifReplacement: ExpEmbedding
-    protected abstract val expressionReplacement: ExpEmbedding
+    abstract val ifReplacement: ExpEmbedding
 
-    fun operatorReplacement(ctx: LinearizationContext) = when (ctx.logicOperatorPolicy) {
-        LogicOperatorPolicy.CONVERT_TO_IF -> ifReplacement
-        LogicOperatorPolicy.CONVERT_TO_EXPRESSION -> expressionReplacement
-    }
+    /** Where the right operand is evaluated, given the builtin [left] operand. */
+    abstract fun rightEvaluatedWhen(left: Exp): Exp
+
+    /** The operator applied to the builtin operands. */
+    abstract fun combine(left: Exp, right: Exp, pos: Position): Exp
 
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(left, right)
 }
@@ -36,8 +37,9 @@ data class SequentialAnd(override val left: ExpEmbedding, override val right: Ex
     SequentialLogicOperatorEmbedding() {
     override val ifReplacement
         get() = If(left, right.withType(type), BooleanLit(false).withType(type), type)
-    override val expressionReplacement
-        get() = OperatorExpEmbeddings.And(left, right)
+
+    override fun rightEvaluatedWhen(left: Exp): Exp = left
+    override fun combine(left: Exp, right: Exp, pos: Position): Exp = Exp.And(left, right, pos)
 
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitSequentialAnd(this)
 }
@@ -46,8 +48,9 @@ data class SequentialOr(override val left: ExpEmbedding, override val right: Exp
     SequentialLogicOperatorEmbedding() {
     override val ifReplacement
         get() = If(left, BooleanLit(true).withType(type), right.withType(type), type)
-    override val expressionReplacement
-        get() = OperatorExpEmbeddings.Or(left, right)
+
+    override fun rightEvaluatedWhen(left: Exp): Exp = Exp.Not(left)
+    override fun combine(left: Exp, right: Exp, pos: Position): Exp = Exp.Or(left, right, pos)
 
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitSequentialOr(this)
 }

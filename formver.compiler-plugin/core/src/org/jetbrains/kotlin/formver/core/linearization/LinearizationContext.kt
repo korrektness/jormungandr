@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.formver.core.embeddings.properties.UniqueValStep
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.conversion.ReturnTarget
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.expression.AnonymousVariableEmbedding
@@ -22,6 +23,7 @@ import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Label
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
 
+/** How `&&` and `||` are linearized: as an `if`, or as Viper's short-circuiting operators. */
 enum class LogicOperatorPolicy {
     CONVERT_TO_IF, CONVERT_TO_EXPRESSION;
 }
@@ -88,6 +90,13 @@ interface LinearizationContext {
         addBranch(condition, thenBranch, elseBranch, result)
         return result.toViperExp(this)
     }
+
+    /**
+     * The expression [value] linearizes, evaluated only where [condition] holds: locals it introduces are bound under
+     * [condition]. Contexts with [LogicOperatorPolicy.CONVERT_TO_EXPRESSION] implement it.
+     */
+    fun addGuarded(condition: Exp, value: LinearizationContext.() -> Exp): Exp =
+        throw SnaktInternalException(source, "This context linearizes no guarded expressions.")
 
     /**
      * [receiverPath] is the receiver's path when it is owned: the access then unfolds the receiver's predicates

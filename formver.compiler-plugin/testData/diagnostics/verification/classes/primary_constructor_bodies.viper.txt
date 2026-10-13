@@ -1220,8 +1220,8 @@ predicate OrderedInitialization_unique(this: Ref) {
     true &&
     boolFromRef((let anon_1_0 ==
       (this.bf_value) in
-      andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
-      3)))))
+      boolToRef(intFromRef(anon_1_0) == 6 &&
+      intFromRef(snapshot(this)) == 3))))
 }
 
 predicate Serializable_footprint(this: Ref)
@@ -1316,8 +1316,8 @@ method con_OrderedInitialization() returns (ret_4: Ref)
       true &&
       boolFromRef((let anon_1_0 ==
         (this.bf_value) in
-        andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
-        3)))))
+        boolToRef(intFromRef(anon_1_0) == 6 &&
+        intFromRef(snapshot(this)) == 3))))
 
 
 method initializedClient(start: Ref) returns (v_ret_0: Ref)
@@ -1357,8 +1357,8 @@ method initializedClient(start: Ref) returns (v_ret_0: Ref)
       true &&
       boolFromRef((let anon_1_0 ==
         (this.bf_value) in
-        andBools(boolToRef(intFromRef(anon_1_0) == 6), boolToRef(intFromRef(snapshot(this)) ==
-        3)))))
+        boolToRef(intFromRef(anon_1_0) == 6 &&
+        intFromRef(snapshot(this)) == 3))))
   fold acc(OrderedInitialization_unique(ordered), write)
   if (intFromRef(anon_6) == 6) {
     anon_5 := boolToRef(intFromRef(snapshot(ordered)) == 3)

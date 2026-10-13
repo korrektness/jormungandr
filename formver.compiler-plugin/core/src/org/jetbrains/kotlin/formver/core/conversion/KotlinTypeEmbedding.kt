@@ -18,7 +18,7 @@ context(converter: ProgramConverter)
 internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuilder = when {
     type is ConeErrorType -> error("Encountered an erroneous type: $type")
     type is ConeTypeParameterType -> {
-        isNullable = true; any()
+        isNullable = type.canBeNull(converter.session); any()
     }
 
     type.isString -> {

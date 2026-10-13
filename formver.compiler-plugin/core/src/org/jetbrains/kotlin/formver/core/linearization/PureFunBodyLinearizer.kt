@@ -104,6 +104,12 @@ data class PureFunBodyLinearizer(
         }
     }
 
+    override fun addGuarded(condition: Exp, value: LinearizationContext.() -> Exp): Exp {
+        var result: Exp? = null
+        ssaConverter.branch(condition, { result = value() }, {})
+        return result ?: throw SnaktInternalException(source, "A guarded expression produced no value")
+    }
+
     override fun addFieldAccessStoringIn(
         receiver: Linearizable,
         receiverType: TypeEmbedding,

@@ -12,10 +12,9 @@ function isNextThreeQuotes(this: Ref, line: Ref, index: Ref, quote: Ref): Ref
     intFromRef(index) + 2 < |stringFromRef(line)|
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(andBools(boolToRef(stringFromRef(line)[intFromRef(index)] ==
-  charFromRef(quote)), boolToRef(stringFromRef(line)[intFromRef(index) + 1] ==
-  charFromRef(quote))), boolToRef(stringFromRef(line)[intFromRef(index) + 2] ==
-  charFromRef(quote)))
+  boolToRef(stringFromRef(line)[intFromRef(index)] == charFromRef(quote) &&
+  stringFromRef(line)[intFromRef(index) + 1] == charFromRef(quote) &&
+  stringFromRef(line)[intFromRef(index) + 2] == charFromRef(quote))
 }
 
 function isStringType(this: Ref): Ref
@@ -171,10 +170,9 @@ function isNextThreeQuotes(this: Ref, line: Ref, index: Ref, quote: Ref): Ref
     intFromRef(index) + 2 < |stringFromRef(line)|
   ensures isSubtype(typeOf(result), boolType())
 {
-  andBools(andBools(boolToRef(stringFromRef(line)[intFromRef(index)] ==
-  charFromRef(quote)), boolToRef(stringFromRef(line)[intFromRef(index) + 1] ==
-  charFromRef(quote))), boolToRef(stringFromRef(line)[intFromRef(index) + 2] ==
-  charFromRef(quote)))
+  boolToRef(stringFromRef(line)[intFromRef(index)] == charFromRef(quote) &&
+  stringFromRef(line)[intFromRef(index) + 1] == charFromRef(quote) &&
+  stringFromRef(line)[intFromRef(index) + 2] == charFromRef(quote))
 }
 
 function isStringType(this: Ref): Ref

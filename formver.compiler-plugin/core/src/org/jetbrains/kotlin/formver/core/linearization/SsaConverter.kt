@@ -87,12 +87,13 @@ class SsaConverter(
     private data class Assignment(val name: SsaVariableName, val guard: Exp, val value: Exp, val default: Exp)
 
     /**
-     * [this] with [assignment] bound in the innermost arm of its conditionals that holds every use of it, reached
-     * through the values and bodies of let bindings, or around [this] when there is no such arm. [known] are the
-     * conditions of the arms entered on the way; when they imply the guard, the value is bound unguarded, so the
-     * binding and its uses can share one `unfolding`. When [this] is just the variable, the value replaces it: Silicon
-     * does not relate a recursive application inside such a `let` to the function's unrolled definition. An alias that
-     * [this] does not use is not bound: reading a variable has no precondition.
+     * [this] with [assignment] bound in the innermost arm that holds every use of it, reached through the values and
+     * bodies of let bindings and the arguments of unary domain functions, or around [this] when there is no such arm.
+     * An arm is a branch of a conditional or the right operand of `&&` or `||`. [known] are the conditions of the arms
+     * entered on the way; when they imply the guard, the value is bound unguarded, so the binding and its uses can
+     * share one `unfolding`. When [this] is just the variable, the value replaces it: Silicon does not relate a
+     * recursive application inside such a `let` to the function's unrolled definition. An alias that [this] does not
+     * use is not bound: reading a variable has no precondition.
      */
     private fun Exp.bind(assignment: Assignment, known: Set<Exp> = emptySet()): Exp {
         if (assignment.name in aliases && !mentions(assignment.name)) return this
@@ -104,7 +105,7 @@ class SsaConverter(
         return Exp.LetBinding(Declaration.LocalVarDecl(assignment.name, Type.Ref), value, this)
     }
 
-    /** [this] with [assignment] bound inside one arm of a conditional, or `null` when no arm holds every use of it. */
+    /** [this] with [assignment] bound inside one of its arms, or `null` when no arm holds every use of it. */
     private fun Exp.bindInArm(assignment: Assignment, known: Set<Exp>): Exp? {
         fun Exp.uses() = mentions(assignment.name)
         return when (this) {
@@ -120,6 +121,10 @@ class SsaConverter(
                 elseExp.uses() && !thenExp.uses() -> copy(elseExp = elseExp.bind(assignment, known + condExp.negations(known)))
                 else -> null
             }
+
+            is Exp.And -> if (right.uses() && !left.uses()) copy(right = right.bind(assignment, known + left.conjuncts())) else null
+            is Exp.Or -> if (right.uses() && !left.uses()) copy(right = right.bind(assignment, known + Exp.Not(left))) else null
+            is Exp.DomainFuncApp -> args.singleOrNull()?.bindInArm(assignment, known)?.let { copy(args = listOf(it)) }
 
             else -> null
         }

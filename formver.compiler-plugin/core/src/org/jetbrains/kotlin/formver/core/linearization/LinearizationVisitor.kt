@@ -651,21 +651,29 @@ data class LinearizationVisitor(
     override fun visitSequentialAnd(e: SequentialAnd): Linearizable = sequentialLogicOperator(e)
     override fun visitSequentialOr(e: SequentialOr): Linearizable = sequentialLogicOperator(e)
 
+    /** In a single expression, the right operand's locals are bound where the left operand does not decide the result. */
     private fun sequentialLogicOperator(e: SequentialLogicOperatorEmbedding): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
-        private fun replacement(ctx: LinearizationContext) = e.operatorReplacement(ctx)
+        private fun LinearizationContext.asIf() = logicOperatorPolicy == LogicOperatorPolicy.CONVERT_TO_IF
+
+        private fun shortCircuit(ctx: LinearizationContext): Exp {
+            val left = e.left.linearize().toViperBuiltinType(ctx)
+            val right = ctx.addGuarded(e.rightEvaluatedWhen(left)) { e.right.linearize().toViperBuiltinType(this) }
+            return e.combine(left, right, ctx.source.asPosition)
+        }
 
         override fun toViper(ctx: LinearizationContext): Exp =
-            replacement(ctx).linearize().toViper(ctx)
+            if (ctx.asIf()) e.ifReplacement.linearize().toViper(ctx)
+            else e.type.injection.toRef(shortCircuit(ctx), pos = ctx.source.asPosition)
 
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
-            replacement(ctx).linearize().toViperBuiltinType(ctx)
+            if (ctx.asIf()) e.ifReplacement.linearize().toViperBuiltinType(ctx) else shortCircuit(ctx)
 
         override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
-            replacement(ctx).linearize().toViperStoringIn(result, ctx)
+            if (ctx.asIf()) e.ifReplacement.linearize().toViperStoringIn(result, ctx) else super.toViperStoringIn(result, ctx)
         }
 
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            replacement(ctx).linearize().toViperUnusedResult(ctx)
+            if (ctx.asIf()) e.ifReplacement.linearize().toViperUnusedResult(ctx) else shortCircuit(ctx)
         }
     }
 
