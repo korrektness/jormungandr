@@ -25,6 +25,12 @@ fun KtDiagnostic.metaInfos(): List<FirDiagnosticCodeMetaInfo> {
 
 
 /**
+ * A parsed tag that compares by identity. [CodeMetaInfoRenderer] drops infos equal to one it has rendered, and parsed
+ * infos are equal when tag and range match, so a range marked `<!A, A!>` would render as `<!A!>`.
+ */
+private class DistinctMetaInfo(info: CodeMetaInfo) : CodeMetaInfo by info
+
+/**
  * Collects and asserts the tags in the test files.
  *
  * It is possible to ignore some tags when comparing. For this [tagsToConsider] must be overwritten by a list of tags that
@@ -126,7 +132,7 @@ abstract class TagCollector(
         require(tagsToConsider != null) { "tagsToConsider must be set" }
         parseExistingMetadataInfosFromAllSources()
         val existingInfosWithoutVerification = existingInfos.mapValues {
-            it.value.filter { info -> info.tag in tagsToConsider!! }
+            it.value.filter { info -> info.tag in tagsToConsider!! }.map(::DistinctMetaInfo)
         }
 
         return renderText(existingInfosWithoutVerification, this::sourceFileWithoutTags)
