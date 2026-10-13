@@ -16,12 +16,14 @@ fun <!VIPER_TEXT!>fill<!>(arr: @Unique @Borrowed IntArray, v: Int) {
 
 fun <!VIPER_TEXT!>sum<!>(arr: @Unique @Borrowed IntArray): Int {
     preconditions {
+        arr.size <= 214748364
         forAll<Int> { k -> (0 <= k && k < arr.size) implies (0 <= arr[k] && arr[k] <= 10) }
     }
     postconditions<Int> { result -> 0 <= result && result <= 10 * arr.size }
     var total = 0
     for (i in 0 ..< arr.size) {
         loopInvariants {
+            arr.size <= 214748364
             forAll<Int> { k -> (0 <= k && k < arr.size) implies (0 <= arr[k] && arr[k] <= 10) }
             0 <= total && total <= 10 * i
         }
@@ -32,12 +34,12 @@ fun <!VIPER_TEXT!>sum<!>(arr: @Unique @Borrowed IntArray): Int {
 
 // The bound is evaluated once, so changing `n` in the body does not change the iterations.
 fun <!VIPER_TEXT!>countInclusive<!>(n: Int): Int {
-    preconditions { n >= 0 }
+    preconditions { 0 <= n && n < 2147483647 }
     postconditions<Int> { result -> result == n + 1 }
     var m = n
     var count = 0
     for (i in 0..m) {
-        loopInvariants { count == i }
+        loopInvariants { count == i && i <= n + 1 }
         m = 0
         count++
     }
@@ -57,7 +59,9 @@ fun <!VIPER_TEXT!>clearBackwards<!>(arr: @Unique @Borrowed IntArray) {
 }
 
 fun <!VIPER_TEXT!>evenSlots<!>(arr: @Unique @Borrowed IntArray, s: Int) {
+    preconditions { arr.size <= 2147483645 }
     for (i in 0 until arr.size step 2) {
+        loopInvariants { arr.size <= 2147483645 }
         arr[i] = 1
     }
     for (i in arr.size - 1 downTo 0 step s) {
@@ -90,7 +94,9 @@ fun <!VIPER_TEXT!>emptyRange<!>(): Int {
 }
 
 fun <!VIPER_TEXT!>writePastEnd<!>(arr: @Unique @Borrowed IntArray) {
+    preconditions { arr.size < 2147483647 }
     for (i in 0..arr.size) {
+        loopInvariants { arr.size < 2147483647 }
         <!POSSIBLE_INDEX_OUT_OF_BOUND!>arr[i] = 0<!>
     }
 }

@@ -4,6 +4,8 @@ field n: Ref
 method bump(l: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(l), Leaf())
   requires acc(Leaf_unique(l), write)
+  requires (unfolding acc(Leaf_unique(l), write) in
+      intFromRef(l.n) < 2147483647)
   ensures acc(Leaf_unique(l), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -81,6 +83,8 @@ method borrowThroughCallResult() returns (v_ret_0: Ref)
 method bump(l: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(l), Leaf())
   requires acc(Leaf_unique(l), write)
+  requires (unfolding acc(Leaf_unique(l), write) in
+      intFromRef(l.n) < 2147483647)
   ensures acc(Leaf_unique(l), write)
   ensures isSubtype(typeOf(ret_1), unitType())
 

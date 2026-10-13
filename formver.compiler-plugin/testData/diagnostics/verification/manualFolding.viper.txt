@@ -115,6 +115,14 @@ method combine(par_left: Ref, par_right: Ref) returns (v_ret_0: Ref)
   requires acc(Tree_unique(par_left), write)
   requires isSubtype(typeOf(par_right), Tree())
   requires acc(Tree_unique(par_right), write)
+  requires (unfolding acc(Tree_unique(par_left), write) in
+      intFromRef(par_left.bf_data) >= -100)
+  requires (unfolding acc(Tree_unique(par_left), write) in
+      intFromRef(par_left.bf_data) <= 100)
+  requires (unfolding acc(Tree_unique(par_right), write) in
+      intFromRef(par_right.bf_data) >= -100)
+  requires (unfolding acc(Tree_unique(par_right), write) in
+      intFromRef(par_right.bf_data) <= 100)
   ensures isSubtype(typeOf(v_ret_0), Tree())
   ensures acc(Tree_unique(v_ret_0), write)
 {
@@ -137,24 +145,24 @@ method combine(par_left: Ref, par_right: Ref) returns (v_ret_0: Ref)
 }
 
 method con_Tree(par_left: Ref, par_right: Ref, par_data: Ref)
-  returns (ret_2: Ref)
+  returns (ret_3: Ref)
   requires isSubtype(typeOf(par_left), nullable(Tree()))
   requires isSubtype(typeOf(par_right), nullable(Tree()))
   requires isSubtype(typeOf(par_data), intType())
-  ensures isSubtype(typeOf(ret_2), Tree())
-  ensures isSubtype(typeOf(ret_2), Tree()) && acc(ret_2.bf_left, write) &&
-    isSubtype(typeOf(ret_2.bf_left), nullable(Tree())) &&
-    acc(ret_2.bf_right, write) &&
-    isSubtype(typeOf(ret_2.bf_right), nullable(Tree())) &&
-    acc(ret_2.bf_data, write) &&
-    isSubtype(typeOf(ret_2.bf_data), intType())
-  ensures ret_2.bf_left == par_left
-  ensures ret_2.bf_right == par_right
-  ensures intFromRef(ret_2.bf_data) == intFromRef(par_data)
+  ensures isSubtype(typeOf(ret_3), Tree())
+  ensures isSubtype(typeOf(ret_3), Tree()) && acc(ret_3.bf_left, write) &&
+    isSubtype(typeOf(ret_3.bf_left), nullable(Tree())) &&
+    acc(ret_3.bf_right, write) &&
+    isSubtype(typeOf(ret_3.bf_right), nullable(Tree())) &&
+    acc(ret_3.bf_data, write) &&
+    isSubtype(typeOf(ret_3.bf_data), intType())
+  ensures ret_3.bf_left == par_left
+  ensures ret_3.bf_right == par_right
+  ensures intFromRef(ret_3.bf_data) == intFromRef(par_data)
 
 
-method con_UniquePred(par_data: Ref) returns (ret_1: Ref)
+method con_UniquePred(par_data: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_data), anyType())
-  ensures isSubtype(typeOf(ret_1), UniquePred())
-  ensures isSubtype(typeOf(ret_1), UniquePred()) &&
-    isSubtype(typeOf(ret_1), Predicate())
+  ensures isSubtype(typeOf(ret_2), UniquePred())
+  ensures isSubtype(typeOf(ret_2), UniquePred()) &&
+    isSubtype(typeOf(ret_2), Predicate())

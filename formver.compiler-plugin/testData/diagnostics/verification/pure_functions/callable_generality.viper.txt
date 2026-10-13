@@ -30,14 +30,22 @@ method invoke(this: Ref, amount: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(Accumulator_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
   ensures (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(Accumulator_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(ret) == intFromRef(total(this)))
 
@@ -192,11 +200,17 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_5: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_5) == intFromRef(Lambda0_f_total(this))
 {
   var anon_2: Ref
@@ -241,14 +255,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this)))
 
@@ -266,7 +288,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_Accumulator_restore(this)
@@ -276,9 +303,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
   assert isSubtype(typeOf(ret_4), intType())
   assert (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this)))
 }
@@ -397,17 +427,23 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_3: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_3), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_3) == intFromRef(Lambda0_f_total(this))
 {
-  var anon: Ref
+  var anon_1: Ref
   unfold acc(Lambda0_unique(this), write)
-  anon := this.Lambda0_p_capture0
-  this.Lambda0_p_capture0 := minusInts(anon, amount)
+  anon_1 := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := minusInts(anon_1, amount)
   v_ret_3 := this.Lambda0_p_capture0
   fold acc(Lambda0_unique(this), write)
   goto lbl_ret_3
@@ -429,14 +465,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this)))
 
@@ -447,7 +491,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_Accumulator_restore(this)
@@ -457,9 +506,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
   assert isSubtype(typeOf(ret_2), intType())
   assert (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this)))
 }
@@ -512,14 +564,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(Accumulator_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(Accumulator_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(ret_2) == intFromRef(total(this)))
 
@@ -537,14 +597,14 @@ method parameterClient() returns (v_ret_0: Ref)
   var f: Ref
   var first: Ref
   var second: Ref
-  var anon: Ref
+  var anon_0: Ref
   f := ownedCapture()
   first := invoke(f, intToRef(3))
   assert intFromRef(first) == 3
   second := invoke(f, intToRef(4))
   assert intFromRef(second) == 7
-  anon := (unfolding acc(Accumulator_unique(f), wildcard) in total(f))
-  assert intFromRef(anon) == 7
+  anon_0 := (unfolding acc(Accumulator_unique(f), wildcard) in total(f))
+  assert intFromRef(anon_0) == 7
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -566,9 +626,9 @@ method badArgument() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var f: Ref
-  var anon: Ref
+  var anon_0: Ref
   f := ownedCapture()
-  anon := invoke(f, intToRef(-1))
+  anon_0 := invoke(f, intToRef(-1))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -579,14 +639,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(Accumulator_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(Accumulator_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(ret_2) == intFromRef(total(this)))
 
@@ -668,14 +736,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this)))
 
@@ -732,17 +808,23 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_4: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(this))
 {
-  var anon: Ref
+  var anon_1: Ref
   unfold acc(Lambda0_unique(this), write)
-  anon := this.Lambda0_p_capture0
-  this.Lambda0_p_capture0 := plusInts(anon, amount)
+  anon_1 := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon_1, amount)
   v_ret_4 := this.Lambda0_p_capture0
   fold acc(Lambda0_unique(this), write)
   goto lbl_ret_4
@@ -768,14 +850,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this)))
 
@@ -786,7 +876,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_Accumulator_restore(this)
@@ -796,9 +891,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   assert isSubtype(typeOf(ret_3), intType())
   assert (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(c_Accumulator_f_total(this)))
 }
@@ -833,16 +931,26 @@ method f_apply(this: Ref, amount: Ref) returns (v_ret_0: Ref)
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(AccumulatorHolder_unique(this), write) in
       (unfolding acc(Accumulator_unique(action(this)), wildcard) in
-        intFromRef(total(action(this))) >= 0))
+        intFromRef(total(action(this))) >= 0)) &&
+    (unfolding acc(AccumulatorHolder_unique(this), write) in
+      (unfolding acc(Accumulator_unique(action(this)), wildcard) in
+        intFromRef(total(action(this))) <=
+        (let anon ==
+          (minusInts(intToRef(2147483647), amount)) in
+          intFromRef(intToRef(2147483647)) - intFromRef(amount))))
   ensures acc(AccumulatorHolder_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures (unfolding acc(AccumulatorHolder_unique(this), write) in
       (unfolding acc(Accumulator_unique(action(this)), wildcard) in
         intFromRef(total(action(this))) ==
-        old((unfolding acc(AccumulatorHolder_unique(this), write) in
-          (unfolding acc(Accumulator_unique(action(this)), wildcard) in
-            intFromRef(total(action(this)))))) +
-        intFromRef(amount))) &&
+        (let anon ==
+          (plusInts(old((unfolding acc(AccumulatorHolder_unique(this), write) in
+            (unfolding acc(Accumulator_unique(action(this)), wildcard) in
+              total(action(this))))), amount)) in
+          intFromRef(old((unfolding acc(AccumulatorHolder_unique(this), write) in
+            (unfolding acc(Accumulator_unique(action(this)), wildcard) in
+              total(action(this)))))) +
+          intFromRef(amount)))) &&
     (unfolding acc(AccumulatorHolder_unique(this), write) in
       (unfolding acc(Accumulator_unique(action(this)), wildcard) in
         intFromRef(v_ret_0) == intFromRef(total(action(this)))))
@@ -860,14 +968,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(Accumulator_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(Accumulator_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(total(this)))
 
@@ -932,16 +1048,26 @@ method f_apply(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(AccumulatorHolder_unique(this), write) in
       (unfolding acc(Accumulator_unique(g_action(this)), wildcard) in
-        intFromRef(total(g_action(this))) >= 0))
+        intFromRef(total(g_action(this))) >= 0)) &&
+    (unfolding acc(AccumulatorHolder_unique(this), write) in
+      (unfolding acc(Accumulator_unique(g_action(this)), wildcard) in
+        intFromRef(total(g_action(this))) <=
+        (let anon_builtin ==
+          (minusInts(intToRef(2147483647), amount)) in
+          intFromRef(intToRef(2147483647)) - intFromRef(amount))))
   ensures acc(AccumulatorHolder_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(AccumulatorHolder_unique(this), write) in
       (unfolding acc(Accumulator_unique(g_action(this)), wildcard) in
         intFromRef(total(g_action(this))) ==
-        old((unfolding acc(AccumulatorHolder_unique(this), write) in
-          (unfolding acc(Accumulator_unique(g_action(this)), wildcard) in
-            intFromRef(total(g_action(this)))))) +
-        intFromRef(amount))) &&
+        (let anon_builtin ==
+          (plusInts(old((unfolding acc(AccumulatorHolder_unique(this), write) in
+            (unfolding acc(Accumulator_unique(g_action(this)), wildcard) in
+              total(g_action(this))))), amount)) in
+          intFromRef(old((unfolding acc(AccumulatorHolder_unique(this), write) in
+            (unfolding acc(Accumulator_unique(g_action(this)), wildcard) in
+              total(g_action(this)))))) +
+          intFromRef(amount)))) &&
     (unfolding acc(AccumulatorHolder_unique(this), write) in
       (unfolding acc(Accumulator_unique(g_action(this)), wildcard) in
         intFromRef(ret_3) == intFromRef(total(g_action(this)))))
@@ -951,11 +1077,11 @@ method fieldClient() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var holder: Ref
-  var anon: Ref
+  var anon_0: Ref
   var first: Ref
   var second: Ref
-  anon := ownedCapture()
-  holder := con(anon)
+  anon_0 := ownedCapture()
+  holder := con(anon_0)
   fold acc(AccumulatorHolder_unique(holder), write)
   first := f_apply(holder, intToRef(2))
   assert intFromRef(first) == 2
@@ -1439,17 +1565,23 @@ method Lambda1_invoke(this: Ref, amount: Ref) returns (v_ret_7: Ref)
   requires acc(Lambda1_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda1_f_total(this)) >= 0
+    intFromRef(Lambda1_f_total(this)) >= 0 &&
+    intFromRef(Lambda1_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_7), intType())
   ensures intFromRef(Lambda1_f_total(this)) ==
-    old(intFromRef(Lambda1_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda1_f_total(this)), amount)) in
+      intFromRef(old(Lambda1_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_7) == intFromRef(Lambda1_f_total(this))
 {
-  var anon: Ref
+  var anon_2: Ref
   unfold acc(Lambda1_unique(this), write)
-  anon := this.Lambda1_p_capture0
-  this.Lambda1_p_capture0 := plusInts(anon, amount)
+  anon_2 := this.Lambda1_p_capture0
+  this.Lambda1_p_capture0 := plusInts(anon_2, amount)
   v_ret_7 := this.Lambda1_p_capture0
   fold acc(Lambda1_unique(this), write)
   goto lbl_ret_7
@@ -1462,14 +1594,22 @@ method c_Accumulator_f_invoke(this: Ref, amount: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_6), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_6) == intFromRef(c_Accumulator_f_total(this)))
 
@@ -1489,7 +1629,12 @@ method refines_c_Accumulator_f_invoke(this: Ref, amount: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_Accumulator_restore(this)
@@ -1499,9 +1644,12 @@ method refines_c_Accumulator_f_invoke(this: Ref, amount: Ref)
   assert isSubtype(typeOf(ret_6), intType())
   assert (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_6) == intFromRef(c_Accumulator_f_total(this)))
 }
@@ -1577,14 +1725,22 @@ method Accumulator_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(Accumulator_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(Accumulator_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(total(this)))
 
@@ -1597,7 +1753,7 @@ method nestedClient() returns (v_ret_0: Ref)
   var second: Ref
   var r1: Ref
   var r2: Ref
-  var anon: Ref
+  var anon_0: Ref
   factory := nestedReturn(intToRef(10))
   first := AccumulatorFactory_f_invoke(factory)
   second := AccumulatorFactory_f_invoke(factory)
@@ -1605,9 +1761,9 @@ method nestedClient() returns (v_ret_0: Ref)
   assert intFromRef(r1) == 11
   r2 := Accumulator_f_invoke(second, intToRef(2))
   assert intFromRef(r2) == 12
-  anon := (unfolding acc(Accumulator_unique(first), wildcard) in
+  anon_0 := (unfolding acc(Accumulator_unique(first), wildcard) in
       total(first))
-  assert intFromRef(anon) == 11
+  assert intFromRef(anon_0) == 11
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1652,17 +1808,23 @@ method project(this: Ref, x: Ref, y: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
   requires (unfolding acc(Projection_unique(this), wildcard) in
+      intFromRef(offset(this)) >= 0) &&
+    (unfolding acc(Projection_unique(this), wildcard) in
       intFromRef(x) >= intFromRef(offset(this))) &&
     intFromRef(y) >= intFromRef(x)
   ensures acc(Projection_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
   ensures (unfolding acc(Projection_unique(this), wildcard) in
-      intFromRef(ret) ==
-      intFromRef(y) - intFromRef(x) + intFromRef(offset(this)))
-  ensures (unfolding acc(Projection_unique(this), wildcard) in
       intFromRef(offset(this)) ==
       old((unfolding acc(Projection_unique(this), wildcard) in
         intFromRef(offset(this)))))
+  ensures intFromRef(ret) ==
+    (let anon ==
+      (plusInts(minusInts(y, x), old((unfolding acc(Projection_unique(this), wildcard) in
+        offset(this))))) in
+      intFromRef(minusInts(y, x)) +
+      intFromRef(old((unfolding acc(Projection_unique(this), wildcard) in
+        offset(this)))))
 
 
 /callable_generality.kt: info: Generated Viper text for namedOperation:
@@ -1826,19 +1988,22 @@ method invoke(this: Ref, x: Ref, y: Ref) returns (v_ret_4: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
-  requires intFromRef(x) >= intFromRef(Lambda0_f_offset(this)) &&
+  requires intFromRef(Lambda0_f_offset(this)) >= 0 &&
+    intFromRef(x) >= intFromRef(Lambda0_f_offset(this)) &&
     intFromRef(y) >= intFromRef(x)
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
-  ensures intFromRef(v_ret_4) ==
-    intFromRef(y) - intFromRef(x) + intFromRef(Lambda0_f_offset(this))
   ensures intFromRef(Lambda0_f_offset(this)) ==
     old(intFromRef(Lambda0_f_offset(this)))
+  ensures intFromRef(v_ret_4) ==
+    (let anon_builtin ==
+      (plusInts(minusInts(y, x), old(Lambda0_f_offset(this)))) in
+      intFromRef(minusInts(y, x)) + intFromRef(old(Lambda0_f_offset(this))))
 {
-  var anon: Ref
+  var anon_1: Ref
   unfold acc(Lambda0_unique(this), write)
-  anon := this.Lambda0_p_capture0
-  v_ret_4 := plusInts(minusInts(y, x), anon)
+  anon_1 := this.Lambda0_p_capture0
+  v_ret_4 := plusInts(minusInts(y, x), anon_1)
   fold acc(Lambda0_unique(this), write)
   goto lbl_ret_4
   label lbl_ret_4
@@ -1859,18 +2024,23 @@ method project(this: Ref, x: Ref, y: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
   requires (unfolding acc(c_Projection_unique(this), wildcard) in
+      intFromRef(c_Projection_f_offset(this)) >= 0) &&
+    (unfolding acc(c_Projection_unique(this), wildcard) in
       intFromRef(x) >= intFromRef(c_Projection_f_offset(this))) &&
     intFromRef(y) >= intFromRef(x)
   ensures acc(c_Projection_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(c_Projection_unique(this), wildcard) in
-      intFromRef(ret_3) ==
-      intFromRef(y) - intFromRef(x) +
-      intFromRef(c_Projection_f_offset(this)))
-  ensures (unfolding acc(c_Projection_unique(this), wildcard) in
       intFromRef(c_Projection_f_offset(this)) ==
       old((unfolding acc(c_Projection_unique(this), wildcard) in
         intFromRef(c_Projection_f_offset(this)))))
+  ensures intFromRef(ret_3) ==
+    (let anon_builtin ==
+      (plusInts(minusInts(y, x), old((unfolding acc(c_Projection_unique(this), wildcard) in
+        c_Projection_f_offset(this))))) in
+      intFromRef(minusInts(y, x)) +
+      intFromRef(old((unfolding acc(c_Projection_unique(this), wildcard) in
+        c_Projection_f_offset(this)))))
 
 
 method refines_project(this: Ref, x: Ref, y: Ref) returns (ret_3: Ref)
@@ -1879,6 +2049,8 @@ method refines_project(this: Ref, x: Ref, y: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
   requires (unfolding acc(c_Projection_unique(this), wildcard) in
+      intFromRef(c_Projection_f_offset(this)) >= 0) &&
+    (unfolding acc(c_Projection_unique(this), wildcard) in
       intFromRef(x) >= intFromRef(c_Projection_f_offset(this))) &&
     intFromRef(y) >= intFromRef(x)
   requires isSubtype(typeOf(this), Lambda0())
@@ -1889,13 +2061,16 @@ method refines_project(this: Ref, x: Ref, y: Ref) returns (ret_3: Ref)
   assert acc(c_Projection_unique(this), write)
   assert isSubtype(typeOf(ret_3), intType())
   assert (unfolding acc(c_Projection_unique(this), wildcard) in
-      intFromRef(ret_3) ==
-      intFromRef(y) - intFromRef(x) +
-      intFromRef(c_Projection_f_offset(this)))
-  assert (unfolding acc(c_Projection_unique(this), wildcard) in
       intFromRef(c_Projection_f_offset(this)) ==
       old((unfolding acc(c_Projection_unique(this), wildcard) in
         intFromRef(c_Projection_f_offset(this)))))
+  assert intFromRef(ret_3) ==
+    (let anon_builtin ==
+      (plusInts(minusInts(y, x), old((unfolding acc(c_Projection_unique(this), wildcard) in
+        c_Projection_f_offset(this))))) in
+      intFromRef(minusInts(y, x)) +
+      intFromRef(old((unfolding acc(c_Projection_unique(this), wildcard) in
+        c_Projection_f_offset(this)))))
 }
 
 /callable_generality.kt: info: Generated Viper text for namedOperationClient:
@@ -2006,18 +2181,23 @@ method project(this: Ref, x: Ref, y: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
   requires (unfolding acc(c_Projection_unique(this), wildcard) in
+      intFromRef(c_Projection_f_offset(this)) >= 0) &&
+    (unfolding acc(c_Projection_unique(this), wildcard) in
       intFromRef(x) >= intFromRef(c_Projection_f_offset(this))) &&
     intFromRef(y) >= intFromRef(x)
   ensures acc(c_Projection_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(c_Projection_unique(this), wildcard) in
-      intFromRef(ret_2) ==
-      intFromRef(y) - intFromRef(x) +
-      intFromRef(c_Projection_f_offset(this)))
-  ensures (unfolding acc(c_Projection_unique(this), wildcard) in
       intFromRef(c_Projection_f_offset(this)) ==
       old((unfolding acc(c_Projection_unique(this), wildcard) in
         intFromRef(c_Projection_f_offset(this)))))
+  ensures intFromRef(ret_2) ==
+    (let anon_builtin ==
+      (plusInts(minusInts(y, x), old((unfolding acc(c_Projection_unique(this), wildcard) in
+        c_Projection_f_offset(this))))) in
+      intFromRef(minusInts(y, x)) +
+      intFromRef(old((unfolding acc(c_Projection_unique(this), wildcard) in
+        c_Projection_f_offset(this)))))
 
 
 /callable_generality.kt: info: Generated Viper text for inheritedSam:
@@ -2165,17 +2345,23 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_4: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(this))
 {
-  var anon: Ref
+  var anon_1: Ref
   unfold acc(Lambda0_unique(this), write)
-  anon := this.Lambda0_p_capture0
-  this.Lambda0_p_capture0 := plusInts(anon, amount)
+  anon_1 := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon_1, amount)
   v_ret_4 := this.Lambda0_p_capture0
   fold acc(Lambda0_unique(this), write)
   goto lbl_ret_4
@@ -2197,14 +2383,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(c_Accumulator_f_total(this)))
 
@@ -2222,7 +2416,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_Accumulator_restore(this)
@@ -2232,9 +2431,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   assert isSubtype(typeOf(ret_3), intType())
   assert (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(c_Accumulator_f_total(this)))
 }
@@ -2337,14 +2539,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_2) == intFromRef(c_Accumulator_f_total(this)))
 
@@ -2425,14 +2635,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this)))
 
@@ -2462,7 +2680,10 @@ method loopLiteral(count: Ref) returns (v_ret_0: Ref)
     inhale isSubtype(typeOf(f), c_Accumulator())
     Lambda0_c_Accumulator_upcast(f)
     l2_r := invoke(f, intToRef(1))
-    assert intFromRef(l2_r) == intFromRef(i) + 1
+    assert intFromRef(l2_r) ==
+      (let anon_builtin ==
+        (plusInts(i, intToRef(1))) in
+        intFromRef(i) + intFromRef(intToRef(1)))
     i := plusInts(i, intToRef(1))
     goto cont
   }
@@ -2550,17 +2771,23 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_6: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_6), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_6) == intFromRef(Lambda0_f_total(this))
 {
-  var anon: Ref
+  var anon_1: Ref
   unfold acc(Lambda0_unique(this), write)
-  anon := this.Lambda0_p_capture0
-  this.Lambda0_p_capture0 := plusInts(anon, amount)
+  anon_1 := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon_1, amount)
   v_ret_6 := this.Lambda0_p_capture0
   fold acc(Lambda0_unique(this), write)
   goto lbl_ret_6
@@ -2582,14 +2809,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this)))
 
@@ -2606,7 +2841,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(c_Accumulator_f_total(this)) >= 0)
+      intFromRef(c_Accumulator_f_total(this)) >= 0) &&
+    (unfolding acc(c_Accumulator_unique(this), wildcard) in
+      intFromRef(c_Accumulator_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_Accumulator_restore(this)
@@ -2616,9 +2856,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_5: Ref)
   assert isSubtype(typeOf(ret_5), intType())
   assert (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
-      old((unfolding acc(c_Accumulator_unique(this), wildcard) in
-        intFromRef(c_Accumulator_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Accumulator_unique(this), wildcard) in
+          c_Accumulator_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(ret_5) == intFromRef(c_Accumulator_f_total(this)))
 }
@@ -2642,14 +2885,22 @@ method applyForwarded(f: Ref, amount: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(f), wildcard) in
-      intFromRef(total(f)) >= 0)
+      intFromRef(total(f)) >= 0) &&
+    (unfolding acc(Accumulator_unique(f), wildcard) in
+      intFromRef(total(f)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(f), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures (unfolding acc(Accumulator_unique(f), wildcard) in
       intFromRef(total(f)) ==
-      old((unfolding acc(Accumulator_unique(f), wildcard) in
-        intFromRef(total(f)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(Accumulator_unique(f), wildcard) in
+          total(f))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(f), wildcard) in
+          total(f)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(f), wildcard) in
       intFromRef(v_ret_0) == intFromRef(total(f)))
 {
@@ -2664,14 +2915,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(Accumulator_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(Accumulator_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(total(this)))
 
@@ -2695,14 +2954,22 @@ method applyForwarded(f: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(f), wildcard) in
-      intFromRef(total(f)) >= 0)
+      intFromRef(total(f)) >= 0) &&
+    (unfolding acc(Accumulator_unique(f), wildcard) in
+      intFromRef(total(f)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(f), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(Accumulator_unique(f), wildcard) in
       intFromRef(total(f)) ==
-      old((unfolding acc(Accumulator_unique(f), wildcard) in
-        intFromRef(total(f)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(Accumulator_unique(f), wildcard) in
+          total(f))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(f), wildcard) in
+          total(f)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(f), wildcard) in
       intFromRef(ret_3) == intFromRef(total(f)))
 
@@ -2713,14 +2980,22 @@ method forward(f: Ref, amount: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(f), wildcard) in
-      intFromRef(total(f)) >= 0)
+      intFromRef(total(f)) >= 0) &&
+    (unfolding acc(Accumulator_unique(f), wildcard) in
+      intFromRef(total(f)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(f), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures (unfolding acc(Accumulator_unique(f), wildcard) in
       intFromRef(total(f)) ==
-      old((unfolding acc(Accumulator_unique(f), wildcard) in
-        intFromRef(total(f)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(Accumulator_unique(f), wildcard) in
+          total(f))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(f), wildcard) in
+          total(f)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(f), wildcard) in
       intFromRef(v_ret_0) == intFromRef(total(f)))
 {
@@ -2772,14 +3047,22 @@ method forward(par_f: Ref, amount: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(par_f), wildcard) in
-      intFromRef(total(par_f)) >= 0)
+      intFromRef(total(par_f)) >= 0) &&
+    (unfolding acc(Accumulator_unique(par_f), wildcard) in
+      intFromRef(total(par_f)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(par_f), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(Accumulator_unique(par_f), wildcard) in
       intFromRef(total(par_f)) ==
-      old((unfolding acc(Accumulator_unique(par_f), wildcard) in
-        intFromRef(total(par_f)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(Accumulator_unique(par_f), wildcard) in
+          total(par_f))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(par_f), wildcard) in
+          total(par_f)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(par_f), wildcard) in
       intFromRef(ret_2) == intFromRef(total(par_f)))
 
@@ -2805,14 +3088,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(Accumulator_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(Accumulator_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(Accumulator_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(Accumulator_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(Accumulator_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(total(this)))
 

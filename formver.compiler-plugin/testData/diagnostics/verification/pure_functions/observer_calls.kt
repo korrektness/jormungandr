@@ -7,6 +7,11 @@ interface Measure {
     @Pure
     fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int
 
+    @SpecOf("scaled")
+    fun scaledSpec(factor: Int) {
+        preconditions { -1073741824 <= factor && factor <= 1073741823 }
+    }
+
     @Pure
     fun <!VIPER_TEXT!>read<!>(cell: @Unique Cell): Int
 
@@ -17,7 +22,10 @@ interface Measure {
 
 class Fixed(var value: Int) : Measure {
     @Pure
-    override fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int = factor * 2
+    override fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int {
+        preconditions { -1073741824 <= factor && factor <= 1073741823 }
+        return factor * 2
+    }
 
     @Pure
     override fun <!VIPER_TEXT!>read<!>(cell: @Unique Cell): Int = cell.value
@@ -28,17 +36,23 @@ class Fixed(var value: Int) : Measure {
 }
 
 fun <!VIPER_TEXT!>interfaceCall<!>(m: @Unique @Borrowed Measure, cell: @Unique @Borrowed Cell): Int {
-    postconditions<Int> { r -> r == m.scaled(3) + m.read(cell) }
+    preconditions {
+        m.scaled(3).toLong() + m.read(cell).toLong() >= -2147483648L
+        m.scaled(3).toLong() + m.read(cell).toLong() <= 2147483647L
+    }
+    postconditions<Int> { r -> r == old(m.scaled(3)) + old(m.read(cell)) }
     return m.scaled(3) + m.read(cell)
 }
 
 fun <!VIPER_TEXT!>classCall<!>(m: Fixed, cell: @Unique @Borrowed Cell): Int {
-    postconditions<Int> { r -> r == 6 + cell.value }
+    preconditions { cell.value <= 2147483641 }
+    postconditions<Int> { r -> r == 6 + old(cell.value) }
     return m.scaled(3) + m.read(cell)
 }
 
 fun <!VIPER_TEXT!>bothCallShapes<!>(m: Fixed, i: @Unique @Borrowed Measure): Int {
-    postconditions<Int> { r -> r == 6 + i.scaled(3) }
+    preconditions { i.scaled(3) <= 2147483641 }
+    postconditions<Int> { r -> r == 6 + old(i.scaled(3)) }
     return m.scaled(3) + i.scaled(3)
 }
 

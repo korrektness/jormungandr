@@ -5,14 +5,14 @@ function lower(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+function read(this: Ref, par_index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), Window())
   requires acc(footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
-  requires intFromRef(lower(this)) <= intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+  requires intFromRef(lower(this)) <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -24,14 +24,14 @@ function lower(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+function read(this: Ref, par_index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), Window())
   requires acc(footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
-  requires intFromRef(lower(this)) <= intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+  requires intFromRef(lower(this)) <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -45,15 +45,16 @@ function ChildWindow_c_Window_f_lower(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function ChildWindow_c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+function ChildWindow_c_Window_f_read(this: Ref, par_index: Ref, limit: Ref,
+  fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
   requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+    intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -72,7 +73,20 @@ function TextWindow_f_read(this: Ref, at: Ref, top: Ref, text: Ref): Ref
   requires isSubtype(typeOf(at), intType())
   requires isSubtype(typeOf(top), intType())
   requires isSubtype(typeOf(text), nullable(stringType()))
-  requires intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+  requires ((let anon ==
+      (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+      longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+      longFromRef(longToRef(1))) <
+    intFromRef(at) ?
+      -1 :
+      ((let anon ==
+        (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+        longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+        longFromRef(longToRef(1))) >
+      intFromRef(at) ?
+        1 :
+        0)) <=
+    0 &&
     intFromRef(at) < intFromRef(top)
   ensures isSubtype(typeOf(result), nullable(stringType()))
   ensures result == text
@@ -86,14 +100,14 @@ function c_Window_f_lower(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+function c_Window_f_read(this: Ref, par_index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(c_Window_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
-  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -115,7 +129,20 @@ function TextWindow_f_read(this: Ref, at: Ref, top: Ref, text: Ref): Ref
   requires isSubtype(typeOf(at), intType())
   requires isSubtype(typeOf(top), intType())
   requires isSubtype(typeOf(text), nullable(stringType()))
-  requires intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+  requires ((let anon ==
+      (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+      longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+      longFromRef(longToRef(1))) <
+    intFromRef(at) ?
+      -1 :
+      ((let anon ==
+        (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+        longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+        longFromRef(longToRef(1))) >
+      intFromRef(at) ?
+        1 :
+        0)) <=
+    0 &&
     intFromRef(at) < intFromRef(top)
   ensures isSubtype(typeOf(result), nullable(stringType()))
   ensures result == text
@@ -130,28 +157,28 @@ function c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this: Ref): Ref
 
 
 function c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref,
-  index: Ref, limit: Ref, fallback: Ref): Ref
+  par_index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(c_ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
   requires intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+    intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
 
-function c_ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+function c_ChildWindow_f_read(this: Ref, par_index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_ChildWindow())
   requires acc(c_ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
   requires intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+    intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -162,16 +189,16 @@ function c_Window_f_lower_args_c_Window_ret_Int(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref, index: Ref,
+function c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref, par_index: Ref,
   limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(c_Window_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
   requires intFromRef(c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+    intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -184,21 +211,21 @@ method TextWindow_c_ChildWindow_restore(this: Ref)
     TextWindow_f_lower(this) ==
     old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
       c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)))
-  ensures (forall index: Ref, limit: Ref, fallback: Ref ::
-      { TextWindow_f_read(this, index, limit, fallback) }
+  ensures (forall par_index: Ref, limit: Ref, fallback: Ref ::
+      { TextWindow_f_read(this, par_index, limit, fallback) }
       true && old(isSubtype(typeOf(this), c_Window())) && true &&
-      old(isSubtype(typeOf(index), intType())) &&
+      old(isSubtype(typeOf(par_index), intType())) &&
       old(isSubtype(typeOf(limit), intType())) &&
       old(isSubtype(typeOf(fallback), nullable(anyType()))) &&
       old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
         intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-        intFromRef(index)) &&
-      intFromRef(index) < intFromRef(limit)) &&
+        intFromRef(par_index)) &&
+      intFromRef(par_index) < intFromRef(limit)) &&
       isSubtype(typeOf(fallback), nullable(stringType())) ==>
-      TextWindow_f_read(this, index, limit, fallback) ==
+      TextWindow_f_read(this, par_index, limit, fallback) ==
       old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
         c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
-        index, limit, fallback))))
+        par_index, limit, fallback))))
 
 
 method TextWindow_c_ChildWindow_upcast(this: Ref)
@@ -215,7 +242,20 @@ method TextWindow_c_ChildWindow_upcast(this: Ref)
       old(isSubtype(typeOf(at), intType())) &&
       old(isSubtype(typeOf(top), intType())) &&
       old(isSubtype(typeOf(text), nullable(stringType()))) &&
-      old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+      old(((let anon ==
+        (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+        longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+        longFromRef(longToRef(1))) <
+      intFromRef(at) ?
+        -1 :
+        ((let anon ==
+          (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+          longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+          longFromRef(longToRef(1))) >
+        intFromRef(at) ?
+          1 :
+          0)) <=
+      0 &&
       intFromRef(at) < intFromRef(top)) &&
       old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at) &&
       intFromRef(at) < intFromRef(top)) &&
@@ -226,22 +266,22 @@ method TextWindow_c_ChildWindow_upcast(this: Ref)
       old(TextWindow_f_read(this, at, top, text)))
 
 
-method refines_c_ChildWindow_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref)
+method refines_c_ChildWindow_f_read(this: Ref, par_index: Ref, limit: Ref, fallback: Ref)
   returns (ret: Ref)
   requires isSubtype(typeOf(fallback), nullable(stringType()))
   requires isSubtype(typeOf(this), c_ChildWindow())
   requires acc(c_ChildWindow_unique(this), write)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
   requires (unfolding acc(c_ChildWindow_unique(this), wildcard) in
       intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-      intFromRef(index)) &&
-    intFromRef(index) < intFromRef(limit)
+      intFromRef(par_index)) &&
+    intFromRef(par_index) < intFromRef(limit)
   requires isSubtype(typeOf(this), TextWindow())
 {
   TextWindow_c_ChildWindow_restore(this)
-  ret := TextWindow_f_read(this, index, limit, fallback)
+  ret := TextWindow_f_read(this, par_index, limit, fallback)
   TextWindow_c_ChildWindow_upcast(this)
   assert isSubtype(typeOf(ret), nullable(anyType()))
   assert ret == fallback
@@ -254,15 +294,16 @@ function ChildWindow_c_Window_f_lower(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function ChildWindow_c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+function ChildWindow_c_Window_f_read(this: Ref, par_index: Ref, limit: Ref,
+  fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
   requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+    intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -273,14 +314,14 @@ function c_Window_f_lower(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+function c_Window_f_read(this: Ref, par_index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(c_Window_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
-  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -327,7 +368,20 @@ function TextWindow_f_read(this: Ref, at: Ref, top: Ref, text: Ref): Ref
   requires isSubtype(typeOf(at), intType())
   requires isSubtype(typeOf(top), intType())
   requires isSubtype(typeOf(text), nullable(stringType()))
-  requires intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+  requires ((let anon_builtin ==
+      (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+      longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+      longFromRef(longToRef(1))) <
+    intFromRef(at) ?
+      -1 :
+      ((let anon_builtin ==
+        (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+        longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+        longFromRef(longToRef(1))) >
+      intFromRef(at) ?
+        1 :
+        0)) <=
+    0 &&
     intFromRef(at) < intFromRef(top)
   ensures isSubtype(typeOf(result), nullable(stringType()))
   ensures result == text
@@ -342,15 +396,15 @@ function c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this: Ref): Ref
 
 
 function c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref,
-  index: Ref, limit: Ref, fallback: Ref): Ref
+  par_index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(c_ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
   requires intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+    intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -361,16 +415,16 @@ function c_Window_f_lower_args_c_Window_ret_Int(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref, index: Ref,
+function c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this: Ref, par_index: Ref,
   limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(c_Window_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
   requires intFromRef(c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+    intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -388,21 +442,21 @@ method TextWindow_c_ChildWindow_restore(this: Ref)
     TextWindow_f_lower(this) ==
     old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
       c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)))
-  ensures (forall index: Ref, limit: Ref, fallback: Ref ::
-      { TextWindow_f_read(this, index, limit, fallback) }
+  ensures (forall par_index: Ref, limit: Ref, fallback: Ref ::
+      { TextWindow_f_read(this, par_index, limit, fallback) }
       true && old(isSubtype(typeOf(this), c_Window())) && true &&
-      old(isSubtype(typeOf(index), intType())) &&
+      old(isSubtype(typeOf(par_index), intType())) &&
       old(isSubtype(typeOf(limit), intType())) &&
       old(isSubtype(typeOf(fallback), nullable(anyType()))) &&
       old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
         intFromRef(c_ChildWindow_c_Window_f_lower_args_c_Window_ret_Int(this)) <=
-        intFromRef(index)) &&
-      intFromRef(index) < intFromRef(limit)) &&
+        intFromRef(par_index)) &&
+      intFromRef(par_index) < intFromRef(limit)) &&
       isSubtype(typeOf(fallback), nullable(stringType())) ==>
-      TextWindow_f_read(this, index, limit, fallback) ==
+      TextWindow_f_read(this, par_index, limit, fallback) ==
       old((unfolding acc(c_ChildWindow_unique(this), wildcard) in
         c_ChildWindow_c_Window_f_read_args_c_Window_Int_Int_NAny_ret_NAny(this,
-        index, limit, fallback))))
+        par_index, limit, fallback))))
 
 
 method TextWindow_c_ChildWindow_upcast(this: Ref)
@@ -419,7 +473,20 @@ method TextWindow_c_ChildWindow_upcast(this: Ref)
       old(isSubtype(typeOf(at), intType())) &&
       old(isSubtype(typeOf(top), intType())) &&
       old(isSubtype(typeOf(text), nullable(stringType()))) &&
-      old(intFromRef(TextWindow_f_lower(this)) - 1 <= intFromRef(at) &&
+      old(((let anon_builtin ==
+        (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+        longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+        longFromRef(longToRef(1))) <
+      intFromRef(at) ?
+        -1 :
+        ((let anon_builtin ==
+          (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+          longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+          longFromRef(longToRef(1))) >
+        intFromRef(at) ?
+          1 :
+          0)) <=
+      0 &&
       intFromRef(at) < intFromRef(top)) &&
       old(intFromRef(TextWindow_f_lower(this)) <= intFromRef(at) &&
       intFromRef(at) < intFromRef(top)) &&
@@ -453,7 +520,8 @@ method windowRoundTrip(w: Ref, i: Ref, limit: Ref) returns (v_ret_0: Ref)
   requires acc(TextWindow_unique(w), write)
   requires isSubtype(typeOf(i), intType())
   requires isSubtype(typeOf(limit), intType())
-  requires intFromRef(TextWindow_f_lower(w)) <= intFromRef(i) &&
+  requires intFromRef(TextWindow_f_lower(w)) > -2147483648 &&
+    intFromRef(TextWindow_f_lower(w)) <= intFromRef(i) &&
     intFromRef(i) < intFromRef(limit)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -499,15 +567,16 @@ function ChildWindow_c_Window_f_lower(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function ChildWindow_c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+function ChildWindow_c_Window_f_read(this: Ref, par_index: Ref, limit: Ref,
+  fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(ChildWindow_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
   requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
-    intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+    intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -518,14 +587,14 @@ function c_Window_f_lower(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function c_Window_f_read(this: Ref, index: Ref, limit: Ref, fallback: Ref): Ref
+function c_Window_f_read(this: Ref, par_index: Ref, limit: Ref, fallback: Ref): Ref
   requires isSubtype(typeOf(this), c_Window())
   requires acc(c_Window_footprint(this), wildcard)
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(limit), intType())
   requires isSubtype(typeOf(fallback), nullable(anyType()))
-  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(index) &&
-    intFromRef(index) < intFromRef(limit)
+  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
   ensures isSubtype(typeOf(result), nullable(anyType()))
   ensures result == fallback
 
@@ -554,7 +623,7 @@ function read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), PositiveRead())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= intFromRef(i)
 
@@ -564,7 +633,7 @@ function PositiveRead_f_read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), PositiveRead())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= intFromRef(i)
 
@@ -572,9 +641,12 @@ function PositiveRead_f_read(this: Ref, i: Ref): Ref
 function WiderRead_f_read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), WiderRead())
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= -1
+  requires intFromRef(i) >= -1 && intFromRef(i) < 2147483647
   ensures isSubtype(typeOf(result), intType())
-  ensures intFromRef(result) == intFromRef(i) + 1
+  ensures intFromRef(result) ==
+    (let anon ==
+      (plusInts(i, intToRef(1))) in
+      intFromRef(i) + intFromRef(intToRef(1)))
 {
   plusInts(i, intToRef(1))
 }
@@ -583,7 +655,7 @@ method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), PositiveRead())
   requires acc(PositiveRead_unique(this), write)
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   requires isSubtype(typeOf(this), WiderRead())
 {
   ret := WiderRead_f_read(this, i)
@@ -606,7 +678,7 @@ function PositiveRead_f_read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), PositiveRead())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= intFromRef(i)
 
@@ -615,7 +687,7 @@ method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), PositiveRead())
   requires acc(PositiveRead_unique(this), write)
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   requires isSubtype(typeOf(this), NarrowRead())
 {
   ret := NarrowRead_f_read(this, i)
@@ -628,7 +700,7 @@ function PositiveRead_f_read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), PositiveRead())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= intFromRef(i)
 
@@ -638,7 +710,10 @@ function WrongRead_f_read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(i), intType())
   requires intFromRef(i) >= 0
   ensures isSubtype(typeOf(result), intType())
-  ensures intFromRef(result) == intFromRef(i) - 1
+  ensures intFromRef(result) ==
+    (let anon ==
+      (minusInts(i, intToRef(1))) in
+      intFromRef(i) - intFromRef(intToRef(1)))
 {
   minusInts(i, intToRef(1))
 }
@@ -647,7 +722,7 @@ method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), PositiveRead())
   requires acc(PositiveRead_unique(this), write)
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   requires isSubtype(typeOf(this), WrongRead())
 {
   ret := WrongRead_f_read(this, i)
@@ -660,7 +735,7 @@ function PositiveRead_f_read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), PositiveRead())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= intFromRef(i)
 
@@ -668,7 +743,7 @@ function PositiveRead_f_read(this: Ref, i: Ref): Ref
 function WrongBody_f_read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), WrongBody())
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= intFromRef(i)
 {
@@ -679,7 +754,7 @@ method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), PositiveRead())
   requires acc(PositiveRead_unique(this), write)
   requires isSubtype(typeOf(i), intType())
-  requires intFromRef(i) >= 0
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
   requires isSubtype(typeOf(this), WrongBody())
 {
   ret := WrongBody_f_read(this, i)

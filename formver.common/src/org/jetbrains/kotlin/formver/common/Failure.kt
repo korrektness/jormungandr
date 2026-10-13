@@ -48,6 +48,8 @@ enum class FailureKind(
     VIPER_VERIFICATION_ERROR,
     VERIFICATION_CONDITION_NOT_ESTABLISHED,
     POSSIBLE_INDEX_OUT_OF_BOUND,
+    INTEGER_OVERFLOW,
+    DIVISION_BY_ZERO,
     UNEXPECTED_RETURNED_VALUE,
     INVALID_SUBLIST_RANGE,
     OWNERSHIP_NOT_ESTABLISHED,
@@ -100,6 +102,8 @@ sealed interface KotlinCondition {
     ) : KotlinCondition
     enum class ProofClause { ASSERTION, REFUTATION, LAW, PRECONDITION, POSTCONDITION, LOOP_INVARIANT }
     data class Proof(val clause: ProofClause, val declaration: FirBasedSymbol<*>? = null) : KotlinCondition
+    data class IntegerOverflow(val operation: String, val resultType: String, val lower: String, val upper: String) : KotlinCondition
+    data class DivisionByZero(val operation: String) : KotlinCondition
     enum class ReturnValue { TRUE, FALSE, NULL, NON_NULL, ANY }
     data class Returns(val effect: ReturnValue) : KotlinCondition
     data class Conditional(val effect: ReturnValue, val predicate: KotlinPredicate) : KotlinCondition

@@ -2,6 +2,7 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 fun <!VIPER_TEXT!>viperKeywordNames<!>(exhale: Int): Int {
+    preconditions { exhale <= 2147483645 }
     postconditions<Int> { res -> res == exhale + 2 }
     val acc = exhale + 1
     val unfolding = acc + 1

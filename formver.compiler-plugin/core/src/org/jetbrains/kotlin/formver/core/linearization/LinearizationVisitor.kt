@@ -20,6 +20,9 @@ import org.jetbrains.kotlin.formver.core.conversion.constructedOpen
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
+import org.jetbrains.kotlin.formver.core.domains.InjectionImageFunction
+import org.jetbrains.kotlin.formver.core.domains.IntegerBounds
+import org.jetbrains.kotlin.formver.core.embeddings.types.StringTypeEmbedding
 import org.jetbrains.kotlin.formver.core.domains.SeqMultisetDomain
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.isOf
 import org.jetbrains.kotlin.formver.core.embeddings.*
@@ -38,6 +41,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
 import org.jetbrains.kotlin.formver.core.embeddings.types.injectionOrNull
 import org.jetbrains.kotlin.formver.core.names.sourceSpelling
+import org.jetbrains.kotlin.formver.core.names.AnonymousBuiltinName
+import org.jetbrains.kotlin.formver.viper.ast.Declaration
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Method
@@ -67,8 +72,10 @@ data class LinearizationVisitor(
             conditions.pureToViper(true, ctx.typeResolver, ctx.source).toConjunction()
         }
         if (triggerExpressions.isEmpty()) return conjunction to derivedTriggers(variable.name, conjunction)
+        val triggerContext = if (ctx is PureExpLinearizer) ctx.copy(isTrigger = true)
+        else PureExpLinearizer(ctx.source, ctx.typeResolver, isTrigger = true)
         val viperTriggers = triggerExpressions.map { triggerExpr ->
-            Exp.Trigger(listOf(triggerExpr.linearize().toViperBuiltinType(ctx)))
+            Exp.Trigger(listOf(triggerExpr.linearize().toViperBuiltinType(triggerContext)))
         }
         return conjunction to viperTriggers
     }
@@ -619,17 +626,44 @@ data class LinearizationVisitor(
 
     // region Operators
 
+    /** Check helper definedness while exposing interpreted terms to quantifier reasoning. */
+    private fun checkedBuiltinValue(operation: InjectionImageFunction, call: Exp, ctx: LinearizationContext): Exp {
+        if (ctx.isTrigger || operation.normalReturnCondition != null) return operation.resultInjection.fromRef(call)
+        val application = call as Exp.FuncApp
+        val values = application.args.zip(operation.argsInjections) { arg, injection ->
+            val native = if (arg is Exp.DomainFuncApp && arg.function == injection.toRef) arg.args.single() else null
+            // quantifierDomain permits the native binder to remain visible to matching.
+            if (native is Exp.LocalVar && native.name is AnonymousBuiltinName) native else injection.fromRef(arg)
+        }
+        return Exp.LetBinding(
+            Declaration.LocalVarDecl(AnonymousBuiltinName(-1), Type.Ref),
+            application,
+            operation.original.toFuncApp(values, call.pos, call.info),
+            call.pos,
+        )
+    }
+
     override fun visitBinaryOperatorExpEmbedding(e: BinaryOperatorExpEmbedding): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
-        override fun toViper(ctx: LinearizationContext): Exp =
-            e.refsOperation(
-                e.left.linearize().toViper(ctx),
-                e.right.linearize().toViper(ctx),
-                pos = ctx.source.asPosition,
-                info = e.sourceRole.asInfo
-            )
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            if (e.refsOperation.checked) ctx.evaluateUnused(toViper(ctx))
+            else super.toViperUnusedResult(ctx)
+        }
+
+        override fun toViper(ctx: LinearizationContext): Exp {
+            val args = listOf(e.left.linearize().toViper(ctx), e.right.linearize().toViper(ctx))
+            val normalReturn = e.refsOperation.normalReturnCondition
+            val exceptionalExit = e.exceptionalExit
+            if (normalReturn != null && exceptionalExit != null && ctx.logicOperatorPolicy == LogicOperatorPolicy.CONVERT_TO_IF) {
+                val values = args.zip(e.refsOperation.argsInjections) { arg, injection -> injection.fromRef(arg) }
+                val abnormal = ctx.asBlock { exceptionalExit.linearize().toViperUnusedResult(this) }
+                ctx.addStatement { Stmt.If(Exp.Not(normalReturn(values)), abnormal, null, source.asPosition) }
+            }
+            return e.refsOperation.toFuncApp(args, pos = ctx.source.asPosition, info = e.sourceRole.asInfo)
+        }
 
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
-            e.builtinsOperation(
+            if (e.refsOperation.checked) checkedBuiltinValue(e.refsOperation, toViper(ctx), ctx)
+            else e.builtinsOperation(
                 e.left.linearize().toViperBuiltinType(ctx),
                 e.right.linearize().toViperBuiltinType(ctx),
                 pos = ctx.source.asPosition,
@@ -638,11 +672,17 @@ data class LinearizationVisitor(
     }
 
     override fun visitUnaryOperatorExpEmbedding(e: UnaryOperatorExpEmbedding): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            if (e.refsOperation.checked) ctx.evaluateUnused(toViper(ctx))
+            else super.toViperUnusedResult(ctx)
+        }
+
         override fun toViper(ctx: LinearizationContext): Exp =
             e.refsOperation(e.inner.linearize().toViper(ctx), pos = ctx.source.asPosition, info = e.sourceRole.asInfo)
 
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
-            e.builtinsOperation(e.inner.linearize().toViperBuiltinType(ctx), pos = ctx.source.asPosition, info = e.sourceRole.asInfo)
+            if (e.refsOperation.checked) checkedBuiltinValue(e.refsOperation, toViper(ctx), ctx)
+            else e.builtinsOperation(e.inner.linearize().toViperBuiltinType(ctx), pos = ctx.source.asPosition, info = e.sourceRole.asInfo)
     }
 
     override fun visitInjectionBasedExpEmbedding(e: InjectionBasedExpEmbedding): Linearizable =
@@ -965,7 +1005,9 @@ data class LinearizationVisitor(
             val builder = e.builder.linearize().toViper(ctx)
             val value = e.value.linearize().toViperBuiltinType(ctx)
             val appended = if (e.value.type.pretype == CharTypeEmbedding) Exp.ExplicitSeq(listOf(value), ctx.source.asPosition) else value
-            ctx.updateStringBuilder(e, builder) { contents -> Exp.SeqAppend(contents, appended, ctx.source.asPosition) }
+            ctx.updateStringBuilder(e, builder, { e.exceptionalExit.linearize().toViperUnusedResult(this) }) { contents ->
+                Exp.SeqAppend(contents, appended, ctx.source.asPosition)
+            }
             return builder
         }
     }
@@ -1060,11 +1102,7 @@ data class LinearizationVisitor(
             return Exp.Forall(
                 variables = listOf(e.variable.toLocalVarDecl()),
                 triggers = viperTriggers,
-                exp = if (e.variable.isOriginallyRef) Exp.Implies(
-                    e.variable.toViperExp(ctx).isOf(e.variable.type.runtimeType),
-                    conjunction
-                )
-                else conjunction,
+                exp = quantifierDomain(e.variable, ctx)?.let { Exp.Implies(it, conjunction) } ?: conjunction,
                 pos = ctx.source.asPosition,
                 info = e.sourceRole.asInfo,
             )
@@ -1077,13 +1115,21 @@ data class LinearizationVisitor(
             return Exp.Exists(
                 variables = listOf(e.variable.toLocalVarDecl()),
                 triggers = viperTriggers,
-                exp = if (e.variable.isOriginallyRef) Exp.And(
-                    e.variable.toViperExp(ctx).isOf(e.variable.type.runtimeType),
-                    conjunction
-                )
-                else conjunction,
+                exp = quantifierDomain(e.variable, ctx)?.let { Exp.And(it, conjunction) } ?: conjunction,
                 pos = ctx.source.asPosition,
                 info = e.sourceRole.asInfo,
+            )
+        }
+    }
+
+    private fun quantifierDomain(variable: VariableEmbedding, ctx: LinearizationContext): Exp? = when {
+        variable.isOriginallyRef -> variable.toViperExp(ctx).isOf(variable.type.runtimeType)
+        variable.type.pretype == StringTypeEmbedding -> IntegerBounds.string(variable.toLocalVarUse(ctx.source.asPosition))
+        else -> IntegerKind.entries.firstOrNull { it.pretype == variable.type.pretype }?.let {
+            // Membership provides a matchable injection term; range constrains the native variable.
+            Exp.And(
+                it.range(variable.toLocalVarUse(ctx.source.asPosition)),
+                variable.toViperExp(ctx).isOf(variable.type.runtimeType),
             )
         }
     }
@@ -1250,11 +1296,22 @@ private fun LinearizationContext.ownedReceiverPath(
  * Sets the contents of [builder], which [e] updates, to [newContents] of the old contents. An update of a builder that
  * is not owned is dropped.
  */
-private fun LinearizationContext.updateStringBuilder(e: StringBuilderUpdate, builder: Exp, newContents: (contents: Exp) -> Exp) {
+private fun LinearizationContext.updateStringBuilder(
+    e: StringBuilderUpdate,
+    builder: Exp,
+    exceptionalExit: (LinearizationContext.() -> Unit)? = null,
+    newContents: (contents: Exp) -> Exp,
+) {
     val builderPath = ownedReceiverPath(e.builder, e.receiverOwned, isWrite = true) ?: return
     foldState?.openOwn(this, builderPath)
     val contents = StringBuilderEmbedding.contents(builder, source.asPosition)
-    addStatement { Stmt.FieldAssign(contents, newContents(contents), source.asPosition) }
+    val updated = newContents(contents)
+    if (exceptionalExit != null) {
+        val fits = Exp.LeCmp(Exp.SeqLength(updated), Exp.IntLit(Int.MAX_VALUE))
+        val abnormal = asBlock(exceptionalExit)
+        addStatement { Stmt.If(Exp.Not(fits), abnormal, null, source.asPosition) }
+    }
+    addStatement { Stmt.FieldAssign(contents, updated, source.asPosition) }
 }
 
 /** Assert that [index] is a valid index into [array], reporting a failure as an array bounds error. */

@@ -1,6 +1,7 @@
 /basic.kt: info: Generated Viper text for addition:
 method addition(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
+  requires -1073741824 <= intFromRef(x) && intFromRef(x) <= 1073741823
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var y: Ref
@@ -23,6 +24,7 @@ method subtraction(x: Ref) returns (v_ret_0: Ref)
 /basic.kt: info: Generated Viper text for multiplication:
 method multiplication(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
+  requires -46340 <= intFromRef(x) && intFromRef(x) <= 46340
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var y: Ref
@@ -56,6 +58,7 @@ method remainder(x: Ref) returns (v_ret_0: Ref)
 /basic.kt: info: Generated Viper text for unary_minus:
 method unary_minus(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -2147483648
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var y: Ref

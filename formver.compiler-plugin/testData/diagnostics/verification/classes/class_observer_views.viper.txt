@@ -3,6 +3,10 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(value(this)) &&
+    intFromRef(value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -30,6 +34,10 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(value(this)) &&
+    intFromRef(value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -59,6 +67,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -78,6 +90,10 @@ function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -117,29 +133,14 @@ predicate footprint(this: Ref)
 /class_observer_views.kt: info: Generated Viper text for scaled:
 field n: Ref
 
-function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
-  requires isSubtype(typeOf(this), ClassObservation())
-  requires acc(footprint(this), wildcard)
-  requires isSubtype(typeOf(factor), intType())
-  ensures isSubtype(typeOf(result), intType())
-
-
-function ClassObservation_f_value(this: Ref): Ref
-  requires isSubtype(typeOf(this), ClassObservation())
-  requires acc(footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
-function ClassObservation_g_size(this: Ref): Ref
-  requires isSubtype(typeOf(this), ClassObservation())
-  requires acc(footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
 function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -164,17 +165,116 @@ function ObservationBase_g_size(this: Ref): Ref
   (unfolding acc(ObservationBase_unique(this), write) in this.n)
 }
 
-predicate ClassObservation_unique(this: Ref) {
-  acc(footprint(this), write) &&
-  isSubtype(typeOf(this), ClassObservation())
-}
+function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ClassObservation_f_value(this)) &&
+    intFromRef(c_ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
 
 predicate ObservationBase_unique(this: Ref) {
   isSubtype(typeOf(this), ObservationBase()) && acc(this.n, write) &&
   isSubtype(typeOf(this.n), intType())
 }
 
+predicate c_ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_ClassObservation())
+}
+
 predicate footprint(this: Ref)
+
+method ObservationBase_c_ClassObservation_restore(this: Ref)
+  requires acc(c_ClassObservation_unique(this), write)
+  requires isSubtype(typeOf(this), ObservationBase())
+  ensures acc(ObservationBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    ObservationBase_f_value(this) ==
+    old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_f_value(this)))
+  ensures (forall factor: Ref ::
+      { ObservationBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ClassObservation())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_ClassObservation_f_value(this))) &&
+      (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        intFromRef(c_ClassObservation_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      ObservationBase_f_scaled(this, factor) ==
+      old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        c_ClassObservation_f_scaled(this, factor))))
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    ObservationBase_g_size(this) ==
+    old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_g_size(this)))
+
+
+method ObservationBase_c_ClassObservation_upcast(this: Ref)
+  requires acc(ObservationBase_unique(this), write)
+  ensures acc(c_ClassObservation_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), ObservationBase())) && true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_f_value(this)) ==
+    old(ObservationBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ClassObservation_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), ObservationBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+      intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+      intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        c_ClassObservation_f_scaled(this, factor)) ==
+      old(ObservationBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), ObservationBase())) && true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_g_size(this)) ==
+    old(ObservationBase_g_size(this))
+
+
+method refines_c_ClassObservation_f_scaled(this: Ref, factor: Ref)
+  returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(c_ClassObservation_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  requires (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      -715827882 <= intFromRef(c_ClassObservation_f_value(this))) &&
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      intFromRef(c_ClassObservation_f_value(this)) <= 715827882) &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
+  requires isSubtype(typeOf(this), ObservationBase())
+{
+  ObservationBase_c_ClassObservation_restore(this)
+  ret := ObservationBase_f_scaled(this, factor)
+  ObservationBase_c_ClassObservation_upcast(this)
+  assert isSubtype(typeOf(ret), intType())
+}
 
 /class_observer_views.kt: info: Generated Viper text for size:
 field n: Ref
@@ -183,6 +283,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -202,6 +306,10 @@ function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -247,6 +355,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -266,6 +378,10 @@ function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -293,6 +409,14 @@ function ObservationBase_g_size(this: Ref): Ref
 function throughThis(this: Ref): Ref
   requires isSubtype(typeOf(this), ObservationLeaf())
   requires acc(ObservationLeaf_unique(this), write)
+  requires (unfolding acc(ObservationLeaf_unique(this), write) in
+      (unfolding acc(ObservationMiddle_unique(this), write) in
+        (unfolding acc(ObservationBase_unique(this), write) in
+          -1073741824 <= intFromRef(this.n)))) &&
+    (unfolding acc(ObservationLeaf_unique(this), write) in
+      (unfolding acc(ObservationMiddle_unique(this), write) in
+        (unfolding acc(ObservationBase_unique(this), write) in
+          intFromRef(this.n) <= 1073741823)))
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationLeaf_unique(this), wildcard) in
@@ -330,6 +454,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -349,6 +477,10 @@ function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -389,12 +521,50 @@ method updateBase(base: Ref, delta: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(base), ObservationBase())
   requires acc(ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(ObservationBase_unique(base), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(ObservationBase_f_value(base)) ==
-    old(intFromRef(ObservationBase_f_value(base))) + intFromRef(delta) &&
+    (let anon_builtin ==
+      (plusInts(old(ObservationBase_f_value(base)), delta)) in
+      intFromRef(old(ObservationBase_f_value(base))) + intFromRef(delta)) &&
     intFromRef(ObservationBase_f_scaled(base, intToRef(2))) ==
-    intFromRef(ObservationBase_f_value(base)) * 2 &&
+    (let anon_builtin ==
+      (timesInts(ObservationBase_f_value(base), intToRef(2))) in
+      intFromRef(ObservationBase_f_value(base)) * intFromRef(intToRef(2))) &&
     intFromRef(ObservationBase_g_size(base)) ==
     intFromRef(ObservationBase_f_value(base))
 {
@@ -421,6 +591,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(ClassObservation_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -440,6 +614,10 @@ function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservationBase())
   requires acc(c_ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+    intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(c_ObservationBase_unique(this), write) in
@@ -517,7 +695,11 @@ method ObservationLeaf_c_ObservationBase_restore(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+      intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
           c_ObservationBase_f_scaled(this, factor))) ==
@@ -540,7 +722,23 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_ObservationBase_f_scaled(this, factor) ==
       old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
@@ -556,6 +754,44 @@ method borrowClassView(leaf: Ref, delta: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(leaf), ObservationLeaf())
   requires acc(ObservationLeaf_unique(leaf), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(c_ObservationBase_unique(leaf), write) in
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(715827882))) in
+            -longFromRef(longToRef(715827882))) <
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(leaf.n), convertIntToLong(delta))) in
+            longFromRef(convertIntToLong(leaf.n)) +
+            longFromRef(convertIntToLong(delta))) ?
+            -1 :
+            ((let anon_builtin ==
+              (unaryMinusLong(longToRef(715827882))) in
+              -longFromRef(longToRef(715827882))) >
+            (let anon_builtin ==
+              (plusLongLong(convertIntToLong(leaf.n), convertIntToLong(delta))) in
+              longFromRef(convertIntToLong(leaf.n)) +
+              longFromRef(convertIntToLong(delta))) ?
+              1 :
+              0)) <=
+          0))) &&
+    (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(c_ObservationBase_unique(leaf), write) in
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(leaf.n), convertIntToLong(delta))) in
+            longFromRef(convertIntToLong(leaf.n)) +
+            longFromRef(convertIntToLong(delta))) <
+          715827882 ?
+            -1 :
+            ((let anon_builtin ==
+              (plusLongLong(convertIntToLong(leaf.n), convertIntToLong(delta))) in
+              longFromRef(convertIntToLong(leaf.n)) +
+              longFromRef(convertIntToLong(delta))) >
+            715827882 ?
+              1 :
+              0)) <=
+          0)))
   ensures acc(ObservationLeaf_unique(leaf), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -578,14 +814,20 @@ method borrowClassView(leaf: Ref, delta: Ref) returns (v_ret_0: Ref)
   anon_5 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
       (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
         c_ObservationBase_f_value(leaf)))
-  assert intFromRef(anon_5) == intFromRef(before) + intFromRef(delta)
+  assert intFromRef(anon_5) ==
+    (let anon_builtin ==
+      (plusInts(before, delta)) in
+      intFromRef(before) + intFromRef(delta))
   anon_6 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
       (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
         c_ObservationBase_f_scaled(leaf, intToRef(2))))
   anon_7 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
       (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
         c_ObservationBase_f_value(leaf)))
-  assert intFromRef(anon_6) == intFromRef(anon_7) * 2
+  assert intFromRef(anon_6) ==
+    (let anon_builtin ==
+      (timesInts(anon_7, intToRef(2))) in
+      intFromRef(anon_7) * intFromRef(intToRef(2)))
   anon_8 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
       (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
         c_ObservationBase_g_size(leaf)))
@@ -602,16 +844,54 @@ method borrowClassView(leaf: Ref, delta: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
+method updateBase(base: Ref, delta: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(base), c_ObservationBase())
   requires acc(c_ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(c_ObservationBase_unique(base), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures intFromRef(c_ObservationBase_f_value(base)) ==
-    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    (let anon_builtin ==
+      (plusInts(old(c_ObservationBase_f_value(base)), delta)) in
+      intFromRef(old(c_ObservationBase_f_value(base))) + intFromRef(delta)) &&
     intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
-    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    (let anon_builtin ==
+      (timesInts(c_ObservationBase_f_value(base), intToRef(2))) in
+      intFromRef(c_ObservationBase_f_value(base)) * intFromRef(intToRef(2))) &&
     intFromRef(c_ObservationBase_g_size(base)) ==
     intFromRef(c_ObservationBase_f_value(base))
 
@@ -625,6 +905,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -644,6 +928,10 @@ function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservationBase())
   requires acc(c_ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+    intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(c_ObservationBase_unique(this), write) in
@@ -702,7 +990,23 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_ObservationBase_f_scaled(this, factor) ==
       old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
@@ -739,6 +1043,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -758,6 +1066,10 @@ function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -817,7 +1129,23 @@ method ObservationLeaf_c_ObservationMiddle_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+          intFromRef(ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
+          intFromRef(ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(c_ObservationMiddle_unique(this), wildcard) in
         ObservationBase_f_scaled(this, factor)) ==
       old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
@@ -855,6 +1183,10 @@ function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -883,6 +1215,10 @@ function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ClassObservation_f_value(this)) &&
+    intFromRef(c_ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -920,7 +1256,15 @@ method ObservationBase_c_ClassObservation_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ClassObservation_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+      intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+      intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(c_ClassObservation_unique(this), wildcard) in
         c_ClassObservation_f_scaled(this, factor)) ==
       old(ObservationBase_f_scaled(this, factor)))
@@ -952,6 +1296,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -971,6 +1319,10 @@ function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -1011,6 +1363,40 @@ method inlineClassView(base: Ref, delta: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(base), ObservationBase())
   requires acc(ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(ObservationBase_unique(base), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -1020,16 +1406,54 @@ method inlineClassView(base: Ref, delta: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
+method updateBase(base: Ref, delta: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(base), ObservationBase())
   requires acc(ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(ObservationBase_unique(base), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures intFromRef(ObservationBase_f_value(base)) ==
-    old(intFromRef(ObservationBase_f_value(base))) + intFromRef(delta) &&
+    (let anon_builtin ==
+      (plusInts(old(ObservationBase_f_value(base)), delta)) in
+      intFromRef(old(ObservationBase_f_value(base))) + intFromRef(delta)) &&
     intFromRef(ObservationBase_f_scaled(base, intToRef(2))) ==
-    intFromRef(ObservationBase_f_value(base)) * 2 &&
+    (let anon_builtin ==
+      (timesInts(ObservationBase_f_value(base), intToRef(2))) in
+      intFromRef(ObservationBase_f_value(base)) * intFromRef(intToRef(2))) &&
     intFromRef(ObservationBase_g_size(base)) ==
     intFromRef(ObservationBase_f_value(base))
 
@@ -1048,6 +1472,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(ClassObservation_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1067,6 +1495,10 @@ function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservationBase())
   requires acc(c_ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+    intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(c_ObservationBase_unique(this), write) in
@@ -1144,7 +1576,11 @@ method ObservationLeaf_c_ObservationBase_restore(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+      intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
           c_ObservationBase_f_scaled(this, factor))) ==
@@ -1167,7 +1603,23 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_ObservationBase_f_scaled(this, factor) ==
       old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
@@ -1182,12 +1634,20 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
 method inlineClassBorrow(leaf: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(leaf), ObservationLeaf())
   requires acc(ObservationLeaf_unique(leaf), write)
+  requires (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(c_ObservationBase_unique(leaf), write) in
+          -715827885 <= intFromRef(leaf.n)))) &&
+    (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(c_ObservationBase_unique(leaf), write) in
+          intFromRef(leaf.n) <= 715827879)))
   ensures acc(ObservationLeaf_unique(leaf), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var before: Ref
   var anon_5: Ref
-  var v_ret_2: Ref
+  var v_ret_3: Ref
   var anon_0: Ref
   var anon_1: Ref
   var anon_6: Ref
@@ -1201,13 +1661,16 @@ method inlineClassBorrow(leaf: Ref) returns (v_ret_0: Ref)
   anon_1 := intToRef(3)
   ObservationLeaf_c_ObservationBase_upcast(anon_0)
   anon_6 := updateBase(anon_0, anon_1)
-  label lbl_ret_2
+  label lbl_ret_3
   ObservationLeaf_c_ObservationBase_restore(anon_0)
-  inhale isSubtype(typeOf(v_ret_2), unitType())
+  inhale isSubtype(typeOf(v_ret_3), unitType())
   anon_7 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
       (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
         c_ObservationBase_f_value(leaf)))
-  assert intFromRef(anon_7) == intFromRef(before) + 3
+  assert intFromRef(anon_7) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(3))) in
+      intFromRef(before) + intFromRef(intToRef(3)))
   unfold acc(ObservationLeaf_unique(leaf), write)
   leaf.extra := intToRef(7)
   anon_8 := leaf.extra
@@ -1217,24 +1680,96 @@ method inlineClassBorrow(leaf: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method inlineClassView(base: Ref, delta: Ref) returns (ret_1: Ref)
+method inlineClassView(base: Ref, delta: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(base), c_ObservationBase())
   requires acc(c_ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(c_ObservationBase_unique(base), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
 
 
-method updateBase(base: Ref, delta: Ref) returns (ret_3: Ref)
+method updateBase(base: Ref, delta: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(base), c_ObservationBase())
   requires acc(c_ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(c_ObservationBase_unique(base), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_5), unitType())
   ensures intFromRef(c_ObservationBase_f_value(base)) ==
-    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    (let anon_builtin ==
+      (plusInts(old(c_ObservationBase_f_value(base)), delta)) in
+      intFromRef(old(c_ObservationBase_f_value(base))) + intFromRef(delta)) &&
     intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
-    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    (let anon_builtin ==
+      (timesInts(c_ObservationBase_f_value(base), intToRef(2))) in
+      intFromRef(c_ObservationBase_f_value(base)) * intFromRef(intToRef(2))) &&
     intFromRef(c_ObservationBase_g_size(base)) ==
     intFromRef(c_ObservationBase_f_value(base))
 
@@ -1253,6 +1788,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(ClassObservation_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1272,6 +1811,10 @@ function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservationBase())
   requires acc(c_ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+    intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(c_ObservationBase_unique(this), write) in
@@ -1359,7 +1902,11 @@ method ObservationLeaf_c_ObservationBase_restore(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+      intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
           c_ObservationBase_f_scaled(this, factor))) ==
@@ -1382,7 +1929,23 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_ObservationBase_f_scaled(this, factor) ==
       old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
@@ -1397,12 +1960,22 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
 method classFieldBorrow(holder: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(holder), ObservationHolder())
   requires acc(ObservationHolder_unique(holder), write)
+  requires (unfolding acc(ObservationHolder_unique(holder), write) in
+      (unfolding acc(ObservationLeaf_unique(leaf(holder)), write) in
+        (unfolding acc(ObservationMiddle_unique(leaf(holder)), write) in
+          (unfolding acc(c_ObservationBase_unique(leaf(holder)), write) in
+            -715827886 <= intFromRef(leaf(holder).n))))) &&
+    (unfolding acc(ObservationHolder_unique(holder), write) in
+      (unfolding acc(ObservationLeaf_unique(leaf(holder)), write) in
+        (unfolding acc(ObservationMiddle_unique(leaf(holder)), write) in
+          (unfolding acc(c_ObservationBase_unique(leaf(holder)), write) in
+            intFromRef(leaf(holder).n) <= 715827878))))
   ensures acc(ObservationHolder_unique(holder), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var before: Ref
   var anon_5: Ref
-  var v_ret_2: Ref
+  var v_ret_3: Ref
   var anon_0: Ref
   var anon_1: Ref
   var anon_6: Ref
@@ -1417,13 +1990,16 @@ method classFieldBorrow(holder: Ref) returns (v_ret_0: Ref)
   anon_1 := intToRef(4)
   ObservationLeaf_c_ObservationBase_upcast(anon_0)
   anon_6 := updateBase(anon_0, anon_1)
-  label lbl_ret_2
+  label lbl_ret_3
   ObservationLeaf_c_ObservationBase_restore(anon_0)
-  inhale isSubtype(typeOf(v_ret_2), unitType())
+  inhale isSubtype(typeOf(v_ret_3), unitType())
   anon_7 := (unfolding acc(ObservationLeaf_unique(leaf(holder)), wildcard) in
       (unfolding acc(ObservationMiddle_unique(leaf(holder)), wildcard) in
         c_ObservationBase_f_value(leaf(holder))))
-  assert intFromRef(anon_7) == intFromRef(before) + 4
+  assert intFromRef(anon_7) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(4))) in
+      intFromRef(before) + intFromRef(intToRef(4)))
   unfold acc(ObservationLeaf_unique(leaf(holder)), write)
   leaf(holder).extra := intToRef(8)
   anon_8 := leaf(holder).extra
@@ -1434,24 +2010,96 @@ method classFieldBorrow(holder: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method inlineClassView(base: Ref, delta: Ref) returns (ret_1: Ref)
+method inlineClassView(base: Ref, delta: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(base), c_ObservationBase())
   requires acc(c_ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(c_ObservationBase_unique(base), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
 
 
-method updateBase(base: Ref, delta: Ref) returns (ret_3: Ref)
+method updateBase(base: Ref, delta: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(base), c_ObservationBase())
   requires acc(c_ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(c_ObservationBase_unique(base), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_5), unitType())
   ensures intFromRef(c_ObservationBase_f_value(base)) ==
-    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    (let anon_builtin ==
+      (plusInts(old(c_ObservationBase_f_value(base)), delta)) in
+      intFromRef(old(c_ObservationBase_f_value(base))) + intFromRef(delta)) &&
     intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
-    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    (let anon_builtin ==
+      (timesInts(c_ObservationBase_f_value(base), intToRef(2))) in
+      intFromRef(c_ObservationBase_f_value(base)) * intFromRef(intToRef(2))) &&
     intFromRef(c_ObservationBase_g_size(base)) ==
     intFromRef(c_ObservationBase_f_value(base))
 
@@ -1470,6 +2118,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(ClassObservation_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1489,6 +2141,10 @@ function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservationBase())
   requires acc(c_ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+    intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(c_ObservationBase_unique(this), write) in
@@ -1566,7 +2222,11 @@ method ObservationLeaf_c_ObservationBase_restore(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+      intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
           c_ObservationBase_f_scaled(this, factor))) ==
@@ -1589,7 +2249,23 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_ObservationBase_f_scaled(this, factor) ==
       old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
@@ -1604,6 +2280,15 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
 method nullableClassBorrow(leaf: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(leaf), nullable(ObservationLeaf()))
   requires leaf != nullValue() ==> acc(ObservationLeaf_unique(leaf), write)
+  requires leaf == nullValue() ||
+    (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(c_ObservationBase_unique(leaf), write) in
+          -715827884 <= intFromRef(leaf.n)))) &&
+    (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(c_ObservationBase_unique(leaf), write) in
+          intFromRef(leaf.n) <= 715827880)))
   ensures leaf != nullValue() ==> acc(ObservationLeaf_unique(leaf), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -1627,7 +2312,10 @@ method nullableClassBorrow(leaf: Ref) returns (v_ret_0: Ref)
     anon_5 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
         (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
           c_ObservationBase_f_value(leaf)))
-    assert intFromRef(anon_5) == intFromRef(before) + 2
+    assert intFromRef(anon_5) ==
+      (let anon_builtin ==
+        (plusInts(before, intToRef(2))) in
+        intFromRef(before) + intFromRef(intToRef(2)))
     if (leaf != nullValue()) {
       unfold acc(ObservationLeaf_unique(leaf), write)
     }
@@ -1642,16 +2330,54 @@ method nullableClassBorrow(leaf: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
+method updateBase(base: Ref, delta: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(base), c_ObservationBase())
   requires acc(c_ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(c_ObservationBase_unique(base), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures intFromRef(c_ObservationBase_f_value(base)) ==
-    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    (let anon_builtin ==
+      (plusInts(old(c_ObservationBase_f_value(base)), delta)) in
+      intFromRef(old(c_ObservationBase_f_value(base))) + intFromRef(delta)) &&
     intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
-    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    (let anon_builtin ==
+      (timesInts(c_ObservationBase_f_value(base), intToRef(2))) in
+      intFromRef(c_ObservationBase_f_value(base)) * intFromRef(intToRef(2))) &&
     intFromRef(c_ObservationBase_g_size(base)) ==
     intFromRef(c_ObservationBase_f_value(base))
 
@@ -1665,6 +2391,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1684,6 +2414,10 @@ function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -1711,6 +2445,14 @@ function ObservationBase_g_size(this: Ref): Ref
 function pureInheritedObservation(leaf: Ref): Ref
   requires isSubtype(typeOf(leaf), ObservationLeaf())
   requires acc(ObservationLeaf_unique(leaf), write)
+  requires (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(ObservationBase_unique(leaf), write) in
+          -1073741824 <= intFromRef(leaf.n)))) &&
+    (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(ObservationBase_unique(leaf), write) in
+          intFromRef(leaf.n) <= 1073741823)))
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
@@ -1755,6 +2497,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(ClassObservation_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1774,6 +2520,10 @@ function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservationBase())
   requires acc(c_ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+    intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(c_ObservationBase_unique(this), write) in
@@ -1851,7 +2601,11 @@ method ObservationLeaf_c_ObservationBase_restore(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+      intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
           c_ObservationBase_f_scaled(this, factor))) ==
@@ -1874,7 +2628,23 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_ObservationBase_f_scaled(this, factor) ==
       old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
@@ -1886,16 +2656,54 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
         c_ObservationBase_g_size(this))))
 
 
-method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
+method updateBase(base: Ref, delta: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(base), c_ObservationBase())
   requires acc(c_ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(c_ObservationBase_unique(base), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures intFromRef(c_ObservationBase_f_value(base)) ==
-    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    (let anon_builtin ==
+      (plusInts(old(c_ObservationBase_f_value(base)), delta)) in
+      intFromRef(old(c_ObservationBase_f_value(base))) + intFromRef(delta)) &&
     intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
-    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    (let anon_builtin ==
+      (timesInts(c_ObservationBase_f_value(base), intToRef(2))) in
+      intFromRef(c_ObservationBase_f_value(base)) * intFromRef(intToRef(2))) &&
     intFromRef(c_ObservationBase_g_size(base)) ==
     intFromRef(c_ObservationBase_f_value(base))
 
@@ -1903,6 +2711,14 @@ method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
 method wrongClassObservation(leaf: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(leaf), ObservationLeaf())
   requires acc(ObservationLeaf_unique(leaf), write)
+  requires (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(c_ObservationBase_unique(leaf), write) in
+          -715827884 <= intFromRef(leaf.n)))) &&
+    (unfolding acc(ObservationLeaf_unique(leaf), write) in
+      (unfolding acc(ObservationMiddle_unique(leaf), write) in
+        (unfolding acc(c_ObservationBase_unique(leaf), write) in
+          intFromRef(leaf.n) <= 715827880)))
   ensures acc(ObservationLeaf_unique(leaf), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -1920,7 +2736,10 @@ method wrongClassObservation(leaf: Ref) returns (v_ret_0: Ref)
   anon_5 := (unfolding acc(ObservationLeaf_unique(leaf), wildcard) in
       (unfolding acc(ObservationMiddle_unique(leaf), wildcard) in
         c_ObservationBase_f_value(leaf)))
-  assert intFromRef(anon_5) == intFromRef(before) + 3
+  assert intFromRef(anon_5) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(3))) in
+      intFromRef(before) + intFromRef(intToRef(3)))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1934,6 +2753,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1953,6 +2776,10 @@ function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservationBase())
   requires acc(c_ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+    intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(c_ObservationBase_unique(this), write) in
@@ -2012,7 +2839,11 @@ method ObservationLeaf_c_ObservationBase_restore(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+      intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
           c_ObservationBase_f_scaled(this, factor))) ==
@@ -2035,7 +2866,23 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_ObservationBase_f_scaled(this, factor) ==
       old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
@@ -2082,12 +2929,50 @@ method updateBase(base: Ref, delta: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(base), c_ObservationBase())
   requires acc(c_ObservationBase_unique(base), write)
   requires isSubtype(typeOf(delta), intType())
+  requires (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(715827882))) in
+        -longFromRef(longToRef(715827882))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.bf_n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.bf_n)) +
+        longFromRef(convertIntToLong(delta))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(715827882))) in
+          -longFromRef(longToRef(715827882))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.bf_n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.bf_n)) +
+          longFromRef(convertIntToLong(delta))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(c_ObservationBase_unique(base), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(base.bf_n), convertIntToLong(delta))) in
+        longFromRef(convertIntToLong(base.bf_n)) +
+        longFromRef(convertIntToLong(delta))) <
+      715827882 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(base.bf_n), convertIntToLong(delta))) in
+          longFromRef(convertIntToLong(base.bf_n)) +
+          longFromRef(convertIntToLong(delta))) >
+        715827882 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(c_ObservationBase_unique(base), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures intFromRef(c_ObservationBase_f_value(base)) ==
-    old(intFromRef(c_ObservationBase_f_value(base))) + intFromRef(delta) &&
+    (let anon_builtin ==
+      (plusInts(old(c_ObservationBase_f_value(base)), delta)) in
+      intFromRef(old(c_ObservationBase_f_value(base))) + intFromRef(delta)) &&
     intFromRef(c_ObservationBase_f_scaled(base, intToRef(2))) ==
-    intFromRef(c_ObservationBase_f_value(base)) * 2 &&
+    (let anon_builtin ==
+      (timesInts(c_ObservationBase_f_value(base), intToRef(2))) in
+      intFromRef(c_ObservationBase_f_value(base)) * intFromRef(intToRef(2))) &&
     intFromRef(c_ObservationBase_g_size(base)) ==
     intFromRef(c_ObservationBase_f_value(base))
 
@@ -2101,6 +2986,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2120,6 +3009,10 @@ function c_ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ObservationBase())
   requires acc(c_ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ObservationBase_f_value(this)) &&
+    intFromRef(c_ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(c_ObservationBase_unique(this), write) in
@@ -2178,7 +3071,23 @@ method ObservationLeaf_c_ObservationBase_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ObservationBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ObservationBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          -715827882 <= intFromRef(c_ObservationBase_f_value(this)))) &&
+      (unfolding acc(ObservationLeaf_unique(this), wildcard) in
+        (unfolding acc(ObservationMiddle_unique(this), wildcard) in
+          intFromRef(c_ObservationBase_f_value(this)) <= 715827882)) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_ObservationBase_f_scaled(this, factor) ==
       old((unfolding acc(ObservationLeaf_unique(this), wildcard) in
         (unfolding acc(ObservationMiddle_unique(this), wildcard) in
@@ -2227,6 +3136,12 @@ function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref)
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(AbstractObservation_unique(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <=
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) &&
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) <=
+    715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2246,6 +3161,10 @@ function DirectObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), DirectObservation())
   requires acc(DirectObservation_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(DirectObservation_f_value(this)) &&
+    intFromRef(DirectObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(DirectObservation_unique(this), write) in
@@ -2274,6 +3193,10 @@ function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ClassObservation_f_value(this)) &&
+    intFromRef(c_ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2313,6 +3236,12 @@ function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref)
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(AbstractObservation_unique(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <=
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) &&
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) <=
+    715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2332,6 +3261,10 @@ function DirectObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), DirectObservation())
   requires acc(DirectObservation_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(DirectObservation_f_value(this)) &&
+    intFromRef(DirectObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(DirectObservation_unique(this), write) in
@@ -2360,6 +3293,10 @@ function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ClassObservation_f_value(this)) &&
+    intFromRef(c_ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2392,6 +3329,82 @@ predicate c_ClassObservation_unique(this: Ref) {
 
 predicate footprint(this: Ref)
 
+method DirectObservation_c_ClassObservation_restore(this: Ref)
+  requires acc(c_ClassObservation_unique(this), write)
+  requires isSubtype(typeOf(this), DirectObservation())
+  ensures acc(DirectObservation_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    DirectObservation_f_value(this) ==
+    old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_f_value(this)))
+  ensures (forall factor: Ref ::
+      { DirectObservation_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ClassObservation())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_ClassObservation_f_value(this))) &&
+      (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        intFromRef(c_ClassObservation_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      DirectObservation_f_scaled(this, factor) ==
+      old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        c_ClassObservation_f_scaled(this, factor))))
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    DirectObservation_g_size(this) ==
+    old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_g_size(this)))
+
+
+method DirectObservation_c_ClassObservation_upcast(this: Ref)
+  requires acc(DirectObservation_unique(this), write)
+  ensures acc(c_ClassObservation_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), DirectObservation())) && true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_f_value(this)) ==
+    old(DirectObservation_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ClassObservation_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), DirectObservation())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(DirectObservation_f_value(this)) &&
+      intFromRef(DirectObservation_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(DirectObservation_f_value(this)) &&
+      intFromRef(DirectObservation_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        c_ClassObservation_f_scaled(this, factor)) ==
+      old(DirectObservation_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), DirectObservation())) && true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_g_size(this)) ==
+    old(DirectObservation_g_size(this))
+
+
+method refines_c_ClassObservation_f_scaled(this: Ref, factor: Ref)
+  returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(c_ClassObservation_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  requires (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      -715827882 <= intFromRef(c_ClassObservation_f_value(this))) &&
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      intFromRef(c_ClassObservation_f_value(this)) <= 715827882) &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
+  requires isSubtype(typeOf(this), DirectObservation())
+{
+  DirectObservation_c_ClassObservation_restore(this)
+  ret := DirectObservation_f_scaled(this, factor)
+  DirectObservation_c_ClassObservation_upcast(this)
+  assert isSubtype(typeOf(ret), intType())
+}
+
 /class_observer_views.kt: info: Generated Viper text for size:
 field n: Ref
 
@@ -2399,6 +3412,12 @@ function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref)
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(AbstractObservation_unique(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <=
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) &&
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) <=
+    715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2418,6 +3437,10 @@ function DirectObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), DirectObservation())
   requires acc(DirectObservation_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(DirectObservation_f_value(this)) &&
+    intFromRef(DirectObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(DirectObservation_unique(this), write) in
@@ -2446,6 +3469,10 @@ function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ClassObservation_f_value(this)) &&
+    intFromRef(c_ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2483,6 +3510,12 @@ function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref)
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(AbstractObservation_unique(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <=
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) &&
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) <=
+    715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2502,6 +3535,10 @@ function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ClassObservation_f_value(this)) &&
+    intFromRef(c_ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2557,6 +3594,10 @@ function DirectObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), DirectObservation())
   requires acc(DirectObservation_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(DirectObservation_f_value(this)) &&
+    intFromRef(DirectObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(DirectObservation_unique(this), write) in
@@ -2586,6 +3627,12 @@ function c_AbstractObservation_c_ClassObservation_f_scaled_args_c_ClassObservati
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(c_AbstractObservation_unique(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <=
+    intFromRef(c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this)) &&
+    intFromRef(c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this)) <=
+    715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2606,6 +3653,12 @@ function c_ClassObservation_f_scaled_args_c_ClassObservation_Int_ret_Int(this: R
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(c_ClassObservation_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <=
+    intFromRef(c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this)) &&
+    intFromRef(c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this)) <=
+    715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2667,7 +3720,13 @@ method DirectObservation_c_AbstractObservation_restore(this: Ref)
   ensures (forall factor: Ref ::
       { DirectObservation_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ClassObservation())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <=
+      intFromRef(c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this)) &&
+      intFromRef(c_AbstractObservation_c_ClassObservation_f_value_args_c_ClassObservation_ret_Int(this)) <=
+      715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       DirectObservation_f_scaled(this, factor) ==
       old(c_AbstractObservation_c_ClassObservation_f_scaled_args_c_ClassObservation_Int_ret_Int(this,
       factor)))
@@ -2687,7 +3746,15 @@ method DirectObservation_c_AbstractObservation_upcast(this: Ref)
       { c_AbstractObservation_c_ClassObservation_f_scaled_args_c_ClassObservation_Int_ret_Int(this,
       factor) }
       true && old(isSubtype(typeOf(this), DirectObservation())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(DirectObservation_f_value(this)) &&
+      intFromRef(DirectObservation_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(DirectObservation_f_value(this)) &&
+      intFromRef(DirectObservation_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_AbstractObservation_c_ClassObservation_f_scaled_args_c_ClassObservation_Int_ret_Int(this,
       factor) ==
       old(DirectObservation_f_scaled(this, factor)))
@@ -2734,6 +3801,12 @@ function AbstractObservation_c_ClassObservation_f_scaled(this: Ref, factor: Ref)
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(AbstractObservation_unique(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <=
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) &&
+    intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) <=
+    715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2753,6 +3826,10 @@ function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ClassObservation_f_value(this)) &&
+    intFromRef(c_ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2790,7 +3867,19 @@ method AbstractObservation_c_ClassObservation_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_ClassObservation_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_ClassObservation())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <=
+      intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) &&
+      intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) <=
+      715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <=
+      intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) &&
+      intFromRef(AbstractObservation_c_ClassObservation_f_value(this)) <=
+      715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(c_ClassObservation_unique(this), wildcard) in
         c_ClassObservation_f_scaled(this, factor)) ==
       old(AbstractObservation_c_ClassObservation_f_scaled(this, factor)))
@@ -2823,6 +3912,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2842,6 +3935,10 @@ function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), RefinementBase())
   requires acc(RefinementBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(RefinementBase_f_value(this)) &&
+    intFromRef(RefinementBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(RefinementBase_unique(this), write) in
@@ -2881,29 +3978,14 @@ predicate footprint(this: Ref)
 /class_observer_views.kt: info: Generated Viper text for scaled:
 field state: Ref
 
-function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
-  requires isSubtype(typeOf(this), ClassObservation())
-  requires acc(footprint(this), wildcard)
-  requires isSubtype(typeOf(factor), intType())
-  ensures isSubtype(typeOf(result), intType())
-
-
-function ClassObservation_f_value(this: Ref): Ref
-  requires isSubtype(typeOf(this), ClassObservation())
-  requires acc(footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
-function ClassObservation_g_size(this: Ref): Ref
-  requires isSubtype(typeOf(this), ClassObservation())
-  requires acc(footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
 function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), RefinementBase())
   requires acc(RefinementBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(RefinementBase_f_value(this)) &&
+    intFromRef(RefinementBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(RefinementBase_unique(this), write) in
@@ -2928,17 +4010,116 @@ function RefinementBase_g_size(this: Ref): Ref
   (unfolding acc(RefinementBase_unique(this), write) in this.state)
 }
 
-predicate ClassObservation_unique(this: Ref) {
-  acc(footprint(this), write) &&
-  isSubtype(typeOf(this), ClassObservation())
-}
+function c_ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_ClassObservation_f_value(this)) &&
+    intFromRef(c_ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ClassObservation_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
 
 predicate RefinementBase_unique(this: Ref) {
   isSubtype(typeOf(this), RefinementBase()) && acc(this.state, write) &&
   isSubtype(typeOf(this.state), intType())
 }
 
+predicate c_ClassObservation_unique(this: Ref) {
+  acc(footprint(this), write) &&
+  isSubtype(typeOf(this), c_ClassObservation())
+}
+
 predicate footprint(this: Ref)
+
+method RefinementBase_c_ClassObservation_restore(this: Ref)
+  requires acc(c_ClassObservation_unique(this), write)
+  requires isSubtype(typeOf(this), RefinementBase())
+  ensures acc(RefinementBase_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    RefinementBase_f_value(this) ==
+    old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_f_value(this)))
+  ensures (forall factor: Ref ::
+      { RefinementBase_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_ClassObservation())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_ClassObservation_f_value(this))) &&
+      (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        intFromRef(c_ClassObservation_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      RefinementBase_f_scaled(this, factor) ==
+      old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        c_ClassObservation_f_scaled(this, factor))))
+  ensures true && old(isSubtype(typeOf(this), c_ClassObservation())) &&
+    true ==>
+    RefinementBase_g_size(this) ==
+    old((unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_g_size(this)))
+
+
+method RefinementBase_c_ClassObservation_upcast(this: Ref)
+  requires acc(RefinementBase_unique(this), write)
+  ensures acc(c_ClassObservation_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), RefinementBase())) && true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_f_value(this)) ==
+    old(RefinementBase_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_ClassObservation_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), RefinementBase())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(RefinementBase_f_value(this)) &&
+      intFromRef(RefinementBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(RefinementBase_f_value(this)) &&
+      intFromRef(RefinementBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+        c_ClassObservation_f_scaled(this, factor)) ==
+      old(RefinementBase_f_scaled(this, factor)))
+  ensures true && old(isSubtype(typeOf(this), RefinementBase())) && true ==>
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      c_ClassObservation_g_size(this)) ==
+    old(RefinementBase_g_size(this))
+
+
+method refines_c_ClassObservation_f_scaled(this: Ref, factor: Ref)
+  returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_ClassObservation())
+  requires acc(c_ClassObservation_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  requires (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      -715827882 <= intFromRef(c_ClassObservation_f_value(this))) &&
+    (unfolding acc(c_ClassObservation_unique(this), wildcard) in
+      intFromRef(c_ClassObservation_f_value(this)) <= 715827882) &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
+  requires isSubtype(typeOf(this), RefinementBase())
+{
+  RefinementBase_c_ClassObservation_restore(this)
+  ret := RefinementBase_f_scaled(this, factor)
+  RefinementBase_c_ClassObservation_upcast(this)
+  assert isSubtype(typeOf(ret), intType())
+}
 
 /class_observer_views.kt: info: Generated Viper text for size:
 field state: Ref
@@ -2947,6 +4128,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -2966,6 +4151,10 @@ function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), RefinementBase())
   requires acc(RefinementBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(RefinementBase_f_value(this)) &&
+    intFromRef(RefinementBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(RefinementBase_unique(this), write) in
@@ -3009,6 +4198,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -3028,6 +4221,10 @@ function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), RefinementBase())
   requires acc(RefinementBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(RefinementBase_f_value(this)) &&
+    intFromRef(RefinementBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(RefinementBase_unique(this), write) in
@@ -3067,10 +4264,15 @@ predicate footprint(this: Ref)
 method advance(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), RefinementBase())
   requires acc(RefinementBase_unique(this), write)
+  requires (unfolding acc(RefinementBase_unique(this), write) in
+      intFromRef(this.state) < 2147483647)
   ensures acc(RefinementBase_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(RefinementBase_f_value(this)) ==
-    old(intFromRef(RefinementBase_f_value(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(RefinementBase_f_value(this)), intToRef(1))) in
+      intFromRef(old(RefinementBase_f_value(this))) +
+      intFromRef(intToRef(1)))
 {
   var anon_0: Ref
   unfold acc(RefinementBase_unique(this), write)
@@ -3088,6 +4290,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -3107,6 +4313,10 @@ function c_RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_RefinementBase())
   requires acc(c_RefinementBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_RefinementBase_f_value(this)) &&
+    intFromRef(c_RefinementBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(c_RefinementBase_unique(this), write) in
@@ -3159,7 +4369,11 @@ method RefinementLeaf_c_RefinementBase_restore(this: Ref)
   ensures (forall factor: Ref ::
       { c_RefinementBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_RefinementBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(c_RefinementBase_f_value(this)) &&
+      intFromRef(c_RefinementBase_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(RefinementLeaf_unique(this), wildcard) in
         c_RefinementBase_f_scaled(this, factor)) ==
       old(c_RefinementBase_f_scaled(this, factor)))
@@ -3179,7 +4393,19 @@ method RefinementLeaf_c_RefinementBase_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_RefinementBase_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_RefinementBase())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_RefinementBase_f_value(this))) &&
+      (unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        intFromRef(c_RefinementBase_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_RefinementBase_f_value(this))) &&
+      (unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        intFromRef(c_RefinementBase_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       c_RefinementBase_f_scaled(this, factor) ==
       old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
         c_RefinementBase_f_scaled(this, factor))))
@@ -3192,13 +4418,19 @@ method RefinementLeaf_c_RefinementBase_upcast(this: Ref)
 method RefinementLeaf_f_advance(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), RefinementLeaf())
   requires acc(RefinementLeaf_unique(this), write)
+  requires (unfolding acc(RefinementLeaf_unique(this), write) in
+      (unfolding acc(c_RefinementBase_unique(this), write) in
+        intFromRef(this.state) < 2147483647))
   ensures acc(RefinementLeaf_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(RefinementLeaf_unique(this), wildcard) in
       intFromRef(c_RefinementBase_f_value(this))) ==
-    old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
-      intFromRef(c_RefinementBase_f_value(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        c_RefinementBase_f_value(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        c_RefinementBase_f_value(this)))) +
+      intFromRef(intToRef(1)))
 {
   var anon_0: Ref
   unfold acc(RefinementLeaf_unique(this), write)
@@ -3214,15 +4446,22 @@ method RefinementLeaf_f_advance(this: Ref) returns (v_ret_0: Ref)
 method c_RefinementBase_f_advance(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_RefinementBase())
   requires acc(c_RefinementBase_unique(this), write)
+  requires (unfolding acc(c_RefinementBase_unique(this), write) in
+      intFromRef(this.state) < 2147483647)
   ensures acc(c_RefinementBase_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures intFromRef(c_RefinementBase_f_value(this)) ==
-    old(intFromRef(c_RefinementBase_f_value(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(c_RefinementBase_f_value(this)), intToRef(1))) in
+      intFromRef(old(c_RefinementBase_f_value(this))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_c_RefinementBase_f_advance(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_RefinementBase())
   requires acc(c_RefinementBase_unique(this), write)
+  requires (unfolding acc(c_RefinementBase_unique(this), write) in
+      intFromRef(this.state) < 2147483647)
   requires isSubtype(typeOf(this), RefinementLeaf())
 {
   RefinementLeaf_c_RefinementBase_restore(this)
@@ -3231,7 +4470,10 @@ method refines_c_RefinementBase_f_advance(this: Ref) returns (ret_1: Ref)
   assert acc(c_RefinementBase_unique(this), write)
   assert isSubtype(typeOf(ret_1), unitType())
   assert intFromRef(c_RefinementBase_f_value(this)) ==
-    old(intFromRef(c_RefinementBase_f_value(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(c_RefinementBase_f_value(this)), intToRef(1))) in
+      intFromRef(old(c_RefinementBase_f_value(this))) +
+      intFromRef(intToRef(1)))
 }
 
 /class_observer_views.kt: info: Generated Viper text for refinementClassClient:
@@ -3246,6 +4488,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(ClassObservation_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -3265,6 +4511,10 @@ function RefinementBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), RefinementBase())
   requires acc(RefinementBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(RefinementBase_f_value(this)) &&
+    intFromRef(RefinementBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(RefinementBase_unique(this), write) in
@@ -3324,21 +4574,30 @@ predicate Serializable_unique(this: Ref) {
   isSubtype(typeOf(this), Serializable())
 }
 
-method advance(this: Ref) returns (ret_1: Ref)
+method advance(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), RefinementLeaf())
   requires acc(RefinementLeaf_unique(this), write)
+  requires (unfolding acc(RefinementLeaf_unique(this), write) in
+      (unfolding acc(RefinementBase_unique(this), write) in
+        intFromRef(this.state) < 2147483647))
   ensures acc(RefinementLeaf_unique(this), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(RefinementLeaf_unique(this), wildcard) in
       intFromRef(RefinementBase_f_value(this))) ==
-    old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
-      intFromRef(RefinementBase_f_value(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        RefinementBase_f_value(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(RefinementLeaf_unique(this), wildcard) in
+        RefinementBase_f_value(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refinementClassClient(leaf: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(leaf), RefinementLeaf())
   requires acc(RefinementLeaf_unique(leaf), write)
+  requires (unfolding acc(RefinementLeaf_unique(leaf), write) in
+      (unfolding acc(RefinementBase_unique(leaf), write) in
+        intFromRef(leaf.state) < 2147483647))
   ensures acc(RefinementLeaf_unique(leaf), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -3352,7 +4611,10 @@ method refinementClassClient(leaf: Ref) returns (v_ret_0: Ref)
   anon_4 := advance(leaf)
   anon_5 := (unfolding acc(RefinementLeaf_unique(leaf), wildcard) in
       RefinementBase_f_value(leaf))
-  assert intFromRef(anon_5) == intFromRef(before) + 1
+  assert intFromRef(anon_5) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(1))) in
+      intFromRef(before) + intFromRef(intToRef(1)))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -3470,6 +4732,10 @@ function ClassObservation_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ClassObservation())
   requires acc(ClassObservation_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ClassObservation_f_value(this)) &&
+    intFromRef(ClassObservation_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -3489,6 +4755,10 @@ function ObservationBase_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), ObservationBase())
   requires acc(ObservationBase_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(ObservationBase_f_value(this)) &&
+    intFromRef(ObservationBase_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ObservationBase_unique(this), write) in
@@ -3546,6 +4816,10 @@ predicate Serializable_unique(this: Ref) {
 method baseFieldAccess(base: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(base), ObservationBase())
   requires acc(ObservationBase_unique(base), write)
+  requires (unfolding acc(ObservationBase_unique(base), write) in
+      -715827882 <= intFromRef(base.n)) &&
+    (unfolding acc(ObservationBase_unique(base), write) in
+      intFromRef(base.n) <= 715827882)
   ensures acc(ObservationBase_unique(base), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -3563,7 +4837,10 @@ method baseFieldAccess(base: Ref) returns (v_ret_0: Ref)
   anon_5 := ObservationBase_f_scaled(base, intToRef(3))
   unfold acc(ObservationBase_unique(base), write)
   anon_6 := base.n
-  assert intFromRef(anon_5) == intFromRef(anon_6) * 3
+  assert intFromRef(anon_5) ==
+    (let anon_builtin ==
+      (timesInts(anon_6, intToRef(3))) in
+      intFromRef(anon_6) * intFromRef(intToRef(3)))
   fold acc(ObservationBase_unique(base), write)
   anon_7 := ObservationBase_g_size(base)
   unfold acc(ObservationBase_unique(base), write)

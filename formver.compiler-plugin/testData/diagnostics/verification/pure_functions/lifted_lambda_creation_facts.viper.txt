@@ -14,6 +14,8 @@ predicate footprint(this: Ref)
 method invoke(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), GrowingCounter())
   requires acc(GrowingCounter_unique(this), write)
+  requires (unfolding acc(GrowingCounter_unique(this), wildcard) in
+      intFromRef(state(this)) == 0)
   ensures acc(GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
   ensures intFromRef(ret) >
@@ -245,6 +247,7 @@ method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -286,6 +289,8 @@ method elseBranchCounter(step: Ref) returns (ret_2: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -298,6 +303,8 @@ method f_invoke(this: Ref) returns (ret_3: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -413,6 +420,7 @@ method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
 method Lambda1_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
+  requires intFromRef(Lambda1_f_state(this)) == 0
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda1_f_state(this))) &&
@@ -439,6 +447,8 @@ method elseBranchCounter(step: Ref) returns (ret_2: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -451,6 +461,8 @@ method f_invoke(this: Ref) returns (ret_3: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_GrowingCounter_restore(this)
@@ -603,6 +615,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -638,6 +651,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -657,6 +672,8 @@ method preconditionCounter(step: Ref) returns (ret_1: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -704,7 +721,8 @@ predicate Lambda0_unique(this: Ref) {
     true && isSubtype(typeOf(this.Lambda0_p_capture2), intType()) &&
     isSubtype(typeOf(this.Lambda0_p_capture1), intType()) &&
     intFromRef(this.Lambda0_p_capture1) >
-    intFromRef(this.Lambda0_p_capture2))
+    intFromRef(this.Lambda0_p_capture2) &&
+    intFromRef(this.Lambda0_p_capture2) >= 0)
 }
 
 predicate c_GrowingCounter_unique(this: Ref) {
@@ -731,6 +749,7 @@ method create(captureArg0: Ref, captureArg1: Ref, captureArg2: Ref)
   requires isSubtype(typeOf(captureArg2), intType())
   requires isSubtype(typeOf(captureArg1), intType())
   requires intFromRef(captureArg1) > intFromRef(captureArg2)
+  requires intFromRef(captureArg2) >= 0
   ensures isSubtype(typeOf(ret_1), Lambda0())
   ensures isSubtype(typeOf(ret_1), Lambda0()) &&
     acc(ret_1.Lambda0_p_capture0, write) &&
@@ -747,7 +766,7 @@ method create(captureArg0: Ref, captureArg1: Ref, captureArg2: Ref)
 method relationalCounter(low: Ref, high: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(low), intType())
   requires isSubtype(typeOf(high), intType())
-  requires intFromRef(high) > intFromRef(low)
+  requires intFromRef(high) > intFromRef(low) && intFromRef(low) >= 0
   ensures isSubtype(typeOf(v_ret_0), c_GrowingCounter())
   ensures acc(c_GrowingCounter_unique(v_ret_0), write)
 {
@@ -796,7 +815,8 @@ predicate Lambda0_unique(this: Ref) {
     true && isSubtype(typeOf(this.Lambda0_p_capture2), intType()) &&
     isSubtype(typeOf(this.Lambda0_p_capture1), intType()) &&
     intFromRef(this.Lambda0_p_capture1) >
-    intFromRef(this.Lambda0_p_capture2))
+    intFromRef(this.Lambda0_p_capture2) &&
+    intFromRef(this.Lambda0_p_capture2) >= 0)
 }
 
 predicate c_GrowingCounter_unique(this: Ref) {
@@ -828,6 +848,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -855,6 +876,7 @@ method create(captureArg0: Ref, captureArg1: Ref, captureArg2: Ref)
   requires isSubtype(typeOf(captureArg2), intType())
   requires isSubtype(typeOf(captureArg1), intType())
   requires intFromRef(captureArg1) > intFromRef(captureArg2)
+  requires intFromRef(captureArg2) >= 0
   ensures isSubtype(typeOf(ret_0), Lambda0())
   ensures isSubtype(typeOf(ret_0), Lambda0()) &&
     acc(ret_0.Lambda0_p_capture0, write) &&
@@ -871,6 +893,8 @@ method create(captureArg0: Ref, captureArg1: Ref, captureArg2: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -883,6 +907,8 @@ method f_invoke(this: Ref) returns (ret_3: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -900,7 +926,7 @@ method refines_f_invoke(this: Ref) returns (ret_3: Ref)
 method relationalCounter(low: Ref, high: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(low), intType())
   requires isSubtype(typeOf(high), intType())
-  requires intFromRef(high) > intFromRef(low)
+  requires intFromRef(high) > intFromRef(low) && intFromRef(low) >= 0
   ensures isSubtype(typeOf(ret_1), c_GrowingCounter())
   ensures acc(c_GrowingCounter_unique(ret_1), write)
 
@@ -1112,6 +1138,7 @@ method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -1147,6 +1174,8 @@ method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -1165,6 +1194,8 @@ method guardCounter(step: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -1280,6 +1311,7 @@ method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
 method Lambda1_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
+  requires intFromRef(Lambda1_f_state(this)) == 0
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda1_f_state(this))) &&
@@ -1300,6 +1332,8 @@ method Lambda1_invoke(this: Ref) returns (v_ret_4: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -1318,6 +1352,8 @@ method guardCounter(step: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_GrowingCounter_restore(this)
@@ -1547,6 +1583,7 @@ method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), intType())
   ensures intFromRef(v_ret_5) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -1583,6 +1620,8 @@ method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
 method f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures intFromRef(ret_4) >
@@ -1595,6 +1634,8 @@ method f_invoke(this: Ref) returns (ret_4: Ref)
 method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -1719,6 +1760,7 @@ method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
 method Lambda1_invoke(this: Ref) returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
+  requires intFromRef(Lambda1_f_state(this)) == 0
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), intType())
   ensures intFromRef(v_ret_5) > old(intFromRef(Lambda1_f_state(this))) &&
@@ -1739,6 +1781,8 @@ method Lambda1_invoke(this: Ref) returns (v_ret_5: Ref)
 method f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures intFromRef(ret_4) >
@@ -1751,6 +1795,8 @@ method f_invoke(this: Ref) returns (ret_4: Ref)
 method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_GrowingCounter_restore(this)
@@ -1989,6 +2035,7 @@ method Lambda0_create(Lambda0_captureArg0: Ref, Lambda0_captureArg1: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), intType())
   ensures intFromRef(v_ret_5) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -2047,6 +2094,8 @@ method Lambda1_create(Lambda1_captureArg0: Ref, Lambda1_captureArg1: Ref)
 method f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures intFromRef(ret_4) >
@@ -2066,6 +2115,8 @@ method nestedCounter(step: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -2198,6 +2249,7 @@ method Lambda1_create(Lambda1_captureArg0: Ref, Lambda1_captureArg1: Ref)
 method Lambda1_invoke(this: Ref) returns (v_ret_7: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
+  requires intFromRef(Lambda1_f_state(this)) == 0
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_7), intType())
   ensures intFromRef(v_ret_7) > old(intFromRef(Lambda1_f_state(this))) &&
@@ -2218,6 +2270,8 @@ method Lambda1_invoke(this: Ref) returns (v_ret_7: Ref)
 method f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures intFromRef(ret_4) >
@@ -2237,6 +2291,8 @@ method nestedCounter(step: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_GrowingCounter_restore(this)
@@ -2398,6 +2454,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -2439,6 +2496,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -2451,6 +2510,8 @@ method f_invoke(this: Ref) returns (ret_3: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -2693,6 +2754,7 @@ method Lambda0_create(Lambda0_captureArg0: Ref, captureArg1: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -2723,6 +2785,8 @@ method Lambda1_create(Lambda1_captureArg0: Ref) returns (ret_1: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -2741,6 +2805,8 @@ method loopCounter(step: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -2856,6 +2922,7 @@ method Lambda1_create(Lambda1_captureArg0: Ref) returns (ret_1: Ref)
 method Lambda1_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
+  requires intFromRef(Lambda1_f_state(this)) == 0
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda1_f_state(this))) &&
@@ -2874,6 +2941,8 @@ method Lambda1_invoke(this: Ref) returns (v_ret_4: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -2892,6 +2961,8 @@ method loopCounter(step: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_GrowingCounter_restore(this)
@@ -3122,6 +3193,7 @@ method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -3165,6 +3237,8 @@ method disjunctiveGuardCounter(step: Ref, enabled: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -3177,6 +3251,8 @@ method f_invoke(this: Ref) returns (ret_3: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -3292,6 +3368,7 @@ method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
 method Lambda1_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
+  requires intFromRef(Lambda1_f_state(this)) == 0
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda1_f_state(this))) &&
@@ -3320,6 +3397,8 @@ method disjunctiveGuardCounter(step: Ref, enabled: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -3332,6 +3411,8 @@ method f_invoke(this: Ref) returns (ret_3: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_GrowingCounter_restore(this)
@@ -3487,6 +3568,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -3531,6 +3613,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -3550,6 +3634,8 @@ method nullableCounter(step: Ref) returns (ret_1: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -3724,6 +3810,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -3759,6 +3846,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -3778,6 +3867,8 @@ method pureFactCounter(step: Ref) returns (ret_1: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -3823,7 +3914,10 @@ predicate Lambda0_unique(this: Ref) {
   (let this ==
     (this) in
     true && isSubtype(typeOf(this.Lambda0_p_capture1), intType()) &&
-    (forall anon_builtin: Int ::anon_builtin == anon_builtin ==>
+    (forall anon_builtin: Int ::anon_builtin >= -2147483648 &&
+      anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      anon_builtin == anon_builtin ==>
       intFromRef(this.Lambda0_p_capture1) > 0))
 }
 
@@ -3847,8 +3941,10 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(captureArg0), intType())
   requires isSubtype(typeOf(captureArg1), intType())
   requires isSubtype(typeOf(captureArg1), intType())
-  requires (forall anon_builtin: Int ::anon_builtin == anon_builtin ==>
-      intFromRef(captureArg1) > 0)
+  requires (forall anon_builtin: Int ::anon_builtin >= -2147483648 &&
+      anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      anon_builtin == anon_builtin ==> intFromRef(captureArg1) > 0)
   ensures isSubtype(typeOf(ret_2), Lambda0())
   ensures isSubtype(typeOf(ret_2), Lambda0()) &&
     acc(ret_2.Lambda0_p_capture0, write) &&
@@ -3861,8 +3957,10 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_2: Ref)
 
 method quantifiedCounter(step: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(step), intType())
-  requires (forall anon_builtin: Int ::anon_builtin == anon_builtin ==>
-      intFromRef(step) > 0)
+  requires (forall anon_builtin: Int ::anon_builtin >= -2147483648 &&
+      anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      anon_builtin == anon_builtin ==> intFromRef(step) > 0)
   ensures isSubtype(typeOf(v_ret_0), c_GrowingCounter())
   ensures acc(c_GrowingCounter_unique(v_ret_0), write)
 {
@@ -3909,7 +4007,10 @@ predicate Lambda0_unique(this: Ref) {
   (let this ==
     (this) in
     true && isSubtype(typeOf(this.Lambda0_p_capture1), intType()) &&
-    (forall anon_builtin: Int ::anon_builtin == anon_builtin ==>
+    (forall anon_builtin: Int ::anon_builtin >= -2147483648 &&
+      anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      anon_builtin == anon_builtin ==>
       intFromRef(this.Lambda0_p_capture1) > 0))
 }
 
@@ -3942,6 +4043,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), intType())
   ensures intFromRef(v_ret_5) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -3963,8 +4065,10 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
   requires isSubtype(typeOf(captureArg0), intType())
   requires isSubtype(typeOf(captureArg1), intType())
   requires isSubtype(typeOf(captureArg1), intType())
-  requires (forall anon_builtin: Int ::anon_builtin == anon_builtin ==>
-      intFromRef(captureArg1) > 0)
+  requires (forall anon_builtin: Int ::anon_builtin >= -2147483648 &&
+      anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      anon_builtin == anon_builtin ==> intFromRef(captureArg1) > 0)
   ensures isSubtype(typeOf(ret_0), Lambda0())
   ensures isSubtype(typeOf(ret_0), Lambda0()) &&
     acc(ret_0.Lambda0_p_capture0, write) &&
@@ -3978,6 +4082,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures intFromRef(ret_4) >
@@ -3989,8 +4095,10 @@ method f_invoke(this: Ref) returns (ret_4: Ref)
 
 method quantifiedCounter(step: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(step), intType())
-  requires (forall anon_builtin: Int ::anon_builtin == anon_builtin ==>
-      intFromRef(step) > 0)
+  requires (forall anon_builtin: Int ::anon_builtin >= -2147483648 &&
+      anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      anon_builtin == anon_builtin ==> intFromRef(step) > 0)
   ensures isSubtype(typeOf(ret_1), c_GrowingCounter())
   ensures acc(c_GrowingCounter_unique(ret_1), write)
 
@@ -3998,6 +4106,8 @@ method quantifiedCounter(step: Ref) returns (ret_1: Ref)
 method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -4206,6 +4316,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_9: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_9), intType())
   ensures intFromRef(v_ret_9) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -4254,6 +4365,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_8: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_8), intType())
   ensures intFromRef(ret_8) >
@@ -4271,6 +4384,8 @@ method multipleCreationContexts(step: Ref) returns (ret_1: Ref)
 method refines_f_invoke(this: Ref) returns (ret_8: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -4433,6 +4548,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_3), intType())
   ensures intFromRef(v_ret_3) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -4473,6 +4589,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) >
@@ -4485,6 +4603,8 @@ method f_invoke(this: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -4707,6 +4827,7 @@ method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -4748,6 +4869,8 @@ method conditionalReturnCounter(step: Ref, stop: Ref) returns (ret_2: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -4760,6 +4883,8 @@ method f_invoke(this: Ref) returns (ret_3: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -4873,6 +4998,7 @@ method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
 method Lambda1_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
+  requires intFromRef(Lambda1_f_state(this)) == 0
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda1_f_state(this))) &&
@@ -4900,6 +5026,8 @@ method conditionalReturnCounter(step: Ref, stop: Ref) returns (ret_2: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -4912,6 +5040,8 @@ method f_invoke(this: Ref) returns (ret_3: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_GrowingCounter_restore(this)
@@ -5133,6 +5263,7 @@ method Lambda0_create(Lambda0_captureArg0: Ref) returns (ret_0: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -5167,6 +5298,8 @@ method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -5186,6 +5319,8 @@ method nestedGuardDoesNotLeak(step: Ref, a: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -5299,6 +5434,7 @@ method Lambda1_create(Lambda1_captureArg0: Ref, captureArg1: Ref)
 method Lambda1_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
+  requires intFromRef(Lambda1_f_state(this)) == 0
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda1_f_state(this))) &&
@@ -5319,6 +5455,8 @@ method Lambda1_invoke(this: Ref) returns (v_ret_4: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -5338,6 +5476,8 @@ method nestedGuardDoesNotLeak(step: Ref, a: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_GrowingCounter_restore(this)
@@ -5530,6 +5670,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -5565,6 +5706,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -5585,6 +5728,8 @@ method immutableHeapCounter(box: Ref) returns (ret_1: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -5755,6 +5900,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -5793,6 +5939,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -5814,6 +5962,8 @@ method mutableHeapCounter(box: Ref) returns (ret_1: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -6005,6 +6155,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -6043,6 +6194,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -6063,6 +6216,8 @@ method mutableHelperCounter(box: Ref) returns (ret_1: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -6213,6 +6368,7 @@ method Lambda0_c_GrowingCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(v_ret_4) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -6247,6 +6403,8 @@ method create(captureArg0: Ref, captureArg1: Ref) returns (ret_0: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) >
@@ -6259,6 +6417,8 @@ method f_invoke(this: Ref) returns (ret_3: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -6488,6 +6648,7 @@ method Lambda0_create(Lambda0_captureArg0: Ref, captureArg1: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_state(this)) == 0
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), intType())
   ensures intFromRef(v_ret_5) > old(intFromRef(Lambda0_f_state(this))) &&
@@ -6519,6 +6680,8 @@ method Lambda1_create(Lambda1_captureArg0: Ref) returns (ret_1: Ref)
 method f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures intFromRef(ret_4) >
@@ -6538,6 +6701,8 @@ method mutableCaptureCounter(initial: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_GrowingCounter_restore(this)
@@ -6647,6 +6812,7 @@ method Lambda1_create(Lambda1_captureArg0: Ref) returns (ret_1: Ref)
 method Lambda1_invoke(this: Ref) returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), Lambda1())
   requires acc(Lambda1_unique(this), write)
+  requires intFromRef(Lambda1_f_state(this)) == 0
   ensures acc(Lambda1_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), intType())
   ensures intFromRef(v_ret_5) > old(intFromRef(Lambda1_f_state(this))) &&
@@ -6665,6 +6831,8 @@ method Lambda1_invoke(this: Ref) returns (v_ret_5: Ref)
 method f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   ensures acc(c_GrowingCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures intFromRef(ret_4) >
@@ -6684,6 +6852,8 @@ method mutableCaptureCounter(initial: Ref) returns (ret_2: Ref)
 method refines_f_invoke(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), c_GrowingCounter())
   requires acc(c_GrowingCounter_unique(this), write)
+  requires (unfolding acc(c_GrowingCounter_unique(this), wildcard) in
+      intFromRef(c_GrowingCounter_f_state(this)) == 0)
   requires isSubtype(typeOf(this), Lambda1())
 {
   Lambda1_c_GrowingCounter_restore(this)

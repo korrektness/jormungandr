@@ -13,7 +13,7 @@ types:
 import org.jetbrains.kotlin.formver.plugin.*
 
 fun divide(numerator: Int, denominator: Int): Int {
-    preconditions { denominator != 0 }
+    preconditions { denominator != 0; numerator != -2147483648 || denominator != -1 }
     return numerator / denominator
 }
 ```
@@ -90,10 +90,17 @@ proof diagnostics independently of solver-selected values. The dedicated
 [`counterexamples.kt`](formver.compiler-plugin/testData/diagnostics/verification/counterexamples.kt) fixture constrains
 its failing values uniquely.
 
+## Integer arithmetic
+
+`Int`, `Long`, `Short`, `Byte` and `Char` values have their Kotlin finite ranges. Arithmetic is checked in executable code and specification expressions alike, including contracts, laws, loop invariants and `@Pure` bodies. Each evaluated operation must have a representable result; overflow reports `INTEGER_OVERFLOW`. Byte and Short arithmetic uses Kotlin's resolved promotion to Int, while increment and decrement retain the receiver's width.
+
+Division truncates toward zero; remainder has the dividend's sign. A zero divisor reports `DIVISION_BY_ZERO`. `MIN_VALUE / -1` overflows; `MIN_VALUE % -1` is zero. Widening conversions are exact, and narrowing conversions must prove the target range. Char arithmetic and conversions must stay within 0 through 65535. Arithmetic failures are proof obligations, not catchable exits.
+
 ## Preconditions and Postconditions
 
 ```kotlin
 fun abs(x: Int): Int {
+    preconditions { x > -2147483648 }
     postconditions<Int> { result ->
         result >= 0
         result == x || result == -x
@@ -864,6 +871,10 @@ Each of these is a compile error:
 Open properties, overriding properties and properties with a custom getter
 or setter are calls, not fields. They carry no stable facts, and reading one
 through an owned path consumes that path.
+
+## Exceptions boundary
+
+Resource exhaustion is outside the verification safety claim. String values have at most `Int.MAX_VALUE` UTF-16 code units. Executable concatenation whose combined length exceeds that limit takes an abnormal exit; on normal return its length is the sum. Pure and specification concatenation requires no size precondition: its result is a bounded String, with exact concatenation semantics guarded by the combined length fitting within the limit. Above that limit the result is unspecified.
 
 ## Additional Plugin Options
 

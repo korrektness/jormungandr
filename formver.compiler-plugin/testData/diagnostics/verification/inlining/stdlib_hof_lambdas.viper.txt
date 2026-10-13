@@ -16,6 +16,7 @@ method myEach(s: Ref, f: Ref) returns (v_ret_0: Ref)
   if (boolFromRef(anon_1)) {
     var anon_2: Ref
     var anon_0: Ref
+    assert stringGet(s, i) == stringGet(s, i)
     inhale isSubtype(typeOf(anon_2), unitType())
     anon_0 := i
     i := plusInts(anon_0, intToRef(1))
@@ -56,9 +57,14 @@ method userInline(s: Ref) returns (v_ret_0: Ref)
   if (boolFromRef(anon_3)) {
     var v_ret_5: Ref
     var anon_0: Ref
+    var anon_4: Ref
     var anon_2: Ref
     anon_0 := stringGet(s, i)
     if (charFromRef(anon_0) == 97) {
+      anon_4 := ltInts(n, intToRef(2147483647))
+    } else {
+      anon_4 := boolToRef(false)}
+    if (boolFromRef(anon_4)) {
       var anon_1: Ref
       anon_1 := n
       n := plusInts(anon_1, intToRef(1))

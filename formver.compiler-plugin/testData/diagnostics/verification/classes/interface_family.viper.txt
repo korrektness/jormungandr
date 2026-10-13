@@ -112,11 +112,17 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate c_Serializable_unique(this: Ref) {
@@ -153,7 +159,12 @@ method consumeSerializable(value: Ref) returns (ret_1: Ref)
 field contents: Seq[Int]
 
 predicate StringBuilder_unique(this: Ref) {
-  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
 }
 
 predicate c_Appendable_unique(this: Ref) {

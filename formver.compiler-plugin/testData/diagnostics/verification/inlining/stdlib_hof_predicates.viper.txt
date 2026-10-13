@@ -29,11 +29,20 @@ method anyWitness(s: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_2) >= -1 &&
       intFromRef(anon_2) < intFromRef(anon_1)
     invariant intFromRef(anon_2) >= 0 ==>
-      stringFromRef(anon_0)[intFromRef(anon_2)] == 97
-    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
-        anon_builtin < intFromRef(anon_1) &&
-        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-        !(stringFromRef(anon_0)[anon_builtin] == 97))
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, anon_2)) in
+        stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+      97
+    invariant (forall anon_builtin_0: Int ::
+        { stringFromRef(anon_0)[anon_builtin_0] }
+        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+        !((let anon_builtin_neg1 ==
+          (stringGet(anon_0, intToRef(anon_builtin_0))) in
+          stringFromRef(anon_0)[anon_builtin_0]) ==
+        97))
   anon_5 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
   if (boolFromRef(anon_5)) {
     var anon_6: Ref
@@ -61,16 +70,28 @@ method anyWitness(s: Ref, k: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_2) >= -1 &&
     intFromRef(anon_2) < intFromRef(anon_1)
   assert intFromRef(anon_2) >= 0 ==>
-    stringFromRef(anon_0)[intFromRef(anon_2)] == 97
-  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
-      anon_builtin < intFromRef(anon_1) &&
-      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-      !(stringFromRef(anon_0)[anon_builtin] == 97))
+    (let anon_builtin_neg1 ==
+      (stringGet(anon_0, anon_2)) in
+      stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+    97
+  assert (forall anon_builtin_0: Int ::
+      { stringFromRef(anon_0)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+      !((let anon_builtin_neg1 ==
+        (stringGet(anon_0, intToRef(anon_builtin_0))) in
+        stringFromRef(anon_0)[anon_builtin_0]) ==
+      97))
   anon_4 := geInts(anon_2, intToRef(0))
   if (boolFromRef(anon_4)) {
     assert |stringFromRef(s)| > 0
   } else {
-    assert !(stringFromRef(s)[intFromRef(k)] == 97)}
+    assert !((let anon_builtin_neg1 ==
+        (stringGet(s, k)) in
+        stringFromRef(s)[intFromRef(k)]) ==
+      97)}
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -106,13 +127,29 @@ method allDigits(s: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_2) >= -1 &&
       intFromRef(anon_2) < intFromRef(anon_1)
     invariant intFromRef(anon_2) >= 0 ==>
-      !(stringFromRef(anon_0)[intFromRef(anon_2)] >= 48 &&
-      stringFromRef(anon_0)[intFromRef(anon_2)] <= 57)
-    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
-        anon_builtin < intFromRef(anon_1) &&
-        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-        !!(stringFromRef(anon_0)[anon_builtin] >= 48 &&
-        stringFromRef(anon_0)[anon_builtin] <= 57))
+      !((let anon_builtin_neg1 ==
+        (stringGet(anon_0, anon_2)) in
+        stringFromRef(anon_0)[intFromRef(anon_2)]) >=
+      48 &&
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, anon_2)) in
+        stringFromRef(anon_0)[intFromRef(anon_2)]) <=
+      57)
+    invariant (forall anon_builtin_0: Int ::
+        { stringFromRef(anon_0)[anon_builtin_0] }
+        { stringFromRef(anon_0)[anon_builtin_0] }
+        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+        !!((let anon_builtin_neg1 ==
+          (stringGet(anon_0, intToRef(anon_builtin_0))) in
+          stringFromRef(anon_0)[anon_builtin_0]) >=
+        48 &&
+        (let anon_builtin_neg1 ==
+          (stringGet(anon_0, intToRef(anon_builtin_0))) in
+          stringFromRef(anon_0)[anon_builtin_0]) <=
+        57))
   anon_5 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
   if (boolFromRef(anon_5)) {
     var anon_6: Ref
@@ -143,16 +180,35 @@ method allDigits(s: Ref, k: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_2) >= -1 &&
     intFromRef(anon_2) < intFromRef(anon_1)
   assert intFromRef(anon_2) >= 0 ==>
-    !(stringFromRef(anon_0)[intFromRef(anon_2)] >= 48 &&
-    stringFromRef(anon_0)[intFromRef(anon_2)] <= 57)
-  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
-      anon_builtin < intFromRef(anon_1) &&
-      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-      !!(stringFromRef(anon_0)[anon_builtin] >= 48 &&
-      stringFromRef(anon_0)[anon_builtin] <= 57))
+    !((let anon_builtin_neg1 ==
+      (stringGet(anon_0, anon_2)) in
+      stringFromRef(anon_0)[intFromRef(anon_2)]) >=
+    48 &&
+    (let anon_builtin_neg1 ==
+      (stringGet(anon_0, anon_2)) in
+      stringFromRef(anon_0)[intFromRef(anon_2)]) <=
+    57)
+  assert (forall anon_builtin_0: Int ::
+      { stringFromRef(anon_0)[anon_builtin_0] }
+      { stringFromRef(anon_0)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+      !!((let anon_builtin_neg1 ==
+        (stringGet(anon_0, intToRef(anon_builtin_0))) in
+        stringFromRef(anon_0)[anon_builtin_0]) >=
+      48 &&
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, intToRef(anon_builtin_0))) in
+        stringFromRef(anon_0)[anon_builtin_0]) <=
+      57))
   anon_4 := ltInts(anon_2, intToRef(0))
   if (boolFromRef(anon_4)) {
-    assert stringFromRef(s)[intFromRef(k)] >= 48
+    assert (let anon_builtin_neg1 ==
+        (stringGet(s, k)) in
+        stringFromRef(s)[intFromRef(k)]) >=
+      48
   }
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -189,11 +245,20 @@ method noneSpace(s: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_2) >= -1 &&
       intFromRef(anon_2) < intFromRef(anon_1)
     invariant intFromRef(anon_2) >= 0 ==>
-      stringFromRef(anon_0)[intFromRef(anon_2)] == 32
-    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
-        anon_builtin < intFromRef(anon_1) &&
-        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-        !(stringFromRef(anon_0)[anon_builtin] == 32))
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, anon_2)) in
+        stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+      32
+    invariant (forall anon_builtin_0: Int ::
+        { stringFromRef(anon_0)[anon_builtin_0] }
+        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+        !((let anon_builtin_neg1 ==
+          (stringGet(anon_0, intToRef(anon_builtin_0))) in
+          stringFromRef(anon_0)[anon_builtin_0]) ==
+        32))
   anon_5 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
   if (boolFromRef(anon_5)) {
     var anon_6: Ref
@@ -221,14 +286,26 @@ method noneSpace(s: Ref, k: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_2) >= -1 &&
     intFromRef(anon_2) < intFromRef(anon_1)
   assert intFromRef(anon_2) >= 0 ==>
-    stringFromRef(anon_0)[intFromRef(anon_2)] == 32
-  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
-      anon_builtin < intFromRef(anon_1) &&
-      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-      !(stringFromRef(anon_0)[anon_builtin] == 32))
+    (let anon_builtin_neg1 ==
+      (stringGet(anon_0, anon_2)) in
+      stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+    32
+  assert (forall anon_builtin_0: Int ::
+      { stringFromRef(anon_0)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+      !((let anon_builtin_neg1 ==
+        (stringGet(anon_0, intToRef(anon_builtin_0))) in
+        stringFromRef(anon_0)[anon_builtin_0]) ==
+      32))
   anon_4 := ltInts(anon_2, intToRef(0))
   if (boolFromRef(anon_4)) {
-    assert !(stringFromRef(s)[intFromRef(k)] == 32)
+    assert !((let anon_builtin_neg1 ==
+        (stringGet(s, k)) in
+        stringFromRef(s)[intFromRef(k)]) ==
+      32)
   }
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -264,11 +341,20 @@ method firstIndex(s: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_2) >= -1 &&
       intFromRef(anon_2) < intFromRef(anon_1)
     invariant intFromRef(anon_2) >= 0 ==>
-      stringFromRef(anon_0)[intFromRef(anon_2)] == 61
-    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
-        anon_builtin < intFromRef(anon_1) &&
-        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-        !(stringFromRef(anon_0)[anon_builtin] == 61))
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, anon_2)) in
+        stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+      61
+    invariant (forall anon_builtin_0: Int ::
+        { stringFromRef(anon_0)[anon_builtin_0] }
+        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+        !((let anon_builtin_neg1 ==
+          (stringGet(anon_0, intToRef(anon_builtin_0))) in
+          stringFromRef(anon_0)[anon_builtin_0]) ==
+        61))
   anon_4 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
   if (boolFromRef(anon_4)) {
     var anon_5: Ref
@@ -295,14 +381,26 @@ method firstIndex(s: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_2) >= -1 &&
     intFromRef(anon_2) < intFromRef(anon_1)
   assert intFromRef(anon_2) >= 0 ==>
-    stringFromRef(anon_0)[intFromRef(anon_2)] == 61
-  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
-      anon_builtin < intFromRef(anon_1) &&
-      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-      !(stringFromRef(anon_0)[anon_builtin] == 61))
+    (let anon_builtin_neg1 ==
+      (stringGet(anon_0, anon_2)) in
+      stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+    61
+  assert (forall anon_builtin_0: Int ::
+      { stringFromRef(anon_0)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+      !((let anon_builtin_neg1 ==
+        (stringGet(anon_0, intToRef(anon_builtin_0))) in
+        stringFromRef(anon_0)[anon_builtin_0]) ==
+      61))
   l0_r := anon_2
   if (intFromRef(l0_r) >= 0) {
-    assert stringFromRef(s)[intFromRef(l0_r)] == 61
+    assert (let anon_builtin_neg1 ==
+        (stringGet(s, l0_r)) in
+        stringFromRef(s)[intFromRef(l0_r)]) ==
+      61
   }
   v_ret_0 := l0_r
   goto lbl_ret_0
@@ -319,7 +417,10 @@ method firstIndexIsFirst(s: Ref, k: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(s), stringType())
   requires isSubtype(typeOf(k), intType())
   requires 0 <= intFromRef(k) && intFromRef(k) < |stringFromRef(s)| &&
-    stringFromRef(s)[intFromRef(k)] == 61
+    (let anon_builtin_neg1 ==
+      (stringGet(s, k)) in
+      stringFromRef(s)[intFromRef(k)]) ==
+    61
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var l0_r: Ref
@@ -341,11 +442,20 @@ method firstIndexIsFirst(s: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_2) >= -1 &&
       intFromRef(anon_2) < intFromRef(anon_1)
     invariant intFromRef(anon_2) >= 0 ==>
-      stringFromRef(anon_0)[intFromRef(anon_2)] == 61
-    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
-        anon_builtin < intFromRef(anon_1) &&
-        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-        !(stringFromRef(anon_0)[anon_builtin] == 61))
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, anon_2)) in
+        stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+      61
+    invariant (forall anon_builtin_0: Int ::
+        { stringFromRef(anon_0)[anon_builtin_0] }
+        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+        !((let anon_builtin_neg1 ==
+          (stringGet(anon_0, intToRef(anon_builtin_0))) in
+          stringFromRef(anon_0)[anon_builtin_0]) ==
+        61))
   anon_4 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
   if (boolFromRef(anon_4)) {
     var anon_5: Ref
@@ -373,11 +483,20 @@ method firstIndexIsFirst(s: Ref, k: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_2) >= -1 &&
     intFromRef(anon_2) < intFromRef(anon_1)
   assert intFromRef(anon_2) >= 0 ==>
-    stringFromRef(anon_0)[intFromRef(anon_2)] == 61
-  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
-      anon_builtin < intFromRef(anon_1) &&
-      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-      !(stringFromRef(anon_0)[anon_builtin] == 61))
+    (let anon_builtin_neg1 ==
+      (stringGet(anon_0, anon_2)) in
+      stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+    61
+  assert (forall anon_builtin_0: Int ::
+      { stringFromRef(anon_0)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+      !((let anon_builtin_neg1 ==
+        (stringGet(anon_0, intToRef(anon_builtin_0))) in
+        stringFromRef(anon_0)[anon_builtin_0]) ==
+      61))
   l0_r := anon_2
   assert 0 <= intFromRef(l0_r)
   assert intFromRef(l0_r) <= intFromRef(k)
@@ -413,13 +532,29 @@ method firstMatch(s: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_2) >= -1 &&
       intFromRef(anon_2) < intFromRef(anon_1)
     invariant intFromRef(anon_2) >= 0 ==>
-      stringFromRef(anon_0)[intFromRef(anon_2)] == 120 ||
-      stringFromRef(anon_0)[intFromRef(anon_2)] == 121
-    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
-        anon_builtin < intFromRef(anon_1) &&
-        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-        !(stringFromRef(anon_0)[anon_builtin] == 120 ||
-        stringFromRef(anon_0)[anon_builtin] == 121))
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, anon_2)) in
+        stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+      120 ||
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, anon_2)) in
+        stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+      121
+    invariant (forall anon_builtin_0: Int ::
+        { stringFromRef(anon_0)[anon_builtin_0] }
+        { stringFromRef(anon_0)[anon_builtin_0] }
+        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+        !((let anon_builtin_neg1 ==
+          (stringGet(anon_0, intToRef(anon_builtin_0))) in
+          stringFromRef(anon_0)[anon_builtin_0]) ==
+        120 ||
+        (let anon_builtin_neg1 ==
+          (stringGet(anon_0, intToRef(anon_builtin_0))) in
+          stringFromRef(anon_0)[anon_builtin_0]) ==
+        121))
   anon_4 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
   if (boolFromRef(anon_4)) {
     var anon_5: Ref
@@ -449,13 +584,29 @@ method firstMatch(s: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_2) >= -1 &&
     intFromRef(anon_2) < intFromRef(anon_1)
   assert intFromRef(anon_2) >= 0 ==>
-    stringFromRef(anon_0)[intFromRef(anon_2)] == 120 ||
-    stringFromRef(anon_0)[intFromRef(anon_2)] == 121
-  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
-      anon_builtin < intFromRef(anon_1) &&
-      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-      !(stringFromRef(anon_0)[anon_builtin] == 120 ||
-      stringFromRef(anon_0)[anon_builtin] == 121))
+    (let anon_builtin_neg1 ==
+      (stringGet(anon_0, anon_2)) in
+      stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+    120 ||
+    (let anon_builtin_neg1 ==
+      (stringGet(anon_0, anon_2)) in
+      stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+    121
+  assert (forall anon_builtin_0: Int ::
+      { stringFromRef(anon_0)[anon_builtin_0] }
+      { stringFromRef(anon_0)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+      !((let anon_builtin_neg1 ==
+        (stringGet(anon_0, intToRef(anon_builtin_0))) in
+        stringFromRef(anon_0)[anon_builtin_0]) ==
+      120 ||
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, intToRef(anon_builtin_0))) in
+        stringFromRef(anon_0)[anon_builtin_0]) ==
+      121))
   if (intFromRef(anon_2) >= 0) {
     c := stringGet(anon_0, anon_2)
   } else {
@@ -494,11 +645,20 @@ method labeledReturnPredicate(s: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_2) >= -1 &&
       intFromRef(anon_2) < intFromRef(anon_1)
     invariant intFromRef(anon_2) >= 0 ==>
-      stringFromRef(anon_0)[intFromRef(anon_2)] == 113
-    invariant (forall anon_builtin: Int ::anon_builtin >= 0 &&
-        anon_builtin < intFromRef(anon_1) &&
-        (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-        !(stringFromRef(anon_0)[anon_builtin] == 113))
+      (let anon_builtin_neg1 ==
+        (stringGet(anon_0, anon_2)) in
+        stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+      113
+    invariant (forall anon_builtin_0: Int ::
+        { stringFromRef(anon_0)[anon_builtin_0] }
+        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+        (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+        !((let anon_builtin_neg1 ==
+          (stringGet(anon_0, intToRef(anon_builtin_0))) in
+          stringFromRef(anon_0)[anon_builtin_0]) ==
+        113))
   anon_4 := andBools(ltInts(anon_1, stringLength(anon_0)), ltInts(anon_2, intToRef(0)))
   if (boolFromRef(anon_4)) {
     var anon_5: Ref
@@ -525,11 +685,20 @@ method labeledReturnPredicate(s: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_2) >= -1 &&
     intFromRef(anon_2) < intFromRef(anon_1)
   assert intFromRef(anon_2) >= 0 ==>
-    stringFromRef(anon_0)[intFromRef(anon_2)] == 113
-  assert (forall anon_builtin: Int ::anon_builtin >= 0 &&
-      anon_builtin < intFromRef(anon_1) &&
-      (intFromRef(anon_2) < 0 || anon_builtin < intFromRef(anon_2)) ==>
-      !(stringFromRef(anon_0)[anon_builtin] == 113))
+    (let anon_builtin_neg1 ==
+      (stringGet(anon_0, anon_2)) in
+      stringFromRef(anon_0)[intFromRef(anon_2)]) ==
+    113
+  assert (forall anon_builtin_0: Int ::
+      { stringFromRef(anon_0)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_1) &&
+      (intFromRef(anon_2) < 0 || anon_builtin_0 < intFromRef(anon_2)) ==>
+      !((let anon_builtin_neg1 ==
+        (stringGet(anon_0, intToRef(anon_builtin_0))) in
+        stringFromRef(anon_0)[anon_builtin_0]) ==
+      113))
   v_ret_0 := geInts(anon_2, intToRef(0))
   goto lbl_ret_0
   label lbl_ret_0
@@ -571,10 +740,12 @@ method impureLambdaBounds(s: Ref) returns (v_ret_0: Ref)
     var anon_6: Ref
     var v_ret_2: Ref
     var anon_3: Ref
-    var anon_4: Ref
     anon_3 := stringGet(anon_0, anon_1)
-    anon_4 := calls
-    calls := plusInts(anon_4, intToRef(1))
+    if (intFromRef(calls) < 2147483647) {
+      var anon_4: Ref
+      anon_4 := calls
+      calls := plusInts(anon_4, intToRef(1))
+    }
     v_ret_2 := boolToRef(charFromRef(anon_3) == 122)
     goto lbl_ret_2
     label lbl_ret_2
@@ -638,10 +809,12 @@ method impureLambdaNoFacts(s: Ref) returns (v_ret_0: Ref)
     var anon_6: Ref
     var v_ret_2: Ref
     var anon_3: Ref
-    var anon_4: Ref
     anon_3 := stringGet(anon_0, anon_1)
-    anon_4 := calls
-    calls := plusInts(anon_4, intToRef(1))
+    if (intFromRef(calls) < 2147483647) {
+      var anon_4: Ref
+      anon_4 := calls
+      calls := plusInts(anon_4, intToRef(1))
+    }
     v_ret_2 := boolToRef(charFromRef(anon_3) == 122)
     goto lbl_ret_2
     label lbl_ret_2
@@ -664,7 +837,10 @@ method impureLambdaNoFacts(s: Ref) returns (v_ret_0: Ref)
     intFromRef(anon_2) < intFromRef(anon_1)
   l0_r := anon_2
   if (intFromRef(l0_r) >= 0) {
-    assert stringFromRef(s)[intFromRef(l0_r)] == 122
+    assert (let anon_builtin ==
+        (stringGet(s, l0_r)) in
+        stringFromRef(s)[intFromRef(l0_r)]) ==
+      122
   }
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -675,6 +851,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function g_size(this: Ref): Ref
@@ -697,7 +874,8 @@ method con(par_size: Ref) returns (ret_4: Ref)
 method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
   requires isSubtype(typeOf(k), intType())
-  requires 0 <= intFromRef(k) && intFromRef(k) < intFromRef(n)
+  requires 0 <= intFromRef(k) && intFromRef(k) < intFromRef(n) &&
+    intFromRef(n) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   var a: Ref
@@ -721,11 +899,11 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
   var anon_12: Ref
   var anon_34: Ref
   var anon_14: Ref
-  var anon_36: Ref
-  var anon_38: Ref
+  var anon_37: Ref
+  var anon_39: Ref
   var anon_16: Ref
   var anon_17: Ref
-  var anon_39: Ref
+  var anon_40: Ref
   anon_0 := n
   anon_1 := con(anon_0)
   anon_2 := intToRef(0)
@@ -738,8 +916,10 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_2) <= intFromRef(anon_0)
     invariant arraySize(anon_1) == intFromRef(anon_0)
     invariant (unfolding acc(IntArray_unique(anon_1), write) in
-        (forall anon_builtin_0: Int ::anon_builtin_0 >= 0 &&
-          anon_builtin_0 < intFromRef(anon_2) ==>
+        (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+          anon_builtin_0 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+          anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_2) ==>
           anon_1.contents[anon_builtin_0] == anon_builtin_0))
   anon_19 := ltInts(anon_2, anon_0)
   if (boolFromRef(anon_19)) {
@@ -766,8 +946,10 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_2) <= intFromRef(anon_0)
   assert arraySize(anon_1) == intFromRef(anon_0)
   assert (unfolding acc(IntArray_unique(anon_1), write) in
-      (forall anon_builtin_0: Int ::anon_builtin_0 >= 0 &&
-        anon_builtin_0 < intFromRef(anon_2) ==>
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_2) ==>
         anon_1.contents[anon_builtin_0] == anon_builtin_0))
   a := anon_1
   anon_3 := intToRef(0)
@@ -787,8 +969,10 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant (unfolding acc(IntArray_unique(a), write) in
         intFromRef(anon_4) >= 0 ==> !(a.contents[intFromRef(anon_4)] >= 0))
     invariant (unfolding acc(IntArray_unique(a), write) in
-        (forall anon_builtin_1: Int ::anon_builtin_1 >= 0 &&
-          anon_builtin_1 < intFromRef(anon_3) &&
+        (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+          anon_builtin_1 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+          anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(anon_3) &&
           (intFromRef(anon_4) < 0 || anon_builtin_1 < intFromRef(anon_4)) ==>
           !!(a.contents[anon_builtin_1] >= 0)))
   anon_22 := andBools(ltInts(anon_3, intToRef(arraySize(a))), ltInts(anon_4,
@@ -828,8 +1012,10 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
   assert (unfolding acc(IntArray_unique(a), write) in
       intFromRef(anon_4) >= 0 ==> !(a.contents[intFromRef(anon_4)] >= 0))
   assert (unfolding acc(IntArray_unique(a), write) in
-      (forall anon_builtin_1: Int ::anon_builtin_1 >= 0 &&
-        anon_builtin_1 < intFromRef(anon_3) &&
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(anon_3) &&
         (intFromRef(anon_4) < 0 || anon_builtin_1 < intFromRef(anon_4)) ==>
         !!(a.contents[anon_builtin_1] >= 0)))
   anon_21 := ltInts(anon_4, intToRef(0))
@@ -859,8 +1045,10 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant (unfolding acc(IntArray_unique(a), write) in
         intFromRef(anon_7) >= 0 ==> a.contents[intFromRef(anon_7)] == 5)
     invariant (unfolding acc(IntArray_unique(a), write) in
-        (forall anon_builtin_2: Int ::anon_builtin_2 >= 0 &&
-          anon_builtin_2 < intFromRef(anon_6) &&
+        (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+          anon_builtin_2 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+          anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(anon_6) &&
           (intFromRef(anon_7) < 0 || anon_builtin_2 < intFromRef(anon_7)) ==>
           !(a.contents[anon_builtin_2] == 5)))
   anon_26 := andBools(ltInts(anon_6, intToRef(arraySize(a))), ltInts(anon_7,
@@ -900,8 +1088,10 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
   assert (unfolding acc(IntArray_unique(a), write) in
       intFromRef(anon_7) >= 0 ==> a.contents[intFromRef(anon_7)] == 5)
   assert (unfolding acc(IntArray_unique(a), write) in
-      (forall anon_builtin_2: Int ::anon_builtin_2 >= 0 &&
-        anon_builtin_2 < intFromRef(anon_6) &&
+      (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+        anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(anon_6) &&
         (intFromRef(anon_7) < 0 || anon_builtin_2 < intFromRef(anon_7)) ==>
         !(a.contents[anon_builtin_2] == 5)))
   l0_r := anon_7
@@ -932,8 +1122,10 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant (unfolding acc(IntArray_unique(a), write) in
         intFromRef(anon_10) >= 0 ==> a.contents[intFromRef(anon_10)] > 3)
     invariant (unfolding acc(IntArray_unique(a), write) in
-        (forall anon_builtin_3: Int ::anon_builtin_3 >= 0 &&
-          anon_builtin_3 < intFromRef(anon_9) &&
+        (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+          anon_builtin_3 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(anon_9) &&
           (intFromRef(anon_10) < 0 || anon_builtin_3 < intFromRef(anon_10)) ==>
           !(a.contents[anon_builtin_3] > 3)))
   anon_30 := andBools(ltInts(anon_9, intToRef(arraySize(a))), ltInts(anon_10,
@@ -974,8 +1166,10 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
   assert (unfolding acc(IntArray_unique(a), write) in
       intFromRef(anon_10) >= 0 ==> a.contents[intFromRef(anon_10)] > 3)
   assert (unfolding acc(IntArray_unique(a), write) in
-      (forall anon_builtin_3: Int ::anon_builtin_3 >= 0 &&
-        anon_builtin_3 < intFromRef(anon_9) &&
+      (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+        anon_builtin_3 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(anon_9) &&
         (intFromRef(anon_10) < 0 || anon_builtin_3 < intFromRef(anon_10)) ==>
         !(a.contents[anon_builtin_3] > 3)))
   if (intFromRef(anon_10) >= 0) {
@@ -1005,12 +1199,13 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(anon_12), intType())
     invariant intFromRef(anon_12) >= 0
     invariant intFromRef(anon_12) <= arraySize(a)
-    invariant intFromRef(sum) >= 0
+    invariant intFromRef(sum) >= 0 && intFromRef(sum) <= 1000000
   anon_34 := ltInts(anon_12, intToRef(arraySize(a)))
   if (boolFromRef(anon_34)) {
     var v_ret_12: Ref
     var anon_13: Ref
     var anon_35: Ref
+    var anon_36: Ref
     assert intFromRef(anon_12) >= 0
     assert intFromRef(anon_12) < arraySize(a)
     unfold acc(IntArray_unique(a), write)
@@ -1018,6 +1213,10 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
     anon_13 := anon_35
     fold acc(IntArray_unique(a), write)
     if (intFromRef(anon_13) > 0) {
+      anon_36 := leInts(sum, minusInts(intToRef(1000000), anon_13))
+    } else {
+      anon_36 := boolToRef(false)}
+    if (boolFromRef(anon_36)) {
       sum := plusInts(sum, anon_13)
     }
     label lbl_ret_12
@@ -1036,7 +1235,7 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(anon_12), intType())
   assert intFromRef(anon_12) >= 0
   assert intFromRef(anon_12) <= arraySize(a)
-  assert intFromRef(sum) >= 0
+  assert intFromRef(sum) >= 0 && intFromRef(sum) <= 1000000
   anon_14 := intToRef(0)
   label cont_5
     invariant acc(IntArray_unique(a), write)
@@ -1050,16 +1249,16 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(anon_14), intType())
     invariant intFromRef(anon_14) >= 0
     invariant intFromRef(anon_14) <= arraySize(a)
-  anon_36 := ltInts(anon_14, intToRef(arraySize(a)))
-  if (boolFromRef(anon_36)) {
+  anon_37 := ltInts(anon_14, intToRef(arraySize(a)))
+  if (boolFromRef(anon_37)) {
     var v_ret_15: Ref
     var anon_15: Ref
-    var anon_37: Ref
+    var anon_38: Ref
     assert intFromRef(anon_14) >= 0
     assert intFromRef(anon_14) < arraySize(a)
     unfold acc(IntArray_unique(a), write)
-    anon_37 := intToRef(a.contents[intFromRef(anon_14)])
-    anon_15 := anon_37
+    anon_38 := intToRef(a.contents[intFromRef(anon_14)])
+    anon_15 := anon_38
     assert intFromRef(anon_14) >= 0
     assert intFromRef(anon_14) < arraySize(a)
     a.contents := a.contents[intFromRef(anon_14) := 0]
@@ -1097,23 +1296,23 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_16) <= arraySize(a)
     invariant intFromRef(anon_17) >= 0 &&
       intFromRef(anon_17) <= intFromRef(anon_16)
-  anon_39 := ltInts(anon_16, intToRef(arraySize(a)))
-  if (boolFromRef(anon_39)) {
-    var anon_40: Ref
+  anon_40 := ltInts(anon_16, intToRef(arraySize(a)))
+  if (boolFromRef(anon_40)) {
+    var anon_41: Ref
     var v_ret_17: Ref
     var anon_18: Ref
-    var anon_41: Ref
+    var anon_42: Ref
     assert intFromRef(anon_16) >= 0
     assert intFromRef(anon_16) < arraySize(a)
     unfold acc(IntArray_unique(a), write)
-    anon_41 := intToRef(a.contents[intFromRef(anon_16)])
-    anon_18 := anon_41
+    anon_42 := intToRef(a.contents[intFromRef(anon_16)])
+    anon_18 := anon_42
     v_ret_17 := gtInts(anon_18, intToRef(0))
     fold acc(IntArray_unique(a), write)
     goto lbl_ret_17
     label lbl_ret_17
-    anon_40 := v_ret_17
-    if (boolFromRef(anon_40)) {
+    anon_41 := v_ret_17
+    if (boolFromRef(anon_41)) {
       anon_17 := plusInts(anon_17, intToRef(1))
     }
     anon_16 := plusInts(anon_16, intToRef(1))
@@ -1133,8 +1332,8 @@ method ownedArraySearch(n: Ref, k: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_16) <= arraySize(a)
   assert intFromRef(anon_17) >= 0 &&
     intFromRef(anon_17) <= intFromRef(anon_16)
-  anon_38 := anon_17
-  v_ret_0 := plusInts(anon_38, sum)
+  anon_39 := anon_17
+  v_ret_0 := plusInts(anon_39, sum)
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -1144,6 +1343,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function size(this: Ref): Ref
@@ -1255,6 +1455,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function size(this: Ref): Ref
@@ -1387,10 +1588,12 @@ method listCallsWithFunctionValues(xs: Ref, p: Ref, f: Ref)
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(xs), List())
   requires acc(xs.size, write)
+  requires isSubtype(typeOf(xs.size), intType())
   requires intFromRef(xs.size) >= 0
   requires isSubtype(typeOf(p), functionType())
   requires isSubtype(typeOf(f), functionType())
   ensures acc(xs.size, write)
+  ensures isSubtype(typeOf(xs.size), intType())
   ensures intFromRef(xs.size) >= 0
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
@@ -1411,6 +1614,7 @@ field contents: Seq[Int]
 
 function arraySize(v_this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method arrayAndStringCallsWithFunctionValues(a: Ref, s: Ref, p: Ref, q: Ref)
@@ -1455,6 +1659,7 @@ field contents: Seq[Int]
 
 function arraySize(v_this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method any(v_this_extension: Ref, par_predicate: Ref) returns (ret_1: Ref)
@@ -1478,6 +1683,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method anyOf(a: Ref, p: Ref) returns (ret_1: Ref)

@@ -3,6 +3,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function g_size(this: Ref): Ref
@@ -23,7 +24,12 @@ predicate Cloneable_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate Serializable_footprint(this: Ref)

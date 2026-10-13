@@ -3,6 +3,12 @@ domain rt  {
 
   unique function intType(): rt
 
+  unique function longType(): rt
+
+  unique function shortType(): rt
+
+  unique function byteType(): rt
+
   unique function boolType(): rt
 
   unique function charType(): rt
@@ -34,6 +40,18 @@ domain rt  {
   function intToRef(v: Int): Ref
 
   function intFromRef(r: Ref): Int
+
+  function longToRef(v: Int): Ref
+
+  function longFromRef(r: Ref): Int
+
+  function shortToRef(v: Int): Ref
+
+  function shortFromRef(r: Ref): Int
+
+  function byteToRef(v: Int): Ref
+
+  function byteFromRef(r: Ref): Int
 
   function boolToRef(v: Bool): Ref
 
@@ -87,6 +105,18 @@ domain rt  {
 
   axiom {
     isSubtype(intType(), anyType())
+  }
+
+  axiom {
+    isSubtype(longType(), anyType())
+  }
+
+  axiom {
+    isSubtype(shortType(), anyType())
+  }
+
+  axiom {
+    isSubtype(byteType(), anyType())
   }
 
   axiom {
@@ -170,8 +200,16 @@ domain rt  {
   }
 
   axiom {
+    (forall r: Ref ::
+      { intFromRef(r) }
+      isSubtype(typeOf(r), intType()) ==>
+      intFromRef(r) >= -2147483648 && intFromRef(r) <= 2147483647)
+  }
+
+  axiom {
     (forall v: Int ::
       { isSubtype(typeOf(intToRef(v)), intType()) }
+      v >= -2147483648 && v <= 2147483647 ==>
       isSubtype(typeOf(intToRef(v)), intType()))
   }
 
@@ -185,6 +223,85 @@ domain rt  {
     (forall r: Ref ::
       { intFromRef(r) }
       isSubtype(typeOf(r), intType()) ==> intToRef(intFromRef(r)) == r)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { longFromRef(r) }
+      isSubtype(typeOf(r), longType()) ==>
+      longFromRef(r) >= -9223372036854775808 &&
+      longFromRef(r) <= 9223372036854775807)
+  }
+
+  axiom {
+    (forall v: Int ::
+      { isSubtype(typeOf(longToRef(v)), longType()) }
+      v >= -9223372036854775808 && v <= 9223372036854775807 ==>
+      isSubtype(typeOf(longToRef(v)), longType()))
+  }
+
+  axiom {
+    (forall v: Int ::
+      { longFromRef(longToRef(v)) }
+      longFromRef(longToRef(v)) == v)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { longFromRef(r) }
+      isSubtype(typeOf(r), longType()) ==> longToRef(longFromRef(r)) == r)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { shortFromRef(r) }
+      isSubtype(typeOf(r), shortType()) ==>
+      shortFromRef(r) >= -32768 && shortFromRef(r) <= 32767)
+  }
+
+  axiom {
+    (forall v: Int ::
+      { isSubtype(typeOf(shortToRef(v)), shortType()) }
+      v >= -32768 && v <= 32767 ==>
+      isSubtype(typeOf(shortToRef(v)), shortType()))
+  }
+
+  axiom {
+    (forall v: Int ::
+      { shortFromRef(shortToRef(v)) }
+      shortFromRef(shortToRef(v)) == v)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { shortFromRef(r) }
+      isSubtype(typeOf(r), shortType()) ==>
+      shortToRef(shortFromRef(r)) == r)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { byteFromRef(r) }
+      isSubtype(typeOf(r), byteType()) ==>
+      byteFromRef(r) >= -128 && byteFromRef(r) <= 127)
+  }
+
+  axiom {
+    (forall v: Int ::
+      { isSubtype(typeOf(byteToRef(v)), byteType()) }
+      v >= -128 && v <= 127 ==> isSubtype(typeOf(byteToRef(v)), byteType()))
+  }
+
+  axiom {
+    (forall v: Int ::
+      { byteFromRef(byteToRef(v)) }
+      byteFromRef(byteToRef(v)) == v)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { byteFromRef(r) }
+      isSubtype(typeOf(r), byteType()) ==> byteToRef(byteFromRef(r)) == r)
   }
 
   axiom {
@@ -206,9 +323,16 @@ domain rt  {
   }
 
   axiom {
+    (forall r: Ref ::
+      { charFromRef(r) }
+      isSubtype(typeOf(r), charType()) ==>
+      charFromRef(r) >= 0 && charFromRef(r) <= 65535)
+  }
+
+  axiom {
     (forall v: Int ::
       { isSubtype(typeOf(charToRef(v)), charType()) }
-      isSubtype(typeOf(charToRef(v)), charType()))
+      v >= 0 && v <= 65535 ==> isSubtype(typeOf(charToRef(v)), charType()))
   }
 
   axiom {
@@ -224,8 +348,23 @@ domain rt  {
   }
 
   axiom {
+    (forall r: Ref ::
+      { stringFromRef(r) }
+      isSubtype(typeOf(r), stringType()) ==>
+      |stringFromRef(r)| <= 2147483647 &&
+      (forall index: Int ::
+        { stringFromRef(r)[index] }
+        index >= 0 && index < |stringFromRef(r)| ==>
+        stringFromRef(r)[index] >= 0 && stringFromRef(r)[index] <= 65535))
+  }
+
+  axiom {
     (forall v: Seq[Int] ::
       { isSubtype(typeOf(stringToRef(v)), stringType()) }
+      |v| <= 2147483647 &&
+      (forall index: Int ::
+        { v[index] }
+        index >= 0 && index < |v| ==> v[index] >= 0 && v[index] <= 65535) ==>
       isSubtype(typeOf(stringToRef(v)), stringType()))
   }
 
@@ -276,20 +415,29 @@ field unit: Ref
 field unitNull: Ref
 
 function addCharInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires charFromRef(arg_1) + intFromRef(arg_2) >= 0 &&
+    charFromRef(arg_1) + intFromRef(arg_2) <= 65535
   ensures isSubtype(typeOf(result), charType())
   ensures charFromRef(result) == charFromRef(arg_1) + intFromRef(arg_2)
 
 
 function addStringChar(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), stringType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), stringType())
-  ensures stringFromRef(result) ==
+  ensures |stringFromRef(arg_1)| < 2147483647 ==>
+    stringFromRef(result) ==
     stringFromRef(arg_1) ++ Seq(charFromRef(arg_2))
 
 
 function addStrings(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), stringType())
+  requires isSubtype(typeOf(arg_2), stringType())
   ensures isSubtype(typeOf(result), stringType())
-  ensures stringFromRef(result) ==
-    stringFromRef(arg_1) ++ stringFromRef(arg_2)
+  ensures |stringFromRef(arg_1)| + |stringFromRef(arg_2)| <= 2147483647 ==>
+    stringFromRef(result) == stringFromRef(arg_1) ++ stringFromRef(arg_2)
 
 
 function andBools(arg_1: Ref, arg_2: Ref): Ref
@@ -297,7 +445,25 @@ function andBools(arg_1: Ref, arg_2: Ref): Ref
   ensures boolFromRef(result) == (boolFromRef(arg_1) && boolFromRef(arg_2))
 
 
+function charCode(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == charFromRef(arg_1)
+
+
+function compareChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (charFromRef(arg_1) < charFromRef(arg_2) ?
+      -1 :
+      (charFromRef(arg_1) > charFromRef(arg_2) ? 1 : 0))
+
+
 function compareInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) ==
     (intFromRef(arg_1) < intFromRef(arg_2) ?
@@ -305,8 +471,564 @@ function compareInts(arg_1: Ref, arg_2: Ref): Ref
       (intFromRef(arg_1) > intFromRef(arg_2) ? 1 : 0))
 
 
-function divInts(arg_1: Ref, arg_2: Ref): Ref
+function compareToByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < byteFromRef(arg_2) ?
+      -1 :
+      (byteFromRef(arg_1) > byteFromRef(arg_2) ? 1 : 0))
+
+
+function compareToByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < intFromRef(arg_2) ?
+      -1 :
+      (byteFromRef(arg_1) > intFromRef(arg_2) ? 1 : 0))
+
+
+function compareToByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < longFromRef(arg_2) ?
+      -1 :
+      (byteFromRef(arg_1) > longFromRef(arg_2) ? 1 : 0))
+
+
+function compareToByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < shortFromRef(arg_2) ?
+      -1 :
+      (byteFromRef(arg_1) > shortFromRef(arg_2) ? 1 : 0))
+
+
+function compareToIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < byteFromRef(arg_2) ?
+      -1 :
+      (intFromRef(arg_1) > byteFromRef(arg_2) ? 1 : 0))
+
+
+function compareToIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < longFromRef(arg_2) ?
+      -1 :
+      (intFromRef(arg_1) > longFromRef(arg_2) ? 1 : 0))
+
+
+function compareToIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < shortFromRef(arg_2) ?
+      -1 :
+      (intFromRef(arg_1) > shortFromRef(arg_2) ? 1 : 0))
+
+
+function compareToLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (longFromRef(arg_1) < byteFromRef(arg_2) ?
+      -1 :
+      (longFromRef(arg_1) > byteFromRef(arg_2) ? 1 : 0))
+
+
+function compareToLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (longFromRef(arg_1) < intFromRef(arg_2) ?
+      -1 :
+      (longFromRef(arg_1) > intFromRef(arg_2) ? 1 : 0))
+
+
+function compareToLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (longFromRef(arg_1) < longFromRef(arg_2) ?
+      -1 :
+      (longFromRef(arg_1) > longFromRef(arg_2) ? 1 : 0))
+
+
+function compareToLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (longFromRef(arg_1) < shortFromRef(arg_2) ?
+      -1 :
+      (longFromRef(arg_1) > shortFromRef(arg_2) ? 1 : 0))
+
+
+function compareToShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < byteFromRef(arg_2) ?
+      -1 :
+      (shortFromRef(arg_1) > byteFromRef(arg_2) ? 1 : 0))
+
+
+function compareToShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < intFromRef(arg_2) ?
+      -1 :
+      (shortFromRef(arg_1) > intFromRef(arg_2) ? 1 : 0))
+
+
+function compareToShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < longFromRef(arg_2) ?
+      -1 :
+      (shortFromRef(arg_1) > longFromRef(arg_2) ? 1 : 0))
+
+
+function compareToShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < shortFromRef(arg_2) ?
+      -1 :
+      (shortFromRef(arg_1) > shortFromRef(arg_2) ? 1 : 0))
+
+
+function convertByteToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == byteFromRef(arg_1)
+
+
+function convertByteToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires byteFromRef(arg_1) >= 0 && byteFromRef(arg_1) <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == byteFromRef(arg_1)
+
+
+function convertByteToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1)
+
+
+function convertByteToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == byteFromRef(arg_1)
+
+
+function convertByteToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == byteFromRef(arg_1)
+
+
+function convertCharToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires charFromRef(arg_1) >= -128 && charFromRef(arg_1) <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == charFromRef(arg_1)
+
+
+function convertCharToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == charFromRef(arg_1)
+
+
+function convertCharToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == charFromRef(arg_1)
+
+
+function convertCharToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == charFromRef(arg_1)
+
+
+function convertCharToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires charFromRef(arg_1) >= -32768 && charFromRef(arg_1) <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == charFromRef(arg_1)
+
+
+function convertIntToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires intFromRef(arg_1) >= -128 && intFromRef(arg_1) <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == intFromRef(arg_1)
+
+
+function convertIntToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires intFromRef(arg_1) >= 0 && intFromRef(arg_1) <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == intFromRef(arg_1)
+
+
+function convertIntToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1)
+
+
+function convertIntToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == intFromRef(arg_1)
+
+
+function convertIntToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires intFromRef(arg_1) >= -32768 && intFromRef(arg_1) <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == intFromRef(arg_1)
+
+
+function convertLongToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) >= -128 && longFromRef(arg_1) <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == longFromRef(arg_1)
+
+
+function convertLongToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) >= 0 && longFromRef(arg_1) <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == longFromRef(arg_1)
+
+
+function convertLongToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) >= -2147483648 &&
+    longFromRef(arg_1) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == longFromRef(arg_1)
+
+
+function convertLongToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1)
+
+
+function convertLongToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) >= -32768 && longFromRef(arg_1) <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == longFromRef(arg_1)
+
+
+function convertShortToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires shortFromRef(arg_1) >= -128 && shortFromRef(arg_1) <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == shortFromRef(arg_1)
+
+
+function convertShortToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires shortFromRef(arg_1) >= 0 && shortFromRef(arg_1) <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == shortFromRef(arg_1)
+
+
+function convertShortToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1)
+
+
+function convertShortToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == shortFromRef(arg_1)
+
+
+function convertShortToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == shortFromRef(arg_1)
+
+
+function decByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires byteFromRef(arg_1) - 1 >= -128 && byteFromRef(arg_1) - 1 <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == byteFromRef(arg_1) - 1
+
+
+function decChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires charFromRef(arg_1) - 1 >= 0 && charFromRef(arg_1) - 1 <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == charFromRef(arg_1) - 1
+
+
+function decLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) - 1 >= -9223372036854775808 &&
+    longFromRef(arg_1) - 1 <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - 1
+
+
+function decShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires shortFromRef(arg_1) - 1 >= -32768 &&
+    shortFromRef(arg_1) - 1 <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == shortFromRef(arg_1) - 1
+
+
+function divByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) >=
+    -2147483648 &&
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2)))
+
+
+function divByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
   requires intFromRef(arg_2) != 0
+  requires (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) >=
+    -2147483648 &&
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2)))
+
+
+function divByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2)))
+
+
+function divByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) >=
+    -2147483648 &&
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2)))
+
+
+function divIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) >=
+    -2147483648 &&
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2)))
+
+
+function divIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2)))
+
+
+function divIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) >=
+    -2147483648 &&
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2)))
+
+
+function divInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires (intFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) >=
+    -2147483648 &&
+    (intFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) <=
+    2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) ==
     (intFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
@@ -316,22 +1038,302 @@ function divInts(arg_1: Ref, arg_2: Ref): Ref
       (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2)))
 
 
+function divLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2)))
+
+
+function divLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2)))
+
+
+function divLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2)))
+
+
+function divLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2)))
+
+
+function divShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) >=
+    -2147483648 &&
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2)))
+
+
+function divShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) >=
+    -2147483648 &&
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2)))
+
+
+function divShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2)))
+
+
+function divShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) >=
+    -2147483648 &&
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2)))
+
+
 function geChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == charFromRef(arg_1) >= charFromRef(arg_2)
 
 
 function geInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == intFromRef(arg_1) >= intFromRef(arg_2)
 
 
 function gtChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == charFromRef(arg_1) > charFromRef(arg_2)
 
 
 function gtInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == intFromRef(arg_1) > intFromRef(arg_2)
 
@@ -342,32 +1344,212 @@ function impliesBools(arg_1: Ref, arg_2: Ref): Ref
     (boolFromRef(arg_1) ==> boolFromRef(arg_2))
 
 
+function incByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires byteFromRef(arg_1) + 1 >= -128 && byteFromRef(arg_1) + 1 <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == byteFromRef(arg_1) + 1
+
+
+function incChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires charFromRef(arg_1) + 1 >= 0 && charFromRef(arg_1) + 1 <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == charFromRef(arg_1) + 1
+
+
+function incLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) + 1 >= -9223372036854775808 &&
+    longFromRef(arg_1) + 1 <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + 1
+
+
+function incShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires shortFromRef(arg_1) + 1 >= -32768 &&
+    shortFromRef(arg_1) + 1 <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == shortFromRef(arg_1) + 1
+
+
 function leChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == charFromRef(arg_1) <= charFromRef(arg_2)
 
 
 function leInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == intFromRef(arg_1) <= intFromRef(arg_2)
 
 
 function ltChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == charFromRef(arg_1) < charFromRef(arg_2)
 
 
 function ltInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == intFromRef(arg_1) < intFromRef(arg_2)
 
 
+function minusByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_1) - byteFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) - byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) - byteFromRef(arg_2)
+
+
+function minusByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires byteFromRef(arg_1) - intFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) - intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) - intFromRef(arg_2)
+
+
+function minusByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires byteFromRef(arg_1) - longFromRef(arg_2) >= -9223372036854775808 &&
+    byteFromRef(arg_1) - longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == byteFromRef(arg_1) - longFromRef(arg_2)
+
+
+function minusByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires byteFromRef(arg_1) - shortFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) - shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) - shortFromRef(arg_2)
+
+
+function minusIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires intFromRef(arg_1) - byteFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) - byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) - byteFromRef(arg_2)
+
+
+function minusIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires intFromRef(arg_1) - longFromRef(arg_2) >= -9223372036854775808 &&
+    intFromRef(arg_1) - longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == intFromRef(arg_1) - longFromRef(arg_2)
+
+
+function minusIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires intFromRef(arg_1) - shortFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) - shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) - shortFromRef(arg_2)
+
+
 function minusInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_1) - intFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) - intFromRef(arg_2) <= 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == intFromRef(arg_1) - intFromRef(arg_2)
 
 
+function minusLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires longFromRef(arg_1) - byteFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) - byteFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - byteFromRef(arg_2)
+
+
+function minusLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires longFromRef(arg_1) - intFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) - intFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - intFromRef(arg_2)
+
+
+function minusLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_1) - longFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) - longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - longFromRef(arg_2)
+
+
+function minusLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires longFromRef(arg_1) - shortFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) - shortFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - shortFromRef(arg_2)
+
+
+function minusShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires shortFromRef(arg_1) - byteFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) - byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) - byteFromRef(arg_2)
+
+
+function minusShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires shortFromRef(arg_1) - intFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) - intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) - intFromRef(arg_2)
+
+
+function minusShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires shortFromRef(arg_1) - longFromRef(arg_2) >= -9223372036854775808 &&
+    shortFromRef(arg_1) - longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == shortFromRef(arg_1) - longFromRef(arg_2)
+
+
+function minusShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_1) - shortFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) - shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) - shortFromRef(arg_2)
+
+
 function negInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires -intFromRef(arg_1) >= -2147483648 &&
+    -intFromRef(arg_1) <= 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == -intFromRef(arg_1)
 
@@ -382,12 +1564,394 @@ function orBools(arg_1: Ref, arg_2: Ref): Ref
   ensures boolFromRef(result) == (boolFromRef(arg_1) || boolFromRef(arg_2))
 
 
+function plusByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_1) + byteFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) + byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) + byteFromRef(arg_2)
+
+
+function plusByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires byteFromRef(arg_1) + intFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) + intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) + intFromRef(arg_2)
+
+
+function plusByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires byteFromRef(arg_1) + longFromRef(arg_2) >= -9223372036854775808 &&
+    byteFromRef(arg_1) + longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == byteFromRef(arg_1) + longFromRef(arg_2)
+
+
+function plusByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires byteFromRef(arg_1) + shortFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) + shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) + shortFromRef(arg_2)
+
+
+function plusIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires intFromRef(arg_1) + byteFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) + byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) + byteFromRef(arg_2)
+
+
+function plusIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires intFromRef(arg_1) + longFromRef(arg_2) >= -9223372036854775808 &&
+    intFromRef(arg_1) + longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == intFromRef(arg_1) + longFromRef(arg_2)
+
+
+function plusIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires intFromRef(arg_1) + shortFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) + shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) + shortFromRef(arg_2)
+
+
 function plusInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_1) + intFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) + intFromRef(arg_2) <= 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == intFromRef(arg_1) + intFromRef(arg_2)
 
 
+function plusLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires longFromRef(arg_1) + byteFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) + byteFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + byteFromRef(arg_2)
+
+
+function plusLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires longFromRef(arg_1) + intFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) + intFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + intFromRef(arg_2)
+
+
+function plusLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_1) + longFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) + longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + longFromRef(arg_2)
+
+
+function plusLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires longFromRef(arg_1) + shortFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) + shortFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + shortFromRef(arg_2)
+
+
+function plusShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires shortFromRef(arg_1) + byteFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) + byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) + byteFromRef(arg_2)
+
+
+function plusShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires shortFromRef(arg_1) + intFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) + intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) + intFromRef(arg_2)
+
+
+function plusShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires shortFromRef(arg_1) + longFromRef(arg_2) >= -9223372036854775808 &&
+    shortFromRef(arg_1) + longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == shortFromRef(arg_1) + longFromRef(arg_2)
+
+
+function plusShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_1) + shortFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) + shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) + shortFromRef(arg_2)
+
+
+function remByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) >=
+    -2147483648 &&
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2)
+
+
+function remByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) >=
+    -2147483648 &&
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2)
+
+
+function remByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) >=
+    -9223372036854775808 &&
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2)
+
+
+function remByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) >=
+    -2147483648 &&
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2)
+
+
+function remIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) >=
+    -2147483648 &&
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2)
+
+
+function remIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) >=
+    -9223372036854775808 &&
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2)
+
+
+function remIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) >=
+    -2147483648 &&
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2)
+
+
 function remInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   requires intFromRef(arg_2) != 0
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) ==
@@ -400,7 +1964,329 @@ function remInts(arg_1: Ref, arg_2: Ref): Ref
     intFromRef(arg_2)
 
 
+function remLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) >=
+    -9223372036854775808 &&
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2)
+
+
+function remLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) >=
+    -9223372036854775808 &&
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2)
+
+
+function remLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) >=
+    -9223372036854775808 &&
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2)
+
+
+function remLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) >=
+    -9223372036854775808 &&
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2)
+
+
+function remShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) >=
+    -2147483648 &&
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2)
+
+
+function remShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) >=
+    -2147483648 &&
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2)
+
+
+function remShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) >=
+    -9223372036854775808 &&
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2)
+
+
+function remShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) >=
+    -2147483648 &&
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2)
+
+
 function stringGet(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), stringType())
+  requires isSubtype(typeOf(arg_2), intType())
   requires intFromRef(arg_2) >= 0 &&
     intFromRef(arg_2) < |stringFromRef(arg_1)|
   ensures isSubtype(typeOf(result), charType())
@@ -408,23 +2294,211 @@ function stringGet(arg_1: Ref, arg_2: Ref): Ref
 
 
 function stringLength(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), stringType())
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == |stringFromRef(arg_1)|
 
 
 function subCharInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires charFromRef(arg_1) - intFromRef(arg_2) >= 0 &&
+    charFromRef(arg_1) - intFromRef(arg_2) <= 65535
   ensures isSubtype(typeOf(result), charType())
   ensures charFromRef(result) == charFromRef(arg_1) - intFromRef(arg_2)
 
 
 function subChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == charFromRef(arg_1) - charFromRef(arg_2)
 
 
+function timesByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_1) * byteFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) * byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) * byteFromRef(arg_2)
+
+
+function timesByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires byteFromRef(arg_1) * intFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) * intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) * intFromRef(arg_2)
+
+
+function timesByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires byteFromRef(arg_1) * longFromRef(arg_2) >= -9223372036854775808 &&
+    byteFromRef(arg_1) * longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == byteFromRef(arg_1) * longFromRef(arg_2)
+
+
+function timesByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires byteFromRef(arg_1) * shortFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) * shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) * shortFromRef(arg_2)
+
+
+function timesIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires intFromRef(arg_1) * byteFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) * byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) * byteFromRef(arg_2)
+
+
+function timesIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires intFromRef(arg_1) * longFromRef(arg_2) >= -9223372036854775808 &&
+    intFromRef(arg_1) * longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == intFromRef(arg_1) * longFromRef(arg_2)
+
+
+function timesIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires intFromRef(arg_1) * shortFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) * shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) * shortFromRef(arg_2)
+
+
 function timesInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_1) * intFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) * intFromRef(arg_2) <= 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == intFromRef(arg_1) * intFromRef(arg_2)
+
+
+function timesLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires longFromRef(arg_1) * byteFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) * byteFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) * byteFromRef(arg_2)
+
+
+function timesLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires longFromRef(arg_1) * intFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) * intFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) * intFromRef(arg_2)
+
+
+function timesLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_1) * longFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) * longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) * longFromRef(arg_2)
+
+
+function timesLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires longFromRef(arg_1) * shortFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) * shortFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) * shortFromRef(arg_2)
+
+
+function timesShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires shortFromRef(arg_1) * byteFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) * byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) * byteFromRef(arg_2)
+
+
+function timesShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires shortFromRef(arg_1) * intFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) * intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) * intFromRef(arg_2)
+
+
+function timesShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires shortFromRef(arg_1) * longFromRef(arg_2) >= -9223372036854775808 &&
+    shortFromRef(arg_1) * longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == shortFromRef(arg_1) * longFromRef(arg_2)
+
+
+function timesShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_1) * shortFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) * shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) * shortFromRef(arg_2)
+
+
+function unaryMinusByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires -byteFromRef(arg_1) >= -2147483648 &&
+    -byteFromRef(arg_1) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == -byteFromRef(arg_1)
+
+
+function unaryMinusLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires -longFromRef(arg_1) >= -9223372036854775808 &&
+    -longFromRef(arg_1) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == -longFromRef(arg_1)
+
+
+function unaryMinusShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires -shortFromRef(arg_1) >= -2147483648 &&
+    -shortFromRef(arg_1) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == -shortFromRef(arg_1)
+
+
+function unaryPlusByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1)
+
+
+function unaryPlusLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1)
+
+
+function unaryPlusShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1)
 
 
 function xorBools(arg_1: Ref, arg_2: Ref): Ref
@@ -518,6 +2592,12 @@ domain rt  {
 
   unique function intType(): rt
 
+  unique function longType(): rt
+
+  unique function shortType(): rt
+
+  unique function byteType(): rt
+
   unique function boolType(): rt
 
   unique function charType(): rt
@@ -549,6 +2629,18 @@ domain rt  {
   function intToRef(v: Int): Ref
 
   function intFromRef(r: Ref): Int
+
+  function longToRef(v: Int): Ref
+
+  function longFromRef(r: Ref): Int
+
+  function shortToRef(v: Int): Ref
+
+  function shortFromRef(r: Ref): Int
+
+  function byteToRef(v: Int): Ref
+
+  function byteFromRef(r: Ref): Int
 
   function boolToRef(v: Bool): Ref
 
@@ -602,6 +2694,18 @@ domain rt  {
 
   axiom {
     isSubtype(intType(), anyType())
+  }
+
+  axiom {
+    isSubtype(longType(), anyType())
+  }
+
+  axiom {
+    isSubtype(shortType(), anyType())
+  }
+
+  axiom {
+    isSubtype(byteType(), anyType())
   }
 
   axiom {
@@ -685,8 +2789,16 @@ domain rt  {
   }
 
   axiom {
+    (forall r: Ref ::
+      { intFromRef(r) }
+      isSubtype(typeOf(r), intType()) ==>
+      intFromRef(r) >= -2147483648 && intFromRef(r) <= 2147483647)
+  }
+
+  axiom {
     (forall v: Int ::
       { isSubtype(typeOf(intToRef(v)), intType()) }
+      v >= -2147483648 && v <= 2147483647 ==>
       isSubtype(typeOf(intToRef(v)), intType()))
   }
 
@@ -700,6 +2812,85 @@ domain rt  {
     (forall r: Ref ::
       { intFromRef(r) }
       isSubtype(typeOf(r), intType()) ==> intToRef(intFromRef(r)) == r)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { longFromRef(r) }
+      isSubtype(typeOf(r), longType()) ==>
+      longFromRef(r) >= -9223372036854775808 &&
+      longFromRef(r) <= 9223372036854775807)
+  }
+
+  axiom {
+    (forall v: Int ::
+      { isSubtype(typeOf(longToRef(v)), longType()) }
+      v >= -9223372036854775808 && v <= 9223372036854775807 ==>
+      isSubtype(typeOf(longToRef(v)), longType()))
+  }
+
+  axiom {
+    (forall v: Int ::
+      { longFromRef(longToRef(v)) }
+      longFromRef(longToRef(v)) == v)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { longFromRef(r) }
+      isSubtype(typeOf(r), longType()) ==> longToRef(longFromRef(r)) == r)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { shortFromRef(r) }
+      isSubtype(typeOf(r), shortType()) ==>
+      shortFromRef(r) >= -32768 && shortFromRef(r) <= 32767)
+  }
+
+  axiom {
+    (forall v: Int ::
+      { isSubtype(typeOf(shortToRef(v)), shortType()) }
+      v >= -32768 && v <= 32767 ==>
+      isSubtype(typeOf(shortToRef(v)), shortType()))
+  }
+
+  axiom {
+    (forall v: Int ::
+      { shortFromRef(shortToRef(v)) }
+      shortFromRef(shortToRef(v)) == v)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { shortFromRef(r) }
+      isSubtype(typeOf(r), shortType()) ==>
+      shortToRef(shortFromRef(r)) == r)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { byteFromRef(r) }
+      isSubtype(typeOf(r), byteType()) ==>
+      byteFromRef(r) >= -128 && byteFromRef(r) <= 127)
+  }
+
+  axiom {
+    (forall v: Int ::
+      { isSubtype(typeOf(byteToRef(v)), byteType()) }
+      v >= -128 && v <= 127 ==> isSubtype(typeOf(byteToRef(v)), byteType()))
+  }
+
+  axiom {
+    (forall v: Int ::
+      { byteFromRef(byteToRef(v)) }
+      byteFromRef(byteToRef(v)) == v)
+  }
+
+  axiom {
+    (forall r: Ref ::
+      { byteFromRef(r) }
+      isSubtype(typeOf(r), byteType()) ==> byteToRef(byteFromRef(r)) == r)
   }
 
   axiom {
@@ -721,9 +2912,16 @@ domain rt  {
   }
 
   axiom {
+    (forall r: Ref ::
+      { charFromRef(r) }
+      isSubtype(typeOf(r), charType()) ==>
+      charFromRef(r) >= 0 && charFromRef(r) <= 65535)
+  }
+
+  axiom {
     (forall v: Int ::
       { isSubtype(typeOf(charToRef(v)), charType()) }
-      isSubtype(typeOf(charToRef(v)), charType()))
+      v >= 0 && v <= 65535 ==> isSubtype(typeOf(charToRef(v)), charType()))
   }
 
   axiom {
@@ -739,8 +2937,23 @@ domain rt  {
   }
 
   axiom {
+    (forall r: Ref ::
+      { stringFromRef(r) }
+      isSubtype(typeOf(r), stringType()) ==>
+      |stringFromRef(r)| <= 2147483647 &&
+      (forall index: Int ::
+        { stringFromRef(r)[index] }
+        index >= 0 && index < |stringFromRef(r)| ==>
+        stringFromRef(r)[index] >= 0 && stringFromRef(r)[index] <= 65535))
+  }
+
+  axiom {
     (forall v: Seq[Int] ::
       { isSubtype(typeOf(stringToRef(v)), stringType()) }
+      |v| <= 2147483647 &&
+      (forall index: Int ::
+        { v[index] }
+        index >= 0 && index < |v| ==> v[index] >= 0 && v[index] <= 65535) ==>
       isSubtype(typeOf(stringToRef(v)), stringType()))
   }
 
@@ -791,20 +3004,29 @@ field unit: Ref
 field unitNull: Ref
 
 function addCharInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires charFromRef(arg_1) + intFromRef(arg_2) >= 0 &&
+    charFromRef(arg_1) + intFromRef(arg_2) <= 65535
   ensures isSubtype(typeOf(result), charType())
   ensures charFromRef(result) == charFromRef(arg_1) + intFromRef(arg_2)
 
 
 function addStringChar(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), stringType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), stringType())
-  ensures stringFromRef(result) ==
+  ensures |stringFromRef(arg_1)| < 2147483647 ==>
+    stringFromRef(result) ==
     stringFromRef(arg_1) ++ Seq(charFromRef(arg_2))
 
 
 function addStrings(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), stringType())
+  requires isSubtype(typeOf(arg_2), stringType())
   ensures isSubtype(typeOf(result), stringType())
-  ensures stringFromRef(result) ==
-    stringFromRef(arg_1) ++ stringFromRef(arg_2)
+  ensures |stringFromRef(arg_1)| + |stringFromRef(arg_2)| <= 2147483647 ==>
+    stringFromRef(result) == stringFromRef(arg_1) ++ stringFromRef(arg_2)
 
 
 function andBools(arg_1: Ref, arg_2: Ref): Ref
@@ -812,7 +3034,25 @@ function andBools(arg_1: Ref, arg_2: Ref): Ref
   ensures boolFromRef(result) == (boolFromRef(arg_1) && boolFromRef(arg_2))
 
 
+function charCode(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == charFromRef(arg_1)
+
+
+function compareChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (charFromRef(arg_1) < charFromRef(arg_2) ?
+      -1 :
+      (charFromRef(arg_1) > charFromRef(arg_2) ? 1 : 0))
+
+
 function compareInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) ==
     (intFromRef(arg_1) < intFromRef(arg_2) ?
@@ -820,8 +3060,564 @@ function compareInts(arg_1: Ref, arg_2: Ref): Ref
       (intFromRef(arg_1) > intFromRef(arg_2) ? 1 : 0))
 
 
-function divInts(arg_1: Ref, arg_2: Ref): Ref
+function compareToByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < byteFromRef(arg_2) ?
+      -1 :
+      (byteFromRef(arg_1) > byteFromRef(arg_2) ? 1 : 0))
+
+
+function compareToByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < intFromRef(arg_2) ?
+      -1 :
+      (byteFromRef(arg_1) > intFromRef(arg_2) ? 1 : 0))
+
+
+function compareToByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < longFromRef(arg_2) ?
+      -1 :
+      (byteFromRef(arg_1) > longFromRef(arg_2) ? 1 : 0))
+
+
+function compareToByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < shortFromRef(arg_2) ?
+      -1 :
+      (byteFromRef(arg_1) > shortFromRef(arg_2) ? 1 : 0))
+
+
+function compareToIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < byteFromRef(arg_2) ?
+      -1 :
+      (intFromRef(arg_1) > byteFromRef(arg_2) ? 1 : 0))
+
+
+function compareToIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < longFromRef(arg_2) ?
+      -1 :
+      (intFromRef(arg_1) > longFromRef(arg_2) ? 1 : 0))
+
+
+function compareToIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < shortFromRef(arg_2) ?
+      -1 :
+      (intFromRef(arg_1) > shortFromRef(arg_2) ? 1 : 0))
+
+
+function compareToLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (longFromRef(arg_1) < byteFromRef(arg_2) ?
+      -1 :
+      (longFromRef(arg_1) > byteFromRef(arg_2) ? 1 : 0))
+
+
+function compareToLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (longFromRef(arg_1) < intFromRef(arg_2) ?
+      -1 :
+      (longFromRef(arg_1) > intFromRef(arg_2) ? 1 : 0))
+
+
+function compareToLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (longFromRef(arg_1) < longFromRef(arg_2) ?
+      -1 :
+      (longFromRef(arg_1) > longFromRef(arg_2) ? 1 : 0))
+
+
+function compareToLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (longFromRef(arg_1) < shortFromRef(arg_2) ?
+      -1 :
+      (longFromRef(arg_1) > shortFromRef(arg_2) ? 1 : 0))
+
+
+function compareToShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < byteFromRef(arg_2) ?
+      -1 :
+      (shortFromRef(arg_1) > byteFromRef(arg_2) ? 1 : 0))
+
+
+function compareToShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < intFromRef(arg_2) ?
+      -1 :
+      (shortFromRef(arg_1) > intFromRef(arg_2) ? 1 : 0))
+
+
+function compareToShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < longFromRef(arg_2) ?
+      -1 :
+      (shortFromRef(arg_1) > longFromRef(arg_2) ? 1 : 0))
+
+
+function compareToShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < shortFromRef(arg_2) ?
+      -1 :
+      (shortFromRef(arg_1) > shortFromRef(arg_2) ? 1 : 0))
+
+
+function convertByteToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == byteFromRef(arg_1)
+
+
+function convertByteToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires byteFromRef(arg_1) >= 0 && byteFromRef(arg_1) <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == byteFromRef(arg_1)
+
+
+function convertByteToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1)
+
+
+function convertByteToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == byteFromRef(arg_1)
+
+
+function convertByteToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == byteFromRef(arg_1)
+
+
+function convertCharToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires charFromRef(arg_1) >= -128 && charFromRef(arg_1) <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == charFromRef(arg_1)
+
+
+function convertCharToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == charFromRef(arg_1)
+
+
+function convertCharToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == charFromRef(arg_1)
+
+
+function convertCharToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == charFromRef(arg_1)
+
+
+function convertCharToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires charFromRef(arg_1) >= -32768 && charFromRef(arg_1) <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == charFromRef(arg_1)
+
+
+function convertIntToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires intFromRef(arg_1) >= -128 && intFromRef(arg_1) <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == intFromRef(arg_1)
+
+
+function convertIntToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires intFromRef(arg_1) >= 0 && intFromRef(arg_1) <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == intFromRef(arg_1)
+
+
+function convertIntToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1)
+
+
+function convertIntToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == intFromRef(arg_1)
+
+
+function convertIntToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires intFromRef(arg_1) >= -32768 && intFromRef(arg_1) <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == intFromRef(arg_1)
+
+
+function convertLongToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) >= -128 && longFromRef(arg_1) <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == longFromRef(arg_1)
+
+
+function convertLongToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) >= 0 && longFromRef(arg_1) <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == longFromRef(arg_1)
+
+
+function convertLongToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) >= -2147483648 &&
+    longFromRef(arg_1) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == longFromRef(arg_1)
+
+
+function convertLongToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1)
+
+
+function convertLongToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) >= -32768 && longFromRef(arg_1) <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == longFromRef(arg_1)
+
+
+function convertShortToByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires shortFromRef(arg_1) >= -128 && shortFromRef(arg_1) <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == shortFromRef(arg_1)
+
+
+function convertShortToChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires shortFromRef(arg_1) >= 0 && shortFromRef(arg_1) <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == shortFromRef(arg_1)
+
+
+function convertShortToInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1)
+
+
+function convertShortToLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == shortFromRef(arg_1)
+
+
+function convertShortToShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == shortFromRef(arg_1)
+
+
+function decByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires byteFromRef(arg_1) - 1 >= -128 && byteFromRef(arg_1) - 1 <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == byteFromRef(arg_1) - 1
+
+
+function decChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires charFromRef(arg_1) - 1 >= 0 && charFromRef(arg_1) - 1 <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == charFromRef(arg_1) - 1
+
+
+function decLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) - 1 >= -9223372036854775808 &&
+    longFromRef(arg_1) - 1 <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - 1
+
+
+function decShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires shortFromRef(arg_1) - 1 >= -32768 &&
+    shortFromRef(arg_1) - 1 <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == shortFromRef(arg_1) - 1
+
+
+function divByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) >=
+    -2147483648 &&
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2)))
+
+
+function divByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
   requires intFromRef(arg_2) != 0
+  requires (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) >=
+    -2147483648 &&
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2)))
+
+
+function divByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2)))
+
+
+function divByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) >=
+    -2147483648 &&
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2)))
+
+
+function divIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) >=
+    -2147483648 &&
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2)))
+
+
+function divIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2)))
+
+
+function divIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) >=
+    -2147483648 &&
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2)))
+
+
+function divInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires (intFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) >=
+    -2147483648 &&
+    (intFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) <=
+    2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) ==
     (intFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
@@ -831,22 +3627,302 @@ function divInts(arg_1: Ref, arg_2: Ref): Ref
       (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2)))
 
 
+function divLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2)))
+
+
+function divLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2)))
+
+
+function divLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2)))
+
+
+function divLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2)))
+
+
+function divShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) >=
+    -2147483648 &&
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2)))
+
+
+function divShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) >=
+    -2147483648 &&
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2)))
+
+
+function divShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) >=
+    -9223372036854775808 &&
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2)))
+
+
+function divShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) >=
+    -2147483648 &&
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2)))
+
+
 function geChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == charFromRef(arg_1) >= charFromRef(arg_2)
 
 
 function geInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == intFromRef(arg_1) >= intFromRef(arg_2)
 
 
 function gtChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == charFromRef(arg_1) > charFromRef(arg_2)
 
 
 function gtInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == intFromRef(arg_1) > intFromRef(arg_2)
 
@@ -857,32 +3933,212 @@ function impliesBools(arg_1: Ref, arg_2: Ref): Ref
     (boolFromRef(arg_1) ==> boolFromRef(arg_2))
 
 
+function incByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires byteFromRef(arg_1) + 1 >= -128 && byteFromRef(arg_1) + 1 <= 127
+  ensures isSubtype(typeOf(result), byteType())
+  ensures byteFromRef(result) == byteFromRef(arg_1) + 1
+
+
+function incChar(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires charFromRef(arg_1) + 1 >= 0 && charFromRef(arg_1) + 1 <= 65535
+  ensures isSubtype(typeOf(result), charType())
+  ensures charFromRef(result) == charFromRef(arg_1) + 1
+
+
+function incLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires longFromRef(arg_1) + 1 >= -9223372036854775808 &&
+    longFromRef(arg_1) + 1 <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + 1
+
+
+function incShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires shortFromRef(arg_1) + 1 >= -32768 &&
+    shortFromRef(arg_1) + 1 <= 32767
+  ensures isSubtype(typeOf(result), shortType())
+  ensures shortFromRef(result) == shortFromRef(arg_1) + 1
+
+
 function leChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == charFromRef(arg_1) <= charFromRef(arg_2)
 
 
 function leInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == intFromRef(arg_1) <= intFromRef(arg_2)
 
 
 function ltChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == charFromRef(arg_1) < charFromRef(arg_2)
 
 
 function ltInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == intFromRef(arg_1) < intFromRef(arg_2)
 
 
+function minusByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_1) - byteFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) - byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) - byteFromRef(arg_2)
+
+
+function minusByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires byteFromRef(arg_1) - intFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) - intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) - intFromRef(arg_2)
+
+
+function minusByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires byteFromRef(arg_1) - longFromRef(arg_2) >= -9223372036854775808 &&
+    byteFromRef(arg_1) - longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == byteFromRef(arg_1) - longFromRef(arg_2)
+
+
+function minusByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires byteFromRef(arg_1) - shortFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) - shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) - shortFromRef(arg_2)
+
+
+function minusIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires intFromRef(arg_1) - byteFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) - byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) - byteFromRef(arg_2)
+
+
+function minusIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires intFromRef(arg_1) - longFromRef(arg_2) >= -9223372036854775808 &&
+    intFromRef(arg_1) - longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == intFromRef(arg_1) - longFromRef(arg_2)
+
+
+function minusIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires intFromRef(arg_1) - shortFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) - shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) - shortFromRef(arg_2)
+
+
 function minusInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_1) - intFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) - intFromRef(arg_2) <= 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == intFromRef(arg_1) - intFromRef(arg_2)
 
 
+function minusLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires longFromRef(arg_1) - byteFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) - byteFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - byteFromRef(arg_2)
+
+
+function minusLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires longFromRef(arg_1) - intFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) - intFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - intFromRef(arg_2)
+
+
+function minusLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_1) - longFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) - longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - longFromRef(arg_2)
+
+
+function minusLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires longFromRef(arg_1) - shortFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) - shortFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) - shortFromRef(arg_2)
+
+
+function minusShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires shortFromRef(arg_1) - byteFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) - byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) - byteFromRef(arg_2)
+
+
+function minusShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires shortFromRef(arg_1) - intFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) - intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) - intFromRef(arg_2)
+
+
+function minusShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires shortFromRef(arg_1) - longFromRef(arg_2) >= -9223372036854775808 &&
+    shortFromRef(arg_1) - longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == shortFromRef(arg_1) - longFromRef(arg_2)
+
+
+function minusShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_1) - shortFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) - shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) - shortFromRef(arg_2)
+
+
 function negInt(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires -intFromRef(arg_1) >= -2147483648 &&
+    -intFromRef(arg_1) <= 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == -intFromRef(arg_1)
 
@@ -897,12 +4153,394 @@ function orBools(arg_1: Ref, arg_2: Ref): Ref
   ensures boolFromRef(result) == (boolFromRef(arg_1) || boolFromRef(arg_2))
 
 
+function plusByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_1) + byteFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) + byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) + byteFromRef(arg_2)
+
+
+function plusByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires byteFromRef(arg_1) + intFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) + intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) + intFromRef(arg_2)
+
+
+function plusByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires byteFromRef(arg_1) + longFromRef(arg_2) >= -9223372036854775808 &&
+    byteFromRef(arg_1) + longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == byteFromRef(arg_1) + longFromRef(arg_2)
+
+
+function plusByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires byteFromRef(arg_1) + shortFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) + shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) + shortFromRef(arg_2)
+
+
+function plusIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires intFromRef(arg_1) + byteFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) + byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) + byteFromRef(arg_2)
+
+
+function plusIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires intFromRef(arg_1) + longFromRef(arg_2) >= -9223372036854775808 &&
+    intFromRef(arg_1) + longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == intFromRef(arg_1) + longFromRef(arg_2)
+
+
+function plusIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires intFromRef(arg_1) + shortFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) + shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) + shortFromRef(arg_2)
+
+
 function plusInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_1) + intFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) + intFromRef(arg_2) <= 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == intFromRef(arg_1) + intFromRef(arg_2)
 
 
+function plusLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires longFromRef(arg_1) + byteFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) + byteFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + byteFromRef(arg_2)
+
+
+function plusLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires longFromRef(arg_1) + intFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) + intFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + intFromRef(arg_2)
+
+
+function plusLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_1) + longFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) + longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + longFromRef(arg_2)
+
+
+function plusLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires longFromRef(arg_1) + shortFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) + shortFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) + shortFromRef(arg_2)
+
+
+function plusShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires shortFromRef(arg_1) + byteFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) + byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) + byteFromRef(arg_2)
+
+
+function plusShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires shortFromRef(arg_1) + intFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) + intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) + intFromRef(arg_2)
+
+
+function plusShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires shortFromRef(arg_1) + longFromRef(arg_2) >= -9223372036854775808 &&
+    shortFromRef(arg_1) + longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == shortFromRef(arg_1) + longFromRef(arg_2)
+
+
+function plusShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_1) + shortFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) + shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) + shortFromRef(arg_2)
+
+
+function remByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) >=
+    -2147483648 &&
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2)
+
+
+function remByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) >=
+    -2147483648 &&
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2)
+
+
+function remByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) >=
+    -9223372036854775808 &&
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2)
+
+
+function remByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) >=
+    -2147483648 &&
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    byteFromRef(arg_1) -
+    (byteFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (byteFromRef(arg_1) < 0 ? -byteFromRef(arg_1) : byteFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2)
+
+
+function remIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) >=
+    -2147483648 &&
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2)
+
+
+function remIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) >=
+    -9223372036854775808 &&
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2)
+
+
+function remIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) >=
+    -2147483648 &&
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef(arg_1) -
+    (intFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (intFromRef(arg_1) < 0 ? -intFromRef(arg_1) : intFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2)
+
+
 function remInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
   requires intFromRef(arg_2) != 0
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) ==
@@ -915,7 +4553,329 @@ function remInts(arg_1: Ref, arg_2: Ref): Ref
     intFromRef(arg_2)
 
 
+function remLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) >=
+    -9223372036854775808 &&
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2)
+
+
+function remLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) >=
+    -9223372036854775808 &&
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2)
+
+
+function remLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) >=
+    -9223372036854775808 &&
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2)
+
+
+function remLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) >=
+    -9223372036854775808 &&
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(arg_1) -
+    (longFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (longFromRef(arg_1) < 0 ? -longFromRef(arg_1) : longFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2)
+
+
+function remShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_2) != 0
+  requires shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) >=
+    -2147483648 &&
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != byteFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (byteFromRef(arg_2) < 0 ? -byteFromRef(arg_2) : byteFromRef(arg_2))) *
+    byteFromRef(arg_2)
+
+
+function remShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_2) != 0
+  requires shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) >=
+    -2147483648 &&
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != intFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (intFromRef(arg_2) < 0 ? -intFromRef(arg_2) : intFromRef(arg_2))) *
+    intFromRef(arg_2)
+
+
+function remShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_2) != 0
+  requires shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) >=
+    -9223372036854775808 &&
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2) <=
+    9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != longFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (longFromRef(arg_2) < 0 ? -longFromRef(arg_2) : longFromRef(arg_2))) *
+    longFromRef(arg_2)
+
+
+function remShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_2) != 0
+  requires shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) >=
+    -2147483648 &&
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2) <=
+    2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    shortFromRef(arg_1) -
+    (shortFromRef(arg_1) < 0 != shortFromRef(arg_2) < 0 ?
+      -((shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) :
+      (shortFromRef(arg_1) < 0 ?
+        -shortFromRef(arg_1) :
+        shortFromRef(arg_1)) \
+      (shortFromRef(arg_2) < 0 ?
+        -shortFromRef(arg_2) :
+        shortFromRef(arg_2))) *
+    shortFromRef(arg_2)
+
+
 function stringGet(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), stringType())
+  requires isSubtype(typeOf(arg_2), intType())
   requires intFromRef(arg_2) >= 0 &&
     intFromRef(arg_2) < |stringFromRef(arg_1)|
   ensures isSubtype(typeOf(result), charType())
@@ -923,23 +4883,211 @@ function stringGet(arg_1: Ref, arg_2: Ref): Ref
 
 
 function stringLength(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), stringType())
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == |stringFromRef(arg_1)|
 
 
 function subCharInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires charFromRef(arg_1) - intFromRef(arg_2) >= 0 &&
+    charFromRef(arg_1) - intFromRef(arg_2) <= 65535
   ensures isSubtype(typeOf(result), charType())
   ensures charFromRef(result) == charFromRef(arg_1) - intFromRef(arg_2)
 
 
 function subChars(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), charType())
+  requires isSubtype(typeOf(arg_2), charType())
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == charFromRef(arg_1) - charFromRef(arg_2)
 
 
+function timesByteByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires byteFromRef(arg_1) * byteFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) * byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) * byteFromRef(arg_2)
+
+
+function timesByteInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires byteFromRef(arg_1) * intFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) * intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) * intFromRef(arg_2)
+
+
+function timesByteLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires byteFromRef(arg_1) * longFromRef(arg_2) >= -9223372036854775808 &&
+    byteFromRef(arg_1) * longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == byteFromRef(arg_1) * longFromRef(arg_2)
+
+
+function timesByteShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires byteFromRef(arg_1) * shortFromRef(arg_2) >= -2147483648 &&
+    byteFromRef(arg_1) * shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1) * shortFromRef(arg_2)
+
+
+function timesIntByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires intFromRef(arg_1) * byteFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) * byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) * byteFromRef(arg_2)
+
+
+function timesIntLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires intFromRef(arg_1) * longFromRef(arg_2) >= -9223372036854775808 &&
+    intFromRef(arg_1) * longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == intFromRef(arg_1) * longFromRef(arg_2)
+
+
+function timesIntShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires intFromRef(arg_1) * shortFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) * shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(arg_1) * shortFromRef(arg_2)
+
+
 function timesInts(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), intType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires intFromRef(arg_1) * intFromRef(arg_2) >= -2147483648 &&
+    intFromRef(arg_1) * intFromRef(arg_2) <= 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) == intFromRef(arg_1) * intFromRef(arg_2)
+
+
+function timesLongByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires longFromRef(arg_1) * byteFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) * byteFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) * byteFromRef(arg_2)
+
+
+function timesLongInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires longFromRef(arg_1) * intFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) * intFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) * intFromRef(arg_2)
+
+
+function timesLongLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires longFromRef(arg_1) * longFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) * longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) * longFromRef(arg_2)
+
+
+function timesLongShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires longFromRef(arg_1) * shortFromRef(arg_2) >= -9223372036854775808 &&
+    longFromRef(arg_1) * shortFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1) * shortFromRef(arg_2)
+
+
+function timesShortByte(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), byteType())
+  requires shortFromRef(arg_1) * byteFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) * byteFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) * byteFromRef(arg_2)
+
+
+function timesShortInt(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), intType())
+  requires shortFromRef(arg_1) * intFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) * intFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) * intFromRef(arg_2)
+
+
+function timesShortLong(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), longType())
+  requires shortFromRef(arg_1) * longFromRef(arg_2) >= -9223372036854775808 &&
+    shortFromRef(arg_1) * longFromRef(arg_2) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == shortFromRef(arg_1) * longFromRef(arg_2)
+
+
+function timesShortShort(arg_1: Ref, arg_2: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires isSubtype(typeOf(arg_2), shortType())
+  requires shortFromRef(arg_1) * shortFromRef(arg_2) >= -2147483648 &&
+    shortFromRef(arg_1) * shortFromRef(arg_2) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1) * shortFromRef(arg_2)
+
+
+function unaryMinusByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  requires -byteFromRef(arg_1) >= -2147483648 &&
+    -byteFromRef(arg_1) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == -byteFromRef(arg_1)
+
+
+function unaryMinusLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  requires -longFromRef(arg_1) >= -9223372036854775808 &&
+    -longFromRef(arg_1) <= 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == -longFromRef(arg_1)
+
+
+function unaryMinusShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  requires -shortFromRef(arg_1) >= -2147483648 &&
+    -shortFromRef(arg_1) <= 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == -shortFromRef(arg_1)
+
+
+function unaryPlusByte(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), byteType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == byteFromRef(arg_1)
+
+
+function unaryPlusLong(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == longFromRef(arg_1)
+
+
+function unaryPlusShort(arg_1: Ref): Ref
+  requires isSubtype(typeOf(arg_1), shortType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == shortFromRef(arg_1)
 
 
 function xorBools(arg_1: Ref, arg_2: Ref): Ref

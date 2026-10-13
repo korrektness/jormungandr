@@ -128,6 +128,42 @@ field y: Ref
 function sum(d: Ref): Ref
   requires isSubtype(typeOf(d), Derived())
   requires acc(Derived_unique(d), write)
+  requires (unfolding acc(Derived_unique(d), write) in
+      (unfolding acc(Base_unique(d), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(d.x), convertIntToLong(d.y))) in
+          longFromRef(convertIntToLong(d.x)) +
+          longFromRef(convertIntToLong(d.y))) <
+        (let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(d.x), convertIntToLong(d.y))) in
+            longFromRef(convertIntToLong(d.x)) +
+            longFromRef(convertIntToLong(d.y))) >
+          (let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) ?
+            1 :
+            0)) >=
+        0))
+  requires (unfolding acc(Derived_unique(d), write) in
+      (unfolding acc(Base_unique(d), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(d.x), convertIntToLong(d.y))) in
+          longFromRef(convertIntToLong(d.x)) +
+          longFromRef(convertIntToLong(d.y))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(d.x), convertIntToLong(d.y))) in
+            longFromRef(convertIntToLong(d.x)) +
+            longFromRef(convertIntToLong(d.y))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0))
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(Derived_unique(d), write) in

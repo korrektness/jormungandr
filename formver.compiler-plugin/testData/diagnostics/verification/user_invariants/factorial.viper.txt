@@ -1,15 +1,143 @@
+/factorial.kt: info: Generated Viper text for factTable:
+function factTable(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(n) && intFromRef(n) <= 12
+  ensures isSubtype(typeOf(result), intType())
+{
+  (intFromRef(n) == 0 ?
+    intToRef(1) :
+    (intFromRef(n) == 1 ?
+      intToRef(1) :
+      (intFromRef(n) == 2 ?
+        intToRef(2) :
+        (intFromRef(n) == 3 ?
+          intToRef(6) :
+          (intFromRef(n) == 4 ?
+            intToRef(24) :
+            (intFromRef(n) == 5 ?
+              intToRef(120) :
+              (intFromRef(n) == 6 ?
+                intToRef(720) :
+                (intFromRef(n) == 7 ?
+                  intToRef(5040) :
+                  (intFromRef(n) == 8 ?
+                    intToRef(40320) :
+                    (intFromRef(n) == 9 ?
+                      intToRef(362880) :
+                      (intFromRef(n) == 10 ?
+                        intToRef(3628800) :
+                        (intFromRef(n) == 11 ?
+                          intToRef(39916800) :
+                          intToRef(479001600)))))))))))))
+}
+
 /factorial.kt: info: Generated Viper text for fact:
 function fact(n: Ref): Ref
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires 0 <= intFromRef(n) && intFromRef(n) <= 12
   ensures isSubtype(typeOf(result), intType())
-  ensures intFromRef(n) == 0 ==> intFromRef(result) == 1
-  ensures intFromRef(n) > 0 ==>
-    intFromRef(result) ==
-    intFromRef(n) * intFromRef(fact(minusInts(n, intToRef(1))))
+  ensures intFromRef(result) == intFromRef(factTable(n))
   decreases intFromRef(n)
 {
   (intFromRef(n) == 0 ?
     intToRef(1) :
     timesInts(n, fact(minusInts(n, intToRef(1)))))
+}
+
+function factTable(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(n) && intFromRef(n) <= 12
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(n) == 0 ?
+    intToRef(1) :
+    (intFromRef(n) == 1 ?
+      intToRef(1) :
+      (intFromRef(n) == 2 ?
+        intToRef(2) :
+        (intFromRef(n) == 3 ?
+          intToRef(6) :
+          (intFromRef(n) == 4 ?
+            intToRef(24) :
+            (intFromRef(n) == 5 ?
+              intToRef(120) :
+              (intFromRef(n) == 6 ?
+                intToRef(720) :
+                (intFromRef(n) == 7 ?
+                  intToRef(5040) :
+                  (intFromRef(n) == 8 ?
+                    intToRef(40320) :
+                    (intFromRef(n) == 9 ?
+                      intToRef(362880) :
+                      (intFromRef(n) == 10 ?
+                        intToRef(3628800) :
+                        (intFromRef(n) == 11 ?
+                          intToRef(39916800) :
+                          intToRef(479001600)))))))))))))
+}
+
+/factorial.kt: info: Generated Viper text for factStep:
+function fact(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(n) && intFromRef(n) <= 12
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(factTable(n))
+  decreases intFromRef(n)
+{
+  (intFromRef(n) == 0 ?
+    intToRef(1) :
+    timesInts(n, fact(minusInts(n, intToRef(1)))))
+}
+
+function factTable(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(n) && intFromRef(n) <= 12
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(n) == 0 ?
+    intToRef(1) :
+    (intFromRef(n) == 1 ?
+      intToRef(1) :
+      (intFromRef(n) == 2 ?
+        intToRef(2) :
+        (intFromRef(n) == 3 ?
+          intToRef(6) :
+          (intFromRef(n) == 4 ?
+            intToRef(24) :
+            (intFromRef(n) == 5 ?
+              intToRef(120) :
+              (intFromRef(n) == 6 ?
+                intToRef(720) :
+                (intFromRef(n) == 7 ?
+                  intToRef(5040) :
+                  (intFromRef(n) == 8 ?
+                    intToRef(40320) :
+                    (intFromRef(n) == 9 ?
+                      intToRef(362880) :
+                      (intFromRef(n) == 10 ?
+                        intToRef(3628800) :
+                        (intFromRef(n) == 11 ?
+                          intToRef(39916800) :
+                          intToRef(479001600)))))))))))))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
+
+method factStep(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires 1 <= intFromRef(n) && intFromRef(n) <= 12
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(fact(n)) ==
+    (let anon ==
+      (timesInts(n, fact(minusInts(n, intToRef(1))))) in
+      intFromRef(n) * intFromRef(fact(minusInts(n, intToRef(1)))))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
 }

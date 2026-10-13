@@ -45,7 +45,11 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
 }
 
 <!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BrokenInitializer<!>(start: Int) {
-    val value = start - 1
+    val value: Int
+    init {
+        require(start > -2147483648)
+        value = start - 1
+    }
     @Law @Pure fun invariant(): Boolean = value > 0
 }<!>
 
@@ -139,6 +143,7 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
     @Law @Pure fun invariant(): Boolean = value >= 0
 }
 @Pure fun <!VIPER_TEXT!>borrowedChildValue<!>(child: @Unique @Borrowed LawfulConstructionChild): Int {
+    preconditions { child.value >= 0 }
     postconditions<Int> { it >= 0 }
     return child.value
 }

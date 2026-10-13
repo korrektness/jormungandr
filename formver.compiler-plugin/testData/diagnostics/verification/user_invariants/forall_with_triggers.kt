@@ -8,8 +8,8 @@ fun <!VIPER_TEXT!>forAllWithSimpleTrigger<!>(): Int {
         forAll<Int> {
             // Specify trigger expression to guide SMT solver
             triggers(it * it)
-            it * it >= 0
-            it * it >= res
+            (-46340 <= it && it <= 46340) implies (it * it >= 0)
+            (-46340 <= it && it <= 46340) implies (it * it >= res)
         }
     }
     return 0
@@ -20,7 +20,7 @@ fun <!VIPER_TEXT!>forAllWithMultipleTriggers<!>(): Int {
         forAll<Int> {
             // Multiple trigger expressions can be provided
             triggers(it * it, it + 1)
-            (it != 0) implies (it * it >= res)
+            (-46340 <= it && it <= 46340 && it != 0) implies (it * it >= res)
         }
     }
     return 1
@@ -34,7 +34,7 @@ fun <!VIPER_TEXT!>forAllWithTriggersInLoop<!>(str: String): Int {
             forAll<Int> {
                 // Triggers can be used in loop invariants
                 triggers(str[it])
-                (0 <= it && it < str.length) implies ((str[it] - 'a') * (str[it] - 'a') >= res)
+                (0 <= it && it < str.length) implies ((str[it] - 'a').toLong() * (str[it] - 'a').toLong() >= res)
             }
         }
         i--
@@ -46,7 +46,7 @@ fun <!VIPER_TEXT!>forAllWithoutTriggers<!>(): Int {
     postconditions<Int> { res ->
         forAll<Int> {
             // forAll without triggers still works (automatic trigger inference)
-            it * it >= 0
+            (-46340 <= it && it <= 46340) implies (it * it >= 0)
         }
     }
     return 0

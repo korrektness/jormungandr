@@ -1,6 +1,9 @@
 // FULL_JDK
 
+import org.jetbrains.kotlin.formver.plugin.*
+
 fun <!VIPER_TEXT!>addition<!>(x: Int) {
+    preconditions { -1073741824 <= x && x <= 1073741823 }
     val y = x + x
 }
 
@@ -9,18 +12,22 @@ fun <!VIPER_TEXT!>subtraction<!>(x: Int) {
 }
 
 fun <!VIPER_TEXT!>multiplication<!>(x: Int) {
+    preconditions { -46340 <= x && x <= 46340 }
     val y = x * x
 }
 
+// Zero is allowed to exercise division-by-zero verification.
 fun <!VIPER_TEXT!>division<!>(x: Int) {
-    val y = <!VIPER_VERIFICATION_ERROR!>x / x<!>
+    val y = <!DIVISION_BY_ZERO!>x / x<!>
 }
 
+// Zero is allowed to exercise remainder-by-zero verification.
 fun <!VIPER_TEXT!>remainder<!>(x: Int) {
-    val y = <!VIPER_VERIFICATION_ERROR!>x % x<!>
+    val y = <!DIVISION_BY_ZERO!>x % x<!>
 }
 
 fun <!VIPER_TEXT!>unary_minus<!>(x: Int) {
+    preconditions { x > -2147483648 }
     val y = -x
 }
 

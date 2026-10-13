@@ -3,6 +3,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method selectionSort(arr: Ref) returns (v_ret_0: Ref)
@@ -11,9 +12,13 @@ method selectionSort(arr: Ref) returns (v_ret_0: Ref)
   ensures acc(IntArray_unique(arr), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_0: Int ::(forall anon_builtin_1: Int ::0 <=
-          anon_builtin_0 &&
-          anon_builtin_0 < anon_builtin_1 &&
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+          anon_builtin_1 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+          0 <= anon_builtin_0 && anon_builtin_0 < anon_builtin_1 &&
           anon_builtin_1 < arraySize(arr) ==>
           arr.contents[anon_builtin_0] <= arr.contents[anon_builtin_1])))
   ensures (unfolding acc(IntArray_unique(arr), write) in
@@ -30,15 +35,23 @@ method selectionSort(arr: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(arr), IntArray())
     invariant 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
     invariant (unfolding acc(IntArray_unique(arr), write) in
-        (forall anon_builtin_2: Int ::(forall anon_builtin_3: Int ::0 <=
-            anon_builtin_2 &&
-            anon_builtin_2 < anon_builtin_3 &&
+        (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+          anon_builtin_2 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+          (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+            anon_builtin_3 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+            0 <= anon_builtin_2 && anon_builtin_2 < anon_builtin_3 &&
             anon_builtin_3 < intFromRef(i) ==>
             arr.contents[anon_builtin_2] <= arr.contents[anon_builtin_3])))
     invariant (unfolding acc(IntArray_unique(arr), write) in
-        (forall anon_builtin_4: Int ::(forall anon_builtin_5: Int ::0 <=
-            anon_builtin_4 &&
-            anon_builtin_4 < intFromRef(i) &&
+        (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+          anon_builtin_4 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+          (forall anon_builtin_5: Int ::anon_builtin_5 >= -2147483648 &&
+            anon_builtin_5 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+            0 <= anon_builtin_4 && anon_builtin_4 < intFromRef(i) &&
             intFromRef(i) <= anon_builtin_5 &&
             anon_builtin_5 < arraySize(arr) ==>
             arr.contents[anon_builtin_4] <= arr.contents[anon_builtin_5])))
@@ -67,19 +80,30 @@ method selectionSort(arr: Ref) returns (v_ret_0: Ref)
         intFromRef(m) < intFromRef(k) &&
         intFromRef(k) <= arraySize(arr)
       invariant (unfolding acc(IntArray_unique(arr), write) in
-          (forall anon_builtin_6: Int ::intFromRef(i) <= anon_builtin_6 &&
+          (forall anon_builtin_6: Int ::anon_builtin_6 >= -2147483648 &&
+            anon_builtin_6 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+            intFromRef(i) <= anon_builtin_6 &&
             anon_builtin_6 < intFromRef(k) ==>
             arr.contents[intFromRef(m)] <= arr.contents[anon_builtin_6]))
       invariant (unfolding acc(IntArray_unique(arr), write) in
-          (forall anon_builtin_7: Int ::(forall anon_builtin_8: Int ::0 <=
-              anon_builtin_7 &&
-              anon_builtin_7 < anon_builtin_8 &&
+          (forall anon_builtin_7: Int ::anon_builtin_7 >= -2147483648 &&
+            anon_builtin_7 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+            (forall anon_builtin_8: Int ::anon_builtin_8 >= -2147483648 &&
+              anon_builtin_8 <= 2147483647 &&
+              isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+              0 <= anon_builtin_7 && anon_builtin_7 < anon_builtin_8 &&
               anon_builtin_8 < intFromRef(i) ==>
               arr.contents[anon_builtin_7] <= arr.contents[anon_builtin_8])))
       invariant (unfolding acc(IntArray_unique(arr), write) in
-          (forall anon_builtin_9: Int ::(forall anon_builtin_10: Int ::0 <=
-              anon_builtin_9 &&
-              anon_builtin_9 < intFromRef(i) &&
+          (forall anon_builtin_9: Int ::anon_builtin_9 >= -2147483648 &&
+            anon_builtin_9 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_9)), intType()) ==>
+            (forall anon_builtin_10: Int ::anon_builtin_10 >= -2147483648 &&
+              anon_builtin_10 <= 2147483647 &&
+              isSubtype(typeOf(intToRef(anon_builtin_10)), intType()) ==>
+              0 <= anon_builtin_9 && anon_builtin_9 < intFromRef(i) &&
               intFromRef(i) <= anon_builtin_10 &&
               anon_builtin_10 < arraySize(arr) ==>
               arr.contents[anon_builtin_9] <= arr.contents[anon_builtin_10])))
@@ -116,19 +140,29 @@ method selectionSort(arr: Ref) returns (v_ret_0: Ref)
       intFromRef(m) < intFromRef(k) &&
       intFromRef(k) <= arraySize(arr)
     assert (unfolding acc(IntArray_unique(arr), write) in
-        (forall anon_builtin_6: Int ::intFromRef(i) <= anon_builtin_6 &&
-          anon_builtin_6 < intFromRef(k) ==>
+        (forall anon_builtin_6: Int ::anon_builtin_6 >= -2147483648 &&
+          anon_builtin_6 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+          intFromRef(i) <= anon_builtin_6 && anon_builtin_6 < intFromRef(k) ==>
           arr.contents[intFromRef(m)] <= arr.contents[anon_builtin_6]))
     assert (unfolding acc(IntArray_unique(arr), write) in
-        (forall anon_builtin_7: Int ::(forall anon_builtin_8: Int ::0 <=
-            anon_builtin_7 &&
-            anon_builtin_7 < anon_builtin_8 &&
+        (forall anon_builtin_7: Int ::anon_builtin_7 >= -2147483648 &&
+          anon_builtin_7 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+          (forall anon_builtin_8: Int ::anon_builtin_8 >= -2147483648 &&
+            anon_builtin_8 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+            0 <= anon_builtin_7 && anon_builtin_7 < anon_builtin_8 &&
             anon_builtin_8 < intFromRef(i) ==>
             arr.contents[anon_builtin_7] <= arr.contents[anon_builtin_8])))
     assert (unfolding acc(IntArray_unique(arr), write) in
-        (forall anon_builtin_9: Int ::(forall anon_builtin_10: Int ::0 <=
-            anon_builtin_9 &&
-            anon_builtin_9 < intFromRef(i) &&
+        (forall anon_builtin_9: Int ::anon_builtin_9 >= -2147483648 &&
+          anon_builtin_9 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_9)), intType()) ==>
+          (forall anon_builtin_10: Int ::anon_builtin_10 >= -2147483648 &&
+            anon_builtin_10 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_10)), intType()) ==>
+            0 <= anon_builtin_9 && anon_builtin_9 < intFromRef(i) &&
             intFromRef(i) <= anon_builtin_10 &&
             anon_builtin_10 < arraySize(arr) ==>
             arr.contents[anon_builtin_9] <= arr.contents[anon_builtin_10])))
@@ -160,15 +194,23 @@ method selectionSort(arr: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(arr), IntArray())
   assert 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
   assert (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_2: Int ::(forall anon_builtin_3: Int ::0 <=
-          anon_builtin_2 &&
-          anon_builtin_2 < anon_builtin_3 &&
+      (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+        anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+          anon_builtin_3 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          0 <= anon_builtin_2 && anon_builtin_2 < anon_builtin_3 &&
           anon_builtin_3 < intFromRef(i) ==>
           arr.contents[anon_builtin_2] <= arr.contents[anon_builtin_3])))
   assert (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_4: Int ::(forall anon_builtin_5: Int ::0 <=
-          anon_builtin_4 &&
-          anon_builtin_4 < intFromRef(i) &&
+      (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+        anon_builtin_4 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+        (forall anon_builtin_5: Int ::anon_builtin_5 >= -2147483648 &&
+          anon_builtin_5 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+          0 <= anon_builtin_4 && anon_builtin_4 < intFromRef(i) &&
           intFromRef(i) <= anon_builtin_5 &&
           anon_builtin_5 < arraySize(arr) ==>
           arr.contents[anon_builtin_4] <= arr.contents[anon_builtin_5])))
@@ -185,6 +227,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method swap(arr: Ref, i: Ref, j: Ref) returns (v_ret_0: Ref)
@@ -228,6 +271,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method rotateFirstThree(arr: Ref) returns (v_ret_0: Ref)
@@ -269,6 +313,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method zeroAll(arr: Ref) returns (v_ret_0: Ref)

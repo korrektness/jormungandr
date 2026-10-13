@@ -27,13 +27,18 @@ predicate footprint(this: Ref)
 method inc(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), Tally())
   requires acc(Tally_unique(this), write)
+  requires (unfolding acc(Tally_unique(this), wildcard) in
+      intFromRef(count(this)) < 2147483647)
   ensures acc(Tally_unique(this), write)
   ensures isSubtype(typeOf(ret), unitType())
   ensures (unfolding acc(Tally_unique(this), wildcard) in
       intFromRef(count(this))) ==
-    old((unfolding acc(Tally_unique(this), wildcard) in
-      intFromRef(count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(Tally_unique(this), wildcard) in
+        count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(Tally_unique(this), wildcard) in
+        count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 /unsupported_observer_views.kt: info: Generated Viper text for count:
@@ -107,14 +112,19 @@ method InheritedTally_c_TallyBase_f_inc_inherited_body_c_Tally_f_inc(this: Ref)
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), InheritedTally())
   requires acc(InheritedTally_unique(this), write)
+  requires (unfolding acc(InheritedTally_unique(this), wildcard) in
+      intFromRef(c_TallyBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedTally()
   ensures acc(InheritedTally_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(InheritedTally_unique(this), wildcard) in
       intFromRef(c_TallyBase_f_count(this))) ==
-    old((unfolding acc(InheritedTally_unique(this), wildcard) in
-      intFromRef(c_TallyBase_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(InheritedTally_unique(this), wildcard) in
+        c_TallyBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedTally_unique(this), wildcard) in
+        c_TallyBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 {
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -124,20 +134,27 @@ method InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), InheritedTally())
   requires acc(InheritedTally_unique(this), write)
+  requires (unfolding acc(InheritedTally_unique(this), wildcard) in
+      intFromRef(c_TallyBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedTally()
   ensures acc(InheritedTally_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(InheritedTally_unique(this), wildcard) in
       intFromRef(c_TallyBase_f_count(this))) ==
-    old((unfolding acc(InheritedTally_unique(this), wildcard) in
-      intFromRef(c_TallyBase_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(InheritedTally_unique(this), wildcard) in
+        c_TallyBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedTally_unique(this), wildcard) in
+        c_TallyBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), InheritedTally())
   requires acc(InheritedTally_unique(this), write)
+  requires (unfolding acc(InheritedTally_unique(this), wildcard) in
+      intFromRef(c_TallyBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedTally()
   requires isSubtype(typeOf(this), InheritedTally())
 {
@@ -146,9 +163,12 @@ method refines_InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(thi
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(InheritedTally_unique(this), wildcard) in
       intFromRef(c_TallyBase_f_count(this))) ==
-    old((unfolding acc(InheritedTally_unique(this), wildcard) in
-      intFromRef(c_TallyBase_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(InheritedTally_unique(this), wildcard) in
+        c_TallyBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedTally_unique(this), wildcard) in
+        c_TallyBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /unsupported_observer_views.kt: info: Generated Viper text for tallyClient:
@@ -187,28 +207,38 @@ predicate Tally_unique(this: Ref) {
   acc(Tally_footprint(this), write) && isSubtype(typeOf(this), Tally())
 }
 
-method inc(this: Ref) returns (ret_2: Ref)
+method inc(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), Tally())
   requires acc(Tally_unique(this), write)
+  requires (unfolding acc(Tally_unique(this), wildcard) in
+      intFromRef(count(this)) < 2147483647)
   ensures acc(Tally_unique(this), write)
-  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures (unfolding acc(Tally_unique(this), wildcard) in
       intFromRef(count(this))) ==
-    old((unfolding acc(Tally_unique(this), wildcard) in
-      intFromRef(count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(Tally_unique(this), wildcard) in
+        count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(Tally_unique(this), wildcard) in
+        count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method tallyClient(par_t: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_t), Tally())
   requires acc(Tally_unique(par_t), write)
+  requires (unfolding acc(Tally_unique(par_t), wildcard) in
+      intFromRef(count(par_t)) < 2147483647)
   ensures acc(Tally_unique(par_t), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Tally_unique(par_t), wildcard) in
       intFromRef(count(par_t))) ==
-    old((unfolding acc(Tally_unique(par_t), wildcard) in
-      intFromRef(count(par_t)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(Tally_unique(par_t), wildcard) in
+        count(par_t))), intToRef(1))) in
+      intFromRef(old((unfolding acc(Tally_unique(par_t), wildcard) in
+        count(par_t)))) +
+      intFromRef(intToRef(1)))
 {
   var before: Ref
   var anon_0: Ref
@@ -218,7 +248,10 @@ method tallyClient(par_t: Ref) returns (v_ret_0: Ref)
   before := anon_0
   anon_1 := inc(par_t)
   anon_2 := (unfolding acc(Tally_unique(par_t), wildcard) in count(par_t))
-  assert intFromRef(anon_2) == intFromRef(before) + 1
+  assert intFromRef(anon_2) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(1))) in
+      intFromRef(before) + intFromRef(intToRef(1)))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -300,21 +333,28 @@ method InheritedTally_c_Tally_upcast(this: Ref)
       TallyBase_f_count(this)))
 
 
-method tallyClient(par_t: Ref) returns (ret_1: Ref)
+method tallyClient(par_t: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_t), c_Tally())
   requires acc(c_Tally_unique(par_t), write)
+  requires (unfolding acc(c_Tally_unique(par_t), wildcard) in
+      intFromRef(c_Tally_f_count(par_t)) < 2147483647)
   ensures acc(c_Tally_unique(par_t), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(c_Tally_unique(par_t), wildcard) in
       intFromRef(c_Tally_f_count(par_t))) ==
-    old((unfolding acc(c_Tally_unique(par_t), wildcard) in
-      intFromRef(c_Tally_f_count(par_t)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_Tally_unique(par_t), wildcard) in
+        c_Tally_f_count(par_t))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_Tally_unique(par_t), wildcard) in
+        c_Tally_f_count(par_t)))) +
+      intFromRef(intToRef(1)))
 
 
 method useInherited(par_t: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_t), InheritedTally())
   requires acc(InheritedTally_unique(par_t), write)
+  requires (unfolding acc(InheritedTally_unique(par_t), wildcard) in
+      intFromRef(TallyBase_f_count(par_t)) < 2147483647)
   ensures acc(InheritedTally_unique(par_t), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -330,7 +370,10 @@ method useInherited(par_t: Ref) returns (v_ret_0: Ref)
   InheritedTally_c_Tally_restore(par_t)
   anon_3 := (unfolding acc(InheritedTally_unique(par_t), wildcard) in
       TallyBase_f_count(par_t))
-  assert intFromRef(anon_3) == intFromRef(before) + 1
+  assert intFromRef(anon_3) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(1))) in
+      intFromRef(before) + intFromRef(intToRef(1)))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

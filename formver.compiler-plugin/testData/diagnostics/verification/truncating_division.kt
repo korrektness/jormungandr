@@ -33,7 +33,7 @@ fun <!VIPER_TEXT!>rejectsEuclideanRemainder<!>(a: Int) {
 
 @Pure
 fun <!VIPER_TEXT!>quotient<!>(a: Int, b: Int): Int {
-    preconditions { b != 0 }
+    preconditions { b != 0; a != -2147483648 || b != -1 }
     return a / b
 }
 

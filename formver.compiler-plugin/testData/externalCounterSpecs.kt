@@ -59,6 +59,7 @@ fun createSpec(initial: Int) {
 
 @SpecOf("twiceModel")
 fun twiceSpec(x: Int) {
+    preconditions { x >= -1073741824; x <= 1073741823 }
     postconditions<Int> { result -> result == x * 2 }
 }
 

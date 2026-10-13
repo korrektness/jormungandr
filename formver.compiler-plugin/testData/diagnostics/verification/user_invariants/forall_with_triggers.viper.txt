@@ -1,9 +1,20 @@
 /forall_with_triggers.kt: info: Generated Viper text for forAllWithSimpleTrigger:
 method forAllWithSimpleTrigger() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures (forall anon: Int ::
-      { anon * anon }
-      anon * anon >= 0 && anon * anon >= intFromRef(v_ret_0))
+  ensures (forall anon_builtin_0: Int ::
+      { intFromRef(timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      (-46340 <= anon_builtin_0 && anon_builtin_0 <= 46340 ==>
+      (let anon_builtin_neg1 ==
+        (timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) in
+        anon_builtin_0 * anon_builtin_0) >=
+      0) &&
+      (-46340 <= anon_builtin_0 && anon_builtin_0 <= 46340 ==>
+      (let anon_builtin_neg1 ==
+        (timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) in
+        anon_builtin_0 * anon_builtin_0) >=
+      intFromRef(v_ret_0)))
 {
   v_ret_0 := intToRef(0)
   goto lbl_ret_0
@@ -13,10 +24,17 @@ method forAllWithSimpleTrigger() returns (v_ret_0: Ref)
 /forall_with_triggers.kt: info: Generated Viper text for forAllWithMultipleTriggers:
 method forAllWithMultipleTriggers() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures (forall anon: Int ::
-      { anon * anon }
-      { anon + 1 }
-      !(anon == 0) ==> anon * anon >= intFromRef(v_ret_0))
+  ensures (forall anon_builtin_0: Int ::
+      { intFromRef(timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) }
+      { intFromRef(plusInts(intToRef(anon_builtin_0), intToRef(1))) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -46340 <= anon_builtin_0 && anon_builtin_0 <= 46340 &&
+      !(anon_builtin_0 == 0) ==>
+      (let anon_builtin_neg1 ==
+        (timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) in
+        anon_builtin_0 * anon_builtin_0) >=
+      intFromRef(v_ret_0))
 {
   v_ret_0 := intToRef(1)
   goto lbl_ret_0
@@ -37,12 +55,33 @@ method forAllWithTriggersInLoop(str: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(res), intType())
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(str), stringType())
-    invariant (forall anon_builtin: Int ::
-        { stringFromRef(str)[anon_builtin] }
-        0 <= anon_builtin && anon_builtin < |stringFromRef(str)| ==>
-        (stringFromRef(str)[anon_builtin] - 97) *
-        (stringFromRef(str)[anon_builtin] - 97) >=
-        intFromRef(res))
+    invariant (forall anon_builtin_0: Int ::
+        { charFromRef(stringGet(str, intToRef(anon_builtin_0))) }
+        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(str)| ==>
+        ((let anon_builtin_neg1 ==
+          (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))), convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))))) in
+          longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97)))) *
+          longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))))) <
+        intFromRef(res) ?
+          -1 :
+          ((let anon_builtin_neg1 ==
+            (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+            charToRef(97))), convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+            charToRef(97))))) in
+            longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+            charToRef(97)))) *
+            longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+            charToRef(97))))) >
+          intFromRef(res) ?
+            1 :
+            0)) >=
+        0)
   anon_1 := gtInts(i, intToRef(0))
   if (boolFromRef(anon_1)) {
     var anon_0: Ref
@@ -54,12 +93,33 @@ method forAllWithTriggersInLoop(str: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(res), intType())
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(str), stringType())
-  assert (forall anon_builtin: Int ::
-      { stringFromRef(str)[anon_builtin] }
-      0 <= anon_builtin && anon_builtin < |stringFromRef(str)| ==>
-      (stringFromRef(str)[anon_builtin] - 97) *
-      (stringFromRef(str)[anon_builtin] - 97) >=
-      intFromRef(res))
+  assert (forall anon_builtin_0: Int ::
+      { charFromRef(stringGet(str, intToRef(anon_builtin_0))) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(str)| ==>
+      ((let anon_builtin_neg1 ==
+        (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+        charToRef(97))), convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+        charToRef(97))))) in
+        longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+        charToRef(97)))) *
+        longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+        charToRef(97))))) <
+      intFromRef(res) ?
+        -1 :
+        ((let anon_builtin_neg1 ==
+          (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))), convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))))) in
+          longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97)))) *
+          longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))))) >
+        intFromRef(res) ?
+          1 :
+          0)) >=
+      0)
   v_ret_0 := res
   goto lbl_ret_0
   label lbl_ret_0
@@ -68,7 +128,14 @@ method forAllWithTriggersInLoop(str: Ref) returns (v_ret_0: Ref)
 /forall_with_triggers.kt: info: Generated Viper text for forAllWithoutTriggers:
 method forAllWithoutTriggers() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures (forall anon: Int ::anon * anon >= 0)
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -46340 <= anon_builtin_0 && anon_builtin_0 <= 46340 ==>
+      (let anon_builtin_neg1 ==
+        (timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) in
+        anon_builtin_0 * anon_builtin_0) >=
+      0)
 {
   v_ret_0 := intToRef(0)
   goto lbl_ret_0

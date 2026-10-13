@@ -82,7 +82,9 @@ function size(this: Ref): Ref
 method verify_forall() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert (forall anon: Int ::anon > 0 || anon < 0 || anon == 0)
+  assert (forall anon: Int ::anon >= -2147483648 && anon <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon)), intType()) ==>
+      anon > 0 || anon < 0 || anon == 0)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

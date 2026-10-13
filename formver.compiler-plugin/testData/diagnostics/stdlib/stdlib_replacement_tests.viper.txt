@@ -35,59 +35,66 @@ function size(v_this: Ref): Ref
 
 
 method f_run_args_NAny_NAny_ret_NAny(v_this_extension: Ref, block: Ref)
-  returns (ret_5: Ref)
+  returns (ret_6: Ref)
   requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
 
 
-method f_run_args_NAny_ret_NAny(block: Ref) returns (ret_1: Ref)
+method f_run_args_NAny_ret_NAny(block: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
 method useRuns(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var cond1: Ref
   var anon_0: Ref
   var anon_1: Ref
-  var v_ret_3: Ref
-  var anon_2: Ref
   var v_ret_4: Ref
+  var anon_2: Ref
+  var v_ret_5: Ref
   var cond2: Ref
   var anon_3: Ref
   var anon_4: Ref
-  var v_ret_7: Ref
-  var anon_5: Ref
   var v_ret_8: Ref
-  v_ret_4 := plusInts(x, intToRef(1))
+  var anon_5: Ref
+  var v_ret_9: Ref
+  v_ret_5 := plusInts(x, intToRef(1))
+  goto lbl_ret_5
+  label lbl_ret_5
+  anon_2 := v_ret_5
+  v_ret_4 := anon_2
+  inhale isSubtype(typeOf(v_ret_4), nullable(anyType()))
   goto lbl_ret_4
   label lbl_ret_4
-  anon_2 := v_ret_4
-  v_ret_3 := anon_2
-  inhale isSubtype(typeOf(v_ret_3), nullable(anyType()))
-  goto lbl_ret_3
-  label lbl_ret_3
-  anon_1 := v_ret_3
+  anon_1 := v_ret_4
   anon_0 := anon_1
   inhale isSubtype(typeOf(anon_0), intType())
-  cond1 := boolToRef(intFromRef(anon_0) == 1 + intFromRef(x))
+  cond1 := boolToRef(intFromRef(anon_0) ==
+    (let anon_builtin ==
+      (plusInts(intToRef(1), x)) in
+      intFromRef(intToRef(1)) + intFromRef(x)))
   inhale isSubtype(typeOf(x), intType())
   inhale isSubtype(typeOf(x), nullable(anyType()))
-  v_ret_8 := plusInts(x, intToRef(1))
+  v_ret_9 := plusInts(x, intToRef(1))
+  goto lbl_ret_9
+  label lbl_ret_9
+  anon_5 := v_ret_9
+  v_ret_8 := anon_5
+  inhale isSubtype(typeOf(v_ret_8), nullable(anyType()))
   goto lbl_ret_8
   label lbl_ret_8
-  anon_5 := v_ret_8
-  v_ret_7 := anon_5
-  inhale isSubtype(typeOf(v_ret_7), nullable(anyType()))
-  goto lbl_ret_7
-  label lbl_ret_7
-  anon_4 := v_ret_7
+  anon_4 := v_ret_8
   anon_3 := anon_4
   inhale isSubtype(typeOf(anon_3), intType())
-  cond2 := boolToRef(intFromRef(anon_3) == 1 + intFromRef(x))
+  cond2 := boolToRef(intFromRef(anon_3) ==
+    (let anon_builtin ==
+      (plusInts(intToRef(1), x)) in
+      intFromRef(intToRef(1)) + intFromRef(x)))
   assert boolFromRef(cond1)
   assert boolFromRef(cond2)
   label lbl_ret_0
@@ -100,31 +107,35 @@ function size(v_this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method also(v_this_extension: Ref, block: Ref) returns (ret_1: Ref)
+method also(v_this_extension: Ref, block: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
 method useAlso(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var anon_1: Ref
   var anon_2: Ref
-  var v_ret_3: Ref
-  var anon_0: Ref
   var v_ret_4: Ref
+  var anon_0: Ref
+  var v_ret_5: Ref
   anon_0 := plusInts(x, intToRef(1))
   inhale isSubtype(typeOf(anon_0), nullable(anyType()))
   inhale isSubtype(typeOf(anon_0), intType())
-  assert intFromRef(anon_0) == 1 + intFromRef(x)
+  assert intFromRef(anon_0) ==
+    (let anon_builtin ==
+      (plusInts(intToRef(1), x)) in
+      intFromRef(intToRef(1)) + intFromRef(x))
+  label lbl_ret_5
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+  v_ret_4 := anon_0
+  goto lbl_ret_4
   label lbl_ret_4
-  inhale isSubtype(typeOf(v_ret_4), unitType())
-  v_ret_3 := anon_0
-  goto lbl_ret_3
-  label lbl_ret_3
-  anon_2 := v_ret_3
+  anon_2 := v_ret_4
   anon_1 := anon_2
   inhale isSubtype(typeOf(anon_1), intType())
   label lbl_ret_0
@@ -137,36 +148,40 @@ function size(v_this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method f_let(v_this_extension: Ref, block: Ref) returns (ret_1: Ref)
+method f_let(v_this_extension: Ref, block: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
 method useLet(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var cond1: Ref
   var anon_0: Ref
   var anon_1: Ref
-  var v_ret_3: Ref
-  var anon_2: Ref
   var v_ret_4: Ref
+  var anon_2: Ref
+  var v_ret_5: Ref
   inhale isSubtype(typeOf(x), intType())
   inhale isSubtype(typeOf(x), nullable(anyType()))
-  v_ret_4 := plusInts(x, intToRef(1))
+  v_ret_5 := plusInts(x, intToRef(1))
+  goto lbl_ret_5
+  label lbl_ret_5
+  anon_2 := v_ret_5
+  v_ret_4 := anon_2
+  inhale isSubtype(typeOf(v_ret_4), nullable(anyType()))
   goto lbl_ret_4
   label lbl_ret_4
-  anon_2 := v_ret_4
-  v_ret_3 := anon_2
-  inhale isSubtype(typeOf(v_ret_3), nullable(anyType()))
-  goto lbl_ret_3
-  label lbl_ret_3
-  anon_1 := v_ret_3
+  anon_1 := v_ret_4
   anon_0 := anon_1
   inhale isSubtype(typeOf(anon_0), intType())
-  cond1 := boolToRef(intFromRef(anon_0) == 1 + intFromRef(x))
+  cond1 := boolToRef(intFromRef(anon_0) ==
+    (let anon_builtin ==
+      (plusInts(intToRef(1), x)) in
+      intFromRef(intToRef(1)) + intFromRef(x)))
   assert boolFromRef(cond1)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -180,36 +195,40 @@ function size(this: Ref): Ref
 
 method useWith(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var anon_1: Ref
   var anon_2: Ref
-  var v_ret_3: Ref
+  var v_ret_4: Ref
   var anon_0: Ref
   var anon_3: Ref
-  var v_ret_4: Ref
+  var v_ret_5: Ref
   anon_0 := plusInts(x, intToRef(1))
   inhale isSubtype(typeOf(anon_0), nullable(anyType()))
   inhale isSubtype(typeOf(anon_0), intType())
-  assert intFromRef(anon_0) == 1 + intFromRef(x)
+  assert intFromRef(anon_0) ==
+    (let anon_builtin ==
+      (plusInts(intToRef(1), x)) in
+      intFromRef(intToRef(1)) + intFromRef(x))
+  label lbl_ret_5
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+  anon_3 := v_ret_5
+  v_ret_4 := anon_3
+  inhale isSubtype(typeOf(v_ret_4), nullable(anyType()))
+  goto lbl_ret_4
   label lbl_ret_4
-  inhale isSubtype(typeOf(v_ret_4), unitType())
-  anon_3 := v_ret_4
-  v_ret_3 := anon_3
-  inhale isSubtype(typeOf(v_ret_3), nullable(anyType()))
-  goto lbl_ret_3
-  label lbl_ret_3
-  anon_2 := v_ret_3
+  anon_2 := v_ret_4
   anon_1 := anon_2
   inhale isSubtype(typeOf(anon_1), unitType())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method with(receiver: Ref, block: Ref) returns (ret_1: Ref)
+method with(receiver: Ref, block: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(receiver), nullable(anyType()))
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
 /stdlib_replacement_tests.kt: info: Generated Viper text for useApply:
@@ -218,31 +237,35 @@ function size(v_this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method f_apply(v_this_extension: Ref, block: Ref) returns (ret_1: Ref)
+method f_apply(v_this_extension: Ref, block: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
 method useApply(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var anon_1: Ref
   var anon_2: Ref
-  var v_ret_3: Ref
-  var anon_0: Ref
   var v_ret_4: Ref
+  var anon_0: Ref
+  var v_ret_5: Ref
   anon_0 := plusInts(x, intToRef(1))
   inhale isSubtype(typeOf(anon_0), nullable(anyType()))
   inhale isSubtype(typeOf(anon_0), intType())
-  assert intFromRef(anon_0) == 1 + intFromRef(x)
+  assert intFromRef(anon_0) ==
+    (let anon_builtin ==
+      (plusInts(intToRef(1), x)) in
+      intFromRef(intToRef(1)) + intFromRef(x))
+  label lbl_ret_5
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+  v_ret_4 := anon_0
+  goto lbl_ret_4
   label lbl_ret_4
-  inhale isSubtype(typeOf(v_ret_4), unitType())
-  v_ret_3 := anon_0
-  goto lbl_ret_3
-  label lbl_ret_3
-  anon_2 := v_ret_3
+  anon_2 := v_ret_4
   anon_1 := anon_2
   inhale isSubtype(typeOf(anon_1), intType())
   label lbl_ret_0

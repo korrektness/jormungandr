@@ -58,14 +58,26 @@ predicate footprint(this: Ref)
 method invoke(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), CounterSpec())
   requires acc(CounterSpec_unique(this), write)
+  requires (unfolding acc(CounterSpec_unique(this), wildcard) in
+      -1000000000 <= intFromRef(value(this))) &&
+    (unfolding acc(CounterSpec_unique(this), wildcard) in
+      intFromRef(value(this)) <= 1000000000)
+  requires (unfolding acc(CounterSpec_unique(this), wildcard) in
+      -100000000 <= intFromRef(inc(this))) &&
+    (unfolding acc(CounterSpec_unique(this), wildcard) in
+      intFromRef(inc(this)) <= 100000000)
   ensures acc(CounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
   ensures (unfolding acc(CounterSpec_unique(this), wildcard) in
       intFromRef(value(this)) ==
-      old((unfolding acc(CounterSpec_unique(this), wildcard) in
-        intFromRef(value(this)))) +
-      old((unfolding acc(CounterSpec_unique(this), wildcard) in
-        intFromRef(inc(this)))))
+      (let anon ==
+        (plusInts(old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          value(this))), old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          inc(this))))) in
+        intFromRef(old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          value(this)))) +
+        intFromRef(old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          inc(this))))))
   ensures (unfolding acc(CounterSpec_unique(this), wildcard) in
       intFromRef(inc(this)) ==
       old((unfolding acc(CounterSpec_unique(this), wildcard) in
@@ -96,15 +108,26 @@ predicate footprint(this: Ref)
 method callTwice(f: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(f), CounterSpec())
   requires acc(CounterSpec_unique(f), write)
+  requires (unfolding acc(CounterSpec_unique(f), wildcard) in
+      -100000000 <= intFromRef(value(f))) &&
+    (unfolding acc(CounterSpec_unique(f), wildcard) in
+      intFromRef(value(f)) <= 100000000)
+  requires (unfolding acc(CounterSpec_unique(f), wildcard) in
+      -100000000 <= intFromRef(inc(f))) &&
+    (unfolding acc(CounterSpec_unique(f), wildcard) in
+      intFromRef(inc(f)) <= 100000000)
   ensures acc(CounterSpec_unique(f), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures (unfolding acc(CounterSpec_unique(f), wildcard) in
       intFromRef(value(f)) ==
-      old((unfolding acc(CounterSpec_unique(f), wildcard) in
-        intFromRef(value(f)))) +
-      2 *
-      old((unfolding acc(CounterSpec_unique(f), wildcard) in
-        intFromRef(inc(f)))))
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(CounterSpec_unique(f), wildcard) in
+          value(f))), timesInts(intToRef(2), old((unfolding acc(CounterSpec_unique(f), wildcard) in
+          inc(f)))))) in
+        intFromRef(old((unfolding acc(CounterSpec_unique(f), wildcard) in
+          value(f)))) +
+        intFromRef(timesInts(intToRef(2), old((unfolding acc(CounterSpec_unique(f), wildcard) in
+          inc(f)))))))
   ensures (unfolding acc(CounterSpec_unique(f), wildcard) in
       intFromRef(inc(f)) ==
       old((unfolding acc(CounterSpec_unique(f), wildcard) in
@@ -112,30 +135,42 @@ method callTwice(f: Ref) returns (v_ret_0: Ref)
   ensures (unfolding acc(CounterSpec_unique(f), wildcard) in
       intFromRef(v_ret_0) == intFromRef(value(f)))
 {
-  var anon: Ref
-  anon := invoke(f)
+  var anon_0: Ref
+  anon_0 := invoke(f)
   v_ret_0 := invoke(f)
   goto lbl_ret_0
   label lbl_ret_0
 }
 
-method invoke(this: Ref) returns (ret_2: Ref)
+method invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), CounterSpec())
   requires acc(CounterSpec_unique(this), write)
+  requires (unfolding acc(CounterSpec_unique(this), wildcard) in
+      -1000000000 <= intFromRef(value(this))) &&
+    (unfolding acc(CounterSpec_unique(this), wildcard) in
+      intFromRef(value(this)) <= 1000000000)
+  requires (unfolding acc(CounterSpec_unique(this), wildcard) in
+      -100000000 <= intFromRef(inc(this))) &&
+    (unfolding acc(CounterSpec_unique(this), wildcard) in
+      intFromRef(inc(this)) <= 100000000)
   ensures acc(CounterSpec_unique(this), write)
-  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(CounterSpec_unique(this), wildcard) in
       intFromRef(value(this)) ==
-      old((unfolding acc(CounterSpec_unique(this), wildcard) in
-        intFromRef(value(this)))) +
-      old((unfolding acc(CounterSpec_unique(this), wildcard) in
-        intFromRef(inc(this)))))
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          value(this))), old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          inc(this))))) in
+        intFromRef(old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          value(this)))) +
+        intFromRef(old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          inc(this))))))
   ensures (unfolding acc(CounterSpec_unique(this), wildcard) in
       intFromRef(inc(this)) ==
       old((unfolding acc(CounterSpec_unique(this), wildcard) in
         intFromRef(inc(this)))))
   ensures (unfolding acc(CounterSpec_unique(this), wildcard) in
-      intFromRef(ret_2) == intFromRef(value(this)))
+      intFromRef(ret_3) == intFromRef(value(this)))
 
 
 /callable_spec.kt: info: Generated Viper text for applyTwice:
@@ -160,35 +195,58 @@ predicate footprint(this: Ref)
 method applyTwice(f: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(f), CounterSpec())
   requires acc(CounterSpec_unique(f), write)
+  requires (unfolding acc(CounterSpec_unique(f), wildcard) in
+      -100000000 <= intFromRef(value(f))) &&
+    (unfolding acc(CounterSpec_unique(f), wildcard) in
+      intFromRef(value(f)) <= 100000000)
+  requires (unfolding acc(CounterSpec_unique(f), wildcard) in
+      -100000000 <= intFromRef(inc(f))) &&
+    (unfolding acc(CounterSpec_unique(f), wildcard) in
+      intFromRef(inc(f)) <= 100000000)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
-    old((unfolding acc(CounterSpec_unique(f), wildcard) in
-      intFromRef(value(f)))) +
-    2 *
-    old((unfolding acc(CounterSpec_unique(f), wildcard) in
-      intFromRef(inc(f))))
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(CounterSpec_unique(f), wildcard) in
+        value(f))), timesInts(intToRef(2), old((unfolding acc(CounterSpec_unique(f), wildcard) in
+        inc(f)))))) in
+      intFromRef(old((unfolding acc(CounterSpec_unique(f), wildcard) in
+        value(f)))) +
+      intFromRef(timesInts(intToRef(2), old((unfolding acc(CounterSpec_unique(f), wildcard) in
+        inc(f))))))
 {
-  var anon: Ref
-  anon := invoke(f)
+  var anon_0: Ref
+  anon_0 := invoke(f)
   v_ret_0 := invoke(f)
   goto lbl_ret_0
   label lbl_ret_0
 }
 
-method invoke(this: Ref) returns (ret_2: Ref)
+method invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), CounterSpec())
   requires acc(CounterSpec_unique(this), write)
+  requires (unfolding acc(CounterSpec_unique(this), wildcard) in
+      -1000000000 <= intFromRef(value(this))) &&
+    (unfolding acc(CounterSpec_unique(this), wildcard) in
+      intFromRef(value(this)) <= 1000000000)
+  requires (unfolding acc(CounterSpec_unique(this), wildcard) in
+      -100000000 <= intFromRef(inc(this))) &&
+    (unfolding acc(CounterSpec_unique(this), wildcard) in
+      intFromRef(inc(this)) <= 100000000)
   ensures acc(CounterSpec_unique(this), write)
-  ensures isSubtype(typeOf(ret_2), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(CounterSpec_unique(this), wildcard) in
       intFromRef(value(this)) ==
-      old((unfolding acc(CounterSpec_unique(this), wildcard) in
-        intFromRef(value(this)))) +
-      old((unfolding acc(CounterSpec_unique(this), wildcard) in
-        intFromRef(inc(this)))))
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          value(this))), old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          inc(this))))) in
+        intFromRef(old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          value(this)))) +
+        intFromRef(old((unfolding acc(CounterSpec_unique(this), wildcard) in
+          inc(this))))))
   ensures (unfolding acc(CounterSpec_unique(this), wildcard) in
       intFromRef(inc(this)) ==
       old((unfolding acc(CounterSpec_unique(this), wildcard) in
         intFromRef(inc(this)))))
   ensures (unfolding acc(CounterSpec_unique(this), wildcard) in
-      intFromRef(ret_2) == intFromRef(value(this)))
+      intFromRef(ret_3) == intFromRef(value(this)))

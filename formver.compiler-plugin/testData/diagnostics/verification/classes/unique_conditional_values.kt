@@ -6,7 +6,10 @@ class Counter(var x: Int)
 
 class Holder(var inner: @Unique Counter, var tag: Int)
 
-fun <!VIPER_TEXT!>make<!>(v: Int): @Unique Counter = Counter(v)
+fun <!VIPER_TEXT!>make<!>(v: Int): @Unique Counter {
+    postconditions<Counter> { result -> result.x == v }
+    return Counter(v)
+}
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>makeInline<!>(v: Int): @Unique Counter = Counter(v)
 
@@ -39,6 +42,7 @@ fun <!VIPER_TEXT!>wrongConditionalConstructorIntoField<!>(h: @Unique @Borrowed H
 }
 
 fun <!VIPER_TEXT!>whenOfFreshValues<!>(n: Int) {
+    preconditions { n < 2147483647 }
     val c: @Unique Counter = when (n) {
         0 -> Counter(0)
         1 -> make(1)

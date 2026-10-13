@@ -11,6 +11,7 @@ interface ObservedList {
 
     @SpecOf("add") @Unique @Borrowed
     fun addSpec(value: Int) {
+        preconditions { size() < 2147483647 }
         postconditions<Unit> {
             size() == old(size()) + 1
             get(old(size())) == value
@@ -34,7 +35,7 @@ interface ObservedList {
 
     @SpecOf("addFrom") @Unique @Borrowed
     fun addFromSpec(source: @Unique @Borrowed ObservedList) {
-        preconditions { source.size() > 0 }
+        preconditions { source.size() > 0 && size() < 2147483647 }
         postconditions<Unit> {
             size() == old(size()) + 1
             get(old(size())) == old(source.get(0))
@@ -62,6 +63,7 @@ class ObservedCell(var count: Int, var item: Int) : ObservedList {
 
     @Unique @Borrowed
     override fun <!VIPER_TEXT!>add<!>(value: Int) {
+        preconditions { count < 2147483647 }
         postconditions<Unit> {
             count == old(count) + 1
             item == value
@@ -103,7 +105,7 @@ class BrokenObservedCell(var count: Int, var item: Int) : ObservedList {
 }
 
 fun <!VIPER_TEXT!>chainedObserverCalls<!>(list: @Unique @Borrowed ObservedList) {
-    preconditions { list.size() >= 0 }
+    preconditions { 0 <= list.size() && list.size() < 2147483647 }
     val index = list.size()
     list.add(7)
     verify(list.size() == index + 1)
@@ -115,7 +117,7 @@ fun <!VIPER_TEXT!>chainedObserverCalls<!>(list: @Unique @Borrowed ObservedList) 
 }
 
 fun <!VIPER_TEXT!>observerParameterContract<!>(list: @Unique @Borrowed ObservedList) {
-    preconditions { list.size() >= 0 }
+    preconditions { 0 <= list.size() && list.size() < 2147483647 }
     postconditions<Unit> {
         list.size() == old(list.size()) + 1
         list.get(old(list.size())) == 5

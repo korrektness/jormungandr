@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.types
 
+import org.jetbrains.kotlin.formver.core.domains.IntegerBounds
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.isOf
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.core.names.SpecialFieldName
@@ -45,6 +46,7 @@ object StringBuilderEmbedding {
             listOf(
                 builder isOf classType.runtimeType,
                 builder.fieldAccessPredicate(contentsField, PermExp.FullPerm()),
+                IntegerBounds.string(contents(builder)),
             ).toConjunction(),
         )
     }

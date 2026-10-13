@@ -9,33 +9,34 @@ fun interface ArgumentIncSpec {
     @Unique @Borrowed operator fun <!VIPER_TEXT!>invoke<!>(x: Int): Int
     @SpecOf("invoke")
     fun invokeSpec(x: Int) {
-        preconditions { x >= 0 }
+        preconditions { x >= 0 && x <= 2147483645 }
         postconditions<Int> { result -> result >= x }
     }
 }
 
 fun <!VIPER_TEXT!>weakerPrecondition<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec { x ->
     exposes(ArgumentIncSpec::class) { inc() == 1 }
-    preconditions { x >= -1 }
+    preconditions { x >= -1 && x <= 2147483645 }
     postconditions<Int> { result -> result == x + 1 }
     x + 1
 }
 
-fun <!VIPER_TEXT!>postconditionOnly<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec { x ->
+fun <!VIPER_TEXT!>postconditionWithBound<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec { x ->
     exposes(ArgumentIncSpec::class) { inc() == 1 }
+    preconditions { x < 2147483647 }
     postconditions<Int> { result -> result == x + 1 }
     x + 1
 }
 
 fun <!VIPER_TEXT!>preconditionOnly<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec <!OVERRIDE_NOT_REFINING!>{ x ->
     exposes(ArgumentIncSpec::class) { inc() == 1 }
-    preconditions { x >= -1 }
+    preconditions { x >= -1 && x <= 2147483645 }
     x + 1
 }<!>
 
 fun <!VIPER_TEXT!>incorrectOwnBody<!>(): @Unique ArgumentIncSpec = ArgumentIncSpec <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ x ->
     exposes(ArgumentIncSpec::class) { inc() == 1 }
-    preconditions { x >= -1 }
+    preconditions { x >= -1 && x <= 2147483645 }
     postconditions<Int> { result -> result == x + 1 }
     x + 2
 }<!>
@@ -48,7 +49,7 @@ fun <!VIPER_TEXT!>interfaceClient<!>() {
 
 fun <!VIPER_TEXT!>clientCannotUseOwnPrecondition<!>() {
     val f: @Unique ArgumentIncSpec = weakerPrecondition()
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>f(-1)<!>
+    <!VIPER_VERIFICATION_ERROR!>f(-1)<!>
 }
 
 fun <!VIPER_TEXT!>clientCannotUseOwnPostcondition<!>() {

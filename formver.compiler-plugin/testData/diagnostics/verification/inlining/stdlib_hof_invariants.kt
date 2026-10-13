@@ -27,6 +27,7 @@ fun <!VIPER_TEXT!>indexFacts<!>(s: String): Int {
 fun <!VIPER_TEXT!>previousCharacter<!>(s: String): Int {
     var escaped = 0
     s.forEachIndexed { i, c ->
+        loopInvariants { 0 <= escaped && escaped <= i }
         if (c == '"' && (i == 0 || s[i - 1] != '\\')) escaped++
     }
     return escaped
@@ -45,9 +46,9 @@ fun <!VIPER_TEXT!>countIsNotExact<!>(s: String) {
 
 fun <!VIPER_TEXT!>labeledReturn<!>(s: String): Int {
     var n = 0
-    s.forEach {
-        loopInvariants { n >= 0 }
-        if (it == ' ') return@forEach
+    s.forEachIndexed { i, c ->
+        loopInvariants { 0 <= n && n <= i }
+        if (c == ' ') return@forEachIndexed
         n++
     }
     return n
@@ -58,9 +59,10 @@ fun <!VIPER_TEXT!>throwInside<!>(s: String) {
 }
 
 fun <!VIPER_TEXT!>repeatIndex<!>(times: Int): Int {
+    preconditions { 0 <= times && times <= 1000 }
     var sum = 0
     repeat(times) { i ->
-        loopInvariants { sum >= 0 }
+        loopInvariants { sum >= 0 && sum.toLong() <= i.toLong() * 1000L }
         verify(i >= 0)
         sum += i
     }

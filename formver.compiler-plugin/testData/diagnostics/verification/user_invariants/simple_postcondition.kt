@@ -4,6 +4,7 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 fun <!VIPER_TEXT!>testGreater<!>(init: Int) : Int {
+    preconditions { init <= 2147483642 }
     postconditions<Int> { result ->
         result > init
     }

@@ -5,11 +5,20 @@ method firstAtLeast(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures 0 <= intFromRef(v_ret_0) &&
     intFromRef(v_ret_0) <= |stringFromRef(v_this_extension)|
-  ensures (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-      anon_builtin_0 < intFromRef(v_ret_0) ==>
-      stringFromRef(v_this_extension)[anon_builtin_0] < charFromRef(c))
+  ensures (forall anon_builtin_0: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < intFromRef(v_ret_0) ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_0))) in
+        stringFromRef(v_this_extension)[anon_builtin_0]) <
+      charFromRef(c))
   ensures !(intFromRef(v_ret_0) == |stringFromRef(v_this_extension)|) ==>
-    stringFromRef(v_this_extension)[intFromRef(v_ret_0)] >= charFromRef(c)
+    (let anon_builtin_neg1 ==
+      (stringGet(v_this_extension, v_ret_0)) in
+      stringFromRef(v_this_extension)[intFromRef(v_ret_0)]) >=
+    charFromRef(c)
 {
   var i: Ref
   var anon_0: Ref
@@ -20,12 +29,21 @@ method firstAtLeast(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(v_this_extension), stringType())
     invariant 0 <= intFromRef(i) &&
       intFromRef(i) <= |stringFromRef(v_this_extension)|
-    invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 < intFromRef(i) ==>
-        stringFromRef(v_this_extension)[anon_builtin_1] < charFromRef(c))
+    invariant (forall anon_builtin_1: Int ::
+        { stringFromRef(v_this_extension)[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
+        (let anon_builtin_neg1 ==
+          (stringGet(v_this_extension, intToRef(anon_builtin_1))) in
+          stringFromRef(v_this_extension)[anon_builtin_1]) <
+        charFromRef(c))
   anon_0 := ltInts(i, stringLength(v_this_extension))
   if (boolFromRef(anon_0)) {
-    if (stringFromRef(v_this_extension)[intFromRef(i)] >= charFromRef(c)) {
+    if ((let anon_builtin_neg1 ==
+      (stringGet(v_this_extension, i)) in
+      stringFromRef(v_this_extension)[intFromRef(i)]) >=
+    charFromRef(c)) {
       goto break
     }
     i := plusInts(i, intToRef(1))
@@ -37,9 +55,15 @@ method firstAtLeast(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(v_this_extension), stringType())
   assert 0 <= intFromRef(i) &&
     intFromRef(i) <= |stringFromRef(v_this_extension)|
-  assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-      anon_builtin_1 < intFromRef(i) ==>
-      stringFromRef(v_this_extension)[anon_builtin_1] < charFromRef(c))
+  assert (forall anon_builtin_1: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_1))) in
+        stringFromRef(v_this_extension)[anon_builtin_1]) <
+      charFromRef(c))
   v_ret_0 := i
   goto lbl_ret_0
   label lbl_ret_0
@@ -51,13 +75,25 @@ method lastLess(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), charType())
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures -1 <= intFromRef(v_ret_0) &&
-    intFromRef(v_ret_0) <= |stringFromRef(v_this_extension)| - 1
-  ensures (forall anon_builtin_0: Int ::intFromRef(v_ret_0) <
-      anon_builtin_0 &&
+    intFromRef(v_ret_0) <=
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), intToRef(1))) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(intToRef(1)))
+  ensures (forall anon_builtin_0: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      intFromRef(v_ret_0) < anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
-      stringFromRef(v_this_extension)[anon_builtin_0] >= charFromRef(c))
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_0))) in
+        stringFromRef(v_this_extension)[anon_builtin_0]) >=
+      charFromRef(c))
   ensures !(intFromRef(v_ret_0) == -1) ==>
-    stringFromRef(v_this_extension)[intFromRef(v_ret_0)] < charFromRef(c)
+    (let anon_builtin_neg1 ==
+      (stringGet(v_this_extension, v_ret_0)) in
+      stringFromRef(v_this_extension)[intFromRef(v_ret_0)]) <
+    charFromRef(c)
 {
   var i: Ref
   var anon_0: Ref
@@ -68,12 +104,22 @@ method lastLess(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(v_this_extension), stringType())
     invariant -1 <= intFromRef(i) &&
       intFromRef(i) < |stringFromRef(v_this_extension)|
-    invariant (forall anon_builtin_1: Int ::intFromRef(i) < anon_builtin_1 &&
+    invariant (forall anon_builtin_1: Int ::
+        { stringFromRef(v_this_extension)[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        intFromRef(i) < anon_builtin_1 &&
         anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
-        stringFromRef(v_this_extension)[anon_builtin_1] >= charFromRef(c))
+        (let anon_builtin_neg1 ==
+          (stringGet(v_this_extension, intToRef(anon_builtin_1))) in
+          stringFromRef(v_this_extension)[anon_builtin_1]) >=
+        charFromRef(c))
   anon_0 := gtInts(i, intToRef(-1))
   if (boolFromRef(anon_0)) {
-    if (stringFromRef(v_this_extension)[intFromRef(i)] < charFromRef(c)) {
+    if ((let anon_builtin_neg1 ==
+      (stringGet(v_this_extension, i)) in
+      stringFromRef(v_this_extension)[intFromRef(i)]) <
+    charFromRef(c)) {
       goto break
     }
     i := minusInts(i, intToRef(1))
@@ -85,9 +131,16 @@ method lastLess(v_this_extension: Ref, c: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(v_this_extension), stringType())
   assert -1 <= intFromRef(i) &&
     intFromRef(i) < |stringFromRef(v_this_extension)|
-  assert (forall anon_builtin_1: Int ::intFromRef(i) < anon_builtin_1 &&
+  assert (forall anon_builtin_1: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      intFromRef(i) < anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
-      stringFromRef(v_this_extension)[anon_builtin_1] >= charFromRef(c))
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_1))) in
+        stringFromRef(v_this_extension)[anon_builtin_1]) >=
+      charFromRef(c))
   v_ret_0 := i
   goto lbl_ret_0
   label lbl_ret_0

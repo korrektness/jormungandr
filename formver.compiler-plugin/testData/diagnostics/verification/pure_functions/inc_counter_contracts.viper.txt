@@ -28,7 +28,7 @@ method invoke(this: Ref, x: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), ArgumentIncSpec())
   requires acc(ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   ensures acc(ArgumentIncSpec_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
   ensures intFromRef(ret) >= intFromRef(x)
@@ -137,10 +137,13 @@ method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= -1
+  requires intFromRef(x) >= -1 && intFromRef(x) <= 2147483645
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_3), intType())
-  ensures intFromRef(v_ret_3) == intFromRef(x) + 1
+  ensures intFromRef(v_ret_3) ==
+    (let anon ==
+      (plusInts(x, intToRef(1))) in
+      intFromRef(x) + intFromRef(intToRef(1)))
 {
   v_ret_3 := plusInts(x, intToRef(1))
   goto lbl_ret_3
@@ -156,7 +159,7 @@ method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ArgumentIncSpec())
   requires acc(c_ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   ensures acc(c_ArgumentIncSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) >= intFromRef(x)
@@ -166,7 +169,7 @@ method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ArgumentIncSpec())
   requires acc(c_ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ArgumentIncSpec_restore(this)
@@ -182,7 +185,7 @@ method weakerPrecondition() returns (ret_1: Ref)
   ensures acc(c_ArgumentIncSpec_unique(ret_1), write)
 
 
-/inc_counter_contracts.kt: info: Generated Viper text for postconditionOnly:
+/inc_counter_contracts.kt: info: Generated Viper text for postconditionWithBound:
 function Lambda0_f_inc(this: Ref): Ref
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
@@ -222,7 +225,7 @@ method create() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Lambda0())
 
 
-method postconditionOnly() returns (v_ret_0: Ref)
+method postconditionWithBound() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), c_ArgumentIncSpec())
   ensures acc(c_ArgumentIncSpec_unique(v_ret_0), write)
 {
@@ -236,7 +239,7 @@ method postconditionOnly() returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-postconditionOnly.lambda0.invoke:
+postconditionWithBound.lambda0.invoke:
 function Lambda0_f_inc(this: Ref): Ref
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
@@ -285,9 +288,13 @@ method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) < 2147483647
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_3), intType())
-  ensures intFromRef(v_ret_3) == intFromRef(x) + 1
+  ensures intFromRef(v_ret_3) ==
+    (let anon ==
+      (plusInts(x, intToRef(1))) in
+      intFromRef(x) + intFromRef(intToRef(1)))
 {
   v_ret_3 := plusInts(x, intToRef(1))
   goto lbl_ret_3
@@ -303,13 +310,13 @@ method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ArgumentIncSpec())
   requires acc(c_ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   ensures acc(c_ArgumentIncSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) >= intFromRef(x)
 
 
-method postconditionOnly() returns (ret_1: Ref)
+method postconditionWithBound() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), c_ArgumentIncSpec())
   ensures acc(c_ArgumentIncSpec_unique(ret_1), write)
 
@@ -318,7 +325,7 @@ method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ArgumentIncSpec())
   requires acc(c_ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ArgumentIncSpec_restore(this)
@@ -432,7 +439,7 @@ method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= -1
+  requires intFromRef(x) >= -1 && intFromRef(x) <= 2147483645
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_3), intType())
 {
@@ -450,7 +457,7 @@ method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ArgumentIncSpec())
   requires acc(c_ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   ensures acc(c_ArgumentIncSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) >= intFromRef(x)
@@ -465,7 +472,7 @@ method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ArgumentIncSpec())
   requires acc(c_ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ArgumentIncSpec_restore(this)
@@ -579,10 +586,13 @@ method Lambda0_invoke(this: Ref, x: Ref) returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= -1
+  requires intFromRef(x) >= -1 && intFromRef(x) <= 2147483645
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_3), intType())
-  ensures intFromRef(v_ret_3) == intFromRef(x) + 1
+  ensures intFromRef(v_ret_3) ==
+    (let anon ==
+      (plusInts(x, intToRef(1))) in
+      intFromRef(x) + intFromRef(intToRef(1)))
 {
   v_ret_3 := plusInts(x, intToRef(2))
   goto lbl_ret_3
@@ -598,7 +608,7 @@ method f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ArgumentIncSpec())
   requires acc(c_ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   ensures acc(c_ArgumentIncSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) >= intFromRef(x)
@@ -613,7 +623,7 @@ method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ArgumentIncSpec())
   requires acc(c_ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ArgumentIncSpec_restore(this)
@@ -677,7 +687,7 @@ method invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), ArgumentIncSpec())
   requires acc(ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   ensures acc(ArgumentIncSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) >= intFromRef(x)
@@ -716,7 +726,7 @@ method invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), ArgumentIncSpec())
   requires acc(ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   ensures acc(ArgumentIncSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) >= intFromRef(x)
@@ -780,7 +790,7 @@ method invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), ArgumentIncSpec())
   requires acc(ArgumentIncSpec_unique(this), write)
   requires isSubtype(typeOf(x), intType())
-  requires intFromRef(x) >= 0
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 2147483645
   ensures acc(ArgumentIncSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) >= intFromRef(x)

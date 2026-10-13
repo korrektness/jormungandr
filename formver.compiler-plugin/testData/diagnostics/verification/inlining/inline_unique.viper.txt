@@ -37,6 +37,8 @@ field x: Ref
 method bump(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -52,35 +54,39 @@ method bump(c: Ref) returns (v_ret_0: Ref)
 /inline_unique.kt: info: Generated Viper text for bumpTwice:
 field x: Ref
 
-method bump(c: Ref) returns (ret_1: Ref)
+method bump(c: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
 
 
 method bumpTwice(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483646)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var v_ret_2: Ref
-  var anon_0: Ref
   var v_ret_3: Ref
+  var anon_0: Ref
+  var v_ret_5: Ref
   var anon_1: Ref
   unfold acc(Counter_unique(c), write)
   anon_0 := c.x
   c.x := plusInts(anon_0, intToRef(1))
-  label lbl_ret_2
-  fold acc(Counter_unique(c), write)
-  inhale isSubtype(typeOf(v_ret_2), unitType())
-  unfold acc(Counter_unique(c), write)
-  anon_1 := c.x
-  c.x := plusInts(anon_1, intToRef(1))
   label lbl_ret_3
   fold acc(Counter_unique(c), write)
   inhale isSubtype(typeOf(v_ret_3), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  c.x := plusInts(anon_1, intToRef(1))
+  label lbl_ret_5
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_5), unitType())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -343,6 +349,8 @@ function size(this: Ref): Ref
 method bump(c: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(ret_1), unitType())
 
@@ -381,16 +389,20 @@ function size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method bump(c: Ref) returns (ret_3: Ref)
+method bump(c: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
 
 
 method bumpTwice(c: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483646)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(ret_1), unitType())
 
@@ -402,9 +414,9 @@ method nestedInlining(c: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var v_ret_2: Ref
-  var v_ret_4: Ref
-  var anon_0: Ref
   var v_ret_5: Ref
+  var anon_0: Ref
+  var v_ret_7: Ref
   var anon_1: Ref
   var anon_2: Ref
   unfold acc(Counter_unique(c), write)
@@ -413,15 +425,15 @@ method nestedInlining(c: Ref) returns (v_ret_0: Ref)
   unfold acc(Counter_unique(c), write)
   anon_0 := c.x
   c.x := plusInts(anon_0, intToRef(1))
-  label lbl_ret_4
-  fold acc(Counter_unique(c), write)
-  inhale isSubtype(typeOf(v_ret_4), unitType())
-  unfold acc(Counter_unique(c), write)
-  anon_1 := c.x
-  c.x := plusInts(anon_1, intToRef(1))
   label lbl_ret_5
   fold acc(Counter_unique(c), write)
   inhale isSubtype(typeOf(v_ret_5), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  c.x := plusInts(anon_1, intToRef(1))
+  label lbl_ret_7
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_7), unitType())
   label lbl_ret_2
   inhale isSubtype(typeOf(v_ret_2), unitType())
   unfold acc(Counter_unique(c), write)
@@ -440,16 +452,20 @@ function size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method bump(c: Ref) returns (ret_3: Ref)
+method bump(c: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
 
 
 method bumpTwice(c: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483646)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(ret_1), unitType())
 
@@ -461,9 +477,9 @@ method wrongNestedInlining(c: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var v_ret_2: Ref
-  var v_ret_4: Ref
-  var anon_0: Ref
   var v_ret_5: Ref
+  var anon_0: Ref
+  var v_ret_7: Ref
   var anon_1: Ref
   var anon_2: Ref
   unfold acc(Counter_unique(c), write)
@@ -472,15 +488,15 @@ method wrongNestedInlining(c: Ref) returns (v_ret_0: Ref)
   unfold acc(Counter_unique(c), write)
   anon_0 := c.x
   c.x := plusInts(anon_0, intToRef(1))
-  label lbl_ret_4
-  fold acc(Counter_unique(c), write)
-  inhale isSubtype(typeOf(v_ret_4), unitType())
-  unfold acc(Counter_unique(c), write)
-  anon_1 := c.x
-  c.x := plusInts(anon_1, intToRef(1))
   label lbl_ret_5
   fold acc(Counter_unique(c), write)
   inhale isSubtype(typeOf(v_ret_5), unitType())
+  unfold acc(Counter_unique(c), write)
+  anon_1 := c.x
+  c.x := plusInts(anon_1, intToRef(1))
+  label lbl_ret_7
+  fold acc(Counter_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_7), unitType())
   label lbl_ret_2
   inhale isSubtype(typeOf(v_ret_2), unitType())
   unfold acc(Counter_unique(c), write)

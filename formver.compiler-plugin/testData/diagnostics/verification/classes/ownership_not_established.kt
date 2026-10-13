@@ -6,6 +6,7 @@ class Leaf(var n: Int)
 class Holder(val leaf: @Unique Leaf, var count: Int)
 
 fun <!VIPER_TEXT!>bump<!>(l: @Unique @Borrowed Leaf) {
+    preconditions { l.n < 2147483647 }
     l.n = l.n + 1
 }
 

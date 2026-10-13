@@ -6,6 +6,8 @@
 package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
+import org.jetbrains.kotlin.formver.core.embeddings.expression.IntegerOperators
+import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings
 import org.jetbrains.kotlin.formver.core.names.FromRefFuncName
 import org.jetbrains.kotlin.formver.core.names.QualifiedDomainFuncName
 import org.jetbrains.kotlin.formver.core.names.ToRefFuncName
@@ -14,6 +16,7 @@ import org.jetbrains.kotlin.formver.viper.ast.AccessPredicate
 import org.jetbrains.kotlin.formver.viper.ast.BinaryExp
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
+import org.jetbrains.kotlin.formver.viper.ast.Type
 
 /**
  * Trigger sets for a user quantifier over [bound] with body [body] and no user triggers: one set for each maximal
@@ -73,6 +76,13 @@ private fun Exp.isInjection(): Boolean {
 
 private val runtimeTypeGuards = setOf(RuntimeTypeDomain.isSubtype, RuntimeTypeDomain.typeOf)
 
+private val interpretedOperators by lazy {
+    (OperatorExpEmbeddings.allTemplates + IntegerOperators.templates)
+        .filter { template -> template.refsOperation.argsInjections.all { it.viperType == Type.Int } }
+        .mapTo(mutableSetOf()) { it.refsOperation.name }
+        .apply { add(OperatorExpEmbeddings.StringGet.refsOperation.name) }
+}
+
 /** [this] as a trigger term without `unfolding`s, or `null` when it does not have a trigger shape. */
 private fun Exp.triggerTerm(nested: Set<SymbolicName>): Exp? = when (this) {
     is Exp.FieldAccess -> rcv.triggerArg(nested)?.let { copy(rcv = it) }
@@ -82,7 +92,8 @@ private fun Exp.triggerTerm(nested: Set<SymbolicName>): Exp? = when (this) {
         val idx = idx.triggerArg(nested)
         if (seq == null || idx == null) null else copy(seq = seq, idx = idx)
     }
-    is Exp.FuncApp -> args.triggerArgs(nested)?.let { copy(args = it) }
+    is Exp.FuncApp ->
+        if (functionName in interpretedOperators) null else args.triggerArgs(nested)?.let { copy(args = it) }
     is Exp.DomainFuncApp ->
         if (function in runtimeTypeGuards) null else args.triggerArgs(nested)?.let { copy(args = it) }
     else -> null

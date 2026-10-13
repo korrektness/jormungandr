@@ -48,6 +48,8 @@ field x: Ref
 method successor(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures isSubtype(typeOf(v_ret_0), Counter())
   ensures acc(Counter_unique(v_ret_0), write)
 {
@@ -923,31 +925,38 @@ field x: Ref
 method returnInlineResult(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures isSubtype(typeOf(v_ret_0), Counter())
   ensures acc(Counter_unique(v_ret_0), write)
   ensures (unfolding acc(Counter_unique(v_ret_0), write) in
       intFromRef(v_ret_0.x) ==
-      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) + 1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Counter_unique(c), write) in c.x)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Counter_unique(c), write) in c.x))) +
+        intFromRef(intToRef(1))))
 {
-  var v_ret_3: Ref
-  var anon: Ref
+  var v_ret_4: Ref
+  var anon_0: Ref
   unfold acc(Counter_unique(c), write)
-  anon := c.x
-  c.x := plusInts(anon, intToRef(1))
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
   fold acc(Counter_unique(c), write)
-  v_ret_3 := c
-  goto lbl_ret_3
-  label lbl_ret_3
-  v_ret_0 := v_ret_3
+  v_ret_4 := c
+  goto lbl_ret_4
+  label lbl_ret_4
+  v_ret_0 := v_ret_4
   goto lbl_ret_0
   label lbl_ret_0
 }
 
-method successor(c: Ref) returns (ret_2: Ref)
+method successor(c: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
-  ensures isSubtype(typeOf(ret_2), Counter())
-  ensures acc(Counter_unique(ret_2), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
+  ensures isSubtype(typeOf(ret_3), Counter())
+  ensures acc(Counter_unique(ret_3), write)
 
 
 /inline_unique_arguments.kt: info: Generated Viper text for make:
@@ -975,6 +984,7 @@ method make(par_v: Ref) returns (v_ret_0: Ref)
 /inline_unique_arguments.kt: info: Generated Viper text for plusOne:
 method plusOne(par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
+  requires intFromRef(par_v) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   v_ret_0 := plusInts(par_v, intToRef(1))
@@ -1124,7 +1134,7 @@ method plainResultIntoPathField(h: Ref) returns (v_ret_0: Ref)
   var v_ret_2: Ref
   var anon_0: Ref
   var anon_4: Ref
-  var v_ret_3: Ref
+  var v_ret_4: Ref
   var anon_1: Ref
   var anon_5: Ref
   var anon_6: Ref
@@ -1141,12 +1151,12 @@ method plainResultIntoPathField(h: Ref) returns (v_ret_0: Ref)
   unfold acc(Counter_unique(h.inner), write)
   anon_2.x := anon_3
   anon_1 := intToRef(1)
-  v_ret_3 := plusInts(anon_1, intToRef(1))
+  v_ret_4 := plusInts(anon_1, intToRef(1))
   fold acc(Counter_unique(h.inner), write)
   fold acc(Holder_unique(h), write)
-  goto lbl_ret_3
-  label lbl_ret_3
-  anon_4 := v_ret_3
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon_4 := v_ret_4
   unfold acc(Holder_unique(h), write)
   h.count := anon_4
   anon_7 := h.inner
@@ -1169,6 +1179,7 @@ method plainResultIntoPathField(h: Ref) returns (v_ret_0: Ref)
 
 method plusOne(par_v: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_v), intType())
+  requires intFromRef(par_v) < 2147483647
   ensures isSubtype(typeOf(ret_1), intType())
 
 

@@ -4,7 +4,10 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 class Box(var value: Int) {
     val doubled: Int
-        <!VIPER_TEXT!>get<!>() = value * 2
+        <!VIPER_TEXT!>get<!>() {
+            val n = value
+            return if (n >= -1073741824 && n <= 1073741823) n * 2 else 0
+        }
 }
 
 fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>readCustomGetter<!>(b: @Unique Box): Int {

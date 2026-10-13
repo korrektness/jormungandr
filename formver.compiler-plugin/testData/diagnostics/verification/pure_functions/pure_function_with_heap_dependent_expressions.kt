@@ -20,6 +20,10 @@ fun <!VIPER_TEXT!>getSafeNextNextValue<!>(node: Node): Int {
 
 @Pure
 fun <!VIPER_TEXT!>sumFirstTwoNodes<!>(node: Node): Int {
+    preconditions {
+        node.next == null || (node.value.toLong() + node.next.value.toLong() >= -2147483648L &&
+            node.value.toLong() + node.next.value.toLong() <= 2147483647L)
+    }
     val nextNode = node.next
     return if (nextNode != null) {
         node.value + nextNode.value

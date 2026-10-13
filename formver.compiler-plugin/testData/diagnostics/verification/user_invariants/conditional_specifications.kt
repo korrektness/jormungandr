@@ -26,6 +26,7 @@ fun <!VIPER_TEXT!>whenInPostcondition<!>(n: Int): Int {
 }
 
 fun <!VIPER_TEXT!>ifOverOldInPostcondition<!>(c: @Unique @Borrowed Counter, flag: Boolean) {
+    preconditions { flag implies (c.x < 2147483647) }
     postconditions<Unit> { c.x == (if (flag) old(c.x) + 1 else old(c.x)) }
     if (flag) {
         c.x = c.x + 1
@@ -33,6 +34,7 @@ fun <!VIPER_TEXT!>ifOverOldInPostcondition<!>(c: @Unique @Borrowed Counter, flag
 }
 
 fun <!VIPER_TEXT!>oldOfIfInPostcondition<!>(c: @Unique @Borrowed Counter, flag: Boolean) {
+    preconditions { flag implies (c.x < 2147483647) }
     postconditions<Unit> { old(if (flag) c.x else 0) + 1 == (if (flag) c.x else 1) }
     if (flag) {
         c.x = c.x + 1

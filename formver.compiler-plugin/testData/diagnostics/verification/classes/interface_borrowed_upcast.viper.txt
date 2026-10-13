@@ -301,9 +301,13 @@ method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(cell), c_BorrowedView())
   requires acc(c_BorrowedView_unique(cell), write)
   requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) < 2147483647
   ensures acc(c_BorrowedView_unique(cell), write)
   ensures isSubtype(typeOf(ret_1), intType())
-  ensures intFromRef(ret_1) == intFromRef(n) + 1
+  ensures intFromRef(ret_1) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 
 
 /interface_borrowed_upcast.kt: info: Generated Viper text for ownedLocal:
@@ -390,9 +394,13 @@ method lend(par_cell: Ref, n: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_cell), c_BorrowedView())
   requires acc(c_BorrowedView_unique(par_cell), write)
   requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) < 2147483647
   ensures acc(c_BorrowedView_unique(par_cell), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(ret_2) == intFromRef(n) + 1
+  ensures intFromRef(ret_2) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 
 
 method ownedLocal() returns (v_ret_0: Ref)
@@ -400,7 +408,7 @@ method ownedLocal() returns (v_ret_0: Ref)
 {
   var l0_cell: Ref
   var l0_result: Ref
-  var anon: Ref
+  var anon_1: Ref
   l0_cell := con(intToRef(1))
   fold acc(BorrowedCell_unique(l0_cell), write)
   BorrowedCell_c_BorrowedView_upcast(l0_cell)
@@ -409,8 +417,8 @@ method ownedLocal() returns (v_ret_0: Ref)
   assert intFromRef(l0_result) == 6
   unfold acc(BorrowedCell_unique(l0_cell), write)
   l0_cell.bf_value := intToRef(9)
-  anon := l0_cell.bf_value
-  assert intFromRef(anon) == 9
+  anon_1 := l0_cell.bf_value
+  assert intFromRef(anon_1) == 9
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -491,9 +499,13 @@ method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(cell), c_BorrowedView())
   requires acc(c_BorrowedView_unique(cell), write)
   requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) < 2147483647
   ensures acc(c_BorrowedView_unique(cell), write)
   ensures isSubtype(typeOf(ret_1), intType())
-  ensures intFromRef(ret_1) == intFromRef(n) + 1
+  ensures intFromRef(ret_1) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 
 
 method lostField(cell: Ref) returns (v_ret_0: Ref)
@@ -662,9 +674,13 @@ method lend(cell: Ref, n: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(cell), c_BorrowedView())
   requires acc(c_BorrowedView_unique(cell), write)
   requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) < 2147483647
   ensures acc(c_BorrowedView_unique(cell), write)
   ensures isSubtype(typeOf(ret_4), intType())
-  ensures intFromRef(ret_4) == intFromRef(n) + 1
+  ensures intFromRef(ret_4) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 
 
 method touch(this: Ref) returns (ret_3: Ref)
@@ -861,9 +877,13 @@ method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(cell), c_BorrowedView())
   requires acc(c_BorrowedView_unique(cell), write)
   requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) < 2147483647
   ensures acc(c_BorrowedView_unique(cell), write)
   ensures isSubtype(typeOf(ret_1), intType())
-  ensures intFromRef(ret_1) == intFromRef(n) + 1
+  ensures intFromRef(ret_1) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 
 
 method pureViewCall(cell: Ref) returns (v_ret_0: Ref)
@@ -1096,12 +1116,12 @@ method freshBorrow() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var l0_result: Ref
-  var anon: Ref
-  anon := con(intToRef(1))
-  fold acc(BorrowedCell_unique(anon), write)
-  BorrowedCell_c_BorrowedView_upcast(anon)
-  l0_result := lend(anon, intToRef(3))
-  BorrowedCell_c_BorrowedView_restore(anon)
+  var anon_1: Ref
+  anon_1 := con(intToRef(1))
+  fold acc(BorrowedCell_unique(anon_1), write)
+  BorrowedCell_c_BorrowedView_upcast(anon_1)
+  l0_result := lend(anon_1, intToRef(3))
+  BorrowedCell_c_BorrowedView_restore(anon_1)
   assert intFromRef(l0_result) == 4
   refute false
   label lbl_ret_0
@@ -1112,9 +1132,13 @@ method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(cell), c_BorrowedView())
   requires acc(c_BorrowedView_unique(cell), write)
   requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) < 2147483647
   ensures acc(c_BorrowedView_unique(cell), write)
   ensures isSubtype(typeOf(ret_1), intType())
-  ensures intFromRef(ret_1) == intFromRef(n) + 1
+  ensures intFromRef(ret_1) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 
 
 /interface_borrowed_upcast.kt: info: Generated Viper text for inlineFieldBorrow:
@@ -1241,9 +1265,13 @@ method lend(par_cell: Ref, n: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_cell), c_BorrowedView())
   requires acc(c_BorrowedView_unique(par_cell), write)
   requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) < 2147483647
   ensures acc(c_BorrowedView_unique(par_cell), write)
   ensures isSubtype(typeOf(ret_4), intType())
-  ensures intFromRef(ret_4) == intFromRef(n) + 1
+  ensures intFromRef(ret_4) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 
 
 method touch(this: Ref) returns (ret_3: Ref)

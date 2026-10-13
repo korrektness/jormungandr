@@ -1,6 +1,8 @@
 // FULL_JDK
 // WITH_STDLIB
 
+import org.jetbrains.kotlin.formver.plugin.*
+
 
 fun <!VIPER_TEXT!>empty_list_expr_get<!>() {
     val s = <!POSSIBLE_INDEX_OUT_OF_BOUND!>emptyList<Int>()[0]<!>
@@ -16,6 +18,7 @@ fun <!VIPER_TEXT!>unsafe_last<!>(l: List<Int>) : Int {
 }
 
 fun <!VIPER_TEXT!>add_get<!>(l: MutableList<Int>) {
+    preconditions { l.size < 2147483647 }
     l.add(1)
     val n = <!POSSIBLE_INDEX_OUT_OF_BOUND!>l[1]<!>
 }

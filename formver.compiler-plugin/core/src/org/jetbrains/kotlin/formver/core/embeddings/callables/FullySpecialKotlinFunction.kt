@@ -91,6 +91,25 @@ object SpecialKotlinFunctions {
     }
 
     val byName: Map<SymbolicName, FullySpecialKotlinFunction> = buildFullySpecialFunctions {
+        for ((op, template) in IntegerOperators.binary) {
+            val signature = buildFunctionPretype {
+                withDispatchReceiver { existing(op.receiver.pretype) }
+                withParam { existing(op.argument.pretype) }
+                withReturnType { existing(op.result.pretype) }
+            }
+            addFunction(signature, SpecialPackages.kotlin, className = op.receiver.name, name = op.operation) { args, _ ->
+                template(args[0], args[1])
+            }
+        }
+        for ((op, template) in IntegerOperators.unary) {
+            val signature = buildFunctionPretype {
+                withDispatchReceiver { existing(op.receiver.pretype) }
+                withReturnType { existing(op.result.pretype) }
+            }
+            addFunction(signature, SpecialPackages.kotlin, className = op.receiver.name, name = op.operation) { args, _ ->
+                template(args[0])
+            }
+        }
         val intIntToIntType = buildFunctionPretype {
             withDispatchReceiver { int() }
             withParam { int() }

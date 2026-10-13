@@ -16,7 +16,8 @@ fun <!VIPER_TEXT!>writeThroughConstructedLocal<!>() {
 fun <!VIPER_TEXT!>storeThroughConstructedArray<!>() {
     val a = IntArray(3)
     <!UNTRACKED_WRITE!>a[0] = 1<!>
-    <!UNTRACKED_WRITE!>a[1] += 1<!>
+    // The zero delta keeps this write probe independent of the unknown shared value.
+    <!UNTRACKED_WRITE!>a[1] += 0<!>
     <!UNTRACKED_WRITE!>a.set(2, 1)<!>
     val x = a[0]
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x == 1<!>)

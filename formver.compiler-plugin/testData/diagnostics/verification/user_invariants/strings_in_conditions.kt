@@ -7,7 +7,7 @@ fun <!VIPER_TEXT!>firstNotSortedIndex<!>(s: String): Int {
     postconditions<Int> { res ->
         0 <= res && res <= s.length
         forAll<Int> {
-            (0 <= it && it + 1 < res) implies (s[it] <= s[it + 1])
+            (0 <= it && it < res - 1) implies (s[it] <= s[it + 1])
         }
     }
 
@@ -19,7 +19,7 @@ fun <!VIPER_TEXT!>firstNotSortedIndex<!>(s: String): Int {
             loopInvariants {
                 i <= s.length && i >= 1
                 forAll<Int> {
-                    (0 <= it && it + 1 < i) implies (s[it] <= s[it + 1])
+                    (0 <= it && it < i - 1) implies (s[it] <= s[it + 1])
                 }
             }
             ++i
@@ -37,6 +37,7 @@ fun <!VIPER_TEXT!>returnNewString<!>(): String {
 fun <!VIPER_TEXT!>addCharacterTimes<!>(s: String, c: Char, n: Int): String {
     preconditions {
         n >= 0
+        n <= 2147483647 - s.length
     }
     postconditions<String> { res ->
         res.length == s.length + n

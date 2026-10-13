@@ -1,404 +1,200 @@
+/z_function.kt: info: Generated Viper text for decodedMatch:
+function decodedMatch(encoded: Ref): Ref
+  requires isSubtype(typeOf(encoded), charType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  subChars(encoded, charToRef(48))
+}
+
 /z_function.kt: info: Generated Viper text for zFuncHelper:
+function decodedMatch(encoded: Ref): Ref
+  requires isSubtype(typeOf(encoded), charType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  subChars(encoded, charToRef(48))
+}
+
 method zFuncHelper(s: Ref, res: Ref, i: Ref, checkedLeft: Ref, checkedRight: Ref)
-  returns (v_ret_0: Ref)
+  returns (ret: Ref)
   requires isSubtype(typeOf(s), stringType())
   requires isSubtype(typeOf(res), stringType())
   requires isSubtype(typeOf(i), intType())
   requires isSubtype(typeOf(checkedLeft), intType())
   requires isSubtype(typeOf(checkedRight), intType())
+  requires |stringFromRef(s)| < 65535 - 48
   requires 1 <= intFromRef(i) && intFromRef(i) < |stringFromRef(s)|
   requires |stringFromRef(res)| == intFromRef(i)
   requires 0 <= intFromRef(checkedLeft) &&
     intFromRef(checkedLeft) <= intFromRef(checkedRight) &&
     intFromRef(checkedRight) <= |stringFromRef(s)|
   requires intFromRef(checkedLeft) < intFromRef(i)
-  requires (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-      anon_builtin_0 < intFromRef(i) ==>
-      48 <= stringFromRef(res)[anon_builtin_0] &&
-      stringFromRef(res)[anon_builtin_0] <=
-      48 + |stringFromRef(s)| - anon_builtin_0 &&
-      (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 < stringFromRef(res)[anon_builtin_0] - 48 ==>
-        stringFromRef(s)[anon_builtin_1] ==
-        stringFromRef(s)[anon_builtin_0 + anon_builtin_1]) &&
-      (stringFromRef(res)[anon_builtin_0] - 48 ==
-      |stringFromRef(s)| - anon_builtin_0 ||
-      !(stringFromRef(s)[anon_builtin_0 +
-      (stringFromRef(res)[anon_builtin_0] - 48)] ==
-      stringFromRef(s)[stringFromRef(res)[anon_builtin_0] - 48])))
-  requires (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
-      anon_builtin_2 < intFromRef(checkedRight) - intFromRef(checkedLeft) ==>
-      stringFromRef(s)[intFromRef(checkedLeft) + anon_builtin_2] ==
-      stringFromRef(s)[anon_builtin_2])
-  ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(i) <= intFromRef(v_ret_0) &&
-    intFromRef(v_ret_0) <= |stringFromRef(s)|
-  ensures (forall anon_builtin_3: Int ::intFromRef(i) <= anon_builtin_3 &&
-      anon_builtin_3 < intFromRef(v_ret_0) ==>
-      stringFromRef(s)[anon_builtin_3 - intFromRef(i)] ==
-      stringFromRef(s)[anon_builtin_3])
-{
-  var anon_0: Ref
-  if (intFromRef(checkedLeft) == 0) {
-    anon_0 := boolToRef(true)
-  } else {
-    anon_0 := leInts(checkedRight, i)}
-  if (boolFromRef(anon_0)) {
-    v_ret_0 := i
-  } else {
-    var bound: Ref
-    bound := plusInts(i, subChars(stringGet(res, minusInts(i, checkedLeft)),
-      charToRef(48)))
-    if (intFromRef(bound) < intFromRef(checkedRight)) {
-      v_ret_0 := bound
-    } else {
-      v_ret_0 := checkedRight}
-  }
-  goto lbl_ret_0
-  label lbl_ret_0
-}
+  requires (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < intFromRef(i) ==>
+      0 <=
+      intFromRef(decodedMatch(stringGet(res, intToRef(anon_builtin_0)))) &&
+      intFromRef(decodedMatch(stringGet(res, intToRef(anon_builtin_0)))) <=
+      (let anon_builtin_neg1 ==
+        (minusInts(stringLength(s), intToRef(anon_builtin_0))) in
+        intFromRef(stringLength(s)) - anon_builtin_0) &&
+      (forall anon_builtin_1: Int ::
+        { stringFromRef(s)[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 &&
+        anon_builtin_1 <
+        intFromRef(decodedMatch(stringGet(res, intToRef(anon_builtin_0)))) ==>
+        (let anon_builtin_neg1 ==
+          (stringGet(s, intToRef(anon_builtin_1))) in
+          stringFromRef(s)[anon_builtin_1]) ==
+        (let anon_builtin_neg1 ==
+          (stringGet(s, plusInts(intToRef(anon_builtin_0), intToRef(anon_builtin_1)))) in
+          stringFromRef(s)[intFromRef(plusInts(intToRef(anon_builtin_0), intToRef(anon_builtin_1)))])) &&
+      (intFromRef(decodedMatch(stringGet(res, intToRef(anon_builtin_0)))) ==
+      (let anon_builtin_neg1 ==
+        (minusInts(stringLength(s), intToRef(anon_builtin_0))) in
+        intFromRef(stringLength(s)) - anon_builtin_0) ||
+      !((let anon_builtin_neg1 ==
+        (stringGet(s, plusInts(intToRef(anon_builtin_0), decodedMatch(stringGet(res,
+        intToRef(anon_builtin_0)))))) in
+        stringFromRef(s)[intFromRef(plusInts(intToRef(anon_builtin_0), decodedMatch(stringGet(res,
+        intToRef(anon_builtin_0)))))]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(s, decodedMatch(stringGet(res, intToRef(anon_builtin_0))))) in
+        stringFromRef(s)[intFromRef(decodedMatch(stringGet(res, intToRef(anon_builtin_0))))]))))
+  requires (forall anon_builtin_2: Int ::
+      { stringFromRef(s)[anon_builtin_2] }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 <
+      (let anon_builtin_neg1 ==
+        (minusInts(checkedRight, checkedLeft)) in
+        intFromRef(checkedRight) - intFromRef(checkedLeft)) ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(s, plusInts(checkedLeft, intToRef(anon_builtin_2)))) in
+        stringFromRef(s)[intFromRef(plusInts(checkedLeft, intToRef(anon_builtin_2)))]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(s, intToRef(anon_builtin_2))) in
+        stringFromRef(s)[anon_builtin_2]))
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(i) <= intFromRef(ret) &&
+    intFromRef(ret) <= |stringFromRef(s)|
+  ensures (forall anon_builtin_3: Int ::
+      { stringFromRef(s)[anon_builtin_3] }
+      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      intFromRef(i) <= anon_builtin_3 && anon_builtin_3 < intFromRef(ret) ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(s, minusInts(intToRef(anon_builtin_3), i))) in
+        stringFromRef(s)[intFromRef(minusInts(intToRef(anon_builtin_3), i))]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(s, intToRef(anon_builtin_3))) in
+        stringFromRef(s)[anon_builtin_3]))
+
 
 /z_function.kt: info: Generated Viper text for zFunction:
-method plus(v_this: Ref, other: Ref) returns (ret_4: Ref)
-  requires isSubtype(typeOf(v_this), stringType())
-  requires isSubtype(typeOf(other), nullable(anyType()))
-  ensures isSubtype(typeOf(ret_4), stringType())
-
-
-method zFuncHelper(s: Ref, par_res: Ref, par_i: Ref, par_checkedLeft: Ref, par_checkedRight: Ref)
-  returns (ret_9: Ref)
-  requires isSubtype(typeOf(s), stringType())
-  requires isSubtype(typeOf(par_res), stringType())
-  requires isSubtype(typeOf(par_i), intType())
-  requires isSubtype(typeOf(par_checkedLeft), intType())
-  requires isSubtype(typeOf(par_checkedRight), intType())
-  requires 1 <= intFromRef(par_i) && intFromRef(par_i) < |stringFromRef(s)|
-  requires |stringFromRef(par_res)| == intFromRef(par_i)
-  requires 0 <= intFromRef(par_checkedLeft) &&
-    intFromRef(par_checkedLeft) <= intFromRef(par_checkedRight) &&
-    intFromRef(par_checkedRight) <= |stringFromRef(s)|
-  requires intFromRef(par_checkedLeft) < intFromRef(par_i)
-  requires (forall anon_builtin_5: Int ::0 <= anon_builtin_5 &&
-      anon_builtin_5 < intFromRef(par_i) ==>
-      48 <= stringFromRef(par_res)[anon_builtin_5] &&
-      stringFromRef(par_res)[anon_builtin_5] <=
-      48 + |stringFromRef(s)| - anon_builtin_5 &&
-      (forall anon_builtin_6: Int ::0 <= anon_builtin_6 &&
-        anon_builtin_6 < stringFromRef(par_res)[anon_builtin_5] - 48 ==>
-        stringFromRef(s)[anon_builtin_6] ==
-        stringFromRef(s)[anon_builtin_5 + anon_builtin_6]) &&
-      (stringFromRef(par_res)[anon_builtin_5] - 48 ==
-      |stringFromRef(s)| - anon_builtin_5 ||
-      !(stringFromRef(s)[anon_builtin_5 +
-      (stringFromRef(par_res)[anon_builtin_5] - 48)] ==
-      stringFromRef(s)[stringFromRef(par_res)[anon_builtin_5] - 48])))
-  requires (forall anon_builtin_7: Int ::0 <= anon_builtin_7 &&
-      anon_builtin_7 <
-      intFromRef(par_checkedRight) - intFromRef(par_checkedLeft) ==>
-      stringFromRef(s)[intFromRef(par_checkedLeft) + anon_builtin_7] ==
-      stringFromRef(s)[anon_builtin_7])
-  ensures isSubtype(typeOf(ret_9), intType())
-  ensures intFromRef(par_i) <= intFromRef(ret_9) &&
-    intFromRef(ret_9) <= |stringFromRef(s)|
-  ensures (forall anon_builtin_8: Int ::intFromRef(par_i) <= anon_builtin_8 &&
-      anon_builtin_8 < intFromRef(ret_9) ==>
-      stringFromRef(s)[anon_builtin_8 - intFromRef(par_i)] ==
-      stringFromRef(s)[anon_builtin_8])
-
-
-method zFunction(v_this_extension: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(v_this_extension), stringType())
-  ensures isSubtype(typeOf(v_ret_0), stringType())
-  ensures |stringFromRef(v_ret_0)| == |stringFromRef(v_this_extension)|
-  ensures (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-      anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
-      48 <= stringFromRef(v_ret_0)[anon_builtin_0] &&
-      stringFromRef(v_ret_0)[anon_builtin_0] <=
-      48 + |stringFromRef(v_this_extension)| - anon_builtin_0 &&
-      (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 < stringFromRef(v_ret_0)[anon_builtin_0] - 48 ==>
-        stringFromRef(v_this_extension)[anon_builtin_1] ==
-        stringFromRef(v_this_extension)[anon_builtin_0 + anon_builtin_1]) &&
-      (stringFromRef(v_ret_0)[anon_builtin_0] - 48 ==
-      |stringFromRef(v_this_extension)| - anon_builtin_0 ||
-      !(stringFromRef(v_this_extension)[anon_builtin_0 +
-      (stringFromRef(v_ret_0)[anon_builtin_0] - 48)] ==
-      stringFromRef(v_this_extension)[stringFromRef(v_ret_0)[anon_builtin_0] -
-      48])))
+function decodedMatch(encoded: Ref): Ref
+  requires isSubtype(typeOf(encoded), charType())
+  ensures isSubtype(typeOf(result), intType())
 {
-  var l0_i: Ref
-  var l0_res: Ref
-  var l0_checkedLeft: Ref
-  var l0_checkedRight: Ref
-  var anon_0: Ref
-  if (|stringFromRef(v_this_extension)| == 0) {
-    v_ret_0 := v_this_extension
-    goto lbl_ret_0
-  }
-  l0_i := intToRef(1)
-  l0_res := addStringChar(stringToRef(Seq[Int]()), addCharInt(charToRef(48),
-    stringLength(v_this_extension)))
-  l0_checkedLeft := intToRef(0)
-  l0_checkedRight := intToRef(0)
-  label cont_0
-    invariant isSubtype(typeOf(l0_i), intType())
-    invariant isSubtype(typeOf(l0_res), stringType())
-    invariant isSubtype(typeOf(l0_checkedLeft), intType())
-    invariant isSubtype(typeOf(l0_checkedRight), intType())
-    invariant isSubtype(typeOf(v_this_extension), stringType())
-    invariant |stringFromRef(l0_res)| == intFromRef(l0_i)
-    invariant 1 <= intFromRef(l0_i) &&
-      intFromRef(l0_i) <= |stringFromRef(v_this_extension)|
-    invariant (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
-        anon_builtin_2 < intFromRef(l0_i) ==>
-        48 <= stringFromRef(l0_res)[anon_builtin_2] &&
-        stringFromRef(l0_res)[anon_builtin_2] <=
-        48 + |stringFromRef(v_this_extension)| - anon_builtin_2 &&
-        (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-          anon_builtin_3 < stringFromRef(l0_res)[anon_builtin_2] - 48 ==>
-          stringFromRef(v_this_extension)[anon_builtin_3] ==
-          stringFromRef(v_this_extension)[anon_builtin_2 + anon_builtin_3]) &&
-        (stringFromRef(l0_res)[anon_builtin_2] - 48 ==
-        |stringFromRef(v_this_extension)| - anon_builtin_2 ||
-        !(stringFromRef(v_this_extension)[anon_builtin_2 +
-        (stringFromRef(l0_res)[anon_builtin_2] - 48)] ==
-        stringFromRef(v_this_extension)[stringFromRef(l0_res)[anon_builtin_2] -
-        48])))
-    invariant 0 <= intFromRef(l0_checkedLeft) &&
-      intFromRef(l0_checkedLeft) <= intFromRef(l0_checkedRight) &&
-      intFromRef(l0_checkedRight) <= |stringFromRef(v_this_extension)|
-    invariant intFromRef(l0_checkedLeft) < intFromRef(l0_i)
-    invariant (forall anon_builtin_4: Int ::0 <= anon_builtin_4 &&
-        anon_builtin_4 <
-        intFromRef(l0_checkedRight) - intFromRef(l0_checkedLeft) ==>
-        stringFromRef(v_this_extension)[intFromRef(l0_checkedLeft) +
-        anon_builtin_4] ==
-        stringFromRef(v_this_extension)[anon_builtin_4])
-  anon_0 := ltInts(l0_i, stringLength(v_this_extension))
-  if (boolFromRef(anon_0)) {
-    var j: Ref
-    var anon_1: Ref
-    j := zFuncHelper(v_this_extension, l0_res, l0_i, l0_checkedLeft, l0_checkedRight)
-    label cont_1
-      invariant isSubtype(typeOf(j), intType())
-      invariant isSubtype(typeOf(l0_i), intType())
-      invariant isSubtype(typeOf(l0_res), stringType())
-      invariant isSubtype(typeOf(l0_checkedLeft), intType())
-      invariant isSubtype(typeOf(l0_checkedRight), intType())
-      invariant isSubtype(typeOf(v_this_extension), stringType())
-      invariant intFromRef(l0_i) <= intFromRef(j) &&
-        intFromRef(j) <= |stringFromRef(v_this_extension)|
-      invariant (forall anon_builtin_9: Int ::intFromRef(l0_checkedLeft) <=
-          anon_builtin_9 &&
-          anon_builtin_9 < intFromRef(l0_checkedRight) ==>
-          stringFromRef(v_this_extension)[anon_builtin_9 -
-          intFromRef(l0_checkedLeft)] ==
-          stringFromRef(v_this_extension)[anon_builtin_9])
-      invariant (forall anon_builtin_10: Int ::intFromRef(l0_i) <=
-          anon_builtin_10 &&
-          anon_builtin_10 < intFromRef(j) ==>
-          stringFromRef(v_this_extension)[anon_builtin_10 -
-          intFromRef(l0_i)] ==
-          stringFromRef(v_this_extension)[anon_builtin_10])
-    if (intFromRef(j) < |stringFromRef(v_this_extension)|) {
-      anon_1 := boolToRef(stringFromRef(v_this_extension)[intFromRef(j) -
-        intFromRef(l0_i)] ==
-        stringFromRef(v_this_extension)[intFromRef(j)])
-    } else {
-      anon_1 := boolToRef(false)}
-    if (boolFromRef(anon_1)) {
-      j := plusInts(j, intToRef(1))
-      goto cont_1
-    }
-    label break_1
-    assert isSubtype(typeOf(j), intType())
-    assert isSubtype(typeOf(l0_i), intType())
-    assert isSubtype(typeOf(l0_res), stringType())
-    assert isSubtype(typeOf(l0_checkedLeft), intType())
-    assert isSubtype(typeOf(l0_checkedRight), intType())
-    assert isSubtype(typeOf(v_this_extension), stringType())
-    assert intFromRef(l0_i) <= intFromRef(j) &&
-      intFromRef(j) <= |stringFromRef(v_this_extension)|
-    assert (forall anon_builtin_9: Int ::intFromRef(l0_checkedLeft) <=
-        anon_builtin_9 &&
-        anon_builtin_9 < intFromRef(l0_checkedRight) ==>
-        stringFromRef(v_this_extension)[anon_builtin_9 -
-        intFromRef(l0_checkedLeft)] ==
-        stringFromRef(v_this_extension)[anon_builtin_9])
-    assert (forall anon_builtin_10: Int ::intFromRef(l0_i) <=
-        anon_builtin_10 &&
-        anon_builtin_10 < intFromRef(j) ==>
-        stringFromRef(v_this_extension)[anon_builtin_10 - intFromRef(l0_i)] ==
-        stringFromRef(v_this_extension)[anon_builtin_10])
-    l0_res := addStringChar(l0_res, addCharInt(charToRef(48), minusInts(j, l0_i)))
-    if (intFromRef(j) > intFromRef(l0_checkedRight)) {
-      l0_checkedLeft := l0_i
-      l0_checkedRight := j
-    }
-    l0_i := plusInts(l0_i, intToRef(1))
-    goto cont_0
-  }
-  label break_0
-  assert isSubtype(typeOf(l0_i), intType())
-  assert isSubtype(typeOf(l0_res), stringType())
-  assert isSubtype(typeOf(l0_checkedLeft), intType())
-  assert isSubtype(typeOf(l0_checkedRight), intType())
-  assert isSubtype(typeOf(v_this_extension), stringType())
-  assert |stringFromRef(l0_res)| == intFromRef(l0_i)
-  assert 1 <= intFromRef(l0_i) &&
-    intFromRef(l0_i) <= |stringFromRef(v_this_extension)|
-  assert (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
-      anon_builtin_2 < intFromRef(l0_i) ==>
-      48 <= stringFromRef(l0_res)[anon_builtin_2] &&
-      stringFromRef(l0_res)[anon_builtin_2] <=
-      48 + |stringFromRef(v_this_extension)| - anon_builtin_2 &&
-      (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-        anon_builtin_3 < stringFromRef(l0_res)[anon_builtin_2] - 48 ==>
-        stringFromRef(v_this_extension)[anon_builtin_3] ==
-        stringFromRef(v_this_extension)[anon_builtin_2 + anon_builtin_3]) &&
-      (stringFromRef(l0_res)[anon_builtin_2] - 48 ==
-      |stringFromRef(v_this_extension)| - anon_builtin_2 ||
-      !(stringFromRef(v_this_extension)[anon_builtin_2 +
-      (stringFromRef(l0_res)[anon_builtin_2] - 48)] ==
-      stringFromRef(v_this_extension)[stringFromRef(l0_res)[anon_builtin_2] -
-      48])))
-  assert 0 <= intFromRef(l0_checkedLeft) &&
-    intFromRef(l0_checkedLeft) <= intFromRef(l0_checkedRight) &&
-    intFromRef(l0_checkedRight) <= |stringFromRef(v_this_extension)|
-  assert intFromRef(l0_checkedLeft) < intFromRef(l0_i)
-  assert (forall anon_builtin_4: Int ::0 <= anon_builtin_4 &&
-      anon_builtin_4 <
-      intFromRef(l0_checkedRight) - intFromRef(l0_checkedLeft) ==>
-      stringFromRef(v_this_extension)[intFromRef(l0_checkedLeft) +
-      anon_builtin_4] ==
-      stringFromRef(v_this_extension)[anon_builtin_4])
-  v_ret_0 := l0_res
-  goto lbl_ret_0
-  label lbl_ret_0
+  subChars(encoded, charToRef(48))
 }
+
+method zFunction(v_this_extension: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires |stringFromRef(v_this_extension)| < 65535 - 48
+  ensures isSubtype(typeOf(ret), stringType())
+  ensures |stringFromRef(ret)| == |stringFromRef(v_this_extension)|
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
+      0 <=
+      intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) &&
+      intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) <=
+      (let anon_builtin_neg1 ==
+        (minusInts(stringLength(v_this_extension), intToRef(anon_builtin_0))) in
+        intFromRef(stringLength(v_this_extension)) - anon_builtin_0) &&
+      (forall anon_builtin_1: Int ::
+        { stringFromRef(v_this_extension)[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 &&
+        anon_builtin_1 <
+        intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) ==>
+        (let anon_builtin_neg1 ==
+          (stringGet(v_this_extension, intToRef(anon_builtin_1))) in
+          stringFromRef(v_this_extension)[anon_builtin_1]) ==
+        (let anon_builtin_neg1 ==
+          (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), intToRef(anon_builtin_1)))) in
+          stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+          intToRef(anon_builtin_1)))])) &&
+      (intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) ==
+      (let anon_builtin_neg1 ==
+        (minusInts(stringLength(v_this_extension), intToRef(anon_builtin_0))) in
+        intFromRef(stringLength(v_this_extension)) - anon_builtin_0) ||
+      !((let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), decodedMatch(stringGet(ret,
+        intToRef(anon_builtin_0)))))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))))]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, decodedMatch(stringGet(ret, intToRef(anon_builtin_0))))) in
+        stringFromRef(v_this_extension)[intFromRef(decodedMatch(stringGet(ret,
+        intToRef(anon_builtin_0))))]))))
+
 
 /z_function.kt: info: Generated Viper text for zFunctionNaive:
-method plus(v_this: Ref, other: Ref) returns (ret_4: Ref)
-  requires isSubtype(typeOf(v_this), stringType())
-  requires isSubtype(typeOf(other), nullable(anyType()))
-  ensures isSubtype(typeOf(ret_4), stringType())
-
-
-method zFunctionNaive(v_this_extension: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(v_this_extension), stringType())
-  ensures isSubtype(typeOf(v_ret_0), stringType())
-  ensures |stringFromRef(v_ret_0)| == |stringFromRef(v_this_extension)|
-  ensures (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-      anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
-      48 <= stringFromRef(v_ret_0)[anon_builtin_0] &&
-      stringFromRef(v_ret_0)[anon_builtin_0] <=
-      48 + |stringFromRef(v_this_extension)| - anon_builtin_0 &&
-      (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 < stringFromRef(v_ret_0)[anon_builtin_0] - 48 ==>
-        stringFromRef(v_this_extension)[anon_builtin_1] ==
-        stringFromRef(v_this_extension)[anon_builtin_0 + anon_builtin_1]) &&
-      (stringFromRef(v_ret_0)[anon_builtin_0] - 48 ==
-      |stringFromRef(v_this_extension)| - anon_builtin_0 ||
-      !(stringFromRef(v_this_extension)[anon_builtin_0 +
-      (stringFromRef(v_ret_0)[anon_builtin_0] - 48)] ==
-      stringFromRef(v_this_extension)[stringFromRef(v_ret_0)[anon_builtin_0] -
-      48])))
+function decodedMatch(encoded: Ref): Ref
+  requires isSubtype(typeOf(encoded), charType())
+  ensures isSubtype(typeOf(result), intType())
 {
-  var i: Ref
-  var res: Ref
-  var anon_0: Ref
-  if (|stringFromRef(v_this_extension)| == 0) {
-    v_ret_0 := v_this_extension
-    goto lbl_ret_0
-  }
-  i := intToRef(1)
-  res := addStringChar(stringToRef(Seq[Int]()), addCharInt(charToRef(48), stringLength(v_this_extension)))
-  label cont_0
-    invariant isSubtype(typeOf(i), intType())
-    invariant isSubtype(typeOf(res), stringType())
-    invariant isSubtype(typeOf(v_this_extension), stringType())
-    invariant |stringFromRef(res)| == intFromRef(i)
-    invariant 0 <= intFromRef(i) &&
-      intFromRef(i) <= |stringFromRef(v_this_extension)|
-    invariant (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
-        anon_builtin_2 < intFromRef(i) ==>
-        48 <= stringFromRef(res)[anon_builtin_2] &&
-        stringFromRef(res)[anon_builtin_2] <=
-        48 + |stringFromRef(v_this_extension)| - anon_builtin_2 &&
-        (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-          anon_builtin_3 < stringFromRef(res)[anon_builtin_2] - 48 ==>
-          stringFromRef(v_this_extension)[anon_builtin_3] ==
-          stringFromRef(v_this_extension)[anon_builtin_2 + anon_builtin_3]) &&
-        (stringFromRef(res)[anon_builtin_2] - 48 ==
-        |stringFromRef(v_this_extension)| - anon_builtin_2 ||
-        !(stringFromRef(v_this_extension)[anon_builtin_2 +
-        (stringFromRef(res)[anon_builtin_2] - 48)] ==
-        stringFromRef(v_this_extension)[stringFromRef(res)[anon_builtin_2] -
-        48])))
-  anon_0 := ltInts(i, stringLength(v_this_extension))
-  if (boolFromRef(anon_0)) {
-    var j: Ref
-    var anon_1: Ref
-    j := i
-    label cont_1
-      invariant isSubtype(typeOf(j), intType())
-      invariant isSubtype(typeOf(i), intType())
-      invariant isSubtype(typeOf(res), stringType())
-      invariant isSubtype(typeOf(v_this_extension), stringType())
-      invariant intFromRef(i) <= intFromRef(j) &&
-        intFromRef(j) <= |stringFromRef(v_this_extension)|
-      invariant (forall anon_builtin_4: Int ::0 <= anon_builtin_4 &&
-          anon_builtin_4 < intFromRef(j) - intFromRef(i) ==>
-          stringFromRef(v_this_extension)[intFromRef(i) + anon_builtin_4] ==
-          stringFromRef(v_this_extension)[anon_builtin_4])
-    if (intFromRef(j) < |stringFromRef(v_this_extension)|) {
-      anon_1 := boolToRef(stringFromRef(v_this_extension)[intFromRef(j) -
-        intFromRef(i)] ==
-        stringFromRef(v_this_extension)[intFromRef(j)])
-    } else {
-      anon_1 := boolToRef(false)}
-    if (boolFromRef(anon_1)) {
-      j := plusInts(j, intToRef(1))
-      goto cont_1
-    }
-    label break_1
-    assert isSubtype(typeOf(j), intType())
-    assert isSubtype(typeOf(i), intType())
-    assert isSubtype(typeOf(res), stringType())
-    assert isSubtype(typeOf(v_this_extension), stringType())
-    assert intFromRef(i) <= intFromRef(j) &&
-      intFromRef(j) <= |stringFromRef(v_this_extension)|
-    assert (forall anon_builtin_4: Int ::0 <= anon_builtin_4 &&
-        anon_builtin_4 < intFromRef(j) - intFromRef(i) ==>
-        stringFromRef(v_this_extension)[intFromRef(i) + anon_builtin_4] ==
-        stringFromRef(v_this_extension)[anon_builtin_4])
-    res := addStringChar(res, addCharInt(charToRef(48), minusInts(j, i)))
-    i := plusInts(i, intToRef(1))
-    goto cont_0
-  }
-  label break_0
-  assert isSubtype(typeOf(i), intType())
-  assert isSubtype(typeOf(res), stringType())
-  assert isSubtype(typeOf(v_this_extension), stringType())
-  assert |stringFromRef(res)| == intFromRef(i)
-  assert 0 <= intFromRef(i) &&
-    intFromRef(i) <= |stringFromRef(v_this_extension)|
-  assert (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
-      anon_builtin_2 < intFromRef(i) ==>
-      48 <= stringFromRef(res)[anon_builtin_2] &&
-      stringFromRef(res)[anon_builtin_2] <=
-      48 + |stringFromRef(v_this_extension)| - anon_builtin_2 &&
-      (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-        anon_builtin_3 < stringFromRef(res)[anon_builtin_2] - 48 ==>
-        stringFromRef(v_this_extension)[anon_builtin_3] ==
-        stringFromRef(v_this_extension)[anon_builtin_2 + anon_builtin_3]) &&
-      (stringFromRef(res)[anon_builtin_2] - 48 ==
-      |stringFromRef(v_this_extension)| - anon_builtin_2 ||
-      !(stringFromRef(v_this_extension)[anon_builtin_2 +
-      (stringFromRef(res)[anon_builtin_2] - 48)] ==
-      stringFromRef(v_this_extension)[stringFromRef(res)[anon_builtin_2] -
-      48])))
-  v_ret_0 := res
-  goto lbl_ret_0
-  label lbl_ret_0
+  subChars(encoded, charToRef(48))
 }
+
+method zFunctionNaive(v_this_extension: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires |stringFromRef(v_this_extension)| < 65535 - 48
+  ensures isSubtype(typeOf(ret), stringType())
+  ensures |stringFromRef(ret)| == |stringFromRef(v_this_extension)|
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
+      0 <=
+      intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) &&
+      intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) <=
+      (let anon_builtin_neg1 ==
+        (minusInts(stringLength(v_this_extension), intToRef(anon_builtin_0))) in
+        intFromRef(stringLength(v_this_extension)) - anon_builtin_0) &&
+      (forall anon_builtin_1: Int ::
+        { stringFromRef(v_this_extension)[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 &&
+        anon_builtin_1 <
+        intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) ==>
+        (let anon_builtin_neg1 ==
+          (stringGet(v_this_extension, intToRef(anon_builtin_1))) in
+          stringFromRef(v_this_extension)[anon_builtin_1]) ==
+        (let anon_builtin_neg1 ==
+          (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), intToRef(anon_builtin_1)))) in
+          stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+          intToRef(anon_builtin_1)))])) &&
+      (intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) ==
+      (let anon_builtin_neg1 ==
+        (minusInts(stringLength(v_this_extension), intToRef(anon_builtin_0))) in
+        intFromRef(stringLength(v_this_extension)) - anon_builtin_0) ||
+      !((let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), decodedMatch(stringGet(ret,
+        intToRef(anon_builtin_0)))))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))))]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, decodedMatch(stringGet(ret, intToRef(anon_builtin_0))))) in
+        stringFromRef(v_this_extension)[intFromRef(decodedMatch(stringGet(ret,
+        intToRef(anon_builtin_0))))]))))

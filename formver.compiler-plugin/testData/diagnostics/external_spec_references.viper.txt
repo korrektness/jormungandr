@@ -1,8 +1,13 @@
 /external_spec_references.kt: info: Generated Viper text for forbiddenCall:
 function twiceModel(x: Ref): Ref
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= -1073741824
+  requires intFromRef(x) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
-  ensures intFromRef(result) == intFromRef(x) * 2
+  ensures intFromRef(result) ==
+    (let anon ==
+      (timesInts(x, intToRef(2))) in
+      intFromRef(x) * intFromRef(intToRef(2)))
 
 
 method forbiddenCall() returns (v_ret_0: Ref)

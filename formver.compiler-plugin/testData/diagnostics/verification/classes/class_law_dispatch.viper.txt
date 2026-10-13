@@ -175,15 +175,24 @@ method increment_runtime_body_increment(this: Ref) returns (v_ret_0: Ref)
   ensures acc(c_LawBase_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon: Ref
+  var anon_3: Ref
   unfold acc(c_LawBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_3 := this.n
   assert (let this ==
       (this) in
       true && boolFromRef(geInts(this.n, intToRef(0))))
   fold acc(c_LawBase_unique(this), write)
+  if (intFromRef(anon_3) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(c_LawBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    assert (let this ==
+        (this) in
+        true && boolFromRef(geInts(this.n, intToRef(0))))
+    fold acc(c_LawBase_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -320,11 +329,11 @@ method LawDerived_c_LawBase_f_copyObservation_inherited_body_c_LawBase_f_copyObs
   ensures acc(LawDerived_unique(this), write)
   ensures isSubtype(typeOf(v_ret_7), unitType())
 {
-  var anon_10: Ref
-  anon_10 := LawDerived_f_read(this)
+  var anon_11: Ref
+  anon_11 := LawDerived_f_read(this)
   unfold acc(LawDerived_unique(this), write)
   unfold acc(c_LawBase_unique(this), write)
-  this.bf_n := anon_10
+  this.bf_n := anon_11
   label lbl_ret_7
   assert (let this ==
       (this) in
@@ -355,12 +364,10 @@ method LawDerived_c_LawBase_f_increment_inherited_body_c_LawBase_f_increment(thi
   ensures acc(LawDerived_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), unitType())
 {
-  var anon_1: Ref
+  var anon_10: Ref
   unfold acc(LawDerived_unique(this), write)
   unfold acc(c_LawBase_unique(this), write)
-  anon_1 := this.bf_n
-  this.bf_n := plusInts(anon_1, intToRef(1))
-  label lbl_ret_5
+  anon_10 := this.bf_n
   assert (let this ==
       (this) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0))))
@@ -370,6 +377,23 @@ method LawDerived_c_LawBase_f_increment_inherited_body_c_LawBase_f_increment(thi
       (unfolding acc(c_LawBase_unique(this), write) in
         true && boolFromRef(geInts(this.bf_m, intToRef(0)))))
   fold acc(LawDerived_unique(this), write)
+  if (intFromRef(anon_10) < 2147483647) {
+    var anon_1: Ref
+    unfold acc(LawDerived_unique(this), write)
+    unfold acc(c_LawBase_unique(this), write)
+    anon_1 := this.bf_n
+    this.bf_n := plusInts(anon_1, intToRef(1))
+    assert (let this ==
+        (this) in
+        true && boolFromRef(geInts(this.bf_n, intToRef(0))))
+    fold acc(c_LawBase_unique(this), write)
+    assert (let this ==
+        (this) in
+        (unfolding acc(c_LawBase_unique(this), write) in
+          true && boolFromRef(geInts(this.bf_m, intToRef(0)))))
+    fold acc(LawDerived_unique(this), write)
+  }
+  label lbl_ret_5
   inhale isSubtype(typeOf(v_ret_5), unitType())
 }
 
@@ -584,16 +608,26 @@ method incrementOther(this: Ref) returns (v_ret_0: Ref)
   ensures acc(LawDerived_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon: Ref
+  var anon_5: Ref
   unfold acc(LawDerived_unique(this), write)
-  anon := this.m
-  this.m := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_5 := this.m
   assert (let this ==
       (this) in
       (unfolding acc(c_LawBase_unique(this), write) in
         true && boolFromRef(geInts(this.m, intToRef(0)))))
   fold acc(LawDerived_unique(this), write)
+  if (intFromRef(anon_5) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(LawDerived_unique(this), write)
+    anon_0 := this.m
+    this.m := plusInts(anon_0, intToRef(1))
+    assert (let this ==
+        (this) in
+        (unfolding acc(c_LawBase_unique(this), write) in
+          true && boolFromRef(geInts(this.m, intToRef(0)))))
+    fold acc(LawDerived_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -858,11 +892,11 @@ method NegativeDispatch_c_LawBase_f_copyObservation_inherited_body_c_LawBase_f_c
   ensures acc(NegativeDispatch_unique(this), write)
   ensures isSubtype(typeOf(v_ret_7), unitType())
 {
-  var anon_6: Ref
-  anon_6 := NegativeDispatch_f_read(this)
+  var anon_7: Ref
+  anon_7 := NegativeDispatch_f_read(this)
   unfold acc(NegativeDispatch_unique(this), write)
   unfold acc(c_LawBase_unique(this), write)
-  this.bf_n := anon_6
+  this.bf_n := anon_7
   label lbl_ret_7
   assert (let this ==
       (this) in
@@ -889,17 +923,28 @@ method NegativeDispatch_c_LawBase_f_increment_inherited_body_c_LawBase_f_increme
   ensures acc(NegativeDispatch_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), unitType())
 {
-  var anon_1: Ref
+  var anon_6: Ref
   unfold acc(NegativeDispatch_unique(this), write)
   unfold acc(c_LawBase_unique(this), write)
-  anon_1 := this.bf_n
-  this.bf_n := plusInts(anon_1, intToRef(1))
-  label lbl_ret_5
+  anon_6 := this.bf_n
   assert (let this ==
       (this) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0))))
   fold acc(c_LawBase_unique(this), write)
   fold acc(NegativeDispatch_unique(this), write)
+  if (intFromRef(anon_6) < 2147483647) {
+    var anon_1: Ref
+    unfold acc(NegativeDispatch_unique(this), write)
+    unfold acc(c_LawBase_unique(this), write)
+    anon_1 := this.bf_n
+    this.bf_n := plusInts(anon_1, intToRef(1))
+    assert (let this ==
+        (this) in
+        true && boolFromRef(geInts(this.bf_n, intToRef(0))))
+    fold acc(c_LawBase_unique(this), write)
+    fold acc(NegativeDispatch_unique(this), write)
+  }
+  label lbl_ret_5
   inhale isSubtype(typeOf(v_ret_5), unitType())
 }
 
@@ -1261,18 +1306,30 @@ method increment(this: Ref) returns (v_ret_0: Ref)
   ensures acc(InheritedLaw_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon: Ref
+  var anon_3: Ref
   unfold acc(InheritedLaw_unique(this), write)
   unfold acc(c_PlainBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_3 := this.n
   fold acc(c_PlainBase_unique(this), write)
   assert (let this ==
       (this) in
       (unfolding acc(c_PlainBase_unique(this), write) in
         true && boolFromRef(geInts(this.n, intToRef(0)))))
   fold acc(InheritedLaw_unique(this), write)
+  if (intFromRef(anon_3) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(InheritedLaw_unique(this), write)
+    unfold acc(c_PlainBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    fold acc(c_PlainBase_unique(this), write)
+    assert (let this ==
+        (this) in
+        (unfolding acc(c_PlainBase_unique(this), write) in
+          true && boolFromRef(geInts(this.n, intToRef(0)))))
+    fold acc(InheritedLaw_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -1481,7 +1538,7 @@ predicate c_PlainBase_unique(this: Ref) {
 predicate footprint(this: Ref)
 
 method con(par_n: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(par_n), intType())
+  requires isSubtype(typeOf(par_n), shortType())
   ensures isSubtype(typeOf(v_ret_0), ComputedInheritedLaw())
   ensures isSubtype(typeOf(v_ret_0), ComputedInheritedLaw()) &&
     (isSubtype(typeOf(v_ret_0), c_PlainBase()) && acc(v_ret_0.bf_n, write) &&
@@ -1489,16 +1546,19 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0))))
-  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n) + 1
+  ensures intFromRef(v_ret_0.bf_n) ==
+    (let anon_builtin ==
+      (plusShortInt(par_n, intToRef(1))) in
+      shortFromRef(par_n) + intFromRef(intToRef(1)))
 {
   var anon_0: Ref
   var anon_3: Ref
   v_ret_0 := new(bf_n)
   inhale typeOf(v_ret_0) == ComputedInheritedLaw()
-  anon_0 := plusInts(par_n, intToRef(1))
+  anon_0 := plusShortInt(par_n, intToRef(1))
   v_ret_0.bf_n := anon_0
   fold acc(c_PlainBase_unique(v_ret_0), write)
-  anon_3 := require(geInts(par_n, intToRef(-1)))
+  anon_3 := require(geInts(compareToShortInt(par_n, intToRef(-1)), intToRef(0)))
   assert (let this ==
       (v_ret_0) in
       (unfolding acc(c_PlainBase_unique(this), write) in
@@ -1954,6 +2014,9 @@ predicate c_PlainBase_unique(this: Ref) {
 method loopWithInheritedLaw(value: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(value), InheritedLaw())
   requires acc(InheritedLaw_unique(value), write)
+  requires (unfolding acc(InheritedLaw_unique(value), write) in
+      (unfolding acc(c_PlainBase_unique(value), write) in
+        intFromRef(value.n) <= 2147483645))
   ensures acc(InheritedLaw_unique(value), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -1965,7 +2028,13 @@ method loopWithInheritedLaw(value: Ref) returns (v_ret_0: Ref)
     invariant acc(InheritedLaw_unique(value), write)
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(value), InheritedLaw())
-    invariant intFromRef(i) >= 0 && intFromRef(i) <= 2
+    invariant intFromRef(i) >= 0 && intFromRef(i) <= 2 &&
+      (unfolding acc(InheritedLaw_unique(value), write) in
+        (unfolding acc(c_PlainBase_unique(value), write) in
+          intFromRef(value.n) <=
+          (let anon_builtin ==
+            (plusInts(intToRef(2147483645), i)) in
+            intFromRef(intToRef(2147483645)) + intFromRef(i))))
   anon_4 := ltInts(i, intToRef(2))
   if (boolFromRef(anon_4)) {
     var anon_0: Ref
@@ -1987,7 +2056,13 @@ method loopWithInheritedLaw(value: Ref) returns (v_ret_0: Ref)
   label break
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(value), InheritedLaw())
-  assert intFromRef(i) >= 0 && intFromRef(i) <= 2
+  assert intFromRef(i) >= 0 && intFromRef(i) <= 2 &&
+    (unfolding acc(InheritedLaw_unique(value), write) in
+      (unfolding acc(c_PlainBase_unique(value), write) in
+        intFromRef(value.n) <=
+        (let anon_builtin ==
+          (plusInts(intToRef(2147483645), i)) in
+          intFromRef(intToRef(2147483645)) + intFromRef(i))))
   unfold acc(InheritedLaw_unique(value), write)
   unfold acc(c_PlainBase_unique(value), write)
   anon_5 := value.n
@@ -2172,7 +2247,7 @@ method c_LawBase_f_increment(this: Ref) returns (ret_5: Ref)
 
 
 method con_ComputedInheritedLaw(par_n: Ref) returns (ret_17: Ref)
-  requires isSubtype(typeOf(par_n), intType())
+  requires isSubtype(typeOf(par_n), shortType())
   ensures isSubtype(typeOf(ret_17), ComputedInheritedLaw())
   ensures isSubtype(typeOf(ret_17), ComputedInheritedLaw()) &&
     (isSubtype(typeOf(ret_17), c_PlainBase()) && acc(ret_17.bf_n, write) &&
@@ -2180,7 +2255,10 @@ method con_ComputedInheritedLaw(par_n: Ref) returns (ret_17: Ref)
     (let this ==
       (ret_17) in
       true && boolFromRef(geInts(this.bf_n, intToRef(0))))
-  ensures intFromRef(ret_17.bf_n) == intFromRef(par_n) + 1
+  ensures intFromRef(ret_17.bf_n) ==
+    (let anon_builtin ==
+      (plusShortInt(par_n, intToRef(1))) in
+      shortFromRef(par_n) + intFromRef(intToRef(1)))
 
 
 method con_DefaultInheritedLaw() returns (ret_13: Ref)
@@ -2278,7 +2356,7 @@ method validConstruction() returns (v_ret_0: Ref)
   unfold acc(c_PlainBase_unique(defaultValue), write)
   anon_13 := defaultValue.bf_n
   assert intFromRef(anon_13) >= 0
-  computed := con_ComputedInheritedLaw(intToRef(0))
+  computed := con_ComputedInheritedLaw(shortToRef(0))
   fold acc(c_PlainBase_unique(computed), write)
   fold acc(ComputedInheritedLaw_unique(computed), write)
   unfold acc(ComputedInheritedLaw_unique(computed), write)
@@ -2676,6 +2754,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function first(data: Ref): Ref
@@ -2689,7 +2768,12 @@ function first(data: Ref): Ref
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 /class_law_dispatch.kt: info: Generated Viper text for read:
@@ -2703,6 +2787,7 @@ function Reading_f_read(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function c_ChangedOwnedStateBase_c_ChangedOwnedStateBase_f_read_args_c_ChangedOwnedStateBase_ret_Int(this: Ref): Ref
@@ -2743,7 +2828,12 @@ function g_data(this: Ref): Ref
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate Reading_unique(this: Ref) {
@@ -2768,6 +2858,7 @@ function Reading_f_read(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function c_ChangedOwnedStateBase_c_ChangedOwnedStateBase_f_read_args_c_ChangedOwnedStateBase_ret_Int(this: Ref): Ref
@@ -2820,7 +2911,12 @@ predicate ChangedOwnedStateLaw_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate Reading_unique(this: Ref) {
@@ -2889,6 +2985,7 @@ function Reading_f_read(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function c_ChangedOwnedStateBase_c_ChangedOwnedStateBase_f_read_args_c_ChangedOwnedStateBase_ret_Int(this: Ref): Ref
@@ -2941,7 +3038,12 @@ predicate ChangedOwnedStateLaw_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate Reading_unique(this: Ref) {

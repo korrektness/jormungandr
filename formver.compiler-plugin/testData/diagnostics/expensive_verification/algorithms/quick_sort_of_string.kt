@@ -84,6 +84,9 @@ fun String.<!VIPER_TEXT!>quickSortRec<!>(minVal: Char, maxVal: Char): String {
     while (i < length) {
         loopInvariants {
             0 <= i && i <= length
+            lessString.length <= i
+            greaterString.length <= i - lessString.length
+            eqString.length <= i - lessString.length - greaterString.length
             lessString.length + greaterString.length + eqString.length == i
             forAll<Int> {
                 (0 <= it && it < lessString.length) implies

@@ -1,14 +1,16 @@
 /binary_search.kt: info: Generated Viper text for safe_binary_search:
 field p_size: Ref
 
-method get(this: Ref, index: Ref) returns (ret_2: Ref)
+method get(this: Ref, par_index: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), List())
   requires acc(this.p_size, write)
+  requires isSubtype(typeOf(this.p_size), intType())
   requires intFromRef(this.p_size) >= 0
-  requires isSubtype(typeOf(index), intType())
-  requires intFromRef(index) >= 0
-  requires intFromRef(this.p_size) > intFromRef(index)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0
+  requires intFromRef(this.p_size) > intFromRef(par_index)
   ensures acc(this.p_size, write)
+  ensures isSubtype(typeOf(this.p_size), intType())
   ensures intFromRef(this.p_size) >= 0
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
@@ -17,8 +19,10 @@ method get(this: Ref, index: Ref) returns (ret_2: Ref)
 method isEmpty(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), List())
   requires acc(this.p_size, write)
+  requires isSubtype(typeOf(this.p_size), intType())
   requires intFromRef(this.p_size) >= 0
   ensures acc(this.p_size, write)
+  ensures isSubtype(typeOf(this.p_size), intType())
   ensures intFromRef(this.p_size) >= 0
   ensures isSubtype(typeOf(ret_1), boolType())
   ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
@@ -29,9 +33,11 @@ method isEmpty(this: Ref) returns (ret_1: Ref)
 method safe_binary_search(arr: Ref, target: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(arr), List())
   requires acc(arr.p_size, write)
+  requires isSubtype(typeOf(arr.p_size), intType())
   requires intFromRef(arr.p_size) >= 0
   requires isSubtype(typeOf(target), intType())
   ensures acc(arr.p_size, write)
+  ensures isSubtype(typeOf(arr.p_size), intType())
   ensures intFromRef(arr.p_size) >= 0
   ensures isSubtype(typeOf(v_ret_0), boolType())
 {
@@ -74,6 +80,7 @@ method subList(this: Ref, fromIndex: Ref, toIndex: Ref)
   returns (ret_3: Ref)
   requires isSubtype(typeOf(this), List())
   requires acc(this.p_size, write)
+  requires isSubtype(typeOf(this.p_size), intType())
   requires intFromRef(this.p_size) >= 0
   requires isSubtype(typeOf(fromIndex), intType())
   requires isSubtype(typeOf(toIndex), intType())
@@ -81,26 +88,32 @@ method subList(this: Ref, fromIndex: Ref, toIndex: Ref)
   requires intFromRef(fromIndex) >= 0
   requires intFromRef(toIndex) <= intFromRef(this.p_size)
   ensures acc(this.p_size, write)
+  ensures isSubtype(typeOf(this.p_size), intType())
   ensures intFromRef(this.p_size) >= 0
   ensures isSubtype(typeOf(ret_3), List())
   ensures acc(ret_3.p_size, write)
+  ensures isSubtype(typeOf(ret_3.p_size), intType())
   ensures intFromRef(ret_3.p_size) >= 0
   ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
   ensures intFromRef(ret_3.p_size) ==
-    intFromRef(toIndex) - intFromRef(fromIndex)
+    (let anon_builtin ==
+      (minusInts(toIndex, fromIndex)) in
+      intFromRef(toIndex) - intFromRef(fromIndex))
 
 
 /binary_search.kt: info: Generated Viper text for unsafe_binary_search_fixed:
 field size: Ref
 
-method get(this: Ref, index: Ref) returns (ret_1: Ref)
+method get(this: Ref, par_index: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), List())
   requires acc(this.size, write)
+  requires isSubtype(typeOf(this.size), intType())
   requires intFromRef(this.size) >= 0
-  requires isSubtype(typeOf(index), intType())
-  requires intFromRef(index) >= 0
-  requires intFromRef(this.size) > intFromRef(index)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0
+  requires intFromRef(this.size) > intFromRef(par_index)
   ensures acc(this.size, write)
+  ensures isSubtype(typeOf(this.size), intType())
   ensures intFromRef(this.size) >= 0
   ensures isSubtype(typeOf(ret_1), intType())
   ensures intFromRef(this.size) == old(intFromRef(this.size))
@@ -110,11 +123,13 @@ method unsafe_binary_search_fixed(arr: Ref, target: Ref, left: Ref, right: Ref)
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(arr), List())
   requires acc(arr.size, write)
+  requires isSubtype(typeOf(arr.size), intType())
   requires intFromRef(arr.size) >= 0
   requires isSubtype(typeOf(target), intType())
   requires isSubtype(typeOf(left), intType())
   requires isSubtype(typeOf(right), intType())
   ensures acc(arr.size, write)
+  ensures isSubtype(typeOf(arr.size), intType())
   ensures intFromRef(arr.size) >= 0
   ensures isSubtype(typeOf(v_ret_0), boolType())
 {

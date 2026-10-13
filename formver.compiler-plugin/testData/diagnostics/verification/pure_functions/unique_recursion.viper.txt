@@ -18,15 +18,61 @@ function length(n: Ref): Ref
         plusInts(intToRef(1), length(anon_3_0)))))
 }
 
+/unique_recursion.kt: info: Generated Viper text for capLength:
+function capLength(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+/unique_recursion.kt: info: Generated Viper text for cappedLength:
+field next: Ref
+
+field value: Ref
+
+function capLength(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedLength(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_3_0 ==
+        (n.next) in
+        capLength(plusInts(intToRef(1), cappedLength(anon_3_0))))))
+}
+
 /unique_recursion.kt: info: Generated Viper text for appendGhost:
 field bf_next: Ref
 
 field bf_value: Ref
 
-function length(n: Ref): Ref
+function capLength(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedLength(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
   ensures n == nullValue() ==> result == intToRef(0)
   decreases n != nullValue(), Node_unique(n)
 {
@@ -35,7 +81,7 @@ function length(n: Ref): Ref
     (unfolding acc(Node_unique(n), write) in
       (let anon_3_0 ==
         (n.bf_next) in
-        plusInts(intToRef(1), length(anon_3_0)))))
+        capLength(plusInts(intToRef(1), cappedLength(anon_3_0))))))
 }
 
 method appendGhost(l: Ref, par_v: Ref, n: Ref) returns (v_ret_0: Ref)
@@ -43,13 +89,17 @@ method appendGhost(l: Ref, par_v: Ref, n: Ref) returns (v_ret_0: Ref)
   requires l != nullValue() ==> acc(Node_unique(l), write)
   requires isSubtype(typeOf(par_v), intType())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(length(l)) == intFromRef(n)
+  requires intFromRef(cappedLength(l)) == intFromRef(n) &&
+    intFromRef(n) < 1000000
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(length(v_ret_0)) == intFromRef(n) + 1
+  ensures intFromRef(cappedLength(v_ret_0)) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 {
-  var anon_4: Ref
-  var anon_5: Ref
+  var anon_7: Ref
+  var anon_8: Ref
   if (l == nullValue()) {
     v_ret_0 := con(par_v, nullValue())
     fold acc(Node_unique(v_ret_0), write)
@@ -58,9 +108,80 @@ method appendGhost(l: Ref, par_v: Ref, n: Ref) returns (v_ret_0: Ref)
   if (l != nullValue()) {
     unfold acc(Node_unique(l), write)
   }
-  anon_5 := l.bf_next
-  anon_4 := appendGhost(anon_5, par_v, minusInts(n, intToRef(1)))
-  l.bf_next := anon_4
+  anon_8 := l.bf_next
+  anon_7 := appendGhost(anon_8, par_v, minusInts(n, intToRef(1)))
+  l.bf_next := anon_7
+  if (l != nullValue()) {
+    fold acc(Node_unique(l), write)
+  }
+  v_ret_0 := l
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con(par_value: Ref, par_next: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  ensures isSubtype(typeOf(ret_5), Node())
+  ensures isSubtype(typeOf(ret_5), Node()) && acc(ret_5.bf_value, write) &&
+    isSubtype(typeOf(ret_5.bf_value), intType()) &&
+    acc(ret_5.bf_next, write) &&
+    isSubtype(typeOf(ret_5.bf_next), nullable(Node()))
+  ensures intFromRef(ret_5.bf_value) == intFromRef(par_value)
+  ensures ret_5.bf_next == par_next
+
+
+/unique_recursion.kt: info: Generated Viper text for append:
+field bf_next: Ref
+
+field bf_value: Ref
+
+function capLength(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedLength(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_3_0 ==
+        (n.bf_next) in
+        capLength(plusInts(intToRef(1), cappedLength(anon_3_0))))))
+}
+
+method append(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), nullable(Node()))
+  requires l != nullValue() ==> acc(Node_unique(l), write)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures acc(Node_unique(v_ret_0), write)
+  ensures intFromRef(cappedLength(v_ret_0)) ==
+    intFromRef(capLength(plusInts(old(cappedLength(l)), intToRef(1))))
+{
+  var anon_7: Ref
+  var anon_8: Ref
+  if (l == nullValue()) {
+    v_ret_0 := con(par_v, nullValue())
+    fold acc(Node_unique(v_ret_0), write)
+    goto lbl_ret_0
+  }
+  if (l != nullValue()) {
+    unfold acc(Node_unique(l), write)
+  }
+  anon_8 := l.bf_next
+  anon_7 := append(anon_8, par_v)
+  l.bf_next := anon_7
   if (l != nullValue()) {
     fold acc(Node_unique(l), write)
   }
@@ -81,76 +202,24 @@ method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
   ensures ret_4.bf_next == par_next
 
 
-/unique_recursion.kt: info: Generated Viper text for append:
-field bf_next: Ref
-
-field bf_value: Ref
-
-function length(n: Ref): Ref
-  requires isSubtype(typeOf(n), nullable(Node()))
-  requires n != nullValue() ==> acc(Node_unique(n), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures n == nullValue() ==> result == intToRef(0)
-  decreases n != nullValue(), Node_unique(n)
-{
-  (n == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(Node_unique(n), write) in
-      (let anon_3_0 ==
-        (n.bf_next) in
-        plusInts(intToRef(1), length(anon_3_0)))))
-}
-
-method append(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(l), nullable(Node()))
-  requires l != nullValue() ==> acc(Node_unique(l), write)
-  requires isSubtype(typeOf(par_v), intType())
-  ensures isSubtype(typeOf(v_ret_0), Node())
-  ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(length(v_ret_0)) == old(intFromRef(length(l))) + 1
-{
-  var anon_4: Ref
-  var anon_5: Ref
-  if (l == nullValue()) {
-    v_ret_0 := con(par_v, nullValue())
-    fold acc(Node_unique(v_ret_0), write)
-    goto lbl_ret_0
-  }
-  if (l != nullValue()) {
-    unfold acc(Node_unique(l), write)
-  }
-  anon_5 := l.bf_next
-  anon_4 := append(anon_5, par_v)
-  l.bf_next := anon_4
-  if (l != nullValue()) {
-    fold acc(Node_unique(l), write)
-  }
-  v_ret_0 := l
-  goto lbl_ret_0
-  label lbl_ret_0
-}
-
-method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
-  requires isSubtype(typeOf(par_value), intType())
-  requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
-    isSubtype(typeOf(ret_3.bf_value), intType()) &&
-    acc(ret_3.bf_next, write) &&
-    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
-  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
-  ensures ret_3.bf_next == par_next
-
-
 /unique_recursion.kt: info: Generated Viper text for incAllRec:
 field next: Ref
 
 field value: Ref
 
-function length(n: Ref): Ref
+function capLength(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedLength(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
   ensures n == nullValue() ==> result == intToRef(0)
   decreases n != nullValue(), Node_unique(n)
 {
@@ -159,7 +228,7 @@ function length(n: Ref): Ref
     (unfolding acc(Node_unique(n), write) in
       (let anon_3_0 ==
         (n.next) in
-        plusInts(intToRef(1), length(anon_3_0)))))
+        capLength(plusInts(intToRef(1), cappedLength(anon_3_0))))))
 }
 
 method incAllRec(l: Ref) returns (v_ret_0: Ref)
@@ -167,11 +236,12 @@ method incAllRec(l: Ref) returns (v_ret_0: Ref)
   requires l != nullValue() ==> acc(Node_unique(l), write)
   ensures isSubtype(typeOf(v_ret_0), nullable(Node()))
   ensures v_ret_0 != nullValue() ==> acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(length(v_ret_0)) == old(intFromRef(length(l)))
+  ensures intFromRef(cappedLength(v_ret_0)) ==
+    old(intFromRef(cappedLength(l)))
 {
-  var anon_4: Ref
-  var anon_5: Ref
-  var anon_6: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  var anon_9: Ref
   if (l == nullValue()) {
     v_ret_0 := nullValue()
     goto lbl_ret_0
@@ -179,11 +249,11 @@ method incAllRec(l: Ref) returns (v_ret_0: Ref)
   if (l != nullValue()) {
     unfold acc(Node_unique(l), write)
   }
-  anon_4 := l.value
-  l.value := plusInts(anon_4, intToRef(1))
-  anon_6 := l.next
-  anon_5 := incAllRec(anon_6)
-  l.next := anon_5
+  anon_7 := l.value
+  l.value := plusInts(anon_7, intToRef(1))
+  anon_9 := l.next
+  anon_8 := incAllRec(anon_9)
+  l.next := anon_8
   if (l != nullValue()) {
     fold acc(Node_unique(l), write)
   }
@@ -197,10 +267,19 @@ field bf_next: Ref
 
 field bf_value: Ref
 
-function length(n: Ref): Ref
+function capLength(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedLength(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
   ensures n == nullValue() ==> result == intToRef(0)
   decreases n != nullValue(), Node_unique(n)
 {
@@ -209,19 +288,19 @@ function length(n: Ref): Ref
     (unfolding acc(Node_unique(n), write) in
       (let anon_3_0 ==
         (n.bf_next) in
-        plusInts(intToRef(1), length(anon_3_0)))))
+        capLength(plusInts(intToRef(1), cappedLength(anon_3_0))))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
-    isSubtype(typeOf(ret_3.bf_value), intType()) &&
-    acc(ret_3.bf_next, write) &&
-    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
-  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
-  ensures ret_3.bf_next == par_next
+  ensures isSubtype(typeOf(ret_4), Node())
+  ensures isSubtype(typeOf(ret_4), Node()) && acc(ret_4.bf_value, write) &&
+    isSubtype(typeOf(ret_4.bf_value), intType()) &&
+    acc(ret_4.bf_next, write) &&
+    isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method prepend(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -230,7 +309,8 @@ method prepend(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(length(v_ret_0)) == old(intFromRef(length(l))) + 1
+  ensures intFromRef(cappedLength(v_ret_0)) ==
+    intFromRef(capLength(plusInts(old(cappedLength(l)), intToRef(1))))
 {
   v_ret_0 := con(par_v, l)
   fold acc(Node_unique(v_ret_0), write)
@@ -238,48 +318,76 @@ method prepend(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
+/unique_recursion.kt: info: Generated Viper text for prefixLength:
+field next: Ref
+
+field value: Ref
+
+function prefixLength(n: Ref, budget: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(budget)
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases intFromRef(budget)
+{
+  (n == nullValue() || intFromRef(budget) == 0 ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_0_0 ==
+        (n.next) in
+        plusInts(intToRef(1), prefixLength(anon_0_0, minusInts(budget, intToRef(1)))))))
+}
+
 /unique_recursion.kt: info: Generated Viper text for twoNodes:
 field bf_next: Ref
 
 field bf_value: Ref
 
-function length(n: Ref): Ref
+function prefixLength(n: Ref, budget: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(budget)
   ensures n == nullValue() ==> result == intToRef(0)
-  decreases n != nullValue(), Node_unique(n)
+  decreases intFromRef(budget)
 {
-  (n == nullValue() ?
+  (n == nullValue() || intFromRef(budget) == 0 ?
     intToRef(0) :
     (unfolding acc(Node_unique(n), write) in
-      (let anon_3_0 ==
+      (let anon_0_0 ==
         (n.bf_next) in
-        plusInts(intToRef(1), length(anon_3_0)))))
+        plusInts(intToRef(1), prefixLength(anon_0_0, minusInts(budget, intToRef(1)))))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
-    isSubtype(typeOf(ret_3.bf_value), intType()) &&
-    acc(ret_3.bf_next, write) &&
-    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
-  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
-  ensures ret_3.bf_next == par_next
+  ensures isSubtype(typeOf(ret_4), Node())
+  ensures isSubtype(typeOf(ret_4), Node()) && acc(ret_4.bf_value, write) &&
+    isSubtype(typeOf(ret_4.bf_value), intType()) &&
+    acc(ret_4.bf_next, write) &&
+    isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method twoNodes(par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(length(v_ret_0)) == 2
+  ensures intFromRef(prefixLength(v_ret_0, intToRef(2))) == 2
 {
-  var anon_4: Ref
-  anon_4 := con(par_v, nullValue())
-  fold acc(Node_unique(anon_4), write)
-  v_ret_0 := con(par_v, anon_4)
+  var anon_1: Ref
+  anon_1 := con(par_v, nullValue())
+  fold acc(Node_unique(anon_1), write)
+  v_ret_0 := con(par_v, anon_1)
   fold acc(Node_unique(v_ret_0), write)
   goto lbl_ret_0
   label lbl_ret_0
@@ -399,19 +507,23 @@ function next(this: Ref): Ref
   decreases _
 
 
-function vLength(n: Ref): Ref
+function prefixVLength(n: Ref, budget: Ref): Ref
   requires isSubtype(typeOf(n), nullable(VNode()))
   requires n != nullValue() ==> acc(VNode_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(budget)
   ensures n == nullValue() ==> result == intToRef(0)
-  decreases n != nullValue(), VNode_unique(n)
+  decreases intFromRef(budget)
 {
-  (n == nullValue() ?
+  (n == nullValue() || intFromRef(budget) == 0 ?
     intToRef(0) :
     (unfolding acc(VNode_unique(n), write) in
-      (let anon_3_0 ==
+      (let anon_0_0 ==
         (next(n)) in
-        plusInts(intToRef(1), vLength(anon_3_0)))))
+        plusInts(intToRef(1), prefixVLength(anon_0_0, minusInts(budget, intToRef(1)))))))
 }
 
 function value(this: Ref): Ref
@@ -424,16 +536,52 @@ method vTail(l: Ref, n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(l), VNode())
   requires acc(VNode_unique(l), write)
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(vLength(l)) == intFromRef(n)
+  requires intFromRef(n) > 0 &&
+    intFromRef(prefixVLength(l, n)) == intFromRef(n)
   ensures isSubtype(typeOf(v_ret_0), nullable(VNode()))
   ensures v_ret_0 != nullValue() ==> acc(VNode_unique(v_ret_0), write)
-  ensures intFromRef(vLength(v_ret_0)) == intFromRef(n) - 1
+  ensures intFromRef(prefixVLength(v_ret_0, minusInts(n, intToRef(1)))) ==
+    (let anon_builtin ==
+      (minusInts(n, intToRef(1))) in
+      intFromRef(n) - intFromRef(intToRef(1)))
 {
   unfold acc(VNode_unique(l), write)
   v_ret_0 := next(l)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/unique_recursion.kt: info: Generated Viper text for prefixVLength:
+function next(this: Ref): Ref
+  requires isSubtype(typeOf(this), VNode())
+  ensures isSubtype(typeOf(result), nullable(VNode()))
+  decreases _
+
+
+function prefixVLength(n: Ref, budget: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(VNode()))
+  requires n != nullValue() ==> acc(VNode_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(budget)
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases intFromRef(budget)
+{
+  (n == nullValue() || intFromRef(budget) == 0 ?
+    intToRef(0) :
+    (unfolding acc(VNode_unique(n), write) in
+      (let anon_0_0 ==
+        (next(n)) in
+        plusInts(intToRef(1), prefixVLength(anon_0_0, minusInts(budget, intToRef(1)))))))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), VNode())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
 
 /unique_recursion.kt: info: Generated Viper text for valueOr:
 field next: Ref
@@ -458,38 +606,42 @@ field bf_next: Ref
 
 field bf_value: Ref
 
-function length(n: Ref): Ref
+function prefixLength(n: Ref, budget: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(budget)
   ensures n == nullValue() ==> result == intToRef(0)
-  decreases n != nullValue(), Node_unique(n)
+  decreases intFromRef(budget)
 {
-  (n == nullValue() ?
+  (n == nullValue() || intFromRef(budget) == 0 ?
     intToRef(0) :
     (unfolding acc(Node_unique(n), write) in
-      (let anon_3_0 ==
+      (let anon_0_0 ==
         (n.bf_next) in
-        plusInts(intToRef(1), length(anon_3_0)))))
+        plusInts(intToRef(1), prefixLength(anon_0_0, minusInts(budget, intToRef(1)))))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
-    isSubtype(typeOf(ret_3.bf_value), intType()) &&
-    acc(ret_3.bf_next, write) &&
-    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
-  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
-  ensures ret_3.bf_next == par_next
+  ensures isSubtype(typeOf(ret_4), Node())
+  ensures isSubtype(typeOf(ret_4), Node()) && acc(ret_4.bf_value, write) &&
+    isSubtype(typeOf(ret_4.bf_value), intType()) &&
+    acc(ret_4.bf_next, write) &&
+    isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method oneNode(par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(length(v_ret_0)) == 1
+  ensures intFromRef(prefixLength(v_ret_0, intToRef(1))) == 1
 {
   v_ret_0 := con(par_v, nullValue())
   fold acc(Node_unique(v_ret_0), write)
@@ -519,26 +671,40 @@ function sum(n: Ref): Ref
           plusInts(anon_0_0, sum(anon_1_0))))))
 }
 
+/unique_recursion.kt: info: Generated Viper text for leafSum:
+field next: Ref
+
+field value: Ref
+
+function leafSum(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires n == nullValue() ||
+    (unfolding acc(Node_unique(n), write) in n.next == nullValue())
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in n.value))
+}
+
 /unique_recursion.kt: info: Generated Viper text for oneSum:
 field bf_next: Ref
 
 field bf_value: Ref
 
-function sum(n: Ref): Ref
+function leafSum(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires n == nullValue() ||
+    (unfolding acc(Node_unique(n), write) in n.bf_next == nullValue())
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
-  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
-    (unfolding acc(Node_unique(n), write) in
-      (let anon_0_0 ==
-        (n.bf_value) in
-        (let anon_1_0 ==
-          (n.bf_next) in
-          plusInts(anon_0_0, sum(anon_1_0))))))
+    (unfolding acc(Node_unique(n), write) in n.bf_value))
 }
 
 method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
@@ -557,10 +723,17 @@ method oneSum(par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(sum(v_ret_0)) == intFromRef(par_v)
+  ensures (unfolding acc(Node_unique(v_ret_0), write) in
+      v_ret_0.bf_next == nullValue())
+  ensures intFromRef(leafSum(v_ret_0)) == intFromRef(par_v)
 {
-  v_ret_0 := con(par_v, nullValue())
-  fold acc(Node_unique(v_ret_0), write)
+  var node: Ref
+  node := con(par_v, nullValue())
+  fold acc(Node_unique(node), write)
+  unfold acc(Node_unique(node), write)
+  node.bf_next := nullValue()
+  fold acc(Node_unique(node), write)
+  v_ret_0 := node
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -586,44 +759,90 @@ function lengthFrom(k: Ref, n: Ref): Ref
         lengthFrom(plusInts(k, intToRef(1)), anon_3_0))))
 }
 
+/unique_recursion.kt: info: Generated Viper text for prefixLengthFrom:
+field next: Ref
+
+field value: Ref
+
+function prefixLengthFrom(k: Ref, n: Ref, budget: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0 &&
+    intFromRef(k) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), budget)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(budget))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(k) <= intFromRef(result) &&
+    intFromRef(result) <=
+    (let anon_builtin ==
+      (plusInts(k, budget)) in
+      intFromRef(k) + intFromRef(budget))
+  ensures n == nullValue() ==> result == k
+  decreases intFromRef(budget)
+{
+  (n == nullValue() || intFromRef(budget) == 0 ?
+    k :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_0_0 ==
+        (n.next) in
+        prefixLengthFrom(plusInts(k, intToRef(1)), anon_0_0, minusInts(budget,
+        intToRef(1))))))
+}
+
 /unique_recursion.kt: info: Generated Viper text for oneFrom:
 field bf_next: Ref
 
 field bf_value: Ref
 
-function lengthFrom(k: Ref, n: Ref): Ref
+function prefixLengthFrom(k: Ref, n: Ref, budget: Ref): Ref
   requires isSubtype(typeOf(k), intType())
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0 &&
+    intFromRef(k) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), budget)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(budget))
   ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(k) <= intFromRef(result) &&
+    intFromRef(result) <=
+    (let anon_builtin ==
+      (plusInts(k, budget)) in
+      intFromRef(k) + intFromRef(budget))
   ensures n == nullValue() ==> result == k
-  decreases n != nullValue(), Node_unique(n)
+  decreases intFromRef(budget)
 {
-  (n == nullValue() ?
+  (n == nullValue() || intFromRef(budget) == 0 ?
     k :
     (unfolding acc(Node_unique(n), write) in
-      (let anon_3_0 ==
+      (let anon_0_0 ==
         (n.bf_next) in
-        lengthFrom(plusInts(k, intToRef(1)), anon_3_0))))
+        prefixLengthFrom(plusInts(k, intToRef(1)), anon_0_0, minusInts(budget,
+        intToRef(1))))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
-    isSubtype(typeOf(ret_3.bf_value), intType()) &&
-    acc(ret_3.bf_next, write) &&
-    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
-  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
-  ensures ret_3.bf_next == par_next
+  ensures isSubtype(typeOf(ret_4), Node())
+  ensures isSubtype(typeOf(ret_4), Node()) && acc(ret_4.bf_value, write) &&
+    isSubtype(typeOf(ret_4.bf_value), intType()) &&
+    acc(ret_4.bf_next, write) &&
+    isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method oneFrom(par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(lengthFrom(intToRef(0), v_ret_0)) == 1
+  ensures intFromRef(prefixLengthFrom(intToRef(0), v_ret_0, intToRef(1))) ==
+    1
 {
   v_ret_0 := con(par_v, nullValue())
   fold acc(Node_unique(v_ret_0), write)
@@ -704,43 +923,77 @@ field bf_next: Ref
 
 field bf_value: Ref
 
-function lengthWhen(n: Ref): Ref
+function prefixLengthWhen(n: Ref, budget: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(budget)
   ensures n == nullValue() ==> result == intToRef(0)
-  decreases n != nullValue(), Node_unique(n)
+  decreases intFromRef(budget)
 {
   (n == nullValue() ?
     intToRef(0) :
     (unfolding acc(Node_unique(n), write) in
-      (let anon_4_0 ==
-        (n.bf_next) in
-        plusInts(intToRef(1), lengthWhen(anon_4_0)))))
+      (intFromRef(budget) == 0 ?
+        intToRef(0) :
+        (let anon_6_0 ==
+          (n.bf_next) in
+          plusInts(intToRef(1), prefixLengthWhen(anon_6_0, minusInts(budget,
+          intToRef(1))))))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
-    isSubtype(typeOf(ret_3.bf_value), intType()) &&
-    acc(ret_3.bf_next, write) &&
-    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
-  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
-  ensures ret_3.bf_next == par_next
+  ensures isSubtype(typeOf(ret_4), Node())
+  ensures isSubtype(typeOf(ret_4), Node()) && acc(ret_4.bf_value, write) &&
+    isSubtype(typeOf(ret_4.bf_value), intType()) &&
+    acc(ret_4.bf_next, write) &&
+    isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method oneNodeWhen(par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(lengthWhen(v_ret_0)) == 1
+  ensures intFromRef(prefixLengthWhen(v_ret_0, intToRef(1))) == 1
 {
   v_ret_0 := con(par_v, nullValue())
   fold acc(Node_unique(v_ret_0), write)
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/unique_recursion.kt: info: Generated Viper text for prefixLengthWhen:
+field next: Ref
+
+field value: Ref
+
+function prefixLengthWhen(n: Ref, budget: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(budget)
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases intFromRef(budget)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (intFromRef(budget) == 0 ?
+        intToRef(0) :
+        (let anon_6_0 ==
+          (n.next) in
+          plusInts(intToRef(1), prefixLengthWhen(anon_6_0, minusInts(budget,
+          intToRef(1))))))))
 }
 
 /unique_recursion.kt: info: Generated Viper text for lengthPlus:
@@ -752,6 +1005,7 @@ function lengthPlus(n: Ref, k: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   requires isSubtype(typeOf(k), intType())
+  requires intFromRef(k) < 2147483647
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == plusInts(k, intToRef(1))
   decreases n != nullValue(), Node_unique(n)
@@ -764,45 +1018,108 @@ function lengthPlus(n: Ref, k: Ref): Ref
         plusInts(intToRef(1), lengthPlus(anon_3_0, k)))))
 }
 
+/unique_recursion.kt: info: Generated Viper text for prefixLengthPlus:
+field next: Ref
+
+field value: Ref
+
+function prefixLength(n: Ref, budget: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(budget)
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases intFromRef(budget)
+{
+  (n == nullValue() || intFromRef(budget) == 0 ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_0_0 ==
+        (n.next) in
+        plusInts(intToRef(1), prefixLength(anon_0_0, minusInts(budget, intToRef(1)))))))
+}
+
+function prefixLengthPlus(n: Ref, k: Ref, budget: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(k), intType())
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0 &&
+    intFromRef(k) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483646), budget)) in
+      intFromRef(intToRef(2147483646)) - intFromRef(budget))
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  plusInts(plusInts(k, intToRef(1)), prefixLength(n, budget))
+}
+
 /unique_recursion.kt: info: Generated Viper text for oneNodePlus:
 field bf_next: Ref
 
 field bf_value: Ref
 
-function lengthPlus(n: Ref, k: Ref): Ref
+function prefixLength(n: Ref, budget: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    intFromRef(result) <= intFromRef(budget)
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases intFromRef(budget)
+{
+  (n == nullValue() || intFromRef(budget) == 0 ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_0_0 ==
+        (n.bf_next) in
+        plusInts(intToRef(1), prefixLength(anon_0_0, minusInts(budget, intToRef(1)))))))
+}
+
+function prefixLengthPlus(n: Ref, k: Ref, budget: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   requires isSubtype(typeOf(k), intType())
+  requires isSubtype(typeOf(budget), intType())
+  requires intFromRef(budget) >= 0 &&
+    intFromRef(k) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483646), budget)) in
+      intFromRef(intToRef(2147483646)) - intFromRef(budget))
   ensures isSubtype(typeOf(result), intType())
-  ensures n == nullValue() ==> result == plusInts(k, intToRef(1))
-  decreases n != nullValue(), Node_unique(n)
+  decreases _
 {
-  (n == nullValue() ?
-    plusInts(k, intToRef(1)) :
-    (unfolding acc(Node_unique(n), write) in
-      (let anon_3_0 ==
-        (n.bf_next) in
-        plusInts(intToRef(1), lengthPlus(anon_3_0, k)))))
+  plusInts(plusInts(k, intToRef(1)), prefixLength(n, budget))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
-    isSubtype(typeOf(ret_3.bf_value), intType()) &&
-    acc(ret_3.bf_next, write) &&
-    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
-  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
-  ensures ret_3.bf_next == par_next
+  ensures isSubtype(typeOf(ret_6), Node())
+  ensures isSubtype(typeOf(ret_6), Node()) && acc(ret_6.bf_value, write) &&
+    isSubtype(typeOf(ret_6.bf_value), intType()) &&
+    acc(ret_6.bf_next, write) &&
+    isSubtype(typeOf(ret_6.bf_next), nullable(Node()))
+  ensures intFromRef(ret_6.bf_value) == intFromRef(par_value)
+  ensures ret_6.bf_next == par_next
 
 
 method oneNodePlus(par_v: Ref, k: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   requires isSubtype(typeOf(k), intType())
+  requires intFromRef(k) <= 2147483645
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(lengthPlus(v_ret_0, k)) == intFromRef(k) + 2
+  ensures intFromRef(prefixLengthPlus(v_ret_0, k, intToRef(1))) ==
+    (let anon_builtin ==
+      (plusInts(k, intToRef(2))) in
+      intFromRef(k) + intFromRef(intToRef(2)))
 {
   v_ret_0 := con(par_v, nullValue())
   fold acc(Node_unique(v_ret_0), write)
@@ -819,6 +1136,7 @@ function sumFrom(n: Ref, k: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   requires isSubtype(typeOf(k), intType())
+  requires -1073741824 <= intFromRef(k) && intFromRef(k) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == timesInts(k, intToRef(2))
   decreases n != nullValue(), Node_unique(n)
@@ -833,50 +1151,169 @@ function sumFrom(n: Ref, k: Ref): Ref
           plusInts(anon_0_0, sumFrom(anon_1_0, k))))))
 }
 
+/unique_recursion.kt: info: Generated Viper text for leafSumFrom:
+field next: Ref
+
+field value: Ref
+
+function leafSumFrom(n: Ref, k: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  requires isSubtype(typeOf(k), intType())
+  requires -1073741824 <= intFromRef(k) && intFromRef(k) <= 1073741823
+  requires n == nullValue() ||
+    (unfolding acc(Node_unique(n), write) in n.next == nullValue())
+  requires n == nullValue() ||
+    (unfolding acc(Node_unique(n), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(n.value), timesLongLong(longToRef(2),
+        convertIntToLong(k)))) in
+        longFromRef(convertIntToLong(n.value)) +
+        longFromRef(timesLongLong(longToRef(2), convertIntToLong(k)))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(n.value), timesLongLong(longToRef(2),
+          convertIntToLong(k)))) in
+          longFromRef(convertIntToLong(n.value)) +
+          longFromRef(timesLongLong(longToRef(2), convertIntToLong(k)))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(Node_unique(n), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(n.value), timesLongLong(longToRef(2),
+        convertIntToLong(k)))) in
+        longFromRef(convertIntToLong(n.value)) +
+        longFromRef(timesLongLong(longToRef(2), convertIntToLong(k)))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(n.value), timesLongLong(longToRef(2),
+          convertIntToLong(k)))) in
+          longFromRef(convertIntToLong(n.value)) +
+          longFromRef(timesLongLong(longToRef(2), convertIntToLong(k)))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==>
+    result == (let base_0 == (timesInts(k, intToRef(2))) in base_0)
+{
+  (let base_0 ==
+    (timesInts(k, intToRef(2))) in
+    (n == nullValue() ?
+      base_0 :
+      (unfolding acc(Node_unique(n), write) in
+        (let anon_3_0 ==
+          (n.value) in
+          plusInts(anon_3_0, base_0)))))
+}
+
 /unique_recursion.kt: info: Generated Viper text for oneNodeSum:
 field bf_next: Ref
 
 field bf_value: Ref
 
-function sumFrom(n: Ref, k: Ref): Ref
+function leafSumFrom(n: Ref, k: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   requires isSubtype(typeOf(k), intType())
-  ensures isSubtype(typeOf(result), intType())
-  ensures n == nullValue() ==> result == timesInts(k, intToRef(2))
-  decreases n != nullValue(), Node_unique(n)
-{
-  (n == nullValue() ?
-    timesInts(k, intToRef(2)) :
+  requires -1073741824 <= intFromRef(k) && intFromRef(k) <= 1073741823
+  requires n == nullValue() ||
+    (unfolding acc(Node_unique(n), write) in n.bf_next == nullValue())
+  requires n == nullValue() ||
     (unfolding acc(Node_unique(n), write) in
-      (let anon_0_0 ==
-        (n.bf_value) in
-        (let anon_1_0 ==
-          (n.bf_next) in
-          plusInts(anon_0_0, sumFrom(anon_1_0, k))))))
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(n.bf_value), timesLongLong(longToRef(2),
+        convertIntToLong(k)))) in
+        longFromRef(convertIntToLong(n.bf_value)) +
+        longFromRef(timesLongLong(longToRef(2), convertIntToLong(k)))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(n.bf_value), timesLongLong(longToRef(2),
+          convertIntToLong(k)))) in
+          longFromRef(convertIntToLong(n.bf_value)) +
+          longFromRef(timesLongLong(longToRef(2), convertIntToLong(k)))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(Node_unique(n), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(n.bf_value), timesLongLong(longToRef(2),
+        convertIntToLong(k)))) in
+        longFromRef(convertIntToLong(n.bf_value)) +
+        longFromRef(timesLongLong(longToRef(2), convertIntToLong(k)))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(n.bf_value), timesLongLong(longToRef(2),
+          convertIntToLong(k)))) in
+          longFromRef(convertIntToLong(n.bf_value)) +
+          longFromRef(timesLongLong(longToRef(2), convertIntToLong(k)))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==>
+    result == (let base_0 == (timesInts(k, intToRef(2))) in base_0)
+{
+  (let base_0 ==
+    (timesInts(k, intToRef(2))) in
+    (n == nullValue() ?
+      base_0 :
+      (unfolding acc(Node_unique(n), write) in
+        (let anon_3_0 ==
+          (n.bf_value) in
+          plusInts(anon_3_0, base_0)))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
-    isSubtype(typeOf(ret_3.bf_value), intType()) &&
-    acc(ret_3.bf_next, write) &&
-    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
-  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
-  ensures ret_3.bf_next == par_next
+  ensures isSubtype(typeOf(ret_4), Node())
+  ensures isSubtype(typeOf(ret_4), Node()) && acc(ret_4.bf_value, write) &&
+    isSubtype(typeOf(ret_4.bf_value), intType()) &&
+    acc(ret_4.bf_next, write) &&
+    isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method oneNodeSum(par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
+  requires intFromRef(par_v) <= 2147483641
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(sumFrom(v_ret_0, intToRef(3))) ==
-    intFromRef(par_v) + 6
+  ensures (unfolding acc(Node_unique(v_ret_0), write) in
+      v_ret_0.bf_next == nullValue())
+  ensures (unfolding acc(Node_unique(v_ret_0), write) in
+      intFromRef(v_ret_0.bf_value) == intFromRef(par_v))
+  ensures intFromRef(leafSumFrom(v_ret_0, intToRef(3))) ==
+    (let anon_builtin ==
+      (plusInts(par_v, intToRef(6))) in
+      intFromRef(par_v) + intFromRef(intToRef(6)))
 {
-  v_ret_0 := con(par_v, nullValue())
-  fold acc(Node_unique(v_ret_0), write)
+  var node: Ref
+  node := con(par_v, nullValue())
+  fold acc(Node_unique(node), write)
+  unfold acc(Node_unique(node), write)
+  node.bf_next := nullValue()
+  fold acc(Node_unique(node), write)
+  v_ret_0 := node
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -923,7 +1360,9 @@ method prependUnrolled(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
   ensures acc(Node_unique(v_ret_0), write)
   ensures intFromRef(sum(v_ret_0)) ==
     (unfolding acc(Node_unique(v_ret_0), write) in
-      intFromRef(v_ret_0.bf_value) + intFromRef(sum(v_ret_0.bf_next)))
+      (let anon_builtin ==
+        (plusInts(v_ret_0.bf_value, sum(v_ret_0.bf_next))) in
+        intFromRef(v_ret_0.bf_value) + intFromRef(sum(v_ret_0.bf_next))))
 {
   v_ret_0 := con(par_v, l)
   fold acc(Node_unique(v_ret_0), write)
@@ -956,17 +1395,64 @@ function sum(n: Ref): Ref
 method sumPlusValue(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), Node())
   requires acc(Node_unique(n), write)
+  requires ((let anon_builtin ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon_builtin ==
+      (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+        convertIntToLong(n.value)))) in
+      longFromRef(convertIntToLong(sum(n))) +
+      (unfolding acc(Node_unique(n), write) in
+        longFromRef(convertIntToLong(n.value)))) ?
+      -1 :
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+          convertIntToLong(n.value)))) in
+        longFromRef(convertIntToLong(sum(n))) +
+        (unfolding acc(Node_unique(n), write) in
+          longFromRef(convertIntToLong(n.value)))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon_builtin ==
+      (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+        convertIntToLong(n.value)))) in
+      longFromRef(convertIntToLong(sum(n))) +
+      (unfolding acc(Node_unique(n), write) in
+        longFromRef(convertIntToLong(n.value)))) <
+    2147483647 ?
+      -1 :
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+          convertIntToLong(n.value)))) in
+        longFromRef(convertIntToLong(sum(n))) +
+        (unfolding acc(Node_unique(n), write) in
+          longFromRef(convertIntToLong(n.value)))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
   ensures acc(Node_unique(n), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
-    intFromRef(sum(n)) +
-    (unfolding acc(Node_unique(n), write) in intFromRef(n.value))
-  ensures (unfolding acc(Node_unique(n), write) in
-      intFromRef(v_ret_0) - intFromRef(n.value)) ==
-    intFromRef(((unfolding acc(Node_unique(n), write) in
-      intFromRef(n.value) > 0) ?
-      sum(n) :
-      sum(n)))
+    (let anon_builtin ==
+      (plusInts(old(sum(n)), old((unfolding acc(Node_unique(n), write) in
+        n.value)))) in
+      intFromRef(old(sum(n))) +
+      intFromRef(old((unfolding acc(Node_unique(n), write) in n.value))))
+  ensures (let anon_builtin ==
+      (minusInts(v_ret_0, old((unfolding acc(Node_unique(n), write) in
+        n.value)))) in
+      intFromRef(v_ret_0) -
+      intFromRef(old((unfolding acc(Node_unique(n), write) in n.value)))) ==
+    intFromRef((old((unfolding acc(Node_unique(n), write) in
+      intFromRef(n.value))) >
+    0 ?
+      old(sum(n)) :
+      old(sum(n))))
 {
   var anon_2: Ref
   var anon_3: Ref
@@ -994,22 +1480,62 @@ function sum(n: Ref): Ref
   (n == nullValue() ?
     intToRef(0) :
     (unfolding acc(Node_unique(n), write) in
-      (let anon_1_0 ==
+      (let anon_0_0 ==
         (n.value) in
-        (let anon_2_0 ==
+        (let anon_1_0 ==
           (n.next) in
-          plusInts(anon_1_0, sum(anon_2_0))))))
+          plusInts(anon_0_0, sum(anon_1_0))))))
 }
 
 function sumAndValue(n: Ref): Ref
   requires isSubtype(typeOf(n), Node())
   requires acc(Node_unique(n), write)
+  requires ((let anon_builtin ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon_builtin ==
+      (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+        convertIntToLong(n.value)))) in
+      longFromRef(convertIntToLong(sum(n))) +
+      (unfolding acc(Node_unique(n), write) in
+        longFromRef(convertIntToLong(n.value)))) ?
+      -1 :
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+          convertIntToLong(n.value)))) in
+        longFromRef(convertIntToLong(sum(n))) +
+        (unfolding acc(Node_unique(n), write) in
+          longFromRef(convertIntToLong(n.value)))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon_builtin ==
+      (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+        convertIntToLong(n.value)))) in
+      longFromRef(convertIntToLong(sum(n))) +
+      (unfolding acc(Node_unique(n), write) in
+        longFromRef(convertIntToLong(n.value)))) <
+    2147483647 ?
+      -1 :
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+          convertIntToLong(n.value)))) in
+        longFromRef(convertIntToLong(sum(n))) +
+        (unfolding acc(Node_unique(n), write) in
+          longFromRef(convertIntToLong(n.value)))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
   ensures isSubtype(typeOf(result), intType())
   decreases _
 {
-  (let anon_0_0 ==
+  (let anon_2_0 ==
     ((unfolding acc(Node_unique(n), write) in n.value)) in
-    plusInts(sum(n), anon_0_0))
+    plusInts(sum(n), anon_2_0))
 }
 
 /unique_recursion.kt: info: Generated Viper text for valueThenSum:
@@ -1037,6 +1563,46 @@ function sum(n: Ref): Ref
 function valueThenSum(n: Ref): Ref
   requires isSubtype(typeOf(n), Node())
   requires acc(Node_unique(n), write)
+  requires ((let anon_builtin ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon_builtin ==
+      (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+        convertIntToLong(n.value)))) in
+      longFromRef(convertIntToLong(sum(n))) +
+      (unfolding acc(Node_unique(n), write) in
+        longFromRef(convertIntToLong(n.value)))) ?
+      -1 :
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+          convertIntToLong(n.value)))) in
+        longFromRef(convertIntToLong(sum(n))) +
+        (unfolding acc(Node_unique(n), write) in
+          longFromRef(convertIntToLong(n.value)))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon_builtin ==
+      (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+        convertIntToLong(n.value)))) in
+      longFromRef(convertIntToLong(sum(n))) +
+      (unfolding acc(Node_unique(n), write) in
+        longFromRef(convertIntToLong(n.value)))) <
+    2147483647 ?
+      -1 :
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(sum(n)), (unfolding acc(Node_unique(n), write) in
+          convertIntToLong(n.value)))) in
+        longFromRef(convertIntToLong(sum(n))) +
+        (unfolding acc(Node_unique(n), write) in
+          longFromRef(convertIntToLong(n.value)))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
   ensures isSubtype(typeOf(result), intType())
   decreases _
 {

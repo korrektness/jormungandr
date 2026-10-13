@@ -11,8 +11,18 @@ interface BindingView {
     @Pure @Unique
     fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int
 
+    @SpecOf("scaled") @Unique
+    fun scaledSpec(factor: Int) {
+        preconditions { -715827882 <= value() && value() <= 715827882 && 0 <= factor && factor <= 3 }
+    }
+
     @Pure @Unique
     fun <!VIPER_TEXT!>read<!>(argument: @Unique BindingArgument): Int
+
+    @SpecOf("read") @Unique
+    fun readSpec(argument: @Unique @Borrowed BindingArgument) {
+        preconditions { -2147483648L <= value().toLong() + argument.number.toLong() && value().toLong() + argument.number.toLong() <= 2147483647L }
+    }
 }
 
 open class BindingCell(var contents: Int) : BindingView {
@@ -61,6 +71,10 @@ fun <!VIPER_TEXT!>borrowBinding<!>() {
 
 @NeverConvert
 fun readBinding(view: @Unique @Borrowed BindingView): Int {
+    preconditions {
+        -715827882 <= view.value() && view.value() <= 715827882
+        -2147483648L <= view.value().toLong() + view.scaled(2).toLong() && view.value().toLong() + view.scaled(2).toLong() <= 2147483647L
+    }
     postconditions<Int> { result ->
         result == old(view.value()) + old(view.scaled(2))
         view.value() == old(view.value())

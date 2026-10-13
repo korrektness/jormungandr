@@ -15,6 +15,7 @@ fun <!VIPER_TEXT!>readFieldSafeCall<!>(c: @Unique @Borrowed Cell): Int {
 }
 
 fun <!VIPER_TEXT!>readAfterEarlyReturn<!>(b: @Unique @Borrowed Box?): Int {
+    preconditions { b == null || b.value < 2147483647 }
     if (b == null) {
         return 0
     }
@@ -28,6 +29,7 @@ fun <!VIPER_TEXT!>clearBox<!>(c: @Unique @Borrowed Cell) {
 }
 
 fun <!VIPER_TEXT!>classify<!>(b: @Unique @Borrowed Box): Int {
+    preconditions { b.value < 2147483647 }
     when (b.value) {
         0 -> return 0
         1 -> b.value = 2

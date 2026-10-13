@@ -1,0 +1,540 @@
+/checked_integer.kt: info: Generated Viper text for addOverflow:
+method addOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 2147483647
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := plusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for subOverflow:
+method subOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == -2147483648
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := minusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for mulOverflow:
+method mulOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 1073741824
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := timesInts(x, intToRef(2))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for negOverflow:
+method negOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == -2147483648
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := negInt(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for divOverflow:
+method divOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == -2147483648
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := divInts(x, intToRef(-1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for incOverflow:
+method incOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 2147483647
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var y: Ref
+  var anon: Ref
+  y := x
+  anon := y
+  y := plusInts(anon, intToRef(1))
+  v_ret_0 := y
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for decOverflow:
+method decOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == -2147483648
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var y: Ref
+  var anon: Ref
+  y := x
+  anon := y
+  y := minusInts(anon, intToRef(1))
+  v_ret_0 := y
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for charAddOverflow:
+method charAddOverflow(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  requires charFromRef(c) == 65535
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  v_ret_0 := addCharInt(c, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for charSubOverflow:
+method charSubOverflow(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  requires charFromRef(c) == 0
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  v_ret_0 := subCharInt(c, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for zeroDiv:
+method zeroDiv(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := divInts(x, intToRef(0))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for zeroRem:
+method zeroRem(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := remInts(x, intToRef(0))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for signedDivision:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method signedDivision(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) == -3
+  requires intFromRef(y) == 2
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (divInts(x, y)) in
+      (intFromRef(x) < 0 != intFromRef(y) < 0 ?
+        -((intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(y) < 0 ? -intFromRef(y) : intFromRef(y))) :
+        (intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(y) < 0 ? -intFromRef(y) : intFromRef(y)))) ==
+    -1
+  assert (let anon ==
+      (remInts(x, y)) in
+      intFromRef(x) -
+      (intFromRef(x) < 0 != intFromRef(y) < 0 ?
+        -((intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(y) < 0 ? -intFromRef(y) : intFromRef(y))) :
+        (intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(y) < 0 ? -intFromRef(y) : intFromRef(y))) *
+      intFromRef(y)) ==
+    -1
+  assert (let anon ==
+      (divInts(x, negInt(y))) in
+      (intFromRef(x) < 0 != intFromRef(negInt(y)) < 0 ?
+        -((intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(negInt(y)) < 0 ?
+          -intFromRef(negInt(y)) :
+          intFromRef(negInt(y)))) :
+        (intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(negInt(y)) < 0 ?
+          -intFromRef(negInt(y)) :
+          intFromRef(negInt(y))))) ==
+    1
+  assert (let anon ==
+      (remInts(x, negInt(y))) in
+      intFromRef(x) -
+      (intFromRef(x) < 0 != intFromRef(negInt(y)) < 0 ?
+        -((intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(negInt(y)) < 0 ?
+          -intFromRef(negInt(y)) :
+          intFromRef(negInt(y)))) :
+        (intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(negInt(y)) < 0 ?
+          -intFromRef(negInt(y)) :
+          intFromRef(negInt(y)))) *
+      intFromRef(negInt(y))) ==
+    -1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for minRemainder:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method minRemainder(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == -2147483648
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (remInts(x, intToRef(-1))) in
+      intFromRef(x) -
+      (intFromRef(x) < 0 != intFromRef(intToRef(-1)) < 0 ?
+        -((intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(intToRef(-1)) < 0 ?
+          -intFromRef(intToRef(-1)) :
+          intFromRef(intToRef(-1)))) :
+        (intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(intToRef(-1)) < 0 ?
+          -intFromRef(intToRef(-1)) :
+          intFromRef(intToRef(-1)))) *
+      intFromRef(intToRef(-1))) ==
+    0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for boundedOperations:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method boundedOperations(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) >= -100
+  requires intFromRef(x) <= 100
+  requires intFromRef(y) >= 1
+  requires intFromRef(y) <= 100
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (plusInts(x, y)) in
+      intFromRef(x) + intFromRef(y)) >=
+    -99
+  assert (let anon ==
+      (minusInts(x, y)) in
+      intFromRef(x) - intFromRef(y)) <=
+    99
+  assert (let anon ==
+      (timesInts(x, y)) in
+      intFromRef(x) * intFromRef(y)) <=
+    10000
+  assert (let anon == (negInt(x)) in -intFromRef(x)) >= -100
+  assert (let anon ==
+      (divInts(x, y)) in
+      (intFromRef(x) < 0 != intFromRef(y) < 0 ?
+        -((intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(y) < 0 ? -intFromRef(y) : intFromRef(y))) :
+        (intFromRef(x) < 0 ? -intFromRef(x) : intFromRef(x)) \
+        (intFromRef(y) < 0 ? -intFromRef(y) : intFromRef(y)))) >=
+    -100
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for pureOverflow:
+function pureOverflow(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  plusInts(x, intToRef(1))
+}
+
+/checked_integer.kt: info: Generated Viper text for postOverflow:
+method postOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures (let anon ==
+      (plusInts(v_ret_0, intToRef(1))) in
+      intFromRef(v_ret_0) + intFromRef(intToRef(1))) >
+    intFromRef(v_ret_0)
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for guardedSpec:
+method guardedSpec(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) < 2147483647 ==>
+    (let anon ==
+      (plusInts(v_ret_0, intToRef(1))) in
+      intFromRef(v_ret_0) + intFromRef(intToRef(1))) >
+    intFromRef(v_ret_0)
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for inputBounds:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inputBounds(x: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(c), charType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(x) >= -2147483648
+  assert intFromRef(x) <= 2147483647
+  assert charFromRef(c) >= 0
+  assert charFromRef(c) <= 65535
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for discardOverflow:
+method discardOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert plusInts(x, intToRef(1)) == plusInts(x, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for preconditionOverflow:
+method preconditionOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires (let anon ==
+      (plusInts(x, intToRef(1))) in
+      intFromRef(x) + intFromRef(intToRef(1))) >
+    intFromRef(x)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for loopOverflow:
+method loopOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_1: Ref
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(x), intType())
+    invariant (let anon_builtin ==
+        (plusInts(x, intToRef(1))) in
+        intFromRef(x) + intFromRef(intToRef(1))) >
+      intFromRef(x)
+    invariant intFromRef(i) >= 0
+    invariant intFromRef(i) <= 1
+  anon_1 := ltInts(i, intToRef(1))
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(x), intType())
+  assert (let anon_builtin ==
+      (plusInts(x, intToRef(1))) in
+      intFromRef(x) + intFromRef(intToRef(1))) >
+    intFromRef(x)
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) <= 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for CheckedArithmeticLaw:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), CheckedArithmeticLaw())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), CheckedArithmeticLaw())
+  ensures isSubtype(typeOf(v_ret_0), CheckedArithmeticLaw()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef(gtInts(plusInts(g_x(this), intToRef(1)), g_x(this))))
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CheckedArithmeticLaw()
+  anon := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef(gtInts(plusInts(g_x(this), intToRef(1)), g_x(this))))
+  fold acc(CheckedArithmeticLaw_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CheckedArithmeticLaw_unique(v_ret_0), write)
+}
+
+/checked_integer.kt: info: Generated Viper text for shortCircuit:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method shortCircuit(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  if (intFromRef(x) == 2147483647) {
+    anon_0 := boolToRef(true)
+  } else {
+    anon_0 := gtInts(plusInts(x, intToRef(1)), x)}
+  assert boolFromRef(anon_0)
+  if (intFromRef(x) == 2147483647) {
+    goto lbl_ret_0
+  }
+  assert (let anon_builtin ==
+      (plusInts(x, intToRef(1))) in
+      intFromRef(x) + intFromRef(intToRef(1))) >
+    intFromRef(x)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for compoundOverflow:
+method compoundOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 2147483647
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var y: Ref
+  y := x
+  y := plusInts(y, intToRef(1))
+  v_ret_0 := y
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for quantifierBounds:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method quantifierBounds() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (forall anon: Int ::anon >= -2147483648 && anon <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon)), intType()) ==>
+      anon >= -2147483648 && anon <= 2147483647)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for quantifierOverflow:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method quantifierOverflow() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(anon_builtin_0), intToRef(1))) in
+        anon_builtin_0 + intFromRef(intToRef(1))) >
+      anon_builtin_0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for constantOverflow:
+method constantOverflow() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := plusInts(intToRef(2147483647), intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_integer.kt: info: Generated Viper text for constantNormalization:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method constantNormalization() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert -2147483648 < 0
+  assert (let anon ==
+      (divInts(intToRef(-3), intToRef(2))) in
+      (intFromRef(intToRef(-3)) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(intToRef(-3)) < 0 ?
+          -intFromRef(intToRef(-3)) :
+          intFromRef(intToRef(-3))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(intToRef(-3)) < 0 ?
+          -intFromRef(intToRef(-3)) :
+          intFromRef(intToRef(-3))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2))))) ==
+    -1
+  assert (let anon ==
+      (remInts(intToRef(-3), intToRef(2))) in
+      intFromRef(intToRef(-3)) -
+      (intFromRef(intToRef(-3)) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(intToRef(-3)) < 0 ?
+          -intFromRef(intToRef(-3)) :
+          intFromRef(intToRef(-3))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(intToRef(-3)) < 0 ?
+          -intFromRef(intToRef(-3)) :
+          intFromRef(intToRef(-3))) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) *
+      intFromRef(intToRef(2))) ==
+    -1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

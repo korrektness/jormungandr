@@ -642,6 +642,8 @@ predicate SizedLaw_unique(this: Ref) {
 method add(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), InvariantSizedLaw())
   requires acc(InvariantSizedLaw_unique(this), write)
+  requires (unfolding acc(InvariantSizedLaw_unique(this), write) in
+      intFromRef(this.count) < 2147483647)
   ensures acc(InvariantSizedLaw_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -739,6 +741,8 @@ method InvariantSizedLaw_c_SizedLaw_upcast(this: Ref)
 method add(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), InvariantSizedLaw())
   requires acc(InvariantSizedLaw_unique(this), write)
+  requires (unfolding acc(InvariantSizedLaw_unique(this), write) in
+      intFromRef(this.bf_count) < 2147483647)
   ensures acc(InvariantSizedLaw_unique(this), write)
   ensures isSubtype(typeOf(ret_4), unitType())
 

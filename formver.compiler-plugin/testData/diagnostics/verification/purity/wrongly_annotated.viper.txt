@@ -10,10 +10,39 @@ method iAmAMethod() returns (v_ret_0: Ref)
 /wrongly_annotated.kt: info: Generated Viper text for impureExtension:
 field value: Ref
 
+method cause(v_this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
 method impureExtension(v_this_extension: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(v_this_extension), Field())
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var before: Ref
+  before := havoc(intType())
+  if (intFromRef(before) == 2147483647) {
+    var anon: Ref
+    anon := con()
+    fold acc(Throwable_unique(anon), write)
+    fold acc(Exception_unique(anon), write)
+    fold acc(RuntimeException_unique(anon), write)
+    fold acc(IllegalArgumentException_unique(anon), write)
+    inhale false
+  }
+  assert plusInts(before, intToRef(1)) == plusInts(before, intToRef(1))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+method message(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))

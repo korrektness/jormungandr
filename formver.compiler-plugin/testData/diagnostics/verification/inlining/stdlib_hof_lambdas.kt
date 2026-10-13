@@ -13,7 +13,7 @@ inline fun <!VIPER_TEXT!>myEach<!>(s: String, f: (Char) -> Unit) {
 
 fun <!VIPER_TEXT!>userInline<!>(s: String): Int {
     var n = 0
-    myEach(s) { c -> if (c == 'a') n++ }
+    myEach(s) { c -> if (c == 'a' && n < 2147483647) n++ }
     return n
 }
 

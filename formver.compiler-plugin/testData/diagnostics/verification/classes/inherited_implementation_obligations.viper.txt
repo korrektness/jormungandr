@@ -27,13 +27,18 @@ predicate footprint(this: Ref)
 method inc(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), RuntimeTally())
   requires acc(RuntimeTally_unique(this), write)
+  requires (unfolding acc(RuntimeTally_unique(this), wildcard) in
+      intFromRef(count(this)) < 2147483647)
   ensures acc(RuntimeTally_unique(this), write)
   ensures isSubtype(typeOf(ret), unitType())
   ensures (unfolding acc(RuntimeTally_unique(this), wildcard) in
       intFromRef(count(this))) ==
-    old((unfolding acc(RuntimeTally_unique(this), wildcard) in
-      intFromRef(count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(RuntimeTally_unique(this), wildcard) in
+        count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(RuntimeTally_unique(this), wildcard) in
+        count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
@@ -66,12 +71,18 @@ method inc(this: Ref) returns (v_ret_0: Ref)
   ensures acc(CountingBase_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon: Ref
+  var anon_1: Ref
   unfold acc(CountingBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_1 := this.n
   fold acc(CountingBase_unique(this), write)
+  if (intFromRef(anon_1) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(CountingBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    fold acc(CountingBase_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -112,23 +123,36 @@ method InheritedCounting_c_CountingBase_f_inc_inherited_body_c_RuntimeTally_f_in
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), InheritedCounting())
   requires acc(InheritedCounting_unique(this), write)
+  requires (unfolding acc(InheritedCounting_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedCounting()
   ensures acc(InheritedCounting_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(InheritedCounting_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedCounting_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_2: Ref
   unfold acc(InheritedCounting_unique(this), write)
   unfold acc(c_CountingBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_2 := this.n
   fold acc(c_CountingBase_unique(this), write)
   fold acc(InheritedCounting_unique(this), write)
+  if (intFromRef(anon_2) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(InheritedCounting_unique(this), write)
+    unfold acc(c_CountingBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    fold acc(c_CountingBase_unique(this), write)
+    fold acc(InheritedCounting_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -136,20 +160,27 @@ method InheritedCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), InheritedCounting())
   requires acc(InheritedCounting_unique(this), write)
+  requires (unfolding acc(InheritedCounting_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedCounting()
   ensures acc(InheritedCounting_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(InheritedCounting_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedCounting_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_InheritedCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), InheritedCounting())
   requires acc(InheritedCounting_unique(this), write)
+  requires (unfolding acc(InheritedCounting_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedCounting()
   requires isSubtype(typeOf(this), InheritedCounting())
 {
@@ -158,9 +189,12 @@ method refines_InheritedCounting_c_RuntimeTally_f_inc_inherited_contract_c_Runti
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(InheritedCounting_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedCounting_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
@@ -234,14 +268,19 @@ method InheritedIdle_c_IdleBase_f_inc_inherited_body_c_RuntimeTally_f_inc(this: 
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), InheritedIdle())
   requires acc(InheritedIdle_unique(this), write)
+  requires (unfolding acc(InheritedIdle_unique(this), wildcard) in
+      intFromRef(c_IdleBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedIdle()
   ensures acc(InheritedIdle_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(InheritedIdle_unique(this), wildcard) in
       intFromRef(c_IdleBase_f_count(this))) ==
-    old((unfolding acc(InheritedIdle_unique(this), wildcard) in
-      intFromRef(c_IdleBase_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(InheritedIdle_unique(this), wildcard) in
+        c_IdleBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedIdle_unique(this), wildcard) in
+        c_IdleBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 {
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -251,20 +290,27 @@ method InheritedIdle_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_in
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), InheritedIdle())
   requires acc(InheritedIdle_unique(this), write)
+  requires (unfolding acc(InheritedIdle_unique(this), wildcard) in
+      intFromRef(c_IdleBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedIdle()
   ensures acc(InheritedIdle_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(InheritedIdle_unique(this), wildcard) in
       intFromRef(c_IdleBase_f_count(this))) ==
-    old((unfolding acc(InheritedIdle_unique(this), wildcard) in
-      intFromRef(c_IdleBase_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(InheritedIdle_unique(this), wildcard) in
+        c_IdleBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedIdle_unique(this), wildcard) in
+        c_IdleBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_InheritedIdle_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), InheritedIdle())
   requires acc(InheritedIdle_unique(this), write)
+  requires (unfolding acc(InheritedIdle_unique(this), wildcard) in
+      intFromRef(c_IdleBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedIdle()
   requires isSubtype(typeOf(this), InheritedIdle())
 {
@@ -273,9 +319,12 @@ method refines_InheritedIdle_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTa
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(InheritedIdle_unique(this), wildcard) in
       intFromRef(c_IdleBase_f_count(this))) ==
-    old((unfolding acc(InheritedIdle_unique(this), wildcard) in
-      intFromRef(c_IdleBase_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(InheritedIdle_unique(this), wildcard) in
+        c_IdleBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedIdle_unique(this), wildcard) in
+        c_IdleBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
@@ -380,28 +429,40 @@ method c_BoundBase_c_RuntimeTally_upcast(this: Ref)
 method c_BoundBase_f_inc(this: Ref) returns (ret_0: Ref)
   requires isSubtype(typeOf(this), c_BoundBase())
   requires acc(c_BoundBase_unique(this), write)
+  requires intFromRef(c_BoundBase_c_BoundBase_f_count_args_c_BoundBase_ret_Int(this)) <
+    2147483647
   ensures acc(c_BoundBase_unique(this), write)
   ensures isSubtype(typeOf(ret_0), unitType())
   ensures intFromRef(c_BoundBase_c_BoundBase_f_count_args_c_BoundBase_ret_Int(this)) ==
-    old(intFromRef(c_BoundBase_c_BoundBase_f_count_args_c_BoundBase_ret_Int(this))) +
-    1
+    (let anon ==
+      (plusInts(old(c_BoundBase_c_BoundBase_f_count_args_c_BoundBase_ret_Int(this)),
+      intToRef(1))) in
+      intFromRef(old(c_BoundBase_c_BoundBase_f_count_args_c_BoundBase_ret_Int(this))) +
+      intFromRef(intToRef(1)))
 
 
 method c_RuntimeTally_f_inc(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_RuntimeTally())
   requires acc(c_RuntimeTally_unique(this), write)
+  requires (unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+      intFromRef(c_RuntimeTally_f_count(this)) < 2147483647)
   ensures acc(c_RuntimeTally_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(c_RuntimeTally_unique(this), wildcard) in
       intFromRef(c_RuntimeTally_f_count(this))) ==
-    old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
-      intFromRef(c_RuntimeTally_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+        c_RuntimeTally_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+        c_RuntimeTally_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_c_RuntimeTally_f_inc(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_RuntimeTally())
   requires acc(c_RuntimeTally_unique(this), write)
+  requires (unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+      intFromRef(c_RuntimeTally_f_count(this)) < 2147483647)
   requires isSubtype(typeOf(this), c_BoundBase())
 {
   c_BoundBase_c_RuntimeTally_restore(this)
@@ -411,9 +472,12 @@ method refines_c_RuntimeTally_f_inc(this: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(c_RuntimeTally_unique(this), wildcard) in
       intFromRef(c_RuntimeTally_f_count(this))) ==
-    old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
-      intFromRef(c_RuntimeTally_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+        c_RuntimeTally_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+        c_RuntimeTally_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for ChangedBinding:
@@ -474,20 +538,32 @@ method ChangedBinding_c_BoundBase_f_inc_inherited_body_c_RuntimeTally_f_inc(this
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), ChangedBinding())
   requires acc(ChangedBinding_unique(this), write)
+  requires intFromRef(ChangedBinding_f_count(this)) < 2147483647
   requires typeOf(this) == ChangedBinding()
   ensures acc(ChangedBinding_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(ChangedBinding_f_count(this)) ==
-    old(intFromRef(ChangedBinding_f_count(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(ChangedBinding_f_count(this)), intToRef(1))) in
+      intFromRef(old(ChangedBinding_f_count(this))) +
+      intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_3: Ref
   unfold acc(ChangedBinding_unique(this), write)
   unfold acc(c_BoundBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_3 := this.n
   fold acc(c_BoundBase_unique(this), write)
   fold acc(ChangedBinding_unique(this), write)
+  if (intFromRef(anon_3) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(ChangedBinding_unique(this), write)
+    unfold acc(c_BoundBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    fold acc(c_BoundBase_unique(this), write)
+    fold acc(ChangedBinding_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -495,17 +571,22 @@ method ChangedBinding_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_i
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), ChangedBinding())
   requires acc(ChangedBinding_unique(this), write)
+  requires intFromRef(ChangedBinding_f_count(this)) < 2147483647
   requires typeOf(this) == ChangedBinding()
   ensures acc(ChangedBinding_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures intFromRef(ChangedBinding_f_count(this)) ==
-    old(intFromRef(ChangedBinding_f_count(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(ChangedBinding_f_count(this)), intToRef(1))) in
+      intFromRef(old(ChangedBinding_f_count(this))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_ChangedBinding_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), ChangedBinding())
   requires acc(ChangedBinding_unique(this), write)
+  requires intFromRef(ChangedBinding_f_count(this)) < 2147483647
   requires typeOf(this) == ChangedBinding()
   requires isSubtype(typeOf(this), ChangedBinding())
 {
@@ -513,7 +594,10 @@ method refines_ChangedBinding_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeT
   assert acc(ChangedBinding_unique(this), write)
   assert isSubtype(typeOf(ret_1), unitType())
   assert intFromRef(ChangedBinding_f_count(this)) ==
-    old(intFromRef(ChangedBinding_f_count(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(ChangedBinding_f_count(this)), intToRef(1))) in
+      intFromRef(old(ChangedBinding_f_count(this))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
@@ -628,20 +712,31 @@ method SameBinding_c_BoundBase_f_inc_inherited_body_c_RuntimeTally_f_inc(this: R
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), SameBinding())
   requires acc(SameBinding_unique(this), write)
+  requires intFromRef(SameBinding_f_count(this)) < 2147483647
   requires typeOf(this) == SameBinding()
   ensures acc(SameBinding_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(SameBinding_f_count(this)) ==
-    old(intFromRef(SameBinding_f_count(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(SameBinding_f_count(this)), intToRef(1))) in
+      intFromRef(old(SameBinding_f_count(this))) + intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_3: Ref
   unfold acc(SameBinding_unique(this), write)
   unfold acc(c_BoundBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_3 := this.n
   fold acc(c_BoundBase_unique(this), write)
   fold acc(SameBinding_unique(this), write)
+  if (intFromRef(anon_3) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(SameBinding_unique(this), write)
+    unfold acc(c_BoundBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    fold acc(c_BoundBase_unique(this), write)
+    fold acc(SameBinding_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -649,17 +744,21 @@ method SameBinding_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), SameBinding())
   requires acc(SameBinding_unique(this), write)
+  requires intFromRef(SameBinding_f_count(this)) < 2147483647
   requires typeOf(this) == SameBinding()
   ensures acc(SameBinding_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures intFromRef(SameBinding_f_count(this)) ==
-    old(intFromRef(SameBinding_f_count(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(SameBinding_f_count(this)), intToRef(1))) in
+      intFromRef(old(SameBinding_f_count(this))) + intFromRef(intToRef(1)))
 
 
 method refines_SameBinding_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), SameBinding())
   requires acc(SameBinding_unique(this), write)
+  requires intFromRef(SameBinding_f_count(this)) < 2147483647
   requires typeOf(this) == SameBinding()
   requires isSubtype(typeOf(this), SameBinding())
 {
@@ -667,7 +766,9 @@ method refines_SameBinding_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTall
   assert acc(SameBinding_unique(this), write)
   assert isSubtype(typeOf(ret_1), unitType())
   assert intFromRef(SameBinding_f_count(this)) ==
-    old(intFromRef(SameBinding_f_count(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(SameBinding_f_count(this)), intToRef(1))) in
+      intFromRef(old(SameBinding_f_count(this))) + intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
@@ -1020,10 +1121,14 @@ method ConcreteTally_c_RuntimeTally_upcast(this: Ref)
 method ConcreteTally_f_inc(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), ConcreteTally())
   requires acc(ConcreteTally_unique(this), write)
+  requires intFromRef(ConcreteTally_f_count(this)) < 2147483647
   ensures acc(ConcreteTally_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(ConcreteTally_f_count(this)) ==
-    old(intFromRef(ConcreteTally_f_count(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(ConcreteTally_f_count(this)), intToRef(1))) in
+      intFromRef(old(ConcreteTally_f_count(this))) +
+      intFromRef(intToRef(1)))
 {
   var anon_0: Ref
   unfold acc(ConcreteTally_unique(this), write)
@@ -1045,18 +1150,25 @@ method ConcreteTally_f_inc(this: Ref) returns (v_ret_0: Ref)
 method c_RuntimeTally_f_inc(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_RuntimeTally())
   requires acc(c_RuntimeTally_unique(this), write)
+  requires (unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+      intFromRef(c_RuntimeTally_f_count(this)) < 2147483647)
   ensures acc(c_RuntimeTally_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(c_RuntimeTally_unique(this), wildcard) in
       intFromRef(c_RuntimeTally_f_count(this))) ==
-    old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
-      intFromRef(c_RuntimeTally_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+        c_RuntimeTally_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+        c_RuntimeTally_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_c_RuntimeTally_f_inc(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_RuntimeTally())
   requires acc(c_RuntimeTally_unique(this), write)
+  requires (unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+      intFromRef(c_RuntimeTally_f_count(this)) < 2147483647)
   requires isSubtype(typeOf(this), ConcreteTally())
 {
   ConcreteTally_c_RuntimeTally_restore(this)
@@ -1066,9 +1178,12 @@ method refines_c_RuntimeTally_f_inc(this: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(c_RuntimeTally_unique(this), wildcard) in
       intFromRef(c_RuntimeTally_f_count(this))) ==
-    old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
-      intFromRef(c_RuntimeTally_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+        c_RuntimeTally_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_RuntimeTally_unique(this), wildcard) in
+        c_RuntimeTally_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
@@ -1100,13 +1215,18 @@ predicate footprint(this: Ref)
 method inc(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), StrongerTally())
   requires acc(StrongerTally_unique(this), write)
+  requires (unfolding acc(StrongerTally_unique(this), wildcard) in
+      intFromRef(count(this)) <= 2147483645)
   ensures acc(StrongerTally_unique(this), write)
   ensures isSubtype(typeOf(ret), unitType())
   ensures (unfolding acc(StrongerTally_unique(this), wildcard) in
       intFromRef(count(this))) ==
-    old((unfolding acc(StrongerTally_unique(this), wildcard) in
-      intFromRef(count(this)))) +
-    2
+    (let anon ==
+      (plusInts(old((unfolding acc(StrongerTally_unique(this), wildcard) in
+        count(this))), intToRef(2))) in
+      intFromRef(old((unfolding acc(StrongerTally_unique(this), wildcard) in
+        count(this)))) +
+      intFromRef(intToRef(2)))
 
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for InheritedStronger:
@@ -1146,23 +1266,36 @@ method InheritedStronger_c_CountingBase_f_inc_inherited_body_c_StrongerTally_f_i
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), InheritedStronger())
   requires acc(InheritedStronger_unique(this), write)
+  requires (unfolding acc(InheritedStronger_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) <= 2147483645)
   requires typeOf(this) == InheritedStronger()
   ensures acc(InheritedStronger_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(InheritedStronger_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedStronger_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    2
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedStronger_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(2))) in
+      intFromRef(old((unfolding acc(InheritedStronger_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(2)))
 {
-  var anon: Ref
+  var anon_2: Ref
   unfold acc(InheritedStronger_unique(this), write)
   unfold acc(c_CountingBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_2 := this.n
   fold acc(c_CountingBase_unique(this), write)
   fold acc(InheritedStronger_unique(this), write)
+  if (intFromRef(anon_2) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(InheritedStronger_unique(this), write)
+    unfold acc(c_CountingBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    fold acc(c_CountingBase_unique(this), write)
+    fold acc(InheritedStronger_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -1170,20 +1303,27 @@ method InheritedStronger_c_StrongerTally_f_inc_inherited_contract_c_StrongerTall
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), InheritedStronger())
   requires acc(InheritedStronger_unique(this), write)
+  requires (unfolding acc(InheritedStronger_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) <= 2147483645)
   requires typeOf(this) == InheritedStronger()
   ensures acc(InheritedStronger_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(InheritedStronger_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedStronger_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    2
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedStronger_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(2))) in
+      intFromRef(old((unfolding acc(InheritedStronger_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(2)))
 
 
 method refines_InheritedStronger_c_StrongerTally_f_inc_inherited_contract_c_StrongerTally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), InheritedStronger())
   requires acc(InheritedStronger_unique(this), write)
+  requires (unfolding acc(InheritedStronger_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) <= 2147483645)
   requires typeOf(this) == InheritedStronger()
   requires isSubtype(typeOf(this), InheritedStronger())
 {
@@ -1192,9 +1332,12 @@ method refines_InheritedStronger_c_StrongerTally_f_inc_inherited_contract_c_Stro
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(InheritedStronger_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedStronger_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    2
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedStronger_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(2))) in
+      intFromRef(old((unfolding acc(InheritedStronger_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(2)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for add:
@@ -1209,21 +1352,29 @@ method add(this: Ref, amount: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), ContractBase())
   requires acc(ContractBase_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
-  requires intFromRef(amount) > 0
+  requires intFromRef(amount) > 0 &&
+    (unfolding acc(ContractBase_unique(this), write) in
+      intFromRef(this.n) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(ContractBase_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures (unfolding acc(ContractBase_unique(this), write) in
       intFromRef(this.n) ==
-      old((unfolding acc(ContractBase_unique(this), write) in
-        intFromRef(this.n))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(ContractBase_unique(this), write) in
+          this.n)), amount)) in
+        intFromRef(old((unfolding acc(ContractBase_unique(this), write) in
+          this.n))) +
+        intFromRef(amount))) &&
     (unfolding acc(ContractBase_unique(this), write) in
       intFromRef(v_ret_0) == intFromRef(this.n))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(ContractBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, amount)
+  anon_0 := this.n
+  this.n := plusInts(anon_0, amount)
   v_ret_0 := this.n
   fold acc(ContractBase_unique(this), write)
   goto lbl_ret_0
@@ -1249,26 +1400,35 @@ method ContractLeaf_c_ContractBase_f_add_inherited_body_c_ContractBase_f_add(thi
   requires isSubtype(typeOf(this), ContractLeaf())
   requires acc(ContractLeaf_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
-  requires intFromRef(amount) > 0
+  requires intFromRef(amount) > 0 &&
+    (unfolding acc(ContractLeaf_unique(this), write) in
+      (unfolding acc(c_ContractBase_unique(this), write) in
+        intFromRef(this.n) <=
+        (let anon_builtin ==
+          (minusInts(intToRef(2147483647), amount)) in
+          intFromRef(intToRef(2147483647)) - intFromRef(amount))))
   requires typeOf(this) == ContractLeaf()
   ensures acc(ContractLeaf_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures (unfolding acc(ContractLeaf_unique(this), write) in
       (unfolding acc(c_ContractBase_unique(this), write) in
         intFromRef(this.n) ==
-        old((unfolding acc(ContractLeaf_unique(this), write) in
-          (unfolding acc(c_ContractBase_unique(this), write) in
-            intFromRef(this.n)))) +
-        intFromRef(amount))) &&
+        (let anon_builtin ==
+          (plusInts(old((unfolding acc(ContractLeaf_unique(this), write) in
+            (unfolding acc(c_ContractBase_unique(this), write) in this.n))),
+          amount)) in
+          intFromRef(old((unfolding acc(ContractLeaf_unique(this), write) in
+            (unfolding acc(c_ContractBase_unique(this), write) in this.n)))) +
+          intFromRef(amount)))) &&
     (unfolding acc(ContractLeaf_unique(this), write) in
       (unfolding acc(c_ContractBase_unique(this), write) in
         intFromRef(v_ret_0) == intFromRef(this.n)))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(ContractLeaf_unique(this), write)
   unfold acc(c_ContractBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, amount)
+  anon_0 := this.n
+  this.n := plusInts(anon_0, amount)
   v_ret_0 := this.n
   fold acc(c_ContractBase_unique(this), write)
   fold acc(ContractLeaf_unique(this), write)
@@ -1282,17 +1442,26 @@ method ContractLeaf_c_ContractBase_f_add_inherited_contract_c_ContractBase_f_add
   requires isSubtype(typeOf(this), ContractLeaf())
   requires acc(ContractLeaf_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
-  requires intFromRef(amount) > 0
+  requires intFromRef(amount) > 0 &&
+    (unfolding acc(ContractLeaf_unique(this), write) in
+      (unfolding acc(c_ContractBase_unique(this), write) in
+        intFromRef(this.n) <=
+        (let anon_builtin ==
+          (minusInts(intToRef(2147483647), amount)) in
+          intFromRef(intToRef(2147483647)) - intFromRef(amount))))
   requires typeOf(this) == ContractLeaf()
   ensures acc(ContractLeaf_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(ContractLeaf_unique(this), write) in
       (unfolding acc(c_ContractBase_unique(this), write) in
         intFromRef(this.n) ==
-        old((unfolding acc(ContractLeaf_unique(this), write) in
-          (unfolding acc(c_ContractBase_unique(this), write) in
-            intFromRef(this.n)))) +
-        intFromRef(amount))) &&
+        (let anon_builtin ==
+          (plusInts(old((unfolding acc(ContractLeaf_unique(this), write) in
+            (unfolding acc(c_ContractBase_unique(this), write) in this.n))),
+          amount)) in
+          intFromRef(old((unfolding acc(ContractLeaf_unique(this), write) in
+            (unfolding acc(c_ContractBase_unique(this), write) in this.n)))) +
+          intFromRef(amount)))) &&
     (unfolding acc(ContractLeaf_unique(this), write) in
       (unfolding acc(c_ContractBase_unique(this), write) in
         intFromRef(ret_3) == intFromRef(this.n)))
@@ -1304,7 +1473,13 @@ method refines_ContractLeaf_c_ContractBase_f_add_inherited_contract_c_ContractBa
   requires isSubtype(typeOf(this), ContractLeaf())
   requires acc(ContractLeaf_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
-  requires intFromRef(amount) > 0
+  requires intFromRef(amount) > 0 &&
+    (unfolding acc(ContractLeaf_unique(this), write) in
+      (unfolding acc(c_ContractBase_unique(this), write) in
+        intFromRef(this.n) <=
+        (let anon_builtin ==
+          (minusInts(intToRef(2147483647), amount)) in
+          intFromRef(intToRef(2147483647)) - intFromRef(amount))))
   requires typeOf(this) == ContractLeaf()
   requires isSubtype(typeOf(this), ContractLeaf())
 {
@@ -1315,10 +1490,13 @@ method refines_ContractLeaf_c_ContractBase_f_add_inherited_contract_c_ContractBa
   assert (unfolding acc(ContractLeaf_unique(this), write) in
       (unfolding acc(c_ContractBase_unique(this), write) in
         intFromRef(this.n) ==
-        old((unfolding acc(ContractLeaf_unique(this), write) in
-          (unfolding acc(c_ContractBase_unique(this), write) in
-            intFromRef(this.n)))) +
-        intFromRef(amount))) &&
+        (let anon_builtin ==
+          (plusInts(old((unfolding acc(ContractLeaf_unique(this), write) in
+            (unfolding acc(c_ContractBase_unique(this), write) in this.n))),
+          amount)) in
+          intFromRef(old((unfolding acc(ContractLeaf_unique(this), write) in
+            (unfolding acc(c_ContractBase_unique(this), write) in this.n)))) +
+          intFromRef(amount)))) &&
     (unfolding acc(ContractLeaf_unique(this), write) in
       (unfolding acc(c_ContractBase_unique(this), write) in
         intFromRef(ret_3) == intFromRef(this.n)))
@@ -1366,27 +1544,44 @@ method ConcreteCounting_c_CountingBase_f_inc_inherited_body_c_RuntimeTally_f_inc
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), ConcreteCounting())
   requires acc(ConcreteCounting_unique(this), write)
+  requires (unfolding acc(ConcreteCounting_unique(this), wildcard) in
+      (unfolding acc(AbstractCounting_unique(this), wildcard) in
+        intFromRef(c_CountingBase_f_count(this)) < 2147483647))
   requires typeOf(this) == ConcreteCounting()
   ensures acc(ConcreteCounting_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(ConcreteCounting_unique(this), wildcard) in
       (unfolding acc(AbstractCounting_unique(this), wildcard) in
         intFromRef(c_CountingBase_f_count(this)))) ==
-    old((unfolding acc(ConcreteCounting_unique(this), wildcard) in
-      (unfolding acc(AbstractCounting_unique(this), wildcard) in
-        intFromRef(c_CountingBase_f_count(this))))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(ConcreteCounting_unique(this), wildcard) in
+        (unfolding acc(AbstractCounting_unique(this), wildcard) in
+          c_CountingBase_f_count(this)))), intToRef(1))) in
+      intFromRef(old((unfolding acc(ConcreteCounting_unique(this), wildcard) in
+        (unfolding acc(AbstractCounting_unique(this), wildcard) in
+          c_CountingBase_f_count(this))))) +
+      intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_2: Ref
   unfold acc(ConcreteCounting_unique(this), write)
   unfold acc(AbstractCounting_unique(this), write)
   unfold acc(c_CountingBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_2 := this.n
   fold acc(c_CountingBase_unique(this), write)
   fold acc(AbstractCounting_unique(this), write)
   fold acc(ConcreteCounting_unique(this), write)
+  if (intFromRef(anon_2) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(ConcreteCounting_unique(this), write)
+    unfold acc(AbstractCounting_unique(this), write)
+    unfold acc(c_CountingBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    fold acc(c_CountingBase_unique(this), write)
+    fold acc(AbstractCounting_unique(this), write)
+    fold acc(ConcreteCounting_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -1394,22 +1589,32 @@ method ConcreteCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), ConcreteCounting())
   requires acc(ConcreteCounting_unique(this), write)
+  requires (unfolding acc(ConcreteCounting_unique(this), wildcard) in
+      (unfolding acc(AbstractCounting_unique(this), wildcard) in
+        intFromRef(c_CountingBase_f_count(this)) < 2147483647))
   requires typeOf(this) == ConcreteCounting()
   ensures acc(ConcreteCounting_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(ConcreteCounting_unique(this), wildcard) in
       (unfolding acc(AbstractCounting_unique(this), wildcard) in
         intFromRef(c_CountingBase_f_count(this)))) ==
-    old((unfolding acc(ConcreteCounting_unique(this), wildcard) in
-      (unfolding acc(AbstractCounting_unique(this), wildcard) in
-        intFromRef(c_CountingBase_f_count(this))))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(ConcreteCounting_unique(this), wildcard) in
+        (unfolding acc(AbstractCounting_unique(this), wildcard) in
+          c_CountingBase_f_count(this)))), intToRef(1))) in
+      intFromRef(old((unfolding acc(ConcreteCounting_unique(this), wildcard) in
+        (unfolding acc(AbstractCounting_unique(this), wildcard) in
+          c_CountingBase_f_count(this))))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_ConcreteCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), ConcreteCounting())
   requires acc(ConcreteCounting_unique(this), write)
+  requires (unfolding acc(ConcreteCounting_unique(this), wildcard) in
+      (unfolding acc(AbstractCounting_unique(this), wildcard) in
+        intFromRef(c_CountingBase_f_count(this)) < 2147483647))
   requires typeOf(this) == ConcreteCounting()
   requires isSubtype(typeOf(this), ConcreteCounting())
 {
@@ -1419,10 +1624,14 @@ method refines_ConcreteCounting_c_RuntimeTally_f_inc_inherited_contract_c_Runtim
   assert (unfolding acc(ConcreteCounting_unique(this), wildcard) in
       (unfolding acc(AbstractCounting_unique(this), wildcard) in
         intFromRef(c_CountingBase_f_count(this)))) ==
-    old((unfolding acc(ConcreteCounting_unique(this), wildcard) in
-      (unfolding acc(AbstractCounting_unique(this), wildcard) in
-        intFromRef(c_CountingBase_f_count(this))))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(ConcreteCounting_unique(this), wildcard) in
+        (unfolding acc(AbstractCounting_unique(this), wildcard) in
+          c_CountingBase_f_count(this)))), intToRef(1))) in
+      intFromRef(old((unfolding acc(ConcreteCounting_unique(this), wildcard) in
+        (unfolding acc(AbstractCounting_unique(this), wildcard) in
+          c_CountingBase_f_count(this))))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for OpenCounting:
@@ -1462,23 +1671,36 @@ method OpenCounting_c_CountingBase_f_inc_inherited_body_c_RuntimeTally_f_inc(thi
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), OpenCounting())
   requires acc(OpenCounting_unique(this), write)
+  requires (unfolding acc(OpenCounting_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == OpenCounting()
   ensures acc(OpenCounting_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(OpenCounting_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(OpenCounting_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(OpenCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(OpenCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_2: Ref
   unfold acc(OpenCounting_unique(this), write)
   unfold acc(c_CountingBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_2 := this.n
   fold acc(c_CountingBase_unique(this), write)
   fold acc(OpenCounting_unique(this), write)
+  if (intFromRef(anon_2) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(OpenCounting_unique(this), write)
+    unfold acc(c_CountingBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    fold acc(c_CountingBase_unique(this), write)
+    fold acc(OpenCounting_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -1486,20 +1708,27 @@ method OpenCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), OpenCounting())
   requires acc(OpenCounting_unique(this), write)
+  requires (unfolding acc(OpenCounting_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == OpenCounting()
   ensures acc(OpenCounting_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(OpenCounting_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(OpenCounting_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(OpenCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(OpenCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_OpenCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), OpenCounting())
   requires acc(OpenCounting_unique(this), write)
+  requires (unfolding acc(OpenCounting_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == OpenCounting()
   requires isSubtype(typeOf(this), OpenCounting())
 {
@@ -1508,9 +1737,12 @@ method refines_OpenCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTal
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(OpenCounting_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(OpenCounting_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(OpenCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(OpenCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for DiamondCounting:
@@ -1577,23 +1809,36 @@ method DiamondCounting_c_CountingBase_f_inc_inherited_body_c_RuntimeTally_f_inc(
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), DiamondCounting())
   requires acc(DiamondCounting_unique(this), write)
+  requires (unfolding acc(DiamondCounting_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == DiamondCounting()
   ensures acc(DiamondCounting_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(DiamondCounting_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(DiamondCounting_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(DiamondCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(DiamondCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_2: Ref
   unfold acc(DiamondCounting_unique(this), write)
   unfold acc(c_CountingBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_2 := this.n
   fold acc(c_CountingBase_unique(this), write)
   fold acc(DiamondCounting_unique(this), write)
+  if (intFromRef(anon_2) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(DiamondCounting_unique(this), write)
+    unfold acc(c_CountingBase_unique(this), write)
+    anon_0 := this.n
+    this.n := plusInts(anon_0, intToRef(1))
+    fold acc(c_CountingBase_unique(this), write)
+    fold acc(DiamondCounting_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -1601,20 +1846,27 @@ method DiamondCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), DiamondCounting())
   requires acc(DiamondCounting_unique(this), write)
+  requires (unfolding acc(DiamondCounting_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == DiamondCounting()
   ensures acc(DiamondCounting_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(DiamondCounting_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(DiamondCounting_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(DiamondCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(DiamondCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_DiamondCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_1: Ref)
   requires isSubtype(typeOf(this), DiamondCounting())
   requires acc(DiamondCounting_unique(this), write)
+  requires (unfolding acc(DiamondCounting_unique(this), wildcard) in
+      intFromRef(c_CountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == DiamondCounting()
   requires isSubtype(typeOf(this), DiamondCounting())
 {
@@ -1623,9 +1875,12 @@ method refines_DiamondCounting_c_RuntimeTally_f_inc_inherited_contract_c_Runtime
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(DiamondCounting_unique(this), wildcard) in
       intFromRef(c_CountingBase_f_count(this))) ==
-    old((unfolding acc(DiamondCounting_unique(this), wildcard) in
-      intFromRef(c_CountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(DiamondCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(DiamondCounting_unique(this), wildcard) in
+        c_CountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
@@ -1663,15 +1918,19 @@ predicate RestrictedBase_unique(this: Ref) {
 method inc(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), RestrictedBase())
   requires acc(RestrictedBase_unique(this), write)
-  requires intFromRef(count(this)) > 0
+  requires intFromRef(count(this)) > 0 &&
+    intFromRef(count(this)) < 2147483647
   ensures acc(RestrictedBase_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures intFromRef(count(this)) == old(intFromRef(count(this))) + 1
+  ensures intFromRef(count(this)) ==
+    (let anon_builtin ==
+      (plusInts(old(count(this)), intToRef(1))) in
+      intFromRef(old(count(this))) + intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(RestrictedBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
+  anon_0 := this.n
+  this.n := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(RestrictedBase_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -1715,21 +1974,26 @@ method InheritedRestricted_c_RestrictedBase_f_inc_inherited_body_c_RestrictedBas
   requires isSubtype(typeOf(this), InheritedRestricted())
   requires acc(InheritedRestricted_unique(this), write)
   requires (unfolding acc(InheritedRestricted_unique(this), wildcard) in
-      intFromRef(c_RestrictedBase_f_count(this)) > 0)
+      intFromRef(c_RestrictedBase_f_count(this)) > 0) &&
+    (unfolding acc(InheritedRestricted_unique(this), wildcard) in
+      intFromRef(c_RestrictedBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedRestricted()
   ensures acc(InheritedRestricted_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(InheritedRestricted_unique(this), wildcard) in
       intFromRef(c_RestrictedBase_f_count(this))) ==
-    old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
-      intFromRef(c_RestrictedBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(InheritedRestricted_unique(this), write)
   unfold acc(c_RestrictedBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
+  anon_0 := this.n
+  this.n := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(c_RestrictedBase_unique(this), write)
   fold acc(InheritedRestricted_unique(this), write)
@@ -1741,29 +2005,39 @@ method InheritedRestricted_c_RestrictedBase_f_inc_inherited_contract_c_Restricte
   requires isSubtype(typeOf(this), InheritedRestricted())
   requires acc(InheritedRestricted_unique(this), write)
   requires (unfolding acc(InheritedRestricted_unique(this), wildcard) in
-      intFromRef(c_RestrictedBase_f_count(this)) > 0)
+      intFromRef(c_RestrictedBase_f_count(this)) > 0) &&
+    (unfolding acc(InheritedRestricted_unique(this), wildcard) in
+      intFromRef(c_RestrictedBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedRestricted()
   ensures acc(InheritedRestricted_unique(this), write)
   ensures isSubtype(typeOf(ret_3), unitType())
   ensures (unfolding acc(InheritedRestricted_unique(this), wildcard) in
       intFromRef(c_RestrictedBase_f_count(this))) ==
-    old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
-      intFromRef(c_RestrictedBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method InheritedRestricted_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_4: Ref)
   requires isSubtype(typeOf(this), InheritedRestricted())
   requires acc(InheritedRestricted_unique(this), write)
+  requires (unfolding acc(InheritedRestricted_unique(this), wildcard) in
+      intFromRef(c_RestrictedBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedRestricted()
   ensures acc(InheritedRestricted_unique(this), write)
   ensures isSubtype(typeOf(ret_4), unitType())
   ensures (unfolding acc(InheritedRestricted_unique(this), wildcard) in
       intFromRef(c_RestrictedBase_f_count(this))) ==
-    old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
-      intFromRef(c_RestrictedBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_InheritedRestricted_c_RestrictedBase_f_inc_inherited_contract_c_RestrictedBase_f_inc(this: Ref)
@@ -1771,7 +2045,9 @@ method refines_InheritedRestricted_c_RestrictedBase_f_inc_inherited_contract_c_R
   requires isSubtype(typeOf(this), InheritedRestricted())
   requires acc(InheritedRestricted_unique(this), write)
   requires (unfolding acc(InheritedRestricted_unique(this), wildcard) in
-      intFromRef(c_RestrictedBase_f_count(this)) > 0)
+      intFromRef(c_RestrictedBase_f_count(this)) > 0) &&
+    (unfolding acc(InheritedRestricted_unique(this), wildcard) in
+      intFromRef(c_RestrictedBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedRestricted()
   requires isSubtype(typeOf(this), InheritedRestricted())
 {
@@ -1780,15 +2056,20 @@ method refines_InheritedRestricted_c_RestrictedBase_f_inc_inherited_contract_c_R
   assert isSubtype(typeOf(ret_3), unitType())
   assert (unfolding acc(InheritedRestricted_unique(this), wildcard) in
       intFromRef(c_RestrictedBase_f_count(this))) ==
-    old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
-      intFromRef(c_RestrictedBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 method refines_InheritedRestricted_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_4: Ref)
   requires isSubtype(typeOf(this), InheritedRestricted())
   requires acc(InheritedRestricted_unique(this), write)
+  requires (unfolding acc(InheritedRestricted_unique(this), wildcard) in
+      intFromRef(c_RestrictedBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedRestricted()
   requires isSubtype(typeOf(this), InheritedRestricted())
 {
@@ -1797,9 +2078,12 @@ method refines_InheritedRestricted_c_RuntimeTally_f_inc_inherited_contract_c_Run
   assert isSubtype(typeOf(ret_4), unitType())
   assert (unfolding acc(InheritedRestricted_unique(this), wildcard) in
       intFromRef(c_RestrictedBase_f_count(this))) ==
-    old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
-      intFromRef(c_RestrictedBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedRestricted_unique(this), wildcard) in
+        c_RestrictedBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
@@ -1911,14 +2195,19 @@ method InheritedHonestIdle_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTall
   returns (ret_3: Ref)
   requires isSubtype(typeOf(this), InheritedHonestIdle())
   requires acc(InheritedHonestIdle_unique(this), write)
+  requires (unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
+      intFromRef(c_HonestIdleBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedHonestIdle()
   ensures acc(InheritedHonestIdle_unique(this), write)
   ensures isSubtype(typeOf(ret_3), unitType())
   ensures (unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
       intFromRef(c_HonestIdleBase_f_count(this))) ==
-    old((unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
-      intFromRef(c_HonestIdleBase_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
+        c_HonestIdleBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
+        c_HonestIdleBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_InheritedHonestIdle_c_HonestIdleBase_f_inc_inherited_contract_c_HonestIdleBase_f_inc(this: Ref)
@@ -1941,6 +2230,8 @@ method refines_InheritedHonestIdle_c_RuntimeTally_f_inc_inherited_contract_c_Run
   returns (ret_3: Ref)
   requires isSubtype(typeOf(this), InheritedHonestIdle())
   requires acc(InheritedHonestIdle_unique(this), write)
+  requires (unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
+      intFromRef(c_HonestIdleBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedHonestIdle()
   requires isSubtype(typeOf(this), InheritedHonestIdle())
 {
@@ -1949,9 +2240,12 @@ method refines_InheritedHonestIdle_c_RuntimeTally_f_inc_inherited_contract_c_Run
   assert isSubtype(typeOf(ret_3), unitType())
   assert (unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
       intFromRef(c_HonestIdleBase_f_count(this))) ==
-    old((unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
-      intFromRef(c_HonestIdleBase_f_count(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
+        c_HonestIdleBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedHonestIdle_unique(this), wildcard) in
+        c_HonestIdleBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /inherited_implementation_obligations.kt: info: Generated Viper text for count:
@@ -1989,14 +2283,18 @@ predicate SpecifiedCountingBase_unique(this: Ref) {
 method inc(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), SpecifiedCountingBase())
   requires acc(SpecifiedCountingBase_unique(this), write)
+  requires intFromRef(count(this)) < 2147483647
   ensures acc(SpecifiedCountingBase_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures intFromRef(count(this)) == old(intFromRef(count(this))) + 1
+  ensures intFromRef(count(this)) ==
+    (let anon_builtin ==
+      (plusInts(old(count(this)), intToRef(1))) in
+      intFromRef(old(count(this))) + intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(SpecifiedCountingBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
+  anon_0 := this.n
+  this.n := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(SpecifiedCountingBase_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -2036,37 +2334,47 @@ predicate c_SpecifiedCountingBase_unique(this: Ref) {
 predicate footprint(this: Ref)
 
 method InheritedSpecifiedCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
-  returns (ret_3: Ref)
+  returns (ret_4: Ref)
   requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
   requires acc(InheritedSpecifiedCounting_unique(this), write)
+  requires (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+      intFromRef(c_SpecifiedCountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedSpecifiedCounting()
   ensures acc(InheritedSpecifiedCounting_unique(this), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
   ensures (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
       intFromRef(c_SpecifiedCountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
-      intFromRef(c_SpecifiedCountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method InheritedSpecifiedCounting_c_SpecifiedCountingBase_f_inc_inherited_body_c_SpecifiedCountingBase_f_inc(this: Ref)
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
   requires acc(InheritedSpecifiedCounting_unique(this), write)
+  requires (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+      intFromRef(c_SpecifiedCountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedSpecifiedCounting()
   ensures acc(InheritedSpecifiedCounting_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
       intFromRef(c_SpecifiedCountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
-      intFromRef(c_SpecifiedCountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(InheritedSpecifiedCounting_unique(this), write)
   unfold acc(c_SpecifiedCountingBase_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
+  anon_0 := this.n
+  this.n := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(c_SpecifiedCountingBase_unique(this), write)
   fold acc(InheritedSpecifiedCounting_unique(this), write)
@@ -2074,23 +2382,52 @@ method InheritedSpecifiedCounting_c_SpecifiedCountingBase_f_inc_inherited_body_c
 }
 
 method InheritedSpecifiedCounting_c_SpecifiedCountingBase_f_inc_inherited_contract_c_SpecifiedCountingBase_f_inc(this: Ref)
-  returns (ret_2: Ref)
-  requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
-  requires acc(InheritedSpecifiedCounting_unique(this), write)
-  requires typeOf(this) == InheritedSpecifiedCounting()
-  ensures acc(InheritedSpecifiedCounting_unique(this), write)
-  ensures isSubtype(typeOf(ret_2), unitType())
-  ensures (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
-      intFromRef(c_SpecifiedCountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
-      intFromRef(c_SpecifiedCountingBase_f_count(this)))) +
-    1
-
-
-method refines_InheritedSpecifiedCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
   returns (ret_3: Ref)
   requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
   requires acc(InheritedSpecifiedCounting_unique(this), write)
+  requires (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+      intFromRef(c_SpecifiedCountingBase_f_count(this)) < 2147483647)
+  requires typeOf(this) == InheritedSpecifiedCounting()
+  ensures acc(InheritedSpecifiedCounting_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+      intFromRef(c_SpecifiedCountingBase_f_count(this))) ==
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
+
+
+method refines_InheritedSpecifiedCounting_c_RuntimeTally_f_inc_inherited_contract_c_RuntimeTally_f_inc(this: Ref)
+  returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
+  requires acc(InheritedSpecifiedCounting_unique(this), write)
+  requires (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+      intFromRef(c_SpecifiedCountingBase_f_count(this)) < 2147483647)
+  requires typeOf(this) == InheritedSpecifiedCounting()
+  requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
+{
+  ret_4 := InheritedSpecifiedCounting_c_SpecifiedCountingBase_f_inc_inherited_body_c_SpecifiedCountingBase_f_inc(this)
+  assert acc(InheritedSpecifiedCounting_unique(this), write)
+  assert isSubtype(typeOf(ret_4), unitType())
+  assert (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+      intFromRef(c_SpecifiedCountingBase_f_count(this))) ==
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
+}
+
+method refines_InheritedSpecifiedCounting_c_SpecifiedCountingBase_f_inc_inherited_contract_c_SpecifiedCountingBase_f_inc(this: Ref)
+  returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
+  requires acc(InheritedSpecifiedCounting_unique(this), write)
+  requires (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+      intFromRef(c_SpecifiedCountingBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedSpecifiedCounting()
   requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
 {
@@ -2099,24 +2436,10 @@ method refines_InheritedSpecifiedCounting_c_RuntimeTally_f_inc_inherited_contrac
   assert isSubtype(typeOf(ret_3), unitType())
   assert (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
       intFromRef(c_SpecifiedCountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
-      intFromRef(c_SpecifiedCountingBase_f_count(this)))) +
-    1
-}
-
-method refines_InheritedSpecifiedCounting_c_SpecifiedCountingBase_f_inc_inherited_contract_c_SpecifiedCountingBase_f_inc(this: Ref)
-  returns (ret_2: Ref)
-  requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
-  requires acc(InheritedSpecifiedCounting_unique(this), write)
-  requires typeOf(this) == InheritedSpecifiedCounting()
-  requires isSubtype(typeOf(this), InheritedSpecifiedCounting())
-{
-  ret_2 := InheritedSpecifiedCounting_c_SpecifiedCountingBase_f_inc_inherited_body_c_SpecifiedCountingBase_f_inc(this)
-  assert acc(InheritedSpecifiedCounting_unique(this), write)
-  assert isSubtype(typeOf(ret_2), unitType())
-  assert (unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
-      intFromRef(c_SpecifiedCountingBase_f_count(this))) ==
-    old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
-      intFromRef(c_SpecifiedCountingBase_f_count(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(InheritedSpecifiedCounting_unique(this), wildcard) in
+        c_SpecifiedCountingBase_f_count(this)))) +
+      intFromRef(intToRef(1)))
 }

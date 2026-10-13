@@ -1,18 +1,20 @@
 /unique_conditional_values.kt: info: Generated Viper text for make:
 field bf_x: Ref
 
-method con(par_x: Ref) returns (ret_1: Ref)
+method con(par_x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_x), intType())
-  ensures isSubtype(typeOf(ret_1), Counter())
-  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
-    isSubtype(typeOf(ret_1.bf_x), intType())
-  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+  ensures isSubtype(typeOf(ret_2), Counter())
+  ensures isSubtype(typeOf(ret_2), Counter()) && acc(ret_2.bf_x, write) &&
+    isSubtype(typeOf(ret_2.bf_x), intType())
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
 
 
 method make(par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(v_ret_0), Counter())
   ensures acc(Counter_unique(v_ret_0), write)
+  ensures (unfolding acc(Counter_unique(v_ret_0), write) in
+      intFromRef(v_ret_0.bf_x) == intFromRef(par_v))
 {
   v_ret_0 := con(par_v)
   fold acc(Counter_unique(v_ret_0), write)
@@ -400,34 +402,37 @@ method wrongConditionalConstructorIntoField(h: Ref, b: Ref)
 /unique_conditional_values.kt: info: Generated Viper text for whenOfFreshValues:
 field bf_x: Ref
 
-method con(par_x: Ref) returns (ret_1: Ref)
+method con(par_x: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_x), intType())
-  ensures isSubtype(typeOf(ret_1), Counter())
-  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
-    isSubtype(typeOf(ret_1.bf_x), intType())
-  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+  ensures isSubtype(typeOf(ret_2), Counter())
+  ensures isSubtype(typeOf(ret_2), Counter()) && acc(ret_2.bf_x, write) &&
+    isSubtype(typeOf(ret_2.bf_x), intType())
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
 
 
-method consume(par_c: Ref) returns (ret_5: Ref)
+method consume(par_c: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(par_c), Counter())
   requires acc(Counter_unique(par_c), write)
-  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures isSubtype(typeOf(ret_6), unitType())
 
 
-method make(par_v: Ref) returns (ret_2: Ref)
-  requires isSubtype(typeOf(par_v), intType())
-  ensures isSubtype(typeOf(ret_2), Counter())
-  ensures acc(Counter_unique(ret_2), write)
-
-
-method makeInline(par_v: Ref) returns (ret_3: Ref)
+method make(par_v: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(ret_3), Counter())
   ensures acc(Counter_unique(ret_3), write)
+  ensures (unfolding acc(Counter_unique(ret_3), write) in
+      intFromRef(ret_3.bf_x) == intFromRef(par_v))
+
+
+method makeInline(par_v: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(ret_4), Counter())
+  ensures acc(Counter_unique(ret_4), write)
 
 
 method whenOfFreshValues(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var l0_c: Ref
@@ -442,12 +447,12 @@ method whenOfFreshValues(n: Ref) returns (v_ret_0: Ref)
   } elseif (intFromRef(anon_0) == 1) {
     anon_1 := make(intToRef(1))
   } else {
-    var v_ret_4: Ref
-    v_ret_4 := con(n)
-    fold acc(Counter_unique(v_ret_4), write)
-    goto lbl_ret_4
-    label lbl_ret_4
-    anon_1 := v_ret_4
+    var v_ret_5: Ref
+    v_ret_5 := con(n)
+    fold acc(Counter_unique(v_ret_5), write)
+    goto lbl_ret_5
+    label lbl_ret_5
+    anon_1 := v_ret_5
   }
   l0_c := anon_1
   unfold acc(Counter_unique(l0_c), write)

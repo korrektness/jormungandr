@@ -802,7 +802,7 @@ method falseGetter(v_this: Ref) returns (ret_1: Ref)
 
 method getterCaller(g: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(g), GetterBody())
-  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures isSubtype(typeOf(v_ret_0), longType())
 {
   var anon_0: Ref
   var anon_1: Ref
@@ -815,7 +815,7 @@ method getterCaller(g: Ref) returns (v_ret_0: Ref)
   anon_3 := eg_guardedExtension(g)
   anon_2 := anon_3
   inhale isSubtype(typeOf(anon_2), intType())
-  v_ret_0 := plusInts(anon_0, anon_2)
+  v_ret_0 := plusLongLong(convertIntToLong(anon_0), convertIntToLong(anon_2))
   goto lbl_ret_0
   label lbl_ret_0
 }

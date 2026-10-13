@@ -6,7 +6,8 @@ class Box(var value: Int)
 
 fun <!VIPER_TEXT!>boundAll<!>(b: @Unique @Borrowed Box) {
     postconditions<Unit> {
-        forAll<Int> { k -> (0 <= k && k < 3) implies (b.value + k >= k) }
+        b.value == 0
+        forAll<Int> { k -> (0 <= k && k < 3 && b.value <= 2147483645) implies (b.value + k >= k) }
     }
     b.value = 0
 }

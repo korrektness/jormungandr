@@ -5,10 +5,20 @@ method doubled(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), anyType())
   ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
 {
-  var anon: Ref
+  var n: Ref
+  var anon_0: Ref
+  var anon_1: Ref
   inhale isSubtype(typeOf(this), Box())
-  anon := havoc(intType())
-  v_ret_0 := timesInts(anon, intToRef(2))
+  n := havoc(intType())
+  if (intFromRef(n) >= -1073741824) {
+    anon_1 := leInts(n, intToRef(1073741823))
+  } else {
+    anon_1 := boolToRef(false)}
+  if (boolFromRef(anon_1)) {
+    anon_0 := timesInts(n, intToRef(2))
+  } else {
+    anon_0 := intToRef(0)}
+  v_ret_0 := anon_0
   goto lbl_ret_0
   label lbl_ret_0
 }

@@ -12,8 +12,10 @@ fun <!VIPER_TEXT!>reset<!>(b: @Unique Box): @Unique Box {
 fun <!VIPER_TEXT!>sink<!>(b: @Unique Box) {}
 
 fun <!VIPER_TEXT!>bumpEach<!>(b: @Unique @Borrowed Box, n: Int) {
+    preconditions { 0 <= n && b.value <= 2147483647 - n }
     var i = 0
     while (i < n) {
+        loopInvariants { 0 <= i && i <= n && b.value <= 2147483647 - (n - i) }
         b.value = b.value + 1
         i = i + 1
     }
@@ -34,7 +36,7 @@ fun <!VIPER_TEXT!>jumps<!>(b: @Unique @Borrowed Box?, n: Int) {
     while (i < n) {
         i = i + 1
         if (b == null) break
-        if (b.value < 0) continue
+        if (b.value < 0 || b.value == 2147483647) continue
         b.value = b.value + 1
     }
 }

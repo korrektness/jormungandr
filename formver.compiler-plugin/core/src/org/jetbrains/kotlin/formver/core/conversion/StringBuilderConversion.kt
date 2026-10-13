@@ -33,7 +33,7 @@ fun StmtConversionContext.convertStringBuilderIntrinsic(
         StringBuilderIntrinsic.TO_STRING -> StringBuilderToString(builder, owned)
         StringBuilderIntrinsic.APPEND_CHAR, StringBuilderIntrinsic.APPEND_STRING -> {
             val value = (access as FirFunctionCall).arguments.single()
-            StringBuilderAppend(builder, convert(value), owned)
+            StringBuilderAppend(builder, convert(value), owned, exceptionalExit())
         }
         StringBuilderIntrinsic.CLEAR -> StringBuilderClear(builder, owned)
     }

@@ -32,6 +32,9 @@ internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuil
     type.isUnit -> unit()
     type.isChar -> char()
     type.isInt -> int()
+    type.isLong -> long()
+    type.isShort -> short()
+    type.isByte -> byte()
     type.isBoolean -> boolean()
     type.isNothing -> nothing()
     type.isSomeFunctionType(converter.session) -> function {

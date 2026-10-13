@@ -1,0 +1,774 @@
+/checked_widths.kt: info: Generated Viper text for longAddOverflow:
+method longAddOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) == 9223372036854775807
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := plusLongLong(x, longToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for longSubOverflow:
+method longSubOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) ==
+    (let anon ==
+      (minusLongLong(unaryMinusLong(longToRef(9223372036854775807)), longToRef(1))) in
+      longFromRef(unaryMinusLong(longToRef(9223372036854775807))) -
+      longFromRef(longToRef(1)))
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := minusLongLong(x, longToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for longMulOverflow:
+method longMulOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) == 4611686018427387904
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := timesLongLong(x, longToRef(2))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for longNegOverflow:
+method longNegOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) ==
+    (let anon ==
+      (minusLongLong(unaryMinusLong(longToRef(9223372036854775807)), longToRef(1))) in
+      longFromRef(unaryMinusLong(longToRef(9223372036854775807))) -
+      longFromRef(longToRef(1)))
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := unaryMinusLong(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for longDivOverflow:
+method longDivOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) ==
+    (let anon ==
+      (minusLongLong(unaryMinusLong(longToRef(9223372036854775807)), longToRef(1))) in
+      longFromRef(unaryMinusLong(longToRef(9223372036854775807))) -
+      longFromRef(longToRef(1)))
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := divLongLong(x, unaryMinusLong(longToRef(1)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for longRemMin:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method longRemMin(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) ==
+    (let anon ==
+      (minusLongLong(unaryMinusLong(longToRef(9223372036854775807)), longToRef(1))) in
+      longFromRef(unaryMinusLong(longToRef(9223372036854775807))) -
+      longFromRef(longToRef(1)))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (remLongLong(x, unaryMinusLong(longToRef(1)))) in
+      longFromRef(x) -
+      (longFromRef(x) < 0 != longFromRef(unaryMinusLong(longToRef(1))) < 0 ?
+        -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(unaryMinusLong(longToRef(1))) < 0 ?
+          -longFromRef(unaryMinusLong(longToRef(1))) :
+          longFromRef(unaryMinusLong(longToRef(1))))) :
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(unaryMinusLong(longToRef(1))) < 0 ?
+          -longFromRef(unaryMinusLong(longToRef(1))) :
+          longFromRef(unaryMinusLong(longToRef(1))))) *
+      longFromRef(unaryMinusLong(longToRef(1)))) ==
+    0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_widths.kt: info: Generated Viper text for longMinimumMagnitudes:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method longMinimumMagnitudes(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) ==
+    (let anon ==
+      (minusLongLong(unaryMinusLong(longToRef(9223372036854775807)), longToRef(1))) in
+      longFromRef(unaryMinusLong(longToRef(9223372036854775807))) -
+      longFromRef(longToRef(1)))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (divLongLong(x, longToRef(2))) in
+      (longFromRef(x) < 0 != longFromRef(longToRef(2)) < 0 ?
+        -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(longToRef(2)) < 0 ?
+          -longFromRef(longToRef(2)) :
+          longFromRef(longToRef(2)))) :
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(longToRef(2)) < 0 ?
+          -longFromRef(longToRef(2)) :
+          longFromRef(longToRef(2))))) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(4611686018427387904))) in
+      -longFromRef(longToRef(4611686018427387904)))
+  assert (let anon ==
+      (remLongLong(x, longToRef(2))) in
+      longFromRef(x) -
+      (longFromRef(x) < 0 != longFromRef(longToRef(2)) < 0 ?
+        -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(longToRef(2)) < 0 ?
+          -longFromRef(longToRef(2)) :
+          longFromRef(longToRef(2)))) :
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(longToRef(2)) < 0 ?
+          -longFromRef(longToRef(2)) :
+          longFromRef(longToRef(2)))) *
+      longFromRef(longToRef(2))) ==
+    0
+  assert (let anon ==
+      (divLongLong(x, x)) in
+      (longFromRef(x) < 0 != longFromRef(x) < 0 ?
+        -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x))) :
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)))) ==
+    1
+  assert (let anon ==
+      (remLongLong(x, x)) in
+      longFromRef(x) -
+      (longFromRef(x) < 0 != longFromRef(x) < 0 ?
+        -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x))) :
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x))) *
+      longFromRef(x)) ==
+    0
+  assert (let anon ==
+      (divLongLong(longToRef(1), x)) in
+      (longFromRef(longToRef(1)) < 0 != longFromRef(x) < 0 ?
+        -((longFromRef(longToRef(1)) < 0 ?
+          -longFromRef(longToRef(1)) :
+          longFromRef(longToRef(1))) \
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x))) :
+        (longFromRef(longToRef(1)) < 0 ?
+          -longFromRef(longToRef(1)) :
+          longFromRef(longToRef(1))) \
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)))) ==
+    0
+  assert (let anon ==
+      (remLongLong(longToRef(1), x)) in
+      longFromRef(longToRef(1)) -
+      (longFromRef(longToRef(1)) < 0 != longFromRef(x) < 0 ?
+        -((longFromRef(longToRef(1)) < 0 ?
+          -longFromRef(longToRef(1)) :
+          longFromRef(longToRef(1))) \
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x))) :
+        (longFromRef(longToRef(1)) < 0 ?
+          -longFromRef(longToRef(1)) :
+          longFromRef(longToRef(1))) \
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x))) *
+      longFromRef(x)) ==
+    1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_widths.kt: info: Generated Viper text for longSigned:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method longSigned(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires isSubtype(typeOf(y), longType())
+  requires longFromRef(x) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(3))) in
+      -longFromRef(longToRef(3)))
+  requires longFromRef(y) == 2
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (divLongLong(x, y)) in
+      (longFromRef(x) < 0 != longFromRef(y) < 0 ?
+        -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(y) < 0 ? -longFromRef(y) : longFromRef(y))) :
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(y) < 0 ? -longFromRef(y) : longFromRef(y)))) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1)))
+  assert (let anon ==
+      (remLongLong(x, y)) in
+      longFromRef(x) -
+      (longFromRef(x) < 0 != longFromRef(y) < 0 ?
+        -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(y) < 0 ? -longFromRef(y) : longFromRef(y))) :
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(y) < 0 ? -longFromRef(y) : longFromRef(y))) *
+      longFromRef(y)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1)))
+  assert (let anon ==
+      (divLongLong(x, unaryMinusLong(y))) in
+      (longFromRef(x) < 0 != longFromRef(unaryMinusLong(y)) < 0 ?
+        -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(unaryMinusLong(y)) < 0 ?
+          -longFromRef(unaryMinusLong(y)) :
+          longFromRef(unaryMinusLong(y)))) :
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(unaryMinusLong(y)) < 0 ?
+          -longFromRef(unaryMinusLong(y)) :
+          longFromRef(unaryMinusLong(y))))) ==
+    1
+  assert (let anon ==
+      (remLongLong(x, unaryMinusLong(y))) in
+      longFromRef(x) -
+      (longFromRef(x) < 0 != longFromRef(unaryMinusLong(y)) < 0 ?
+        -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(unaryMinusLong(y)) < 0 ?
+          -longFromRef(unaryMinusLong(y)) :
+          longFromRef(unaryMinusLong(y)))) :
+        (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+        (longFromRef(unaryMinusLong(y)) < 0 ?
+          -longFromRef(unaryMinusLong(y)) :
+          longFromRef(unaryMinusLong(y)))) *
+      longFromRef(unaryMinusLong(y))) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_widths.kt: info: Generated Viper text for longIncOverflow:
+method longIncOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) == 9223372036854775807
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  var y: Ref
+  var anon: Ref
+  y := x
+  anon := y
+  y := incLong(anon)
+  v_ret_0 := y
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for longDecOverflow:
+method longDecOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) ==
+    (let anon_builtin ==
+      (minusLongLong(unaryMinusLong(longToRef(9223372036854775807)), longToRef(1))) in
+      longFromRef(unaryMinusLong(longToRef(9223372036854775807))) -
+      longFromRef(longToRef(1)))
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  var y: Ref
+  var anon_0: Ref
+  y := x
+  anon_0 := y
+  y := decLong(anon_0)
+  v_ret_0 := y
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for longZeroDiv:
+method longZeroDiv(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := divLongLong(x, longToRef(0))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for longZeroRem:
+method longZeroRem(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := remLongLong(x, longToRef(0))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for byteZeroDiv:
+method byteZeroDiv(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), byteType())
+  requires isSubtype(typeOf(y), byteType())
+  requires byteFromRef(y) ==
+    (let anon ==
+      (convertIntToByte(intToRef(0))) in
+      intFromRef(intToRef(0)))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := divByteByte(x, y)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for byteZeroRem:
+method byteZeroRem(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), byteType())
+  requires isSubtype(typeOf(y), byteType())
+  requires byteFromRef(y) ==
+    (let anon ==
+      (convertIntToByte(intToRef(0))) in
+      intFromRef(intToRef(0)))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := remByteByte(x, y)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for shortZeroDiv:
+method shortZeroDiv(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), shortType())
+  requires isSubtype(typeOf(y), shortType())
+  requires shortFromRef(y) ==
+    (let anon ==
+      (convertIntToShort(intToRef(0))) in
+      intFromRef(intToRef(0)))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := divShortShort(x, y)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for shortZeroRem:
+method shortZeroRem(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), shortType())
+  requires isSubtype(typeOf(y), shortType())
+  requires shortFromRef(y) ==
+    (let anon ==
+      (convertIntToShort(intToRef(0))) in
+      intFromRef(intToRef(0)))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := remShortShort(x, y)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for byteInc:
+method byteInc(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), byteType())
+  requires byteFromRef(x) ==
+    (let anon ==
+      (convertIntToByte(intToRef(127))) in
+      intFromRef(intToRef(127)))
+  ensures isSubtype(typeOf(v_ret_0), byteType())
+{
+  v_ret_0 := incByte(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for byteDec:
+method byteDec(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), byteType())
+  requires byteFromRef(x) ==
+    (let anon ==
+      (convertIntToByte(intToRef(-128))) in
+      intFromRef(intToRef(-128)))
+  ensures isSubtype(typeOf(v_ret_0), byteType())
+{
+  v_ret_0 := decByte(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for shortInc:
+method shortInc(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), shortType())
+  requires shortFromRef(x) ==
+    (let anon ==
+      (convertIntToShort(intToRef(32767))) in
+      intFromRef(intToRef(32767)))
+  ensures isSubtype(typeOf(v_ret_0), shortType())
+{
+  v_ret_0 := incShort(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for shortDec:
+method shortDec(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), shortType())
+  requires shortFromRef(x) ==
+    (let anon ==
+      (convertIntToShort(intToRef(-32768))) in
+      intFromRef(intToRef(-32768)))
+  ensures isSubtype(typeOf(v_ret_0), shortType())
+{
+  v_ret_0 := decShort(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for bytePromotions:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bytePromotions(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), byteType())
+  requires isSubtype(typeOf(y), byteType())
+  requires byteFromRef(x) ==
+    (let anon ==
+      (convertIntToByte(intToRef(-128))) in
+      intFromRef(intToRef(-128)))
+  requires byteFromRef(y) ==
+    (let anon ==
+      (convertIntToByte(intToRef(-1))) in
+      intFromRef(intToRef(-1)))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (plusByteByte(x, y)) in
+      byteFromRef(x) + byteFromRef(y)) ==
+    -129
+  assert (let anon ==
+      (minusByteByte(x, y)) in
+      byteFromRef(x) - byteFromRef(y)) ==
+    -127
+  assert (let anon ==
+      (timesByteByte(x, y)) in
+      byteFromRef(x) * byteFromRef(y)) ==
+    128
+  assert (let anon == (unaryMinusByte(x)) in -byteFromRef(x)) == 128
+  assert byteFromRef(x) == -128
+  assert (let anon ==
+      (divByteByte(x, y)) in
+      (byteFromRef(x) < 0 != byteFromRef(y) < 0 ?
+        -((byteFromRef(x) < 0 ? -byteFromRef(x) : byteFromRef(x)) \
+        (byteFromRef(y) < 0 ? -byteFromRef(y) : byteFromRef(y))) :
+        (byteFromRef(x) < 0 ? -byteFromRef(x) : byteFromRef(x)) \
+        (byteFromRef(y) < 0 ? -byteFromRef(y) : byteFromRef(y)))) ==
+    128
+  assert (let anon ==
+      (remByteByte(x, y)) in
+      byteFromRef(x) -
+      (byteFromRef(x) < 0 != byteFromRef(y) < 0 ?
+        -((byteFromRef(x) < 0 ? -byteFromRef(x) : byteFromRef(x)) \
+        (byteFromRef(y) < 0 ? -byteFromRef(y) : byteFromRef(y))) :
+        (byteFromRef(x) < 0 ? -byteFromRef(x) : byteFromRef(x)) \
+        (byteFromRef(y) < 0 ? -byteFromRef(y) : byteFromRef(y))) *
+      byteFromRef(y)) ==
+    0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_widths.kt: info: Generated Viper text for shortPromotions:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method shortPromotions(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), shortType())
+  requires isSubtype(typeOf(y), shortType())
+  requires shortFromRef(x) ==
+    (let anon ==
+      (convertIntToShort(intToRef(-32768))) in
+      intFromRef(intToRef(-32768)))
+  requires shortFromRef(y) ==
+    (let anon ==
+      (convertIntToShort(intToRef(-1))) in
+      intFromRef(intToRef(-1)))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (plusShortShort(x, y)) in
+      shortFromRef(x) + shortFromRef(y)) ==
+    -32769
+  assert (let anon ==
+      (minusShortShort(x, y)) in
+      shortFromRef(x) - shortFromRef(y)) ==
+    -32767
+  assert (let anon ==
+      (timesShortShort(x, y)) in
+      shortFromRef(x) * shortFromRef(y)) ==
+    32768
+  assert (let anon == (unaryMinusShort(x)) in -shortFromRef(x)) == 32768
+  assert shortFromRef(x) == -32768
+  assert (let anon ==
+      (divShortShort(x, y)) in
+      (shortFromRef(x) < 0 != shortFromRef(y) < 0 ?
+        -((shortFromRef(x) < 0 ? -shortFromRef(x) : shortFromRef(x)) \
+        (shortFromRef(y) < 0 ? -shortFromRef(y) : shortFromRef(y))) :
+        (shortFromRef(x) < 0 ? -shortFromRef(x) : shortFromRef(x)) \
+        (shortFromRef(y) < 0 ? -shortFromRef(y) : shortFromRef(y)))) ==
+    32768
+  assert (let anon ==
+      (remShortShort(x, y)) in
+      shortFromRef(x) -
+      (shortFromRef(x) < 0 != shortFromRef(y) < 0 ?
+        -((shortFromRef(x) < 0 ? -shortFromRef(x) : shortFromRef(x)) \
+        (shortFromRef(y) < 0 ? -shortFromRef(y) : shortFromRef(y))) :
+        (shortFromRef(x) < 0 ? -shortFromRef(x) : shortFromRef(x)) \
+        (shortFromRef(y) < 0 ? -shortFromRef(y) : shortFromRef(y))) *
+      shortFromRef(y)) ==
+    0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_widths.kt: info: Generated Viper text for narrowByte:
+method narrowByte(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 128
+  ensures isSubtype(typeOf(v_ret_0), byteType())
+{
+  v_ret_0 := convertIntToByte(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for narrowShort:
+method narrowShort(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 32768
+  ensures isSubtype(typeOf(v_ret_0), shortType())
+{
+  v_ret_0 := convertIntToShort(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for narrowInt:
+method narrowInt(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) == 2147483648
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := convertLongToInt(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for narrowChar:
+method narrowChar(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == -1
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  v_ret_0 := convertIntToChar(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for exactWidening:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method exactWidening(x: Ref, y: Ref, z: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), byteType())
+  requires isSubtype(typeOf(y), shortType())
+  requires isSubtype(typeOf(z), intType())
+  requires isSubtype(typeOf(c), charType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert byteFromRef(x) == byteFromRef(x)
+  assert shortFromRef(y) == shortFromRef(y)
+  assert (let anon ==
+      (convertLongToInt(convertIntToLong(z))) in
+      longFromRef(convertIntToLong(z))) ==
+    intFromRef(z)
+  assert charFromRef(c) >= 0
+  assert charFromRef(c) <= 65535
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_widths.kt: info: Generated Viper text for mixedWidths:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method mixedWidths(x: Ref, y: Ref, z: Ref, w: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), byteType())
+  requires isSubtype(typeOf(y), shortType())
+  requires isSubtype(typeOf(z), intType())
+  requires isSubtype(typeOf(w), longType())
+  requires byteFromRef(x) ==
+    (let anon ==
+      (convertIntToByte(intToRef(1))) in
+      intFromRef(intToRef(1)))
+  requires shortFromRef(y) ==
+    (let anon ==
+      (convertIntToShort(intToRef(2))) in
+      intFromRef(intToRef(2)))
+  requires intFromRef(z) == 3
+  requires longFromRef(w) == 4
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (plusByteShort(x, y)) in
+      byteFromRef(x) + shortFromRef(y)) ==
+    3
+  assert (let anon ==
+      (plusShortInt(y, z)) in
+      shortFromRef(y) + intFromRef(z)) ==
+    5
+  assert (let anon ==
+      (plusIntLong(z, w)) in
+      intFromRef(z) + longFromRef(w)) ==
+    7
+  assert (let anon ==
+      (plusLongByte(w, x)) in
+      longFromRef(w) + byteFromRef(x)) ==
+    5
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_widths.kt: info: Generated Viper text for charInc:
+method charInc(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  requires charFromRef(c) == 65535
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  v_ret_0 := incChar(c)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for charDec:
+method charDec(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  requires charFromRef(c) == 0
+  ensures isSubtype(typeOf(v_ret_0), charType())
+{
+  v_ret_0 := decChar(c)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/checked_widths.kt: info: Generated Viper text for compareWidths:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method compareWidths(b: Ref, s: Ref, l: Ref, c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), byteType())
+  requires isSubtype(typeOf(s), shortType())
+  requires isSubtype(typeOf(l), longType())
+  requires isSubtype(typeOf(c), charType())
+  requires byteFromRef(b) ==
+    (let anon ==
+      (convertIntToByte(intToRef(3))) in
+      intFromRef(intToRef(3)))
+  requires shortFromRef(s) ==
+    (let anon ==
+      (convertIntToShort(intToRef(3))) in
+      intFromRef(intToRef(3)))
+  requires longFromRef(l) == 3
+  requires charFromRef(c) == 99
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (byteFromRef(b) <
+    (let anon ==
+      (convertIntToByte(intToRef(1))) in
+      intFromRef(intToRef(1))) ?
+      -1 :
+      (byteFromRef(b) >
+      (let anon ==
+        (convertIntToByte(intToRef(1))) in
+        intFromRef(intToRef(1))) ?
+        1 :
+        0)) ==
+    1
+  assert (shortFromRef(s) <
+    (let anon ==
+      (convertIntToShort(intToRef(1))) in
+      intFromRef(intToRef(1))) ?
+      -1 :
+      (shortFromRef(s) >
+      (let anon ==
+        (convertIntToShort(intToRef(1))) in
+        intFromRef(intToRef(1))) ?
+        1 :
+        0)) ==
+    1
+  assert (longFromRef(l) < 1 ? -1 : (longFromRef(l) > 1 ? 1 : 0)) == 1
+  assert (charFromRef(c) < 97 ? -1 : (charFromRef(c) > 97 ? 1 : 0)) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_widths.kt: info: Generated Viper text for charCompareDifference:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method charCompareDifference(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), charType())
+  requires charFromRef(c) == 99
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (charFromRef(c) < 97 ? -1 : (charFromRef(c) > 97 ? 1 : 0)) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_widths.kt: info: Generated Viper text for longConstantNormalization:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method longConstantNormalization() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert ((let anon ==
+      (minusLongLong(unaryMinusLong(longToRef(9223372036854775807)), longToRef(1))) in
+      longFromRef(unaryMinusLong(longToRef(9223372036854775807))) -
+      longFromRef(longToRef(1))) <
+    0 ?
+      -1 :
+      ((let anon ==
+        (minusLongLong(unaryMinusLong(longToRef(9223372036854775807)), longToRef(1))) in
+        longFromRef(unaryMinusLong(longToRef(9223372036854775807))) -
+        longFromRef(longToRef(1))) >
+      0 ?
+        1 :
+        0)) <
+    0
+  assert (9223372036854775807 < 0 ? -1 : (9223372036854775807 > 0 ? 1 : 0)) >
+    0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

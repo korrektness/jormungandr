@@ -40,11 +40,185 @@ function z(this: Ref): Ref
 
 method sum(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Bar())
+  requires ((let anon ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) ?
+      -1 :
+      ((let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) <
+    2147483647 ?
+      -1 :
+      ((let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   v_ret_0 := plusInts(x(this), z(this))
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/inheritance.kt: info: Generated Viper text for Baz:
+field b: Ref
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Foo())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Foo())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function z(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Bar())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Baz_c_Bar_f_sum_inherited_body_c_Bar_f_sum(this: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Baz())
+  requires ((let anon ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) ?
+      -1 :
+      ((let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) <
+    2147483647 ?
+      -1 :
+      ((let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
+  requires typeOf(this) == Baz()
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := plusInts(x(this), z(this))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method Baz_c_Bar_f_sum_inherited_contract_c_Bar_f_sum(this: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Baz())
+  requires ((let anon ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) ?
+      -1 :
+      ((let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) <
+    2147483647 ?
+      -1 :
+      ((let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
+  requires typeOf(this) == Baz()
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method refines_Baz_c_Bar_f_sum_inherited_contract_c_Bar_f_sum(this: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Baz())
+  requires ((let anon ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) ?
+      -1 :
+      ((let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) <
+    2147483647 ?
+      -1 :
+      ((let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
+  requires typeOf(this) == Baz()
+  requires isSubtype(typeOf(this), Baz())
+{
+  ret_2 := Baz_c_Bar_f_sum_inherited_body_c_Bar_f_sum(this)
+  assert isSubtype(typeOf(ret_2), intType())
 }
 
 /inheritance.kt: info: Generated Viper text for callSuperMethod:
@@ -153,6 +327,38 @@ function z(this: Ref): Ref
 
 method callNewMethod(bar: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(bar), Bar())
+  requires ((let anon ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon ==
+      (plusLongLong(convertIntToLong(x(bar)), convertIntToLong(z(bar)))) in
+      longFromRef(convertIntToLong(x(bar))) +
+      longFromRef(convertIntToLong(z(bar)))) ?
+      -1 :
+      ((let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon ==
+        (plusLongLong(convertIntToLong(x(bar)), convertIntToLong(z(bar)))) in
+        longFromRef(convertIntToLong(x(bar))) +
+        longFromRef(convertIntToLong(z(bar)))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon ==
+      (plusLongLong(convertIntToLong(x(bar)), convertIntToLong(z(bar)))) in
+      longFromRef(convertIntToLong(x(bar))) +
+      longFromRef(convertIntToLong(z(bar)))) <
+    2147483647 ?
+      -1 :
+      ((let anon ==
+        (plusLongLong(convertIntToLong(x(bar)), convertIntToLong(z(bar)))) in
+        longFromRef(convertIntToLong(x(bar))) +
+        longFromRef(convertIntToLong(z(bar)))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   v_ret_0 := sum(bar)
@@ -160,9 +366,41 @@ method callNewMethod(bar: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-method sum(this: Ref) returns (ret_1: Ref)
+method sum(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), Bar())
-  ensures isSubtype(typeOf(ret_1), intType())
+  requires ((let anon ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) ?
+      -1 :
+      ((let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon ==
+      (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+      longFromRef(convertIntToLong(x(this))) +
+      longFromRef(convertIntToLong(z(this)))) <
+    2147483647 ?
+      -1 :
+      ((let anon ==
+        (plusLongLong(convertIntToLong(x(this)), convertIntToLong(z(this)))) in
+        longFromRef(convertIntToLong(x(this))) +
+        longFromRef(convertIntToLong(z(this)))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
+  ensures isSubtype(typeOf(ret_2), intType())
 
 
 /inheritance.kt: info: Generated Viper text for setSuperField:

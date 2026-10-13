@@ -3,6 +3,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 import org.jetbrains.kotlin.formver.plugin.verify
+import org.jetbrains.kotlin.formver.plugin.preconditions
 
 fun <T> <!VIPER_TEXT!>idFun<!>(arg: T): T = arg
 
@@ -74,6 +75,7 @@ fun <!VIPER_TEXT!>accessManyMembers<!>(m: ManyMembers) {
 }
 
 fun <!VIPER_TEXT!>checkEvaluatedOnce<!>(i: Int, mm: ManyMembers) {
+    preconditions { -2147483648 < i && i < 2147483647 }
     (i + (if (mm.b) 1 else -1)).copiedRun {
         verify(this == this)
     }

@@ -18,6 +18,7 @@ fun <!VIPER_TEXT!>fixedProperty<!>() {
 
 interface Growing : Sized {
     @SpecOf("grow") @Unique @Borrowed fun growSpec() {
+        preconditions { size <= 2147483645 }
         postconditions<Unit> { size == old(size) + 1 }
     }
     @Unique @Borrowed fun <!VIPER_TEXT!>grow<!>()
@@ -29,12 +30,14 @@ interface Growing : Sized {
     @Unique @Borrowed override fun <!VIPER_TEXT!>grow<!>() { n++ }
 }
 fun <!VIPER_TEXT!>growClient<!>(s: @Unique @Borrowed Growing) {
+    preconditions { s.size <= 2147483645 }
     postconditions<Unit> { s.size == old(s.size) + 1 }
     val before = s.size
     s.grow()
     verify(s.size == before + 1)
 }
 fun <!VIPER_TEXT!>borrowedProperty<!>(s: @Unique @Borrowed MutableSize) {
+    preconditions { s.size <= 2147483645 }
     val before = s.size
     growClient(s)
     verify(s.size == before + 1)

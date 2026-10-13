@@ -22,6 +22,7 @@ class TaggedHolder(var inner: @Unique Tagged)
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>consume<!>(c: @Unique Counter): Int = c.x
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>successor<!>(c: @Unique Counter): @Unique Counter {
+    preconditions { c.x < 2147483647 }
     c.x = c.x + 1
     return c
 }
@@ -148,13 +149,17 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>lambdaReassignsRetainedPath<!>(h: @Uniqu
 }
 
 fun <!VIPER_TEXT!>returnInlineResult<!>(c: @Unique Counter): @Unique Counter {
+    preconditions { c.x < 2147483647 }
     postconditions<Counter> { r -> r.x == old(c.x) + 1 }
     return successor(c)
 }
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>make<!>(v: Int): @Unique Counter = Counter(v)
 
-<!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>plusOne<!>(v: Int): Int = v + 1
+<!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>plusOne<!>(v: Int): Int {
+    preconditions { v < 2147483647 }
+    return v + 1
+}
 
 fun <!VIPER_TEXT!>resultIntoPath<!>(h: @Unique @Borrowed Holder) {
     h.inner = make(3)

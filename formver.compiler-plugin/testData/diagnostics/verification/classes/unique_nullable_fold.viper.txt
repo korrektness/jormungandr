@@ -74,6 +74,9 @@ field value: Ref
 method readAfterEarlyReturn(b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), nullable(Box()))
   requires b != nullValue() ==> acc(Box_unique(b), write)
+  requires b == nullValue() ||
+    (unfolding acc(Box_unique(b), write) in
+      intFromRef(b.value) < 2147483647)
   ensures b != nullValue() ==> acc(Box_unique(b), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
@@ -122,6 +125,8 @@ field value: Ref
 method classify(b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), Box())
   requires acc(Box_unique(b), write)
+  requires (unfolding acc(Box_unique(b), write) in
+      intFromRef(b.value) < 2147483647)
   ensures acc(Box_unique(b), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
 {

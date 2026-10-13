@@ -1,6 +1,7 @@
 // FULL_JDK
 
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
+import org.jetbrains.kotlin.formver.plugin.preconditions
 
 @NeverConvert
 inline fun invoke(f: (Int) -> Int): Int {
@@ -69,6 +70,7 @@ fun <!VIPER_TEXT!>captureVar<!>(): Int {
 }
 
 fun <!VIPER_TEXT!>captureAndShadow<!>(x: Int): Int {
+    preconditions { x <= 2147483646 }
     return invoke {
         val y = x
         val x = 1
@@ -87,6 +89,7 @@ fun <!VIPER_TEXT!>captureVarClash<!>(x: Int): Int {
 }
 
 fun <!VIPER_TEXT!>captureAndShadowClash<!>(x: Int): Int {
+    preconditions { x <= 2147483644 }
     return invokeClash {
         val y = x
         val x = 2
@@ -95,6 +98,7 @@ fun <!VIPER_TEXT!>captureAndShadowClash<!>(x: Int): Int {
 }
 
 fun <!VIPER_TEXT!>nestedLambdaShadowing<!>(x: Int): Int {
+    preconditions { x <= 2147483642 }
     return invokeClash {
         invokeClash {
             val x = 3

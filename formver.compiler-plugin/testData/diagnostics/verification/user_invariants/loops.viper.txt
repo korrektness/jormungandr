@@ -208,20 +208,21 @@ function size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method con(par_field: Ref) returns (ret_1: Ref)
+method con(par_field: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_field), intType())
-  ensures isSubtype(typeOf(ret_1), ClassWithField())
-  ensures intFromRef(g_field(ret_1)) == intFromRef(par_field)
+  ensures isSubtype(typeOf(ret_2), ClassWithField())
+  ensures intFromRef(g_field(ret_2)) == intFromRef(par_field)
 
 
 method test_while(param: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(param), ClassWithField())
+  requires intFromRef(g_field(param)) >= -46339
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var c: Ref
   var initParamField: Ref
   var iteration: Ref
-  var anon: Ref
+  var anon_1: Ref
   var cond1: Ref
   var cond2: Ref
   c := con(intToRef(13))
@@ -231,7 +232,13 @@ method test_while(param: Ref) returns (v_ret_0: Ref)
     iteration := intToRef(0)
   } else {
     var intermediate: Ref
+    var anon_0: Ref
     intermediate := plusInts(negInt(initParamField), intToRef(1))
+    if (1 <= intFromRef(intermediate)) {
+      anon_0 := leInts(intermediate, intToRef(46340))
+    } else {
+      anon_0 := boolToRef(false)}
+    assert boolFromRef(anon_0)
     iteration := timesInts(intermediate, intermediate)
   }
   label cont
@@ -239,8 +246,8 @@ method test_while(param: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(initParamField), intType())
     invariant isSubtype(typeOf(iteration), intType())
     invariant isSubtype(typeOf(param), ClassWithField())
-  anon := ltInts(iteration, intToRef(10))
-  if (boolFromRef(anon)) {
+  anon_1 := ltInts(iteration, intToRef(10))
+  if (boolFromRef(anon_1)) {
     var l4_field: Ref
     var paramField: Ref
     l4_field := g_field(c)

@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.linearization
 
+import org.jetbrains.kotlin.formver.core.asPosition
+
 import org.jetbrains.kotlin.formver.core.embeddings.properties.UniqueValStep
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
@@ -40,6 +42,8 @@ interface LinearizationContext {
     //  passing Position explicitly to ctx methods that need it.
     val source: KtSourceElement?
     val logicOperatorPolicy: LogicOperatorPolicy
+    val isTrigger: Boolean
+        get() = false
 
     /** Whether the linearized code inhales the type invariants the conversion records for a value. */
     val inhalesInvariants: Boolean
@@ -57,6 +61,11 @@ interface LinearizationContext {
     fun <R> withPosition(newSource: KtSourceElement, action: LinearizationContext.() -> R): R
 
     fun addStatement(buildStmt: LinearizationContext.() -> Stmt)
+
+    /** Preserve well-definedness obligations even when an expression's value is discarded. */
+    fun evaluateUnused(value: Exp) {
+        addStatement { Stmt.Assert(Exp.EqCmp(value, value), source.asPosition) }
+    }
     fun addDeclaration(decl: Declaration)
     fun store(lhs: VariableEmbedding, rhs: Linearizable)
     fun addReturn(returnExp: Linearizable, target: ReturnTarget)

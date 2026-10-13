@@ -55,6 +55,21 @@ data object IntTypeEmbedding : PretypeEmbedding {
     override val name = PretypeName("Int")
 }
 
+data object LongTypeEmbedding : PretypeEmbedding {
+    override val runtimeType = RuntimeTypeDomain.longType()
+    override val name = PretypeName("Long")
+}
+
+data object ShortTypeEmbedding : PretypeEmbedding {
+    override val runtimeType = RuntimeTypeDomain.shortType()
+    override val name = PretypeName("Short")
+}
+
+data object ByteTypeEmbedding : PretypeEmbedding {
+    override val runtimeType = RuntimeTypeDomain.byteType()
+    override val name = PretypeName("Byte")
+}
+
 data object BooleanTypeEmbedding : PretypeEmbedding {
     override val runtimeType = RuntimeTypeDomain.boolType()
     override val name = PretypeName("Boolean")

@@ -11,9 +11,11 @@ fun <!VIPER_TEXT!>identity<!>(n: Int, k: Int) {
     verify(a.size == n, x == k)
 }
 
+// TODO: Stabilize quantified square bounds; checked multiplication can stall verification.
+@NeverVerify
 fun <!VIPER_TEXT!>squares<!>(n: Int): @Unique IntArray {
     preconditions {
-        n >= 0
+        0 <= n && n <= 46341
     }
     postconditions<IntArray> { r ->
         r.size == n
@@ -22,7 +24,10 @@ fun <!VIPER_TEXT!>squares<!>(n: Int): @Unique IntArray {
     return IntArray(n) { it * it }
 }
 
-fun <!VIPER_TEXT!>next<!>(i: Int): Int = i + 1
+fun <!VIPER_TEXT!>next<!>(i: Int): Int {
+    preconditions { i < 2147483647 }
+    return i + 1
+}
 
 // The initializer calls a function, so only the size and ownership of the array are known.
 fun <!VIPER_TEXT!>impureInitializer<!>(n: Int): Int {

@@ -13,7 +13,7 @@ interface IntList {
 
     @SpecOf("add") @Unique @Borrowed
     fun addSpec(value: Int) {
-        preconditions { size() >= 0 }
+        preconditions { 0 <= size() && size() < 2147483647 }
         postconditions<Unit> {
             size() == old(size()) + 1
             get(old(size())) == value
@@ -78,38 +78,49 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
     }
 }
 
-// A pure array read's well-formedness needs its array bound in the guard.
+// An independent count cannot establish a pure array read's upper bound.
 <!VIPER_TEXT!>class ArrayBoundProbe<!>(var data: @Unique IntArray, var count: Int) {
     init { require(0 <= count && count <= data.size) }
-    @Law @Pure @Unique fun representation(): Boolean = 0 <= count && count <= data.size
-    @Pure @Unique fun <!VIPER_TEXT!>getByCount<!>(i: Int): Int =
-        if (0 <= i && i < count) data[i] else 0
+    @Law @Pure @Unique fun representation(): Boolean = 0 <= count
+    <!VIPER_VERIFICATION_ERROR!>@Pure @Unique fun <!VIPER_TEXT!>getByCount<!>(i: Int): Int =
+        if (0 <= i && i < count) data[i] else 0<!>
 }
 
 class IntNode(var value: Int, var next: @Unique IntNode?)
+// The recursive measure has no bound on its tail, so its addition is overflow-negative.
 @Pure fun <!VIPER_TEXT!>nodeSize<!>(node: @Unique IntNode?): Int {
     preconditions { decreases(node) }
-    return if (node == null) 0 else 1 + nodeSize(node.next)
+    return if (node == null) 0 else <!INTEGER_OVERFLOW!>1 + nodeSize(node.next)<!>
+}
+
+// Saturating length keeps the observer total; additions require spare capacity.
+@Pure fun <!VIPER_TEXT!>boundedNodeSize<!>(node: @Unique IntNode?): Int {
+    preconditions { decreases(node) }
+    postconditions<Int> { result -> result >= 0 }
+    if (node == null) return 0
+    val tail = boundedNodeSize(node.next)
+    return if (tail < 2147483647) 1 + tail else 2147483647
 }
 @Pure fun <!VIPER_TEXT!>nodeGet<!>(node: @Unique IntNode?, i: Int): Int {
     preconditions { decreases(node) }
-    return if (node == null) 0 else if (i == 0) node.value else nodeGet(node.next, i - 1)
+    return if (node == null || i < 0) 0 else if (i == 0) node.value else nodeGet(node.next, i - 1)
 }
 
 fun <!VIPER_TEXT!>nonnegativeNodes<!>(node: @Unique @Borrowed IntNode?) {
     postconditions<Unit> {
-        nodeSize(node) >= 0
-        nodeSize(node) == old(nodeSize(node))
+        boundedNodeSize(node) >= 0
+        boundedNodeSize(node) == old(boundedNodeSize(node))
         forAll<Int> { k -> nodeGet(node, k) == old(nodeGet(node, k)) }
     }
     if (node != null) nonnegativeNodes(node.next)
 }
 
 fun <!VIPER_TEXT!>appendNode<!>(node: @Unique IntNode?, value: Int): @Unique IntNode {
+    preconditions { boundedNodeSize(node) < 2147483647 }
     postconditions<IntNode> { result ->
-        nodeSize(result) == old(nodeSize(node)) + 1
-        nodeGet(result, old(nodeSize(node))) == value
-        forAll<Int> { k -> (0 <= k && k < old(nodeSize(node))) implies (nodeGet(result, k) == old(nodeGet(node, k))) }
+        boundedNodeSize(result) == old(boundedNodeSize(node)) + 1
+        nodeGet(result, old(boundedNodeSize(node))) == value
+        forAll<Int> { k -> (0 <= k && k < old(boundedNodeSize(node))) implies (nodeGet(result, k) == old(nodeGet(node, k))) }
     }
     if (node == null) return IntNode(value, null)
     nonnegativeNodes(node.next)
@@ -118,11 +129,11 @@ fun <!VIPER_TEXT!>appendNode<!>(node: @Unique IntNode?, value: Int): @Unique Int
 }
 
 fun <!VIPER_TEXT!>setNode<!>(node: @Unique @Borrowed IntNode?, i: Int, value: Int) {
-    preconditions { 0 <= i && i < nodeSize(node) }
+    preconditions { 0 <= i && i < boundedNodeSize(node) }
     postconditions<Unit> {
-        nodeSize(node) == old(nodeSize(node))
+        boundedNodeSize(node) == old(boundedNodeSize(node))
         nodeGet(node, i) == value
-        forAll<Int> { k -> (0 <= k && k < nodeSize(node) && k != i) implies (nodeGet(node, k) == old(nodeGet(node, k))) }
+        forAll<Int> { k -> (0 <= k && k < boundedNodeSize(node) && k != i) implies (nodeGet(node, k) == old(nodeGet(node, k))) }
     }
     if (node != null) {
         if (i == 0) node.value = value
@@ -131,8 +142,8 @@ fun <!VIPER_TEXT!>setNode<!>(node: @Unique @Borrowed IntNode?, i: Int, value: In
 }
 
 <!VIPER_TEXT!>class NodeIntList<!>(var head: @Unique IntNode?, var count: Int) : IntList {
-    init { require(count >= 0 && count == nodeSize(head)) }
-    @Law @Pure @Unique fun representation(): Boolean = count >= 0 && count == nodeSize(head)
+    init { require(count >= 0 && count == boundedNodeSize(head)) }
+    @Law @Pure @Unique fun representation(): Boolean = count >= 0 && count == boundedNodeSize(head)
     @Pure @Unique override fun <!VIPER_TEXT!>size<!>(): Int = count
     @Pure @Unique override fun <!VIPER_TEXT!>get<!>(i: Int): Int = nodeGet(head, i)
     @Unique @Borrowed override fun <!VIPER_TEXT!>add<!>(value: Int) {
@@ -145,6 +156,7 @@ fun <!VIPER_TEXT!>setNode<!>(node: @Unique @Borrowed IntNode?, i: Int, value: In
 }
 
 fun <!VIPER_TEXT!>interfaceClient<!>(list: @Unique @Borrowed IntList) {
+    preconditions { list.size() <= 2147483645 }
     val n = list.size()
     verify(n >= 0)
     list.add(7)
@@ -163,6 +175,7 @@ fun <!VIPER_TEXT!>interfaceClient<!>(list: @Unique @Borrowed IntList) {
 }
 
 fun <!VIPER_TEXT!>lendClient<!>(list: @Unique @Borrowed IntList) {
+    preconditions { list.size() < 2147483647 }
     postconditions<Unit> {
         list.size() == old(list.size()) + 1
         list.get(old(list.size())) == 42
@@ -248,6 +261,7 @@ fun <!VIPER_TEXT!>badGetIndex<!>(list: @Unique @Borrowed IntList) {
 }
 
 fun <!VIPER_TEXT!>falseClientClaim<!>(list: @Unique @Borrowed IntList) {
+    preconditions { list.size() < 2147483647 }
     val n = list.size()
     list.add(7)
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>list.get(n) == 8<!>)

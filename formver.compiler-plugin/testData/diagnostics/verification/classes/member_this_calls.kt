@@ -10,12 +10,14 @@ open class Counter(var count: Int) {
 
     @Unique @Borrowed
     fun <!VIPER_TEXT!>bump<!>() {
+        preconditions { count < 2147483647 }
         postconditions<Unit> { count == old(count) + 1 }
         count = count + 1
     }
 
     @Unique @Borrowed
     fun <!VIPER_TEXT!>touch<!>() {
+        preconditions { count < 2147483647 }
         count = count + 1
     }
 
@@ -89,6 +91,7 @@ open class Counter(var count: Int) {
 
     @Unique @Borrowed
     fun <!VIPER_TEXT!>subclassFieldsLost<!>() {
+        preconditions { count < 2147483647 }
         total = 5
         bump()
         verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>total == 5<!>)

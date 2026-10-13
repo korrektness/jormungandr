@@ -139,6 +139,7 @@ function complexBooleanReturn(x: Ref): Ref
 function safeDivide(x: Ref, y: Ref): Ref
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) > -2147483648
   ensures isSubtype(typeOf(result), intType())
 {
   (!(intFromRef(y) == 0) ? divInts(x, y) : intToRef(0))
@@ -157,6 +158,7 @@ function safeNestedDivide(x: Ref, y: Ref, z: Ref): Ref
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
   requires isSubtype(typeOf(z), intType())
+  requires intFromRef(x) > -2147483648
   ensures isSubtype(typeOf(result), intType())
 {
   (let res_0 ==
@@ -170,6 +172,34 @@ function safeNestedDivide(x: Ref, y: Ref, z: Ref): Ref
 function safeInverseDifference(x: Ref, y: Ref): Ref
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
+  requires ((let anon ==
+      (minusLongLong(convertIntToLong(x), convertIntToLong(y))) in
+      longFromRef(convertIntToLong(x)) - longFromRef(convertIntToLong(y))) <
+    (let anon ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) ?
+      -1 :
+      ((let anon ==
+        (minusLongLong(convertIntToLong(x), convertIntToLong(y))) in
+        longFromRef(convertIntToLong(x)) - longFromRef(convertIntToLong(y))) >
+      (let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) ?
+        1 :
+        0)) >=
+    0
+  requires ((let anon ==
+      (minusLongLong(convertIntToLong(x), convertIntToLong(y))) in
+      longFromRef(convertIntToLong(x)) - longFromRef(convertIntToLong(y))) <
+    2147483647 ?
+      -1 :
+      ((let anon ==
+        (minusLongLong(convertIntToLong(x), convertIntToLong(y))) in
+        longFromRef(convertIntToLong(x)) - longFromRef(convertIntToLong(y))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
   ensures isSubtype(typeOf(result), intType())
 {
   (!(intFromRef(x) == intFromRef(y)) ?

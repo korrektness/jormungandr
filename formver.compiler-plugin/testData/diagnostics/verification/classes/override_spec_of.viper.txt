@@ -2,7 +2,7 @@
 method step(this: Ref, n: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), Counter())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires intFromRef(n) >= 0 && intFromRef(n) < 2147483647
   ensures isSubtype(typeOf(ret), intType())
   ensures intFromRef(ret) > intFromRef(n)
 
@@ -11,7 +11,7 @@ method step(this: Ref, n: Ref) returns (ret: Ref)
 method Counter_f_step(this: Ref, n: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), Counter())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires intFromRef(n) >= 0 && intFromRef(n) < 2147483647
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) > intFromRef(n)
 
@@ -19,9 +19,12 @@ method Counter_f_step(this: Ref, n: Ref) returns (ret_3: Ref)
 method Incrementer_f_step(this: Ref, n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Incrementer())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= -1
+  requires intFromRef(n) >= -1 && intFromRef(n) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(n) + 1
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 {
   v_ret_0 := plusInts(n, intToRef(1))
   goto lbl_ret_0
@@ -31,7 +34,7 @@ method Incrementer_f_step(this: Ref, n: Ref) returns (v_ret_0: Ref)
 method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), Counter())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires intFromRef(n) >= 0 && intFromRef(n) < 2147483647
   requires isSubtype(typeOf(this), Incrementer())
 {
   ret_3 := Incrementer_f_step(this, n)
@@ -43,7 +46,7 @@ method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_3: Ref)
 method Counter_f_step(this: Ref, n: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), Counter())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires intFromRef(n) >= 0 && intFromRef(n) < 2147483647
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) > intFromRef(n)
 
@@ -62,7 +65,7 @@ method Identity_f_step(this: Ref, n: Ref) returns (v_ret_0: Ref)
 method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), Counter())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires intFromRef(n) >= 0 && intFromRef(n) < 2147483647
   requires isSubtype(typeOf(this), Identity())
 {
   ret_2 := Identity_f_step(this, n)
@@ -74,7 +77,7 @@ method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_2: Ref)
 method Counter_f_step(this: Ref, n: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), Counter())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires intFromRef(n) >= 0 && intFromRef(n) < 2147483647
   ensures isSubtype(typeOf(ret_1), intType())
   ensures intFromRef(ret_1) > intFromRef(n)
 
@@ -82,7 +85,7 @@ method Counter_f_step(this: Ref, n: Ref) returns (ret_1: Ref)
 method Inheriting_f_step(this: Ref, n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Inheriting())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires intFromRef(n) >= 0 && intFromRef(n) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) > intFromRef(n)
 {
@@ -94,7 +97,7 @@ method Inheriting_f_step(this: Ref, n: Ref) returns (v_ret_0: Ref)
 method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), Counter())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires intFromRef(n) >= 0 && intFromRef(n) < 2147483647
   requires isSubtype(typeOf(this), Inheriting())
 {
   ret_1 := Inheriting_f_step(this, n)
@@ -118,11 +121,17 @@ method Halving_f_size(this: Ref, limit: Ref) returns (v_ret_0: Ref)
   requires intFromRef(limit) > 0
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
-    (intFromRef(limit) < 0 != 2 < 0 ?
-      -((intFromRef(limit) < 0 ? -intFromRef(limit) : intFromRef(limit)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(limit) < 0 ? -intFromRef(limit) : intFromRef(limit)) \
-      (2 < 0 ? -2 : 2))
+    (let anon ==
+      (divInts(limit, intToRef(2))) in
+      (intFromRef(limit) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(limit) < 0 ? -intFromRef(limit) : intFromRef(limit)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(limit) < 0 ? -intFromRef(limit) : intFromRef(limit)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))))
 {
   v_ret_0 := divInts(limit, intToRef(2))
   goto lbl_ret_0

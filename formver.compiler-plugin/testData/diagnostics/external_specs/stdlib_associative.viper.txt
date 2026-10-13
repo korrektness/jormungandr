@@ -69,9 +69,14 @@ method add(this: Ref, element: Ref) returns (ret_4: Ref)
       boolFromRef(MutableSetModel_c_SetModel_f_contains(this, element)))
   ensures (unfolding acc(MutableSetModel_unique(this), wildcard) in
       intFromRef(MutableSetModel_c_SetModel_g_size(this))) ==
-    old((unfolding acc(MutableSetModel_unique(this), wildcard) in
-      intFromRef(MutableSetModel_c_SetModel_g_size(this)))) +
-    intFromRef((boolFromRef(ret_4) ? intToRef(1) : intToRef(0)))
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+        MutableSetModel_c_SetModel_g_size(this))), (boolFromRef(ret_4) ?
+        intToRef(1) :
+        intToRef(0)))) in
+      intFromRef(old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+        MutableSetModel_c_SetModel_g_size(this)))) +
+      intFromRef((boolFromRef(ret_4) ? intToRef(1) : intToRef(0))))
 
 
 method emptyMutableSetModel() returns (ret_3: Ref)
@@ -101,9 +106,14 @@ method remove(this: Ref, element: Ref) returns (ret_5: Ref)
       !boolFromRef(MutableSetModel_c_SetModel_f_contains(this, element)))
   ensures (unfolding acc(MutableSetModel_unique(this), wildcard) in
       intFromRef(MutableSetModel_c_SetModel_g_size(this))) ==
-    old((unfolding acc(MutableSetModel_unique(this), wildcard) in
-      intFromRef(MutableSetModel_c_SetModel_g_size(this)))) -
-    intFromRef((boolFromRef(ret_5) ? intToRef(1) : intToRef(0)))
+    (let anon_builtin ==
+      (minusInts(old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+        MutableSetModel_c_SetModel_g_size(this))), (boolFromRef(ret_5) ?
+        intToRef(1) :
+        intToRef(0)))) in
+      intFromRef(old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+        MutableSetModel_c_SetModel_g_size(this)))) -
+      intFromRef((boolFromRef(ret_5) ? intToRef(1) : intToRef(0))))
 
 
 method setBasics() returns (v_ret_0: Ref)
@@ -455,12 +465,18 @@ method put(this: Ref, key: Ref, value: Ref) returns (ret_3: Ref)
       boolFromRef(MutableMapModel_c_MapModel_f_containsValue(this, value)))
   ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
       intFromRef(MutableMapModel_c_MapModel_g_size(this))) ==
-    old((unfolding acc(MutableMapModel_unique(this), wildcard) in
-      intFromRef(MutableMapModel_c_MapModel_g_size(this)))) +
-    intFromRef((old((unfolding acc(MutableMapModel_unique(this), wildcard) in
-      boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
-      intToRef(0) :
-      intToRef(1)))
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        MutableMapModel_c_MapModel_g_size(this))), (old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
+        intToRef(0) :
+        intToRef(1)))) in
+      intFromRef(old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        MutableMapModel_c_MapModel_g_size(this)))) +
+      intFromRef((old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
+        intToRef(0) :
+        intToRef(1))))
 
 
 method remove(this: Ref, key: Ref) returns (ret_4: Ref)
@@ -476,12 +492,18 @@ method remove(this: Ref, key: Ref) returns (ret_4: Ref)
       !boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))
   ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
       intFromRef(MutableMapModel_c_MapModel_g_size(this))) ==
-    old((unfolding acc(MutableMapModel_unique(this), wildcard) in
-      intFromRef(MutableMapModel_c_MapModel_g_size(this)))) -
-    intFromRef((old((unfolding acc(MutableMapModel_unique(this), wildcard) in
-      boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
-      intToRef(1) :
-      intToRef(0)))
+    (let anon_builtin ==
+      (minusInts(old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        MutableMapModel_c_MapModel_g_size(this))), (old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
+        intToRef(1) :
+        intToRef(0)))) in
+      intFromRef(old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        MutableMapModel_c_MapModel_g_size(this)))) -
+      intFromRef((old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
+        intToRef(1) :
+        intToRef(0))))
 
 
 /stdlib_associative.kt: info: Generated Viper text for nullIsMappedValue:
@@ -643,12 +665,18 @@ method put(this: Ref, key: Ref, value: Ref) returns (ret_2: Ref)
       boolFromRef(MutableMapModel_c_MapModel_f_containsValue(this, value)))
   ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
       intFromRef(MutableMapModel_c_MapModel_g_size(this))) ==
-    old((unfolding acc(MutableMapModel_unique(this), wildcard) in
-      intFromRef(MutableMapModel_c_MapModel_g_size(this)))) +
-    intFromRef((old((unfolding acc(MutableMapModel_unique(this), wildcard) in
-      boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
-      intToRef(0) :
-      intToRef(1)))
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        MutableMapModel_c_MapModel_g_size(this))), (old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
+        intToRef(0) :
+        intToRef(1)))) in
+      intFromRef(old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        MutableMapModel_c_MapModel_g_size(this)))) +
+      intFromRef((old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+        boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
+        intToRef(0) :
+        intToRef(1))))
 
 
 /stdlib_associative.kt: info: Generated Viper text for duplicateSetDoesNotGrow:
@@ -722,9 +750,14 @@ method add(this: Ref, element: Ref) returns (ret_2: Ref)
       boolFromRef(MutableSetModel_c_SetModel_f_contains(this, element)))
   ensures (unfolding acc(MutableSetModel_unique(this), wildcard) in
       intFromRef(MutableSetModel_c_SetModel_g_size(this))) ==
-    old((unfolding acc(MutableSetModel_unique(this), wildcard) in
-      intFromRef(MutableSetModel_c_SetModel_g_size(this)))) +
-    intFromRef((boolFromRef(ret_2) ? intToRef(1) : intToRef(0)))
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+        MutableSetModel_c_SetModel_g_size(this))), (boolFromRef(ret_2) ?
+        intToRef(1) :
+        intToRef(0)))) in
+      intFromRef(old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+        MutableSetModel_c_SetModel_g_size(this)))) +
+      intFromRef((boolFromRef(ret_2) ? intToRef(1) : intToRef(0))))
 
 
 method duplicateSetDoesNotGrow() returns (v_ret_0: Ref)

@@ -147,7 +147,7 @@ method testOps(s: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var c: Ref
-  var anon: Ref
+  var anon_0: Ref
   var str: Ref
   var helloWorld: Ref
   var stringPlusInteger: Ref
@@ -156,16 +156,34 @@ method testOps(s: Ref) returns (v_ret_0: Ref)
   } else {
     c := charToRef(97)}
   if (charFromRef(c) == 97) {
-    anon := boolToRef(true)
+    anon_0 := boolToRef(true)
   } else {
-    anon := gtInts(stringLength(s), intToRef(0))}
-  assert boolFromRef(anon)
+    anon_0 := gtInts(stringLength(s), intToRef(0))}
+  assert boolFromRef(anon_0)
   str := stringToRef(Seq(97, 98, 97))
-  assert stringFromRef(str)[0] == stringFromRef(str)[2]
-  assert !(stringFromRef(str)[1] == stringFromRef(str)[0])
-  assert stringFromRef(str)[1] == 98
+  assert (let anon_builtin ==
+      (stringGet(str, intToRef(0))) in
+      stringFromRef(str)[intFromRef(intToRef(0))]) ==
+    (let anon_builtin ==
+      (stringGet(str, intToRef(2))) in
+      stringFromRef(str)[intFromRef(intToRef(2))])
+  assert !((let anon_builtin ==
+      (stringGet(str, intToRef(1))) in
+      stringFromRef(str)[intFromRef(intToRef(1))]) ==
+    (let anon_builtin ==
+      (stringGet(str, intToRef(0))) in
+      stringFromRef(str)[intFromRef(intToRef(0))]))
+  assert (let anon_builtin ==
+      (stringGet(str, intToRef(1))) in
+      stringFromRef(str)[intFromRef(intToRef(1))]) ==
+    98
   assert Seq(75, 111, 116, 108, 105, 110, 46, 83, 116, 114, 105, 110, 103) ==
     Seq(75, 111, 116, 108, 105, 110, 46, 83, 116, 114, 105, 110, 103)
+  if (!(|stringFromRef(stringToRef(Seq(72, 101, 108, 108, 111, 32, 87, 111,
+  114, 108, 100)))| <
+  2147483647)) {
+    inhale false
+  }
   helloWorld := addStringChar(stringToRef(Seq(72, 101, 108, 108, 111, 32, 87,
     111, 114, 108, 100)), charToRef(33))
   assert stringFromRef(helloWorld) ==

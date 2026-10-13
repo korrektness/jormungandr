@@ -13,6 +13,10 @@ method applyDelta(v_this: Ref, v_this_extension: Ref)
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(v_this), ClassWithExtension())
   requires isSubtype(typeOf(v_this_extension), intType())
+  requires intFromRef(v_this_extension) >= -100
+  requires intFromRef(v_this_extension) <= 100
+  requires intFromRef(delta(v_this)) >= -100
+  requires intFromRef(delta(v_this)) <= 100
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var withoutLabels: Ref
@@ -68,6 +72,10 @@ function size(v_this: Ref): Ref
 method applyDelta(v_this: Ref, v_this_extension: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(v_this), ClassWithExtension())
   requires isSubtype(typeOf(v_this_extension), intType())
+  requires intFromRef(v_this_extension) >= -100
+  requires intFromRef(v_this_extension) <= 100
+  requires intFromRef(g_delta(v_this)) >= -100
+  requires intFromRef(g_delta(v_this)) <= 100
   ensures isSubtype(typeOf(ret_6), unitType())
 
 

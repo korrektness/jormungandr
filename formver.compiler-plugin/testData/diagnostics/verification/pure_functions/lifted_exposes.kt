@@ -11,10 +11,11 @@ fun interface ExposedCounter {
     @Unique @Borrowed fun <!VIPER_TEXT!>invoke<!>(): Int
     @SpecOf("invoke")
     fun invokeSpec() {
+        preconditions { value() <= 2147483647 - step() }
         postconditions<Int> { result ->
-            value() == old(value()) + step()
-            result == value()
             step() == old(step())
+            value() == old(value()) + old(step())
+            result == value()
         }
     }
 }

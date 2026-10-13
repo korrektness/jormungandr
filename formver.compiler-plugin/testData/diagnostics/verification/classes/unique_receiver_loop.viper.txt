@@ -72,7 +72,7 @@ method countUpEndProbe(v_this_extension: Ref, n: Ref)
   requires isSubtype(typeOf(v_this_extension), Box())
   requires acc(Box_unique(v_this_extension), write)
   requires isSubtype(typeOf(n), intType())
-  requires 0 <= intFromRef(n)
+  requires 0 <= intFromRef(n) && intFromRef(n) < 2147483647
   ensures acc(Box_unique(v_this_extension), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -112,7 +112,10 @@ method countUpEndProbe(v_this_extension: Ref, n: Ref)
       intFromRef(v_this_extension.value) == intFromRef(i))
   unfold acc(Box_unique(v_this_extension), write)
   anon_3 := v_this_extension.value
-  assert intFromRef(anon_3) == intFromRef(n) + 1
+  assert intFromRef(anon_3) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
   label lbl_ret_0
   fold acc(Box_unique(v_this_extension), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())

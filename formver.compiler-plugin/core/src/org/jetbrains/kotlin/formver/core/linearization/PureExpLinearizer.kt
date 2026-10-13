@@ -51,6 +51,7 @@ data class PureExpLinearizer(
     val observerFootprintOpen: Boolean = true,
     val functionResult: Exp? = null,
     val variableNames: Map<SymbolicName, SymbolicName> = emptyMap(),
+    override val isTrigger: Boolean = false,
 ) : LinearizationContext {
 
     override val logicOperatorPolicy: LogicOperatorPolicy
@@ -79,6 +80,11 @@ data class PureExpLinearizer(
 
     override fun addStatement(buildStmt: LinearizationContext.() -> Stmt) =
         unsupported("This construct needs a statement, which a specification cannot contain.")
+
+    override fun evaluateUnused(value: Exp) {
+        val current = scope ?: unsupported("A discarded expression requires a specification block.")
+        current.discard(value)
+    }
 
     override fun addDeclaration(decl: Declaration) {
         if (decl !is Declaration.LocalVarDecl) unsupported("This construct needs a declaration, which a specification cannot contain.")
@@ -243,6 +249,12 @@ class LetScope {
 
     fun declare(decl: Declaration.LocalVarDecl) {
         declared[decl.name] = decl
+    }
+
+    fun discard(value: Exp) {
+        val name = org.jetbrains.kotlin.formver.core.names.AnonymousBuiltinName(-bindings.size - 1)
+        declare(Declaration.LocalVarDecl(name, value.type))
+        check(bind(name, value))
     }
 
     /** Binds the local [name] to [value]; false when this scope declares no unbound local [name]. */

@@ -123,6 +123,8 @@ method previousCharacter(s: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(anon_1), intType())
     invariant intFromRef(anon_1) >= 0
     invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
+    invariant 0 <= intFromRef(escaped) &&
+      intFromRef(escaped) <= intFromRef(anon_1)
   anon_4 := ltInts(anon_1, stringLength(anon_0))
   if (boolFromRef(anon_4)) {
     var v_ret_2: Ref
@@ -133,7 +135,9 @@ method previousCharacter(s: Ref) returns (v_ret_0: Ref)
       if (intFromRef(anon_1) == 0) {
         anon_5 := boolToRef(true)
       } else {
-        anon_5 := notBool(boolToRef(stringFromRef(s)[intFromRef(anon_1) - 1] ==
+        anon_5 := notBool(boolToRef((let anon_builtin ==
+            (stringGet(s, minusInts(anon_1, intToRef(1)))) in
+            stringFromRef(s)[intFromRef(minusInts(anon_1, intToRef(1)))]) ==
           92))}
     } else {
       anon_5 := boolToRef(false)}
@@ -154,6 +158,8 @@ method previousCharacter(s: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(anon_1), intType())
   assert intFromRef(anon_1) >= 0
   assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
+  assert 0 <= intFromRef(escaped) &&
+    intFromRef(escaped) <= intFromRef(anon_1)
   v_ret_0 := escaped
   goto lbl_ret_0
   label lbl_ret_0
@@ -296,7 +302,7 @@ method labeledReturn(s: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(anon_1), intType())
     invariant intFromRef(anon_1) >= 0
     invariant intFromRef(anon_1) <= |stringFromRef(anon_0)|
-    invariant intFromRef(n) >= 0
+    invariant 0 <= intFromRef(n) && intFromRef(n) <= intFromRef(anon_1)
   anon_4 := ltInts(anon_1, stringLength(anon_0))
   if (boolFromRef(anon_4)) {
     var v_ret_2: Ref
@@ -320,7 +326,7 @@ method labeledReturn(s: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(anon_1), intType())
   assert intFromRef(anon_1) >= 0
   assert intFromRef(anon_1) <= |stringFromRef(anon_0)|
-  assert intFromRef(n) >= 0
+  assert 0 <= intFromRef(n) && intFromRef(n) <= intFromRef(anon_1)
   v_ret_0 := n
   goto lbl_ret_0
   label lbl_ret_0
@@ -397,6 +403,7 @@ function size(this: Ref): Ref
 
 method repeatIndex(times: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(times), intType())
+  requires 0 <= intFromRef(times) && intFromRef(times) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   var sum: Ref
@@ -413,14 +420,28 @@ method repeatIndex(times: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_1) >= 0
     invariant intFromRef(anon_1) <= intFromRef(anon_0) ||
       intFromRef(anon_1) == 0
-    invariant intFromRef(sum) >= 0
+    invariant intFromRef(sum) >= 0 &&
+      (intFromRef(sum) <
+      (let anon_builtin ==
+        (timesLongLong(convertIntToLong(anon_1), longToRef(1000))) in
+        longFromRef(convertIntToLong(anon_1)) *
+        longFromRef(longToRef(1000))) ?
+        -1 :
+        (intFromRef(sum) >
+        (let anon_builtin ==
+          (timesLongLong(convertIntToLong(anon_1), longToRef(1000))) in
+          longFromRef(convertIntToLong(anon_1)) *
+          longFromRef(longToRef(1000))) ?
+          1 :
+          0)) <=
+      0
   anon_2 := ltInts(anon_1, anon_0)
   if (boolFromRef(anon_2)) {
-    var v_ret_2: Ref
+    var v_ret_3: Ref
     assert intFromRef(anon_1) >= 0
     sum := plusInts(sum, anon_1)
-    label lbl_ret_2
-    inhale isSubtype(typeOf(v_ret_2), unitType())
+    label lbl_ret_3
+    inhale isSubtype(typeOf(v_ret_3), unitType())
     anon_1 := plusInts(anon_1, intToRef(1))
     goto cont
   }
@@ -431,7 +452,20 @@ method repeatIndex(times: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_1) >= 0
   assert intFromRef(anon_1) <= intFromRef(anon_0) ||
     intFromRef(anon_1) == 0
-  assert intFromRef(sum) >= 0
+  assert intFromRef(sum) >= 0 &&
+    (intFromRef(sum) <
+    (let anon_builtin ==
+      (timesLongLong(convertIntToLong(anon_1), longToRef(1000))) in
+      longFromRef(convertIntToLong(anon_1)) * longFromRef(longToRef(1000))) ?
+      -1 :
+      (intFromRef(sum) >
+      (let anon_builtin ==
+        (timesLongLong(convertIntToLong(anon_1), longToRef(1000))) in
+        longFromRef(convertIntToLong(anon_1)) *
+        longFromRef(longToRef(1000))) ?
+        1 :
+        0)) <=
+    0
   v_ret_0 := sum
   goto lbl_ret_0
   label lbl_ret_0
@@ -476,6 +510,9 @@ method fillOwnedBuilder(s: Ref) returns (v_ret_0: Ref)
     var anon_2: Ref
     anon_2 := stringGet(anon_0, anon_1)
     unfold acc(StringBuilder_unique(sb), write)
+    if (!(|sb.contents ++ Seq(charFromRef(anon_2))| <= 2147483647)) {
+      inhale false
+    }
     sb.contents := sb.contents ++ Seq(charFromRef(anon_2))
     label lbl_ret_4
     inhale isSubtype(typeOf(v_ret_4), unitType())
@@ -518,6 +555,7 @@ method myEach(s: Ref, f: Ref) returns (v_ret_0: Ref)
   if (boolFromRef(anon_1)) {
     var anon_2: Ref
     var anon_0: Ref
+    assert stringGet(s, i) == stringGet(s, i)
     inhale isSubtype(typeOf(anon_2), unitType())
     anon_0 := i
     i := plusInts(anon_0, intToRef(1))
@@ -572,6 +610,9 @@ method myEachOwnedBuilder(s: Ref) returns (v_ret_0: Ref)
     var anon_1: Ref
     anon_0 := stringGet(s, i)
     unfold acc(StringBuilder_unique(sb), write)
+    if (!(|sb.contents ++ Seq(charFromRef(anon_0))| <= 2147483647)) {
+      inhale false
+    }
     sb.contents := sb.contents ++ Seq(charFromRef(anon_0))
     label lbl_ret_6
     inhale isSubtype(typeOf(v_ret_6), unitType())

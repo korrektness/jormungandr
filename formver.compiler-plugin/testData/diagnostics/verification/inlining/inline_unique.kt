@@ -10,10 +10,12 @@ class Counter(var x: Int)
 }
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Counter) {
+    preconditions { c.x < 2147483647 }
     c.x = c.x + 1
 }
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>bumpTwice<!>(c: @Unique @Borrowed Counter) {
+    preconditions { c.x < 2147483646 }
     bump(c)
     bump(c)
 }

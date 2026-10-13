@@ -1,6 +1,8 @@
 // FULL_JDK
 // WITH_STDLIB
 
+import org.jetbrains.kotlin.formver.plugin.*
+
 
 fun <!VIPER_TEXT!>declaration<!>() {
     val l1: List<Int>
@@ -14,6 +16,7 @@ fun <!VIPER_TEXT!>initialization<!>(l: List<Int>) {
 }
 
 fun <!VIPER_TEXT!>add_get<!>(l: MutableList<Int>) {
+    preconditions { l.size < 2147483647 }
     l.add(1)
     val n = l[0]
 }

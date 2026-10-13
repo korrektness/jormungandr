@@ -90,7 +90,7 @@ fun <!VIPER_TEXT!>setterCaller<!>(s: SetterBody, g: GetterBody) {
     refute(false)
 }
 
-fun <!VIPER_TEXT!>getterCaller<!>(g: GetterBody): Int {
+fun <!VIPER_TEXT!>getterCaller<!>(g: GetterBody): Long {
     refute(false)
-    return g.violatingGetter + g.guardedExtension
+    return g.violatingGetter.toLong() + g.guardedExtension.toLong()
 }

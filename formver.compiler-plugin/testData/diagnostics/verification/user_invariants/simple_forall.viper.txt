@@ -1,8 +1,19 @@
 /simple_forall.kt: info: Generated Viper text for anyIntegerSquaredAtLeastZero:
 method anyIntegerSquaredAtLeastZero() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures (forall anon: Int ::anon * anon >= 0 &&
-      anon * anon >= intFromRef(v_ret_0))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      (-46340 <= anon_builtin_0 && anon_builtin_0 <= 46340 ==>
+      (let anon_builtin_neg1 ==
+        (timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) in
+        anon_builtin_0 * anon_builtin_0) >=
+      0) &&
+      (-46340 <= anon_builtin_0 && anon_builtin_0 <= 46340 ==>
+      (let anon_builtin_neg1 ==
+        (timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) in
+        anon_builtin_0 * anon_builtin_0) >=
+      intFromRef(v_ret_0)))
 {
   v_ret_0 := intToRef(0)
   goto lbl_ret_0
@@ -12,8 +23,15 @@ method anyIntegerSquaredAtLeastZero() returns (v_ret_0: Ref)
 /simple_forall.kt: info: Generated Viper text for anyIntegerSquaredIsAtLeastOneExceptZero:
 method anyIntegerSquaredIsAtLeastOneExceptZero() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures (forall anon: Int ::!(anon == 0) ==>
-      anon * anon >= intFromRef(v_ret_0))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -46340 <= anon_builtin_0 && anon_builtin_0 <= 46340 &&
+      !(anon_builtin_0 == 0) ==>
+      (let anon_builtin_neg1 ==
+        (timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) in
+        anon_builtin_0 * anon_builtin_0) >=
+      intFromRef(v_ret_0))
 {
   v_ret_0 := intToRef(1)
   goto lbl_ret_0
@@ -35,11 +53,32 @@ method anyIntegerSquaredIsAtLeastZeroStringVersion(str: Ref)
     invariant isSubtype(typeOf(res), intType())
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(str), stringType())
-    invariant (forall anon_builtin: Int ::0 <= anon_builtin &&
-        anon_builtin < |stringFromRef(str)| ==>
-        (stringFromRef(str)[anon_builtin] - 97) *
-        (stringFromRef(str)[anon_builtin] - 97) >=
-        intFromRef(res))
+    invariant (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(str)| ==>
+        ((let anon_builtin_neg1 ==
+          (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))), convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))))) in
+          longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97)))) *
+          longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))))) <
+        intFromRef(res) ?
+          -1 :
+          ((let anon_builtin_neg1 ==
+            (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+            charToRef(97))), convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+            charToRef(97))))) in
+            longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+            charToRef(97)))) *
+            longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+            charToRef(97))))) >
+          intFromRef(res) ?
+            1 :
+            0)) >=
+        0)
   anon_1 := gtInts(i, intToRef(0))
   if (boolFromRef(anon_1)) {
     var anon_0: Ref
@@ -51,11 +90,32 @@ method anyIntegerSquaredIsAtLeastZeroStringVersion(str: Ref)
   assert isSubtype(typeOf(res), intType())
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(str), stringType())
-  assert (forall anon_builtin: Int ::0 <= anon_builtin &&
-      anon_builtin < |stringFromRef(str)| ==>
-      (stringFromRef(str)[anon_builtin] - 97) *
-      (stringFromRef(str)[anon_builtin] - 97) >=
-      intFromRef(res))
+  assert (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(str)| ==>
+      ((let anon_builtin_neg1 ==
+        (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+        charToRef(97))), convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+        charToRef(97))))) in
+        longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+        charToRef(97)))) *
+        longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+        charToRef(97))))) <
+      intFromRef(res) ?
+        -1 :
+        ((let anon_builtin_neg1 ==
+          (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))), convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))))) in
+          longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97)))) *
+          longFromRef(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
+          charToRef(97))))) >
+        intFromRef(res) ?
+          1 :
+          0)) >=
+      0)
   v_ret_0 := res
   goto lbl_ret_0
   label lbl_ret_0

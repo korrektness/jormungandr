@@ -11,7 +11,7 @@ open <!VIPER_TEXT!>class LawBase<!>(var n: Int) : Reading {
     init { require(n >= 0) }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = n
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
-    @Unique @Borrowed fun <!VIPER_TEXT!>increment<!>() { n++ }
+    @Unique @Borrowed fun <!VIPER_TEXT!>increment<!>() { if (n < 2147483647) n++ }
     @Unique @Borrowed fun <!VIPER_TEXT!>copyObservation<!>() { n = read() }
 }
 
@@ -19,7 +19,7 @@ open <!VIPER_TEXT!>class LawBase<!>(var n: Int) : Reading {
     init { require(m >= 0) }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = m
     @Law @Pure @Unique fun ownNonnegative(): Boolean = read() >= 0
-    @Unique @Borrowed fun <!VIPER_TEXT!>incrementOther<!>() { m++ }
+    @Unique @Borrowed fun <!VIPER_TEXT!>incrementOther<!>() { if (m < 2147483647) m++ }
     <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed fun <!VIPER_TEXT!>breakBase<!>() { n = -1 }<!>
     @Unique @Borrowed fun <!VIPER_TEXT!>inspect<!>() {
         verify(n >= 0)
@@ -39,14 +39,14 @@ open class PlainBase(@LawBound var n: Int = 3) : Reading {
 <!VIPER_TEXT!>class InheritedLaw<!>(n: Int) : PlainBase(n) {
     init { require(n >= 0) }
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
-    @Unique @Borrowed fun <!VIPER_TEXT!>increment<!>() { n++ }
+    @Unique @Borrowed fun <!VIPER_TEXT!>increment<!>() { if (n < 2147483647) n++ }
     <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed fun <!VIPER_TEXT!>breakInvariant<!>() { n = -1 }<!>
 }
 
 <!VIPER_TEXT!>class DefaultInheritedLaw<!> : PlainBase() {
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
 }
-<!VIPER_TEXT!>class ComputedInheritedLaw<!>(n: Int) : PlainBase(n + 1) {
+<!VIPER_TEXT!>class ComputedInheritedLaw<!>(n: Short) : PlainBase(n + 1) {
     init { require(n >= -1) }
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
 }
@@ -64,9 +64,10 @@ fun <!VIPER_TEXT!>stableOverride<!>() {
     verify(value.n >= 0)
 }
 fun <!VIPER_TEXT!>loopWithInheritedLaw<!>(value: @Unique @Borrowed InheritedLaw) {
+    preconditions { value.n <= 2147483645 }
     var i = 0
     while (i < 2) {
-        loopInvariants { i >= 0 && i <= 2 }
+        loopInvariants { i >= 0 && i <= 2 && value.n <= 2147483645 + i }
         value.n++
         i++
     }

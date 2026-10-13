@@ -26,6 +26,8 @@ class OperatorExpEmbeddingBuilder {
     private var viperApplicable: Applicable? = null
     private var callableType: FunctionTypeEmbedding? = null
     private var additionalConditions: (FunctionBuilder.() -> Unit)? = null
+    private var checked = false
+    private var normalReturnCondition: ((List<Exp>) -> Exp)? = null
 
     fun complete(): OperatorExpEmbeddingTemplate? {
         val callableType = callableType ?: error("Signature not specified to buildExpEmbedding.")
@@ -36,6 +38,8 @@ class OperatorExpEmbeddingBuilder {
             viperApplicable ?: error("No viper operator specified to build ExpEmbedding."),
             argumentTypes.map { it.injection },
             returnType.injection,
+            checked,
+            normalReturnCondition,
             additionalConditions ?: { }
         )
         return OperatorExpEmbeddingTemplate.create(returnType, refsOperation)
@@ -70,7 +74,13 @@ class OperatorExpEmbeddingBuilder {
         }
     }
 
+    fun normalReturnCondition(block: (List<Exp>) -> Exp) {
+        checked = true
+        normalReturnCondition = block
+    }
+
     fun additionalConditions(block: FunctionBuilder.() -> Unit) {
+        checked = true
         additionalConditions = block
     }
 }

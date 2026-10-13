@@ -16,6 +16,7 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
     val role = lookupSourceRole()
     val counterexample = kotlinCounterexample()
     val condition = when (role) {
+        is SourceRole.Arithmetic -> role.condition
         is SourceRole.Proof -> KotlinCondition.Proof(role.clause, role.declaration)
         is SourceRole.ReturnsEffect -> KotlinCondition.Returns(role.toReturnValue())
         is SourceRole.ConditionalEffect -> KotlinCondition.Conditional(role.effect.toReturnValue(), role.condition.toPredicate())
@@ -44,18 +45,7 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
         is SourceRole.ObserverAccess -> KotlinCondition.Ownership("the observer receiver", KotlinCondition.OwnershipSite.UNFOLD)
         else -> if (result is FunctionTerminationError) KotlinCondition.Termination else KotlinCondition.Unclassified
     }
-    val kind = when (condition) {
-        is KotlinCondition.Proof -> FailureKind.VERIFICATION_CONDITION_NOT_ESTABLISHED
-        is KotlinCondition.Returns -> FailureKind.UNEXPECTED_RETURNED_VALUE
-        is KotlinCondition.Conditional -> FailureKind.CONDITIONAL_EFFECT_ERROR
-        is KotlinCondition.Index -> FailureKind.POSSIBLE_INDEX_OUT_OF_BOUND
-        is KotlinCondition.SubList -> FailureKind.INVALID_SUBLIST_RANGE
-        is KotlinCondition.Ownership -> FailureKind.OWNERSHIP_NOT_ESTABLISHED
-        is KotlinCondition.Override -> FailureKind.OVERRIDE_NOT_REFINING
-        KotlinCondition.Termination -> FailureKind.TERMINATION_NOT_ESTABLISHED
-        KotlinCondition.Unclassified -> FailureKind.VIPER_VERIFICATION_ERROR
-        else -> error("A proof adapter produced a non-proof condition")
-    }
+    val kind = condition.failureKind()
     return Failure(
         kind, source, condition,
         if (source == null) ObligationIdentity(result.offendingNode(), result.reason().offendingNode())
@@ -71,6 +61,21 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
         counterexample = counterexample,
         backend = BackendEvidence(id, result.reason().id(), msg),
     )
+}
+
+private fun KotlinCondition.failureKind(): FailureKind = when (this) {
+    is KotlinCondition.Proof -> FailureKind.VERIFICATION_CONDITION_NOT_ESTABLISHED
+    is KotlinCondition.Returns -> FailureKind.UNEXPECTED_RETURNED_VALUE
+    is KotlinCondition.Conditional -> FailureKind.CONDITIONAL_EFFECT_ERROR
+    is KotlinCondition.IntegerOverflow -> FailureKind.INTEGER_OVERFLOW
+    is KotlinCondition.DivisionByZero -> FailureKind.DIVISION_BY_ZERO
+    is KotlinCondition.Index -> FailureKind.POSSIBLE_INDEX_OUT_OF_BOUND
+    is KotlinCondition.SubList -> FailureKind.INVALID_SUBLIST_RANGE
+    is KotlinCondition.Ownership -> FailureKind.OWNERSHIP_NOT_ESTABLISHED
+    is KotlinCondition.Override -> FailureKind.OVERRIDE_NOT_REFINING
+    KotlinCondition.Termination -> FailureKind.TERMINATION_NOT_ESTABLISHED
+    KotlinCondition.Unclassified -> FailureKind.VIPER_VERIFICATION_ERROR
+    else -> error("A proof adapter produced a non-proof condition")
 }
 
 /** Backend products encode clause structure without diagnostic text; metadata is presentation-independent. */
@@ -125,7 +130,7 @@ private fun VerificationError.collectionSymbol() =
 
 private fun VerificationError.lookupSourceRole(): SourceRole? {
     fun applicable(role: SourceRole?): SourceRole? = when (role) {
-        is SourceRole.Proof, is SourceRole.ReturnsEffect, is SourceRole.ConditionalEffect,
+        is SourceRole.Arithmetic, is SourceRole.Proof, is SourceRole.ReturnsEffect, is SourceRole.ConditionalEffect,
         is SourceRole.ListElementAccessCheck, is SourceRole.ArrayElementAccessCheck,
         is SourceRole.SubListCreation, is SourceRole.Ownership, is SourceRole.OverrideRefinement -> role
         is SourceRole.ObserverAccess -> role.takeIf { result.reason() is reasons.InsufficientPermission }
@@ -135,7 +140,8 @@ private fun VerificationError.lookupSourceRole(): SourceRole? {
     // A termination failure's reason names the function whose measure does not decrease, not a proposition.
     val proposition = if (result.reason().offendingNode() !is viper.silver.ast.Exp) null
         else applicable(unverifiableProposition.getInfoOrNull<SourceRole>())
-    return if (location is SourceRole.Proof && proposition is SourceRole.ObserverAccess) proposition
+    return if (proposition is SourceRole.Arithmetic) proposition
+        else if (location is SourceRole.Proof && proposition is SourceRole.ObserverAccess) proposition
         else location ?: proposition
 }
 

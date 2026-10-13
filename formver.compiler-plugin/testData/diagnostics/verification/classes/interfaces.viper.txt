@@ -27,7 +27,7 @@ method testProperties(foo: Ref) returns (v_ret_0: Ref)
   anon_4 := valProp(foo)
   anon_3 := anon_4
   inhale isSubtype(typeOf(anon_3), intType())
-  x := plusInts(anon_1, anon_3)
+  x := plusLongLong(convertIntToLong(anon_1), convertIntToLong(anon_3))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -260,21 +260,22 @@ method createImpls() returns (v_ret_0: Ref)
   var cond5: Ref
   impl12 := con_Impl12()
   fold acc(Impl12_unique(impl12), write)
-  start12 := minusInts(plusInts(Impl12_g_field(impl12), intToRef(1)), intToRef(1))
+  start12 := minusLongLong(plusLongLong(convertIntToLong(Impl12_g_field(impl12)),
+    longToRef(1)), longToRef(1))
   anon_0 := take1(impl12)
   anon_1 := take2(impl12)
   impl23 := con_Impl23()
   fold acc(AbstractWithFinalImplementation3_unique(impl23), write)
   fold acc(Impl23_unique(impl23), write)
-  start23 := minusInts(plusInts(AbstractWithFinalImplementation3_g_field(impl23),
-    intToRef(1)), intToRef(1))
+  start23 := minusLongLong(plusLongLong(convertIntToLong(AbstractWithFinalImplementation3_g_field(impl23)),
+    longToRef(1)), longToRef(1))
   anon_2 := take2(impl23)
   anon_3 := take3(impl23)
   impl3 := con_Impl3()
   fold acc(AbstractWithFinalImplementation3_unique(impl3), write)
   fold acc(Impl3_unique(impl3), write)
-  start3 := minusInts(plusInts(AbstractWithFinalImplementation3_g_field(impl3),
-    intToRef(1)), intToRef(1))
+  start3 := minusLongLong(plusLongLong(convertIntToLong(AbstractWithFinalImplementation3_g_field(impl3)),
+    longToRef(1)), longToRef(1))
   anon_4 := take3(impl3)
   impl24 := con_Impl24()
   fold acc(AbstractWithOpenImplementation4_unique(impl24), write)
@@ -282,29 +283,32 @@ method createImpls() returns (v_ret_0: Ref)
   anon_6 := public_g_field(impl24)
   anon_5 := anon_6
   inhale isSubtype(typeOf(anon_5), intType())
-  start24 := minusInts(plusInts(anon_5, intToRef(1)), intToRef(1))
+  start24 := minusLongLong(plusLongLong(convertIntToLong(anon_5), longToRef(1)),
+    longToRef(1))
   anon_7 := take2(impl24)
   anon_8 := take4(impl24)
   impl14 := con_Impl14()
   fold acc(AbstractWithOpenImplementation4_unique(impl14), write)
   fold acc(Impl14_unique(impl14), write)
-  start14 := minusInts(plusInts(Impl14_g_field(impl14), intToRef(1)), intToRef(1))
+  start14 := minusLongLong(plusLongLong(convertIntToLong(Impl14_g_field(impl14)),
+    longToRef(1)), longToRef(1))
   anon_9 := take1(impl14)
   anon_10 := take4(impl14)
   impl6 := create6()
   anon_12 := public_g_field(impl6)
   anon_11 := anon_12
   inhale isSubtype(typeOf(anon_11), intType())
-  start6 := minusInts(plusInts(anon_11, intToRef(1)), intToRef(1))
-  cond1 := boolToRef(intFromRef(start12) ==
+  start6 := minusLongLong(plusLongLong(convertIntToLong(anon_11), longToRef(1)),
+    longToRef(1))
+  cond1 := boolToRef(longFromRef(start12) ==
     intFromRef(Impl12_g_field(impl12)))
-  cond2 := boolToRef(intFromRef(start23) ==
+  cond2 := boolToRef(longFromRef(start23) ==
     intFromRef(AbstractWithFinalImplementation3_g_field(impl23)))
-  cond3 := boolToRef(intFromRef(start3) ==
+  cond3 := boolToRef(longFromRef(start3) ==
     intFromRef(AbstractWithFinalImplementation3_g_field(impl3)))
-  cond4 := boolToRef(intFromRef(start14) ==
+  cond4 := boolToRef(longFromRef(start14) ==
     intFromRef(Impl14_g_field(impl14)))
-  cond5 := boolToRef(isSubtype(typeOf(start6), intType()))
+  cond5 := boolToRef(isSubtype(typeOf(start6), longType()))
   assert boolFromRef(cond1)
   assert boolFromRef(cond2)
   assert boolFromRef(cond3)

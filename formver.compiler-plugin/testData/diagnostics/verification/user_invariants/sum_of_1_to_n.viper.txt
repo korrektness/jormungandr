@@ -1,26 +1,27 @@
 /sum_of_1_to_n.kt: info: Generated Viper text for recursiveSumOfIntegersUpToN:
 method recursiveSumOfIntegersUpToN(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires 0 <= intFromRef(n) && intFromRef(n) <= 32767
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) ==
-    (intFromRef(n) * (intFromRef(n) + 1) < 0 != 2 < 0 ?
-      -((intFromRef(n) * (intFromRef(n) + 1) < 0 ?
-        -(intFromRef(n) * (intFromRef(n) + 1)) :
-        intFromRef(n) * (intFromRef(n) + 1)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(n) * (intFromRef(n) + 1) < 0 ?
-        -(intFromRef(n) * (intFromRef(n) + 1)) :
-        intFromRef(n) * (intFromRef(n) + 1)) \
-      (2 < 0 ? -2 : 2))
+  ensures 0 <= intFromRef(v_ret_0) &&
+    intFromRef(v_ret_0) <=
+    (let anon_builtin ==
+      (timesInts(n, intToRef(32767))) in
+      intFromRef(n) * intFromRef(intToRef(32767)))
+  ensures (let anon_builtin ==
+      (plusInts(v_ret_0, v_ret_0)) in
+      intFromRef(v_ret_0) + intFromRef(v_ret_0)) ==
+    (let anon_builtin ==
+      (timesInts(n, plusInts(n, intToRef(1)))) in
+      intFromRef(n) * intFromRef(plusInts(n, intToRef(1))))
 {
   if (intFromRef(n) == 0) {
     v_ret_0 := intToRef(0)
     goto lbl_ret_0
   } else {
-    var anon: Ref
-    anon := recursiveSumOfIntegersUpToN(minusInts(n, intToRef(1)))
-    v_ret_0 := plusInts(n, anon)
+    var anon_0: Ref
+    anon_0 := recursiveSumOfIntegersUpToN(minusInts(n, intToRef(1)))
+    v_ret_0 := plusInts(n, anon_0)
     goto lbl_ret_0
   }
   label lbl_ret_0
@@ -29,41 +30,44 @@ method recursiveSumOfIntegersUpToN(n: Ref) returns (v_ret_0: Ref)
 /sum_of_1_to_n.kt: info: Generated Viper text for sumOfIntegersUpToN:
 method sumOfIntegersUpToN(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires 0 <= intFromRef(n) && intFromRef(n) <= 32767
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) ==
-    (intFromRef(n) * (intFromRef(n) + 1) < 0 != 2 < 0 ?
-      -((intFromRef(n) * (intFromRef(n) + 1) < 0 ?
-        -(intFromRef(n) * (intFromRef(n) + 1)) :
-        intFromRef(n) * (intFromRef(n) + 1)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(n) * (intFromRef(n) + 1) < 0 ?
-        -(intFromRef(n) * (intFromRef(n) + 1)) :
-        intFromRef(n) * (intFromRef(n) + 1)) \
-      (2 < 0 ? -2 : 2))
+  ensures 0 <= intFromRef(v_ret_0) &&
+    intFromRef(v_ret_0) <=
+    (let anon_builtin ==
+      (timesInts(n, intToRef(32767))) in
+      intFromRef(n) * intFromRef(intToRef(32767)))
+  ensures (let anon_builtin ==
+      (plusInts(v_ret_0, v_ret_0)) in
+      intFromRef(v_ret_0) + intFromRef(v_ret_0)) ==
+    (let anon_builtin ==
+      (timesInts(n, plusInts(n, intToRef(1)))) in
+      intFromRef(n) * intFromRef(plusInts(n, intToRef(1))))
 {
   var sum: Ref
   var i: Ref
-  var anon: Ref
+  var anon_0: Ref
   sum := intToRef(0)
   i := intToRef(0)
   label cont
     invariant isSubtype(typeOf(sum), intType())
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(n), intType())
-    invariant intFromRef(i) <= intFromRef(n)
-    invariant intFromRef(sum) ==
-      (intFromRef(i) * (intFromRef(i) + 1) < 0 != 2 < 0 ?
-        -((intFromRef(i) * (intFromRef(i) + 1) < 0 ?
-          -(intFromRef(i) * (intFromRef(i) + 1)) :
-          intFromRef(i) * (intFromRef(i) + 1)) \
-        (2 < 0 ? -2 : 2)) :
-        (intFromRef(i) * (intFromRef(i) + 1) < 0 ?
-          -(intFromRef(i) * (intFromRef(i) + 1)) :
-          intFromRef(i) * (intFromRef(i) + 1)) \
-        (2 < 0 ? -2 : 2))
-  anon := ltInts(i, n)
-  if (boolFromRef(anon)) {
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+      intFromRef(i) <= 32767
+    invariant 0 <= intFromRef(sum) &&
+      intFromRef(sum) <=
+      (let anon_builtin ==
+        (timesInts(i, intToRef(32767))) in
+        intFromRef(i) * intFromRef(intToRef(32767)))
+    invariant (let anon_builtin ==
+        (plusInts(sum, sum)) in
+        intFromRef(sum) + intFromRef(sum)) ==
+      (let anon_builtin ==
+        (timesInts(i, plusInts(i, intToRef(1)))) in
+        intFromRef(i) * intFromRef(plusInts(i, intToRef(1))))
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
     sum := plusInts(sum, plusInts(i, intToRef(1)))
     i := plusInts(i, intToRef(1))
     goto cont
@@ -72,17 +76,19 @@ method sumOfIntegersUpToN(n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(sum), intType())
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(n), intType())
-  assert intFromRef(i) <= intFromRef(n)
-  assert intFromRef(sum) ==
-    (intFromRef(i) * (intFromRef(i) + 1) < 0 != 2 < 0 ?
-      -((intFromRef(i) * (intFromRef(i) + 1) < 0 ?
-        -(intFromRef(i) * (intFromRef(i) + 1)) :
-        intFromRef(i) * (intFromRef(i) + 1)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(i) * (intFromRef(i) + 1) < 0 ?
-        -(intFromRef(i) * (intFromRef(i) + 1)) :
-        intFromRef(i) * (intFromRef(i) + 1)) \
-      (2 < 0 ? -2 : 2))
+  assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+    intFromRef(i) <= 32767
+  assert 0 <= intFromRef(sum) &&
+    intFromRef(sum) <=
+    (let anon_builtin ==
+      (timesInts(i, intToRef(32767))) in
+      intFromRef(i) * intFromRef(intToRef(32767)))
+  assert (let anon_builtin ==
+      (plusInts(sum, sum)) in
+      intFromRef(sum) + intFromRef(sum)) ==
+    (let anon_builtin ==
+      (timesInts(i, plusInts(i, intToRef(1)))) in
+      intFromRef(i) * intFromRef(plusInts(i, intToRef(1))))
   v_ret_0 := sum
   goto lbl_ret_0
   label lbl_ret_0

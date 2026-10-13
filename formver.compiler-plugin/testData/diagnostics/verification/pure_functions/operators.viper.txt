@@ -24,12 +24,14 @@ function testShortCircuitAnd(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), intType())
   ensures isSubtype(typeOf(result), boolType())
 {
-  boolToRef(!(intFromRef(b) == 0) &&
-  (intFromRef(a) < 0 != intFromRef(b) < 0 ?
-    -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-    (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
-    (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-    (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) >
+  boolToRef(intFromRef(b) > 0 &&
+  (let anon ==
+    (divInts(a, b)) in
+    (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b)))) >
   0)
 }
 
@@ -39,12 +41,14 @@ function testShortCircuitOr(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), intType())
   ensures isSubtype(typeOf(result), boolType())
 {
-  boolToRef(intFromRef(b) == 0 ||
-  (intFromRef(a) < 0 != intFromRef(b) < 0 ?
-    -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-    (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
-    (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-    (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) >
+  boolToRef(intFromRef(b) <= 0 ||
+  (let anon ==
+    (divInts(a, b)) in
+    (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b)))) >
   0)
 }
 
@@ -54,7 +58,7 @@ function testShortCircuitIf(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), intType())
   ensures isSubtype(typeOf(result), intType())
 {
-  (!(intFromRef(b) == 0) ? divInts(a, b) : intToRef(0))
+  (intFromRef(b) > 0 ? divInts(a, b) : intToRef(0))
 }
 
 /operators.kt: info: Generated Viper text for testXor:
@@ -77,6 +81,7 @@ function testNot(a: Ref): Ref
 /operators.kt: info: Generated Viper text for testNegation:
 function testNegation(a: Ref): Ref
   requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) > -2147483648
   ensures isSubtype(typeOf(result), intType())
 {
   negInt(negInt(a))

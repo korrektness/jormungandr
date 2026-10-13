@@ -76,7 +76,7 @@ class Line(var base: Int, var below: Int) : Probe {
         return if (j < 0) below else base
     }
 
-    @Unique @Borrowed override fun <!VIPER_TEXT!>shift<!>() { below++ }
+    @Unique @Borrowed override fun <!VIPER_TEXT!>shift<!>() { below = 0 }
 }
 
 // `at(-1)` lies outside the interface observer's domain, so the restore relates nothing there.
@@ -95,37 +95,37 @@ fun <!VIPER_TEXT!>restoreInsideDomain<!>(l: @Unique @Borrowed Line) {
 }
 
 interface Shown {
-    @Pure @Unique fun <!VIPER_TEXT!>shown<!>(): Int
+    @Pure @Unique fun <!VIPER_TEXT!>shown<!>(): Long
 }
 
 open class Meter(var raw: Int) : Shown {
-    @Pure @Unique override fun <!VIPER_TEXT!>shown<!>(): Int = raw
+    @Pure @Unique override fun <!VIPER_TEXT!>shown<!>(): Long = raw.toLong()
 }
 
 class DoubledMeter(raw: Int) : Meter(raw) {
-    @Pure @Unique override fun <!VIPER_TEXT!>shown<!>(): Int = raw * 2
+    @Pure @Unique override fun <!VIPER_TEXT!>shown<!>(): Long = raw.toLong() * 2L
 }
 
 // A class view hides subclass dispatch; the exact binding applies only to a runtime `Meter`.
 fun <!VIPER_TEXT!>openObserverView<!>(m: @Unique @Borrowed Meter) {
-    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>m.shown() == m.raw<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>m.shown() == m.raw.toLong()<!>)
 }
 
 // Sound to prove, but the constructor states only a runtime subtype, so the exact binding never applies.
 fun <!VIPER_TEXT!>exactMeter<!>() {
     val m: @Unique Meter = Meter(3)
-    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>m.shown() == 3<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>m.shown() == 3L<!>)
 }
 
 // The class view of a `DoubledMeter` must not use the `Meter` body.
 fun <!VIPER_TEXT!>subclassAsMeter<!>() {
     val m: @Unique Meter = DoubledMeter(3)
-    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>m.shown() == 3<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>m.shown() == 3L<!>)
 }
 
 // The interface binding of a `DoubledMeter` held as `Meter` is the subclass body.
 fun <!VIPER_TEXT!>subclassThroughInterface<!>() {
     val m: @Unique Meter = DoubledMeter(3)
     val s: @Unique Shown = m
-    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>s.shown() == 3<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>s.shown() == 3L<!>)
 }

@@ -50,7 +50,7 @@ fun <!VIPER_TEXT!>positiveParameterClient<!>() {
 <!VIPER_TEXT!>class PhaseTwoCall<!> {
     var value = 1
     init { increase() }
-    @Unique @Borrowed fun <!VIPER_TEXT!>increase<!>() { value++ }
+    @Unique @Borrowed fun <!VIPER_TEXT!>increase<!>() { if (value < 2147483647) value++ }
     @Law @Pure fun invariant(): Boolean = value > 0
 }
 
@@ -76,10 +76,10 @@ fun <!VIPER_TEXT!>positiveParameterClient<!>() {
 open <!VIPER_TEXT!>class EstablishedParent<!> {
     var value = 1
     init { increase() }
-    @Unique @Borrowed fun <!VIPER_TEXT!>increase<!>() { value++ }
+    @Unique @Borrowed fun <!VIPER_TEXT!>increase<!>() { if (value < 2147483647) value++ }
     @Law @Pure fun invariant(): Boolean = value > 0
 }
 
 <!VIPER_TEXT!>class EstablishedChild<!>: EstablishedParent() {
-    init { value++ }
+    init { if (value < 2147483647) value++ }
 }

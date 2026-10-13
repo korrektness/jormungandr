@@ -34,6 +34,12 @@ method bumpEach(b: Ref, n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(b), Box())
   requires acc(Box_unique(b), write)
   requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(n) &&
+    (unfolding acc(Box_unique(b), write) in
+      intFromRef(b.value) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), n)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(n)))
   ensures acc(Box_unique(b), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -45,6 +51,12 @@ method bumpEach(b: Ref, n: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(b), Box())
     invariant isSubtype(typeOf(n), intType())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+      (unfolding acc(Box_unique(b), write) in
+        intFromRef(b.value) <=
+        (let anon_builtin ==
+          (minusInts(intToRef(2147483647), minusInts(n, i))) in
+          intFromRef(intToRef(2147483647)) - intFromRef(minusInts(n, i))))
   anon_0 := ltInts(i, n)
   if (boolFromRef(anon_0)) {
     var anon_1: Ref
@@ -59,6 +71,12 @@ method bumpEach(b: Ref, n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(b), Box())
   assert isSubtype(typeOf(n), intType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n) &&
+    (unfolding acc(Box_unique(b), write) in
+      intFromRef(b.value) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), minusInts(n, i))) in
+        intFromRef(intToRef(2147483647)) - intFromRef(minusInts(n, i))))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -140,6 +158,7 @@ method jumps(b: Ref, n: Ref) returns (v_ret_0: Ref)
   if (boolFromRef(anon_0)) {
     var anon_1: Ref
     var anon_2: Ref
+    var anon_4: Ref
     i := plusInts(i, intToRef(1))
     if (b == nullValue()) {
       goto break
@@ -147,18 +166,31 @@ method jumps(b: Ref, n: Ref) returns (v_ret_0: Ref)
     if (b != nullValue()) {
       unfold acc(Box_unique(b), write)
     }
-    anon_1 := b.value
+    anon_2 := b.value
     if (b != nullValue()) {
       fold acc(Box_unique(b), write)
     }
-    if (intFromRef(anon_1) < 0) {
+    if (intFromRef(anon_2) < 0) {
+      anon_1 := boolToRef(true)
+    } else {
+      var anon_3: Ref
+      if (b != nullValue()) {
+        unfold acc(Box_unique(b), write)
+      }
+      anon_3 := b.value
+      anon_1 := boolToRef(intFromRef(anon_3) == 2147483647)
+      if (b != nullValue()) {
+        fold acc(Box_unique(b), write)
+      }
+    }
+    if (boolFromRef(anon_1)) {
       goto cont
     }
     if (b != nullValue()) {
       unfold acc(Box_unique(b), write)
     }
-    anon_2 := b.value
-    b.value := plusInts(anon_2, intToRef(1))
+    anon_4 := b.value
+    b.value := plusInts(anon_4, intToRef(1))
     if (b != nullValue()) {
       fold acc(Box_unique(b), write)
     }

@@ -6,7 +6,10 @@ import org.jetbrains.kotlin.formver.plugin.*
 open <!VIPER_TEXT!>class TransitiveRoot<!>(var n: Int) {
     init { require(n >= 0) }
     @Law @Pure @Unique fun nonnegative(): Boolean = n >= 0
-    @Unique @Borrowed fun <!VIPER_TEXT!>increment<!>() { n++ }
+    @Unique @Borrowed fun <!VIPER_TEXT!>increment<!>() {
+        preconditions { n < 2147483647 }
+        n++
+    }
 }
 open <!VIPER_TEXT!>class LawFreeMiddle<!>(n: Int) : TransitiveRoot(n)
 <!VIPER_TEXT!>class TransitiveLeaf<!>(n: Int) : LawFreeMiddle(n)
@@ -54,12 +57,12 @@ open <!VIPER_TEXT!>class InheritedBodyRoot<!>(var n: Int) {
 open <!VIPER_TEXT!>class DefaultArgumentRoot<!>(x: Int, y: Int = x + 1, offset: Int = y + 2) {
     val z: Int = y
     val w: Int = offset
-    init { require(y >= 0 && offset == y + 2) }
-    @Law @Pure fun validFields(): Boolean = z >= 0 && w == z + 2
+    init { require(y >= 0 && y <= 2147483645 && offset == y + 2) }
+    @Law @Pure fun validFields(): Boolean = z >= 0 && z <= 2147483645 && w.toLong() == z.toLong() + 2L
 }
-<!VIPER_TEXT!>class RenamedArgumentLeaf<!>(n: Int) : DefaultArgumentRoot(n * 2)
-<!VIPER_TEXT!>class SameNameArgumentLeaf<!>(x: Int) : DefaultArgumentRoot(x * 2)
-<!VIPER_TEXT!>class ExplicitDefaultLeaf<!>(x: Int) : DefaultArgumentRoot(x * 2, y = x + 10)
+<!VIPER_TEXT!>class RenamedArgumentLeaf<!>(n: Short) : DefaultArgumentRoot(n * 2)
+<!VIPER_TEXT!>class SameNameArgumentLeaf<!>(x: Short) : DefaultArgumentRoot(x * 2)
+<!VIPER_TEXT!>class ExplicitDefaultLeaf<!>(x: Short) : DefaultArgumentRoot(x * 2, y = x + 10)
 
 fun <!VIPER_TEXT!>validSuperclassDefaults<!>() {
     val renamed: @Unique RenamedArgumentLeaf = RenamedArgumentLeaf(1)

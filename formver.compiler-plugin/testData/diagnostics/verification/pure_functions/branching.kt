@@ -1,6 +1,7 @@
 // FULL_JDK
 
 import org.jetbrains.kotlin.formver.plugin.Pure
+import org.jetbrains.kotlin.formver.plugin.preconditions
 
 @Pure
 fun <!VIPER_TEXT!>noAssignmentInBlocks<!>(a: Boolean): Int {
@@ -129,6 +130,7 @@ fun <!VIPER_TEXT!>complexBooleanReturn<!>(x: Int): Boolean {
 
 @Pure
 fun <!VIPER_TEXT!>safeDivide<!>(x: Int, y: Int): Int {
+    preconditions { x > -2147483648 }
     var res = 0
     if (y != 0) {
         res = x / y
@@ -147,6 +149,7 @@ fun <!VIPER_TEXT!>getStringLength<!>(obj: Any): Int {
 
 @Pure
 fun <!VIPER_TEXT!>safeNestedDivide<!>(x: Int, y: Int, z: Int): Int {
+    preconditions { x > -2147483648 }
     var res = 0
     if (y != 0) {
         if (z != 0) {
@@ -158,6 +161,10 @@ fun <!VIPER_TEXT!>safeNestedDivide<!>(x: Int, y: Int, z: Int): Int {
 
 @Pure
 fun <!VIPER_TEXT!>safeInverseDifference<!>(x: Int, y: Int): Int {
+    preconditions {
+        x.toLong() - y.toLong() >= -2147483648L
+        x.toLong() - y.toLong() <= 2147483647L
+    }
     var res = 0
     if (x != y) {
         res = 100 / (x - y)

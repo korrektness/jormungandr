@@ -55,6 +55,7 @@ method castListElement() returns (v_ret_0: Ref)
   l := anon_0
   inhale isSubtype(typeOf(l), List())
   inhale acc(l.p_size, write)
+  inhale isSubtype(typeOf(l.p_size), intType())
   inhale intFromRef(l.p_size) >= 0
   anon_1 := get(l, intToRef(0))
   x := anon_1
@@ -63,14 +64,16 @@ method castListElement() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method get(this: Ref, index: Ref) returns (ret_2: Ref)
+method get(this: Ref, par_index: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), List())
   requires acc(this.p_size, write)
+  requires isSubtype(typeOf(this.p_size), intType())
   requires intFromRef(this.p_size) >= 0
-  requires isSubtype(typeOf(index), intType())
-  requires intFromRef(index) >= 0
-  requires intFromRef(this.p_size) > intFromRef(index)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0
+  requires intFromRef(this.p_size) > intFromRef(par_index)
   ensures acc(this.p_size, write)
+  ensures isSubtype(typeOf(this.p_size), intType())
   ensures intFromRef(this.p_size) >= 0
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
@@ -80,6 +83,7 @@ method listOf(element: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(element), nullable(anyType()))
   ensures isSubtype(typeOf(ret_1), List())
   ensures acc(ret_1.p_size, write)
+  ensures isSubtype(typeOf(ret_1.p_size), intType())
   ensures intFromRef(ret_1.p_size) >= 0
 
 

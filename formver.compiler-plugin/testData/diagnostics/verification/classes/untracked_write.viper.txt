@@ -52,6 +52,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function g_size(this: Ref): Ref
@@ -76,12 +77,15 @@ method storeThroughConstructedArray() returns (v_ret_0: Ref)
 {
   var a: Ref
   var anon_0: Ref
-  var x: Ref
   var anon_1: Ref
+  var x: Ref
+  var anon_2: Ref
   a := con(intToRef(3))
   anon_0 := intToRef(1)
   anon_1 := havoc(intType())
-  x := anon_1
+  assert plusInts(anon_1, intToRef(0)) == plusInts(anon_1, intToRef(0))
+  anon_2 := havoc(intType())
+  x := anon_2
   assert intFromRef(x) == 1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -94,6 +98,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function g_size(this: Ref): Ref
@@ -189,6 +194,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function size(this: Ref): Ref
@@ -217,6 +223,7 @@ field value: Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function size(this: Ref): Ref

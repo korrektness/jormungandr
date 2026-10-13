@@ -230,7 +230,7 @@ method positiveInitializer(par_value: Ref) returns (ret_3: Ref)
 
 
 /primary_constructor_bodies.kt: info: Generated Viper text for BrokenInitializer:
-function value(this: Ref): Ref
+function g_value(this: Ref): Ref
   requires isSubtype(typeOf(this), BrokenInitializer())
   ensures isSubtype(typeOf(result), intType())
 
@@ -239,7 +239,7 @@ predicate BrokenInitializer_unique(this: Ref) {
   isSubtype(typeOf(this), BrokenInitializer()) &&
   (let this ==
     (this) in
-    true && boolFromRef(gtInts(value(this), intToRef(0))))
+    true && boolFromRef(gtInts(g_value(this), intToRef(0))))
 }
 
 method con(start: Ref) returns (v_ret_0: Ref)
@@ -248,27 +248,35 @@ method con(start: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), BrokenInitializer()) &&
     (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(value(this), intToRef(0))))
-  ensures intFromRef(value(v_ret_0)) == intFromRef(start) - 1
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
 {
-  var anon: Ref
+  var anon_1: Ref
+  var anon_0: Ref
   v_ret_0 := new()
   inhale typeOf(v_ret_0) == BrokenInitializer()
-  anon := minusInts(start, intToRef(1))
-  inhale intFromRef(value(v_ret_0)) == intFromRef(anon)
+  anon_1 := require(gtInts(start, intToRef(-2147483648)))
+  anon_0 := minusInts(start, intToRef(1))
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(value(this), intToRef(0))))
+      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
   fold acc(BrokenInitializer_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(BrokenInitializer_unique(v_ret_0), write)
 }
+
+method require(par_value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(par_value)
+
 
 /primary_constructor_bodies.kt: info: Generated Viper text for initializedHead:
 field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function initializedHead(data: Ref): Ref
@@ -282,7 +290,12 @@ function initializedHead(data: Ref): Ref
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 /primary_constructor_bodies.kt: info: Generated Viper text for OwnedInitialization:
@@ -290,6 +303,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function g_data(this: Ref): Ref
@@ -310,7 +324,12 @@ function initializedHead(par_data: Ref): Ref
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate OwnedInitialization_unique(this: Ref) {
@@ -375,6 +394,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function initializedHead(par_data: Ref): Ref
@@ -403,7 +423,12 @@ predicate BrokenOwnedInitialization_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 method con(par_data: Ref) returns (v_ret_0: Ref)
@@ -517,35 +542,35 @@ method con() returns (v_ret_0: Ref)
         (this.value) in
         boolToRef(intFromRef(anon_2_0) == 3))))
 {
-  var index: Ref
+  var l4_index: Ref
   var anon_3: Ref
   v_ret_0 := new(value)
   inhale typeOf(v_ret_0) == LoopInitialization()
   v_ret_0.value := intToRef(0)
-  index := intToRef(0)
+  l4_index := intToRef(0)
   label cont
     invariant isSubtype(typeOf(v_ret_0), LoopInitialization()) &&
       acc(v_ret_0.value, write) &&
       isSubtype(typeOf(v_ret_0.value), intType())
-    invariant isSubtype(typeOf(index), intType())
+    invariant isSubtype(typeOf(l4_index), intType())
     invariant isSubtype(typeOf(v_ret_0), LoopInitialization())
-    invariant intFromRef(index) >= 0 && intFromRef(index) <= 3 &&
-      intFromRef(v_ret_0.value) == intFromRef(index)
-  anon_3 := ltInts(index, intToRef(3))
+    invariant intFromRef(l4_index) >= 0 && intFromRef(l4_index) <= 3 &&
+      intFromRef(v_ret_0.value) == intFromRef(l4_index)
+  anon_3 := ltInts(l4_index, intToRef(3))
   if (boolFromRef(anon_3)) {
     var anon_0: Ref
     var anon_1: Ref
     anon_0 := v_ret_0.value
     v_ret_0.value := plusInts(anon_0, intToRef(1))
-    anon_1 := index
-    index := plusInts(anon_1, intToRef(1))
+    anon_1 := l4_index
+    l4_index := plusInts(anon_1, intToRef(1))
     goto cont
   }
   label break
-  assert isSubtype(typeOf(index), intType())
+  assert isSubtype(typeOf(l4_index), intType())
   assert isSubtype(typeOf(v_ret_0), LoopInitialization())
-  assert intFromRef(index) >= 0 && intFromRef(index) <= 3 &&
-    intFromRef(v_ret_0.value) == intFromRef(index)
+  assert intFromRef(l4_index) >= 0 && intFromRef(l4_index) <= 3 &&
+    intFromRef(v_ret_0.value) == intFromRef(l4_index)
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -564,6 +589,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function initializedHead(par_data: Ref): Ref
@@ -579,7 +605,12 @@ function initializedHead(par_data: Ref): Ref
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate LocalOwnedInitialization_unique(this: Ref) {
@@ -651,6 +682,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function initializedHead(par_data: Ref): Ref
@@ -679,7 +711,12 @@ predicate BrokenLocalOwnedInitialization_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 method con_BrokenLocalOwnedInitialization() returns (v_ret_0: Ref)
@@ -984,6 +1021,8 @@ field value: Ref
 function borrowedChildValue(child: Ref): Ref
   requires isSubtype(typeOf(child), LawfulConstructionChild())
   requires acc(LawfulConstructionChild_unique(child), write)
+  requires (unfolding acc(LawfulConstructionChild_unique(child), write) in
+      intFromRef(child.value) >= 0)
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= 0
 {
@@ -1009,6 +1048,8 @@ field value: Ref
 function borrowedChildValue(par_child: Ref): Ref
   requires isSubtype(typeOf(par_child), LawfulConstructionChild())
   requires acc(LawfulConstructionChild_unique(par_child), write)
+  requires (unfolding acc(LawfulConstructionChild_unique(par_child), write) in
+      intFromRef(par_child.value) >= 0)
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= 0
 {

@@ -1,3 +1,4 @@
+// FULL_JDK
 // EXTERNAL_SPEC: formver.compiler-plugin/testData/externalCounterSpecs.kt
 // EXTERNAL_TEST_LIBRARY: formver.compiler-plugin/testData/externalLibrary.kt
 

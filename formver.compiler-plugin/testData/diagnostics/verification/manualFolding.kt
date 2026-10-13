@@ -42,6 +42,7 @@ fun <!VIPER_TEXT!>contains<!>(tree: @Unique @Borrowed Tree?, search: Int) : Bool
 
 
 fun <!VIPER_TEXT!>combine<!>(left: @Unique Tree, right: @Unique Tree): @Unique Tree {
+    preconditions { left.data >= -100; left.data <= 100; right.data >= -100; right.data <= 100 }
     unfold(UniquePred(left))
     unfold(UniquePred(right))
     val data = left.data + right.data

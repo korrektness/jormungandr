@@ -10,7 +10,7 @@ interface Foo {
 
 fun <!VIPER_TEXT!>testProperties<!>(foo: Foo) {
     foo.varProp = 0
-    val x = foo.varProp + foo.valProp
+    val x = foo.varProp.toLong() + foo.valProp.toLong()
 }
 
 interface First {
@@ -98,38 +98,38 @@ fun create6() = object : InheritingInterfaceWithoutImplementation6 {
 @Suppress("USELESS_IS_CHECK")
 fun <!VIPER_TEXT!>createImpls<!>() {
     val impl12 = Impl12()
-    val start12 = impl12.field + 1 - 1
+    val start12 = impl12.field.toLong() + 1L - 1L
     take1(impl12)
     take2(impl12)
 
     val impl23 = Impl23()
-    val start23 = impl23.field + 1 - 1
+    val start23 = impl23.field.toLong() + 1L - 1L
     take2(impl23)
     take3(impl23)
 
     val impl3 = Impl3()
-    val start3 = impl3.field + 1 - 1
+    val start3 = impl3.field.toLong() + 1L - 1L
     take3(impl3)
 
     // TODO: it seems that we should be able to prove start == finish here
     val impl24 = Impl24()
-    val start24 = impl24.field + 1 - 1
+    val start24 = impl24.field.toLong() + 1L - 1L
     take2(impl24)
     take4(impl24)
 
     val impl14 = Impl14()
-    val start14 = impl14.field + 1 - 1
+    val start14 = impl14.field.toLong() + 1L - 1L
     take1(impl14)
     take4(impl14)
 
     val impl6 = create6()
-    val start6 = impl6.field + 1 - 1
+    val start6 = impl6.field.toLong() + 1L - 1L
 
-    val cond1 = start12 == impl12.field
-    val cond2 = start23 == impl23.field
-    val cond3 = start3 == impl3.field
-    val cond4 = start14 == impl14.field
-    val cond5 = start6 is Int
+    val cond1 = start12 == impl12.field.toLong()
+    val cond2 = start23 == impl23.field.toLong()
+    val cond3 = start3 == impl3.field.toLong()
+    val cond4 = start14 == impl14.field.toLong()
+    val cond5 = start6 is Long
     verify(
         cond1,
         cond2,

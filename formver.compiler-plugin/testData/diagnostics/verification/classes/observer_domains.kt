@@ -16,7 +16,7 @@ interface ChildWindow<T> : Window<T>
 class TextWindow(var start: Int) : ChildWindow<String?> {
     @Pure @Unique override fun <!VIPER_TEXT!>lower<!>(): Int = start
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(at: Int, top: Int, text: String?): String? {
-        preconditions { lower() - 1 <= at && at < top }
+        preconditions { lower().toLong() - 1L <= at.toLong() && at < top }
         postconditions<String?> { result -> result == text }
         return text
     }
@@ -29,7 +29,7 @@ fun <!VIPER_TEXT!>readWindow<!>(w: @Unique @Borrowed ChildWindow<String?>, i: In
 }
 
 fun <!VIPER_TEXT!>windowRoundTrip<!>(w: @Unique TextWindow, i: Int, limit: Int) {
-    preconditions { w.lower() <= i && i < limit }
+    preconditions { w.lower() > -2147483648 && w.lower() <= i && i < limit }
     verify(w.read(w.lower() - 1, w.lower(), "edge") == "edge")
     val before = w.read(i, limit, "ok")
     val result = readWindow(w, i, limit)
@@ -48,7 +48,7 @@ interface PositiveRead {
     @Pure fun <!VIPER_TEXT!>read<!>(i: Int): Int
     @SpecOf("read")
     fun readSpec(i: Int) {
-        preconditions { i >= 0 }
+        preconditions { i >= 0 && i < 2147483647 }
         postconditions<Int> { result -> result >= i }
     }
 }
@@ -56,7 +56,7 @@ interface PositiveRead {
 class WiderRead : PositiveRead {
     @SpecOf("read")
     fun widerSpec(i: Int) {
-        preconditions { i >= -1 }
+        preconditions { i >= -1 && i < 2147483647 }
         postconditions<Int> { result -> result == i + 1 }
     }
     @Pure override fun <!VIPER_TEXT!>read<!>(i: Int): Int = i + 1

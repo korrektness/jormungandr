@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.types
 
+import org.jetbrains.kotlin.formver.core.domains.IntegerBounds
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.isOf
 import org.jetbrains.kotlin.formver.core.domains.domainVar
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
@@ -33,7 +34,7 @@ object IntArrayEmbedding {
         listOf(receiver.decl()),
         Type.Int,
         pres = listOf(),
-        posts = listOf(Exp.Result(Type.Int) ge Exp.IntLit(0)),
+        posts = listOf(Exp.Result(Type.Int) ge Exp.IntLit(0), Exp.Result(Type.Int) le Exp.IntLit(Int.MAX_VALUE)),
         body = null,
     )
 
@@ -56,6 +57,11 @@ object IntArrayEmbedding {
                 array isOf classType.runtimeType,
                 array.fieldAccessPredicate(contentsField, PermExp.FullPerm()),
                 Exp.SeqLength(array.fieldAccess(contentsField)) eq arraySize(array),
+                Exp.forall(domainVar("index", Type.Int)) { index ->
+                    assumption { index ge 0.toExp() }
+                    assumption { index lt arraySize(array) }
+                    IntegerBounds.int(simpleTrigger { element(array, index) })
+                },
             ).toConjunction(),
         )
     }

@@ -21,6 +21,8 @@ field x: Ref
 method bump(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -77,6 +79,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method setFirst(a: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -103,11 +106,14 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method bumpFirst(a: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(a), IntArray())
   requires acc(IntArray_unique(a), write)
+  requires (unfolding acc(IntArray_unique(a), write) in
+      arraySize(a) < 1 || a.contents[0] < 2147483647)
   ensures acc(IntArray_unique(a), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -123,7 +129,10 @@ method bumpFirst(a: Ref) returns (v_ret_0: Ref)
   anon_1 := intToRef(a.contents[intFromRef(anon_0)])
   assert intFromRef(anon_0) >= 0
   assert intFromRef(anon_0) < arraySize(a)
-  a.contents := a.contents[intFromRef(anon_0) := intFromRef(anon_1) + 1]
+  a.contents := a.contents[intFromRef(anon_0) :=
+    (let anon_builtin ==
+      (plusInts(anon_1, intToRef(1))) in
+      intFromRef(anon_1) + intFromRef(intToRef(1)))]
   fold acc(IntArray_unique(a), write)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -198,6 +207,8 @@ function size(this: Ref): Ref
 method bump(c: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(ret_1), unitType())
 
@@ -299,6 +310,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function size(this: Ref): Ref
@@ -357,6 +369,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function size(this: Ref): Ref
@@ -367,6 +380,8 @@ function size(this: Ref): Ref
 method bumpFirst(a: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(a), IntArray())
   requires acc(IntArray_unique(a), write)
+  requires (unfolding acc(IntArray_unique(a), write) in
+      arraySize(a) < 1 || a.contents[0] < 2147483647)
   ensures acc(IntArray_unique(a), write)
   ensures isSubtype(typeOf(ret_1), unitType())
 
@@ -399,7 +414,10 @@ method wrongAfterInlineElementBump(a: Ref) returns (v_ret_0: Ref)
   anon_1 := intToRef(a.contents[intFromRef(anon_0)])
   assert intFromRef(anon_0) >= 0
   assert intFromRef(anon_0) < arraySize(a)
-  a.contents := a.contents[intFromRef(anon_0) := intFromRef(anon_1) + 1]
+  a.contents := a.contents[intFromRef(anon_0) :=
+    (let anon_builtin ==
+      (plusInts(anon_1, intToRef(1))) in
+      intFromRef(anon_1) + intFromRef(intToRef(1)))]
   fold acc(IntArray_unique(a), write)
   label lbl_ret_2
   inhale isSubtype(typeOf(v_ret_2), unitType())

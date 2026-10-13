@@ -46,4 +46,10 @@ open class Base(var x: Int)
 class Derived(x: Int, var y: Int) : Base(x)
 
 @Pure
-fun <!VIPER_TEXT!>sum<!>(d: @Unique Derived): Int = d.x + d.y
+fun <!VIPER_TEXT!>sum<!>(d: @Unique Derived): Int {
+    preconditions {
+        d.x.toLong() + d.y.toLong() >= -2147483648L
+        d.x.toLong() + d.y.toLong() <= 2147483647L
+    }
+    return d.x + d.y
+}

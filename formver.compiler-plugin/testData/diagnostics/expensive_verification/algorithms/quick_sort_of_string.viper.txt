@@ -6,15 +6,27 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
   requires |stringFromRef(v_this_extension)| >= 1
   ensures isSubtype(typeOf(v_ret_0), charType())
   ensures boolFromRef(calcMin) ==>
-    (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+    (forall anon_builtin_0: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
       charFromRef(v_ret_0) <=
-      stringFromRef(v_this_extension)[anon_builtin_0])
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_0))) in
+        stringFromRef(v_this_extension)[anon_builtin_0]))
   ensures !boolFromRef(calcMin) ==>
-    (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+    (forall anon_builtin_1: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
       charFromRef(v_ret_0) >=
-      stringFromRef(v_this_extension)[anon_builtin_1])
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_1))) in
+        stringFromRef(v_this_extension)[anon_builtin_1]))
 {
   var res: Ref
   var i: Ref
@@ -29,13 +41,25 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
     invariant 0 <= intFromRef(i) &&
       intFromRef(i) <= |stringFromRef(v_this_extension)|
     invariant boolFromRef(calcMin) ==>
-      (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
-        anon_builtin_2 < intFromRef(i) ==>
-        charFromRef(res) <= stringFromRef(v_this_extension)[anon_builtin_2])
+      (forall anon_builtin_2: Int ::
+        { stringFromRef(v_this_extension)[anon_builtin_2] }
+        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(i) ==>
+        charFromRef(res) <=
+        (let anon_builtin_neg1 ==
+          (stringGet(v_this_extension, intToRef(anon_builtin_2))) in
+          stringFromRef(v_this_extension)[anon_builtin_2]))
     invariant !boolFromRef(calcMin) ==>
-      (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-        anon_builtin_3 < intFromRef(i) ==>
-        charFromRef(res) >= stringFromRef(v_this_extension)[anon_builtin_3])
+      (forall anon_builtin_3: Int ::
+        { stringFromRef(v_this_extension)[anon_builtin_3] }
+        anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(i) ==>
+        charFromRef(res) >=
+        (let anon_builtin_neg1 ==
+          (stringGet(v_this_extension, intToRef(anon_builtin_3))) in
+          stringFromRef(v_this_extension)[anon_builtin_3]))
   anon_0 := ltInts(i, stringLength(v_this_extension))
   if (boolFromRef(anon_0)) {
     var anon_1: Ref
@@ -64,13 +88,25 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
   assert 0 <= intFromRef(i) &&
     intFromRef(i) <= |stringFromRef(v_this_extension)|
   assert boolFromRef(calcMin) ==>
-    (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
-      anon_builtin_2 < intFromRef(i) ==>
-      charFromRef(res) <= stringFromRef(v_this_extension)[anon_builtin_2])
+    (forall anon_builtin_2: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_2] }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(i) ==>
+      charFromRef(res) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_2))) in
+        stringFromRef(v_this_extension)[anon_builtin_2]))
   assert !boolFromRef(calcMin) ==>
-    (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-      anon_builtin_3 < intFromRef(i) ==>
-      charFromRef(res) >= stringFromRef(v_this_extension)[anon_builtin_3])
+    (forall anon_builtin_3: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_3] }
+      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(i) ==>
+      charFromRef(res) >=
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_3))) in
+        stringFromRef(v_this_extension)[anon_builtin_3]))
   v_ret_0 := res
   goto lbl_ret_0
   label lbl_ret_0
@@ -84,23 +120,46 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
   requires |stringFromRef(v_this_extension)| >= 1
   ensures isSubtype(typeOf(ret_3), charType())
   ensures boolFromRef(calcMin) ==>
-    (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+    (forall anon_builtin_1: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
-      charFromRef(ret_3) <= stringFromRef(v_this_extension)[anon_builtin_1])
+      charFromRef(ret_3) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_1))) in
+        stringFromRef(v_this_extension)[anon_builtin_1]))
   ensures !boolFromRef(calcMin) ==>
-    (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
+    (forall anon_builtin_2: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_2] }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 &&
       anon_builtin_2 < |stringFromRef(v_this_extension)| ==>
-      charFromRef(ret_3) >= stringFromRef(v_this_extension)[anon_builtin_2])
+      charFromRef(ret_3) >=
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_2))) in
+        stringFromRef(v_this_extension)[anon_builtin_2]))
 
 
 method quickSort(v_this_extension: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(v_this_extension), stringType())
   ensures isSubtype(typeOf(v_ret_0), stringType())
   ensures |stringFromRef(v_ret_0)| == |stringFromRef(v_this_extension)|
-  ensures (forall anon_builtin_0: Int ::1 <= anon_builtin_0 &&
+  ensures (forall anon_builtin_0: Int ::
+      { stringFromRef(v_ret_0)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      1 <= anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
-      stringFromRef(v_ret_0)[anon_builtin_0 - 1] <=
-      stringFromRef(v_ret_0)[anon_builtin_0])
+      (let anon_builtin_neg1 ==
+        (stringGet(v_ret_0, minusInts(intToRef(anon_builtin_0), intToRef(1)))) in
+        stringFromRef(v_ret_0)[intFromRef(minusInts(intToRef(anon_builtin_0),
+        intToRef(1)))]) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(v_ret_0, intToRef(anon_builtin_0))) in
+        stringFromRef(v_ret_0)[anon_builtin_0]))
 {
   var l0_minVal: Ref
   var l0_maxVal: Ref
@@ -120,22 +179,51 @@ method quickSortRec(v_this_extension: Ref, par_minVal: Ref, par_maxVal: Ref)
   requires isSubtype(typeOf(v_this_extension), stringType())
   requires isSubtype(typeOf(par_minVal), charType())
   requires isSubtype(typeOf(par_maxVal), charType())
-  requires (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
+  requires (forall anon_builtin_3: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_3] }
+      { stringFromRef(v_this_extension)[anon_builtin_3] }
+      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      0 <= anon_builtin_3 &&
       anon_builtin_3 < |stringFromRef(v_this_extension)| ==>
       charFromRef(par_minVal) <=
-      stringFromRef(v_this_extension)[anon_builtin_3] &&
-      stringFromRef(v_this_extension)[anon_builtin_3] <=
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_3))) in
+        stringFromRef(v_this_extension)[anon_builtin_3]) &&
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_3))) in
+        stringFromRef(v_this_extension)[anon_builtin_3]) <=
       charFromRef(par_maxVal))
   ensures isSubtype(typeOf(ret_6), stringType())
   ensures |stringFromRef(ret_6)| == |stringFromRef(v_this_extension)|
-  ensures (forall anon_builtin_4: Int ::0 <= anon_builtin_4 &&
+  ensures (forall anon_builtin_4: Int ::
+      { stringFromRef(ret_6)[anon_builtin_4] }
+      { stringFromRef(ret_6)[anon_builtin_4] }
+      anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      0 <= anon_builtin_4 &&
       anon_builtin_4 < |stringFromRef(v_this_extension)| ==>
-      charFromRef(par_minVal) <= stringFromRef(ret_6)[anon_builtin_4] &&
-      stringFromRef(ret_6)[anon_builtin_4] <= charFromRef(par_maxVal))
-  ensures (forall anon_builtin_5: Int ::1 <= anon_builtin_5 &&
+      charFromRef(par_minVal) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(ret_6, intToRef(anon_builtin_4))) in
+        stringFromRef(ret_6)[anon_builtin_4]) &&
+      (let anon_builtin_neg1 ==
+        (stringGet(ret_6, intToRef(anon_builtin_4))) in
+        stringFromRef(ret_6)[anon_builtin_4]) <=
+      charFromRef(par_maxVal))
+  ensures (forall anon_builtin_5: Int ::
+      { stringFromRef(ret_6)[anon_builtin_5] }
+      anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+      1 <= anon_builtin_5 &&
       anon_builtin_5 < |stringFromRef(v_this_extension)| ==>
-      stringFromRef(ret_6)[anon_builtin_5 - 1] <=
-      stringFromRef(ret_6)[anon_builtin_5])
+      (let anon_builtin_neg1 ==
+        (stringGet(ret_6, minusInts(intToRef(anon_builtin_5), intToRef(1)))) in
+        stringFromRef(ret_6)[intFromRef(minusInts(intToRef(anon_builtin_5),
+        intToRef(1)))]) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(ret_6, intToRef(anon_builtin_5))) in
+        stringFromRef(ret_6)[anon_builtin_5]))
 
 
 /quick_sort_of_string.kt: info: Generated Viper text for quickSortRec:
@@ -158,22 +246,51 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
   requires isSubtype(typeOf(v_this_extension), stringType())
   requires isSubtype(typeOf(minVal), charType())
   requires isSubtype(typeOf(maxVal), charType())
-  requires (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
+  requires (forall anon_builtin_0: Int ::
+      { stringFromRef(v_this_extension)[anon_builtin_0] }
+      { stringFromRef(v_this_extension)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
       charFromRef(minVal) <=
-      stringFromRef(v_this_extension)[anon_builtin_0] &&
-      stringFromRef(v_this_extension)[anon_builtin_0] <=
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_0))) in
+        stringFromRef(v_this_extension)[anon_builtin_0]) &&
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, intToRef(anon_builtin_0))) in
+        stringFromRef(v_this_extension)[anon_builtin_0]) <=
       charFromRef(maxVal))
   ensures isSubtype(typeOf(v_ret_0), stringType())
   ensures |stringFromRef(v_ret_0)| == |stringFromRef(v_this_extension)|
-  ensures (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
+  ensures (forall anon_builtin_1: Int ::
+      { stringFromRef(v_ret_0)[anon_builtin_1] }
+      { stringFromRef(v_ret_0)[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
-      charFromRef(minVal) <= stringFromRef(v_ret_0)[anon_builtin_1] &&
-      stringFromRef(v_ret_0)[anon_builtin_1] <= charFromRef(maxVal))
-  ensures (forall anon_builtin_2: Int ::1 <= anon_builtin_2 &&
+      charFromRef(minVal) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(v_ret_0, intToRef(anon_builtin_1))) in
+        stringFromRef(v_ret_0)[anon_builtin_1]) &&
+      (let anon_builtin_neg1 ==
+        (stringGet(v_ret_0, intToRef(anon_builtin_1))) in
+        stringFromRef(v_ret_0)[anon_builtin_1]) <=
+      charFromRef(maxVal))
+  ensures (forall anon_builtin_2: Int ::
+      { stringFromRef(v_ret_0)[anon_builtin_2] }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      1 <= anon_builtin_2 &&
       anon_builtin_2 < |stringFromRef(v_this_extension)| ==>
-      stringFromRef(v_ret_0)[anon_builtin_2 - 1] <=
-      stringFromRef(v_ret_0)[anon_builtin_2])
+      (let anon_builtin_neg1 ==
+        (stringGet(v_ret_0, minusInts(intToRef(anon_builtin_2), intToRef(1)))) in
+        stringFromRef(v_ret_0)[intFromRef(minusInts(intToRef(anon_builtin_2),
+        intToRef(1)))]) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(v_ret_0, intToRef(anon_builtin_2))) in
+        stringFromRef(v_ret_0)[anon_builtin_2]))
 {
   var medVal: Ref
   var anon_1: Ref
@@ -205,20 +322,60 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
     invariant isSubtype(typeOf(v_this_extension), stringType())
     invariant 0 <= intFromRef(i) &&
       intFromRef(i) <= |stringFromRef(v_this_extension)|
-    invariant |stringFromRef(lessString)| + |stringFromRef(greaterString)| +
-      |stringFromRef(eqString)| ==
+    invariant |stringFromRef(lessString)| <= intFromRef(i)
+    invariant |stringFromRef(greaterString)| <=
+      (let anon_builtin_neg1 ==
+        (minusInts(i, stringLength(lessString))) in
+        intFromRef(i) - intFromRef(stringLength(lessString)))
+    invariant |stringFromRef(eqString)| <=
+      (let anon_builtin_neg1 ==
+        (minusInts(minusInts(i, stringLength(lessString)), stringLength(greaterString))) in
+        intFromRef(minusInts(i, stringLength(lessString))) -
+        intFromRef(stringLength(greaterString)))
+    invariant (let anon_builtin_neg1 ==
+        (plusInts(plusInts(stringLength(lessString), stringLength(greaterString)),
+        stringLength(eqString))) in
+        intFromRef(plusInts(stringLength(lessString), stringLength(greaterString))) +
+        intFromRef(stringLength(eqString))) ==
       intFromRef(i)
-    invariant (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-        anon_builtin_3 < |stringFromRef(lessString)| ==>
-        charFromRef(minVal) <= stringFromRef(lessString)[anon_builtin_3] &&
-        stringFromRef(lessString)[anon_builtin_3] <= charFromRef(medVal))
-    invariant (forall anon_builtin_4: Int ::0 <= anon_builtin_4 &&
+    invariant (forall anon_builtin_3: Int ::
+        { stringFromRef(lessString)[anon_builtin_3] }
+        { stringFromRef(lessString)[anon_builtin_3] }
+        anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        0 <= anon_builtin_3 && anon_builtin_3 < |stringFromRef(lessString)| ==>
+        charFromRef(minVal) <=
+        (let anon_builtin_neg1 ==
+          (stringGet(lessString, intToRef(anon_builtin_3))) in
+          stringFromRef(lessString)[anon_builtin_3]) &&
+        (let anon_builtin_neg1 ==
+          (stringGet(lessString, intToRef(anon_builtin_3))) in
+          stringFromRef(lessString)[anon_builtin_3]) <=
+        charFromRef(medVal))
+    invariant (forall anon_builtin_4: Int ::
+        { stringFromRef(greaterString)[anon_builtin_4] }
+        { stringFromRef(greaterString)[anon_builtin_4] }
+        anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+        0 <= anon_builtin_4 &&
         anon_builtin_4 < |stringFromRef(greaterString)| ==>
-        charFromRef(medVal) <= stringFromRef(greaterString)[anon_builtin_4] &&
-        stringFromRef(greaterString)[anon_builtin_4] <= charFromRef(maxVal))
-    invariant (forall anon_builtin_5: Int ::0 <= anon_builtin_5 &&
-        anon_builtin_5 < |stringFromRef(eqString)| ==>
-        stringFromRef(eqString)[anon_builtin_5] == charFromRef(medVal))
+        charFromRef(medVal) <=
+        (let anon_builtin_neg1 ==
+          (stringGet(greaterString, intToRef(anon_builtin_4))) in
+          stringFromRef(greaterString)[anon_builtin_4]) &&
+        (let anon_builtin_neg1 ==
+          (stringGet(greaterString, intToRef(anon_builtin_4))) in
+          stringFromRef(greaterString)[anon_builtin_4]) <=
+        charFromRef(maxVal))
+    invariant (forall anon_builtin_5: Int ::
+        { stringFromRef(eqString)[anon_builtin_5] }
+        anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+        0 <= anon_builtin_5 && anon_builtin_5 < |stringFromRef(eqString)| ==>
+        (let anon_builtin_neg1 ==
+          (stringGet(eqString, intToRef(anon_builtin_5))) in
+          stringFromRef(eqString)[anon_builtin_5]) ==
+        charFromRef(medVal))
   anon_2 := ltInts(i, stringLength(v_this_extension))
   if (boolFromRef(anon_2)) {
     var curChar: Ref
@@ -229,11 +386,21 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
     anon_3 := anon_0
     curChar := stringGet(v_this_extension, anon_3)
     if (charFromRef(curChar) < charFromRef(medVal)) {
+      if (!(|stringFromRef(lessString)| < 2147483647)) {
+        inhale false
+      }
       lessString := addStringChar(lessString, curChar)
     } elseif (charFromRef(curChar) > charFromRef(medVal)) {
+      if (!(|stringFromRef(greaterString)| < 2147483647)) {
+        inhale false
+      }
       greaterString := addStringChar(greaterString, curChar)
     } else {
-      eqString := addStringChar(eqString, curChar)}
+      if (!(|stringFromRef(eqString)| < 2147483647)) {
+        inhale false
+      }
+      eqString := addStringChar(eqString, curChar)
+    }
     goto cont
   }
   label break
@@ -247,22 +414,70 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
   assert isSubtype(typeOf(v_this_extension), stringType())
   assert 0 <= intFromRef(i) &&
     intFromRef(i) <= |stringFromRef(v_this_extension)|
-  assert |stringFromRef(lessString)| + |stringFromRef(greaterString)| +
-    |stringFromRef(eqString)| ==
+  assert |stringFromRef(lessString)| <= intFromRef(i)
+  assert |stringFromRef(greaterString)| <=
+    (let anon_builtin_neg1 ==
+      (minusInts(i, stringLength(lessString))) in
+      intFromRef(i) - intFromRef(stringLength(lessString)))
+  assert |stringFromRef(eqString)| <=
+    (let anon_builtin_neg1 ==
+      (minusInts(minusInts(i, stringLength(lessString)), stringLength(greaterString))) in
+      intFromRef(minusInts(i, stringLength(lessString))) -
+      intFromRef(stringLength(greaterString)))
+  assert (let anon_builtin_neg1 ==
+      (plusInts(plusInts(stringLength(lessString), stringLength(greaterString)),
+      stringLength(eqString))) in
+      intFromRef(plusInts(stringLength(lessString), stringLength(greaterString))) +
+      intFromRef(stringLength(eqString))) ==
     intFromRef(i)
-  assert (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-      anon_builtin_3 < |stringFromRef(lessString)| ==>
-      charFromRef(minVal) <= stringFromRef(lessString)[anon_builtin_3] &&
-      stringFromRef(lessString)[anon_builtin_3] <= charFromRef(medVal))
-  assert (forall anon_builtin_4: Int ::0 <= anon_builtin_4 &&
+  assert (forall anon_builtin_3: Int ::
+      { stringFromRef(lessString)[anon_builtin_3] }
+      { stringFromRef(lessString)[anon_builtin_3] }
+      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      0 <= anon_builtin_3 && anon_builtin_3 < |stringFromRef(lessString)| ==>
+      charFromRef(minVal) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(lessString, intToRef(anon_builtin_3))) in
+        stringFromRef(lessString)[anon_builtin_3]) &&
+      (let anon_builtin_neg1 ==
+        (stringGet(lessString, intToRef(anon_builtin_3))) in
+        stringFromRef(lessString)[anon_builtin_3]) <=
+      charFromRef(medVal))
+  assert (forall anon_builtin_4: Int ::
+      { stringFromRef(greaterString)[anon_builtin_4] }
+      { stringFromRef(greaterString)[anon_builtin_4] }
+      anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      0 <= anon_builtin_4 &&
       anon_builtin_4 < |stringFromRef(greaterString)| ==>
-      charFromRef(medVal) <= stringFromRef(greaterString)[anon_builtin_4] &&
-      stringFromRef(greaterString)[anon_builtin_4] <= charFromRef(maxVal))
-  assert (forall anon_builtin_5: Int ::0 <= anon_builtin_5 &&
-      anon_builtin_5 < |stringFromRef(eqString)| ==>
-      stringFromRef(eqString)[anon_builtin_5] == charFromRef(medVal))
+      charFromRef(medVal) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(greaterString, intToRef(anon_builtin_4))) in
+        stringFromRef(greaterString)[anon_builtin_4]) &&
+      (let anon_builtin_neg1 ==
+        (stringGet(greaterString, intToRef(anon_builtin_4))) in
+        stringFromRef(greaterString)[anon_builtin_4]) <=
+      charFromRef(maxVal))
+  assert (forall anon_builtin_5: Int ::
+      { stringFromRef(eqString)[anon_builtin_5] }
+      anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+      0 <= anon_builtin_5 && anon_builtin_5 < |stringFromRef(eqString)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(eqString, intToRef(anon_builtin_5))) in
+        stringFromRef(eqString)[anon_builtin_5]) ==
+      charFromRef(medVal))
   anon_4 := quickSortRec(lessString, minVal, medVal)
+  if (!(|stringFromRef(anon_4)| + |stringFromRef(eqString)| <= 2147483647)) {
+    inhale false
+  }
   anon_5 := quickSortRec(greaterString, medVal, maxVal)
+  if (!(|stringFromRef(addStrings(anon_4, eqString))| +
+  |stringFromRef(anon_5)| <=
+  2147483647)) {
+    inhale false
+  }
   v_ret_0 := addStrings(addStrings(anon_4, eqString), anon_5)
   goto lbl_ret_0
   label lbl_ret_0

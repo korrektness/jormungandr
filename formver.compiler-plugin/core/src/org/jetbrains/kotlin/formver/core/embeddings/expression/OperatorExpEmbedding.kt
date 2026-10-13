@@ -20,6 +20,8 @@ interface InjectionBasedExpEmbedding : ExpEmbedding {
 interface BinaryOperatorExpEmbedding : InjectionBasedExpEmbedding {
     val left: ExpEmbedding
     val right: ExpEmbedding
+    val exceptionalExit: ExpEmbedding?
+        get() = null
 
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitBinaryOperatorExpEmbedding(this)
 
@@ -58,13 +60,15 @@ class BinaryOperatorExpEmbeddingTemplate(
     operator fun invoke(
         left: ExpEmbedding,
         right: ExpEmbedding,
-        sourceRole: SourceRole? = null
+        sourceRole: SourceRole? = null,
+        exceptionalExit: ExpEmbedding? = null,
     ): BinaryOperatorExpEmbedding =
         object : BinaryOperatorExpEmbedding {
             override val refsOperation: InjectionImageFunction = this@BinaryOperatorExpEmbeddingTemplate.refsOperation
             override val type = this@BinaryOperatorExpEmbeddingTemplate.type
             override val left = left
             override val right = right
+            override val exceptionalExit = exceptionalExit
             override val sourceRole = sourceRole
         }
 }

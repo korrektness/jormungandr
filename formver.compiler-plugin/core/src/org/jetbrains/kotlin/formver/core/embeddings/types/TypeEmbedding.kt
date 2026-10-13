@@ -96,6 +96,9 @@ val TypeEmbedding.injectionOrNull: Injection?
             IterationSequenceTypeEmbedding -> RuntimeTypeDomain.iterationSequenceInjection
             CharTypeEmbedding -> RuntimeTypeDomain.charInjection
             IntTypeEmbedding -> RuntimeTypeDomain.intInjection
+            LongTypeEmbedding -> RuntimeTypeDomain.longInjection
+            ShortTypeEmbedding -> RuntimeTypeDomain.shortInjection
+            ByteTypeEmbedding -> RuntimeTypeDomain.byteInjection
             BooleanTypeEmbedding -> RuntimeTypeDomain.boolInjection
             else -> null
         }

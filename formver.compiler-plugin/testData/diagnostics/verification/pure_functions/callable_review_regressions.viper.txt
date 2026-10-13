@@ -30,14 +30,22 @@ method invoke(this: Ref, amount: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(ReviewAcc_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(ReviewAcc_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
   ensures (unfolding acc(ReviewAcc_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(ReviewAcc_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(ReviewAcc_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(ReviewAcc_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(ReviewAcc_unique(this), wildcard) in
       intFromRef(ret) == intFromRef(total(this)))
 
@@ -179,11 +187,17 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_5: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_5) == intFromRef(Lambda0_f_total(this))
 {
   var anon_1: Ref
@@ -211,14 +225,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_4), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_4) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -229,7 +251,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -239,9 +266,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
   assert isSubtype(typeOf(ret_4), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_4) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -302,14 +332,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(ReviewAcc_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(ReviewAcc_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(ReviewAcc_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(ReviewAcc_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(ReviewAcc_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(ReviewAcc_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(total(this)))
 
@@ -488,11 +526,17 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_4: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(this))
 {
   var anon_2: Ref
@@ -529,14 +573,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -556,7 +608,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -566,9 +623,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   assert isSubtype(typeOf(ret_3), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -718,11 +778,17 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_4: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(this))
 {
   var anon_2: Ref
@@ -768,14 +834,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -786,7 +860,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -796,9 +875,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   assert isSubtype(typeOf(ret_3), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -853,11 +935,17 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_2), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
 {
   v_ret_2 := intToRef(-5)
@@ -876,14 +964,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -894,7 +990,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -904,9 +1005,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -980,14 +1084,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(ReviewAcc_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(ReviewAcc_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures (unfolding acc(ReviewAcc_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(ReviewAcc_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(ReviewAcc_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(ReviewAcc_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_2) == intFromRef(total(this)))
 
@@ -1042,11 +1154,17 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_2), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
 {
   v_ret_2 := intToRef(-5)
@@ -1065,14 +1183,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -1083,7 +1209,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -1093,9 +1224,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -1150,11 +1284,17 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_2), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
 {
   v_ret_2 := intToRef(-5)
@@ -1173,14 +1313,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -1191,7 +1339,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -1201,9 +1354,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -1258,11 +1414,17 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_2), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
 {
   v_ret_2 := intToRef(-5)
@@ -1281,14 +1443,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -1299,7 +1469,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -1309,9 +1484,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -1350,14 +1528,22 @@ method invoke(this: Ref, amount: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(NamedCounterSpec_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(NamedCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
   ensures (unfolding acc(NamedCounterSpec_unique(this), wildcard) in
       intFromRef(total(this))) ==
-    old((unfolding acc(NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(total(this)))) +
-    intFromRef(amount) &&
+    (let anon ==
+      (plusInts(old((unfolding acc(NamedCounterSpec_unique(this), wildcard) in
+        total(this))), amount)) in
+      intFromRef(old((unfolding acc(NamedCounterSpec_unique(this), wildcard) in
+        total(this)))) +
+      intFromRef(amount)) &&
     (unfolding acc(NamedCounterSpec_unique(this), wildcard) in
       intFromRef(ret) == intFromRef(total(this)))
 
@@ -1446,17 +1632,23 @@ method NamedReviewAcc_f_invoke(this: Ref, amount: Ref)
   requires acc(NamedReviewAcc_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(NamedReviewAcc_f_total(this)) >= 0
+    intFromRef(NamedReviewAcc_f_total(this)) >= 0 &&
+    intFromRef(NamedReviewAcc_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(NamedReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(NamedReviewAcc_f_total(this)) ==
-    old(intFromRef(NamedReviewAcc_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(NamedReviewAcc_f_total(this)), amount)) in
+      intFromRef(old(NamedReviewAcc_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_0) == intFromRef(NamedReviewAcc_f_total(this))
 {
-  var anon: Ref
+  var anon_1: Ref
   unfold acc(NamedReviewAcc_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, amount)
+  anon_1 := this.n
+  this.n := plusInts(anon_1, amount)
   v_ret_0 := this.n
   fold acc(NamedReviewAcc_unique(this), write)
   goto lbl_ret_0
@@ -1470,14 +1662,22 @@ method c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(c_NamedCounterSpec_f_total(this)) >= 0)
+      intFromRef(c_NamedCounterSpec_f_total(this)) >= 0) &&
+    (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+      intFromRef(c_NamedCounterSpec_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_NamedCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
       intFromRef(c_NamedCounterSpec_f_total(this))) ==
-    old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(c_NamedCounterSpec_f_total(this)))) +
-    intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+        c_NamedCounterSpec_f_total(this))), amount)) in
+      intFromRef(old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+        c_NamedCounterSpec_f_total(this)))) +
+      intFromRef(amount)) &&
     (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_NamedCounterSpec_f_total(this)))
 
@@ -1489,7 +1689,12 @@ method refines_c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(c_NamedCounterSpec_f_total(this)) >= 0)
+      intFromRef(c_NamedCounterSpec_f_total(this)) >= 0) &&
+    (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+      intFromRef(c_NamedCounterSpec_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), NamedReviewAcc())
 {
   NamedReviewAcc_c_NamedCounterSpec_restore(this)
@@ -1499,9 +1704,12 @@ method refines_c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
   assert isSubtype(typeOf(ret_1), intType())
   assert (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
       intFromRef(c_NamedCounterSpec_f_total(this))) ==
-    old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(c_NamedCounterSpec_f_total(this)))) +
-    intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+        c_NamedCounterSpec_f_total(this))), amount)) in
+      intFromRef(old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+        c_NamedCounterSpec_f_total(this)))) +
+      intFromRef(amount)) &&
     (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_NamedCounterSpec_f_total(this)))
 }
@@ -1591,12 +1799,18 @@ method BrokenNamedReviewAcc_f_invoke(this: Ref, amount: Ref)
   requires acc(BrokenNamedReviewAcc_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(BrokenNamedReviewAcc_f_total(this)) >= 0
+    intFromRef(BrokenNamedReviewAcc_f_total(this)) >= 0 &&
+    intFromRef(BrokenNamedReviewAcc_f_total(this)) <=
+    (let anon ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(BrokenNamedReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(BrokenNamedReviewAcc_f_total(this)) ==
-    old(intFromRef(BrokenNamedReviewAcc_f_total(this))) +
-    intFromRef(amount) &&
+    (let anon ==
+      (plusInts(old(BrokenNamedReviewAcc_f_total(this)), amount)) in
+      intFromRef(old(BrokenNamedReviewAcc_f_total(this))) +
+      intFromRef(amount)) &&
     intFromRef(v_ret_0) == intFromRef(BrokenNamedReviewAcc_f_total(this))
 {
   v_ret_0 := intToRef(-7)
@@ -1611,14 +1825,22 @@ method c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(c_NamedCounterSpec_f_total(this)) >= 0)
+      intFromRef(c_NamedCounterSpec_f_total(this)) >= 0) &&
+    (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+      intFromRef(c_NamedCounterSpec_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_NamedCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
       intFromRef(c_NamedCounterSpec_f_total(this))) ==
-    old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(c_NamedCounterSpec_f_total(this)))) +
-    intFromRef(amount) &&
+    (let anon ==
+      (plusInts(old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+        c_NamedCounterSpec_f_total(this))), amount)) in
+      intFromRef(old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+        c_NamedCounterSpec_f_total(this)))) +
+      intFromRef(amount)) &&
     (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_NamedCounterSpec_f_total(this)))
 
@@ -1630,7 +1852,12 @@ method refines_c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(c_NamedCounterSpec_f_total(this)) >= 0)
+      intFromRef(c_NamedCounterSpec_f_total(this)) >= 0) &&
+    (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+      intFromRef(c_NamedCounterSpec_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), BrokenNamedReviewAcc())
 {
   BrokenNamedReviewAcc_c_NamedCounterSpec_restore(this)
@@ -1640,9 +1867,12 @@ method refines_c_NamedCounterSpec_f_invoke(this: Ref, amount: Ref)
   assert isSubtype(typeOf(ret_1), intType())
   assert (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
       intFromRef(c_NamedCounterSpec_f_total(this))) ==
-    old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(c_NamedCounterSpec_f_total(this)))) +
-    intFromRef(amount) &&
+    (let anon ==
+      (plusInts(old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+        c_NamedCounterSpec_f_total(this))), amount)) in
+      intFromRef(old((unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
+        c_NamedCounterSpec_f_total(this)))) +
+      intFromRef(amount)) &&
     (unfolding acc(c_NamedCounterSpec_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_NamedCounterSpec_f_total(this)))
 }
@@ -1672,8 +1902,8 @@ method callTwice(f: Ref) returns (v_ret_0: Ref)
     (unfolding acc(NamedCounterSpec_unique(f), wildcard) in
       intFromRef(total(f)) == 2)
 {
-  var anon: Ref
-  anon := invoke(f, intToRef(1))
+  var anon_0: Ref
+  anon_0 := invoke(f, intToRef(1))
   v_ret_0 := invoke(f, intToRef(1))
   goto lbl_ret_0
   label lbl_ret_0
@@ -1685,14 +1915,22 @@ method invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(total(this)) >= 0)
+      intFromRef(total(this)) >= 0) &&
+    (unfolding acc(NamedCounterSpec_unique(this), wildcard) in
+      intFromRef(total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(NamedCounterSpec_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(NamedCounterSpec_unique(this), wildcard) in
       intFromRef(total(this))) ==
-    old((unfolding acc(NamedCounterSpec_unique(this), wildcard) in
-      intFromRef(total(this)))) +
-    intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(NamedCounterSpec_unique(this), wildcard) in
+        total(this))), amount)) in
+      intFromRef(old((unfolding acc(NamedCounterSpec_unique(this), wildcard) in
+        total(this)))) +
+      intFromRef(amount)) &&
     (unfolding acc(NamedCounterSpec_unique(this), wildcard) in
       intFromRef(ret_3) == intFromRef(total(this)))
 
@@ -1837,9 +2075,12 @@ method invoke(this: Ref, amount: Ref) returns (ret: Ref)
   ensures isSubtype(typeOf(ret), intType())
   ensures (unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
       intFromRef(ret) == intFromRef(total(this)))
 
@@ -1876,9 +2117,12 @@ method invoke(this: Ref, amount: Ref) returns (ret: Ref)
   ensures isSubtype(typeOf(ret), intType())
   ensures (unfolding acc(GhostSharedAcc_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(GhostSharedAcc_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(GhostSharedAcc_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(GhostSharedAcc_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(GhostSharedAcc_unique(this), wildcard) in
       intFromRef(ret) == intFromRef(total(this)))
 
@@ -1926,9 +2170,12 @@ method invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(OrdinarySharedAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(total(this)))
 
@@ -2002,9 +2249,12 @@ method invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(GhostSharedAcc_unique(this), wildcard) in
       intFromRef(total(this)) ==
-      old((unfolding acc(GhostSharedAcc_unique(this), wildcard) in
-        intFromRef(total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(GhostSharedAcc_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(GhostSharedAcc_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(GhostSharedAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(total(this)))
 
@@ -2059,11 +2309,17 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_2), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
 {
   v_ret_2 := intToRef(-5)
@@ -2082,14 +2338,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -2100,7 +2364,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -2110,9 +2379,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -2186,14 +2458,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -2204,7 +2484,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -2214,9 +2499,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -2410,17 +2698,23 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(this)) >= 0
+    intFromRef(Lambda0_f_total(this)) >= 0 &&
+    intFromRef(Lambda0_f_total(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_2), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
-    old(intFromRef(Lambda0_f_total(this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
     intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
 {
-  var anon: Ref
+  var anon_1: Ref
   unfold acc(Lambda0_unique(this), write)
-  anon := this.Lambda0_p_capture0
-  this.Lambda0_p_capture0 := plusInts(anon, amount)
+  anon_1 := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon_1, amount)
   v_ret_2 := this.Lambda0_p_capture0
   fold acc(Lambda0_unique(this), write)
   goto lbl_ret_2
@@ -2442,14 +2736,22 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(this), write)
   ensures isSubtype(typeOf(ret_1), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 
@@ -2460,7 +2762,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(this)
@@ -2470,9 +2777,12 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), intType())
   assert (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(this), wildcard) in
+          c_ReviewAcc_f_total(this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(this), wildcard) in
       intFromRef(ret_1) == intFromRef(c_ReviewAcc_f_total(this)))
 }
@@ -2752,11 +3062,17 @@ method Lambda0_invoke(v_this: Ref, amount: Ref) returns (v_ret_4: Ref)
   requires acc(Lambda0_unique(v_this), write)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
-    intFromRef(Lambda0_f_total(v_this)) >= 0
+    intFromRef(Lambda0_f_total(v_this)) >= 0 &&
+    intFromRef(Lambda0_f_total(v_this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), amount)) in
+      intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(v_this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
   ensures intFromRef(Lambda0_f_total(v_this)) ==
-    old(intFromRef(Lambda0_f_total(v_this))) + intFromRef(amount) &&
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_total(v_this)), amount)) in
+      intFromRef(old(Lambda0_f_total(v_this))) + intFromRef(amount)) &&
     intFromRef(v_ret_4) == intFromRef(Lambda0_f_total(v_this))
 {
   var anon_2: Ref
@@ -2802,14 +3118,22 @@ method f_invoke(v_this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(v_this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(v_this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(v_this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_ReviewAcc_unique(v_this), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures (unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(v_this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(v_this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
+          c_ReviewAcc_f_total(v_this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
+          c_ReviewAcc_f_total(v_this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
       intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(v_this)))
 
@@ -2820,7 +3144,12 @@ method refines_f_invoke(v_this: Ref, amount: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(amount), intType())
   requires intFromRef(amount) >= 0 &&
     (unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
-      intFromRef(c_ReviewAcc_f_total(v_this)) >= 0)
+      intFromRef(c_ReviewAcc_f_total(v_this)) >= 0) &&
+    (unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
+      intFromRef(c_ReviewAcc_f_total(v_this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   requires isSubtype(typeOf(v_this), Lambda0())
 {
   Lambda0_c_ReviewAcc_restore(v_this)
@@ -2830,9 +3159,12 @@ method refines_f_invoke(v_this: Ref, amount: Ref) returns (ret_3: Ref)
   assert isSubtype(typeOf(ret_3), intType())
   assert (unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
       intFromRef(c_ReviewAcc_f_total(v_this)) ==
-      old((unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
-        intFromRef(c_ReviewAcc_f_total(v_this)))) +
-      intFromRef(amount)) &&
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
+          c_ReviewAcc_f_total(v_this))), amount)) in
+        intFromRef(old((unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
+          c_ReviewAcc_f_total(v_this)))) +
+        intFromRef(amount))) &&
     (unfolding acc(c_ReviewAcc_unique(v_this), wildcard) in
       intFromRef(ret_3) == intFromRef(c_ReviewAcc_f_total(v_this)))
 }

@@ -8,6 +8,7 @@ fun interface LiftedSpec {
     @Unique @Borrowed fun <!VIPER_TEXT!>invoke<!>(x: Int): Int
     @SpecOf("invoke")
     fun invokeSpec(x: Int) {
+        preconditions { x > -2147483648 && x < 2147483647 && state() < 2147483647 }
         postconditions<Int> { result -> result >= x }
     }
     @GhostObserver @Pure fun <!VIPER_TEXT!>state<!>(): Int = ghostObserver()
@@ -20,9 +21,9 @@ fun <!VIPER_TEXT!>noCaptures<!>(): @Unique LiftedSpec = LiftedSpec { x ->
 
 fun <!VIPER_TEXT!>withCaptures<!>(start: Int): @Unique LiftedSpec {
     var n = start
-    val step = 1
     return LiftedSpec { x ->
         exposes(LiftedSpec::class) { state() == n }
+        val step = 1
         n += step
         if (n >= x) n else x
     }
@@ -69,6 +70,7 @@ fun <!VIPER_TEXT!>boundObserver<!>(): @Unique LiftedSpec {
 }
 
 fun <!VIPER_TEXT!>exposedOnlyCapture<!>(k: Int): @Unique LiftedSpec {
+    preconditions { k < 2147483646 }
     val f: @Unique LiftedSpec = LiftedSpec { x ->
         exposes(LiftedSpec::class) { state() == k + 1 }
         x
@@ -81,12 +83,14 @@ fun interface Counter {
     @Unique @Borrowed fun <!VIPER_TEXT!>invoke<!>(): Int
     @SpecOf("invoke")
     fun invokeSpec() {
+        preconditions { state() < 2147483647 }
         postconditions<Int> { result -> state() == old(state()) + 1 && result == state() }
     }
     @GhostObserver @Pure fun <!VIPER_TEXT!>state<!>(): Int = ghostObserver()
 }
 
 fun <!VIPER_TEXT!>countFrom<!>(start: Int) {
+    preconditions { start < 2147483647 }
     var n = start
     val c: @Unique Counter = Counter {
         exposes(Counter::class) { state() == n }

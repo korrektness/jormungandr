@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 abstract class Counter {
     @SpecOf("step")
     fun stepSpec(n: Int) {
-        preconditions { n >= 0 }
+        preconditions { n >= 0 && n < 2147483647 }
         postconditions<Int> { r -> r > n }
     }
 
@@ -14,7 +14,7 @@ abstract class Counter {
 
 class Incrementer : Counter() {
     override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
-        preconditions { n >= -1 }
+        preconditions { n >= -1 && n < 2147483647 }
         postconditions<Int> { r -> r == n + 1 }
         return n + 1
     }

@@ -2,7 +2,12 @@
 field contents: Seq[Int]
 
 predicate StringBuilder_unique(this: Ref) {
-  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
 }
 
 method con() returns (ret_3: Ref)
@@ -38,6 +43,9 @@ method repeatChar(c: Ref, n: Ref) returns (v_ret_0: Ref)
   if (boolFromRef(anon_1)) {
     var anon_0: Ref
     unfold acc(StringBuilder_unique(sb), write)
+    if (!(|sb.contents ++ Seq(charFromRef(c))| <= 2147483647)) {
+      inhale false
+    }
     sb.contents := sb.contents ++ Seq(charFromRef(c))
     anon_0 := i
     i := plusInts(anon_0, intToRef(1))
@@ -64,7 +72,12 @@ method repeatChar(c: Ref, n: Ref) returns (v_ret_0: Ref)
 field contents: Seq[Int]
 
 predicate StringBuilder_unique(this: Ref) {
-  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
 }
 
 method con() returns (ret_2: Ref)
@@ -82,7 +95,13 @@ method literal() returns (v_ret_0: Ref)
   var anon: Ref
   sb := con()
   unfold acc(StringBuilder_unique(sb), write)
+  if (!(|sb.contents ++ Seq(97)| <= 2147483647)) {
+    inhale false
+  }
   sb.contents := sb.contents ++ Seq(97)
+  if (!(|sb.contents ++ Seq(98, 99)| <= 2147483647)) {
+    inhale false
+  }
   sb.contents := sb.contents ++ Seq(98, 99)
   anon := stringToRef(sb.contents)
   v_ret_0 := anon
@@ -95,27 +114,62 @@ method literal() returns (v_ret_0: Ref)
 field contents: Seq[Int]
 
 predicate StringBuilder_unique(this: Ref) {
-  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
 }
 
 method appendTwice(sb: Ref, s: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(sb), StringBuilder())
   requires acc(StringBuilder_unique(sb), write)
   requires isSubtype(typeOf(s), stringType())
+  requires (unfolding acc(StringBuilder_unique(sb), write) in
+      |stringFromRef(s)| <=
+      (let anon ==
+        (divInts(minusInts(intToRef(2147483647), intToRef(|sb.contents|)), intToRef(2))) in
+        (intFromRef(minusInts(intToRef(2147483647), intToRef(|sb.contents|))) <
+        0 !=
+        intFromRef(intToRef(2)) < 0 ?
+          -((intFromRef(minusInts(intToRef(2147483647), intToRef(|sb.contents|))) <
+          0 ?
+            -intFromRef(minusInts(intToRef(2147483647), intToRef(|sb.contents|))) :
+            intFromRef(minusInts(intToRef(2147483647), intToRef(|sb.contents|)))) \
+          (intFromRef(intToRef(2)) < 0 ?
+            -intFromRef(intToRef(2)) :
+            intFromRef(intToRef(2)))) :
+          (intFromRef(minusInts(intToRef(2147483647), intToRef(|sb.contents|))) <
+          0 ?
+            -intFromRef(minusInts(intToRef(2147483647), intToRef(|sb.contents|))) :
+            intFromRef(minusInts(intToRef(2147483647), intToRef(|sb.contents|)))) \
+          (intFromRef(intToRef(2)) < 0 ?
+            -intFromRef(intToRef(2)) :
+            intFromRef(intToRef(2))))))
   ensures acc(StringBuilder_unique(sb), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(StringBuilder_unique(sb), write) in
       |sb.contents| ==
-      old((unfolding acc(StringBuilder_unique(sb), write) in |sb.contents|)) +
-      2 * |stringFromRef(s)|)
+      (let anon ==
+        (plusInts(old((unfolding acc(StringBuilder_unique(sb), write) in
+          intToRef(|sb.contents|))), timesInts(intToRef(2), stringLength(s)))) in
+        intFromRef(old((unfolding acc(StringBuilder_unique(sb), write) in
+          intToRef(|sb.contents|)))) +
+        intFromRef(timesInts(intToRef(2), stringLength(s)))))
   ensures (unfolding acc(StringBuilder_unique(sb), write) in
       sb.contents ==
-      old((unfolding acc(StringBuilder_unique(sb), write) in sb.contents)) ++
-      stringFromRef(s) ++
-      stringFromRef(s))
+      stringFromRef(addStrings(addStrings(old((unfolding acc(StringBuilder_unique(sb), write) in
+        stringToRef(sb.contents))), s), s)))
 {
   unfold acc(StringBuilder_unique(sb), write)
+  if (!(|sb.contents ++ stringFromRef(s)| <= 2147483647)) {
+    inhale false
+  }
   sb.contents := sb.contents ++ stringFromRef(s)
+  if (!(|sb.contents ++ stringFromRef(s)| <= 2147483647)) {
+    inhale false
+  }
   sb.contents := sb.contents ++ stringFromRef(s)
   label lbl_ret_0
   fold acc(StringBuilder_unique(sb), write)
@@ -132,7 +186,12 @@ method plus(this: Ref, other: Ref) returns (ret_1: Ref)
 field contents: Seq[Int]
 
 predicate StringBuilder_unique(this: Ref) {
-  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
 }
 
 method clearThenAppend(sb: Ref) returns (v_ret_0: Ref)
@@ -145,6 +204,9 @@ method clearThenAppend(sb: Ref) returns (v_ret_0: Ref)
 {
   unfold acc(StringBuilder_unique(sb), write)
   sb.contents := Seq[Int]()
+  if (!(|sb.contents ++ Seq(120)| <= 2147483647)) {
+    inhale false
+  }
   sb.contents := sb.contents ++ Seq(120)
   label lbl_ret_0
   fold acc(StringBuilder_unique(sb), write)
@@ -155,7 +217,12 @@ method clearThenAppend(sb: Ref) returns (v_ret_0: Ref)
 field contents: Seq[Int]
 
 predicate StringBuilder_unique(this: Ref) {
-  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
 }
 
 method returnAppended(sb: Ref) returns (v_ret_0: Ref)
@@ -165,6 +232,9 @@ method returnAppended(sb: Ref) returns (v_ret_0: Ref)
   ensures acc(StringBuilder_unique(v_ret_0), write)
 {
   unfold acc(StringBuilder_unique(sb), write)
+  if (!(|sb.contents ++ Seq(33)| <= 2147483647)) {
+    inhale false
+  }
   sb.contents := sb.contents ++ Seq(33)
   fold acc(StringBuilder_unique(sb), write)
   v_ret_0 := sb
@@ -176,7 +246,12 @@ method returnAppended(sb: Ref) returns (v_ret_0: Ref)
 field contents: Seq[Int]
 
 predicate StringBuilder_unique(this: Ref) {
-  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
 }
 
 method bindAppended() returns (v_ret_0: Ref)
@@ -188,10 +263,16 @@ method bindAppended() returns (v_ret_0: Ref)
   var anon: Ref
   sb := con()
   unfold acc(StringBuilder_unique(sb), write)
+  if (!(|sb.contents ++ Seq(120)| <= 2147483647)) {
+    inhale false
+  }
   sb.contents := sb.contents ++ Seq(120)
   fold acc(StringBuilder_unique(sb), write)
   l0_t := sb
   unfold acc(StringBuilder_unique(l0_t), write)
+  if (!(|l0_t.contents ++ Seq(121)| <= 2147483647)) {
+    inhale false
+  }
   l0_t.contents := l0_t.contents ++ Seq(121)
   anon := intToRef(|l0_t.contents|)
   v_ret_0 := anon
@@ -234,7 +315,12 @@ predicate Serializable_unique(this: Ref) {
 }
 
 predicate StringBuilder_unique(this: Ref) {
-  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
 }
 
 method con() returns (ret_1: Ref)
@@ -251,6 +337,9 @@ method wrongLength() returns (v_ret_0: Ref)
   var anon: Ref
   sb := con()
   unfold acc(StringBuilder_unique(sb), write)
+  if (!(|sb.contents ++ Seq(97)| <= 2147483647)) {
+    inhale false
+  }
   sb.contents := sb.contents ++ Seq(97)
   anon := intToRef(|sb.contents|)
   assert intFromRef(anon) == 2
@@ -262,7 +351,12 @@ method wrongLength() returns (v_ret_0: Ref)
 field contents: Seq[Int]
 
 predicate StringBuilder_unique(this: Ref) {
-  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write)
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
 }
 
 method appendShared(sb: Ref) returns (v_ret_0: Ref)

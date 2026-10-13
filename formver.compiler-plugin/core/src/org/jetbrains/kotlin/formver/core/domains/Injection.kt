@@ -44,6 +44,7 @@ class Injection(
     baseName: SymbolicName,
     val viperType: Type,
     val typeFunction: DomainFunc,
+    private val valueDomain: ((Exp) -> Exp)? = null,
 ) {
     private val v = domainVar("v", viperType)
     private val r = domainVar("r", Type.Ref)
@@ -54,8 +55,19 @@ class Injection(
         RuntimeTypeDomain.createDomainFunc(FromRefFuncName(baseName), listOf(r.decl()), viperType)
 
     internal fun AxiomListBuilder.injectionAxioms() {
+        valueDomain?.let { domain ->
+            axiom {
+                Exp.forall(r) { r ->
+                    assumption { r isOf typeFunction() }
+                    domain(simpleTrigger { fromRef(r) })
+                }
+            }
+        }
         axiom {
-            Exp.forall(v) { v -> simpleTrigger { toRef(v) isOf typeFunction() } }
+            Exp.forall(v) { v ->
+                valueDomain?.let { assumption { it(v) } }
+                simpleTrigger { toRef(v) isOf typeFunction() }
+            }
         }
         axiom {
             Exp.forall(v) { v ->
@@ -97,14 +109,25 @@ val Injection?.viperType: Type
 class InjectionImageFunction(
     name: SymbolicName,
     val original: Applicable,
-    argsInjections: List<Injection>,
-    resultInjection: Injection,
+    val argsInjections: List<Injection>,
+    val resultInjection: Injection,
+    val checked: Boolean = false,
+    val normalReturnCondition: ((List<Exp>) -> Exp)? = null,
     additionalConditions: FunctionBuilder.() -> Unit = { }
 ) : Function by FunctionBuilder.build(name, {
-    val viperResult = original.toFuncApp(argsInjections.map { it.fromRef(argument(Type.Ref)) })
+    val args = argsInjections.map { injection ->
+        val arg = argument(Type.Ref)
+        // Boolean projection is total; its native sort has no representability restriction.
+        if (injection.viperType != Type.Bool) precondition { arg isOf injection.typeFunction() }
+        injection.fromRef(arg)
+    }
+    val viperResult = original.toFuncApp(args)
     returns(Type.Ref)
     postcondition { result isOf resultInjection.typeFunction() }
-    postcondition { resultInjection.fromRef(result) eq viperResult }
+    postcondition {
+        val relation = resultInjection.fromRef(result) eq viperResult
+        normalReturnCondition?.let { Exp.Implies(it(args), relation) } ?: relation
+    }
     additionalConditions()
 
 })

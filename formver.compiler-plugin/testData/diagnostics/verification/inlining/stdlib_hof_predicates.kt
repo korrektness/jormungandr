@@ -53,7 +53,7 @@ fun <!VIPER_TEXT!>impureLambdaBounds<!>(s: String) {
     var calls = 0
     val r = s.indexOfFirst {
         loopInvariants { calls >= 0 }
-        calls++
+        if (calls < 2147483647) calls++
         it == 'z'
     }
     verify(-1 <= r, r < s.length)
@@ -62,7 +62,7 @@ fun <!VIPER_TEXT!>impureLambdaBounds<!>(s: String) {
 fun <!VIPER_TEXT!>impureLambdaNoFacts<!>(s: String) {
     var calls = 0
     val r = s.indexOfFirst {
-        calls++
+        if (calls < 2147483647) calls++
         it == 'z'
     }
     if (r >= 0) {
@@ -71,7 +71,7 @@ fun <!VIPER_TEXT!>impureLambdaNoFacts<!>(s: String) {
 }
 
 fun <!VIPER_TEXT!>ownedArraySearch<!>(n: Int, k: Int): Int {
-    preconditions { 0 <= k && k < n }
+    preconditions { 0 <= k && k < n && n <= 1000 }
     val a: @Unique IntArray = IntArray(n) { it }
     if (a.all { it >= 0 }) {
         verify(a[k] >= 0)
@@ -86,8 +86,8 @@ fun <!VIPER_TEXT!>ownedArraySearch<!>(n: Int, k: Int): Int {
     }
     var sum = 0
     a.forEach {
-        loopInvariants { sum >= 0 }
-        if (it > 0) sum += it
+        loopInvariants { sum >= 0 && sum <= 1000000 }
+        if (it > 0 && sum <= 1000000 - it) sum += it
     }
     a.forEachIndexed { i, _ -> a[i] = 0 }
     return a.count { it > 0 } + sum

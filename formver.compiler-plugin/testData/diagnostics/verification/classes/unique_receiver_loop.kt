@@ -20,7 +20,7 @@ fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUp<!>(n: Int) {
 }
 
 fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUpEndProbe<!>(n: Int) {
-    preconditions { 0 <= n }
+    preconditions { 0 <= n && n < 2147483647 }
     var i = 0
     value = 0
     while (i < n) {

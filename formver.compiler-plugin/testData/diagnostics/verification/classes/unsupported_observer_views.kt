@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 interface Tally {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int
     @SpecOf("inc") @Unique @Borrowed fun incSpec() {
+        preconditions { count() < 2147483647 }
         postconditions<Unit> { count() == old(count()) + 1 }
     }
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>()
@@ -16,12 +17,14 @@ open class TallyBase(var v: Int) {
 }
 <!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class InheritedTally<!> : TallyBase(0), Tally<!>
 fun <!VIPER_TEXT!>tallyClient<!>(t: @Unique @Borrowed Tally) {
+    preconditions { t.count() < 2147483647 }
     postconditions<Unit> { t.count() == old(t.count()) + 1 }
     val before = t.count()
     t.inc()
     verify(t.count() == before + 1)
 }
 fun <!VIPER_TEXT!>useInherited<!>(t: @Unique @Borrowed InheritedTally) {
+    preconditions { t.count() < 2147483647 }
     val before = t.count()
     tallyClient(t)
     verify(t.count() == before + 1)

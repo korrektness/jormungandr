@@ -42,5 +42,5 @@ fun <!VIPER_TEXT!>recursiveContract<!>(n: Int, x: Any?): Boolean {
     contract {
         <!CONDITIONAL_EFFECT_ERROR!>returns(true) implies (x is String)<!>
     }
-    return if (n == 0) x is Int else recursiveContract(n - 1, x)
+    return if (n <= 0) x is Int else recursiveContract(n - 1, x)
 }

@@ -1,6 +1,7 @@
 /simple_postcondition.kt: info: Generated Viper text for testGreater:
 method testGreater(init: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(init), intType())
+  requires intFromRef(init) <= 2147483642
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) > intFromRef(init)
 {

@@ -4,16 +4,21 @@ field x: Ref
 method plusAssign(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Counter_unique(c), write) in
       intFromRef(c.x) ==
-      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) + 1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Counter_unique(c), write) in c.x)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Counter_unique(c), write) in c.x))) +
+        intFromRef(intToRef(1))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Counter_unique(c), write)
-  anon := c.x
-  c.x := plusInts(anon, intToRef(1))
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(Counter_unique(c), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -25,16 +30,21 @@ field x: Ref
 method minusAssign(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) > -2147483648)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Counter_unique(c), write) in
       intFromRef(c.x) ==
-      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) - 1)
+      (let anon_builtin ==
+        (minusInts(old((unfolding acc(Counter_unique(c), write) in c.x)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Counter_unique(c), write) in c.x))) -
+        intFromRef(intToRef(1))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Counter_unique(c), write)
-  anon := c.x
-  c.x := minusInts(anon, intToRef(1))
+  anon_0 := c.x
+  c.x := minusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(Counter_unique(c), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -46,16 +56,21 @@ field x: Ref
 method postIncrement(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Counter_unique(c), write) in
       intFromRef(c.x) ==
-      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) + 1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Counter_unique(c), write) in c.x)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Counter_unique(c), write) in c.x))) +
+        intFromRef(intToRef(1))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Counter_unique(c), write)
-  anon := c.x
-  c.x := plusInts(anon, intToRef(1))
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(Counter_unique(c), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -67,16 +82,21 @@ field x: Ref
 method preIncrement(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Counter_unique(c), write) in
       intFromRef(c.x) ==
-      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) + 1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Counter_unique(c), write) in c.x)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Counter_unique(c), write) in c.x))) +
+        intFromRef(intToRef(1))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Counter_unique(c), write)
-  anon := c.x
-  c.x := plusInts(anon, intToRef(1))
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(Counter_unique(c), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -88,19 +108,24 @@ field x: Ref
 method postIncrementValue(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
     old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) &&
     (unfolding acc(Counter_unique(c), write) in
       intFromRef(c.x) ==
-      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) + 1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Counter_unique(c), write) in c.x)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Counter_unique(c), write) in c.x))) +
+        intFromRef(intToRef(1))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Counter_unique(c), write)
-  anon := c.x
-  c.x := plusInts(anon, intToRef(1))
-  v_ret_0 := anon
+  anon_0 := c.x
+  c.x := plusInts(anon_0, intToRef(1))
+  v_ret_0 := anon_0
   fold acc(Counter_unique(c), write)
   goto lbl_ret_0
   label lbl_ret_0
@@ -112,18 +137,26 @@ field x: Ref
 method preDecrementValue(c: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.x) > -2147483648)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
-    old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) - 1 &&
+    (let anon_builtin ==
+      (minusInts(old((unfolding acc(Counter_unique(c), write) in c.x)), intToRef(1))) in
+      intFromRef(old((unfolding acc(Counter_unique(c), write) in c.x))) -
+      intFromRef(intToRef(1))) &&
     (unfolding acc(Counter_unique(c), write) in
       intFromRef(c.x) ==
-      old((unfolding acc(Counter_unique(c), write) in intFromRef(c.x))) - 1)
+      (let anon_builtin ==
+        (minusInts(old((unfolding acc(Counter_unique(c), write) in c.x)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Counter_unique(c), write) in c.x))) -
+        intFromRef(intToRef(1))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Counter_unique(c), write)
-  anon := c.x
-  c.x := minusInts(anon, intToRef(1))
+  anon_0 := c.x
+  c.x := minusInts(anon_0, intToRef(1))
   v_ret_0 := c.x
   fold acc(Counter_unique(c), write)
   goto lbl_ret_0
@@ -141,21 +174,27 @@ function inner(this: Ref): Ref
 method fieldPathPlusAssign(h: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(h), Holder())
   requires acc(Holder_unique(h), write)
+  requires (unfolding acc(Holder_unique(h), write) in
+      (unfolding acc(Counter_unique(inner(h)), write) in
+        intFromRef(inner(h).x) < 2147483647))
   ensures acc(Holder_unique(h), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Holder_unique(h), write) in
       (unfolding acc(Counter_unique(inner(h)), write) in
         intFromRef(inner(h).x) ==
-        old((unfolding acc(Holder_unique(h), write) in
-          (unfolding acc(Counter_unique(inner(h)), write) in
-            intFromRef(inner(h).x)))) +
-        1))
+        (let anon_builtin ==
+          (plusInts(old((unfolding acc(Holder_unique(h), write) in
+            (unfolding acc(Counter_unique(inner(h)), write) in inner(h).x))),
+          intToRef(1))) in
+          intFromRef(old((unfolding acc(Holder_unique(h), write) in
+            (unfolding acc(Counter_unique(inner(h)), write) in inner(h).x)))) +
+          intFromRef(intToRef(1)))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Holder_unique(h), write)
   unfold acc(Counter_unique(inner(h)), write)
-  anon := inner(h).x
-  inner(h).x := plusInts(anon, intToRef(1))
+  anon_0 := inner(h).x
+  inner(h).x := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(Counter_unique(inner(h)), write)
   fold acc(Holder_unique(h), write)
@@ -173,21 +212,27 @@ function inner(this: Ref): Ref
 method fieldPathIncrement(h: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(h), Holder())
   requires acc(Holder_unique(h), write)
+  requires (unfolding acc(Holder_unique(h), write) in
+      (unfolding acc(Counter_unique(inner(h)), write) in
+        intFromRef(inner(h).x) < 2147483647))
   ensures acc(Holder_unique(h), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Holder_unique(h), write) in
       (unfolding acc(Counter_unique(inner(h)), write) in
         intFromRef(inner(h).x) ==
-        old((unfolding acc(Holder_unique(h), write) in
-          (unfolding acc(Counter_unique(inner(h)), write) in
-            intFromRef(inner(h).x)))) +
-        1))
+        (let anon_builtin ==
+          (plusInts(old((unfolding acc(Holder_unique(h), write) in
+            (unfolding acc(Counter_unique(inner(h)), write) in inner(h).x))),
+          intToRef(1))) in
+          intFromRef(old((unfolding acc(Holder_unique(h), write) in
+            (unfolding acc(Counter_unique(inner(h)), write) in inner(h).x)))) +
+          intFromRef(intToRef(1)))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Holder_unique(h), write)
   unfold acc(Counter_unique(inner(h)), write)
-  anon := inner(h).x
-  inner(h).x := plusInts(anon, intToRef(1))
+  anon_0 := inner(h).x
+  inner(h).x := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(Counter_unique(inner(h)), write)
   fold acc(Holder_unique(h), write)

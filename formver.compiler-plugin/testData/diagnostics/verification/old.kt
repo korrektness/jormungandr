@@ -21,6 +21,7 @@ fun <!VIPER_TEXT!>test<!>(c: @Unique @Borrowed C) {
 // TODO: Remove the @NeverConvert once we have uniqueness information.
 @NeverConvert
 fun inc(c: @Unique @Borrowed C) {
+    preconditions { c.field < 2147483647 }
     postconditions<Unit> {
         c.field == old(c.field) + 1
     }

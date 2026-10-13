@@ -1,6 +1,7 @@
 // FULL_JDK
 
 import org.jetbrains.kotlin.formver.plugin.Pure
+import org.jetbrains.kotlin.formver.plugin.preconditions
 
 @Pure
 fun <!VIPER_TEXT!>returnNumberVal<!>(): Int {
@@ -36,6 +37,7 @@ fun <!VIPER_TEXT!>laterInitializersCanRelyOnPrevious<!>(): Int {
 
 @Pure
 fun <!VIPER_TEXT!>initializersCanRelyOnParameters<!>(x: Int, y: Int): Int {
+    preconditions { -1000 <= x && x <= 1000 && -1000 <= y && y <= 1000 }
     val sum = x + y
     val diff = x - y
     val res = sum * diff

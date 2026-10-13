@@ -3,18 +3,30 @@ field isInMultilineBasic: Ref
 
 field isInMultilineLiteral: Ref
 
-function isNextThreeQuotes(this: Ref, line: Ref, index: Ref, quote: Ref): Ref
+function isNextThreeQuotes(this: Ref, line: Ref, par_index: Ref, quote: Ref): Ref
   requires isSubtype(typeOf(this), TomlMultilineString())
   requires isSubtype(typeOf(line), stringType())
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(quote), charType())
-  requires 0 <= intFromRef(index) &&
-    intFromRef(index) + 2 < |stringFromRef(line)|
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) <
+    (let anon_builtin ==
+      (minusInts(stringLength(line), intToRef(2))) in
+      intFromRef(stringLength(line)) - intFromRef(intToRef(2)))
   ensures isSubtype(typeOf(result), boolType())
 {
-  boolToRef(stringFromRef(line)[intFromRef(index)] == charFromRef(quote) &&
-  stringFromRef(line)[intFromRef(index) + 1] == charFromRef(quote) &&
-  stringFromRef(line)[intFromRef(index) + 2] == charFromRef(quote))
+  boolToRef((let anon_builtin ==
+    (stringGet(line, par_index)) in
+    stringFromRef(line)[intFromRef(par_index)]) ==
+  charFromRef(quote) &&
+  (let anon_builtin ==
+    (stringGet(line, plusInts(par_index, intToRef(1)))) in
+    stringFromRef(line)[intFromRef(plusInts(par_index, intToRef(1)))]) ==
+  charFromRef(quote) &&
+  (let anon_builtin ==
+    (stringGet(line, plusInts(par_index, intToRef(2)))) in
+    stringFromRef(line)[intFromRef(plusInts(par_index, intToRef(2)))]) ==
+  charFromRef(quote))
 }
 
 function isStringType(this: Ref): Ref
@@ -74,7 +86,10 @@ method trackMultilineString(this: Ref, line: Ref) returns (v_ret_0: Ref)
     } else {
       anon_3 := boolToRef(false)}
     if (boolFromRef(anon_3)) {
-      anon_2 := boolToRef(stringFromRef(line)[intFromRef(i)] == 35)
+      anon_2 := boolToRef((let anon_builtin ==
+          (stringGet(line, i)) in
+          stringFromRef(line)[intFromRef(i)]) ==
+        35)
     } else {
       anon_2 := boolToRef(false)}
     if (boolFromRef(anon_2)) {
@@ -161,18 +176,30 @@ field isInMultilineBasic: Ref
 
 field isInMultilineLiteral: Ref
 
-function isNextThreeQuotes(this: Ref, line: Ref, index: Ref, quote: Ref): Ref
+function isNextThreeQuotes(this: Ref, line: Ref, par_index: Ref, quote: Ref): Ref
   requires isSubtype(typeOf(this), TomlMultilineString())
   requires isSubtype(typeOf(line), stringType())
-  requires isSubtype(typeOf(index), intType())
+  requires isSubtype(typeOf(par_index), intType())
   requires isSubtype(typeOf(quote), charType())
-  requires 0 <= intFromRef(index) &&
-    intFromRef(index) + 2 < |stringFromRef(line)|
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) <
+    (let anon ==
+      (minusInts(stringLength(line), intToRef(2))) in
+      intFromRef(stringLength(line)) - intFromRef(intToRef(2)))
   ensures isSubtype(typeOf(result), boolType())
 {
-  boolToRef(stringFromRef(line)[intFromRef(index)] == charFromRef(quote) &&
-  stringFromRef(line)[intFromRef(index) + 1] == charFromRef(quote) &&
-  stringFromRef(line)[intFromRef(index) + 2] == charFromRef(quote))
+  boolToRef((let anon ==
+    (stringGet(line, par_index)) in
+    stringFromRef(line)[intFromRef(par_index)]) ==
+  charFromRef(quote) &&
+  (let anon ==
+    (stringGet(line, plusInts(par_index, intToRef(1)))) in
+    stringFromRef(line)[intFromRef(plusInts(par_index, intToRef(1)))]) ==
+  charFromRef(quote) &&
+  (let anon ==
+    (stringGet(line, plusInts(par_index, intToRef(2)))) in
+    stringFromRef(line)[intFromRef(plusInts(par_index, intToRef(2)))]) ==
+  charFromRef(quote))
 }
 
 function isStringType(this: Ref): Ref

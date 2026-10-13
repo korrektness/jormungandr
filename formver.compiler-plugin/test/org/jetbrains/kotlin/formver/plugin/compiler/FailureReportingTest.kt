@@ -53,6 +53,8 @@ class FailureReportingTest {
             SourceRole.ArrayElementAccessCheck(SourceRole.ArrayElementAccessCheck.Bound.NEGATIVE, null),
             SourceRole.Ownership("x", SourceRole.Ownership.Site.Fold),
             SourceRole.OverrideRefinement("base", SourceRole.OverrideRefinement.Clause.POSTCONDITION, Position.NoPosition),
+            SourceRole.Arithmetic(KotlinCondition.IntegerOverflow("+", "Int", "-2147483648", "2147483647")),
+            SourceRole.Arithmetic(KotlinCondition.DivisionByZero("/")),
         )
         val problems = roles.map { failure(it).toFailure(null) } + subListFailure().toFailure(null) + failure().toFailure(null)
         assertEquals(setOf(
@@ -60,6 +62,7 @@ class FailureReportingTest {
             FailureKind.POSSIBLE_INDEX_OUT_OF_BOUND, FailureKind.OWNERSHIP_NOT_ESTABLISHED,
             FailureKind.OVERRIDE_NOT_REFINING, FailureKind.INVALID_SUBLIST_RANGE,
             FailureKind.VIPER_VERIFICATION_ERROR, FailureKind.VERIFICATION_CONDITION_NOT_ESTABLISHED,
+            FailureKind.INTEGER_OVERFLOW, FailureKind.DIVISION_BY_ZERO,
         ), problems.map { it.kind }.toSet())
         problems.forEach {
             assertEquals(Severity.ERROR, it.kind.factory.severity)
@@ -68,6 +71,18 @@ class FailureReportingTest {
         }
         assertEquals(KotlinCondition.ReturnValue.TRUE, (problems[0].condition as KotlinCondition.Returns).effect)
         assertEquals(KotlinCondition.Bound.NEGATIVE, (problems[3].condition as KotlinCondition.Index).bound)
+    }
+
+    @Test
+    fun `arithmetic definedness takes precedence over the containing clause`() {
+        val condition = KotlinCondition.IntegerOverflow("+", "Int", "-2147483648", "2147483647")
+        val metadata = with(SimpleNameResolver()) { SourceRole.Arithmetic(condition).asInfo.toSilver() }
+        val clause = with(SimpleNameResolver()) { SourceRole.Proof(KotlinCondition.ProofClause.POSTCONDITION).asInfo.toSilver() }
+        val proposition = FalseLit(pos, metadata, trafos)
+        val node = Assert(proposition, pos, clause, trafos)
+        val problem = VerificationError(errors.AssertFailed(node, reasons.AssertionFalse(proposition), false)).toFailure(null)
+        assertEquals(FailureKind.INTEGER_OVERFLOW, problem.kind)
+        assertEquals(condition, problem.condition)
     }
 
     @Test

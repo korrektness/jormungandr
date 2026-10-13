@@ -6,11 +6,12 @@
 package org.jetbrains.kotlin.formver.core.embeddings.callables
 
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings
+import org.jetbrains.kotlin.formver.core.embeddings.expression.IntegerOperators
 
 
 object SpecialFunctions {
     val all
-        get() = OperatorExpEmbeddings.allTemplates.map { it.refsOperation }
+        get() = (OperatorExpEmbeddings.allTemplates + IntegerOperators.templates).map { it.refsOperation }
 
     val iterationSequence
         get() = OperatorExpEmbeddings.iterationSequenceTemplates.map { it.refsOperation } +

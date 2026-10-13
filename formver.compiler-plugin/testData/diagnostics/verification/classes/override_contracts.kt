@@ -6,12 +6,13 @@ class Cell(var value: Int)
 
 open class Base {
     open fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
-        preconditions { x > 0 }
+        preconditions { x > 0 && x <= 2147483645 }
         postconditions<Int> { result -> result > 0 }
         return x
     }
 
     open fun <!VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Cell) {
+        preconditions { c.value <= 2147483645 }
         postconditions<Unit> { c.value > old(c.value) }
         c.value = c.value + 1
     }
@@ -19,7 +20,7 @@ open class Base {
 
 interface AtLeastOne {
     fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
-        preconditions { x >= 0 }
+        preconditions { x >= 0 && x <= 2147483645 }
         postconditions<Int> { result -> result >= 1 }
         return x + 1
     }
@@ -28,12 +29,13 @@ interface AtLeastOne {
 // A weaker precondition and a stronger postcondition refine both overridden declarations.
 class Refining : Base(), AtLeastOne {
     override fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
-        preconditions { x >= 0 }
+        preconditions { x >= 0 && x <= 2147483645 }
         postconditions<Int> { result -> result > 1 }
         return x + 2
     }
 
     override fun <!VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Cell) {
+        preconditions { c.value <= 2147483645 }
         postconditions<Unit> { c.value == old(c.value) + 2 }
         c.value = c.value + 2
     }

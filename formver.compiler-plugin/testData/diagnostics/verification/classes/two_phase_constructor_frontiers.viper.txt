@@ -443,11 +443,9 @@ method increase(this: Ref) returns (v_ret_0: Ref)
   ensures acc(PhaseTwoCall_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_0: Ref
+  var anon_2: Ref
   unfold acc(PhaseTwoCall_unique(this), write)
-  anon_0 := this.value
-  this.value := plusInts(anon_0, intToRef(1))
-  label lbl_ret_0
+  anon_2 := this.value
   assert (let this ==
       (this) in
       true &&
@@ -455,6 +453,20 @@ method increase(this: Ref) returns (v_ret_0: Ref)
         (this.value) in
         gtInts(anon_1_0, intToRef(0)))))
   fold acc(PhaseTwoCall_unique(this), write)
+  if (intFromRef(anon_2) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(PhaseTwoCall_unique(this), write)
+    anon_0 := this.value
+    this.value := plusInts(anon_0, intToRef(1))
+    assert (let this ==
+        (this) in
+        true &&
+        boolFromRef((let anon_1_0 ==
+          (this.value) in
+          gtInts(anon_1_0, intToRef(0)))))
+    fold acc(PhaseTwoCall_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -694,11 +706,9 @@ method increase(this: Ref) returns (v_ret_0: Ref)
   ensures acc(EstablishedParent_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_0: Ref
+  var anon_2: Ref
   unfold acc(EstablishedParent_unique(this), write)
-  anon_0 := this.value
-  this.value := plusInts(anon_0, intToRef(1))
-  label lbl_ret_0
+  anon_2 := this.value
   assert (let this ==
       (this) in
       true &&
@@ -706,6 +716,20 @@ method increase(this: Ref) returns (v_ret_0: Ref)
         (this.value) in
         gtInts(anon_1_0, intToRef(0)))))
   fold acc(EstablishedParent_unique(this), write)
+  if (intFromRef(anon_2) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(EstablishedParent_unique(this), write)
+    anon_0 := this.value
+    this.value := plusInts(anon_0, intToRef(1))
+    assert (let this ==
+        (this) in
+        true &&
+        boolFromRef((let anon_1_0 ==
+          (this.value) in
+          gtInts(anon_1_0, intToRef(0)))))
+    fold acc(EstablishedParent_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -736,12 +760,10 @@ method EstablishedChild_c_EstablishedParent_f_increase_inherited_body_c_Establis
   ensures acc(EstablishedChild_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), unitType())
 {
-  var anon_1: Ref
+  var anon_5: Ref
   unfold acc(EstablishedChild_unique(this), write)
   unfold acc(c_EstablishedParent_unique(this), write)
-  anon_1 := this.value
-  this.value := plusInts(anon_1, intToRef(1))
-  label lbl_ret_5
+  anon_5 := this.value
   assert (let this ==
       (this) in
       true &&
@@ -750,6 +772,22 @@ method EstablishedChild_c_EstablishedParent_f_increase_inherited_body_c_Establis
         gtInts(anon_2_0, intToRef(0)))))
   fold acc(c_EstablishedParent_unique(this), write)
   fold acc(EstablishedChild_unique(this), write)
+  if (intFromRef(anon_5) < 2147483647) {
+    var anon_1: Ref
+    unfold acc(EstablishedChild_unique(this), write)
+    unfold acc(c_EstablishedParent_unique(this), write)
+    anon_1 := this.value
+    this.value := plusInts(anon_1, intToRef(1))
+    assert (let this ==
+        (this) in
+        true &&
+        boolFromRef((let anon_2_0 ==
+          (this.value) in
+          gtInts(anon_2_0, intToRef(0)))))
+    fold acc(c_EstablishedParent_unique(this), write)
+    fold acc(EstablishedChild_unique(this), write)
+  }
+  label lbl_ret_5
   inhale isSubtype(typeOf(v_ret_5), unitType())
 }
 
@@ -783,7 +821,7 @@ method con() returns (v_ret_0: Ref)
         gtInts(anon_2_0, intToRef(0))))))
 {
   var anon_3: Ref
-  var anon_0: Ref
+  var anon_4: Ref
   v_ret_0 := new(value)
   inhale typeOf(v_ret_0) == EstablishedChild()
   v_ret_0.value := intToRef(1)
@@ -798,8 +836,7 @@ method con() returns (v_ret_0: Ref)
   exhale isSubtype(typeOf(v_ret_0), EstablishedChild())
   inhale isSubtype(typeOf(v_ret_0), EstablishedChild())
   unfold acc(c_EstablishedParent_unique(v_ret_0), write)
-  anon_0 := v_ret_0.value
-  v_ret_0.value := plusInts(anon_0, intToRef(1))
+  anon_4 := v_ret_0.value
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -807,6 +844,19 @@ method con() returns (v_ret_0: Ref)
         (this.value) in
         gtInts(anon_2_0, intToRef(0)))))
   fold acc(c_EstablishedParent_unique(v_ret_0), write)
+  if (intFromRef(anon_4) < 2147483647) {
+    var anon_0: Ref
+    unfold acc(c_EstablishedParent_unique(v_ret_0), write)
+    anon_0 := v_ret_0.value
+    v_ret_0.value := plusInts(anon_0, intToRef(1))
+    assert (let this ==
+        (v_ret_0) in
+        true &&
+        boolFromRef((let anon_2_0 ==
+          (this.value) in
+          gtInts(anon_2_0, intToRef(0)))))
+    fold acc(c_EstablishedParent_unique(v_ret_0), write)
+  }
   fold acc(EstablishedChild_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(EstablishedChild_unique(v_ret_0), write)

@@ -50,6 +50,9 @@ function laterInitializersCanRelyOnPrevious(): Ref
 function initializersCanRelyOnParameters(x: Ref, y: Ref): Ref
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
+  requires -1000 <= intFromRef(x) && intFromRef(x) <= 1000 &&
+    -1000 <= intFromRef(y) &&
+    intFromRef(y) <= 1000
   ensures isSubtype(typeOf(result), intType())
 {
   (let sum_0 ==

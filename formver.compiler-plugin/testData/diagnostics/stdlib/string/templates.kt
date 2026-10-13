@@ -9,6 +9,7 @@ fun <!VIPER_TEXT!>templateInThrow<!>(x: Int, c: Char): Int {
 }
 
 fun <!VIPER_TEXT!>templateOfStringsAndChars<!>(s: String, c: Char) {
+    preconditions { s.length <= 2147483645 }
     verify(
         "<$s>" == "<" + s + ">",
         "$c$c" == "" + c + c,

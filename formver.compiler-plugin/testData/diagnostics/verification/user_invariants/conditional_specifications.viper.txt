@@ -56,6 +56,8 @@ method ifOverOldInPostcondition(c: Ref, flag: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
   requires isSubtype(typeOf(flag), boolType())
+  requires (unfolding acc(Counter_unique(c), write) in
+      boolFromRef(flag) ==> intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Counter_unique(c), write) in
@@ -82,19 +84,24 @@ method oldOfIfInPostcondition(c: Ref, flag: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
   requires isSubtype(typeOf(flag), boolType())
+  requires (unfolding acc(Counter_unique(c), write) in
+      boolFromRef(flag) ==> intFromRef(c.x) < 2147483647)
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Counter_unique(c), write) in
-      old((unfolding acc(Counter_unique(c), write) in
-        intFromRef((boolFromRef(flag) ? c.x : intToRef(0))))) +
-      1 ==
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Counter_unique(c), write) in
+          (boolFromRef(flag) ? c.x : intToRef(0)))), intToRef(1))) in
+        intFromRef(old((unfolding acc(Counter_unique(c), write) in
+          (boolFromRef(flag) ? c.x : intToRef(0))))) +
+        intFromRef(intToRef(1))) ==
       intFromRef((boolFromRef(flag) ? c.x : intToRef(1))))
 {
   if (boolFromRef(flag)) {
-    var anon: Ref
+    var anon_0: Ref
     unfold acc(Counter_unique(c), write)
-    anon := c.x
-    c.x := plusInts(anon, intToRef(1))
+    anon_0 := c.x
+    c.x := plusInts(anon_0, intToRef(1))
     fold acc(Counter_unique(c), write)
   }
   label lbl_ret_0

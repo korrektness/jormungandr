@@ -57,7 +57,7 @@ data class AnonymousBuiltinName(override val n: Int) : NumberedName, NameTypeIsV
         candidate {
             +"anon"
             +"builtin"
-            +n.toString()
+            +(if (n < 0) "neg${-n.toLong()}" else n.toString())
         }
     }
 

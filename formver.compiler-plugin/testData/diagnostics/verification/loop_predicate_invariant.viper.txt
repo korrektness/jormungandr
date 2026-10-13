@@ -16,6 +16,11 @@ method bump(c: Ref, k: Ref) returns (v_ret_0: Ref)
   requires acc(Counter_unique(c), write)
   requires isSubtype(typeOf(k), intType())
   requires intFromRef(k) >= 0
+  requires (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.n) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), k)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(k)))
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -27,6 +32,13 @@ method bump(c: Ref, k: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(c), Counter())
     invariant isSubtype(typeOf(k), intType())
     invariant acc(Counter_unique(c), write)
+    invariant intFromRef(i) >= 0
+    invariant intFromRef(i) <= intFromRef(k)
+    invariant (unfolding acc(Counter_unique(c), write) in
+        intFromRef(c.n) <=
+        (let anon_builtin ==
+          (minusInts(intToRef(2147483647), minusInts(k, i))) in
+          intFromRef(intToRef(2147483647)) - intFromRef(minusInts(k, i))))
   anon_0 := ltInts(i, k)
   if (boolFromRef(anon_0)) {
     var anon_1: Ref
@@ -42,6 +54,13 @@ method bump(c: Ref, k: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(c), Counter())
   assert isSubtype(typeOf(k), intType())
   assert acc(Counter_unique(c), write)
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) <= intFromRef(k)
+  assert (unfolding acc(Counter_unique(c), write) in
+      intFromRef(c.n) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), minusInts(k, i))) in
+        intFromRef(intToRef(2147483647)) - intFromRef(minusInts(k, i))))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

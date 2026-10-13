@@ -8,6 +8,8 @@ fun interface GrowingCounter {
     @Unique @Borrowed fun <!VIPER_TEXT!>invoke<!>(): Int
     @SpecOf("invoke")
     fun invokeSpec() {
+        // Each closure is exercised from its initial counter state.
+        preconditions { state() == 0 }
         postconditions<Int> { result -> result > old(state()) && result == state() }
     }
     @GhostObserver @Pure fun <!VIPER_TEXT!>state<!>(): Int = ghostObserver()
@@ -37,7 +39,7 @@ fun <!VIPER_TEXT!>preconditionCounter<!>(step: Int): @Unique GrowingCounter {
 }
 
 fun <!VIPER_TEXT!>relationalCounter<!>(low: Int, high: Int): @Unique GrowingCounter {
-    preconditions { high > low }
+    preconditions { high > low && low >= 0 }
     var n = 0
     return GrowingCounter {
         exposes(GrowingCounter::class) { state() == n }

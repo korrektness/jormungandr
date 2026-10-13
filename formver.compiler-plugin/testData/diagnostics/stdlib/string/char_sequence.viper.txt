@@ -48,7 +48,10 @@ method lastIndex(v_this_extension: Ref) returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), nullable(anyType()))
   ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
     isSubtype(typeOf(ret_3), intType()) &&
-    intFromRef(ret_3) == |stringFromRef(v_this_extension)| - 1
+    intFromRef(ret_3) ==
+    (let anon_builtin ==
+      (minusInts(stringLength(v_this_extension), intToRef(1))) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(intToRef(1)))
 
 
 method lastIndexBound(s: Ref) returns (v_ret_0: Ref)
@@ -84,15 +87,22 @@ method repeat(v_this_extension: Ref, n: Ref) returns (ret_4: Ref)
   ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
     intFromRef(n) >= 0 ==>
     |stringFromRef(ret_4)| ==
-    |stringFromRef(v_this_extension)| * intFromRef(n)
+    (let anon ==
+      (timesLongLong(convertIntToLong(stringLength(v_this_extension)), convertIntToLong(n))) in
+      longFromRef(convertIntToLong(stringLength(v_this_extension))) *
+      longFromRef(convertIntToLong(n)))
 
 
 method repeatLength(s: Ref, n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(s), stringType())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires 0 <= intFromRef(n) && intFromRef(n) <= 46340
+  requires |stringFromRef(s)| <= 46340
   ensures isSubtype(typeOf(v_ret_0), stringType())
-  ensures |stringFromRef(v_ret_0)| == |stringFromRef(s)| * intFromRef(n)
+  ensures |stringFromRef(v_ret_0)| ==
+    (let anon ==
+      (timesInts(stringLength(s), n)) in
+      intFromRef(stringLength(s)) * intFromRef(n))
 {
   v_ret_0 := repeat(s, n)
   goto lbl_ret_0

@@ -19,6 +19,8 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -43,6 +45,8 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -67,6 +71,8 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -93,6 +99,8 @@ function Fixed_f_read(this: Ref, cell: Ref): Ref
 function Fixed_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 {
   timesInts(factor, intToRef(2))
@@ -116,8 +124,22 @@ function Measure_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
+
+method refines_Measure_f_scaled(this: Ref, factor: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Measure())
+  requires acc(Measure_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
+  requires isSubtype(typeOf(this), Fixed())
+{
+  ret := Fixed_f_scaled(this, factor)
+  assert isSubtype(typeOf(ret), intType())
+}
 
 /observer_calls.kt: info: Generated Viper text for read:
 field value: Ref
@@ -142,6 +164,8 @@ function Fixed_f_read(this: Ref, cell: Ref): Ref
 function Fixed_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 {
   timesInts(factor, intToRef(2))
@@ -165,6 +189,8 @@ function Measure_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -191,6 +217,8 @@ function Fixed_f_read(this: Ref, cell: Ref): Ref
 function Fixed_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 {
   timesInts(factor, intToRef(2))
@@ -214,6 +242,8 @@ function Measure_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -238,6 +268,8 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -246,12 +278,56 @@ method interfaceCall(m: Ref, cell: Ref) returns (v_ret_0: Ref)
   requires acc(Measure_unique(m), write)
   requires isSubtype(typeOf(cell), Cell())
   requires acc(Cell_unique(cell), write)
+  requires (unfolding acc(Measure_unique(m), wildcard) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(scaled(m, intToRef(3))), convertIntToLong(read(m,
+        cell)))) in
+        longFromRef(convertIntToLong(scaled(m, intToRef(3)))) +
+        longFromRef(convertIntToLong(read(m, cell)))) <
+      (let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(scaled(m, intToRef(3))), convertIntToLong(read(m,
+          cell)))) in
+          longFromRef(convertIntToLong(scaled(m, intToRef(3)))) +
+          longFromRef(convertIntToLong(read(m, cell)))) >
+        (let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) ?
+          1 :
+          0)) >=
+      0)
+  requires (unfolding acc(Measure_unique(m), wildcard) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(scaled(m, intToRef(3))), convertIntToLong(read(m,
+        cell)))) in
+        longFromRef(convertIntToLong(scaled(m, intToRef(3)))) +
+        longFromRef(convertIntToLong(read(m, cell)))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(scaled(m, intToRef(3))), convertIntToLong(read(m,
+          cell)))) in
+          longFromRef(convertIntToLong(scaled(m, intToRef(3)))) +
+          longFromRef(convertIntToLong(read(m, cell)))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures acc(Measure_unique(m), write)
   ensures acc(Cell_unique(cell), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures (unfolding acc(Measure_unique(m), wildcard) in
-      intFromRef(v_ret_0) ==
-      intFromRef(scaled(m, intToRef(3))) + intFromRef(read(m, cell)))
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(Measure_unique(m), wildcard) in
+        scaled(m, intToRef(3)))), old((unfolding acc(Measure_unique(m), wildcard) in
+        read(m, cell))))) in
+      intFromRef(old((unfolding acc(Measure_unique(m), wildcard) in
+        scaled(m, intToRef(3))))) +
+      intFromRef(old((unfolding acc(Measure_unique(m), wildcard) in
+        read(m, cell)))))
 {
   var anon_0: Ref
   var anon_1: Ref
@@ -286,6 +362,8 @@ function Fixed_f_read(this: Ref, cell: Ref): Ref
 function Fixed_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 {
   timesInts(factor, intToRef(2))
@@ -309,6 +387,8 @@ function Measure_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -316,14 +396,21 @@ method classCall(m: Ref, cell: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(m), Fixed())
   requires isSubtype(typeOf(cell), Cell())
   requires acc(Cell_unique(cell), write)
+  requires (unfolding acc(Cell_unique(cell), write) in
+      intFromRef(cell.value) <= 2147483641)
   ensures acc(Cell_unique(cell), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures (unfolding acc(Cell_unique(cell), write) in
-      intFromRef(v_ret_0) == 6 + intFromRef(cell.value))
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (plusInts(intToRef(6), old((unfolding acc(Cell_unique(cell), write) in
+        cell.value)))) in
+      intFromRef(intToRef(6)) +
+      intFromRef(old((unfolding acc(Cell_unique(cell), write) in
+        cell.value))))
 {
-  var anon: Ref
-  anon := Fixed_f_read(m, cell)
-  v_ret_0 := plusInts(Fixed_f_scaled(m, intToRef(3)), anon)
+  var anon_2: Ref
+  anon_2 := Fixed_f_read(m, cell)
+  v_ret_0 := plusInts(Fixed_f_scaled(m, intToRef(3)), anon_2)
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -351,6 +438,8 @@ function Fixed_f_read(this: Ref, cell: Ref): Ref
 function Fixed_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 {
   timesInts(factor, intToRef(2))
@@ -374,6 +463,8 @@ function Measure_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -381,16 +472,22 @@ method bothCallShapes(m: Ref, i: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(m), Fixed())
   requires isSubtype(typeOf(i), Measure())
   requires acc(Measure_unique(i), write)
+  requires (unfolding acc(Measure_unique(i), wildcard) in
+      intFromRef(Measure_f_scaled(i, intToRef(3))) <= 2147483641)
   ensures acc(Measure_unique(i), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures (unfolding acc(Measure_unique(i), wildcard) in
-      intFromRef(v_ret_0) ==
-      6 + intFromRef(Measure_f_scaled(i, intToRef(3))))
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (plusInts(intToRef(6), old((unfolding acc(Measure_unique(i), wildcard) in
+        Measure_f_scaled(i, intToRef(3)))))) in
+      intFromRef(intToRef(6)) +
+      intFromRef(old((unfolding acc(Measure_unique(i), wildcard) in
+        Measure_f_scaled(i, intToRef(3))))))
 {
-  var anon: Ref
-  anon := (unfolding acc(Measure_unique(i), wildcard) in
+  var anon_2: Ref
+  anon_2 := (unfolding acc(Measure_unique(i), wildcard) in
       Measure_f_scaled(i, intToRef(3)))
-  v_ret_0 := plusInts(Fixed_f_scaled(m, intToRef(3)), anon)
+  v_ret_0 := plusInts(Fixed_f_scaled(m, intToRef(3)), anon_2)
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -416,6 +513,8 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -457,6 +556,8 @@ function Fixed_f_read(this: Ref, cell: Ref): Ref
 function Fixed_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 {
   timesInts(factor, intToRef(2))
@@ -480,6 +581,8 @@ function Measure_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -521,6 +624,8 @@ function Fixed_f_read(this: Ref, cell: Ref): Ref
 function Fixed_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Fixed())
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 {
   timesInts(factor, intToRef(2))
@@ -544,6 +649,8 @@ function Measure_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), Measure())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -1073741824 <= intFromRef(factor) &&
+    intFromRef(factor) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
 
 

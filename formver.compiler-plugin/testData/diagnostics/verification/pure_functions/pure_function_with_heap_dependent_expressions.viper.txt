@@ -66,6 +66,39 @@ function next(this: Ref): Ref
 
 function sumFirstTwoNodes(node: Ref): Ref
   requires isSubtype(typeOf(node), Node())
+  requires next(node) == nullValue() ||
+    ((let anon ==
+      (plusLongLong(convertIntToLong(value(node)), convertIntToLong(value(next(node))))) in
+      longFromRef(convertIntToLong(value(node))) +
+      longFromRef(convertIntToLong(value(next(node))))) <
+    (let anon ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) ?
+      -1 :
+      ((let anon ==
+        (plusLongLong(convertIntToLong(value(node)), convertIntToLong(value(next(node))))) in
+        longFromRef(convertIntToLong(value(node))) +
+        longFromRef(convertIntToLong(value(next(node))))) >
+      (let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) ?
+        1 :
+        0)) >=
+    0 &&
+    ((let anon ==
+      (plusLongLong(convertIntToLong(value(node)), convertIntToLong(value(next(node))))) in
+      longFromRef(convertIntToLong(value(node))) +
+      longFromRef(convertIntToLong(value(next(node))))) <
+    2147483647 ?
+      -1 :
+      ((let anon ==
+        (plusLongLong(convertIntToLong(value(node)), convertIntToLong(value(next(node))))) in
+        longFromRef(convertIntToLong(value(node))) +
+        longFromRef(convertIntToLong(value(next(node))))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
   ensures isSubtype(typeOf(result), intType())
 {
   (let nextNode_0 ==

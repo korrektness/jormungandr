@@ -156,10 +156,11 @@ method cellFalse(c: Ref) returns (v_ret_0: Ref)
 /termination.kt: info: Generated Viper text for growing:
 function growing(x: Ref): Ref
   requires isSubtype(typeOf(x), intType())
+  requires 0 <= intFromRef(x) && intFromRef(x) <= 10
   ensures isSubtype(typeOf(result), intType())
   decreases intFromRef(x)
 {
-  (intFromRef(x) == 0 ? intToRef(0) : growing(plusInts(x, intToRef(1))))
+  (intFromRef(x) == 10 ? intToRef(0) : growing(plusInts(x, intToRef(1))))
 }
 
 /termination.kt: info: Generated Viper text for countdown:
@@ -167,6 +168,7 @@ function countdown(x: Ref): Ref
   requires isSubtype(typeOf(x), intType())
   requires intFromRef(x) >= 0
   ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(x)
   decreases intFromRef(x)
 {
   (intFromRef(x) == 0 ?
@@ -179,6 +181,7 @@ function countdown(x: Ref): Ref
   requires isSubtype(typeOf(x), intType())
   requires intFromRef(x) >= 0
   ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(x)
   decreases intFromRef(x)
 {
   (intFromRef(x) == 0 ?
@@ -252,33 +255,66 @@ function ackermann(m: Ref, n: Ref): Ref
       ackermann(minusInts(m, intToRef(1)), ackermann(m, minusInts(n, intToRef(1))))))
 }
 
-/termination.kt: info: Generated Viper text for ackermannClient:
-function ackermann(m: Ref, n: Ref): Ref
+/termination.kt: info: Generated Viper text for smallAckermann:
+function smallAckermann(m: Ref, n: Ref): Ref
   requires isSubtype(typeOf(m), intType())
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(m) >= 0
-  requires intFromRef(n) >= 0
+  requires 0 <= intFromRef(m) && intFromRef(m) <= 1
+  requires 0 <= intFromRef(n) &&
+    intFromRef(n) <=
+    (let anon ==
+      (minusInts(intToRef(2147483646), m)) in
+      intFromRef(intToRef(2147483646)) - intFromRef(m))
   ensures isSubtype(typeOf(result), intType())
-  ensures intFromRef(result) >= 0
+  ensures intFromRef(result) ==
+    (let anon ==
+      (plusInts(plusInts(m, n), intToRef(1))) in
+      intFromRef(plusInts(m, n)) + intFromRef(intToRef(1)))
   decreases intFromRef(m), intFromRef(n)
 {
   (intFromRef(m) == 0 ?
     plusInts(n, intToRef(1)) :
     (intFromRef(n) == 0 ?
-      ackermann(minusInts(m, intToRef(1)), intToRef(1)) :
-      ackermann(minusInts(m, intToRef(1)), ackermann(m, minusInts(n, intToRef(1))))))
+      smallAckermann(minusInts(m, intToRef(1)), intToRef(1)) :
+      smallAckermann(minusInts(m, intToRef(1)), smallAckermann(m, minusInts(n,
+      intToRef(1))))))
 }
 
+/termination.kt: info: Generated Viper text for ackermannClient:
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
   decreases _
 
 
+function smallAckermann(m: Ref, n: Ref): Ref
+  requires isSubtype(typeOf(m), intType())
+  requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(m) && intFromRef(m) <= 1
+  requires 0 <= intFromRef(n) &&
+    intFromRef(n) <=
+    (let anon ==
+      (minusInts(intToRef(2147483646), m)) in
+      intFromRef(intToRef(2147483646)) - intFromRef(m))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (let anon ==
+      (plusInts(plusInts(m, n), intToRef(1))) in
+      intFromRef(plusInts(m, n)) + intFromRef(intToRef(1)))
+  decreases intFromRef(m), intFromRef(n)
+{
+  (intFromRef(m) == 0 ?
+    plusInts(n, intToRef(1)) :
+    (intFromRef(n) == 0 ?
+      smallAckermann(minusInts(m, intToRef(1)), intToRef(1)) :
+      smallAckermann(minusInts(m, intToRef(1)), smallAckermann(m, minusInts(n,
+      intToRef(1))))))
+}
+
 method ackermannClient() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert intFromRef(ackermann(intToRef(0), intToRef(3))) == 4
+  assert intFromRef(smallAckermann(intToRef(1), intToRef(3))) == 5
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -312,20 +348,54 @@ function value(this: Ref): Ref
   decreases _
 
 
-/termination.kt: info: Generated Viper text for lengthClient:
-function length(n: Ref): Ref
+/termination.kt: info: Generated Viper text for cappedLength:
+function cappedLength(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
   ensures n == nullValue() ==> result == intToRef(0)
   decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
     (unfolding acc(Node_unique(n), write) in
-      (let anon_3_0 ==
+      (let anon_0_0 ==
         (next(n)) in
-        plusInts(intToRef(1), length(anon_3_0)))))
+        (let k_0 ==
+          (plusInts(intToRef(1), cappedLength(anon_0_0))) in
+          (intFromRef(k_0) > 1000000 ? intToRef(1000000) : k_0)))))
+}
+
+function next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), nullable(Node()))
+  decreases _
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
+
+/termination.kt: info: Generated Viper text for lengthClient:
+function cappedLength(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_0_0 ==
+        (next(n)) in
+        (let k_0 ==
+          (plusInts(intToRef(1), cappedLength(anon_0_0))) in
+          (intFromRef(k_0) > 1000000 ? intToRef(1000000) : k_0)))))
 }
 
 function next(this: Ref): Ref
@@ -352,16 +422,8 @@ method lengthClient(n: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var anon_4: Ref
-  var anon_5: Ref
-  anon_5 := length(n)
-  if (intFromRef(anon_5) >= 1) {
-    anon_4 := boolToRef(true)
-  } else {
-    var anon_6: Ref
-    anon_6 := length(n)
-    anon_4 := leInts(anon_6, intToRef(1))
-  }
-  assert boolFromRef(anon_4)
+  anon_4 := cappedLength(n)
+  assert intFromRef(anon_4) >= 1
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())

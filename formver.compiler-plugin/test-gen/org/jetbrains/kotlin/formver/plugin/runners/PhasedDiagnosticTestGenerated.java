@@ -641,6 +641,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("checked_integer.kt")
+    public void testChecked_integer() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/checked_integer.kt");
+    }
+
+    @Test
+    @TestMetadata("checked_widths.kt")
+    public void testChecked_widths() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/checked_widths.kt");
+    }
+
+    @Test
     @TestMetadata("compare_to.kt")
     public void testCompare_to() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/compare_to.kt");
@@ -758,6 +770,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("spec_unfolding_placement.kt")
     public void testSpec_unfolding_placement() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/spec_unfolding_placement.kt");
+    }
+
+    @Test
+    @TestMetadata("string_domain.kt")
+    public void testString_domain() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/string_domain.kt");
     }
 
     @Test

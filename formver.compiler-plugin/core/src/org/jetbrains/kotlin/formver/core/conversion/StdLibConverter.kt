@@ -14,9 +14,9 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.GtIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Implies
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.LeIntInt
+import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.LtIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Or
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntTypeEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.MulIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Not
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.StringLength
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.SubIntInt
@@ -123,7 +123,7 @@ sealed interface StdLibCondition {
 
 sealed interface StdLibPrecondition : StdLibCondition {
     companion object {
-        val all = listOf(GetPrecondition, SubListPrecondition)
+        val all = listOf(GetPrecondition, SubListPrecondition, AddPrecondition)
     }
 
     fun getEmbeddings(function: NamedFunctionSignature): List<ExpEmbedding>
@@ -247,6 +247,15 @@ data object SubListPostcondition : StdLibPostcondition {
     override val functionName = "subList"
 }
 
+data object AddPrecondition : StdLibPrecondition {
+    override fun getEmbeddings(function: NamedFunctionSignature): List<ExpEmbedding> = listOf(
+        LtIntInt(FieldAccess(function.dispatchReceiver!!, CollectionSizeFieldEmbedding), IntLit(Int.MAX_VALUE))
+    )
+
+    override val stdLibInterface = MutableListInterface
+    override val functionName = "add"
+}
+
 data object AddPostcondition : StdLibPostcondition {
     override fun getEmbeddings(
         returnVariable: VariableEmbedding,
@@ -343,10 +352,15 @@ data object CharSequenceRepeatPostcondition : StdLibPostcondition {
         function: NamedFunctionSignature
     ): List<ExpEmbedding> {
         val countArg = function.params[0]
+        val widen = IntegerOperators.unary.getValue(IntegerOperators.Unary(IntegerKind.Int, "toLong", IntegerKind.Long))
+        val multiply = IntegerOperators.binary.getValue(
+            IntegerOperators.Binary(IntegerKind.Long, IntegerKind.Long, "times", IntegerKind.Long)
+        )
+        // Widen the length calculation so the contract is defined for all Int counts.
         return listOf(function.ifStringReceiver { length ->
             Implies(
                 GeIntInt(countArg, IntLit(0)),
-                EqCmp(StringLength(returnVariable), MulIntInt(length, countArg)),
+                EqCmp(widen(StringLength(returnVariable)), multiply(widen(length), widen(countArg))),
             )
         })
     }

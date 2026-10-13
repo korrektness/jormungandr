@@ -6,6 +6,40 @@ function read(this: Ref, argument: Ref): Ref
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon ==
+        (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon ==
+          (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon ==
+        (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon ==
+          (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -13,6 +47,10 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingView())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(value(this)) &&
+    intFromRef(value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -41,6 +79,40 @@ function read(this: Ref, argument: Ref): Ref
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon ==
+        (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon ==
+          (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon ==
+        (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon ==
+          (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -48,6 +120,10 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingView())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(value(this)) &&
+    intFromRef(value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -76,6 +152,40 @@ function read(this: Ref, argument: Ref): Ref
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon ==
+        (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon ==
+          (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon ==
+        (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon ==
+          (plusLongLong(convertIntToLong(value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -83,6 +193,10 @@ function scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingView())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(value(this)) &&
+    intFromRef(value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -113,6 +227,40 @@ function BindingCell_f_read(this: Ref, argument: Ref): Ref
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -128,6 +276,10 @@ function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingCell())
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(BindingCell_f_value(this)) &&
+    intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -149,6 +301,40 @@ function BindingView_f_read(this: Ref, argument: Ref): Ref
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -156,6 +342,10 @@ function BindingView_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingView())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(BindingView_f_value(this)) &&
+    intFromRef(BindingView_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -191,6 +381,40 @@ function BindingCell_f_read(this: Ref, argument: Ref): Ref
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -206,6 +430,10 @@ function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingCell())
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(BindingCell_f_value(this)) &&
+    intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -222,23 +450,61 @@ function BindingCell_f_value(this: Ref): Ref
   (unfolding acc(BindingCell_unique(this), write) in this.contents)
 }
 
-function BindingView_f_read(this: Ref, argument: Ref): Ref
-  requires isSubtype(typeOf(this), BindingView())
+function c_BindingView_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
-function BindingView_f_scaled(this: Ref, factor: Ref): Ref
-  requires isSubtype(typeOf(this), BindingView())
+function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_BindingView_f_value(this)) &&
+    intFromRef(c_BindingView_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
-function BindingView_f_value(this: Ref): Ref
-  requires isSubtype(typeOf(this), BindingView())
+function c_BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
   requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
@@ -253,11 +519,207 @@ predicate BindingCell_unique(this: Ref) {
   isSubtype(typeOf(this.contents), intType())
 }
 
-predicate BindingView_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), BindingView())
+predicate c_BindingView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_BindingView())
 }
 
 predicate footprint(this: Ref)
+
+method BindingCell_c_BindingView_restore(this: Ref)
+  requires acc(c_BindingView_unique(this), write)
+  requires isSubtype(typeOf(this), BindingCell())
+  ensures acc(BindingCell_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BindingView())) && true ==>
+    BindingCell_f_value(this) ==
+    old((unfolding acc(c_BindingView_unique(this), wildcard) in
+      c_BindingView_f_value(this)))
+  ensures (forall factor: Ref ::
+      { BindingCell_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_BindingView_f_value(this))) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        intFromRef(c_BindingView_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      BindingCell_f_scaled(this, factor) ==
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        c_BindingView_f_scaled(this, factor))))
+  ensures (forall argument: Ref ::
+      { BindingCell_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) <
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            -1 :
+            ((let anon_builtin ==
+              (unaryMinusLong(longToRef(2147483648))) in
+              -longFromRef(longToRef(2147483648))) >
+            (let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) ?
+              1 :
+              0)) <=
+          0)) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) <
+          2147483647 ?
+            -1 :
+            ((let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) >
+            2147483647 ?
+              1 :
+              0)) <=
+          0))) ==>
+      BindingCell_f_read(this, argument) ==
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        c_BindingView_f_read(this, argument))))
+
+
+method BindingCell_c_BindingView_upcast(this: Ref)
+  requires acc(BindingCell_unique(this), write)
+  ensures acc(c_BindingView_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BindingCell())) && true ==>
+    (unfolding acc(c_BindingView_unique(this), wildcard) in
+      c_BindingView_f_value(this)) ==
+    old(BindingCell_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_BindingView_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        c_BindingView_f_scaled(this, factor)) ==
+      old(BindingCell_f_scaled(this, factor)))
+  ensures (forall argument: Ref ::
+      { c_BindingView_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) &&
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) ==>
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        c_BindingView_f_read(this, argument)) ==
+      old(BindingCell_f_read(this, argument)))
+
+
+method refines_c_BindingView_f_scaled(this: Ref, factor: Ref)
+  returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), write)
+  requires isSubtype(typeOf(factor), intType())
+  requires (unfolding acc(c_BindingView_unique(this), wildcard) in
+      -715827882 <= intFromRef(c_BindingView_f_value(this))) &&
+    (unfolding acc(c_BindingView_unique(this), wildcard) in
+      intFromRef(c_BindingView_f_value(this)) <= 715827882) &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
+  requires isSubtype(typeOf(this), BindingCell())
+{
+  BindingCell_c_BindingView_restore(this)
+  ret := BindingCell_f_scaled(this, factor)
+  BindingCell_c_BindingView_upcast(this)
+  assert isSubtype(typeOf(ret), intType())
+}
 
 /interface_observer_bindings.kt: info: Generated Viper text for read:
 field contents: Ref
@@ -269,6 +731,40 @@ function BindingCell_f_read(this: Ref, argument: Ref): Ref
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -284,6 +780,10 @@ function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingCell())
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(BindingCell_f_value(this)) &&
+    intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -300,23 +800,61 @@ function BindingCell_f_value(this: Ref): Ref
   (unfolding acc(BindingCell_unique(this), write) in this.contents)
 }
 
-function BindingView_f_read(this: Ref, argument: Ref): Ref
-  requires isSubtype(typeOf(this), BindingView())
+function c_BindingView_f_read(this: Ref, argument: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
-function BindingView_f_scaled(this: Ref, factor: Ref): Ref
-  requires isSubtype(typeOf(this), BindingView())
+function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
   requires acc(footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_BindingView_f_value(this)) &&
+    intFromRef(c_BindingView_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
-function BindingView_f_value(this: Ref): Ref
-  requires isSubtype(typeOf(this), BindingView())
+function c_BindingView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BindingView())
   requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
@@ -331,11 +869,250 @@ predicate BindingCell_unique(this: Ref) {
   isSubtype(typeOf(this.contents), intType())
 }
 
-predicate BindingView_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), BindingView())
+predicate c_BindingView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_BindingView())
 }
 
 predicate footprint(this: Ref)
+
+method BindingCell_c_BindingView_restore(this: Ref)
+  requires acc(c_BindingView_unique(this), write)
+  requires isSubtype(typeOf(this), BindingCell())
+  ensures acc(BindingCell_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BindingView())) && true ==>
+    BindingCell_f_value(this) ==
+    old((unfolding acc(c_BindingView_unique(this), wildcard) in
+      c_BindingView_f_value(this)))
+  ensures (forall factor: Ref ::
+      { BindingCell_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_BindingView_f_value(this))) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        intFromRef(c_BindingView_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      BindingCell_f_scaled(this, factor) ==
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        c_BindingView_f_scaled(this, factor))))
+  ensures (forall argument: Ref ::
+      { BindingCell_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) <
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            -1 :
+            ((let anon_builtin ==
+              (unaryMinusLong(longToRef(2147483648))) in
+              -longFromRef(longToRef(2147483648))) >
+            (let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) ?
+              1 :
+              0)) <=
+          0)) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) <
+          2147483647 ?
+            -1 :
+            ((let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) >
+            2147483647 ?
+              1 :
+              0)) <=
+          0))) ==>
+      BindingCell_f_read(this, argument) ==
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        c_BindingView_f_read(this, argument))))
+
+
+method BindingCell_c_BindingView_upcast(this: Ref)
+  requires acc(BindingCell_unique(this), write)
+  ensures acc(c_BindingView_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), BindingCell())) && true ==>
+    (unfolding acc(c_BindingView_unique(this), wildcard) in
+      c_BindingView_f_value(this)) ==
+    old(BindingCell_f_value(this))
+  ensures (forall factor: Ref ::
+      { c_BindingView_f_scaled(this, factor) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        c_BindingView_f_scaled(this, factor)) ==
+      old(BindingCell_f_scaled(this, factor)))
+  ensures (forall argument: Ref ::
+      { c_BindingView_f_read(this, argument) }
+      true && old(isSubtype(typeOf(this), BindingCell())) && true &&
+      old(isSubtype(typeOf(argument), BindingArgument())) &&
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) &&
+      (old([perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      [perm(BindingArgument_unique(argument)) >= write,
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) ==>
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        c_BindingView_f_read(this, argument)) ==
+      old(BindingCell_f_read(this, argument)))
+
+
+method refines_c_BindingView_f_read(this: Ref, argument: Ref)
+  returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_BindingView())
+  requires acc(c_BindingView_unique(this), write)
+  requires isSubtype(typeOf(argument), BindingArgument())
+  requires acc(BindingArgument_unique(argument), write)
+  requires ((let anon_builtin ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon_builtin ==
+      ((unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))))) in
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))))) ?
+      -1 :
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon_builtin ==
+        ((unfolding acc(c_BindingView_unique(this), wildcard) in
+          (unfolding acc(BindingArgument_unique(argument), write) in
+            plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))))) in
+        (unfolding acc(c_BindingView_unique(this), wildcard) in
+          (unfolding acc(BindingArgument_unique(argument), write) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon_builtin ==
+      ((unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))))) in
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))))) <
+    2147483647 ?
+      -1 :
+      ((let anon_builtin ==
+        ((unfolding acc(c_BindingView_unique(this), wildcard) in
+          (unfolding acc(BindingArgument_unique(argument), write) in
+            plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))))) in
+        (unfolding acc(c_BindingView_unique(this), wildcard) in
+          (unfolding acc(BindingArgument_unique(argument), write) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
+  requires isSubtype(typeOf(this), BindingCell())
+{
+  BindingCell_c_BindingView_restore(this)
+  ret := BindingCell_f_read(this, argument)
+  BindingCell_c_BindingView_upcast(this)
+  assert isSubtype(typeOf(ret), intType())
+}
 
 /interface_observer_bindings.kt: info: Generated Viper text for inheritedBinding:
 field bf_contents: Ref
@@ -347,6 +1124,40 @@ function BindingCell_f_read(this: Ref, argument: Ref): Ref
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -362,6 +1173,10 @@ function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingCell())
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(BindingCell_f_value(this)) &&
+    intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -383,6 +1198,40 @@ function c_BindingView_f_read(this: Ref, argument: Ref): Ref
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -390,6 +1239,10 @@ function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_BindingView())
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_BindingView_f_value(this)) &&
+    intFromRef(c_BindingView_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -456,7 +1309,13 @@ method InheritedBindingCell_c_BindingView_restore(this: Ref)
   ensures (forall factor: Ref ::
       { BindingCell_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_BindingView_f_value(this))) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        intFromRef(c_BindingView_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(InheritedBindingCell_unique(this), wildcard) in
         BindingCell_f_scaled(this, factor)) ==
       old((unfolding acc(c_BindingView_unique(this), wildcard) in
@@ -468,7 +1327,43 @@ method InheritedBindingCell_c_BindingView_restore(this: Ref)
       (old([perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
-      perm(BindingArgument_unique(argument)) >= write]) ==>
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) <
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            -1 :
+            ((let anon_builtin ==
+              (unaryMinusLong(longToRef(2147483648))) in
+              -longFromRef(longToRef(2147483648))) >
+            (let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) ?
+              1 :
+              0)) <=
+          0)) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) <
+          2147483647 ?
+            -1 :
+            ((let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) >
+            2147483647 ?
+              1 :
+              0)) <=
+          0))) ==>
       (unfolding acc(InheritedBindingCell_unique(this), wildcard) in
         BindingCell_f_read(this, argument)) ==
       old((unfolding acc(c_BindingView_unique(this), wildcard) in
@@ -486,7 +1381,19 @@ method InheritedBindingCell_c_BindingView_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_BindingView_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(InheritedBindingCell_unique(this), wildcard) in
+        -715827882 <= intFromRef(BindingCell_f_value(this))) &&
+      (unfolding acc(InheritedBindingCell_unique(this), wildcard) in
+        intFromRef(BindingCell_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old((unfolding acc(InheritedBindingCell_unique(this), wildcard) in
+        -715827882 <= intFromRef(BindingCell_f_value(this))) &&
+      (unfolding acc(InheritedBindingCell_unique(this), wildcard) in
+        intFromRef(BindingCell_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_scaled(this, factor)) ==
       old((unfolding acc(InheritedBindingCell_unique(this), wildcard) in
@@ -499,10 +1406,82 @@ method InheritedBindingCell_c_BindingView_upcast(this: Ref)
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(InheritedBindingCell_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) <
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            -1 :
+            ((let anon_builtin ==
+              (unaryMinusLong(longToRef(2147483648))) in
+              -longFromRef(longToRef(2147483648))) >
+            (let anon_builtin ==
+              (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) ?
+              1 :
+              0)) <=
+          0)) &&
+      (unfolding acc(InheritedBindingCell_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) <
+          2147483647 ?
+            -1 :
+            ((let anon_builtin ==
+              (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) >
+            2147483647 ?
+              1 :
+              0)) <=
+          0))) &&
       (old([perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
-      perm(BindingArgument_unique(argument)) >= write]) ==>
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(InheritedBindingCell_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) <
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            -1 :
+            ((let anon_builtin ==
+              (unaryMinusLong(longToRef(2147483648))) in
+              -longFromRef(longToRef(2147483648))) >
+            (let anon_builtin ==
+              (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) ?
+              1 :
+              0)) <=
+          0)) &&
+      (unfolding acc(InheritedBindingCell_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) <
+          2147483647 ?
+            -1 :
+            ((let anon_builtin ==
+              (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) >
+            2147483647 ?
+              1 :
+              0)) <=
+          0))) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_read(this, argument)) ==
       old((unfolding acc(InheritedBindingCell_unique(this), wildcard) in
@@ -571,6 +1550,40 @@ function BindingCell_f_read(this: Ref, par_argument: Ref): Ref
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(par_argument), BindingArgument())
   requires acc(BindingArgument_unique(par_argument), write)
+  requires (unfolding acc(BindingArgument_unique(par_argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(par_argument.bf_number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(par_argument.bf_number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(par_argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(par_argument.bf_number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(par_argument.bf_number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -586,6 +1599,10 @@ function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingCell())
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(BindingCell_f_value(this)) &&
+    intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -607,6 +1624,40 @@ function c_BindingView_f_read(this: Ref, par_argument: Ref): Ref
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(par_argument), BindingArgument())
   requires acc(BindingArgument_unique(par_argument), write)
+  requires (unfolding acc(BindingArgument_unique(par_argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(par_argument.bf_number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(par_argument.bf_number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(par_argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(par_argument.bf_number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(par_argument.bf_number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -614,6 +1665,10 @@ function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_BindingView())
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_BindingView_f_value(this)) &&
+    intFromRef(c_BindingView_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -673,7 +1728,15 @@ method BindingCell_c_BindingView_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_BindingView_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_scaled(this, factor)) ==
       old(BindingCell_f_scaled(this, factor)))
@@ -685,10 +1748,78 @@ method BindingCell_c_BindingView_upcast(this: Ref)
       perm(BindingArgument_unique(par_argument)) >= write]) &&
       [perm(BindingArgument_unique(par_argument)) >= write,
       perm(BindingArgument_unique(par_argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(par_argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(par_argument.bf_number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(par_argument.bf_number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(par_argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(par_argument.bf_number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(par_argument.bf_number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) &&
       (old([perm(BindingArgument_unique(par_argument)) >= write,
       perm(BindingArgument_unique(par_argument)) >= write]) &&
       [perm(BindingArgument_unique(par_argument)) >= write,
-      perm(BindingArgument_unique(par_argument)) >= write]) ==>
+      perm(BindingArgument_unique(par_argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(par_argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(par_argument.bf_number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(par_argument.bf_number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(par_argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(par_argument.bf_number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(par_argument.bf_number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(par_argument.bf_number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_read(this, par_argument)) ==
       old(BindingCell_f_read(this, par_argument)))
@@ -754,6 +1885,40 @@ function BindingCell_f_read(this: Ref, argument: Ref): Ref
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -769,6 +1934,10 @@ function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingCell())
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(BindingCell_f_value(this)) &&
+    intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -790,6 +1959,40 @@ function c_BindingView_f_read(this: Ref, argument: Ref): Ref
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -797,6 +2000,10 @@ function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_BindingView())
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_BindingView_f_value(this)) &&
+    intFromRef(c_BindingView_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -857,7 +2064,13 @@ method BindingCell_c_BindingView_restore(this: Ref)
   ensures (forall factor: Ref ::
       { BindingCell_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_BindingView_f_value(this))) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        intFromRef(c_BindingView_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       BindingCell_f_scaled(this, factor) ==
       old((unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_scaled(this, factor))))
@@ -868,7 +2081,43 @@ method BindingCell_c_BindingView_restore(this: Ref)
       (old([perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
-      perm(BindingArgument_unique(argument)) >= write]) ==>
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) <
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            -1 :
+            ((let anon_builtin ==
+              (unaryMinusLong(longToRef(2147483648))) in
+              -longFromRef(longToRef(2147483648))) >
+            (let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) ?
+              1 :
+              0)) <=
+          0)) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) <
+          2147483647 ?
+            -1 :
+            ((let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) >
+            2147483647 ?
+              1 :
+              0)) <=
+          0))) ==>
       BindingCell_f_read(this, argument) ==
       old((unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_read(this, argument))))
@@ -884,7 +2133,15 @@ method BindingCell_c_BindingView_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_BindingView_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_scaled(this, factor)) ==
       old(BindingCell_f_scaled(this, factor)))
@@ -896,10 +2153,78 @@ method BindingCell_c_BindingView_upcast(this: Ref)
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) &&
       (old([perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
-      perm(BindingArgument_unique(argument)) >= write]) ==>
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_read(this, argument)) ==
       old(BindingCell_f_read(this, argument)))
@@ -956,6 +2281,40 @@ function BindingCell_f_read(this: Ref, argument: Ref): Ref
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -971,6 +2330,10 @@ function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingCell())
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(BindingCell_f_value(this)) &&
+    intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -992,6 +2355,40 @@ function c_BindingView_f_read(this: Ref, argument: Ref): Ref
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -999,6 +2396,10 @@ function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_BindingView())
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_BindingView_f_value(this)) &&
+    intFromRef(c_BindingView_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1059,7 +2460,13 @@ method BindingCell_c_BindingView_restore(this: Ref)
   ensures (forall factor: Ref ::
       { BindingCell_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), c_BindingView())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        -715827882 <= intFromRef(c_BindingView_f_value(this))) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        intFromRef(c_BindingView_f_value(this)) <= 715827882) &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       BindingCell_f_scaled(this, factor) ==
       old((unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_scaled(this, factor))))
@@ -1070,7 +2477,43 @@ method BindingCell_c_BindingView_restore(this: Ref)
       (old([perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
-      perm(BindingArgument_unique(argument)) >= write]) ==>
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) <
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            -1 :
+            ((let anon_builtin ==
+              (unaryMinusLong(longToRef(2147483648))) in
+              -longFromRef(longToRef(2147483648))) >
+            (let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) ?
+              1 :
+              0)) <=
+          0)) &&
+      (unfolding acc(c_BindingView_unique(this), wildcard) in
+        (unfolding acc(BindingArgument_unique(argument), write) in
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) <
+          2147483647 ?
+            -1 :
+            ((let anon_builtin ==
+              (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+              longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+              longFromRef(convertIntToLong(argument.number))) >
+            2147483647 ?
+              1 :
+              0)) <=
+          0))) ==>
       BindingCell_f_read(this, argument) ==
       old((unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_read(this, argument))))
@@ -1086,7 +2529,15 @@ method BindingCell_c_BindingView_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_BindingView_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_scaled(this, factor)) ==
       old(BindingCell_f_scaled(this, factor)))
@@ -1098,10 +2549,78 @@ method BindingCell_c_BindingView_upcast(this: Ref)
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) &&
       (old([perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
-      perm(BindingArgument_unique(argument)) >= write]) ==>
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_read(this, argument)) ==
       old(BindingCell_f_read(this, argument)))
@@ -1142,13 +2661,69 @@ method con(par_contents: Ref) returns (ret_1: Ref)
 method readBinding(view: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(view), c_BindingView())
   requires acc(c_BindingView_unique(view), write)
+  requires (unfolding acc(c_BindingView_unique(view), wildcard) in
+      -715827882 <= intFromRef(c_BindingView_f_value(view))) &&
+    (unfolding acc(c_BindingView_unique(view), wildcard) in
+      intFromRef(c_BindingView_f_value(view)) <= 715827882)
+  requires ((let anon_builtin ==
+      (unaryMinusLong(longToRef(2147483648))) in
+      -longFromRef(longToRef(2147483648))) <
+    (let anon_builtin ==
+      (plusLongLong((unfolding acc(c_BindingView_unique(view), wildcard) in
+        convertIntToLong(c_BindingView_f_value(view))), (unfolding acc(c_BindingView_unique(view), wildcard) in
+        convertIntToLong(c_BindingView_f_scaled(view, intToRef(2)))))) in
+      (unfolding acc(c_BindingView_unique(view), wildcard) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(view)))) +
+      (unfolding acc(c_BindingView_unique(view), wildcard) in
+        longFromRef(convertIntToLong(c_BindingView_f_scaled(view, intToRef(2)))))) ?
+      -1 :
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) >
+      (let anon_builtin ==
+        (plusLongLong((unfolding acc(c_BindingView_unique(view), wildcard) in
+          convertIntToLong(c_BindingView_f_value(view))), (unfolding acc(c_BindingView_unique(view), wildcard) in
+          convertIntToLong(c_BindingView_f_scaled(view, intToRef(2)))))) in
+        (unfolding acc(c_BindingView_unique(view), wildcard) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(view)))) +
+        (unfolding acc(c_BindingView_unique(view), wildcard) in
+          longFromRef(convertIntToLong(c_BindingView_f_scaled(view, intToRef(2)))))) ?
+        1 :
+        0)) <=
+    0 &&
+    ((let anon_builtin ==
+      (plusLongLong((unfolding acc(c_BindingView_unique(view), wildcard) in
+        convertIntToLong(c_BindingView_f_value(view))), (unfolding acc(c_BindingView_unique(view), wildcard) in
+        convertIntToLong(c_BindingView_f_scaled(view, intToRef(2)))))) in
+      (unfolding acc(c_BindingView_unique(view), wildcard) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(view)))) +
+      (unfolding acc(c_BindingView_unique(view), wildcard) in
+        longFromRef(convertIntToLong(c_BindingView_f_scaled(view, intToRef(2)))))) <
+    2147483647 ?
+      -1 :
+      ((let anon_builtin ==
+        (plusLongLong((unfolding acc(c_BindingView_unique(view), wildcard) in
+          convertIntToLong(c_BindingView_f_value(view))), (unfolding acc(c_BindingView_unique(view), wildcard) in
+          convertIntToLong(c_BindingView_f_scaled(view, intToRef(2)))))) in
+        (unfolding acc(c_BindingView_unique(view), wildcard) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(view)))) +
+        (unfolding acc(c_BindingView_unique(view), wildcard) in
+          longFromRef(convertIntToLong(c_BindingView_f_scaled(view, intToRef(2)))))) >
+      2147483647 ?
+        1 :
+        0)) <=
+    0
   ensures acc(c_BindingView_unique(view), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) ==
-    old((unfolding acc(c_BindingView_unique(view), wildcard) in
-      intFromRef(c_BindingView_f_value(view)))) +
-    old((unfolding acc(c_BindingView_unique(view), wildcard) in
-      intFromRef(c_BindingView_f_scaled(view, intToRef(2)))))
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_BindingView_unique(view), wildcard) in
+        c_BindingView_f_value(view))), old((unfolding acc(c_BindingView_unique(view), wildcard) in
+        c_BindingView_f_scaled(view, intToRef(2)))))) in
+      intFromRef(old((unfolding acc(c_BindingView_unique(view), wildcard) in
+        c_BindingView_f_value(view)))) +
+      intFromRef(old((unfolding acc(c_BindingView_unique(view), wildcard) in
+        c_BindingView_f_scaled(view, intToRef(2))))))
   ensures (unfolding acc(c_BindingView_unique(view), wildcard) in
       intFromRef(c_BindingView_f_value(view))) ==
     old((unfolding acc(c_BindingView_unique(view), wildcard) in
@@ -1165,6 +2740,40 @@ function BindingCell_f_read(this: Ref, argument: Ref): Ref
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -1180,6 +2789,10 @@ function BindingCell_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), BindingCell())
   requires acc(BindingCell_unique(this), write)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(BindingCell_f_value(this)) &&
+    intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(BindingCell_unique(this), write) in
@@ -1201,6 +2814,40 @@ function c_BindingView_f_read(this: Ref, argument: Ref): Ref
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(argument), BindingArgument())
   requires acc(BindingArgument_unique(argument), write)
+  requires (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (unaryMinusLong(longToRef(2147483648))) in
+        -longFromRef(longToRef(2147483648))) <
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) ?
+        -1 :
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) >
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          1 :
+          0)) <=
+      0) &&
+    (unfolding acc(BindingArgument_unique(argument), write) in
+      ((let anon_builtin ==
+        (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+        longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+        longFromRef(convertIntToLong(argument.number))) <
+      2147483647 ?
+        -1 :
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(c_BindingView_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(c_BindingView_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) >
+        2147483647 ?
+          1 :
+          0)) <=
+      0)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1208,6 +2855,10 @@ function c_BindingView_f_scaled(this: Ref, factor: Ref): Ref
   requires isSubtype(typeOf(this), c_BindingView())
   requires acc(c_BindingView_footprint(this), wildcard)
   requires isSubtype(typeOf(factor), intType())
+  requires -715827882 <= intFromRef(c_BindingView_f_value(this)) &&
+    intFromRef(c_BindingView_f_value(this)) <= 715827882 &&
+    0 <= intFromRef(factor) &&
+    intFromRef(factor) <= 3
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -1267,7 +2918,15 @@ method BindingCell_c_BindingView_upcast(this: Ref)
   ensures (forall factor: Ref ::
       { c_BindingView_f_scaled(this, factor) }
       true && old(isSubtype(typeOf(this), BindingCell())) && true &&
-      old(isSubtype(typeOf(factor), intType())) ==>
+      old(isSubtype(typeOf(factor), intType())) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) &&
+      old(-715827882 <= intFromRef(BindingCell_f_value(this)) &&
+      intFromRef(BindingCell_f_value(this)) <= 715827882 &&
+      0 <= intFromRef(factor) &&
+      intFromRef(factor) <= 3) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_scaled(this, factor)) ==
       old(BindingCell_f_scaled(this, factor)))
@@ -1279,10 +2938,78 @@ method BindingCell_c_BindingView_upcast(this: Ref)
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) &&
       (old([perm(BindingArgument_unique(argument)) >= write,
       perm(BindingArgument_unique(argument)) >= write]) &&
       [perm(BindingArgument_unique(argument)) >= write,
-      perm(BindingArgument_unique(argument)) >= write]) ==>
+      perm(BindingArgument_unique(argument)) >= write]) &&
+      old((unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (unaryMinusLong(longToRef(2147483648))) in
+          -longFromRef(longToRef(2147483648))) <
+        (let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) ?
+          -1 :
+          ((let anon_builtin ==
+            (unaryMinusLong(longToRef(2147483648))) in
+            -longFromRef(longToRef(2147483648))) >
+          (let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) ?
+            1 :
+            0)) <=
+        0) &&
+      (unfolding acc(BindingArgument_unique(argument), write) in
+        ((let anon_builtin ==
+          (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+          longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+          longFromRef(convertIntToLong(argument.number))) <
+        2147483647 ?
+          -1 :
+          ((let anon_builtin ==
+            (plusLongLong(convertIntToLong(BindingCell_f_value(this)), convertIntToLong(argument.number))) in
+            longFromRef(convertIntToLong(BindingCell_f_value(this))) +
+            longFromRef(convertIntToLong(argument.number))) >
+          2147483647 ?
+            1 :
+            0)) <=
+        0)) ==>
       (unfolding acc(c_BindingView_unique(this), wildcard) in
         c_BindingView_f_read(this, argument)) ==
       old(BindingCell_f_read(this, argument)))

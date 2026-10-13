@@ -6,9 +6,18 @@ method boundAll(b: Ref) returns (v_ret_0: Ref)
   requires acc(Box_unique(b), write)
   ensures acc(Box_unique(b), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures (unfolding acc(Box_unique(b), write) in
-      (forall anon: Int ::0 <= anon && anon < 3 ==>
-        intFromRef(b.value) + anon >= anon))
+  ensures (unfolding acc(Box_unique(b), write) in intFromRef(b.value) == 0)
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < 3 &&
+      (unfolding acc(Box_unique(b), write) in
+        intFromRef(b.value) <= 2147483645) ==>
+      (unfolding acc(Box_unique(b), write) in
+        (let anon_builtin_neg1 ==
+          (plusInts(b.value, intToRef(anon_builtin_0))) in
+          intFromRef(b.value) + anon_builtin_0) >=
+        anon_builtin_0))
 {
   unfold acc(Box_unique(b), write)
   b.value := intToRef(0)
@@ -66,6 +75,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method sizeGuardThroughVar(h: Ref) returns (v_ret_0: Ref)
@@ -73,7 +83,9 @@ method sizeGuardThroughVar(h: Ref) returns (v_ret_0: Ref)
   requires acc(ArrayHolder_unique(h), write)
   ensures acc(ArrayHolder_unique(h), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures (forall anon: Int ::0 <= anon &&
+  ensures (forall anon: Int ::anon >= -2147483648 && anon <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon)), intType()) ==>
+      0 <= anon &&
       (unfolding acc(ArrayHolder_unique(h), write) in
         anon < arraySize(h.arr)) ==>
       (unfolding acc(ArrayHolder_unique(h), write) in

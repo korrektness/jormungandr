@@ -5,6 +5,11 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.core.domains.IntegerBounds
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.charInjection
+import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
+import org.jetbrains.kotlin.formver.core.embeddings.asInfo
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.intInjection
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.stringInjection
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildFunctionPretype
@@ -12,6 +17,24 @@ import org.jetbrains.kotlin.formver.viper.ast.*
 import org.jetbrains.kotlin.formver.viper.ast.Exp.Companion.toConjunction
 
 object OperatorExpEmbeddings {
+
+    private fun overflow(value: Exp, operation: String, char: Boolean = false): Exp {
+        val condition = if (char) KotlinCondition.IntegerOverflow(operation, "Char", "0", "65535")
+        else KotlinCondition.IntegerOverflow(operation, "Int", Int.MIN_VALUE.toString(), Int.MAX_VALUE.toString())
+        val bounds = (if (char) IntegerBounds.char(value) else IntegerBounds.int(value)) as Exp.And
+        val info = SourceRole.Arithmetic(condition).asInfo
+        return Exp.And(Exp.WithInfo(bounds.left, info), Exp.WithInfo(bounds.right, info), info = info)
+    }
+
+    private fun nonzero(value: Exp, operation: String): Exp = Exp.WithInfo(
+        value ne 0.toExp(), SourceRole.Arithmetic(KotlinCondition.DivisionByZero(operation)).asInfo
+    )
+
+    private fun quotient(a: Exp, b: Exp): Exp {
+        fun abs(x: Exp) = Exp.TernaryExp(x lt 0.toExp(), Exp.Minus(x), x)
+        val magnitude = Exp.Div(abs(a), abs(b))
+        return Exp.TernaryExp(Exp.NeCmp(a lt 0.toExp(), b lt 0.toExp()), Exp.Minus(magnitude), magnitude)
+    }
 
     private val intIntToIntType
         get() = buildFunctionPretype {
@@ -24,6 +47,9 @@ object OperatorExpEmbeddings {
         setName("plusInts")
         setSignature(intIntToIntType)
         viperImplementation { Exp.Add(args[0], args[1], pos, info) }
+        additionalConditions {
+            precondition { overflow(Exp.Add(intInjection.fromRef(args[0]), intInjection.fromRef(args[1])), "+") }
+        }
     }
 
     val CompareIntInt = buildBinaryOperator {
@@ -42,43 +68,36 @@ object OperatorExpEmbeddings {
         setName("minusInts")
         setSignature(intIntToIntType)
         viperImplementation { Exp.Sub(args[0], args[1], pos, info) }
+        additionalConditions {
+            precondition { overflow(Exp.Sub(intInjection.fromRef(args[0]), intInjection.fromRef(args[1])), "-") }
+        }
     }
 
     val MulIntInt = buildBinaryOperator {
         setName("timesInts")
         setSignature(intIntToIntType)
         viperImplementation { Exp.Mul(args[0], args[1], pos, info) }
-    }
-
-    private fun truncatingQuotient(a: Exp, b: Exp, pos: Position = Position.NoPosition, info: Info = Info.NoInfo): Exp {
-        val aNegative = Exp.LtCmp(a, 0.toExp())
-        val bNegative = Exp.LtCmp(b, 0.toExp())
-        val magnitude = Exp.Div(
-            Exp.TernaryExp(aNegative, Exp.Minus(a), a),
-            Exp.TernaryExp(bNegative, Exp.Minus(b), b),
-        )
-        return Exp.TernaryExp(Exp.NeCmp(aNegative, bNegative), Exp.Minus(magnitude), magnitude, pos, info)
+        additionalConditions {
+            precondition { overflow(Exp.Mul(intInjection.fromRef(args[0]), intInjection.fromRef(args[1])), "*") }
+        }
     }
 
     val DivIntInt = buildBinaryOperator {
         setName("divInts")
         setSignature(intIntToIntType)
-        viperImplementation { truncatingQuotient(args[0], args[1], pos, info) }
+        viperImplementation { quotient(args[0], args[1]) }
         additionalConditions {
-            precondition {
-                intInjection.fromRef(args[1]) ne 0.toExp()
-            }
+            precondition { nonzero(intInjection.fromRef(args[1]), "/") }
+            precondition { overflow(quotient(intInjection.fromRef(args[0]), intInjection.fromRef(args[1])), "/") }
         }
     }
 
     val RemIntInt = buildBinaryOperator {
         setName("remInts")
         setSignature(intIntToIntType)
-        viperImplementation { Exp.Sub(args[0], Exp.Mul(truncatingQuotient(args[0], args[1]), args[1]), pos, info) }
+        viperImplementation { Exp.Sub(args[0], Exp.Mul(quotient(args[0], args[1]), args[1]), pos, info) }
         additionalConditions {
-            precondition {
-                intInjection.fromRef(args[1]) ne 0.toExp()
-            }
+            precondition { nonzero(intInjection.fromRef(args[1]), "%") }
         }
     }
 
@@ -120,6 +139,9 @@ object OperatorExpEmbeddings {
             withReturnType { int() }
         }
         viperImplementation { Exp.Minus(args[0], pos, info) }
+        additionalConditions {
+            precondition { overflow(Exp.Minus(intInjection.fromRef(args[0])), "unary -") }
+        }
     }
 
     val Not = buildUnaryOperator {
@@ -182,12 +204,18 @@ object OperatorExpEmbeddings {
         setName("addCharInt")
         setSignature(charIntToCharType)
         viperImplementation { Exp.Add(args[0], args[1], pos, info) }
+        additionalConditions {
+            precondition { overflow(Exp.Add(charInjection.fromRef(args[0]), intInjection.fromRef(args[1])), "+", char = true) }
+        }
     }
 
     val SubCharInt = buildBinaryOperator {
         setName("subCharInt")
         setSignature(charIntToCharType)
         viperImplementation { Exp.Sub(args[0], args[1], pos, info) }
+        additionalConditions {
+            precondition { overflow(Exp.Sub(charInjection.fromRef(args[0]), intInjection.fromRef(args[1])), "-", char = true) }
+        }
     }
 
     private val charCharToBooleanType = buildFunctionPretype {
@@ -255,6 +283,7 @@ object OperatorExpEmbeddings {
             withReturnType { string() }
         }
         viperImplementation { Exp.SeqAppend(args[0], args[1], pos, info) }
+        normalReturnCondition { args -> Exp.Add(Exp.SeqLength(args[0]), Exp.SeqLength(args[1])) le Int.MAX_VALUE.toExp() }
     }
 
     val AddStringChar = buildBinaryOperator {
@@ -265,6 +294,7 @@ object OperatorExpEmbeddings {
             withReturnType { string() }
         }
         viperImplementation { Exp.SeqAppend(args[0], Exp.ExplicitSeq(listOf(args[1])), pos, info) }
+        normalReturnCondition { args -> Exp.SeqLength(args[0]) lt Int.MAX_VALUE.toExp() }
     }
 
     val IterationSequenceSize = buildUnaryOperator {

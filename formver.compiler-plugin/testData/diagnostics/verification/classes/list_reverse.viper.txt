@@ -56,7 +56,9 @@ method reverseWithOld(head: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(l4_acc), nullable(Node()))
     invariant isSubtype(typeOf(cur), nullable(Node()))
     invariant isSubtype(typeOf(head), nullable(Node()))
-    invariant intFromRef(length(l4_acc)) + intFromRef(length(cur)) ==
+    invariant (let anon_builtin ==
+        (plusInts(length(l4_acc), length(cur))) in
+        intFromRef(length(l4_acc)) + intFromRef(length(cur))) ==
       old(intFromRef(length(head)))
   anon_4 := notBool(boolToRef(cur == nullValue()))
   if (boolFromRef(anon_4)) {
@@ -77,7 +79,9 @@ method reverseWithOld(head: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(l4_acc), nullable(Node()))
   assert isSubtype(typeOf(cur), nullable(Node()))
   assert isSubtype(typeOf(head), nullable(Node()))
-  assert intFromRef(length(l4_acc)) + intFromRef(length(cur)) ==
+  assert (let anon_builtin ==
+      (plusInts(length(l4_acc), length(cur))) in
+      intFromRef(length(l4_acc)) + intFromRef(length(cur))) ==
     old(intFromRef(length(head)))
   v_ret_0 := l4_acc
   goto lbl_ret_0
@@ -125,7 +129,9 @@ method reverseWithGhost(head: Ref, n: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(cur), nullable(Node()))
     invariant isSubtype(typeOf(head), nullable(Node()))
     invariant isSubtype(typeOf(n), intType())
-    invariant intFromRef(length(l4_acc)) + intFromRef(length(cur)) ==
+    invariant (let anon_builtin ==
+        (plusInts(length(l4_acc), length(cur))) in
+        intFromRef(length(l4_acc)) + intFromRef(length(cur))) ==
       intFromRef(n)
   anon_4 := notBool(boolToRef(cur == nullValue()))
   if (boolFromRef(anon_4)) {
@@ -147,7 +153,9 @@ method reverseWithGhost(head: Ref, n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(cur), nullable(Node()))
   assert isSubtype(typeOf(head), nullable(Node()))
   assert isSubtype(typeOf(n), intType())
-  assert intFromRef(length(l4_acc)) + intFromRef(length(cur)) ==
+  assert (let anon_builtin ==
+      (plusInts(length(l4_acc), length(cur))) in
+      intFromRef(length(l4_acc)) + intFromRef(length(cur))) ==
     intFromRef(n)
   v_ret_0 := l4_acc
   goto lbl_ret_0

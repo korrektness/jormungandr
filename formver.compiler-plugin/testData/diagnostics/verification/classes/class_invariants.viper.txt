@@ -9,6 +9,7 @@ function nonnegative(value: Ref): Ref
 /class_invariants.kt: info: Generated Viper text for adjusted:
 function adjusted(value: Ref): Ref
   requires isSubtype(typeOf(value), intType())
+  requires intFromRef(value) < 2147483647
   ensures isSubtype(typeOf(result), intType())
 {
   plusInts(value, intToRef(1))
@@ -19,6 +20,7 @@ field bf_value: Ref
 
 function adjusted(par_value: Ref): Ref
   requires isSubtype(typeOf(par_value), intType())
+  requires intFromRef(par_value) < 2147483647
   ensures isSubtype(typeOf(result), intType())
 {
   plusInts(par_value, intToRef(1))
@@ -60,13 +62,24 @@ method con(start: Ref) returns (v_ret_0: Ref)
         (let anon_1_0 ==
           (this.bf_value) in
           boolFromRef(nonnegative(anon_1_0)))))))
-  ensures intFromRef(v_ret_0.bf_value) == intFromRef(adjusted(start))
+  ensures intFromRef(v_ret_0.bf_value) ==
+    intFromRef((intFromRef(start) < 2147483647 ? adjusted(start) : start))
 {
   var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
   v_ret_0 := new(bf_value)
   inhale typeOf(v_ret_0) == Positive()
-  v_ret_0.bf_value := adjusted(start)
-  anon_2 := require(geInts(start, intToRef(0)))
+  if (intFromRef(start) < 2147483647) {
+    anon_2 := adjusted(start)
+  } else {
+    anon_2 := start}
+  v_ret_0.bf_value := anon_2
+  if (intFromRef(start) >= 0) {
+    anon_4 := ltInts(start, intToRef(2147483647))
+  } else {
+    anon_4 := boolToRef(false)}
+  anon_3 := require(anon_4)
   assert (let this ==
       (v_ret_0) in
       true &&
@@ -81,9 +94,9 @@ method con(start: Ref) returns (v_ret_0: Ref)
   unfold acc(Positive_unique(v_ret_0), write)
 }
 
-method require(par_value: Ref) returns (ret_3: Ref)
+method require(par_value: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
   ensures true ==> boolFromRef(par_value)
 
 
@@ -137,6 +150,8 @@ predicate Serializable_unique(this: Ref) {
 method increment(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Positive())
   requires acc(Positive_unique(this), write)
+  requires (unfolding acc(Positive_unique(this), write) in
+      intFromRef(this.bf_value) < 2147483647)
   ensures acc(Positive_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -348,6 +363,7 @@ field bf_value: Ref
 
 function adjusted(par_value: Ref): Ref
   requires isSubtype(typeOf(par_value), intType())
+  requires intFromRef(par_value) < 2147483647
   ensures isSubtype(typeOf(result), intType())
 {
   plusInts(par_value, intToRef(1))
@@ -412,24 +428,33 @@ method con(start: Ref) returns (ret_1: Ref)
         (let anon_1_0 ==
           (this.bf_value) in
           boolFromRef(nonnegative(anon_1_0)))))))
-  ensures intFromRef(ret_1.bf_value) == intFromRef(adjusted(start))
+  ensures intFromRef(ret_1.bf_value) ==
+    intFromRef((intFromRef(start) < 2147483647 ? adjusted(start) : start))
 
 
 method createPositive(start: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(start), intType())
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon_2: Ref
   if (intFromRef(start) >= 0) {
+    anon_2 := ltInts(start, intToRef(2147483647))
+  } else {
+    anon_2 := boolToRef(false)}
+  if (boolFromRef(anon_2)) {
     var p: Ref
-    var anon_2: Ref
     var anon_3: Ref
+    var anon_4: Ref
     p := con(start)
     fold acc(Positive_unique(p), write)
     unfold acc(Positive_unique(p), write)
-    anon_2 := p.bf_value
-    assert intFromRef(anon_2) == intFromRef(start) + 1
     anon_3 := p.bf_value
-    assert intFromRef(anon_3) > 0
+    assert intFromRef(anon_3) ==
+      (let anon_builtin ==
+        (plusInts(start, intToRef(1))) in
+        intFromRef(start) + intFromRef(intToRef(1)))
+    anon_4 := p.bf_value
+    assert intFromRef(anon_4) > 0
     assert (let this ==
         (p) in
         true &&

@@ -188,6 +188,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
     }
 
     private fun obligationMessage(failure: Failure): String = when (val condition = failure.condition) {
+            is KotlinCondition.IntegerOverflow -> "Could not establish that ${condition.operation} produces a ${condition.resultType} value in [${condition.lower}, ${condition.upper}]."
+            is KotlinCondition.DivisionByZero -> "Could not establish a nonzero divisor for ${condition.operation}."
             is KotlinCondition.Proof -> proofMessage(condition)
             is PurityCondition -> when (condition.rule) {
                 PurityRule.FUNCTION_BODY -> "Impure function body detected in pure function"

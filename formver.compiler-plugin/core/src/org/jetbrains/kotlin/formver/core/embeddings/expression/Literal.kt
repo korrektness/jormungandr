@@ -31,6 +31,21 @@ data class IntLit(override val value: Int) : LiteralEmbedding {
     override val debugName = "Int"
 }
 
+data class LongLit(override val value: Long) : LiteralEmbedding {
+    override val type = buildType { long() }
+    override val debugName = "Long"
+}
+
+data class ShortLit(override val value: Short) : LiteralEmbedding {
+    override val type = buildType { short() }
+    override val debugName = "Short"
+}
+
+data class ByteLit(override val value: Byte) : LiteralEmbedding {
+    override val type = buildType { byte() }
+    override val debugName = "Byte"
+}
+
 data class BooleanLit(
     override val value: Boolean,
     override val sourceRole: SourceRole? = null

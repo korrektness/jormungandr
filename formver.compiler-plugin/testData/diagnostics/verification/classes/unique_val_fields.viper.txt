@@ -11,18 +11,28 @@ function inner(this: Ref): Ref
 method bumpBoth(o: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(o), Outer())
   requires acc(Outer_unique(o), write)
+  requires (unfolding acc(Outer_unique(o), write) in
+      (unfolding acc(Inner_unique(inner(o)), write) in
+        intFromRef(inner(o).x) < 2147483647)) &&
+    (unfolding acc(Outer_unique(o), write) in intFromRef(o.y) < 2147483647)
   ensures acc(Outer_unique(o), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Outer_unique(o), write) in
       (unfolding acc(Inner_unique(inner(o)), write) in
         intFromRef(inner(o).x) ==
-        old((unfolding acc(Outer_unique(o), write) in
-          (unfolding acc(Inner_unique(inner(o)), write) in
-            intFromRef(inner(o).x)))) +
-        1))
+        (let anon_builtin ==
+          (plusInts(old((unfolding acc(Outer_unique(o), write) in
+            (unfolding acc(Inner_unique(inner(o)), write) in inner(o).x))),
+          intToRef(1))) in
+          intFromRef(old((unfolding acc(Outer_unique(o), write) in
+            (unfolding acc(Inner_unique(inner(o)), write) in inner(o).x)))) +
+          intFromRef(intToRef(1)))))
   ensures (unfolding acc(Outer_unique(o), write) in
       intFromRef(o.y) ==
-      old((unfolding acc(Outer_unique(o), write) in intFromRef(o.y))) + 1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Outer_unique(o), write) in o.y)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Outer_unique(o), write) in o.y))) +
+        intFromRef(intToRef(1))))
 {
   var anon_0: Ref
   var anon_1: Ref
@@ -56,18 +66,28 @@ function size(this: Ref): Ref
 method bumpBoth(o: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(o), Outer())
   requires acc(Outer_unique(o), write)
+  requires (unfolding acc(Outer_unique(o), write) in
+      (unfolding acc(Inner_unique(inner(o)), write) in
+        intFromRef(inner(o).x) < 2147483647)) &&
+    (unfolding acc(Outer_unique(o), write) in intFromRef(o.y) < 2147483647)
   ensures acc(Outer_unique(o), write)
   ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(Outer_unique(o), write) in
       (unfolding acc(Inner_unique(inner(o)), write) in
         intFromRef(inner(o).x) ==
-        old((unfolding acc(Outer_unique(o), write) in
-          (unfolding acc(Inner_unique(inner(o)), write) in
-            intFromRef(inner(o).x)))) +
-        1))
+        (let anon_builtin ==
+          (plusInts(old((unfolding acc(Outer_unique(o), write) in
+            (unfolding acc(Inner_unique(inner(o)), write) in inner(o).x))),
+          intToRef(1))) in
+          intFromRef(old((unfolding acc(Outer_unique(o), write) in
+            (unfolding acc(Inner_unique(inner(o)), write) in inner(o).x)))) +
+          intFromRef(intToRef(1)))))
   ensures (unfolding acc(Outer_unique(o), write) in
       intFromRef(o.y) ==
-      old((unfolding acc(Outer_unique(o), write) in intFromRef(o.y))) + 1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Outer_unique(o), write) in o.y)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Outer_unique(o), write) in o.y))) +
+        intFromRef(intToRef(1))))
 
 
 method callBumpTwice(o: Ref) returns (v_ret_0: Ref)
@@ -110,16 +130,21 @@ field x: Ref
 method bump(i: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(i), Inner())
   requires acc(Inner_unique(i), write)
+  requires (unfolding acc(Inner_unique(i), write) in
+      intFromRef(i.x) < 2147483647)
   ensures acc(Inner_unique(i), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Inner_unique(i), write) in
       intFromRef(i.x) ==
-      old((unfolding acc(Inner_unique(i), write) in intFromRef(i.x))) + 1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Inner_unique(i), write) in i.x)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Inner_unique(i), write) in i.x))) +
+        intFromRef(intToRef(1))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Inner_unique(i), write)
-  anon := i.x
-  i.x := plusInts(anon, intToRef(1))
+  anon_0 := i.x
+  i.x := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(Inner_unique(i), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -165,11 +190,16 @@ method borrowThroughVal(o: Ref) returns (v_ret_0: Ref)
 method bump(i: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(i), Inner())
   requires acc(Inner_unique(i), write)
+  requires (unfolding acc(Inner_unique(i), write) in
+      intFromRef(i.x) < 2147483647)
   ensures acc(Inner_unique(i), write)
   ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(Inner_unique(i), write) in
       intFromRef(i.x) ==
-      old((unfolding acc(Inner_unique(i), write) in intFromRef(i.x))) + 1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Inner_unique(i), write) in i.x)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Inner_unique(i), write) in i.x))) +
+        intFromRef(intToRef(1))))
 
 
 /unique_val_fields.kt: info: Generated Viper text for moveOutThroughVal:
@@ -225,6 +255,7 @@ field count: Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function data(this: Ref): Ref
@@ -244,23 +275,28 @@ method push(b: Ref, par_v: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Buf_unique(b), write) in
       intFromRef(b.count) ==
-      old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count))) + 1)
+      (let anon_builtin_neg1 ==
+        (plusInts(old((unfolding acc(Buf_unique(b), write) in b.count)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Buf_unique(b), write) in b.count))) +
+        intFromRef(intToRef(1))))
   ensures (unfolding acc(Buf_unique(b), write) in
       (unfolding acc(IntArray_unique(data(b)), write) in
         data(b).contents[old((unfolding acc(Buf_unique(b), write) in
           intFromRef(b.count)))] ==
         intFromRef(par_v)))
-  ensures (forall anon_builtin: Int ::
-      { data(b).contents[anon_builtin] }
-      0 <= anon_builtin && anon_builtin < arraySize(data(b)) &&
-      !(anon_builtin ==
+  ensures (forall anon_builtin_0: Int ::
+      { data(b).contents[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < arraySize(data(b)) &&
+      !(anon_builtin_0 ==
       old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count)))) ==>
       (unfolding acc(Buf_unique(b), write) in
         (unfolding acc(IntArray_unique(data(b)), write) in
-          data(b).contents[anon_builtin] ==
+          data(b).contents[anon_builtin_0] ==
           old((unfolding acc(Buf_unique(b), write) in
             (unfolding acc(IntArray_unique(data(b)), write) in
-              data(b).contents[anon_builtin]))))))
+              data(b).contents[anon_builtin_0]))))))
 {
   var anon_0: Ref
   var anon_1: Ref
@@ -286,6 +322,7 @@ field count: Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function data(this: Ref): Ref
@@ -310,23 +347,28 @@ method push(b: Ref, par_v: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(Buf_unique(b), write) in
       intFromRef(b.count) ==
-      old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count))) + 1)
+      (let anon_builtin_neg1 ==
+        (plusInts(old((unfolding acc(Buf_unique(b), write) in b.count)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Buf_unique(b), write) in b.count))) +
+        intFromRef(intToRef(1))))
   ensures (unfolding acc(Buf_unique(b), write) in
       (unfolding acc(IntArray_unique(data(b)), write) in
         data(b).contents[old((unfolding acc(Buf_unique(b), write) in
           intFromRef(b.count)))] ==
         intFromRef(par_v)))
-  ensures (forall anon_builtin: Int ::
-      { data(b).contents[anon_builtin] }
-      0 <= anon_builtin && anon_builtin < arraySize(data(b)) &&
-      !(anon_builtin ==
+  ensures (forall anon_builtin_0: Int ::
+      { data(b).contents[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < arraySize(data(b)) &&
+      !(anon_builtin_0 ==
       old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count)))) ==>
       (unfolding acc(Buf_unique(b), write) in
         (unfolding acc(IntArray_unique(data(b)), write) in
-          data(b).contents[anon_builtin] ==
+          data(b).contents[anon_builtin_0] ==
           old((unfolding acc(Buf_unique(b), write) in
             (unfolding acc(IntArray_unique(data(b)), write) in
-              data(b).contents[anon_builtin]))))))
+              data(b).contents[anon_builtin_0]))))))
 
 
 method pushTwice(b: Ref) returns (v_ret_0: Ref)
@@ -415,6 +457,7 @@ field count: Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function data(this: Ref): Ref
@@ -468,9 +511,13 @@ function xOf(a: Ref): Ref
 method bumpThroughPure(a: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(a), A())
   requires acc(A_unique(a), write)
+  requires intFromRef(xOf(a)) < 2147483647
   ensures acc(A_unique(a), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures intFromRef(xOf(a)) == old(intFromRef(xOf(a))) + 1
+  ensures intFromRef(xOf(a)) ==
+    (let anon_builtin ==
+      (plusInts(old(xOf(a)), intToRef(1))) in
+      intFromRef(old(xOf(a))) + intFromRef(intToRef(1)))
 {
   var anon_3: Ref
   unfold acc(A_unique(a), write)
@@ -492,6 +539,7 @@ field count: Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function data(this: Ref): Ref
@@ -532,23 +580,28 @@ method push(b: Ref, par_v: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(Buf_unique(b), write) in
       intFromRef(b.count) ==
-      old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count))) + 1)
+      (let anon_builtin_neg1 ==
+        (plusInts(old((unfolding acc(Buf_unique(b), write) in b.count)), intToRef(1))) in
+        intFromRef(old((unfolding acc(Buf_unique(b), write) in b.count))) +
+        intFromRef(intToRef(1))))
   ensures (unfolding acc(Buf_unique(b), write) in
       (unfolding acc(IntArray_unique(data(b)), write) in
         data(b).contents[old((unfolding acc(Buf_unique(b), write) in
           intFromRef(b.count)))] ==
         intFromRef(par_v)))
-  ensures (forall anon_builtin: Int ::
-      { data(b).contents[anon_builtin] }
-      0 <= anon_builtin && anon_builtin < arraySize(data(b)) &&
-      !(anon_builtin ==
+  ensures (forall anon_builtin_0: Int ::
+      { data(b).contents[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < arraySize(data(b)) &&
+      !(anon_builtin_0 ==
       old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count)))) ==>
       (unfolding acc(Buf_unique(b), write) in
         (unfolding acc(IntArray_unique(data(b)), write) in
-          data(b).contents[anon_builtin] ==
+          data(b).contents[anon_builtin_0] ==
           old((unfolding acc(Buf_unique(b), write) in
             (unfolding acc(IntArray_unique(data(b)), write) in
-              data(b).contents[anon_builtin]))))))
+              data(b).contents[anon_builtin_0]))))))
 
 
 method pushThroughPure(b: Ref) returns (v_ret_0: Ref)

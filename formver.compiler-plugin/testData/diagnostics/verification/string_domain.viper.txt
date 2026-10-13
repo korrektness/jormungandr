@@ -1,0 +1,297 @@
+/string_domain.kt: info: Generated Viper text for concatPure:
+function concatPure(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  ensures isSubtype(typeOf(result), stringType())
+{
+  addStrings(a, b)
+}
+
+method plus(this: Ref, other: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret), stringType())
+
+
+/string_domain.kt: info: Generated Viper text for pureConcatUnrestricted:
+function concatPure(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  ensures isSubtype(typeOf(result), stringType())
+{
+  addStrings(a, b)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method plus(this: Ref, other: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+method pureConcatUnrestricted(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert |stringFromRef(concatPure(a, b))| >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/string_domain.kt: info: Generated Viper text for pureConcatExact:
+function concatPure(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  ensures isSubtype(typeOf(result), stringType())
+{
+  addStrings(a, b)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method plus(this: Ref, other: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), stringType())
+
+
+method pureConcatExact(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  requires |stringFromRef(a)| <= 100
+  requires |stringFromRef(b)| <= 100
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert |stringFromRef(concatPure(a, b))| ==
+    (let anon ==
+      (plusInts(stringLength(a), stringLength(b))) in
+      intFromRef(stringLength(a)) + intFromRef(stringLength(b)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/string_domain.kt: info: Generated Viper text for overlongPureResult:
+function concatPure(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  ensures isSubtype(typeOf(result), stringType())
+{
+  addStrings(a, b)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method overlongPureResult(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  requires |stringFromRef(a)| == 2147483647
+  requires |stringFromRef(b)| == 1
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert |stringFromRef(concatPure(a, b))| == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plus(this: Ref, other: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), stringType())
+
+
+/string_domain.kt: info: Generated Viper text for overlongExecutableExit:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method overlongExecutableExit(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  requires |stringFromRef(a)| == 2147483647
+  requires |stringFromRef(b)| == 1
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var joined: Ref
+  if (!(|stringFromRef(a)| + |stringFromRef(b)| <= 2147483647)) {
+    inhale false
+  }
+  joined := addStrings(a, b)
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plus(this: Ref, other: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), stringType())
+
+
+/string_domain.kt: info: Generated Viper text for stringValueBounds:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method stringValueBounds(s: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  requires intFromRef(i) < |stringFromRef(s)|
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert |stringFromRef(s)| <= 2147483647
+  assert (let anon ==
+      (stringGet(s, i)) in
+      stringFromRef(s)[intFromRef(i)]) >=
+    0
+  assert (let anon ==
+      (stringGet(s, i)) in
+      stringFromRef(s)[intFromRef(i)]) <=
+    65535
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/string_domain.kt: info: Generated Viper text for concatPreservesCharacterBound:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method concatPreservesCharacterBound(a: Ref, b: Ref, lower: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  requires isSubtype(typeOf(lower), charType())
+  requires |stringFromRef(a)| <= 100
+  requires |stringFromRef(b)| <= 100
+  requires (forall anon_builtin_0: Int ::
+      { stringFromRef(a)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(a)| ==>
+      charFromRef(lower) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(a, intToRef(anon_builtin_0))) in
+        stringFromRef(a)[anon_builtin_0]))
+  requires (forall anon_builtin_1: Int ::
+      { stringFromRef(b)[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 && anon_builtin_1 < |stringFromRef(b)| ==>
+      charFromRef(lower) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(b, intToRef(anon_builtin_1))) in
+        stringFromRef(b)[anon_builtin_1]))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var joined: Ref
+  if (!(|stringFromRef(a)| + |stringFromRef(b)| <= 2147483647)) {
+    inhale false
+  }
+  joined := addStrings(a, b)
+  assert |stringFromRef(joined)| ==
+    (let anon_builtin_neg1 ==
+      (plusInts(stringLength(a), stringLength(b))) in
+      intFromRef(stringLength(a)) + intFromRef(stringLength(b)))
+  assert (forall anon_builtin_2: Int ::
+      { stringFromRef(joined)[anon_builtin_2] }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 && anon_builtin_2 < |stringFromRef(joined)| ==>
+      charFromRef(lower) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(joined, intToRef(anon_builtin_2))) in
+        stringFromRef(joined)[anon_builtin_2]))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plus(this: Ref, other: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_4), stringType())
+
+
+/string_domain.kt: info: Generated Viper text for quantifiedStrings:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method quantifiedStrings() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (forall anon: Seq[Int] ::|anon| <= 2147483647 &&
+      (forall index: Int ::
+        { anon[index] }
+        index >= 0 && index < |anon| ==>
+        anon[index] >= 0 && anon[index] <= 65535) ==>
+      |anon| <= 2147483647)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/string_domain.kt: info: Generated Viper text for builderStringBounds:
+field contents: Seq[Int]
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method builderStringBounds(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), StringBuilder())
+  requires acc(StringBuilder_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  unfold acc(StringBuilder_unique(b), write)
+  anon_0 := intToRef(|b.contents|)
+  assert intFromRef(anon_0) <= 2147483647
+  anon_1 := stringToRef(b.contents)
+  anon_2 := intToRef(|b.contents|)
+  assert |stringFromRef(anon_1)| == intFromRef(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/string_domain.kt: info: Generated Viper text for overlongBuilderAppend:
+field contents: Seq[Int]
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method overlongBuilderAppend(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), StringBuilder())
+  requires acc(StringBuilder_unique(b), write)
+  requires (unfolding acc(StringBuilder_unique(b), write) in
+      |b.contents| == 2147483647)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(StringBuilder_unique(b), write)
+  if (!(|b.contents ++ Seq(97)| <= 2147483647)) {
+    inhale false
+  }
+  b.contents := b.contents ++ Seq(97)
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

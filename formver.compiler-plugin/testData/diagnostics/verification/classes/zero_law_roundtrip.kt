@@ -7,6 +7,7 @@ interface ZeroLawBase {
 
     @SpecOf("advance") @Unique @Borrowed
     fun advanceSpec() {
+        preconditions { observe() < 2147483647 }
         postconditions<Unit> { observe() == old(observe()) + 1 }
     }
 
@@ -26,11 +27,13 @@ class ZeroLawCell(var value: Int) : ZeroLawDiamond {
 }
 
 fun <!VIPER_TEXT!>advanceDiamond<!>(view: @Unique @Borrowed ZeroLawDiamond) {
+    preconditions { view.observe() < 2147483647 }
     postconditions<Unit> { view.observe() == old(view.observe()) + 1 }
     view.advance()
 }
 
 fun <!VIPER_TEXT!>borrowedZeroLaws<!>(cell: @Unique @Borrowed ZeroLawCell) {
+    preconditions { cell.value <= 2147483645 }
     val before = cell.value
     advanceDiamond(cell)
     verify(cell.value == before + 1)
@@ -40,6 +43,7 @@ fun <!VIPER_TEXT!>borrowedZeroLaws<!>(cell: @Unique @Borrowed ZeroLawCell) {
 }
 
 fun <!VIPER_TEXT!>permanentZeroLaws<!>(cell: @Unique ZeroLawCell) {
+    preconditions { cell.value < 2147483647 }
     val before = cell.value
     val diamond: @Unique ZeroLawDiamond = cell
     val base: @Unique ZeroLawBase = diamond

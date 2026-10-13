@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.properties.CustomSetter
 import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.fir.types.isChar
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
@@ -56,6 +57,9 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
 import org.jetbrains.kotlin.formver.core.functionCallArguments
 import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isIntArrayElementAccess
+import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.types.ConstantValueKind
 import org.jetbrains.kotlin.util.OperatorNameConventions
@@ -113,6 +117,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data: StmtConversionContext,
     ): ExpEmbedding = when (literalExpression.kind) {
         ConstantValueKind.Int -> IntLit((literalExpression.value as Long).toInt())
+        ConstantValueKind.Long -> LongLit(literalExpression.value as Long)
+        ConstantValueKind.Short -> ShortLit((literalExpression.value as Long).toShort())
+        ConstantValueKind.Byte -> ByteLit((literalExpression.value as Long).toByte())
         ConstantValueKind.Boolean -> BooleanLit(literalExpression.value as Boolean)
         ConstantValueKind.Char -> CharLit(literalExpression.value as Char)
         ConstantValueKind.String -> StringLit(literalExpression.value as String)
@@ -213,6 +220,15 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (propertyId?.packageName?.asString() == "org.jetbrains.kotlin.formver.plugin" &&
             propertyId.className?.asString() == "IterationSequence" && propertyId.callableName.asString() == "size") {
             return OperatorExpEmbeddings.IterationSequenceSize(data.convert(propertyAccessExpression.dispatchReceiver!!))
+        }
+        val extensionReceiver = propertyAccessExpression.extensionReceiver
+        if (extensionReceiver != null && extensionReceiver.resolvedType.isChar &&
+            propertyId == CallableId(FqName("kotlin"), Name.identifier("code"))
+        ) {
+            val receiver = data.convert(extensionReceiver)
+            return IntegerOperators.unary.getValue(
+                IntegerOperators.Unary(IntegerKind.Char, "<get-code>", IntegerKind.Int)
+            )(receiver)
         }
         propertyAccessExpression.stringBuilderIntrinsic(data.session)?.let {
             return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)

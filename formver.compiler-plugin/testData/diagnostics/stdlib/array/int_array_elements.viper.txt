@@ -3,6 +3,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method swap(arr: Ref, i: Ref, j: Ref) returns (v_ret_0: Ref)
@@ -50,6 +51,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method addTwo(arr: Ref, i: Ref) returns (v_ret_0: Ref)
@@ -57,13 +59,18 @@ method addTwo(arr: Ref, i: Ref) returns (v_ret_0: Ref)
   requires acc(IntArray_unique(arr), write)
   requires isSubtype(typeOf(i), intType())
   requires 0 <= intFromRef(i) && intFromRef(i) < arraySize(arr)
+  requires (unfolding acc(IntArray_unique(arr), write) in
+      arr.contents[intFromRef(i)] <= 2147483645)
   ensures acc(IntArray_unique(arr), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(IntArray_unique(arr), write) in
       arr.contents[intFromRef(i)] ==
-      old((unfolding acc(IntArray_unique(arr), write) in
-        arr.contents[intFromRef(i)])) +
-      2)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(IntArray_unique(arr), write) in
+          intToRef(arr.contents[intFromRef(i)]))), intToRef(2))) in
+        intFromRef(old((unfolding acc(IntArray_unique(arr), write) in
+          intToRef(arr.contents[intFromRef(i)])))) +
+        intFromRef(intToRef(2))))
 {
   var anon_0: Ref
   var anon_3: Ref
@@ -78,7 +85,9 @@ method addTwo(arr: Ref, i: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_0) >= 0
   assert intFromRef(anon_0) < arraySize(arr)
   arr.contents := arr.contents[intFromRef(anon_0) :=
-    intFromRef(anon_3) + 1]
+    (let anon_builtin ==
+      (plusInts(anon_3, intToRef(1))) in
+      intFromRef(anon_3) + intFromRef(intToRef(1)))]
   anon_1 := i
   assert intFromRef(anon_1) >= 0
   assert intFromRef(anon_1) < arraySize(arr)
@@ -87,7 +96,9 @@ method addTwo(arr: Ref, i: Ref) returns (v_ret_0: Ref)
   assert intFromRef(anon_1) >= 0
   assert intFromRef(anon_1) < arraySize(arr)
   arr.contents := arr.contents[intFromRef(anon_1) :=
-    intFromRef(anon_2) + 1]
+    (let anon_builtin ==
+      (plusInts(anon_2, intToRef(1))) in
+      intFromRef(anon_2) + intFromRef(intToRef(1)))]
   label lbl_ret_0
   fold acc(IntArray_unique(arr), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -98,6 +109,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -107,8 +119,10 @@ method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
   ensures acc(IntArray_unique(arr), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-        anon_builtin_0 < arraySize(arr) ==>
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        0 <= anon_builtin_0 && anon_builtin_0 < arraySize(arr) ==>
         arr.contents[anon_builtin_0] == intFromRef(par_v)))
 {
   var i: Ref
@@ -121,8 +135,10 @@ method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(par_v), intType())
     invariant 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
     invariant (unfolding acc(IntArray_unique(arr), write) in
-        (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-          anon_builtin_1 < intFromRef(i) ==>
+        (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+          anon_builtin_1 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+          0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
           arr.contents[anon_builtin_1] == intFromRef(par_v)))
   anon_1 := ltInts(i, intToRef(arraySize(arr)))
   if (boolFromRef(anon_1)) {
@@ -142,8 +158,10 @@ method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(par_v), intType())
   assert 0 <= intFromRef(i) && intFromRef(i) <= arraySize(arr)
   assert (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 < intFromRef(i) ==>
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
         arr.contents[anon_builtin_1] == intFromRef(par_v)))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -154,6 +172,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method boundedByIndexOr(arr: Ref, n: Ref) returns (v_ret_0: Ref)
@@ -161,15 +180,19 @@ method boundedByIndexOr(arr: Ref, n: Ref) returns (v_ret_0: Ref)
   requires acc(IntArray_unique(arr), write)
   requires isSubtype(typeOf(n), intType())
   requires (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-        anon_builtin_0 < arraySize(arr) ==>
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        0 <= anon_builtin_0 && anon_builtin_0 < arraySize(arr) ==>
         arr.contents[anon_builtin_0] <= anon_builtin_0 ||
         arr.contents[anon_builtin_0] <= intFromRef(n)))
   ensures acc(IntArray_unique(arr), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 < arraySize(arr) ==>
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < arraySize(arr) ==>
         arr.contents[anon_builtin_1] <= anon_builtin_1 ||
         arr.contents[anon_builtin_1] <= intFromRef(n)))
 {
@@ -182,6 +205,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method readPastEnd(arr: Ref) returns (v_ret_0: Ref)
@@ -206,6 +230,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method writeNegative(arr: Ref) returns (v_ret_0: Ref)
@@ -228,6 +253,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method writeShared(arr: Ref) returns (v_ret_0: Ref)

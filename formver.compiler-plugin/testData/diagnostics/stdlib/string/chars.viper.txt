@@ -29,9 +29,15 @@ method testChars(c: Ref) returns (v_ret_0: Ref)
   cond1 := boolToRef(charFromRef(charA) == charFromRef(g_char(box)))
   assert boolFromRef(cond1)
   charZ := charToRef(122)
-  assert charFromRef(charA) == charFromRef(charZ) - 25
+  assert charFromRef(charA) ==
+    (let anon ==
+      (subCharInt(charZ, intToRef(25))) in
+      charFromRef(charZ) - intFromRef(intToRef(25)))
   assert charFromRef(charA) - charFromRef(charZ) == -25
-  assert charFromRef(charZ) == charFromRef(charA) + 25
+  assert charFromRef(charZ) ==
+    (let anon ==
+      (addCharInt(charA, intToRef(25))) in
+      charFromRef(charA) + intFromRef(intToRef(25)))
   assert charFromRef(charA) <= charFromRef(charZ)
   assert charFromRef(charA) < charFromRef(charZ)
   assert charFromRef(charZ) > charFromRef(charA)

@@ -5,16 +5,21 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 import org.jetbrains.kotlin.formver.plugin.verify
+import org.jetbrains.kotlin.formver.plugin.preconditions
 
 @NeverConvert
 @Suppress("NOTHING_TO_INLINE")
 inline fun double(x: Int): Int {
+    preconditions { -1073741824 <= x && x <= 1073741823 }
     val y = x + x
     return y
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun <!VIPER_TEXT!>quadruple<!>(x: Int) = double(x) + double(x)
+inline fun <!VIPER_TEXT!>quadruple<!>(x: Int): Int {
+    preconditions { -536870912 <= x && x <= 536870911 }
+    return double(x) + double(x)
+}
 
 @NeverConvert
 @Suppress("NOTHING_TO_INLINE")

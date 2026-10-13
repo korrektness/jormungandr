@@ -8,6 +8,7 @@ class Counter(var x: Int)
 }
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>bump<!>(c: @Unique @Borrowed Counter) {
+    preconditions { c.x < 2147483647 }
     c.x = c.x + 1
 }
 
@@ -29,6 +30,7 @@ class Counter(var x: Int)
 }
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>bumpFirst<!>(a: @Unique @Borrowed IntArray) {
+    preconditions { a.size < 1 || a[0] < 2147483647 }
     if (a.size < 1) return
     a[0] += 1
 }

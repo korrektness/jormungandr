@@ -6,6 +6,7 @@ class Inner(var x: Int)
 class Outer(val inner: @Unique Inner, var y: Int)
 
 fun <!VIPER_TEXT!>bumpBoth<!>(o: @Unique @Borrowed Outer) {
+    preconditions { o.inner.x < 2147483647 && o.y < 2147483647 }
     postconditions<Unit> {
         o.inner.x == old(o.inner.x) + 1
         o.y == old(o.y) + 1
@@ -22,6 +23,7 @@ fun <!VIPER_TEXT!>callBumpTwice<!>(o: @Unique @Borrowed Outer) {
 }
 
 fun <!VIPER_TEXT!>bump<!>(i: @Unique @Borrowed Inner) {
+    preconditions { i.x < 2147483647 }
     postconditions<Unit> { i.x == old(i.x) + 1 }
     i.x = i.x + 1
 }
@@ -77,6 +79,7 @@ fun <!VIPER_TEXT!>innerXOf<!>(o: @Unique Outer): Int = o.inner.x
 fun <!VIPER_TEXT!>firstOrZero<!>(b: @Unique Buf): Int = if (b.data.size > 0) b.data[0] else 0
 
 fun <!VIPER_TEXT!>bumpThroughPure<!>(a: @Unique @Borrowed A) {
+    preconditions { xOf(a) < 2147483647 }
     postconditions<Unit> { xOf(a) == old(xOf(a)) + 1 }
     a.b.c.x = a.b.c.x + 1
 }

@@ -3,9 +3,13 @@ method scaled(n: Ref, k: Ref, f: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
   requires isSubtype(typeOf(k), intType())
   requires isSubtype(typeOf(f), functionType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000 &&
+    -1000 <= intFromRef(k) &&
+    intFromRef(k) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   var anon: Ref
+  assert timesInts(n, k) == timesInts(n, k)
   inhale isSubtype(typeOf(anon), intType())
   v_ret_0 := anon
   goto lbl_ret_0
@@ -16,8 +20,14 @@ method scaled(n: Ref, k: Ref, f: Ref) returns (v_ret_0: Ref)
 method offset(n: Ref, by: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
   requires isSubtype(typeOf(by), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000 &&
+    -1000 <= intFromRef(by) &&
+    intFromRef(by) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(n) + intFromRef(by)
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (plusInts(n, by)) in
+      intFromRef(n) + intFromRef(by))
 {
   v_ret_0 := plusInts(n, by)
   goto lbl_ret_0
@@ -28,8 +38,14 @@ method offset(n: Ref, by: Ref) returns (v_ret_0: Ref)
 method difference(a: Ref, b: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(a), intType())
   requires isSubtype(typeOf(b), intType())
+  requires -1000 <= intFromRef(a) && intFromRef(a) <= 1000 &&
+    -1000 <= intFromRef(b) &&
+    intFromRef(b) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(a) - intFromRef(b)
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (minusInts(a, b)) in
+      intFromRef(a) - intFromRef(b))
 {
   v_ret_0 := minusInts(a, b)
   goto lbl_ret_0
@@ -39,81 +55,105 @@ method difference(a: Ref, b: Ref) returns (v_ret_0: Ref)
 /default_arguments.kt: info: Generated Viper text for inlineCallWithDefault:
 method inlineCallWithDefault(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(n) * 2 + 1
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (plusInts(timesInts(n, intToRef(2)), intToRef(1))) in
+      intFromRef(timesInts(n, intToRef(2))) + intFromRef(intToRef(1)))
 {
   var anon_0: Ref
-  var v_ret_4: Ref
   var v_ret_5: Ref
+  var v_ret_7: Ref
   var anon_1: Ref
   anon_0 := intToRef(2)
   anon_1 := timesInts(n, anon_0)
-  v_ret_5 := plusInts(anon_1, intToRef(1))
+  v_ret_7 := plusInts(anon_1, intToRef(1))
+  goto lbl_ret_7
+  label lbl_ret_7
+  v_ret_5 := v_ret_7
   goto lbl_ret_5
   label lbl_ret_5
-  v_ret_4 := v_ret_5
-  goto lbl_ret_4
-  label lbl_ret_4
-  v_ret_0 := v_ret_4
+  v_ret_0 := v_ret_5
   goto lbl_ret_0
   label lbl_ret_0
 }
 
-method scaled(n: Ref, k: Ref, f: Ref) returns (ret_2: Ref)
+method scaled(n: Ref, k: Ref, f: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(n), intType())
   requires isSubtype(typeOf(k), intType())
   requires isSubtype(typeOf(f), functionType())
-  ensures isSubtype(typeOf(ret_2), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000 &&
+    -1000 <= intFromRef(k) &&
+    intFromRef(k) <= 1000
+  ensures isSubtype(typeOf(ret_3), intType())
 
 
 /default_arguments.kt: info: Generated Viper text for inlineCallWithExplicitArgument:
 method inlineCallWithExplicitArgument(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(n) * 3 + 1
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (plusInts(timesInts(n, intToRef(3)), intToRef(1))) in
+      intFromRef(timesInts(n, intToRef(3))) + intFromRef(intToRef(1)))
 {
-  var v_ret_4: Ref
-  var anon_0: Ref
   var v_ret_5: Ref
+  var anon_0: Ref
+  var v_ret_7: Ref
   var anon_1: Ref
   anon_0 := intToRef(3)
   anon_1 := timesInts(n, anon_0)
-  v_ret_5 := plusInts(anon_1, intToRef(1))
+  v_ret_7 := plusInts(anon_1, intToRef(1))
+  goto lbl_ret_7
+  label lbl_ret_7
+  v_ret_5 := v_ret_7
   goto lbl_ret_5
   label lbl_ret_5
-  v_ret_4 := v_ret_5
-  goto lbl_ret_4
-  label lbl_ret_4
-  v_ret_0 := v_ret_4
+  v_ret_0 := v_ret_5
   goto lbl_ret_0
   label lbl_ret_0
 }
 
-method scaled(n: Ref, k: Ref, f: Ref) returns (ret_2: Ref)
+method scaled(n: Ref, k: Ref, f: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(n), intType())
   requires isSubtype(typeOf(k), intType())
   requires isSubtype(typeOf(f), functionType())
-  ensures isSubtype(typeOf(ret_2), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000 &&
+    -1000 <= intFromRef(k) &&
+    intFromRef(k) <= 1000
+  ensures isSubtype(typeOf(ret_3), intType())
 
 
 /default_arguments.kt: info: Generated Viper text for callWithDefault:
 method callWithDefault(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(n) + 1
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 {
-  var anon: Ref
-  anon := intToRef(1)
-  v_ret_0 := offset(n, anon)
+  var anon_0: Ref
+  anon_0 := intToRef(1)
+  v_ret_0 := offset(n, anon_0)
   goto lbl_ret_0
   label lbl_ret_0
 }
 
-method offset(n: Ref, by: Ref) returns (ret_2: Ref)
+method offset(n: Ref, by: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(n), intType())
   requires isSubtype(typeOf(by), intType())
-  ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(ret_2) == intFromRef(n) + intFromRef(by)
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000 &&
+    -1000 <= intFromRef(by) &&
+    intFromRef(by) <= 1000
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) ==
+    (let anon_builtin ==
+      (plusInts(n, by)) in
+      intFromRef(n) + intFromRef(by))
 
 
 /default_arguments.kt: info: Generated Viper text for callWithNamedArgumentsReordered:
@@ -121,24 +161,37 @@ method callWithNamedArgumentsReordered(a: Ref, b: Ref)
   returns (v_ret_0: Ref)
   requires isSubtype(typeOf(a), intType())
   requires isSubtype(typeOf(b), intType())
+  requires -1000 <= intFromRef(a) && intFromRef(a) <= 1000 &&
+    -1000 <= intFromRef(b) &&
+    intFromRef(b) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(a) - intFromRef(b)
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (minusInts(a, b)) in
+      intFromRef(a) - intFromRef(b))
 {
   v_ret_0 := difference(a, b)
   goto lbl_ret_0
   label lbl_ret_0
 }
 
-method difference(a: Ref, b: Ref) returns (ret_2: Ref)
+method difference(a: Ref, b: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(a), intType())
   requires isSubtype(typeOf(b), intType())
-  ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(ret_2) == intFromRef(a) - intFromRef(b)
+  requires -1000 <= intFromRef(a) && intFromRef(a) <= 1000 &&
+    -1000 <= intFromRef(b) &&
+    intFromRef(b) <= 1000
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) ==
+    (let anon ==
+      (minusInts(a, b)) in
+      intFromRef(a) - intFromRef(b))
 
 
 /default_arguments.kt: info: Generated Viper text for inlineCallWithDefaultInSpecification:
 method inlineCallWithDefaultInSpecification(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) ==
     intFromRef((let anon_0 ==
@@ -156,35 +209,45 @@ method scaled(n: Ref, k: Ref, f: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(n), intType())
   requires isSubtype(typeOf(k), intType())
   requires isSubtype(typeOf(f), functionType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000 &&
+    -1000 <= intFromRef(k) &&
+    intFromRef(k) <= 1000
   ensures isSubtype(typeOf(ret_1), intType())
 
 
 /default_arguments.kt: info: Generated Viper text for wrongInlineCallWithDefault:
-method scaled(n: Ref, k: Ref, f: Ref) returns (ret_2: Ref)
+method scaled(n: Ref, k: Ref, f: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(n), intType())
   requires isSubtype(typeOf(k), intType())
   requires isSubtype(typeOf(f), functionType())
-  ensures isSubtype(typeOf(ret_2), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000 &&
+    -1000 <= intFromRef(k) &&
+    intFromRef(k) <= 1000
+  ensures isSubtype(typeOf(ret_3), intType())
 
 
 method wrongInlineCallWithDefault(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(n) * 3 + 1
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (plusInts(timesInts(n, intToRef(3)), intToRef(1))) in
+      intFromRef(timesInts(n, intToRef(3))) + intFromRef(intToRef(1)))
 {
   var anon_0: Ref
-  var v_ret_4: Ref
   var v_ret_5: Ref
+  var v_ret_7: Ref
   var anon_1: Ref
   anon_0 := intToRef(2)
   anon_1 := timesInts(n, anon_0)
-  v_ret_5 := plusInts(anon_1, intToRef(1))
+  v_ret_7 := plusInts(anon_1, intToRef(1))
+  goto lbl_ret_7
+  label lbl_ret_7
+  v_ret_5 := v_ret_7
   goto lbl_ret_5
   label lbl_ret_5
-  v_ret_4 := v_ret_5
-  goto lbl_ret_4
-  label lbl_ret_4
-  v_ret_0 := v_ret_4
+  v_ret_0 := v_ret_5
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -193,8 +256,14 @@ method wrongInlineCallWithDefault(n: Ref) returns (v_ret_0: Ref)
 method span(lo: Ref, hi: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(lo), intType())
   requires isSubtype(typeOf(hi), intType())
+  requires -1000 <= intFromRef(lo) && intFromRef(lo) <= 1000 &&
+    -2000 <= intFromRef(hi) &&
+    intFromRef(hi) <= 2000
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(hi) - intFromRef(lo)
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (minusInts(hi, lo)) in
+      intFromRef(hi) - intFromRef(lo))
 {
   v_ret_0 := minusInts(hi, lo)
   goto lbl_ret_0
@@ -206,9 +275,13 @@ method doubled(this: Ref, k: Ref, f: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), intType())
   requires isSubtype(typeOf(k), intType())
   requires isSubtype(typeOf(f), functionType())
+  requires -1000 <= intFromRef(this) && intFromRef(this) <= 1000 &&
+    -1000 <= intFromRef(k) &&
+    intFromRef(k) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   var anon: Ref
+  assert plusInts(this, k) == plusInts(this, k)
   inhale isSubtype(typeOf(anon), intType())
   v_ret_0 := anon
   goto lbl_ret_0
@@ -218,6 +291,7 @@ method doubled(this: Ref, k: Ref, f: Ref) returns (v_ret_0: Ref)
 /default_arguments.kt: info: Generated Viper text for defaultReadsEarlierParameter:
 method defaultReadsEarlierParameter(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == intFromRef(n)
 {
@@ -230,39 +304,52 @@ method defaultReadsEarlierParameter(n: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-method span(lo: Ref, hi: Ref) returns (ret_2: Ref)
+method span(lo: Ref, hi: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(lo), intType())
   requires isSubtype(typeOf(hi), intType())
-  ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(ret_2) == intFromRef(hi) - intFromRef(lo)
+  requires -1000 <= intFromRef(lo) && intFromRef(lo) <= 1000 &&
+    -2000 <= intFromRef(hi) &&
+    intFromRef(hi) <= 2000
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) ==
+    (let anon_builtin ==
+      (minusInts(hi, lo)) in
+      intFromRef(hi) - intFromRef(lo))
 
 
 /default_arguments.kt: info: Generated Viper text for defaultReadsReceiver:
 method defaultReadsReceiver(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
+  requires -1000 <= intFromRef(n) && intFromRef(n) <= 1000
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(n) * 2
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (timesInts(n, intToRef(2))) in
+      intFromRef(n) * intFromRef(intToRef(2)))
 {
-  var v_ret_4: Ref
   var v_ret_5: Ref
-  var anon: Ref
-  anon := plusInts(n, n)
-  v_ret_5 := anon
+  var v_ret_7: Ref
+  var anon_0: Ref
+  anon_0 := plusInts(n, n)
+  v_ret_7 := anon_0
+  goto lbl_ret_7
+  label lbl_ret_7
+  v_ret_5 := v_ret_7
   goto lbl_ret_5
   label lbl_ret_5
-  v_ret_4 := v_ret_5
-  goto lbl_ret_4
-  label lbl_ret_4
-  v_ret_0 := v_ret_4
+  v_ret_0 := v_ret_5
   goto lbl_ret_0
   label lbl_ret_0
 }
 
-method doubled(this: Ref, k: Ref, f: Ref) returns (ret_2: Ref)
+method doubled(this: Ref, k: Ref, f: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), intType())
   requires isSubtype(typeOf(k), intType())
   requires isSubtype(typeOf(f), functionType())
-  ensures isSubtype(typeOf(ret_2), intType())
+  requires -1000 <= intFromRef(this) && intFromRef(this) <= 1000 &&
+    -1000 <= intFromRef(k) &&
+    intFromRef(k) <= 1000
+  ensures isSubtype(typeOf(ret_3), intType())
 
 
 /default_arguments.kt: info: Generated Viper text for withCounter:
@@ -290,9 +377,13 @@ method counterPlus(c: Ref, k: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
   requires isSubtype(typeOf(k), intType())
+  requires intFromRef(k) < 2147483647
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(k) + 1
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (plusInts(k, intToRef(1))) in
+      intFromRef(k) + intFromRef(intToRef(1)))
 {
   v_ret_0 := plusInts(k, intToRef(1))
   goto lbl_ret_0
@@ -342,9 +433,13 @@ method counterPlus(c: Ref, k: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(c), Counter())
   requires acc(Counter_unique(c), write)
   requires isSubtype(typeOf(k), intType())
+  requires intFromRef(k) < 2147483647
   ensures acc(Counter_unique(c), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(ret_2) == intFromRef(k) + 1
+  ensures intFromRef(ret_2) ==
+    (let anon_builtin ==
+      (plusInts(k, intToRef(1))) in
+      intFromRef(k) + intFromRef(intToRef(1)))
 
 
 method defaultReadsUniqueField(c: Ref) returns (v_ret_0: Ref)
@@ -353,12 +448,12 @@ method defaultReadsUniqueField(c: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 5
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Counter_unique(c), write)
   c.x := intToRef(4)
-  anon := c.x
+  anon_0 := c.x
   fold acc(Counter_unique(c), write)
-  v_ret_0 := counterPlus(c, anon)
+  v_ret_0 := counterPlus(c, anon_0)
   goto lbl_ret_0
   label lbl_ret_0
 }

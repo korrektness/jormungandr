@@ -3,6 +3,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -12,8 +13,10 @@ method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
   ensures acc(IntArray_unique(arr), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-        anon_builtin_0 < arraySize(arr) ==>
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        0 <= anon_builtin_0 && anon_builtin_0 < arraySize(arr) ==>
         arr.contents[anon_builtin_0] == intFromRef(par_v)))
 {
   var anon_0: Ref
@@ -29,8 +32,10 @@ method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
     invariant 0 <= intFromRef(i) &&
       (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
     invariant (unfolding acc(IntArray_unique(arr), write) in
-        (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-          anon_builtin_1 < intFromRef(i) ==>
+        (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+          anon_builtin_1 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+          0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
           arr.contents[anon_builtin_1] == intFromRef(par_v)))
   anon_1 := ltInts(i, anon_0)
   if (boolFromRef(anon_1)) {
@@ -50,8 +55,10 @@ method fill(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
   assert 0 <= intFromRef(i) &&
     (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
   assert (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 < intFromRef(i) ==>
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
         arr.contents[anon_builtin_1] == intFromRef(par_v)))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -62,13 +69,17 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method sum(arr: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(arr), IntArray())
   requires acc(IntArray_unique(arr), write)
-  requires (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-      anon_builtin_0 < arraySize(arr) ==>
+  requires arraySize(arr) <= 214748364
+  requires (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < arraySize(arr) ==>
       (unfolding acc(IntArray_unique(arr), write) in
         0 <= arr.contents[anon_builtin_0]) &&
       (unfolding acc(IntArray_unique(arr), write) in
@@ -76,7 +87,10 @@ method sum(arr: Ref) returns (v_ret_0: Ref)
   ensures acc(IntArray_unique(arr), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures 0 <= intFromRef(v_ret_0) &&
-    intFromRef(v_ret_0) <= 10 * arraySize(arr)
+    intFromRef(v_ret_0) <=
+    (let anon_builtin_neg1 ==
+      (timesInts(intToRef(10), intToRef(arraySize(arr)))) in
+      intFromRef(intToRef(10)) * intFromRef(intToRef(arraySize(arr))))
 {
   var total: Ref
   var anon_0: Ref
@@ -92,14 +106,20 @@ method sum(arr: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(arr), IntArray())
     invariant 0 <= intFromRef(i) &&
       (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
-    invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 < arraySize(arr) ==>
+    invariant arraySize(arr) <= 214748364
+    invariant (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < arraySize(arr) ==>
         (unfolding acc(IntArray_unique(arr), write) in
           0 <= arr.contents[anon_builtin_1]) &&
         (unfolding acc(IntArray_unique(arr), write) in
           arr.contents[anon_builtin_1] <= 10))
     invariant 0 <= intFromRef(total) &&
-      intFromRef(total) <= 10 * intFromRef(i)
+      intFromRef(total) <=
+      (let anon_builtin_neg1 ==
+        (timesInts(intToRef(10), i)) in
+        intFromRef(intToRef(10)) * intFromRef(i))
   anon_1 := ltInts(i, anon_0)
   if (boolFromRef(anon_1)) {
     var anon_2: Ref
@@ -119,13 +139,20 @@ method sum(arr: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(arr), IntArray())
   assert 0 <= intFromRef(i) &&
     (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
-  assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-      anon_builtin_1 < arraySize(arr) ==>
+  assert arraySize(arr) <= 214748364
+  assert (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 && anon_builtin_1 < arraySize(arr) ==>
       (unfolding acc(IntArray_unique(arr), write) in
         0 <= arr.contents[anon_builtin_1]) &&
       (unfolding acc(IntArray_unique(arr), write) in
         arr.contents[anon_builtin_1] <= 10))
-  assert 0 <= intFromRef(total) && intFromRef(total) <= 10 * intFromRef(i)
+  assert 0 <= intFromRef(total) &&
+    intFromRef(total) <=
+    (let anon_builtin_neg1 ==
+      (timesInts(intToRef(10), i)) in
+      intFromRef(intToRef(10)) * intFromRef(i))
   v_ret_0 := total
   goto lbl_ret_0
   label lbl_ret_0
@@ -134,9 +161,12 @@ method sum(arr: Ref) returns (v_ret_0: Ref)
 /for_ranges.kt: info: Generated Viper text for countInclusive:
 method countInclusive(n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(n), intType())
-  requires intFromRef(n) >= 0
+  requires 0 <= intFromRef(n) && intFromRef(n) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(n) + 1
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 {
   var m: Ref
   var count: Ref
@@ -153,8 +183,16 @@ method countInclusive(n: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(count), intType())
     invariant isSubtype(typeOf(n), intType())
     invariant 0 <= intFromRef(i) &&
-      (intFromRef(i) <= intFromRef(anon_0) + 1 || intFromRef(i) == 0)
-    invariant intFromRef(count) == intFromRef(i)
+      (intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(anon_0, intToRef(1))) in
+        intFromRef(anon_0) + intFromRef(intToRef(1))) ||
+      intFromRef(i) == 0)
+    invariant intFromRef(count) == intFromRef(i) &&
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(n, intToRef(1))) in
+        intFromRef(n) + intFromRef(intToRef(1)))
   anon_2 := leInts(i, anon_0)
   if (boolFromRef(anon_2)) {
     var anon_1: Ref
@@ -171,8 +209,16 @@ method countInclusive(n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(count), intType())
   assert isSubtype(typeOf(n), intType())
   assert 0 <= intFromRef(i) &&
-    (intFromRef(i) <= intFromRef(anon_0) + 1 || intFromRef(i) == 0)
-  assert intFromRef(count) == intFromRef(i)
+    (intFromRef(i) <=
+    (let anon_builtin ==
+      (plusInts(anon_0, intToRef(1))) in
+      intFromRef(anon_0) + intFromRef(intToRef(1))) ||
+    intFromRef(i) == 0)
+  assert intFromRef(count) == intFromRef(i) &&
+    intFromRef(i) <=
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
   v_ret_0 := count
   goto lbl_ret_0
   label lbl_ret_0
@@ -183,6 +229,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method clearBackwards(arr: Ref) returns (v_ret_0: Ref)
@@ -191,8 +238,10 @@ method clearBackwards(arr: Ref) returns (v_ret_0: Ref)
   ensures acc(IntArray_unique(arr), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-        anon_builtin_0 < arraySize(arr) ==>
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        0 <= anon_builtin_0 && anon_builtin_0 < arraySize(arr) ==>
         arr.contents[anon_builtin_0] == 0))
 {
   var anon_0: Ref
@@ -205,10 +254,16 @@ method clearBackwards(arr: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(arr), IntArray())
     invariant intFromRef(i) <= intFromRef(anon_0) &&
-      (intFromRef(i) >= 0 - 1 || intFromRef(i) == intFromRef(anon_0))
+      (intFromRef(i) >=
+      (let anon_builtin_neg1 ==
+        (minusInts(intToRef(0), intToRef(1))) in
+        intFromRef(intToRef(0)) - intFromRef(intToRef(1))) ||
+      intFromRef(i) == intFromRef(anon_0))
     invariant (unfolding acc(IntArray_unique(arr), write) in
-        (forall anon_builtin_1: Int ::intFromRef(i) < anon_builtin_1 &&
-          anon_builtin_1 < arraySize(arr) ==>
+        (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+          anon_builtin_1 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+          intFromRef(i) < anon_builtin_1 && anon_builtin_1 < arraySize(arr) ==>
           arr.contents[anon_builtin_1] == 0))
   anon_1 := geInts(i, intToRef(0))
   if (boolFromRef(anon_1)) {
@@ -225,10 +280,16 @@ method clearBackwards(arr: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(arr), IntArray())
   assert intFromRef(i) <= intFromRef(anon_0) &&
-    (intFromRef(i) >= 0 - 1 || intFromRef(i) == intFromRef(anon_0))
+    (intFromRef(i) >=
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(0), intToRef(1))) in
+      intFromRef(intToRef(0)) - intFromRef(intToRef(1))) ||
+    intFromRef(i) == intFromRef(anon_0))
   assert (unfolding acc(IntArray_unique(arr), write) in
-      (forall anon_builtin_1: Int ::intFromRef(i) < anon_builtin_1 &&
-        anon_builtin_1 < arraySize(arr) ==>
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        intFromRef(i) < anon_builtin_1 && anon_builtin_1 < arraySize(arr) ==>
         arr.contents[anon_builtin_1] == 0))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -239,12 +300,14 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method evenSlots(arr: Ref, s: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(arr), IntArray())
   requires acc(IntArray_unique(arr), write)
   requires isSubtype(typeOf(s), intType())
+  requires arraySize(arr) <= 2147483645
   ensures acc(IntArray_unique(arr), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -263,7 +326,12 @@ method evenSlots(arr: Ref, s: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(arr), IntArray())
     invariant isSubtype(typeOf(s), intType())
     invariant 0 <= intFromRef(l1_i) &&
-      (intFromRef(l1_i) < intFromRef(anon_0) + 2 || intFromRef(l1_i) == 0)
+      (intFromRef(l1_i) <
+      (let anon_builtin ==
+        (plusInts(anon_0, intToRef(2))) in
+        intFromRef(anon_0) + intFromRef(intToRef(2))) ||
+      intFromRef(l1_i) == 0)
+    invariant arraySize(arr) <= 2147483645
   anon_3 := ltInts(l1_i, anon_0)
   if (boolFromRef(anon_3)) {
     assert intFromRef(l1_i) >= 0
@@ -280,7 +348,12 @@ method evenSlots(arr: Ref, s: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(arr), IntArray())
   assert isSubtype(typeOf(s), intType())
   assert 0 <= intFromRef(l1_i) &&
-    (intFromRef(l1_i) < intFromRef(anon_0) + 2 || intFromRef(l1_i) == 0)
+    (intFromRef(l1_i) <
+    (let anon_builtin ==
+      (plusInts(anon_0, intToRef(2))) in
+      intFromRef(anon_0) + intFromRef(intToRef(2))) ||
+    intFromRef(l1_i) == 0)
+  assert arraySize(arr) <= 2147483645
   anon_1 := minusInts(intToRef(arraySize(arr)), intToRef(1))
   anon_2 := s
   if (!(intFromRef(anon_2) > 0)) {
@@ -293,7 +366,10 @@ method evenSlots(arr: Ref, s: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(arr), IntArray())
     invariant isSubtype(typeOf(s), intType())
     invariant intFromRef(l3_i) <= intFromRef(anon_1) &&
-      (intFromRef(l3_i) >= 0 - intFromRef(anon_2) ||
+      (intFromRef(l3_i) >=
+      (let anon_builtin ==
+        (minusInts(intToRef(0), anon_2)) in
+        intFromRef(intToRef(0)) - intFromRef(anon_2)) ||
       intFromRef(l3_i) == intFromRef(anon_1))
   anon_4 := geInts(l3_i, intToRef(0))
   if (boolFromRef(anon_4)) {
@@ -311,7 +387,10 @@ method evenSlots(arr: Ref, s: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(arr), IntArray())
   assert isSubtype(typeOf(s), intType())
   assert intFromRef(l3_i) <= intFromRef(anon_1) &&
-    (intFromRef(l3_i) >= 0 - intFromRef(anon_2) ||
+    (intFromRef(l3_i) >=
+    (let anon_builtin ==
+      (minusInts(intToRef(0), anon_2)) in
+      intFromRef(intToRef(0)) - intFromRef(anon_2)) ||
     intFromRef(l3_i) == intFromRef(anon_1))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -322,6 +401,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method skipAndStop(arr: Ref, stop: Ref) returns (v_ret_0: Ref)
@@ -395,7 +475,10 @@ method emptyRange() returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(count), intType())
     invariant 5 <= intFromRef(i) &&
       (intFromRef(i) <= 3 || intFromRef(i) == 5)
-    invariant intFromRef(count) == intFromRef(i) - 5
+    invariant intFromRef(count) ==
+      (let anon_builtin ==
+        (minusInts(i, intToRef(5))) in
+        intFromRef(i) - intFromRef(intToRef(5)))
   anon_1 := ltInts(i, intToRef(3))
   if (boolFromRef(anon_1)) {
     var anon_0: Ref
@@ -409,7 +492,10 @@ method emptyRange() returns (v_ret_0: Ref)
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(count), intType())
   assert 5 <= intFromRef(i) && (intFromRef(i) <= 3 || intFromRef(i) == 5)
-  assert intFromRef(count) == intFromRef(i) - 5
+  assert intFromRef(count) ==
+    (let anon_builtin ==
+      (minusInts(i, intToRef(5))) in
+      intFromRef(i) - intFromRef(intToRef(5)))
   v_ret_0 := count
   goto lbl_ret_0
   label lbl_ret_0
@@ -420,11 +506,13 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 method writePastEnd(arr: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(arr), IntArray())
   requires acc(IntArray_unique(arr), write)
+  requires arraySize(arr) < 2147483647
   ensures acc(IntArray_unique(arr), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -438,7 +526,12 @@ method writePastEnd(arr: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(i), intType())
     invariant isSubtype(typeOf(arr), IntArray())
     invariant 0 <= intFromRef(i) &&
-      (intFromRef(i) <= intFromRef(anon_0) + 1 || intFromRef(i) == 0)
+      (intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(anon_0, intToRef(1))) in
+        intFromRef(anon_0) + intFromRef(intToRef(1))) ||
+      intFromRef(i) == 0)
+    invariant arraySize(arr) < 2147483647
   anon_1 := leInts(i, anon_0)
   if (boolFromRef(anon_1)) {
     assert intFromRef(i) >= 0
@@ -454,7 +547,12 @@ method writePastEnd(arr: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(i), intType())
   assert isSubtype(typeOf(arr), IntArray())
   assert 0 <= intFromRef(i) &&
-    (intFromRef(i) <= intFromRef(anon_0) + 1 || intFromRef(i) == 0)
+    (intFromRef(i) <=
+    (let anon_builtin ==
+      (plusInts(anon_0, intToRef(1))) in
+      intFromRef(anon_0) + intFromRef(intToRef(1))) ||
+    intFromRef(i) == 0)
+  assert arraySize(arr) < 2147483647
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

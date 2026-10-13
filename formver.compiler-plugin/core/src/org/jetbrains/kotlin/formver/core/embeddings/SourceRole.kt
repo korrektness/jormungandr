@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.formver.viper.ast.Info
 import org.jetbrains.kotlin.formver.viper.ast.Position
 
 sealed interface SourceRole {
+    data class Arithmetic(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition) : SourceRole
     /** The Kotlin clause responsible for an explicit proof obligation. */
     data class Proof(
         val clause: org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause,

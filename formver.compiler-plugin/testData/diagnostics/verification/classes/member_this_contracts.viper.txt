@@ -5,19 +5,27 @@ method advance(this: Ref, by: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Meter())
   requires acc(Meter_unique(this), write)
   requires isSubtype(typeOf(by), intType())
-  requires intFromRef(by) >= 0
+  requires intFromRef(by) >= 0 &&
+    (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), by)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(by)))
   ensures acc(Meter_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Meter_unique(this), write) in
       intFromRef(this.reading) ==
-      old((unfolding acc(Meter_unique(this), write) in
-        intFromRef(this.reading))) +
-      intFromRef(by))
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Meter_unique(this), write) in
+          this.reading)), by)) in
+        intFromRef(old((unfolding acc(Meter_unique(this), write) in
+          this.reading))) +
+        intFromRef(by)))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Meter_unique(this), write)
-  anon := this.reading
-  this.reading := plusInts(anon, by)
+  anon_0 := this.reading
+  this.reading := plusInts(anon_0, by)
   label lbl_ret_0
   fold acc(Meter_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -26,30 +34,46 @@ method advance(this: Ref, by: Ref) returns (v_ret_0: Ref)
 /member_this_contracts.kt: info: Generated Viper text for advanceTwice:
 field reading: Ref
 
-method advance(this: Ref, by: Ref) returns (ret_2: Ref)
+method advance(this: Ref, by: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), Meter())
   requires acc(Meter_unique(this), write)
   requires isSubtype(typeOf(by), intType())
-  requires intFromRef(by) >= 0
+  requires intFromRef(by) >= 0 &&
+    (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), by)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(by)))
   ensures acc(Meter_unique(this), write)
-  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures (unfolding acc(Meter_unique(this), write) in
       intFromRef(this.reading) ==
-      old((unfolding acc(Meter_unique(this), write) in
-        intFromRef(this.reading))) +
-      intFromRef(by))
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Meter_unique(this), write) in
+          this.reading)), by)) in
+        intFromRef(old((unfolding acc(Meter_unique(this), write) in
+          this.reading))) +
+        intFromRef(by)))
 
 
 method advanceTwice(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Meter())
   requires acc(Meter_unique(this), write)
+  requires (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), intToRef(3))) in
+        intFromRef(intToRef(2147483647)) - intFromRef(intToRef(3))))
   ensures acc(Meter_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Meter_unique(this), write) in
       intFromRef(this.reading) ==
-      old((unfolding acc(Meter_unique(this), write) in
-        intFromRef(this.reading))) +
-      3)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Meter_unique(this), write) in
+          this.reading)), intToRef(3))) in
+        intFromRef(old((unfolding acc(Meter_unique(this), write) in
+          this.reading))) +
+        intFromRef(intToRef(3))))
 {
   var anon_0: Ref
   var anon_1: Ref
@@ -90,14 +114,22 @@ method advance(this: Ref, by: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), Meter())
   requires acc(Meter_unique(this), write)
   requires isSubtype(typeOf(by), intType())
-  requires intFromRef(by) >= 0
+  requires intFromRef(by) >= 0 &&
+    (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), by)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(by)))
   ensures acc(Meter_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(Meter_unique(this), write) in
       intFromRef(this.reading) ==
-      old((unfolding acc(Meter_unique(this), write) in
-        intFromRef(this.reading))) +
-      intFromRef(by))
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Meter_unique(this), write) in
+          this.reading)), by)) in
+        intFromRef(old((unfolding acc(Meter_unique(this), write) in
+          this.reading))) +
+        intFromRef(by)))
 
 
 method advanceFromZero(m: Ref) returns (v_ret_0: Ref)
@@ -131,13 +163,21 @@ function size(this: Ref): Ref
 method advanceTwice(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), Meter())
   requires acc(Meter_unique(this), write)
+  requires (unfolding acc(Meter_unique(this), write) in
+      intFromRef(this.reading) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), intToRef(3))) in
+        intFromRef(intToRef(2147483647)) - intFromRef(intToRef(3))))
   ensures acc(Meter_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(Meter_unique(this), write) in
       intFromRef(this.reading) ==
-      old((unfolding acc(Meter_unique(this), write) in
-        intFromRef(this.reading))) +
-      3)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Meter_unique(this), write) in
+          this.reading)), intToRef(3))) in
+        intFromRef(old((unfolding acc(Meter_unique(this), write) in
+          this.reading))) +
+        intFromRef(intToRef(3))))
 
 
 method staleAfterAdvance(m: Ref) returns (v_ret_0: Ref)
@@ -233,12 +273,18 @@ method CountingGauge_f_tick(this: Ref) returns (v_ret_0: Ref)
           (unfolding acc(Gauge_unique(this), write) in
             intFromRef(this.level))))))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(CountingGauge_unique(this), write)
-  anon := this.ticks
-  this.ticks := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_0 := this.ticks
   fold acc(CountingGauge_unique(this), write)
+  if (intFromRef(anon_0) < 2147483647) {
+    var anon_1: Ref
+    unfold acc(CountingGauge_unique(this), write)
+    anon_1 := this.ticks
+    this.ticks := plusInts(anon_1, intToRef(1))
+    fold acc(CountingGauge_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
@@ -281,14 +327,22 @@ method DriftingGauge_f_tick(this: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures true
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(DriftingGauge_unique(this), write)
   unfold acc(Gauge_unique(this), write)
-  anon := this.level
-  this.level := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  anon_0 := this.level
   fold acc(Gauge_unique(this), write)
   fold acc(DriftingGauge_unique(this), write)
+  if (intFromRef(anon_0) < 2147483647) {
+    var anon_1: Ref
+    unfold acc(DriftingGauge_unique(this), write)
+    unfold acc(Gauge_unique(this), write)
+    anon_1 := this.level
+    this.level := plusInts(anon_1, intToRef(1))
+    fold acc(Gauge_unique(this), write)
+    fold acc(DriftingGauge_unique(this), write)
+  }
+  label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 

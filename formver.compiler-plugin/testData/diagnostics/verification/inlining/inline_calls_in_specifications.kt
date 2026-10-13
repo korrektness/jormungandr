@@ -20,16 +20,19 @@ fun <!VIPER_TEXT!>safeLetInPostcondition<!>(o: Box?): Int {
 }
 
 fun <!VIPER_TEXT!>runInPostcondition<!>(n: Int): Int {
+    preconditions { n < 2147483647 }
     postconditions<Int> { r -> r == run { n + 1 } }
     return n + 1
 }
 
 fun <!VIPER_TEXT!>receiverRunInPostcondition<!>(b: Box): Int {
+    preconditions { -1073741824 <= b.v && b.v <= 1073741823 }
     postconditions<Int> { r -> r == b.run { v * 2 } }
     return b.v * 2
 }
 
 fun <!VIPER_TEXT!>withInPostcondition<!>(b: Box): Int {
+    preconditions { b.v <= 2147483644 }
     postconditions<Int> { r -> r == with(b) { v + 3 } }
     return b.v + 3
 }
@@ -52,6 +55,7 @@ fun <!VIPER_TEXT!>takeIfInPostcondition<!>(n: Int): Int {
 inline fun <!VIPER_TEXT!>twice<!>(n: Int, f: (Int) -> Int): Int = f(f(n))
 
 fun <!VIPER_TEXT!>userInlineInPostcondition<!>(n: Int): Int {
+    preconditions { n <= 2147483645 }
     postconditions<Int> { r -> r == twice(n) { it + 1 } }
     return n + 2
 }
@@ -92,11 +96,11 @@ fun <!VIPER_TEXT!>scopeFunctionsInLoopInvariant<!>(b: Box, n: Int): Int {
 }
 
 fun <!VIPER_TEXT!>scopeFunctionsOverUniqueReceivers<!>(c: @Unique @Borrowed Counter, n: @Unique @Borrowed Node?, o: @Unique @Borrowed Outer): Int {
-    preconditions { c.x > 0 }
+    preconditions { c.x > 0 && c.x <= 1073741823 }
     postconditions<Int> { r ->
-        r == c.let { val t = it.x; t * 2 }
-        r == with(c) { x * 2 }
-        r == c.run { x * 2 }
+        r == c.let { val t = old(it.x); t * 2 }
+        r == with(c) { old(x) * 2 }
+        r == c.run { old(x) * 2 }
         (n?.let { it.value } ?: -1) == (if (n == null) -1 else n.value)
         o.let { it.middle.inner.x } == o.middle.inner.x
     }
@@ -104,7 +108,8 @@ fun <!VIPER_TEXT!>scopeFunctionsOverUniqueReceivers<!>(c: @Unique @Borrowed Coun
 }
 
 <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongLetOverUniqueReceiver<!>(c: @Unique @Borrowed Counter): Int {
-    postconditions<Int> { r -> r == c.let { it.x + 1 } }
+    preconditions { c.x < 2147483647 }
+    postconditions<Int> { r -> r == c.let { old(it.x) + 1 } }
     return c.x
 }<!>
 
@@ -122,6 +127,7 @@ fun <!VIPER_TEXT!>letOverArrayInQuantifier<!>(arr: @Unique @Borrowed IntArray) {
 }
 
 fun <!VIPER_TEXT!>letInVerify<!>(n: Int, o: Int?) {
+    preconditions { n < 2147483647 && (o == null || o < 2147483647) }
     verify(n.let { it + 1 } == n + 1, (o?.let { it + 1 } ?: 0) >= 0 || n == n)
 }
 
@@ -134,11 +140,13 @@ fun <!VERIFICATION_SKIPPED!>sideEffectsInVerify<!>(n: Int): Int {
 }
 
 fun <!VIPER_TEXT!>letOverOldInPostcondition<!>(c: @Unique @Borrowed Counter) {
+    preconditions { c.x < 2147483647 }
     postconditions<Unit> { c.x == old(c.x).let { it + 1 } }
     c.x = c.x + 1
 }
 
 fun <!VIPER_TEXT!>localInLambdaInPostcondition<!>(n: Int): Int {
+    preconditions { -1073741824 <= n && n < 1073741823 }
     postconditions<Int> { r ->
         r == n.let {
             val doubled = it * 2
@@ -165,6 +173,7 @@ fun <!VIPER_TEXT!>safeCastInPostcondition<!>(x: Any): Int {
 }
 
 <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongLetInPostcondition<!>(n: Int): Int {
+    preconditions { n < 2147483647 }
     postconditions<Int> { r -> r == n.let { it + 1 } }
     return n
 }<!>

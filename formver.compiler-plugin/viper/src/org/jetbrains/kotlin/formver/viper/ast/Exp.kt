@@ -320,10 +320,11 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
 
     //region Literals
     data class IntLit(
-        val value: Int,
+        val value: Long,
         override val pos: Position = Position.NoPosition,
         override val info: Info = Info.NoInfo,
     ) : Exp {
+        constructor(value: Int, pos: Position = Position.NoPosition, info: Info = Info.NoInfo) : this(value.toLong(), pos, info)
         override val type = Type.Int
         context(nameResolver: NameResolver)
         override fun toSilver(): viper.silver.ast.IntLit =
@@ -885,7 +886,7 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         override val pos: Position = Position.NoPosition,
         override val info: Info = Info.NoInfo,
     ): Exp {
-        override val type: Type = variable.type
+        override val type: Type = body.type
 
         context(nameResolver: NameResolver)
         override fun toSilver(): viper.silver.ast.Let =
@@ -1123,6 +1124,9 @@ fun Any?.viperLiteral(
 ): Exp = when (this) {
     null -> Exp.NullLit(pos, info)
     is Int -> Exp.IntLit(this, pos, info)
+    is Long -> Exp.IntLit(this, pos, info)
+    is Short -> Exp.IntLit(toInt(), pos, info)
+    is Byte -> Exp.IntLit(toInt(), pos, info)
     is Boolean -> Exp.BoolLit(this, pos, info)
     is Char -> Exp.IntLit(this.code, pos, info)
     is String ->

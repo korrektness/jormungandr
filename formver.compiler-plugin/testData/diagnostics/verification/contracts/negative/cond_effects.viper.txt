@@ -62,7 +62,7 @@ method recursiveContract(n: Ref, x: Ref) returns (v_ret_0: Ref)
   ensures boolFromRef(v_ret_0) == true ==>
     isSubtype(typeOf(x), stringType())
 {
-  if (intFromRef(n) == 0) {
+  if (intFromRef(n) <= 0) {
     v_ret_0 := boolToRef(isSubtype(typeOf(x), intType()))
   } else {
     v_ret_0 := recursiveContract(minusInts(n, intToRef(1)), x)}

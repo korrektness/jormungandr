@@ -42,7 +42,7 @@ class TomlMultilineString(private val isStringType: Boolean) {
 
     @Pure
     private fun <!VIPER_TEXT!>isNextThreeQuotes<!>(line: String, index: Int, quote: Char): Boolean {
-        preconditions { 0 <= index && index + 2 < line.length }
+        preconditions { 0 <= index && index < line.length - 2 }
         return line[index] == quote && line[index + 1] == quote && line[index + 2] == quote
     }
 }

@@ -27,6 +27,9 @@ class TypeBuilder {
     fun nothing() = NothingPretypeBuilder
     fun any() = AnyPretypeBuilder
     fun int() = IntPretypeBuilder
+    fun long() = ExistingPretypeBuilder(LongTypeEmbedding)
+    fun short() = ExistingPretypeBuilder(ShortTypeEmbedding)
+    fun byte() = ExistingPretypeBuilder(ByteTypeEmbedding)
     fun boolean() = BooleanPretypeBuilder
     fun char() = CharPretypeBuilder
     fun string() = StringPretypeBuilder

@@ -8,7 +8,7 @@ fun interface ReviewAcc {
     @GhostObserver @Pure fun <!VIPER_TEXT!>total<!>(): Int = ghostObserver()
     @Unique @Borrowed operator fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int
     @SpecOf("invoke") fun invokeSpec(amount: Int) {
-        preconditions { amount >= 0 && total() >= 0 }
+        preconditions { amount >= 0 && total() >= 0 && total() <= 2147483647 - amount }
         postconditions<Int> { r -> total() == old(total()) + amount && r == total() }
     }
 }
@@ -90,7 +90,7 @@ fun interface NamedCounterSpec {
     @GhostObserver @Pure @Unique fun <!VIPER_TEXT!>total<!>(): Int = ghostObserver()
     @Unique @Borrowed operator fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int
     @Unique @Borrowed @SpecOf("invoke") fun invokeSpec(amount: Int) {
-        preconditions { amount >= 0 && total() >= 0 }
+        preconditions { amount >= 0 && total() >= 0 && total() <= 2147483647 - amount }
         postconditions<Int> { r -> total() == old(total()) + amount && r == total() }
     }
 }

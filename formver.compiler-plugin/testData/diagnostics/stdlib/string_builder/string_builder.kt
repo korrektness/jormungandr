@@ -33,6 +33,9 @@ fun <!VIPER_TEXT!>literal<!>(): String {
 }
 
 fun <!VIPER_TEXT!>appendTwice<!>(sb: @Unique @Borrowed StringBuilder, s: String) {
+    preconditions {
+        s.length <= (2147483647 - sb.length) / 2
+    }
     postconditions<Unit> {
         sb.length == old(sb.length) + 2 * s.length
         sb.toString() == old(sb.toString()) + s + s

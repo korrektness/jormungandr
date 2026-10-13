@@ -3,23 +3,26 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
-method con(size: Ref) returns (ret_2: Ref)
+method con(size: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(size), intType())
   requires intFromRef(size) >= 0
-  ensures isSubtype(typeOf(ret_2), IntArray())
-  ensures acc(IntArray_unique(ret_2), write)
-  ensures arraySize(ret_2) == intFromRef(size)
-  ensures (unfolding acc(IntArray_unique(ret_2), write) in
+  ensures isSubtype(typeOf(ret_3), IntArray())
+  ensures acc(IntArray_unique(ret_3), write)
+  ensures arraySize(ret_3) == intFromRef(size)
+  ensures (unfolding acc(IntArray_unique(ret_3), write) in
       (forall v_j: Int ::
-        { ret_2.contents[v_j] }
-        v_j >= 0 && v_j < arraySize(ret_2) ==> ret_2.contents[v_j] == 0))
+        { ret_3.contents[v_j] }
+        v_j >= 0 && v_j < arraySize(ret_3) ==> ret_3.contents[v_j] == 0))
 
 
 method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(first), stringType())
   requires isSubtype(typeOf(second), stringType())
+  requires |stringFromRef(first)| < 2147483647
+  requires |stringFromRef(second)| < 2147483647
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures 0 <= intFromRef(v_ret_0)
   ensures intFromRef(v_ret_0) <= |stringFromRef(first)| ||
@@ -63,8 +66,10 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
     invariant arraySize(distance) == intFromRef(firstLen)
     invariant arraySize(newDistance) == intFromRef(firstLen)
     invariant (unfolding acc(IntArray_unique(distance), write) in
-        (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-          anon_builtin_0 < intFromRef(k) ==>
+        (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+          anon_builtin_0 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+          0 <= anon_builtin_0 && anon_builtin_0 < intFromRef(k) ==>
           distance.contents[anon_builtin_0] == anon_builtin_0))
   anon_3 := ltInts(k, firstLen)
   if (boolFromRef(anon_3)) {
@@ -91,8 +96,10 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
   assert arraySize(distance) == intFromRef(firstLen)
   assert arraySize(newDistance) == intFromRef(firstLen)
   assert (unfolding acc(IntArray_unique(distance), write) in
-      (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-        anon_builtin_0 < intFromRef(k) ==>
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        0 <= anon_builtin_0 && anon_builtin_0 < intFromRef(k) ==>
         distance.contents[anon_builtin_0] == anon_builtin_0))
   i := intToRef(1)
   label cont_1
@@ -109,13 +116,21 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
     invariant 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
     invariant arraySize(distance) == intFromRef(firstLen)
     invariant arraySize(newDistance) == intFromRef(firstLen)
-    invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 < intFromRef(firstLen) ==>
+    invariant (forall anon_builtin_1: Int ::
+        { distance.contents[anon_builtin_1] }
+        { distance.contents[anon_builtin_1] }
+        { distance.contents[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(firstLen) ==>
         (unfolding acc(IntArray_unique(distance), write) in
           0 <= distance.contents[anon_builtin_1]) &&
         (unfolding acc(IntArray_unique(distance), write) in
           distance.contents[anon_builtin_1] <= anon_builtin_1 ||
-          distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+          distance.contents[anon_builtin_1] <=
+          (let anon_builtin_neg1 ==
+            (minusInts(i, intToRef(1))) in
+            intFromRef(i) - intFromRef(intToRef(1)))))
   anon_4 := ltInts(i, secondLen)
   if (boolFromRef(anon_4)) {
     var l7_j: Ref
@@ -144,17 +159,27 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
         intFromRef(l7_j) <= intFromRef(firstLen)
       invariant arraySize(distance) == intFromRef(firstLen)
       invariant arraySize(newDistance) == intFromRef(firstLen)
-      invariant (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
-          anon_builtin_2 < intFromRef(firstLen) ==>
+      invariant (forall anon_builtin_2: Int ::
+          { distance.contents[anon_builtin_2] }
+          { distance.contents[anon_builtin_2] }
+          { distance.contents[anon_builtin_2] }
+          anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+          0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(firstLen) ==>
           (unfolding acc(IntArray_unique(distance), write) in
             0 <= distance.contents[anon_builtin_2]) &&
           (unfolding acc(IntArray_unique(distance), write) in
             distance.contents[anon_builtin_2] <= anon_builtin_2 ||
-            distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+            distance.contents[anon_builtin_2] <=
+            (let anon_builtin_neg1 ==
+              (minusInts(i, intToRef(1))) in
+              intFromRef(i) - intFromRef(intToRef(1)))))
       invariant (unfolding acc(IntArray_unique(newDistance), write) in
           newDistance.contents[0] == intFromRef(i))
-      invariant (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-          anon_builtin_3 < intFromRef(l7_j) ==>
+      invariant (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+          anon_builtin_3 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(l7_j) ==>
           (unfolding acc(IntArray_unique(newDistance), write) in
             0 <= newDistance.contents[anon_builtin_3]) &&
           (unfolding acc(IntArray_unique(newDistance), write) in
@@ -171,13 +196,25 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
       var anon_9: Ref
       var cost: Ref
       var anon_1: Ref
-      assert intFromRef(l7_j) - 1 >= 0
-      assert intFromRef(l7_j) - 1 < arraySize(distance)
+      assert (let anon_builtin_neg1 ==
+          (minusInts(l7_j, intToRef(1))) in
+          intFromRef(l7_j) - intFromRef(intToRef(1))) >=
+        0
+      assert (let anon_builtin_neg1 ==
+          (minusInts(l7_j, intToRef(1))) in
+          intFromRef(l7_j) - intFromRef(intToRef(1))) <
+        arraySize(distance)
       unfold acc(IntArray_unique(distance), write)
-      anon_6 := intToRef(distance.contents[intFromRef(l7_j) - 1])
+      anon_6 := intToRef(distance.contents[(let anon_builtin_neg1 ==
+          (minusInts(l7_j, intToRef(1))) in
+          intFromRef(l7_j) - intFromRef(intToRef(1)))])
       fold acc(IntArray_unique(distance), write)
-      if (stringFromRef(first)[intFromRef(l7_j) - 1] ==
-      stringFromRef(second)[intFromRef(i) - 1]) {
+      if ((let anon_builtin_neg1 ==
+        (stringGet(first, minusInts(l7_j, intToRef(1)))) in
+        stringFromRef(first)[intFromRef(minusInts(l7_j, intToRef(1)))]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(second, minusInts(i, intToRef(1)))) in
+        stringFromRef(second)[intFromRef(minusInts(i, intToRef(1)))])) {
         anon_7 := intToRef(0)
       } else {
         anon_7 := intToRef(1)}
@@ -187,10 +224,18 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
       unfold acc(IntArray_unique(distance), write)
       anon_8 := intToRef(distance.contents[intFromRef(l7_j)])
       costInsert := plusInts(anon_8, intToRef(1))
-      assert intFromRef(l7_j) - 1 >= 0
-      assert intFromRef(l7_j) - 1 < arraySize(newDistance)
+      assert (let anon_builtin_neg1 ==
+          (minusInts(l7_j, intToRef(1))) in
+          intFromRef(l7_j) - intFromRef(intToRef(1))) >=
+        0
+      assert (let anon_builtin_neg1 ==
+          (minusInts(l7_j, intToRef(1))) in
+          intFromRef(l7_j) - intFromRef(intToRef(1))) <
+        arraySize(newDistance)
       unfold acc(IntArray_unique(newDistance), write)
-      anon_9 := intToRef(newDistance.contents[intFromRef(l7_j) - 1])
+      anon_9 := intToRef(newDistance.contents[(let anon_builtin_neg1 ==
+          (minusInts(l7_j, intToRef(1))) in
+          intFromRef(l7_j) - intFromRef(intToRef(1)))])
       costDelete := plusInts(anon_9, intToRef(1))
       cost := costInsert
       fold acc(IntArray_unique(distance), write)
@@ -226,17 +271,27 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
       intFromRef(l7_j) <= intFromRef(firstLen)
     assert arraySize(distance) == intFromRef(firstLen)
     assert arraySize(newDistance) == intFromRef(firstLen)
-    assert (forall anon_builtin_2: Int ::0 <= anon_builtin_2 &&
-        anon_builtin_2 < intFromRef(firstLen) ==>
+    assert (forall anon_builtin_2: Int ::
+        { distance.contents[anon_builtin_2] }
+        { distance.contents[anon_builtin_2] }
+        { distance.contents[anon_builtin_2] }
+        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(firstLen) ==>
         (unfolding acc(IntArray_unique(distance), write) in
           0 <= distance.contents[anon_builtin_2]) &&
         (unfolding acc(IntArray_unique(distance), write) in
           distance.contents[anon_builtin_2] <= anon_builtin_2 ||
-          distance.contents[anon_builtin_2] <= intFromRef(i) - 1))
+          distance.contents[anon_builtin_2] <=
+          (let anon_builtin_neg1 ==
+            (minusInts(i, intToRef(1))) in
+            intFromRef(i) - intFromRef(intToRef(1)))))
     assert (unfolding acc(IntArray_unique(newDistance), write) in
         newDistance.contents[0] == intFromRef(i))
-    assert (forall anon_builtin_3: Int ::0 <= anon_builtin_3 &&
-        anon_builtin_3 < intFromRef(l7_j) ==>
+    assert (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+        anon_builtin_3 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(l7_j) ==>
         (unfolding acc(IntArray_unique(newDistance), write) in
           0 <= newDistance.contents[anon_builtin_3]) &&
         (unfolding acc(IntArray_unique(newDistance), write) in
@@ -262,18 +317,34 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
   assert 1 <= intFromRef(i) && intFromRef(i) <= intFromRef(secondLen)
   assert arraySize(distance) == intFromRef(firstLen)
   assert arraySize(newDistance) == intFromRef(firstLen)
-  assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-      anon_builtin_1 < intFromRef(firstLen) ==>
+  assert (forall anon_builtin_1: Int ::
+      { distance.contents[anon_builtin_1] }
+      { distance.contents[anon_builtin_1] }
+      { distance.contents[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(firstLen) ==>
       (unfolding acc(IntArray_unique(distance), write) in
         0 <= distance.contents[anon_builtin_1]) &&
       (unfolding acc(IntArray_unique(distance), write) in
         distance.contents[anon_builtin_1] <= anon_builtin_1 ||
-        distance.contents[anon_builtin_1] <= intFromRef(i) - 1))
+        distance.contents[anon_builtin_1] <=
+        (let anon_builtin_neg1 ==
+          (minusInts(i, intToRef(1))) in
+          intFromRef(i) - intFromRef(intToRef(1)))))
   refute false
-  assert intFromRef(firstLen) - 1 >= 0
-  assert intFromRef(firstLen) - 1 < arraySize(distance)
+  assert (let anon_builtin_neg1 ==
+      (minusInts(firstLen, intToRef(1))) in
+      intFromRef(firstLen) - intFromRef(intToRef(1))) >=
+    0
+  assert (let anon_builtin_neg1 ==
+      (minusInts(firstLen, intToRef(1))) in
+      intFromRef(firstLen) - intFromRef(intToRef(1))) <
+    arraySize(distance)
   unfold acc(IntArray_unique(distance), write)
-  anon_10 := intToRef(distance.contents[intFromRef(firstLen) - 1])
+  anon_10 := intToRef(distance.contents[(let anon_builtin_neg1 ==
+      (minusInts(firstLen, intToRef(1))) in
+      intFromRef(firstLen) - intFromRef(intToRef(1)))])
   v_ret_0 := anon_10
   fold acc(IntArray_unique(distance), write)
   goto lbl_ret_0

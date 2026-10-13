@@ -73,28 +73,35 @@ method add(this: Ref, value: Ref) returns (ret: Ref)
   requires acc(IntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
   requires (unfolding acc(IntList_unique(this), wildcard) in
-      intFromRef(size(this)) >= 0)
+      0 <= intFromRef(size(this))) &&
+    (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this)) < 2147483647)
   ensures acc(IntList_unique(this), write)
   ensures isSubtype(typeOf(ret), unitType())
   ensures (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(size(this))) ==
-    old((unfolding acc(IntList_unique(this), wildcard) in
-      intFromRef(size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(IntList_unique(this), wildcard) in
+        size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(IntList_unique(this), wildcard) in
+        size(this)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(get(this, old((unfolding acc(IntList_unique(this), wildcard) in
         size(this))))) ==
       intFromRef(value))
-  ensures (forall anon: Int ::
-      { get(this, intToRef(anon)) }
-      0 <= anon &&
-      anon <
+  ensures (forall anon_builtin_0: Int ::
+      { get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
       old((unfolding acc(IntList_unique(this), wildcard) in
         intFromRef(size(this)))) ==>
       (unfolding acc(IntList_unique(this), wildcard) in
-        intFromRef(get(this, intToRef(anon))) ==
+        intFromRef(get(this, intToRef(anon_builtin_0))) ==
         old((unfolding acc(IntList_unique(this), wildcard) in
-          intFromRef(get(this, intToRef(anon)))))))
+          intFromRef(get(this, intToRef(anon_builtin_0)))))))
 
 
 /intlist_milestone.kt: info: Generated Viper text for set:
@@ -141,6 +148,8 @@ method set(this: Ref, i: Ref, value: Ref) returns (ret: Ref)
       intFromRef(get(this, i)) == intFromRef(value))
   ensures (forall anon: Int ::
       { get(this, intToRef(anon)) }
+      anon >= -2147483648 && anon <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon)), intType()) ==>
       0 <= anon &&
       (unfolding acc(IntList_unique(this), wildcard) in
         anon < intFromRef(size(this))) &&
@@ -195,6 +204,8 @@ method f_get_Int(list: Ref, i: Ref) returns (v_ret_0: Ref)
       intFromRef(size(list))))
   ensures (forall anon_builtin: Int ::
       { IntList_f_get(list, intToRef(anon_builtin)) }
+      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
       0 <= anon_builtin &&
       (unfolding acc(IntList_unique(list), wildcard) in
         anon_builtin < intFromRef(size(list))) ==>
@@ -261,6 +272,7 @@ function IntList_f_size(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 predicate ArrayIntList_unique(this: Ref) {
@@ -284,7 +296,12 @@ predicate ArrayIntList_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate IntList_unique(this: Ref) {
@@ -418,6 +435,7 @@ function IntList_f_size(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 predicate ArrayIntList_unique(this: Ref) {
@@ -441,7 +459,12 @@ predicate ArrayIntList_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate IntList_unique(this: Ref) {
@@ -486,6 +509,7 @@ function ArrayIntList_f_size(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function c_IntList_f_get(this: Ref, i: Ref): Ref
@@ -524,7 +548,12 @@ predicate ArrayIntList_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate c_IntList_unique(this: Ref) {
@@ -627,6 +656,7 @@ function ArrayIntList_f_size(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function c_IntList_f_get(this: Ref, par_i: Ref): Ref
@@ -665,7 +695,12 @@ predicate ArrayIntList_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate InvariantBuilder_unique(this: Ref) {
@@ -726,15 +761,20 @@ method ArrayIntList_f_add(this: Ref, value: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), ArrayIntList())
   requires acc(ArrayIntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
-  requires intFromRef(ArrayIntList_f_size(this)) >= 0
+  requires 0 <= intFromRef(ArrayIntList_f_size(this)) &&
+    intFromRef(ArrayIntList_f_size(this)) < 2147483647
   ensures acc(ArrayIntList_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(ArrayIntList_f_size(this)) ==
-    old(intFromRef(ArrayIntList_f_size(this))) + 1
+    (let anon_builtin_neg1 ==
+      (plusInts(old(ArrayIntList_f_size(this)), intToRef(1))) in
+      intFromRef(old(ArrayIntList_f_size(this))) + intFromRef(intToRef(1)))
   ensures intFromRef(ArrayIntList_f_get(this, old(ArrayIntList_f_size(this)))) ==
     intFromRef(value)
   ensures (forall anon_builtin_0: Int ::
       { ArrayIntList_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < old(intFromRef(ArrayIntList_f_size(this))) ==>
       intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_0))) ==
@@ -774,14 +814,18 @@ method ArrayIntList_f_add(this: Ref, value: Ref) returns (v_ret_0: Ref)
     invariant (unfolding acc(IntArray_unique(replacement), write) in
         (unfolding acc(ArrayIntList_unique(this), write) in
           (unfolding acc(IntArray_unique(this.data), write) in
-            (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-              anon_builtin_1 < intFromRef(l0_i) ==>
+            (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+              anon_builtin_1 <= 2147483647 &&
+              isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+              0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(l0_i) ==>
               replacement.contents[anon_builtin_1] ==
               this.data.contents[anon_builtin_1]))))
     invariant (unfolding acc(ArrayIntList_unique(this), write) in
         (unfolding acc(IntArray_unique(this.data), write) in
           (forall anon_builtin_2: Int ::
             { this.data.contents[anon_builtin_2] }
+            anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
             0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(n) ==>
             this.data.contents[anon_builtin_2] ==
             old((unfolding acc(ArrayIntList_unique(this), write) in
@@ -833,14 +877,18 @@ method ArrayIntList_f_add(this: Ref, value: Ref) returns (v_ret_0: Ref)
   assert (unfolding acc(IntArray_unique(replacement), write) in
       (unfolding acc(ArrayIntList_unique(this), write) in
         (unfolding acc(IntArray_unique(this.data), write) in
-          (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-            anon_builtin_1 < intFromRef(l0_i) ==>
+          (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+            anon_builtin_1 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+            0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(l0_i) ==>
             replacement.contents[anon_builtin_1] ==
             this.data.contents[anon_builtin_1]))))
   assert (unfolding acc(ArrayIntList_unique(this), write) in
       (unfolding acc(IntArray_unique(this.data), write) in
         (forall anon_builtin_2: Int ::
           { this.data.contents[anon_builtin_2] }
+          anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
           0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(n) ==>
           this.data.contents[anon_builtin_2] ==
           old((unfolding acc(ArrayIntList_unique(this), write) in
@@ -876,20 +924,27 @@ method c_IntList_f_add(this: Ref, value: Ref) returns (ret_6: Ref)
   requires acc(c_IntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
   requires (unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)) >= 0)
+      0 <= intFromRef(c_IntList_f_size(this))) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)) < 2147483647)
   ensures acc(c_IntList_unique(this), write)
   ensures isSubtype(typeOf(ret_6), unitType())
   ensures (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_size(this))) ==
-    old((unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
         c_IntList_f_size(this))))) ==
       intFromRef(value))
   ensures (forall anon_builtin_3: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_3)) }
+      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
       0 <= anon_builtin_3 &&
       anon_builtin_3 <
       old((unfolding acc(c_IntList_unique(this), wildcard) in
@@ -917,7 +972,9 @@ method refines_c_IntList_f_add(this: Ref, value: Ref) returns (ret_6: Ref)
   requires acc(c_IntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
   requires (unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)) >= 0)
+      0 <= intFromRef(c_IntList_f_size(this))) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)) < 2147483647)
   requires isSubtype(typeOf(this), ArrayIntList())
 {
   ArrayIntList_c_IntList_restore(this)
@@ -927,15 +984,20 @@ method refines_c_IntList_f_add(this: Ref, value: Ref) returns (ret_6: Ref)
   assert isSubtype(typeOf(ret_6), unitType())
   assert (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_size(this))) ==
-    old((unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this)))) +
+      intFromRef(intToRef(1)))
   assert (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
         c_IntList_f_size(this))))) ==
       intFromRef(value))
   assert (forall anon_builtin_3: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_3)) }
+      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
       0 <= anon_builtin_3 &&
       anon_builtin_3 <
       old((unfolding acc(c_IntList_unique(this), wildcard) in
@@ -981,6 +1043,7 @@ function ArrayIntList_f_size(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function c_IntList_f_get(this: Ref, i: Ref): Ref
@@ -1019,7 +1082,12 @@ predicate ArrayIntList_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate InvariantBuilder_unique(this: Ref) {
@@ -1091,6 +1159,8 @@ method ArrayIntList_f_set(this: Ref, i: Ref, value: Ref)
   ensures intFromRef(ArrayIntList_f_get(this, i)) == intFromRef(value)
   ensures (forall anon_builtin_0: Int ::
       { ArrayIntList_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayIntList_f_size(this)) &&
       !(anon_builtin_0 == intFromRef(i)) ==>
@@ -1139,6 +1209,8 @@ method c_IntList_f_set(this: Ref, i: Ref, value: Ref) returns (ret_2: Ref)
       intFromRef(c_IntList_f_get(this, i)) == intFromRef(value))
   ensures (forall anon_builtin_1: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       (unfolding acc(c_IntList_unique(this), wildcard) in
         anon_builtin_1 < intFromRef(c_IntList_f_size(this))) &&
@@ -1173,6 +1245,8 @@ method refines_c_IntList_f_set(this: Ref, i: Ref, value: Ref)
       intFromRef(c_IntList_f_get(this, i)) == intFromRef(value))
   assert (forall anon_builtin_1: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       (unfolding acc(c_IntList_unique(this), wildcard) in
         anon_builtin_1 < intFromRef(c_IntList_f_size(this))) &&
@@ -1192,6 +1266,7 @@ field contents: Seq[Int]
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 predicate ArrayBoundProbe_unique(this: Ref) {
@@ -1205,17 +1280,17 @@ predicate ArrayBoundProbe_unique(this: Ref) {
     true &&
     boolFromRef((let anon_0_0 ==
       (this.bf_count) in
-      boolToRef(0 <= intFromRef(anon_0_0) &&
-      (let anon_1_0 ==
-        (this.bf_count) in
-        (let anon_2_0 ==
-          (this.bf_data) in
-          intFromRef(anon_1_0) <= arraySize(anon_2_0)))))))
+      leInts(intToRef(0), anon_0_0))))
 }
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 method con(par_data: Ref, par_count: Ref) returns (v_ret_0: Ref)
@@ -1234,45 +1309,35 @@ method con(par_data: Ref, par_count: Ref) returns (v_ret_0: Ref)
       true &&
       boolFromRef((let anon_0_0 ==
         (this.bf_count) in
-        boolToRef(0 <= intFromRef(anon_0_0) &&
-        (let anon_1_0 ==
-          (this.bf_count) in
-          (let anon_2_0 ==
-            (this.bf_data) in
-            intFromRef(anon_1_0) <= arraySize(anon_2_0)))))))
+        leInts(intToRef(0), anon_0_0))))
   ensures v_ret_0.bf_data == par_data
   ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
   ensures v_ret_0.bf_data == par_data
   ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
 {
+  var anon_1: Ref
+  var anon_2: Ref
   var anon_3: Ref
-  var anon_4: Ref
-  var anon_5: Ref
   v_ret_0 := new(bf_data, bf_count)
   inhale typeOf(v_ret_0) == ArrayBoundProbe()
   v_ret_0.bf_data := par_data
   v_ret_0.bf_count := par_count
-  anon_5 := v_ret_0.bf_count
-  if (0 <= intFromRef(anon_5)) {
-    var anon_6: Ref
-    var anon_7: Ref
-    anon_6 := v_ret_0.bf_count
-    anon_7 := v_ret_0.bf_data
-    anon_4 := leInts(anon_6, intToRef(arraySize(anon_7)))
+  anon_3 := v_ret_0.bf_count
+  if (0 <= intFromRef(anon_3)) {
+    var anon_4: Ref
+    var anon_5: Ref
+    anon_4 := v_ret_0.bf_count
+    anon_5 := v_ret_0.bf_data
+    anon_2 := leInts(anon_4, intToRef(arraySize(anon_5)))
   } else {
-    anon_4 := boolToRef(false)}
-  anon_3 := require(anon_4)
+    anon_2 := boolToRef(false)}
+  anon_1 := require(anon_2)
   assert (let this ==
       (v_ret_0) in
       true &&
       boolFromRef((let anon_0_0 ==
         (this.bf_count) in
-        boolToRef(0 <= intFromRef(anon_0_0) &&
-        (let anon_1_0 ==
-          (this.bf_count) in
-          (let anon_2_0 ==
-            (this.bf_data) in
-            intFromRef(anon_1_0) <= arraySize(anon_2_0)))))))
+        leInts(intToRef(0), anon_0_0))))
   fold acc(ArrayBoundProbe_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(ArrayBoundProbe_unique(v_ret_0), write)
@@ -1293,6 +1358,7 @@ field data: Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function getByCount(this: Ref, i: Ref): Ref
@@ -1302,13 +1368,13 @@ function getByCount(this: Ref, i: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ArrayBoundProbe_unique(this), write) in
-    (let anon_4_0 ==
+    (let anon_2_0 ==
       ((0 <= intFromRef(i) ? this.count : null)) in
-      (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_4_0) ?
-        (let anon_6_0 ==
+      (0 <= intFromRef(i) && intFromRef(i) < intFromRef(anon_2_0) ?
+        (let anon_4_0 ==
           (this.data) in
-          (unfolding acc(IntArray_unique(anon_6_0), write) in
-            intToRef(anon_6_0.contents[intFromRef(i)]))) :
+          (unfolding acc(IntArray_unique(anon_4_0), write) in
+            intToRef(anon_4_0.contents[intFromRef(i)]))) :
         intToRef(0))))
 }
 
@@ -1323,17 +1389,17 @@ predicate ArrayBoundProbe_unique(this: Ref) {
     true &&
     boolFromRef((let anon_0_0 ==
       (this.count) in
-      boolToRef(0 <= intFromRef(anon_0_0) &&
-      (let anon_1_0 ==
-        (this.count) in
-        (let anon_2_0 ==
-          (this.data) in
-          intFromRef(anon_1_0) <= arraySize(anon_2_0)))))))
+      leInts(intToRef(0), anon_0_0))))
 }
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 /intlist_milestone.kt: info: Generated Viper text for nodeSize:
@@ -1364,6 +1430,39 @@ predicate IntNode_unique(this: Ref) {
   (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
 }
 
+/intlist_milestone.kt: info: Generated Viper text for boundedNodeSize:
+field next: Ref
+
+field value: Ref
+
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_0_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_0_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
+predicate IntNode_unique(this: Ref) {
+  isSubtype(typeOf(this), IntNode()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(IntNode())) &&
+  (this.next != nullValue() ==> acc(IntNode_unique(this.next), write))
+}
+
 /intlist_milestone.kt: info: Generated Viper text for nodeGet:
 field next: Ref
 
@@ -1377,7 +1476,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -1400,6 +1499,26 @@ field next: Ref
 
 field value: Ref
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_0_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_0_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function nodeGet(node: Ref, i: Ref): Ref
   requires isSubtype(typeOf(node), nullable(IntNode()))
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
@@ -1408,7 +1527,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -1416,21 +1535,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_9_0 ==
           (node.next) in
           nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_3_0 ==
-        (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_3_0)))))
 }
 
 predicate IntNode_unique(this: Ref) {
@@ -1450,10 +1554,13 @@ method nonnegativeNodes(node: Ref) returns (v_ret_0: Ref)
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
   ensures node != nullValue() ==> acc(IntNode_unique(node), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures intFromRef(nodeSize(node)) >= 0
-  ensures intFromRef(nodeSize(node)) == old(intFromRef(nodeSize(node)))
+  ensures intFromRef(boundedNodeSize(node)) >= 0
+  ensures intFromRef(boundedNodeSize(node)) ==
+    old(intFromRef(boundedNodeSize(node)))
   ensures (forall anon_builtin: Int ::
       { nodeGet(node, intToRef(anon_builtin)) }
+      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
       intFromRef(nodeGet(node, intToRef(anon_builtin))) ==
       old(intFromRef(nodeGet(node, intToRef(anon_builtin)))))
 {
@@ -1478,6 +1585,26 @@ field bf_next: Ref
 
 field bf_value: Ref
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_0_0 ==
+        (node.bf_next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_0_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function nodeGet(node: Ref, i: Ref): Ref
   requires isSubtype(typeOf(node), nullable(IntNode()))
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
@@ -1486,7 +1613,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -1494,21 +1621,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_9_0 ==
           (node.bf_next) in
           nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_3_0 ==
-        (node.bf_next) in
-        plusInts(intToRef(1), nodeSize(anon_3_0)))))
 }
 
 predicate IntNode_unique(this: Ref) {
@@ -1527,16 +1639,21 @@ method appendNode(node: Ref, par_value: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(node), nullable(IntNode()))
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
   requires isSubtype(typeOf(par_value), intType())
+  requires intFromRef(boundedNodeSize(node)) < 2147483647
   ensures isSubtype(typeOf(v_ret_0), IntNode())
   ensures acc(IntNode_unique(v_ret_0), write)
-  ensures intFromRef(nodeSize(v_ret_0)) ==
-    old(intFromRef(nodeSize(node))) + 1
-  ensures intFromRef(nodeGet(v_ret_0, old(nodeSize(node)))) ==
+  ensures intFromRef(boundedNodeSize(v_ret_0)) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(old(boundedNodeSize(node)), intToRef(1))) in
+      intFromRef(old(boundedNodeSize(node))) + intFromRef(intToRef(1)))
+  ensures intFromRef(nodeGet(v_ret_0, old(boundedNodeSize(node)))) ==
     intFromRef(par_value)
   ensures (forall anon_builtin_0: Int ::
       { nodeGet(v_ret_0, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
-      anon_builtin_0 < old(intFromRef(nodeSize(node))) ==>
+      anon_builtin_0 < old(intFromRef(boundedNodeSize(node))) ==>
       intFromRef(nodeGet(v_ret_0, intToRef(anon_builtin_0))) ==
       old(intFromRef(nodeGet(node, intToRef(anon_builtin_0)))))
 {
@@ -1565,27 +1682,30 @@ method appendNode(node: Ref, par_value: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_5: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(IntNode()))
-  ensures isSubtype(typeOf(ret_5), IntNode())
-  ensures isSubtype(typeOf(ret_5), IntNode()) && acc(ret_5.bf_value, write) &&
-    isSubtype(typeOf(ret_5.bf_value), intType()) &&
-    acc(ret_5.bf_next, write) &&
-    isSubtype(typeOf(ret_5.bf_next), nullable(IntNode()))
-  ensures intFromRef(ret_5.bf_value) == intFromRef(par_value)
-  ensures ret_5.bf_next == par_next
+  ensures isSubtype(typeOf(ret_7), IntNode())
+  ensures isSubtype(typeOf(ret_7), IntNode()) && acc(ret_7.bf_value, write) &&
+    isSubtype(typeOf(ret_7.bf_value), intType()) &&
+    acc(ret_7.bf_next, write) &&
+    isSubtype(typeOf(ret_7.bf_next), nullable(IntNode()))
+  ensures intFromRef(ret_7.bf_value) == intFromRef(par_value)
+  ensures ret_7.bf_next == par_next
 
 
-method nonnegativeNodes(node: Ref) returns (ret_6: Ref)
+method nonnegativeNodes(node: Ref) returns (ret_8: Ref)
   requires isSubtype(typeOf(node), nullable(IntNode()))
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
   ensures node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(ret_6), unitType())
-  ensures intFromRef(nodeSize(node)) >= 0
-  ensures intFromRef(nodeSize(node)) == old(intFromRef(nodeSize(node)))
+  ensures isSubtype(typeOf(ret_8), unitType())
+  ensures intFromRef(boundedNodeSize(node)) >= 0
+  ensures intFromRef(boundedNodeSize(node)) ==
+    old(intFromRef(boundedNodeSize(node)))
   ensures (forall anon_builtin_1: Int ::
       { nodeGet(node, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       intFromRef(nodeGet(node, intToRef(anon_builtin_1))) ==
       old(intFromRef(nodeGet(node, intToRef(anon_builtin_1)))))
 
@@ -1595,6 +1715,26 @@ field bf_value: Ref
 
 field next: Ref
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_0_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_0_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function nodeGet(node: Ref, i: Ref): Ref
   requires isSubtype(typeOf(node), nullable(IntNode()))
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
@@ -1603,7 +1743,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -1611,21 +1751,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_9_0 ==
           (node.next) in
           nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_3_0 ==
-        (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_3_0)))))
 }
 
 predicate IntNode_unique(this: Ref) {
@@ -1645,14 +1770,18 @@ method setNode(node: Ref, i: Ref, par_value: Ref) returns (v_ret_0: Ref)
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
   requires isSubtype(typeOf(i), intType())
   requires isSubtype(typeOf(par_value), intType())
-  requires 0 <= intFromRef(i) && intFromRef(i) < intFromRef(nodeSize(node))
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(boundedNodeSize(node))
   ensures node != nullValue() ==> acc(IntNode_unique(node), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
-  ensures intFromRef(nodeSize(node)) == old(intFromRef(nodeSize(node)))
+  ensures intFromRef(boundedNodeSize(node)) ==
+    old(intFromRef(boundedNodeSize(node)))
   ensures intFromRef(nodeGet(node, i)) == intFromRef(par_value)
   ensures (forall anon_builtin: Int ::
       { nodeGet(node, intToRef(anon_builtin)) }
-      0 <= anon_builtin && anon_builtin < intFromRef(nodeSize(node)) &&
+      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      0 <= anon_builtin && anon_builtin < intFromRef(boundedNodeSize(node)) &&
       !(anon_builtin == intFromRef(i)) ==>
       intFromRef(nodeGet(node, intToRef(anon_builtin))) ==
       old(intFromRef(nodeGet(node, intToRef(anon_builtin)))))
@@ -1733,6 +1862,26 @@ function NodeIntList_f_size(this: Ref): Ref
   (unfolding acc(NodeIntList_unique(this), write) in this.bf_count)
 }
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_3_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_3_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function nodeGet(node: Ref, i: Ref): Ref
   requires isSubtype(typeOf(node), nullable(IntNode()))
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
@@ -1741,7 +1890,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -1749,21 +1898,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_14_0 ==
           (node.next) in
           nodeGet(anon_14_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_6_0 ==
-        (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_6_0)))))
 }
 
 predicate IntList_unique(this: Ref) {
@@ -1795,7 +1929,7 @@ predicate NodeIntList_unique(this: Ref) {
         (this.bf_count) in
         (let anon_2_0 ==
           (this.bf_head) in
-          intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+          intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
 }
 
 predicate footprint(this: Ref)
@@ -1822,7 +1956,7 @@ method con(par_head: Ref, par_count: Ref) returns (v_ret_0: Ref)
           (this.bf_count) in
           (let anon_2_0 ==
             (this.bf_head) in
-            intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+            intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
   ensures v_ret_0.bf_head == par_head
   ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
   ensures v_ret_0.bf_head == par_head
@@ -1842,7 +1976,7 @@ method con(par_head: Ref, par_count: Ref) returns (v_ret_0: Ref)
     var anon_20: Ref
     anon_18 := v_ret_0.bf_count
     anon_19 := v_ret_0.bf_head
-    anon_20 := nodeSize(anon_19)
+    anon_20 := boundedNodeSize(anon_19)
     anon_16 := boolToRef(intFromRef(anon_18) == intFromRef(anon_20))
   } else {
     anon_16 := boolToRef(false)}
@@ -1857,7 +1991,7 @@ method con(par_head: Ref, par_count: Ref) returns (v_ret_0: Ref)
           (this.bf_count) in
           (let anon_2_0 ==
             (this.bf_head) in
-            intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+            intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
   fold acc(NodeIntList_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(NodeIntList_unique(v_ret_0), write)
@@ -1927,6 +2061,26 @@ function NodeIntList_f_size(this: Ref): Ref
   (unfolding acc(NodeIntList_unique(this), write) in this.count)
 }
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_11_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_11_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function nodeGet(node: Ref, i: Ref): Ref
   requires isSubtype(typeOf(node), nullable(IntNode()))
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
@@ -1935,7 +2089,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -1943,21 +2097,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_10_0 ==
           (node.next) in
           nodeGet(anon_10_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_14_0 ==
-        (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_14_0)))))
 }
 
 predicate IntList_unique(this: Ref) {
@@ -1989,7 +2128,7 @@ predicate NodeIntList_unique(this: Ref) {
         (this.count) in
         (let anon_2_0 ==
           (this.head) in
-          intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+          intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
 }
 
 predicate footprint(this: Ref)
@@ -2027,6 +2166,26 @@ function NodeIntList_f_size(this: Ref): Ref
   (unfolding acc(NodeIntList_unique(this), write) in this.count)
 }
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_11_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_11_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function c_IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
   requires acc(footprint(this), wildcard)
@@ -2052,7 +2211,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -2060,21 +2219,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_9_0 ==
           (node.next) in
           nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_14_0 ==
-        (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_14_0)))))
 }
 
 predicate IntNode_unique(this: Ref) {
@@ -2101,7 +2245,7 @@ predicate NodeIntList_unique(this: Ref) {
         (this.count) in
         (let anon_2_0 ==
           (this.head) in
-          intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+          intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
 }
 
 predicate c_IntList_unique(this: Ref) {
@@ -2199,6 +2343,26 @@ function NodeIntList_f_size(this: Ref): Ref
   (unfolding acc(NodeIntList_unique(this), write) in this.count)
 }
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_4_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_4_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function c_IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
   requires acc(footprint(this), wildcard)
@@ -2224,7 +2388,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -2232,21 +2396,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_13_0 ==
           (node.next) in
           nodeGet(anon_13_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_7_0 ==
-        (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_7_0)))))
 }
 
 predicate IntNode_unique(this: Ref) {
@@ -2277,7 +2426,7 @@ predicate NodeIntList_unique(this: Ref) {
         (this.count) in
         (let anon_3_0 ==
           (this.head) in
-          intFromRef(anon_2_0) == intFromRef(nodeSize(anon_3_0))))))))
+          intFromRef(anon_2_0) == intFromRef(boundedNodeSize(anon_3_0))))))))
 }
 
 predicate c_IntList_unique(this: Ref) {
@@ -2331,15 +2480,20 @@ method NodeIntList_f_add(this: Ref, par_value: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), NodeIntList())
   requires acc(NodeIntList_unique(this), write)
   requires isSubtype(typeOf(par_value), intType())
-  requires intFromRef(NodeIntList_f_size(this)) >= 0
+  requires 0 <= intFromRef(NodeIntList_f_size(this)) &&
+    intFromRef(NodeIntList_f_size(this)) < 2147483647
   ensures acc(NodeIntList_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(NodeIntList_f_size(this)) ==
-    old(intFromRef(NodeIntList_f_size(this))) + 1
+    (let anon_builtin_neg1 ==
+      (plusInts(old(NodeIntList_f_size(this)), intToRef(1))) in
+      intFromRef(old(NodeIntList_f_size(this))) + intFromRef(intToRef(1)))
   ensures intFromRef(NodeIntList_f_get(this, old(NodeIntList_f_size(this)))) ==
     intFromRef(par_value)
   ensures (forall anon_builtin_0: Int ::
       { NodeIntList_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < old(intFromRef(NodeIntList_f_size(this))) ==>
       intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_0))) ==
@@ -2365,7 +2519,7 @@ method NodeIntList_f_add(this: Ref, par_value: Ref) returns (v_ret_0: Ref)
           (this.count) in
           (let anon_3_0 ==
             (this.head) in
-            intFromRef(anon_2_0) == intFromRef(nodeSize(anon_3_0))))))))
+            intFromRef(anon_2_0) == intFromRef(boundedNodeSize(anon_3_0))))))))
   fold acc(NodeIntList_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -2374,39 +2528,51 @@ method appendNode(node: Ref, par_value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(node), nullable(IntNode()))
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
   requires isSubtype(typeOf(par_value), intType())
+  requires intFromRef(boundedNodeSize(node)) < 2147483647
   ensures isSubtype(typeOf(ret_2), IntNode())
   ensures acc(IntNode_unique(ret_2), write)
-  ensures intFromRef(nodeSize(ret_2)) ==
-    old(intFromRef(nodeSize(node))) + 1
-  ensures intFromRef(nodeGet(ret_2, old(nodeSize(node)))) ==
+  ensures intFromRef(boundedNodeSize(ret_2)) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(old(boundedNodeSize(node)), intToRef(1))) in
+      intFromRef(old(boundedNodeSize(node))) + intFromRef(intToRef(1)))
+  ensures intFromRef(nodeGet(ret_2, old(boundedNodeSize(node)))) ==
     intFromRef(par_value)
   ensures (forall anon_builtin_1: Int ::
       { nodeGet(ret_2, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
-      anon_builtin_1 < old(intFromRef(nodeSize(node))) ==>
+      anon_builtin_1 < old(intFromRef(boundedNodeSize(node))) ==>
       intFromRef(nodeGet(ret_2, intToRef(anon_builtin_1))) ==
       old(intFromRef(nodeGet(node, intToRef(anon_builtin_1)))))
 
 
-method c_IntList_f_add(this: Ref, par_value: Ref) returns (ret_6: Ref)
+method c_IntList_f_add(this: Ref, par_value: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(this), c_IntList())
   requires acc(c_IntList_unique(this), write)
   requires isSubtype(typeOf(par_value), intType())
   requires (unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)) >= 0)
+      0 <= intFromRef(c_IntList_f_size(this))) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)) < 2147483647)
   ensures acc(c_IntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
   ensures (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_size(this))) ==
-    old((unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
         c_IntList_f_size(this))))) ==
       intFromRef(par_value))
   ensures (forall anon_builtin_2: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_2)) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 <
       old((unfolding acc(c_IntList_unique(this), wildcard) in
@@ -2418,30 +2584,37 @@ method c_IntList_f_add(this: Ref, par_value: Ref) returns (ret_6: Ref)
 
 
 method refines_c_IntList_f_add(this: Ref, par_value: Ref)
-  returns (ret_6: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), c_IntList())
   requires acc(c_IntList_unique(this), write)
   requires isSubtype(typeOf(par_value), intType())
   requires (unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)) >= 0)
+      0 <= intFromRef(c_IntList_f_size(this))) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)) < 2147483647)
   requires isSubtype(typeOf(this), NodeIntList())
 {
   NodeIntList_c_IntList_restore(this)
-  ret_6 := NodeIntList_f_add(this, par_value)
+  ret_7 := NodeIntList_f_add(this, par_value)
   NodeIntList_c_IntList_upcast(this)
   assert acc(c_IntList_unique(this), write)
-  assert isSubtype(typeOf(ret_6), unitType())
+  assert isSubtype(typeOf(ret_7), unitType())
   assert (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_size(this))) ==
-    old((unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this)))) +
+      intFromRef(intToRef(1)))
   assert (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
         c_IntList_f_size(this))))) ==
       intFromRef(par_value))
   assert (forall anon_builtin_2: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_2)) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 <
       old((unfolding acc(c_IntList_unique(this), wildcard) in
@@ -2485,6 +2658,26 @@ function NodeIntList_f_size(this: Ref): Ref
   (unfolding acc(NodeIntList_unique(this), write) in this.count)
 }
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_3_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_3_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function c_IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
   requires acc(footprint(this), wildcard)
@@ -2510,7 +2703,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -2518,21 +2711,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_12_0 ==
           (node.next) in
           nodeGet(anon_12_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_6_0 ==
-        (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_6_0)))))
 }
 
 predicate IntNode_unique(this: Ref) {
@@ -2563,7 +2741,7 @@ predicate NodeIntList_unique(this: Ref) {
         (this.count) in
         (let anon_2_0 ==
           (this.head) in
-          intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+          intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
 }
 
 predicate c_IntList_unique(this: Ref) {
@@ -2628,6 +2806,8 @@ method NodeIntList_f_set(this: Ref, i: Ref, par_value: Ref)
   ensures intFromRef(NodeIntList_f_get(this, i)) == intFromRef(par_value)
   ensures (forall anon_builtin_0: Int ::
       { NodeIntList_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(NodeIntList_f_size(this)) &&
       !(anon_builtin_0 == intFromRef(i)) ==>
@@ -2650,13 +2830,13 @@ method NodeIntList_f_set(this: Ref, i: Ref, par_value: Ref)
           (this.count) in
           (let anon_2_0 ==
             (this.head) in
-            intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+            intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
   fold acc(NodeIntList_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
 method c_IntList_f_set(this: Ref, i: Ref, par_value: Ref)
-  returns (ret_6: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), c_IntList())
   requires acc(c_IntList_unique(this), write)
   requires isSubtype(typeOf(i), intType())
@@ -2665,7 +2845,7 @@ method c_IntList_f_set(this: Ref, i: Ref, par_value: Ref)
     (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(i) < intFromRef(c_IntList_f_size(this)))
   ensures acc(c_IntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
   ensures (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_size(this))) ==
     old((unfolding acc(c_IntList_unique(this), wildcard) in
@@ -2674,6 +2854,8 @@ method c_IntList_f_set(this: Ref, i: Ref, par_value: Ref)
       intFromRef(c_IntList_f_get(this, i)) == intFromRef(par_value))
   ensures (forall anon_builtin_2: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_2)) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
       0 <= anon_builtin_2 &&
       (unfolding acc(c_IntList_unique(this), wildcard) in
         anon_builtin_2 < intFromRef(c_IntList_f_size(this))) &&
@@ -2685,7 +2867,7 @@ method c_IntList_f_set(this: Ref, i: Ref, par_value: Ref)
 
 
 method refines_c_IntList_f_set(this: Ref, i: Ref, par_value: Ref)
-  returns (ret_6: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), c_IntList())
   requires acc(c_IntList_unique(this), write)
   requires isSubtype(typeOf(i), intType())
@@ -2696,10 +2878,10 @@ method refines_c_IntList_f_set(this: Ref, i: Ref, par_value: Ref)
   requires isSubtype(typeOf(this), NodeIntList())
 {
   NodeIntList_c_IntList_restore(this)
-  ret_6 := NodeIntList_f_set(this, i, par_value)
+  ret_7 := NodeIntList_f_set(this, i, par_value)
   NodeIntList_c_IntList_upcast(this)
   assert acc(c_IntList_unique(this), write)
-  assert isSubtype(typeOf(ret_6), unitType())
+  assert isSubtype(typeOf(ret_7), unitType())
   assert (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_size(this))) ==
     old((unfolding acc(c_IntList_unique(this), wildcard) in
@@ -2708,6 +2890,8 @@ method refines_c_IntList_f_set(this: Ref, i: Ref, par_value: Ref)
       intFromRef(c_IntList_f_get(this, i)) == intFromRef(par_value))
   assert (forall anon_builtin_2: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_2)) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
       0 <= anon_builtin_2 &&
       (unfolding acc(c_IntList_unique(this), wildcard) in
         anon_builtin_2 < intFromRef(c_IntList_f_size(this))) &&
@@ -2723,14 +2907,19 @@ method setNode(node: Ref, i: Ref, par_value: Ref) returns (ret_2: Ref)
   requires node != nullValue() ==> acc(IntNode_unique(node), write)
   requires isSubtype(typeOf(i), intType())
   requires isSubtype(typeOf(par_value), intType())
-  requires 0 <= intFromRef(i) && intFromRef(i) < intFromRef(nodeSize(node))
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(boundedNodeSize(node))
   ensures node != nullValue() ==> acc(IntNode_unique(node), write)
   ensures isSubtype(typeOf(ret_2), unitType())
-  ensures intFromRef(nodeSize(node)) == old(intFromRef(nodeSize(node)))
+  ensures intFromRef(boundedNodeSize(node)) ==
+    old(intFromRef(boundedNodeSize(node)))
   ensures intFromRef(nodeGet(node, i)) == intFromRef(par_value)
   ensures (forall anon_builtin_1: Int ::
       { nodeGet(node, intToRef(anon_builtin_1)) }
-      0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(nodeSize(node)) &&
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(boundedNodeSize(node)) &&
       !(anon_builtin_1 == intFromRef(i)) ==>
       intFromRef(nodeGet(node, intToRef(anon_builtin_1))) ==
       old(intFromRef(nodeGet(node, intToRef(anon_builtin_1)))))
@@ -2785,25 +2974,32 @@ predicate Serializable_unique(this: Ref) {
   isSubtype(typeOf(this), Serializable())
 }
 
-method add(this: Ref, value: Ref) returns (ret_1: Ref)
+method add(this: Ref, value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), IntList())
   requires acc(IntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
   requires (unfolding acc(IntList_unique(this), wildcard) in
-      intFromRef(f_size(this)) >= 0)
+      0 <= intFromRef(f_size(this))) &&
+    (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(f_size(this)) < 2147483647)
   ensures acc(IntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(f_size(this))) ==
-    old((unfolding acc(IntList_unique(this), wildcard) in
-      intFromRef(f_size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(IntList_unique(this), wildcard) in
+        f_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(IntList_unique(this), wildcard) in
+        f_size(this)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(IntList_f_get(this, old((unfolding acc(IntList_unique(this), wildcard) in
         f_size(this))))) ==
       intFromRef(value))
   ensures (forall anon_builtin_0: Int ::
       { IntList_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 <
       old((unfolding acc(IntList_unique(this), wildcard) in
@@ -2814,7 +3010,7 @@ method add(this: Ref, value: Ref) returns (ret_1: Ref)
           intFromRef(IntList_f_get(this, intToRef(anon_builtin_0)))))))
 
 
-method f_get_Int(list: Ref, i: Ref) returns (ret_3: Ref)
+method f_get_Int(list: Ref, i: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(list), IntList())
   requires acc(IntList_unique(list), write)
   requires isSubtype(typeOf(i), intType())
@@ -2822,8 +3018,8 @@ method f_get_Int(list: Ref, i: Ref) returns (ret_3: Ref)
     (unfolding acc(IntList_unique(list), wildcard) in
       intFromRef(i) < intFromRef(f_size(list)))
   ensures acc(IntList_unique(list), write)
-  ensures isSubtype(typeOf(ret_3), intType())
-  ensures intFromRef(ret_3) ==
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(ret_4) ==
     old((unfolding acc(IntList_unique(list), wildcard) in
       intFromRef(IntList_f_get(list, i))))
   ensures (unfolding acc(IntList_unique(list), wildcard) in
@@ -2832,6 +3028,8 @@ method f_get_Int(list: Ref, i: Ref) returns (ret_3: Ref)
       intFromRef(f_size(list))))
   ensures (forall anon_builtin_1: Int ::
       { IntList_f_get(list, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       (unfolding acc(IntList_unique(list), wildcard) in
         anon_builtin_1 < intFromRef(f_size(list))) ==>
@@ -2844,6 +3042,8 @@ method f_get_Int(list: Ref, i: Ref) returns (ret_3: Ref)
 method interfaceClient(list: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(list), IntList())
   requires acc(IntList_unique(list), write)
+  requires (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(f_size(list)) <= 2147483645)
   ensures acc(IntList_unique(list), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -2872,13 +3072,16 @@ method interfaceClient(list: Ref) returns (v_ret_0: Ref)
   assert intFromRef(changed) == 9
   assert intFromRef(unchanged) == 8
   anon_4 := (unfolding acc(IntList_unique(list), wildcard) in f_size(list))
-  assert intFromRef(anon_4) == intFromRef(n) + 2
+  assert intFromRef(anon_4) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(n, intToRef(2))) in
+      intFromRef(n) + intFromRef(intToRef(2)))
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method set(this: Ref, i: Ref, value: Ref) returns (ret_5: Ref)
+method set(this: Ref, i: Ref, value: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(this), IntList())
   requires acc(IntList_unique(this), write)
   requires isSubtype(typeOf(i), intType())
@@ -2887,7 +3090,7 @@ method set(this: Ref, i: Ref, value: Ref) returns (ret_5: Ref)
     (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(i) < intFromRef(f_size(this)))
   ensures acc(IntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures isSubtype(typeOf(ret_6), unitType())
   ensures (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(f_size(this))) ==
     old((unfolding acc(IntList_unique(this), wildcard) in
@@ -2896,6 +3099,8 @@ method set(this: Ref, i: Ref, value: Ref) returns (ret_5: Ref)
       intFromRef(IntList_f_get(this, i)) == intFromRef(value))
   ensures (forall anon_builtin_2: Int ::
       { IntList_f_get(this, intToRef(anon_builtin_2)) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
       0 <= anon_builtin_2 &&
       (unfolding acc(IntList_unique(this), wildcard) in
         anon_builtin_2 < intFromRef(f_size(this))) &&
@@ -2932,25 +3137,32 @@ predicate InvariantBuilder_unique(this: Ref) {
 
 predicate footprint(this: Ref)
 
-method add(this: Ref, value: Ref) returns (ret_3: Ref)
+method add(this: Ref, value: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), IntList())
   requires acc(IntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
   requires (unfolding acc(IntList_unique(this), wildcard) in
-      intFromRef(size(this)) >= 0)
+      0 <= intFromRef(size(this))) &&
+    (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(size(this)) < 2147483647)
   ensures acc(IntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
   ensures (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(size(this))) ==
-    old((unfolding acc(IntList_unique(this), wildcard) in
-      intFromRef(size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(IntList_unique(this), wildcard) in
+        size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(IntList_unique(this), wildcard) in
+        size(this)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(get(this, old((unfolding acc(IntList_unique(this), wildcard) in
         size(this))))) ==
       intFromRef(value))
   ensures (forall anon_builtin_1: Int ::
       { get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 <
       old((unfolding acc(IntList_unique(this), wildcard) in
@@ -2964,19 +3176,26 @@ method add(this: Ref, value: Ref) returns (ret_3: Ref)
 method lendClient(list: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(list), IntList())
   requires acc(IntList_unique(list), write)
+  requires (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(size(list)) < 2147483647)
   ensures acc(IntList_unique(list), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(IntList_unique(list), wildcard) in
       intFromRef(size(list))) ==
-    old((unfolding acc(IntList_unique(list), wildcard) in
-      intFromRef(size(list)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(IntList_unique(list), wildcard) in
+        size(list))), intToRef(1))) in
+      intFromRef(old((unfolding acc(IntList_unique(list), wildcard) in
+        size(list)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(IntList_unique(list), wildcard) in
       intFromRef(get(list, old((unfolding acc(IntList_unique(list), wildcard) in
         size(list))))) ==
       42)
   ensures (forall anon_builtin_0: Int ::
       { get(list, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 <
       old((unfolding acc(IntList_unique(list), wildcard) in
@@ -3027,6 +3246,7 @@ function ArrayIntList_f_size(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function c_IntList_f_get(this: Ref, i: Ref): Ref
@@ -3081,7 +3301,12 @@ predicate Cloneable_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate InvariantBuilder_unique(this: Ref) {
@@ -3238,6 +3463,8 @@ method createUpcastArray() returns (v_ret_0: Ref)
 method interfaceClient(par_list: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
+  requires (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)) <= 2147483645)
   ensures acc(c_IntList_unique(par_list), write)
   ensures isSubtype(typeOf(ret_7), unitType())
 
@@ -3245,27 +3472,34 @@ method interfaceClient(par_list: Ref) returns (ret_7: Ref)
 method lendClient(par_list: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
+  requires (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)) < 2147483647)
   ensures acc(c_IntList_unique(par_list), write)
   ensures isSubtype(typeOf(ret_5), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
-    old((unfolding acc(c_IntList_unique(par_list), wildcard) in
-      intFromRef(c_IntList_f_size(par_list)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_get(par_list, old((unfolding acc(c_IntList_unique(par_list), wildcard) in
         c_IntList_f_size(par_list))))) ==
       42)
-  ensures (forall anon_builtin: Int ::
-      { c_IntList_f_get(par_list, intToRef(anon_builtin)) }
-      0 <= anon_builtin &&
-      anon_builtin <
+  ensures (forall anon_builtin_0: Int ::
+      { c_IntList_f_get(par_list, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
       old((unfolding acc(c_IntList_unique(par_list), wildcard) in
         intFromRef(c_IntList_f_size(par_list)))) ==>
       (unfolding acc(c_IntList_unique(par_list), wildcard) in
-        intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin))) ==
+        intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_0))) ==
         old((unfolding acc(c_IntList_unique(par_list), wildcard) in
-          intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin)))))))
+          intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_0)))))))
 
 
 /intlist_milestone.kt: info: Generated Viper text for createUpcastNode:
@@ -3301,6 +3535,26 @@ function NodeIntList_f_size(this: Ref): Ref
   (unfolding acc(NodeIntList_unique(this), write) in this.bf_count)
 }
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_11_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_11_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function c_IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
   requires acc(c_IntList_footprint(this), wildcard)
@@ -3332,7 +3586,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -3340,21 +3594,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_9_0 ==
           (node.next) in
           nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_14_0 ==
-        (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_14_0)))))
 }
 
 predicate BooleanArray_unique(this: Ref) {
@@ -3396,7 +3635,7 @@ predicate NodeIntList_unique(this: Ref) {
         (this.bf_count) in
         (let anon_2_0 ==
           (this.bf_head) in
-          intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+          intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
 }
 
 predicate Serializable_footprint(this: Ref)
@@ -3476,7 +3715,7 @@ method con(par_head: Ref, par_count: Ref) returns (ret_1: Ref)
           (this.bf_count) in
           (let anon_2_0 ==
             (this.bf_head) in
-            intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+            intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
   ensures ret_1.bf_head == par_head
   ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
   ensures ret_1.bf_head == par_head
@@ -3512,7 +3751,7 @@ method createUpcastNode() returns (v_ret_0: Ref)
           (this.bf_count) in
           (let anon_2_0 ==
             (this.bf_head) in
-            intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+            intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
   fold acc(NodeIntList_unique(l0_list), write)
   anon_17 := NodeIntList_f_get(l0_list, intToRef(0))
   assert intFromRef(anon_17) == 42
@@ -3533,6 +3772,8 @@ method createUpcastNode() returns (v_ret_0: Ref)
 method interfaceClient(par_list: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
+  requires (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)) <= 2147483645)
   ensures acc(c_IntList_unique(par_list), write)
   ensures isSubtype(typeOf(ret_7), unitType())
 
@@ -3540,27 +3781,34 @@ method interfaceClient(par_list: Ref) returns (ret_7: Ref)
 method lendClient(par_list: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
+  requires (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)) < 2147483647)
   ensures acc(c_IntList_unique(par_list), write)
   ensures isSubtype(typeOf(ret_4), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
-    old((unfolding acc(c_IntList_unique(par_list), wildcard) in
-      intFromRef(c_IntList_f_size(par_list)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_get(par_list, old((unfolding acc(c_IntList_unique(par_list), wildcard) in
         c_IntList_f_size(par_list))))) ==
       42)
-  ensures (forall anon_builtin: Int ::
-      { c_IntList_f_get(par_list, intToRef(anon_builtin)) }
-      0 <= anon_builtin &&
-      anon_builtin <
+  ensures (forall anon_builtin_0: Int ::
+      { c_IntList_f_get(par_list, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
       old((unfolding acc(c_IntList_unique(par_list), wildcard) in
         intFromRef(c_IntList_f_size(par_list)))) ==>
       (unfolding acc(c_IntList_unique(par_list), wildcard) in
-        intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin))) ==
+        intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_0))) ==
         old((unfolding acc(c_IntList_unique(par_list), wildcard) in
-          intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin)))))))
+          intFromRef(c_IntList_f_get(par_list, intToRef(anon_builtin_0)))))))
 
 
 /intlist_milestone.kt: info: Generated Viper text for concreteArrayOperations:
@@ -3598,6 +3846,7 @@ function ArrayIntList_f_size(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function c_IntList_f_get(this: Ref, i: Ref): Ref
@@ -3652,7 +3901,12 @@ predicate Cloneable_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate InvariantBuilder_unique(this: Ref) {
@@ -3721,15 +3975,20 @@ method add(this: Ref, value: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), ArrayIntList())
   requires acc(ArrayIntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
-  requires intFromRef(ArrayIntList_f_size(this)) >= 0
+  requires 0 <= intFromRef(ArrayIntList_f_size(this)) &&
+    intFromRef(ArrayIntList_f_size(this)) < 2147483647
   ensures acc(ArrayIntList_unique(this), write)
   ensures isSubtype(typeOf(ret_5), unitType())
   ensures intFromRef(ArrayIntList_f_size(this)) ==
-    old(intFromRef(ArrayIntList_f_size(this))) + 1
+    (let anon_builtin_neg1 ==
+      (plusInts(old(ArrayIntList_f_size(this)), intToRef(1))) in
+      intFromRef(old(ArrayIntList_f_size(this))) + intFromRef(intToRef(1)))
   ensures intFromRef(ArrayIntList_f_get(this, old(ArrayIntList_f_size(this)))) ==
     intFromRef(value)
   ensures (forall anon_builtin_0: Int ::
       { ArrayIntList_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < old(intFromRef(ArrayIntList_f_size(this))) ==>
       intFromRef(ArrayIntList_f_get(this, intToRef(anon_builtin_0))) ==
@@ -3833,19 +4092,26 @@ method concreteArrayOperations() returns (v_ret_0: Ref)
 method lendClient(par_list: Ref) returns (ret_9: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
+  requires (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)) < 2147483647)
   ensures acc(c_IntList_unique(par_list), write)
   ensures isSubtype(typeOf(ret_9), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
-    old((unfolding acc(c_IntList_unique(par_list), wildcard) in
-      intFromRef(c_IntList_f_size(par_list)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_get(par_list, old((unfolding acc(c_IntList_unique(par_list), wildcard) in
         c_IntList_f_size(par_list))))) ==
       42)
   ensures (forall anon_builtin_2: Int ::
       { c_IntList_f_get(par_list, intToRef(anon_builtin_2)) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 <
       old((unfolding acc(c_IntList_unique(par_list), wildcard) in
@@ -3870,6 +4136,8 @@ method set(this: Ref, i: Ref, value: Ref) returns (ret_7: Ref)
   ensures intFromRef(ArrayIntList_f_get(this, i)) == intFromRef(value)
   ensures (forall anon_builtin_1: Int ::
       { ArrayIntList_f_get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayIntList_f_size(this)) &&
       !(anon_builtin_1 == intFromRef(i)) ==>
@@ -3910,6 +4178,26 @@ function NodeIntList_f_size(this: Ref): Ref
   (unfolding acc(NodeIntList_unique(this), write) in this.bf_count)
 }
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_11_0 ==
+        (node.next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_11_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function c_IntList_f_get(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), c_IntList())
   requires acc(c_IntList_footprint(this), wildcard)
@@ -3941,7 +4229,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -3949,21 +4237,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_9_0 ==
           (node.next) in
           nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_14_0 ==
-        (node.next) in
-        plusInts(intToRef(1), nodeSize(anon_14_0)))))
 }
 
 predicate BooleanArray_unique(this: Ref) {
@@ -4005,7 +4278,7 @@ predicate NodeIntList_unique(this: Ref) {
         (this.bf_count) in
         (let anon_2_0 ==
           (this.bf_head) in
-          intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+          intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
 }
 
 predicate Serializable_footprint(this: Ref)
@@ -4067,15 +4340,20 @@ method add(this: Ref, par_value: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), NodeIntList())
   requires acc(NodeIntList_unique(this), write)
   requires isSubtype(typeOf(par_value), intType())
-  requires intFromRef(NodeIntList_f_size(this)) >= 0
+  requires 0 <= intFromRef(NodeIntList_f_size(this)) &&
+    intFromRef(NodeIntList_f_size(this)) < 2147483647
   ensures acc(NodeIntList_unique(this), write)
   ensures isSubtype(typeOf(ret_4), unitType())
   ensures intFromRef(NodeIntList_f_size(this)) ==
-    old(intFromRef(NodeIntList_f_size(this))) + 1
+    (let anon_builtin_neg1 ==
+      (plusInts(old(NodeIntList_f_size(this)), intToRef(1))) in
+      intFromRef(old(NodeIntList_f_size(this))) + intFromRef(intToRef(1)))
   ensures intFromRef(NodeIntList_f_get(this, old(NodeIntList_f_size(this)))) ==
     intFromRef(par_value)
   ensures (forall anon_builtin_0: Int ::
       { NodeIntList_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < old(intFromRef(NodeIntList_f_size(this))) ==>
       intFromRef(NodeIntList_f_get(this, intToRef(anon_builtin_0))) ==
@@ -4104,7 +4382,7 @@ method con(par_head: Ref, par_count: Ref) returns (ret_1: Ref)
           (this.bf_count) in
           (let anon_2_0 ==
             (this.bf_head) in
-            intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+            intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
   ensures ret_1.bf_head == par_head
   ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
   ensures ret_1.bf_head == par_head
@@ -4143,7 +4421,7 @@ method concreteNodeOperations() returns (v_ret_0: Ref)
           (this.bf_count) in
           (let anon_2_0 ==
             (this.bf_head) in
-            intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+            intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
   fold acc(NodeIntList_unique(l0_list), write)
   anon_19 := NodeIntList_f_get(l0_list, intToRef(0))
   assert intFromRef(anon_19) == 13
@@ -4166,19 +4444,26 @@ method concreteNodeOperations() returns (v_ret_0: Ref)
 method lendClient(par_list: Ref) returns (ret_9: Ref)
   requires isSubtype(typeOf(par_list), c_IntList())
   requires acc(c_IntList_unique(par_list), write)
+  requires (unfolding acc(c_IntList_unique(par_list), wildcard) in
+      intFromRef(c_IntList_f_size(par_list)) < 2147483647)
   ensures acc(c_IntList_unique(par_list), write)
   ensures isSubtype(typeOf(ret_9), unitType())
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_size(par_list))) ==
-    old((unfolding acc(c_IntList_unique(par_list), wildcard) in
-      intFromRef(c_IntList_f_size(par_list)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(par_list), wildcard) in
+        c_IntList_f_size(par_list)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(c_IntList_unique(par_list), wildcard) in
       intFromRef(c_IntList_f_get(par_list, old((unfolding acc(c_IntList_unique(par_list), wildcard) in
         c_IntList_f_size(par_list))))) ==
       42)
   ensures (forall anon_builtin_2: Int ::
       { c_IntList_f_get(par_list, intToRef(anon_builtin_2)) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 <
       old((unfolding acc(c_IntList_unique(par_list), wildcard) in
@@ -4203,6 +4488,8 @@ method set(this: Ref, i: Ref, par_value: Ref) returns (ret_6: Ref)
   ensures intFromRef(NodeIntList_f_get(this, i)) == intFromRef(par_value)
   ensures (forall anon_builtin_1: Int ::
       { NodeIntList_f_get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(NodeIntList_f_size(this)) &&
       !(anon_builtin_1 == intFromRef(i)) ==>
@@ -4260,6 +4547,7 @@ function IntList_f_size(this: Ref): Ref
 
 function arraySize(this: Ref): Int
   ensures result >= 0
+  ensures result <= 2147483647
 
 
 function g_size(this: Ref): Ref
@@ -4299,7 +4587,12 @@ predicate Cloneable_unique(this: Ref) {
 
 predicate IntArray_unique(this: Ref) {
   isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
-  |this.contents| == arraySize(this)
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
 }
 
 predicate IntList_footprint(this: Ref)
@@ -4426,6 +4719,26 @@ function NodeIntList_f_size(this: Ref): Ref
   (unfolding acc(NodeIntList_unique(this), write) in this.bf_count)
 }
 
+function boundedNodeSize(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(IntNode()))
+  requires node != nullValue() ==> acc(IntNode_unique(node), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  ensures node == nullValue() ==> result == intToRef(0)
+  decreases node != nullValue(), IntNode_unique(node)
+{
+  (node == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(IntNode_unique(node), write) in
+      (let anon_11_0 ==
+        (node.bf_next) in
+        (let tail_0 ==
+          (boundedNodeSize(anon_11_0)) in
+          (intFromRef(tail_0) < 2147483647 ?
+            plusInts(intToRef(1), tail_0) :
+            intToRef(2147483647))))))
+}
+
 function g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
@@ -4440,7 +4753,7 @@ function nodeGet(node: Ref, i: Ref): Ref
   ensures node == nullValue() ==> result == intToRef(0)
   decreases node != nullValue(), IntNode_unique(node)
 {
-  (node == nullValue() ?
+  (node == nullValue() || intFromRef(i) < 0 ?
     intToRef(0) :
     (unfolding acc(IntNode_unique(node), write) in
       (intFromRef(i) == 0 ?
@@ -4448,21 +4761,6 @@ function nodeGet(node: Ref, i: Ref): Ref
         (let anon_9_0 ==
           (node.bf_next) in
           nodeGet(anon_9_0, minusInts(i, intToRef(1)))))))
-}
-
-function nodeSize(node: Ref): Ref
-  requires isSubtype(typeOf(node), nullable(IntNode()))
-  requires node != nullValue() ==> acc(IntNode_unique(node), write)
-  ensures isSubtype(typeOf(result), intType())
-  ensures node == nullValue() ==> result == intToRef(0)
-  decreases node != nullValue(), IntNode_unique(node)
-{
-  (node == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(IntNode_unique(node), write) in
-      (let anon_14_0 ==
-        (node.bf_next) in
-        plusInts(intToRef(1), nodeSize(anon_14_0)))))
 }
 
 predicate BooleanArray_unique(this: Ref) {
@@ -4507,7 +4805,7 @@ predicate NodeIntList_unique(this: Ref) {
         (this.bf_count) in
         (let anon_2_0 ==
           (this.bf_head) in
-          intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+          intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
 }
 
 predicate Serializable_footprint(this: Ref)
@@ -4551,7 +4849,7 @@ method con_NodeIntList(par_head: Ref, par_count: Ref) returns (ret_2: Ref)
           (this.bf_count) in
           (let anon_2_0 ==
             (this.bf_head) in
-            intFromRef(anon_1_0) == intFromRef(nodeSize(anon_2_0))))))))
+            intFromRef(anon_1_0) == intFromRef(boundedNodeSize(anon_2_0))))))))
   ensures ret_2.bf_head == par_head
   ensures intFromRef(ret_2.bf_count) == intFromRef(par_count)
   ensures ret_2.bf_head == par_head
@@ -4632,6 +4930,8 @@ method set(this: Ref, i: Ref, value: Ref) returns (ret_1: Ref)
       intFromRef(get(this, i)) == intFromRef(value))
   ensures (forall anon_builtin: Int ::
       { get(this, intToRef(anon_builtin)) }
+      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
       0 <= anon_builtin &&
       (unfolding acc(IntList_unique(this), wildcard) in
         anon_builtin < intFromRef(size(this))) &&
@@ -4728,38 +5028,47 @@ predicate Serializable_unique(this: Ref) {
   isSubtype(typeOf(this), Serializable())
 }
 
-method add(this: Ref, value: Ref) returns (ret_1: Ref)
+method add(this: Ref, value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), IntList())
   requires acc(IntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
   requires (unfolding acc(IntList_unique(this), wildcard) in
-      intFromRef(f_size(this)) >= 0)
+      0 <= intFromRef(f_size(this))) &&
+    (unfolding acc(IntList_unique(this), wildcard) in
+      intFromRef(f_size(this)) < 2147483647)
   ensures acc(IntList_unique(this), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(f_size(this))) ==
-    old((unfolding acc(IntList_unique(this), wildcard) in
-      intFromRef(f_size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(IntList_unique(this), wildcard) in
+        f_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(IntList_unique(this), wildcard) in
+        f_size(this)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(IntList_unique(this), wildcard) in
       intFromRef(get(this, old((unfolding acc(IntList_unique(this), wildcard) in
         f_size(this))))) ==
       intFromRef(value))
-  ensures (forall anon_builtin: Int ::
-      { get(this, intToRef(anon_builtin)) }
-      0 <= anon_builtin &&
-      anon_builtin <
+  ensures (forall anon_builtin_0: Int ::
+      { get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
       old((unfolding acc(IntList_unique(this), wildcard) in
         intFromRef(f_size(this)))) ==>
       (unfolding acc(IntList_unique(this), wildcard) in
-        intFromRef(get(this, intToRef(anon_builtin))) ==
+        intFromRef(get(this, intToRef(anon_builtin_0))) ==
         old((unfolding acc(IntList_unique(this), wildcard) in
-          intFromRef(get(this, intToRef(anon_builtin)))))))
+          intFromRef(get(this, intToRef(anon_builtin_0)))))))
 
 
 method falseClientClaim(list: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(list), IntList())
   requires acc(IntList_unique(list), write)
+  requires (unfolding acc(IntList_unique(list), wildcard) in
+      intFromRef(f_size(list)) < 2147483647)
   ensures acc(IntList_unique(list), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -5099,15 +5408,20 @@ method BrokenIntList_f_add(this: Ref, value: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), BrokenIntList())
   requires acc(BrokenIntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
-  requires intFromRef(BrokenIntList_f_size(this)) >= 0
+  requires 0 <= intFromRef(BrokenIntList_f_size(this)) &&
+    intFromRef(BrokenIntList_f_size(this)) < 2147483647
   ensures acc(BrokenIntList_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(BrokenIntList_f_size(this)) ==
-    old(intFromRef(BrokenIntList_f_size(this))) + 1
+    (let anon_builtin_neg1 ==
+      (plusInts(old(BrokenIntList_f_size(this)), intToRef(1))) in
+      intFromRef(old(BrokenIntList_f_size(this))) + intFromRef(intToRef(1)))
   ensures intFromRef(BrokenIntList_f_get(this, old(BrokenIntList_f_size(this)))) ==
     intFromRef(value)
   ensures (forall anon_builtin_0: Int ::
       { BrokenIntList_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < old(intFromRef(BrokenIntList_f_size(this))) ==>
       intFromRef(BrokenIntList_f_get(this, intToRef(anon_builtin_0))) ==
@@ -5128,20 +5442,27 @@ method c_IntList_f_add(this: Ref, value: Ref) returns (ret_2: Ref)
   requires acc(c_IntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
   requires (unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)) >= 0)
+      0 <= intFromRef(c_IntList_f_size(this))) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)) < 2147483647)
   ensures acc(c_IntList_unique(this), write)
   ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_size(this))) ==
-    old((unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this)))) +
+      intFromRef(intToRef(1)))
   ensures (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
         c_IntList_f_size(this))))) ==
       intFromRef(value))
   ensures (forall anon_builtin_1: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 <
       old((unfolding acc(c_IntList_unique(this), wildcard) in
@@ -5157,7 +5478,9 @@ method refines_c_IntList_f_add(this: Ref, value: Ref) returns (ret_2: Ref)
   requires acc(c_IntList_unique(this), write)
   requires isSubtype(typeOf(value), intType())
   requires (unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)) >= 0)
+      0 <= intFromRef(c_IntList_f_size(this))) &&
+    (unfolding acc(c_IntList_unique(this), wildcard) in
+      intFromRef(c_IntList_f_size(this)) < 2147483647)
   requires isSubtype(typeOf(this), BrokenIntList())
 {
   BrokenIntList_c_IntList_restore(this)
@@ -5167,15 +5490,20 @@ method refines_c_IntList_f_add(this: Ref, value: Ref) returns (ret_2: Ref)
   assert isSubtype(typeOf(ret_2), unitType())
   assert (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_size(this))) ==
-    old((unfolding acc(c_IntList_unique(this), wildcard) in
-      intFromRef(c_IntList_f_size(this)))) +
-    1
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_IntList_unique(this), wildcard) in
+        c_IntList_f_size(this)))) +
+      intFromRef(intToRef(1)))
   assert (unfolding acc(c_IntList_unique(this), wildcard) in
       intFromRef(c_IntList_f_get(this, old((unfolding acc(c_IntList_unique(this), wildcard) in
         c_IntList_f_size(this))))) ==
       intFromRef(value))
   assert (forall anon_builtin_1: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 <
       old((unfolding acc(c_IntList_unique(this), wildcard) in
@@ -5298,6 +5626,8 @@ method BrokenIntList_f_set(this: Ref, i: Ref, value: Ref)
   ensures intFromRef(BrokenIntList_f_get(this, i)) == intFromRef(value)
   ensures (forall anon_builtin_0: Int ::
       { BrokenIntList_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(BrokenIntList_f_size(this)) &&
       !(anon_builtin_0 == intFromRef(i)) ==>
@@ -5329,6 +5659,8 @@ method c_IntList_f_set(this: Ref, i: Ref, value: Ref) returns (ret_2: Ref)
       intFromRef(c_IntList_f_get(this, i)) == intFromRef(value))
   ensures (forall anon_builtin_1: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       (unfolding acc(c_IntList_unique(this), wildcard) in
         anon_builtin_1 < intFromRef(c_IntList_f_size(this))) &&
@@ -5363,6 +5695,8 @@ method refines_c_IntList_f_set(this: Ref, i: Ref, value: Ref)
       intFromRef(c_IntList_f_get(this, i)) == intFromRef(value))
   assert (forall anon_builtin_1: Int ::
       { c_IntList_f_get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       0 <= anon_builtin_1 &&
       (unfolding acc(c_IntList_unique(this), wildcard) in
         anon_builtin_1 < intFromRef(c_IntList_f_size(this))) &&

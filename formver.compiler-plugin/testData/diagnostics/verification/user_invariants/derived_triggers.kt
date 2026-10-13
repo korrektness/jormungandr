@@ -30,7 +30,7 @@ fun <!VIPER_TEXT!>swapKeepsSingleQuantifiedFact<!>(arr: @Unique @Borrowed IntArr
 
 fun <!VIPER_TEXT!>swapKeepsSortedPrefix<!>(arr: @Unique @Borrowed IntArray, n: Int) {
     preconditions {
-        0 <= n && n + 2 <= arr.size
+        0 <= n && n <= arr.size - 2
         forAll<Int> { a -> forAll<Int> { b -> (0 <= a && a < b && b < n) implies (arr[a] <= arr[b]) } }
     }
     postconditions<Unit> {
@@ -130,10 +130,10 @@ fun <!VIPER_TEXT!>first<!>(x: Int, y: Int): Int = x
 // `first` mentions `b`, which is bound inside `a`'s quantifier, so `a`'s derived trigger is a subterm without `b`.
 fun <!VIPER_TEXT!>rejectedCandidates<!>(arr: @Unique @Borrowed IntArray) {
     preconditions {
-        forAll<Int> { k -> (0 <= k && k + 1 < arr.size) implies (arr[k + 1] == arr[k]) }
+        forAll<Int> { k -> (0 <= k && k < arr.size - 1) implies (arr[k + 1] == arr[k]) }
     }
     postconditions<Unit> {
-        forAll<Int> { k -> (0 <= k && k + 1 < arr.size) implies (arr[k + 1] == old(arr[k])) }
+        forAll<Int> { k -> (0 <= k && k < arr.size - 1) implies (arr[k + 1] == old(arr[k])) }
         forAll<Int> { a -> forAll<Int> { b -> (0 <= a && a < arr.size) implies (first(arr[a], b) == old(arr[a])) } }
     }
 }

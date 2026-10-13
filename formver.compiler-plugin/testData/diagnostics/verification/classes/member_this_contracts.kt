@@ -5,13 +5,14 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Meter(var reading: Int) {
     @Unique @Borrowed
     fun <!VIPER_TEXT!>advance<!>(by: Int) {
-        preconditions { by >= 0 }
+        preconditions { by >= 0 && reading <= 2147483647 - by }
         postconditions<Unit> { reading == old(reading) + by }
         reading = reading + by
     }
 
     @Unique @Borrowed
     fun <!VIPER_TEXT!>advanceTwice<!>() {
+        preconditions { reading <= 2147483647 - 3 }
         postconditions<Unit> { reading == old(reading) + 3 }
         advance(1)
         advance(2)
@@ -57,7 +58,7 @@ open class Gauge(var level: Int) {
 class CountingGauge(level: Int, var ticks: Int) : Gauge(level) {
     @Unique @Borrowed
     override fun <!VIPER_TEXT!>tick<!>() {
-        ticks = ticks + 1
+        if (ticks < 2147483647) ticks = ticks + 1
     }
 }
 
@@ -65,7 +66,7 @@ class DriftingGauge(level: Int) : Gauge(level) {
     @Unique @Borrowed
     override fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>tick<!>() {
         postconditions<Unit> { true }
-        level = level + 1
+        if (level < 2147483647) level = level + 1
     }
 }
 

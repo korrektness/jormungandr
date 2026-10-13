@@ -6,14 +6,16 @@ function value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method get(this: Ref, index: Ref) returns (v_ret_0: Ref)
+method get(this: Ref, par_index: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), CustomList())
   requires acc(this.size, write)
+  requires isSubtype(typeOf(this.size), intType())
   requires intFromRef(this.size) >= 0
-  requires isSubtype(typeOf(index), intType())
-  requires intFromRef(index) >= 0
-  requires intFromRef(this.size) > intFromRef(index)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0
+  requires intFromRef(this.size) > intFromRef(par_index)
   ensures acc(this.size, write)
+  ensures isSubtype(typeOf(this.size), intType())
   ensures intFromRef(this.size) >= 0
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(this.size) == old(intFromRef(this.size))
@@ -36,6 +38,7 @@ method con(par_size: Ref, par_value: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_value), intType())
   ensures isSubtype(typeOf(ret_1), CustomList())
   ensures acc(ret_1.p_size, write)
+  ensures isSubtype(typeOf(ret_1.p_size), intType())
   ensures intFromRef(ret_1.p_size) >= 0
   ensures isSubtype(typeOf(ret_1), CustomList()) &&
     (isSubtype(typeOf(ret_1), AbstractList()) &&
@@ -43,14 +46,16 @@ method con(par_size: Ref, par_value: Ref) returns (ret_1: Ref)
   ensures intFromRef(ret_1.p_size) == intFromRef(par_size)
 
 
-method get(this: Ref, index: Ref) returns (ret_3: Ref)
+method get(this: Ref, par_index: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), CustomList())
   requires acc(this.p_size, write)
+  requires isSubtype(typeOf(this.p_size), intType())
   requires intFromRef(this.p_size) >= 0
-  requires isSubtype(typeOf(index), intType())
-  requires intFromRef(index) >= 0
-  requires intFromRef(this.p_size) > intFromRef(index)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0
+  requires intFromRef(this.p_size) > intFromRef(par_index)
   ensures acc(this.p_size, write)
+  ensures isSubtype(typeOf(this.p_size), intType())
   ensures intFromRef(this.p_size) >= 0
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
@@ -59,8 +64,10 @@ method get(this: Ref, index: Ref) returns (ret_3: Ref)
 method isEmpty(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), CustomList())
   requires acc(this.p_size, write)
+  requires isSubtype(typeOf(this.p_size), intType())
   requires intFromRef(this.p_size) >= 0
   ensures acc(this.p_size, write)
+  ensures isSubtype(typeOf(this.p_size), intType())
   ensures intFromRef(this.p_size) >= 0
   ensures isSubtype(typeOf(ret_2), boolType())
   ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))

@@ -26,10 +26,44 @@ function size(par_t: Ref): Ref
           plusInts(plusInts(intToRef(1), size(anon_3_0)), size(anon_4_0))))))
 }
 
-/unique_tree_recursion.kt: info: Generated Viper text for insert:
-field bf_l: Ref
+/unique_tree_recursion.kt: info: Generated Viper text for capSize:
+function capSize(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
 
+/unique_tree_recursion.kt: info: Generated Viper text for cappedSize:
 field bf_r: Ref
+
+field l: Ref
+
+function capSize(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedSize(par_t: Ref): Ref
+  requires isSubtype(typeOf(par_t), nullable(Tree()))
+  requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
+  ensures par_t == nullValue() ==> result == intToRef(0)
+  decreases par_t != nullValue(), Tree_unique(par_t)
+{
+  (par_t == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Tree_unique(par_t), write) in
+      (let anon_3_0 ==
+        (par_t.l) in
+        (let anon_4_0 ==
+          (par_t.bf_r) in
+          capSize(plusInts(plusInts(intToRef(1), cappedSize(anon_3_0)), cappedSize(anon_4_0)))))))
+}
 
 function g_v(this: Ref): Ref
   requires isSubtype(typeOf(this), Tree())
@@ -37,10 +71,24 @@ function g_v(this: Ref): Ref
   decreases _
 
 
-function size(par_t: Ref): Ref
+/unique_tree_recursion.kt: info: Generated Viper text for insert:
+field bf_l: Ref
+
+field bf_r: Ref
+
+function capSize(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedSize(par_t: Ref): Ref
   requires isSubtype(typeOf(par_t), nullable(Tree()))
   requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
   ensures par_t == nullValue() ==> result == intToRef(0)
   decreases par_t != nullValue(), Tree_unique(par_t)
 {
@@ -51,21 +99,27 @@ function size(par_t: Ref): Ref
         (par_t.bf_l) in
         (let anon_4_0 ==
           (par_t.bf_r) in
-          plusInts(plusInts(intToRef(1), size(anon_3_0)), size(anon_4_0))))))
+          capSize(plusInts(plusInts(intToRef(1), cappedSize(anon_3_0)), cappedSize(anon_4_0)))))))
 }
 
-method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (ret_3: Ref)
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Tree())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
+
+method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_v), intType())
   requires isSubtype(typeOf(par_l), nullable(Tree()))
   requires isSubtype(typeOf(par_r), nullable(Tree()))
-  ensures isSubtype(typeOf(ret_3), Tree())
-  ensures isSubtype(typeOf(ret_3), Tree()) && acc(ret_3.bf_l, write) &&
-    isSubtype(typeOf(ret_3.bf_l), nullable(Tree())) &&
-    acc(ret_3.bf_r, write) &&
-    isSubtype(typeOf(ret_3.bf_r), nullable(Tree()))
-  ensures intFromRef(g_v(ret_3)) == intFromRef(par_v)
-  ensures ret_3.bf_l == par_l
-  ensures ret_3.bf_r == par_r
+  ensures isSubtype(typeOf(ret_4), Tree())
+  ensures isSubtype(typeOf(ret_4), Tree()) && acc(ret_4.bf_l, write) &&
+    isSubtype(typeOf(ret_4.bf_l), nullable(Tree())) &&
+    acc(ret_4.bf_r, write) &&
+    isSubtype(typeOf(ret_4.bf_r), nullable(Tree()))
+  ensures intFromRef(g_v(ret_4)) == intFromRef(par_v)
+  ensures ret_4.bf_l == par_l
+  ensures ret_4.bf_r == par_r
 
 
 method insert(par_t: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -74,7 +128,8 @@ method insert(par_t: Ref, par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(v_ret_0), Tree())
   ensures acc(Tree_unique(v_ret_0), write)
-  ensures intFromRef(size(v_ret_0)) == old(intFromRef(size(par_t))) + 1
+  ensures intFromRef(cappedSize(v_ret_0)) ==
+    intFromRef(capSize(plusInts(old(cappedSize(par_t)), intToRef(1))))
 {
   if (par_t == nullValue()) {
     v_ret_0 := con(par_v, nullValue(), nullValue())
@@ -82,26 +137,26 @@ method insert(par_t: Ref, par_v: Ref) returns (v_ret_0: Ref)
     goto lbl_ret_0
   }
   if (intFromRef(par_v) < intFromRef(g_v(par_t))) {
-    var anon_5: Ref
-    var anon_6: Ref
+    var anon_8: Ref
+    var anon_9: Ref
     if (par_t != nullValue()) {
       unfold acc(Tree_unique(par_t), write)
     }
-    anon_6 := par_t.bf_l
-    anon_5 := insert(anon_6, par_v)
-    par_t.bf_l := anon_5
+    anon_9 := par_t.bf_l
+    anon_8 := insert(anon_9, par_v)
+    par_t.bf_l := anon_8
     if (par_t != nullValue()) {
       fold acc(Tree_unique(par_t), write)
     }
   } else {
-    var anon_7: Ref
-    var anon_8: Ref
+    var anon_10: Ref
+    var anon_11: Ref
     if (par_t != nullValue()) {
       unfold acc(Tree_unique(par_t), write)
     }
-    anon_8 := par_t.bf_r
-    anon_7 := insert(anon_8, par_v)
-    par_t.bf_r := anon_7
+    anon_11 := par_t.bf_r
+    anon_10 := insert(anon_11, par_v)
+    par_t.bf_r := anon_10
     if (par_t != nullValue()) {
       fold acc(Tree_unique(par_t), write)
     }
@@ -109,6 +164,28 @@ method insert(par_t: Ref, par_v: Ref) returns (v_ret_0: Ref)
   v_ret_0 := par_t
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/unique_tree_recursion.kt: info: Generated Viper text for leafSize:
+field bf_r: Ref
+
+field l: Ref
+
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Tree())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function leafSize(par_t: Ref): Ref
+  requires isSubtype(typeOf(par_t), nullable(Tree()))
+  requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
+  requires par_t == nullValue() ||
+    (unfolding acc(Tree_unique(par_t), write) in par_t.l == nullValue()) &&
+    (unfolding acc(Tree_unique(par_t), write) in par_t.bf_r == nullValue())
+  ensures isSubtype(typeOf(result), intType())
+  ensures par_t == nullValue() ==> result == intToRef(0)
+{
+  (par_t == nullValue() ? intToRef(0) : intToRef(1))
 }
 
 /unique_tree_recursion.kt: info: Generated Viper text for leaf:
@@ -119,24 +196,18 @@ field bf_r: Ref
 function g_v(this: Ref): Ref
   requires isSubtype(typeOf(this), Tree())
   ensures isSubtype(typeOf(result), intType())
-  decreases _
 
 
-function size(par_t: Ref): Ref
+function leafSize(par_t: Ref): Ref
   requires isSubtype(typeOf(par_t), nullable(Tree()))
   requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
+  requires par_t == nullValue() ||
+    (unfolding acc(Tree_unique(par_t), write) in par_t.bf_l == nullValue()) &&
+    (unfolding acc(Tree_unique(par_t), write) in par_t.bf_r == nullValue())
   ensures isSubtype(typeOf(result), intType())
   ensures par_t == nullValue() ==> result == intToRef(0)
-  decreases par_t != nullValue(), Tree_unique(par_t)
 {
-  (par_t == nullValue() ?
-    intToRef(0) :
-    (unfolding acc(Tree_unique(par_t), write) in
-      (let anon_3_0 ==
-        (par_t.bf_l) in
-        (let anon_4_0 ==
-          (par_t.bf_r) in
-          plusInts(plusInts(intToRef(1), size(anon_3_0)), size(anon_4_0))))))
+  (par_t == nullValue() ? intToRef(0) : intToRef(1))
 }
 
 method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (ret_3: Ref)
@@ -157,10 +228,20 @@ method leaf(par_v: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(v_ret_0), Tree())
   ensures acc(Tree_unique(v_ret_0), write)
-  ensures intFromRef(size(v_ret_0)) == 1
+  ensures (unfolding acc(Tree_unique(v_ret_0), write) in
+      v_ret_0.bf_l == nullValue()) &&
+    (unfolding acc(Tree_unique(v_ret_0), write) in
+      v_ret_0.bf_r == nullValue())
+  ensures intFromRef(leafSize(v_ret_0)) == 1
 {
-  v_ret_0 := con(par_v, nullValue(), nullValue())
-  fold acc(Tree_unique(v_ret_0), write)
+  var tree: Ref
+  tree := con(par_v, nullValue(), nullValue())
+  fold acc(Tree_unique(tree), write)
+  unfold acc(Tree_unique(tree), write)
+  tree.bf_l := nullValue()
+  tree.bf_r := nullValue()
+  fold acc(Tree_unique(tree), write)
+  v_ret_0 := tree
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -170,10 +251,19 @@ field bf_r: Ref
 
 field l: Ref
 
-function f_size(par_t: Ref): Ref
+function capSize(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedSize(par_t: Ref): Ref
   requires isSubtype(typeOf(par_t), nullable(Tree()))
   requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
   ensures par_t == nullValue() ==> result == intToRef(0)
   decreases par_t != nullValue(), Tree_unique(par_t)
 {
@@ -184,17 +274,17 @@ function f_size(par_t: Ref): Ref
         (par_t.l) in
         (let anon_4_0 ==
           (par_t.bf_r) in
-          plusInts(plusInts(intToRef(1), f_size(anon_3_0)), f_size(anon_4_0))))))
+          capSize(plusInts(plusInts(intToRef(1), cappedSize(anon_3_0)), cappedSize(anon_4_0)))))))
 }
 
-function g_size(this: Ref): Ref
-  requires isSubtype(typeOf(this), BooleanArray())
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Tree())
   ensures isSubtype(typeOf(result), intType())
   decreases _
 
 
-function g_v(this: Ref): Ref
-  requires isSubtype(typeOf(this), Tree())
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
   decreases _
 
@@ -204,12 +294,10 @@ method rotateLeft(par_t: Ref) returns (v_ret_0: Ref)
   requires acc(Tree_unique(par_t), write)
   ensures isSubtype(typeOf(v_ret_0), Tree())
   ensures acc(Tree_unique(v_ret_0), write)
-  ensures intFromRef(f_size(v_ret_0)) == old(intFromRef(f_size(par_t)))
+  ensures intFromRef(cappedSize(v_ret_0)) ==
+    old(intFromRef(cappedSize(par_t)))
 {
   var right: Ref
-  var anon_5: Ref
-  var anon_6: Ref
-  var anon_7: Ref
   var anon_8: Ref
   var anon_9: Ref
   var anon_10: Ref
@@ -218,6 +306,9 @@ method rotateLeft(par_t: Ref) returns (v_ret_0: Ref)
   var anon_13: Ref
   var anon_14: Ref
   var anon_15: Ref
+  var anon_16: Ref
+  var anon_17: Ref
+  var anon_18: Ref
   unfold acc(Tree_unique(par_t), write)
   right := par_t.bf_r
   if (right == nullValue()) {
@@ -226,26 +317,27 @@ method rotateLeft(par_t: Ref) returns (v_ret_0: Ref)
     v_ret_0 := par_t
     goto lbl_ret_0
   }
-  anon_5 := f_size(right)
+  anon_8 := cappedSize(right)
   if (right != nullValue()) {
     unfold acc(Tree_unique(right), write)
   }
-  anon_6 := right.l
-  anon_7 := f_size(anon_6)
-  anon_8 := right.bf_r
-  anon_9 := f_size(anon_8)
-  assert intFromRef(anon_5) == 1 + intFromRef(anon_7) + intFromRef(anon_9)
-  anon_10 := right.l
-  par_t.bf_r := anon_10
+  anon_9 := right.l
+  anon_10 := cappedSize(anon_9)
+  anon_11 := right.bf_r
+  anon_12 := cappedSize(anon_11)
+  assert intFromRef(anon_8) ==
+    intFromRef(capSize(plusInts(plusInts(intToRef(1), anon_10), anon_12)))
+  anon_13 := right.l
+  par_t.bf_r := anon_13
   fold acc(Tree_unique(par_t), write)
-  anon_11 := f_size(par_t)
+  anon_14 := cappedSize(par_t)
   unfold acc(Tree_unique(par_t), write)
-  anon_12 := par_t.l
-  anon_13 := f_size(anon_12)
-  anon_14 := par_t.bf_r
-  anon_15 := f_size(anon_14)
-  assert intFromRef(anon_11) ==
-    1 + intFromRef(anon_13) + intFromRef(anon_15)
+  anon_15 := par_t.l
+  anon_16 := cappedSize(anon_15)
+  anon_17 := par_t.bf_r
+  anon_18 := cappedSize(anon_17)
+  assert intFromRef(anon_14) ==
+    intFromRef(capSize(plusInts(plusInts(intToRef(1), anon_16), anon_18)))
   fold acc(Tree_unique(par_t), write)
   right.l := par_t
   if (right != nullValue()) {

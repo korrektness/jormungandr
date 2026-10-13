@@ -18,6 +18,7 @@ fun <!VIPER_TEXT!>swap<!>(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
 fun <!VIPER_TEXT!>addTwo<!>(arr: @Unique @Borrowed IntArray, i: Int) {
     preconditions {
         0 <= i && i < arr.size
+        arr[i] <= 2147483645
     }
     postconditions<Unit> {
         arr[i] == old(arr[i]) + 2

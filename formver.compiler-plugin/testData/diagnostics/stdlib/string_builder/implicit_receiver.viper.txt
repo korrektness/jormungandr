@@ -8,6 +8,9 @@ method addX(v_this_extension: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   unfold acc(StringBuilder_unique(v_this_extension), write)
+  if (!(|v_this_extension.contents ++ Seq(120)| <= 2147483647)) {
+    inhale false
+  }
   v_this_extension.contents := v_this_extension.contents ++ Seq(120)
   label lbl_ret_0
   fold acc(StringBuilder_unique(v_this_extension), write)
@@ -118,6 +121,9 @@ method throwsAfter(v_this_extension: Ref, n: Ref) returns (v_ret_0: Ref)
     inhale false
   }
   unfold acc(StringBuilder_unique(v_this_extension), write)
+  if (!(|v_this_extension.contents ++ Seq(121)| <= 2147483647)) {
+    inhale false
+  }
   v_this_extension.contents := v_this_extension.contents ++ Seq(121)
   label lbl_ret_0
   fold acc(StringBuilder_unique(v_this_extension), write)

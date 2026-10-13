@@ -134,6 +134,7 @@ fun createSpec(initial: Int) {
 
 @SpecOf("twiceModel")
 fun twiceSpec(x: Int) {
+    preconditions { -1073741824 <= x && x <= 1073741823 }
     postconditions<Int> { result -> result == x * 2 }
 }
 SRC
@@ -187,7 +188,10 @@ import org.jetbrains.kotlin.formver.plugin.*
 import stand.lib.*
 import kotlin.math.abs
 
-fun answer(x: Int): Int = x + 1
+fun answer(x: Int): Int {
+    preconditions { x < 2147483647 }
+    return x + 1
+}
 
 fun counting(counter: @Unique @Borrowed Counter) {
     verify(counter.value() >= 0)

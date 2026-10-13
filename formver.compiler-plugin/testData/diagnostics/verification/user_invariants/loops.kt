@@ -2,9 +2,11 @@
 // REPLACE_STDLIB_EXTENSIONS
 
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
+import org.jetbrains.kotlin.formver.plugin.preconditions
 import org.jetbrains.kotlin.formver.plugin.loopInvariants
 import org.jetbrains.kotlin.formver.plugin.verify
 
+// Incrementing i violates the stated invariant.
 fun <!VIPER_TEXT!>violatedInvariant<!>() {
     var i = 0
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>while (i < 2) {
@@ -84,6 +86,7 @@ fun <!VIPER_TEXT!>test_boolean_postcondition<!>() {
 class ClassWithField(val field: Int)
 
 fun <!VIPER_TEXT!>test_while<!>(param: ClassWithField) {
+    preconditions { param.field >= -46339 }
     val c = ClassWithField(13)
     val initParamField = param.field
 
@@ -93,6 +96,7 @@ fun <!VIPER_TEXT!>test_while<!>(param: ClassWithField) {
         if (initParamField > 0) 0
         else {
             val intermediate = -initParamField + 1
+            verify(1 <= intermediate && intermediate <= 46340)
             intermediate * intermediate
         }
     while (iteration < 10) {

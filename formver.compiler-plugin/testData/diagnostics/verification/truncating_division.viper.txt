@@ -9,33 +9,57 @@ method negativeDividend(a: Ref) returns (v_ret_0: Ref)
   requires intFromRef(a) == -3
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert (intFromRef(a) < 0 != 2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) ==
+  assert (let anon ==
+      (divInts(a, intToRef(2))) in
+      (intFromRef(a) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2))))) ==
     -1
-  assert intFromRef(a) -
-    (intFromRef(a) < 0 != 2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) *
-    2 ==
+  assert (let anon ==
+      (remInts(a, intToRef(2))) in
+      intFromRef(a) -
+      (intFromRef(a) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) *
+      intFromRef(intToRef(2))) ==
     -1
-  assert (intFromRef(a) < 0 != -2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-2 < 0 ? --2 : -2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-2 < 0 ? --2 : -2)) ==
+  assert (let anon ==
+      (divInts(a, intToRef(-2))) in
+      (intFromRef(a) < 0 != intFromRef(intToRef(-2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-2)) < 0 ?
+          -intFromRef(intToRef(-2)) :
+          intFromRef(intToRef(-2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-2)) < 0 ?
+          -intFromRef(intToRef(-2)) :
+          intFromRef(intToRef(-2))))) ==
     1
-  assert intFromRef(a) -
-    (intFromRef(a) < 0 != -2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-2 < 0 ? --2 : -2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-2 < 0 ? --2 : -2)) *
-    -2 ==
+  assert (let anon ==
+      (remInts(a, intToRef(-2))) in
+      intFromRef(a) -
+      (intFromRef(a) < 0 != intFromRef(intToRef(-2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-2)) < 0 ?
+          -intFromRef(intToRef(-2)) :
+          intFromRef(intToRef(-2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-2)) < 0 ?
+          -intFromRef(intToRef(-2)) :
+          intFromRef(intToRef(-2)))) *
+      intFromRef(intToRef(-2))) ==
     -1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -52,33 +76,57 @@ method negativeDivisor(a: Ref) returns (v_ret_0: Ref)
   requires intFromRef(a) == 3
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert (intFromRef(a) < 0 != -2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-2 < 0 ? --2 : -2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-2 < 0 ? --2 : -2)) ==
+  assert (let anon ==
+      (divInts(a, intToRef(-2))) in
+      (intFromRef(a) < 0 != intFromRef(intToRef(-2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-2)) < 0 ?
+          -intFromRef(intToRef(-2)) :
+          intFromRef(intToRef(-2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-2)) < 0 ?
+          -intFromRef(intToRef(-2)) :
+          intFromRef(intToRef(-2))))) ==
     -1
-  assert intFromRef(a) -
-    (intFromRef(a) < 0 != -2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-2 < 0 ? --2 : -2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-2 < 0 ? --2 : -2)) *
-    -2 ==
+  assert (let anon ==
+      (remInts(a, intToRef(-2))) in
+      intFromRef(a) -
+      (intFromRef(a) < 0 != intFromRef(intToRef(-2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-2)) < 0 ?
+          -intFromRef(intToRef(-2)) :
+          intFromRef(intToRef(-2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-2)) < 0 ?
+          -intFromRef(intToRef(-2)) :
+          intFromRef(intToRef(-2)))) *
+      intFromRef(intToRef(-2))) ==
     1
-  assert (intFromRef(a) < 0 != 2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) ==
+  assert (let anon ==
+      (divInts(a, intToRef(2))) in
+      (intFromRef(a) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2))))) ==
     1
-  assert intFromRef(a) -
-    (intFromRef(a) < 0 != 2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) *
-    2 ==
+  assert (let anon ==
+      (remInts(a, intToRef(2))) in
+      intFromRef(a) -
+      (intFromRef(a) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) *
+      intFromRef(intToRef(2))) ==
     1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -97,19 +145,23 @@ method zeroDividend(a: Ref, b: Ref) returns (v_ret_0: Ref)
   requires !(intFromRef(b) == 0)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert (intFromRef(a) < 0 != intFromRef(b) < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) ==
+  assert (let anon ==
+      (divInts(a, b)) in
+      (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b)))) ==
     0
-  assert intFromRef(a) -
-    (intFromRef(a) < 0 != intFromRef(b) < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) *
-    intFromRef(b) ==
+  assert (let anon ==
+      (remInts(a, b)) in
+      intFromRef(a) -
+      (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) *
+      intFromRef(b)) ==
     0
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -126,13 +178,19 @@ method minimumRemainder(a: Ref) returns (v_ret_0: Ref)
   requires intFromRef(a) == -2147483648
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert intFromRef(a) -
-    (intFromRef(a) < 0 != -1 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-1 < 0 ? --1 : -1)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (-1 < 0 ? --1 : -1)) *
-    -1 ==
+  assert (let anon ==
+      (remInts(a, intToRef(-1))) in
+      intFromRef(a) -
+      (intFromRef(a) < 0 != intFromRef(intToRef(-1)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-1)) < 0 ?
+          -intFromRef(intToRef(-1)) :
+          intFromRef(intToRef(-1)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(-1)) < 0 ?
+          -intFromRef(intToRef(-1)) :
+          intFromRef(intToRef(-1)))) *
+      intFromRef(intToRef(-1))) ==
     0
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -149,11 +207,17 @@ method rejectsEuclideanQuotient(a: Ref) returns (v_ret_0: Ref)
   requires intFromRef(a) == -3
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert (intFromRef(a) < 0 != 2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) ==
+  assert (let anon ==
+      (divInts(a, intToRef(2))) in
+      (intFromRef(a) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2))))) ==
     -2
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -170,13 +234,19 @@ method rejectsEuclideanRemainder(a: Ref) returns (v_ret_0: Ref)
   requires intFromRef(a) == -3
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert intFromRef(a) -
-    (intFromRef(a) < 0 != 2 < 0 ?
-      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) :
-      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
-      (2 < 0 ? -2 : 2)) *
-    2 ==
+  assert (let anon ==
+      (remInts(a, intToRef(2))) in
+      intFromRef(a) -
+      (intFromRef(a) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) *
+      intFromRef(intToRef(2))) ==
     1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -187,6 +257,7 @@ function quotient(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(a), intType())
   requires isSubtype(typeOf(b), intType())
   requires !(intFromRef(b) == 0)
+  requires !(intFromRef(a) == -2147483648) || !(intFromRef(b) == -1)
   ensures isSubtype(typeOf(result), intType())
 {
   divInts(a, b)
@@ -207,6 +278,7 @@ function quotient(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(a), intType())
   requires isSubtype(typeOf(b), intType())
   requires !(intFromRef(b) == 0)
+  requires !(intFromRef(a) == -2147483648) || !(intFromRef(b) == -1)
   ensures isSubtype(typeOf(result), intType())
 {
   divInts(a, b)

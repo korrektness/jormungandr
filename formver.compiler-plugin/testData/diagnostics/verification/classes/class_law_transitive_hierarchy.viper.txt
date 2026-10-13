@@ -68,6 +68,8 @@ predicate TransitiveRoot_unique(this: Ref) {
 method increment(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), TransitiveRoot())
   requires acc(TransitiveRoot_unique(this), write)
+  requires (unfolding acc(TransitiveRoot_unique(this), write) in
+      intFromRef(this.n) < 2147483647)
   ensures acc(TransitiveRoot_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -109,6 +111,9 @@ method LawFreeMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoo
   returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), LawFreeMiddle())
   requires acc(LawFreeMiddle_unique(this), write)
+  requires (unfolding acc(LawFreeMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == LawFreeMiddle()
   ensures acc(LawFreeMiddle_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), unitType())
@@ -131,12 +136,15 @@ method LawFreeMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoo
 }
 
 method LawFreeMiddle_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_6: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), LawFreeMiddle())
   requires acc(LawFreeMiddle_unique(this), write)
+  requires (unfolding acc(LawFreeMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == LawFreeMiddle()
   ensures acc(LawFreeMiddle_unique(this), write)
-  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
 
 
 method con(par_n: Ref) returns (v_ret_0: Ref)
@@ -178,15 +186,18 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 }
 
 method refines_LawFreeMiddle_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_6: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), LawFreeMiddle())
   requires acc(LawFreeMiddle_unique(this), write)
+  requires (unfolding acc(LawFreeMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == LawFreeMiddle()
   requires isSubtype(typeOf(this), LawFreeMiddle())
 {
-  ret_6 := LawFreeMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  ret_7 := LawFreeMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
   assert acc(LawFreeMiddle_unique(this), write)
-  assert isSubtype(typeOf(ret_6), unitType())
+  assert isSubtype(typeOf(ret_7), unitType())
 }
 
 method require(value: Ref) returns (ret_4: Ref)
@@ -223,6 +234,10 @@ method TransitiveLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRo
   returns (v_ret_6: Ref)
   requires isSubtype(typeOf(this), TransitiveLeaf())
   requires acc(TransitiveLeaf_unique(this), write)
+  requires (unfolding acc(TransitiveLeaf_unique(this), write) in
+      (unfolding acc(LawFreeMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == TransitiveLeaf()
   ensures acc(TransitiveLeaf_unique(this), write)
   ensures isSubtype(typeOf(v_ret_6), unitType())
@@ -247,12 +262,16 @@ method TransitiveLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRo
 }
 
 method TransitiveLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_7: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), TransitiveLeaf())
   requires acc(TransitiveLeaf_unique(this), write)
+  requires (unfolding acc(TransitiveLeaf_unique(this), write) in
+      (unfolding acc(LawFreeMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == TransitiveLeaf()
   ensures acc(TransitiveLeaf_unique(this), write)
-  ensures isSubtype(typeOf(ret_7), unitType())
+  ensures isSubtype(typeOf(ret_8), unitType())
 
 
 method con(par_n: Ref) returns (v_ret_0: Ref)
@@ -299,15 +318,19 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 }
 
 method refines_TransitiveLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_7: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), TransitiveLeaf())
   requires acc(TransitiveLeaf_unique(this), write)
+  requires (unfolding acc(TransitiveLeaf_unique(this), write) in
+      (unfolding acc(LawFreeMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == TransitiveLeaf()
   requires isSubtype(typeOf(this), TransitiveLeaf())
 {
-  ret_7 := TransitiveLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  ret_8 := TransitiveLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
   assert acc(TransitiveLeaf_unique(this), write)
-  assert isSubtype(typeOf(ret_7), unitType())
+  assert isSubtype(typeOf(ret_8), unitType())
 }
 
 method require(value: Ref) returns (ret_5: Ref)
@@ -383,6 +406,8 @@ method con(par_n: Ref) returns (ret_1: Ref)
 method increment(this: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(this), TransitiveRoot())
   requires acc(TransitiveRoot_unique(this), write)
+  requires (unfolding acc(TransitiveRoot_unique(this), write) in
+      intFromRef(this.bf_n) < 2147483647)
   ensures acc(TransitiveRoot_unique(this), write)
   ensures isSubtype(typeOf(ret_6), unitType())
 
@@ -640,6 +665,9 @@ method InitializingMiddle_c_TransitiveRoot_f_increment_inherited_body_c_Transiti
   returns (v_ret_5: Ref)
   requires isSubtype(typeOf(this), InitializingMiddle())
   requires acc(InitializingMiddle_unique(this), write)
+  requires (unfolding acc(InitializingMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == InitializingMiddle()
   ensures acc(InitializingMiddle_unique(this), write)
   ensures isSubtype(typeOf(v_ret_5), unitType())
@@ -662,12 +690,15 @@ method InitializingMiddle_c_TransitiveRoot_f_increment_inherited_body_c_Transiti
 }
 
 method InitializingMiddle_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_6: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), InitializingMiddle())
   requires acc(InitializingMiddle_unique(this), write)
+  requires (unfolding acc(InitializingMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == InitializingMiddle()
   ensures acc(InitializingMiddle_unique(this), write)
-  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
 
 
 method con(par_n: Ref) returns (v_ret_0: Ref)
@@ -716,15 +747,18 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 }
 
 method refines_InitializingMiddle_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_6: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), InitializingMiddle())
   requires acc(InitializingMiddle_unique(this), write)
+  requires (unfolding acc(InitializingMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == InitializingMiddle()
   requires isSubtype(typeOf(this), InitializingMiddle())
 {
-  ret_6 := InitializingMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  ret_7 := InitializingMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
   assert acc(InitializingMiddle_unique(this), write)
-  assert isSubtype(typeOf(ret_6), unitType())
+  assert isSubtype(typeOf(ret_7), unitType())
 }
 
 method require(value: Ref) returns (ret_4: Ref)
@@ -761,6 +795,10 @@ method InitializingLeaf_c_TransitiveRoot_f_increment_inherited_body_c_Transitive
   returns (v_ret_6: Ref)
   requires isSubtype(typeOf(this), InitializingLeaf())
   requires acc(InitializingLeaf_unique(this), write)
+  requires (unfolding acc(InitializingLeaf_unique(this), write) in
+      (unfolding acc(InitializingMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == InitializingLeaf()
   ensures acc(InitializingLeaf_unique(this), write)
   ensures isSubtype(typeOf(v_ret_6), unitType())
@@ -785,12 +823,16 @@ method InitializingLeaf_c_TransitiveRoot_f_increment_inherited_body_c_Transitive
 }
 
 method InitializingLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_7: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), InitializingLeaf())
   requires acc(InitializingLeaf_unique(this), write)
+  requires (unfolding acc(InitializingLeaf_unique(this), write) in
+      (unfolding acc(InitializingMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == InitializingLeaf()
   ensures acc(InitializingLeaf_unique(this), write)
-  ensures isSubtype(typeOf(ret_7), unitType())
+  ensures isSubtype(typeOf(ret_8), unitType())
 
 
 method con(par_n: Ref) returns (v_ret_0: Ref)
@@ -844,15 +886,19 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 }
 
 method refines_InitializingLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_7: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), InitializingLeaf())
   requires acc(InitializingLeaf_unique(this), write)
+  requires (unfolding acc(InitializingLeaf_unique(this), write) in
+      (unfolding acc(InitializingMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == InitializingLeaf()
   requires isSubtype(typeOf(this), InitializingLeaf())
 {
-  ret_7 := InitializingLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  ret_8 := InitializingLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
   assert acc(InitializingLeaf_unique(this), write)
-  assert isSubtype(typeOf(ret_7), unitType())
+  assert isSubtype(typeOf(ret_8), unitType())
 }
 
 method require(value: Ref) returns (ret_5: Ref)
@@ -884,6 +930,9 @@ method c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_
   returns (v_ret_11: Ref)
   requires isSubtype(typeOf(this), c_SecondaryMiddle())
   requires acc(c_SecondaryMiddle_unique(this), write)
+  requires (unfolding acc(c_SecondaryMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == c_SecondaryMiddle()
   ensures acc(c_SecondaryMiddle_unique(this), write)
   ensures isSubtype(typeOf(v_ret_11), unitType())
@@ -906,12 +955,15 @@ method c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_
 }
 
 method c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit_inherited_contract_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit(this: Ref)
-  returns (ret_12: Ref)
+  returns (ret_13: Ref)
   requires isSubtype(typeOf(this), c_SecondaryMiddle())
   requires acc(c_SecondaryMiddle_unique(this), write)
+  requires (unfolding acc(c_SecondaryMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == c_SecondaryMiddle()
   ensures acc(c_SecondaryMiddle_unique(this), write)
-  ensures isSubtype(typeOf(ret_12), unitType())
+  ensures isSubtype(typeOf(ret_13), unitType())
 
 
 method con_c_SecondaryMiddle(par_n: Ref) returns (v_ret_0: Ref)
@@ -991,15 +1043,18 @@ method con_c_SecondaryMiddle_args() returns (v_ret_5: Ref)
 }
 
 method refines_c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit_inherited_contract_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit(this: Ref)
-  returns (ret_12: Ref)
+  returns (ret_13: Ref)
   requires isSubtype(typeOf(this), c_SecondaryMiddle())
   requires acc(c_SecondaryMiddle_unique(this), write)
+  requires (unfolding acc(c_SecondaryMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == c_SecondaryMiddle()
   requires isSubtype(typeOf(this), c_SecondaryMiddle())
 {
-  ret_12 := c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit_inherited_body_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit(this)
+  ret_13 := c_SecondaryMiddle_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit_inherited_body_c_TransitiveRoot_f_increment_args_c_TransitiveRoot_ret_Unit(this)
   assert acc(c_SecondaryMiddle_unique(this), write)
-  assert isSubtype(typeOf(ret_12), unitType())
+  assert isSubtype(typeOf(ret_13), unitType())
 }
 
 method require(value: Ref) returns (ret_4: Ref)
@@ -1036,6 +1091,10 @@ method SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoo
   returns (v_ret_6: Ref)
   requires isSubtype(typeOf(this), SecondaryLeaf())
   requires acc(SecondaryLeaf_unique(this), write)
+  requires (unfolding acc(SecondaryLeaf_unique(this), write) in
+      (unfolding acc(SecondaryMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == SecondaryLeaf()
   ensures acc(SecondaryLeaf_unique(this), write)
   ensures isSubtype(typeOf(v_ret_6), unitType())
@@ -1060,12 +1119,16 @@ method SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoo
 }
 
 method SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_7: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), SecondaryLeaf())
   requires acc(SecondaryLeaf_unique(this), write)
+  requires (unfolding acc(SecondaryLeaf_unique(this), write) in
+      (unfolding acc(SecondaryMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == SecondaryLeaf()
   ensures acc(SecondaryLeaf_unique(this), write)
-  ensures isSubtype(typeOf(ret_7), unitType())
+  ensures isSubtype(typeOf(ret_8), unitType())
 
 
 method con(par_n: Ref) returns (v_ret_0: Ref)
@@ -1112,15 +1175,19 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
 }
 
 method refines_SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_7: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), SecondaryLeaf())
   requires acc(SecondaryLeaf_unique(this), write)
+  requires (unfolding acc(SecondaryLeaf_unique(this), write) in
+      (unfolding acc(SecondaryMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == SecondaryLeaf()
   requires isSubtype(typeOf(this), SecondaryLeaf())
 {
-  ret_7 := SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  ret_8 := SecondaryLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
   assert acc(SecondaryLeaf_unique(this), write)
-  assert isSubtype(typeOf(ret_7), unitType())
+  assert isSubtype(typeOf(ret_8), unitType())
 }
 
 method require(value: Ref) returns (ret_5: Ref)
@@ -1167,6 +1234,9 @@ method ImpureInitializerMiddle_c_TransitiveRoot_f_increment_inherited_body_c_Tra
   returns (v_ret_6: Ref)
   requires isSubtype(typeOf(this), ImpureInitializerMiddle())
   requires acc(ImpureInitializerMiddle_unique(this), write)
+  requires (unfolding acc(ImpureInitializerMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == ImpureInitializerMiddle()
   ensures acc(ImpureInitializerMiddle_unique(this), write)
   ensures isSubtype(typeOf(v_ret_6), unitType())
@@ -1189,12 +1259,15 @@ method ImpureInitializerMiddle_c_TransitiveRoot_f_increment_inherited_body_c_Tra
 }
 
 method ImpureInitializerMiddle_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_7: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), ImpureInitializerMiddle())
   requires acc(ImpureInitializerMiddle_unique(this), write)
+  requires (unfolding acc(ImpureInitializerMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == ImpureInitializerMiddle()
   ensures acc(ImpureInitializerMiddle_unique(this), write)
-  ensures isSubtype(typeOf(ret_7), unitType())
+  ensures isSubtype(typeOf(ret_8), unitType())
 
 
 method con(par_n: Ref) returns (v_ret_0: Ref)
@@ -1244,15 +1317,18 @@ method effectfulInitializer(par_n: Ref) returns (ret_5: Ref)
 
 
 method refines_ImpureInitializerMiddle_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_7: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), ImpureInitializerMiddle())
   requires acc(ImpureInitializerMiddle_unique(this), write)
+  requires (unfolding acc(ImpureInitializerMiddle_unique(this), write) in
+      (unfolding acc(c_TransitiveRoot_unique(this), write) in
+        intFromRef(this.bf_n) < 2147483647))
   requires typeOf(this) == ImpureInitializerMiddle()
   requires isSubtype(typeOf(this), ImpureInitializerMiddle())
 {
-  ret_7 := ImpureInitializerMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  ret_8 := ImpureInitializerMiddle_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
   assert acc(ImpureInitializerMiddle_unique(this), write)
-  assert isSubtype(typeOf(ret_7), unitType())
+  assert isSubtype(typeOf(ret_8), unitType())
 }
 
 method require(value: Ref) returns (ret_4: Ref)
@@ -1294,6 +1370,10 @@ method ImpureInitializerLeaf_c_TransitiveRoot_f_increment_inherited_body_c_Trans
   returns (v_ret_7: Ref)
   requires isSubtype(typeOf(this), ImpureInitializerLeaf())
   requires acc(ImpureInitializerLeaf_unique(this), write)
+  requires (unfolding acc(ImpureInitializerLeaf_unique(this), write) in
+      (unfolding acc(ImpureInitializerMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == ImpureInitializerLeaf()
   ensures acc(ImpureInitializerLeaf_unique(this), write)
   ensures isSubtype(typeOf(v_ret_7), unitType())
@@ -1318,12 +1398,16 @@ method ImpureInitializerLeaf_c_TransitiveRoot_f_increment_inherited_body_c_Trans
 }
 
 method ImpureInitializerLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_8: Ref)
+  returns (ret_9: Ref)
   requires isSubtype(typeOf(this), ImpureInitializerLeaf())
   requires acc(ImpureInitializerLeaf_unique(this), write)
+  requires (unfolding acc(ImpureInitializerLeaf_unique(this), write) in
+      (unfolding acc(ImpureInitializerMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == ImpureInitializerLeaf()
   ensures acc(ImpureInitializerLeaf_unique(this), write)
-  ensures isSubtype(typeOf(ret_8), unitType())
+  ensures isSubtype(typeOf(ret_9), unitType())
 
 
 method con(par_n: Ref) returns (v_ret_0: Ref)
@@ -1378,15 +1462,19 @@ method effectfulInitializer(par_n: Ref) returns (ret_6: Ref)
 
 
 method refines_ImpureInitializerLeaf_c_TransitiveRoot_f_increment_inherited_contract_c_TransitiveRoot_f_increment(this: Ref)
-  returns (ret_8: Ref)
+  returns (ret_9: Ref)
   requires isSubtype(typeOf(this), ImpureInitializerLeaf())
   requires acc(ImpureInitializerLeaf_unique(this), write)
+  requires (unfolding acc(ImpureInitializerLeaf_unique(this), write) in
+      (unfolding acc(ImpureInitializerMiddle_unique(this), write) in
+        (unfolding acc(c_TransitiveRoot_unique(this), write) in
+          intFromRef(this.bf_n) < 2147483647)))
   requires typeOf(this) == ImpureInitializerLeaf()
   requires isSubtype(typeOf(this), ImpureInitializerLeaf())
 {
-  ret_8 := ImpureInitializerLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
+  ret_9 := ImpureInitializerLeaf_c_TransitiveRoot_f_increment_inherited_body_c_TransitiveRoot_f_increment(this)
   assert acc(ImpureInitializerLeaf_unique(this), write)
-  assert isSubtype(typeOf(ret_8), unitType())
+  assert isSubtype(typeOf(ret_9), unitType())
 }
 
 method require(value: Ref) returns (ret_5: Ref)
@@ -1712,7 +1800,11 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
     (this) in
     true &&
     boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+    intFromRef(z(this)) <= 2147483645 &&
+    intFromRef(w(this)) ==
+    (let anon_builtin ==
+      (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+      longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
 }
 
 method con(x: Ref, y: Ref, offset: Ref) returns (v_ret_0: Ref)
@@ -1725,7 +1817,11 @@ method con(x: Ref, y: Ref, offset: Ref) returns (v_ret_0: Ref)
       (v_ret_0) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
   ensures intFromRef(z(v_ret_0)) == intFromRef(y)
   ensures intFromRef(w(v_ret_0)) == intFromRef(offset)
 {
@@ -1733,6 +1829,7 @@ method con(x: Ref, y: Ref, offset: Ref) returns (v_ret_0: Ref)
   var anon_1: Ref
   var anon_2: Ref
   var anon_3: Ref
+  var anon_4: Ref
   v_ret_0 := new()
   inhale typeOf(v_ret_0) == DefaultArgumentRoot()
   anon_0 := y
@@ -1740,7 +1837,14 @@ method con(x: Ref, y: Ref, offset: Ref) returns (v_ret_0: Ref)
   anon_1 := offset
   inhale intFromRef(w(v_ret_0)) == intFromRef(anon_1)
   if (intFromRef(y) >= 0) {
-    anon_3 := boolToRef(intFromRef(offset) == intFromRef(y) + 2)
+    anon_4 := leInts(y, intToRef(2147483645))
+  } else {
+    anon_4 := boolToRef(false)}
+  if (boolFromRef(anon_4)) {
+    anon_3 := boolToRef(intFromRef(offset) ==
+      (let anon_builtin ==
+        (plusInts(y, intToRef(2))) in
+        intFromRef(y) + intFromRef(intToRef(2))))
   } else {
     anon_3 := boolToRef(false)}
   anon_2 := require(anon_3)
@@ -1748,7 +1852,11 @@ method con(x: Ref, y: Ref, offset: Ref) returns (v_ret_0: Ref)
       (v_ret_0) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(DefaultArgumentRoot_unique(v_ret_0), write)
@@ -1777,7 +1885,11 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
     (this) in
     true &&
     boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+    intFromRef(z(this)) <= 2147483645 &&
+    intFromRef(w(this)) ==
+    (let anon_builtin ==
+      (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+      longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
 }
 
 predicate RenamedArgumentLeaf_unique(this: Ref) {
@@ -1786,7 +1898,7 @@ predicate RenamedArgumentLeaf_unique(this: Ref) {
 }
 
 method con(n: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(n), shortType())
   ensures isSubtype(typeOf(v_ret_0), RenamedArgumentLeaf())
   ensures isSubtype(typeOf(v_ret_0), RenamedArgumentLeaf()) &&
     (isSubtype(typeOf(v_ret_0), DefaultArgumentRoot()) &&
@@ -1794,9 +1906,20 @@ method con(n: Ref) returns (v_ret_0: Ref)
       (v_ret_0) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
-  ensures intFromRef(z(v_ret_0)) == intFromRef(n) * 2 + 1
-  ensures intFromRef(w(v_ret_0)) == intFromRef(n) * 2 + 1 + 2
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2)))))))
+  ensures intFromRef(z(v_ret_0)) ==
+    (let anon_builtin ==
+      (plusInts(timesShortInt(n, intToRef(2)), intToRef(1))) in
+      intFromRef(timesShortInt(n, intToRef(2))) + intFromRef(intToRef(1)))
+  ensures intFromRef(w(v_ret_0)) ==
+    (let anon_builtin ==
+      (plusInts(plusInts(timesShortInt(n, intToRef(2)), intToRef(1)), intToRef(2))) in
+      intFromRef(plusInts(timesShortInt(n, intToRef(2)), intToRef(1))) +
+      intFromRef(intToRef(2)))
 {
   var anon_0: Ref
   var anon_1: Ref
@@ -1805,9 +1928,10 @@ method con(n: Ref) returns (v_ret_0: Ref)
   var anon_4: Ref
   var anon_5: Ref
   var anon_6: Ref
+  var anon_7: Ref
   v_ret_0 := new()
   inhale typeOf(v_ret_0) == RenamedArgumentLeaf()
-  anon_0 := timesInts(n, intToRef(2))
+  anon_0 := timesShortInt(n, intToRef(2))
   anon_1 := plusInts(anon_0, intToRef(1))
   anon_2 := plusInts(anon_1, intToRef(2))
   anon_3 := anon_1
@@ -1815,7 +1939,14 @@ method con(n: Ref) returns (v_ret_0: Ref)
   anon_4 := anon_2
   inhale intFromRef(w(v_ret_0)) == intFromRef(anon_4)
   if (intFromRef(anon_1) >= 0) {
-    anon_6 := boolToRef(intFromRef(anon_2) == intFromRef(anon_1) + 2)
+    anon_7 := leInts(anon_1, intToRef(2147483645))
+  } else {
+    anon_7 := boolToRef(false)}
+  if (boolFromRef(anon_7)) {
+    anon_6 := boolToRef(intFromRef(anon_2) ==
+      (let anon_builtin ==
+        (plusInts(anon_1, intToRef(2))) in
+        intFromRef(anon_1) + intFromRef(intToRef(2))))
   } else {
     anon_6 := boolToRef(false)}
   anon_5 := require(anon_6)
@@ -1823,7 +1954,11 @@ method con(n: Ref) returns (v_ret_0: Ref)
       (v_ret_0) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   fold acc(RenamedArgumentLeaf_unique(v_ret_0), write)
   label lbl_ret_0
@@ -1854,7 +1989,11 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
     (this) in
     true &&
     boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+    intFromRef(z(this)) <= 2147483645 &&
+    intFromRef(w(this)) ==
+    (let anon_builtin ==
+      (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+      longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
 }
 
 predicate SameNameArgumentLeaf_unique(this: Ref) {
@@ -1863,7 +2002,7 @@ predicate SameNameArgumentLeaf_unique(this: Ref) {
 }
 
 method con(x: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(x), shortType())
   ensures isSubtype(typeOf(v_ret_0), SameNameArgumentLeaf())
   ensures isSubtype(typeOf(v_ret_0), SameNameArgumentLeaf()) &&
     (isSubtype(typeOf(v_ret_0), DefaultArgumentRoot()) &&
@@ -1871,9 +2010,20 @@ method con(x: Ref) returns (v_ret_0: Ref)
       (v_ret_0) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
-  ensures intFromRef(z(v_ret_0)) == intFromRef(x) * 2 + 1
-  ensures intFromRef(w(v_ret_0)) == intFromRef(x) * 2 + 1 + 2
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2)))))))
+  ensures intFromRef(z(v_ret_0)) ==
+    (let anon_builtin ==
+      (plusInts(timesShortInt(x, intToRef(2)), intToRef(1))) in
+      intFromRef(timesShortInt(x, intToRef(2))) + intFromRef(intToRef(1)))
+  ensures intFromRef(w(v_ret_0)) ==
+    (let anon_builtin ==
+      (plusInts(plusInts(timesShortInt(x, intToRef(2)), intToRef(1)), intToRef(2))) in
+      intFromRef(plusInts(timesShortInt(x, intToRef(2)), intToRef(1))) +
+      intFromRef(intToRef(2)))
 {
   var anon_0: Ref
   var anon_1: Ref
@@ -1882,9 +2032,10 @@ method con(x: Ref) returns (v_ret_0: Ref)
   var anon_4: Ref
   var anon_5: Ref
   var anon_6: Ref
+  var anon_7: Ref
   v_ret_0 := new()
   inhale typeOf(v_ret_0) == SameNameArgumentLeaf()
-  anon_0 := timesInts(x, intToRef(2))
+  anon_0 := timesShortInt(x, intToRef(2))
   anon_1 := plusInts(anon_0, intToRef(1))
   anon_2 := plusInts(anon_1, intToRef(2))
   anon_3 := anon_1
@@ -1892,7 +2043,14 @@ method con(x: Ref) returns (v_ret_0: Ref)
   anon_4 := anon_2
   inhale intFromRef(w(v_ret_0)) == intFromRef(anon_4)
   if (intFromRef(anon_1) >= 0) {
-    anon_6 := boolToRef(intFromRef(anon_2) == intFromRef(anon_1) + 2)
+    anon_7 := leInts(anon_1, intToRef(2147483645))
+  } else {
+    anon_7 := boolToRef(false)}
+  if (boolFromRef(anon_7)) {
+    anon_6 := boolToRef(intFromRef(anon_2) ==
+      (let anon_builtin ==
+        (plusInts(anon_1, intToRef(2))) in
+        intFromRef(anon_1) + intFromRef(intToRef(2))))
   } else {
     anon_6 := boolToRef(false)}
   anon_5 := require(anon_6)
@@ -1900,7 +2058,11 @@ method con(x: Ref) returns (v_ret_0: Ref)
       (v_ret_0) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   fold acc(SameNameArgumentLeaf_unique(v_ret_0), write)
   label lbl_ret_0
@@ -1931,7 +2093,11 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
     (this) in
     true &&
     boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+    intFromRef(z(this)) <= 2147483645 &&
+    intFromRef(w(this)) ==
+    (let anon_builtin ==
+      (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+      longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
 }
 
 predicate ExplicitDefaultLeaf_unique(this: Ref) {
@@ -1940,7 +2106,7 @@ predicate ExplicitDefaultLeaf_unique(this: Ref) {
 }
 
 method con(x: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(x), shortType())
   ensures isSubtype(typeOf(v_ret_0), ExplicitDefaultLeaf())
   ensures isSubtype(typeOf(v_ret_0), ExplicitDefaultLeaf()) &&
     (isSubtype(typeOf(v_ret_0), DefaultArgumentRoot()) &&
@@ -1948,9 +2114,19 @@ method con(x: Ref) returns (v_ret_0: Ref)
       (v_ret_0) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
-  ensures intFromRef(z(v_ret_0)) == intFromRef(x) + 10
-  ensures intFromRef(w(v_ret_0)) == intFromRef(x) + 10 + 2
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2)))))))
+  ensures intFromRef(z(v_ret_0)) ==
+    (let anon_builtin ==
+      (plusShortInt(x, intToRef(10))) in
+      shortFromRef(x) + intFromRef(intToRef(10)))
+  ensures intFromRef(w(v_ret_0)) ==
+    (let anon_builtin ==
+      (plusInts(plusShortInt(x, intToRef(10)), intToRef(2))) in
+      intFromRef(plusShortInt(x, intToRef(10))) + intFromRef(intToRef(2)))
 {
   var anon_0: Ref
   var anon_1: Ref
@@ -1959,17 +2135,25 @@ method con(x: Ref) returns (v_ret_0: Ref)
   var anon_4: Ref
   var anon_5: Ref
   var anon_6: Ref
+  var anon_7: Ref
   v_ret_0 := new()
   inhale typeOf(v_ret_0) == ExplicitDefaultLeaf()
-  anon_0 := timesInts(x, intToRef(2))
-  anon_1 := plusInts(x, intToRef(10))
+  anon_0 := timesShortInt(x, intToRef(2))
+  anon_1 := plusShortInt(x, intToRef(10))
   anon_2 := plusInts(anon_1, intToRef(2))
   anon_3 := anon_1
   inhale intFromRef(z(v_ret_0)) == intFromRef(anon_3)
   anon_4 := anon_2
   inhale intFromRef(w(v_ret_0)) == intFromRef(anon_4)
   if (intFromRef(anon_1) >= 0) {
-    anon_6 := boolToRef(intFromRef(anon_2) == intFromRef(anon_1) + 2)
+    anon_7 := leInts(anon_1, intToRef(2147483645))
+  } else {
+    anon_7 := boolToRef(false)}
+  if (boolFromRef(anon_7)) {
+    anon_6 := boolToRef(intFromRef(anon_2) ==
+      (let anon_builtin ==
+        (plusInts(anon_1, intToRef(2))) in
+        intFromRef(anon_1) + intFromRef(intToRef(2))))
   } else {
     anon_6 := boolToRef(false)}
   anon_5 := require(anon_6)
@@ -1977,7 +2161,11 @@ method con(x: Ref) returns (v_ret_0: Ref)
       (v_ret_0) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon_builtin ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
   fold acc(DefaultArgumentRoot_unique(v_ret_0), write)
   fold acc(ExplicitDefaultLeaf_unique(v_ret_0), write)
   label lbl_ret_0
@@ -2024,7 +2212,11 @@ predicate DefaultArgumentRoot_unique(this: Ref) {
     (this) in
     true &&
     boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-    intFromRef(w(this)) == intFromRef(z(this)) + 2)))
+    intFromRef(z(this)) <= 2147483645 &&
+    intFromRef(w(this)) ==
+    (let anon ==
+      (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+      longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2))))))
 }
 
 predicate ExplicitDefaultLeaf_unique(this: Ref) {
@@ -2050,7 +2242,7 @@ predicate Serializable_unique(this: Ref) {
 }
 
 method con_ExplicitDefaultLeaf(x: Ref) returns (ret_9: Ref)
-  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(x), shortType())
   ensures isSubtype(typeOf(ret_9), ExplicitDefaultLeaf())
   ensures isSubtype(typeOf(ret_9), ExplicitDefaultLeaf()) &&
     (isSubtype(typeOf(ret_9), DefaultArgumentRoot()) &&
@@ -2058,13 +2250,23 @@ method con_ExplicitDefaultLeaf(x: Ref) returns (ret_9: Ref)
       (ret_9) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
-  ensures intFromRef(z(ret_9)) == intFromRef(x) + 10
-  ensures intFromRef(w(ret_9)) == intFromRef(x) + 10 + 2
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2)))))))
+  ensures intFromRef(z(ret_9)) ==
+    (let anon ==
+      (plusShortInt(x, intToRef(10))) in
+      shortFromRef(x) + intFromRef(intToRef(10)))
+  ensures intFromRef(w(ret_9)) ==
+    (let anon ==
+      (plusInts(plusShortInt(x, intToRef(10)), intToRef(2))) in
+      intFromRef(plusShortInt(x, intToRef(10))) + intFromRef(intToRef(2)))
 
 
 method con_RenamedArgumentLeaf(n: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(n), shortType())
   ensures isSubtype(typeOf(ret_1), RenamedArgumentLeaf())
   ensures isSubtype(typeOf(ret_1), RenamedArgumentLeaf()) &&
     (isSubtype(typeOf(ret_1), DefaultArgumentRoot()) &&
@@ -2072,13 +2274,24 @@ method con_RenamedArgumentLeaf(n: Ref) returns (ret_1: Ref)
       (ret_1) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
-  ensures intFromRef(z(ret_1)) == intFromRef(n) * 2 + 1
-  ensures intFromRef(w(ret_1)) == intFromRef(n) * 2 + 1 + 2
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2)))))))
+  ensures intFromRef(z(ret_1)) ==
+    (let anon ==
+      (plusInts(timesShortInt(n, intToRef(2)), intToRef(1))) in
+      intFromRef(timesShortInt(n, intToRef(2))) + intFromRef(intToRef(1)))
+  ensures intFromRef(w(ret_1)) ==
+    (let anon ==
+      (plusInts(plusInts(timesShortInt(n, intToRef(2)), intToRef(1)), intToRef(2))) in
+      intFromRef(plusInts(timesShortInt(n, intToRef(2)), intToRef(1))) +
+      intFromRef(intToRef(2)))
 
 
 method con_SameNameArgumentLeaf(x: Ref) returns (ret_5: Ref)
-  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(x), shortType())
   ensures isSubtype(typeOf(ret_5), SameNameArgumentLeaf())
   ensures isSubtype(typeOf(ret_5), SameNameArgumentLeaf()) &&
     (isSubtype(typeOf(ret_5), DefaultArgumentRoot()) &&
@@ -2086,9 +2299,20 @@ method con_SameNameArgumentLeaf(x: Ref) returns (ret_5: Ref)
       (ret_5) in
       true &&
       boolFromRef(boolToRef(intFromRef(z(this)) >= 0 &&
-      intFromRef(w(this)) == intFromRef(z(this)) + 2))))
-  ensures intFromRef(z(ret_5)) == intFromRef(x) * 2 + 1
-  ensures intFromRef(w(ret_5)) == intFromRef(x) * 2 + 1 + 2
+      intFromRef(z(this)) <= 2147483645 &&
+      intFromRef(w(this)) ==
+      (let anon ==
+        (plusLongLong(convertIntToLong(z(this)), longToRef(2))) in
+        longFromRef(convertIntToLong(z(this))) + longFromRef(longToRef(2)))))))
+  ensures intFromRef(z(ret_5)) ==
+    (let anon ==
+      (plusInts(timesShortInt(x, intToRef(2)), intToRef(1))) in
+      intFromRef(timesShortInt(x, intToRef(2))) + intFromRef(intToRef(1)))
+  ensures intFromRef(w(ret_5)) ==
+    (let anon ==
+      (plusInts(plusInts(timesShortInt(x, intToRef(2)), intToRef(1)), intToRef(2))) in
+      intFromRef(plusInts(timesShortInt(x, intToRef(2)), intToRef(1))) +
+      intFromRef(intToRef(2)))
 
 
 method validSuperclassDefaults() returns (v_ret_0: Ref)
@@ -2097,17 +2321,17 @@ method validSuperclassDefaults() returns (v_ret_0: Ref)
   var renamed: Ref
   var sameName: Ref
   var explicit: Ref
-  renamed := con_RenamedArgumentLeaf(intToRef(1))
+  renamed := con_RenamedArgumentLeaf(shortToRef(1))
   fold acc(DefaultArgumentRoot_unique(renamed), write)
   fold acc(RenamedArgumentLeaf_unique(renamed), write)
   assert intFromRef(z(renamed)) == 3
   assert intFromRef(w(renamed)) == 5
-  sameName := con_SameNameArgumentLeaf(intToRef(1))
+  sameName := con_SameNameArgumentLeaf(shortToRef(1))
   fold acc(DefaultArgumentRoot_unique(sameName), write)
   fold acc(SameNameArgumentLeaf_unique(sameName), write)
   assert intFromRef(z(sameName)) == 3
   assert intFromRef(w(sameName)) == 5
-  explicit := con_ExplicitDefaultLeaf(intToRef(-1))
+  explicit := con_ExplicitDefaultLeaf(shortToRef(-1))
   fold acc(DefaultArgumentRoot_unique(explicit), write)
   fold acc(ExplicitDefaultLeaf_unique(explicit), write)
   assert intFromRef(z(explicit)) == 9

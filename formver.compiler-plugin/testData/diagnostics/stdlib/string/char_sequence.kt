@@ -12,7 +12,7 @@ fun <!VIPER_TEXT!>lastIndexBound<!>(s: String): Char {
 }
 
 fun <!VIPER_TEXT!>repeatLength<!>(s: String, n: Int): String {
-    preconditions { n >= 0 }
+    preconditions { 0 <= n && n <= 46340; s.length <= 46340 }
     postconditions<String> { r -> r.length == s.length * n }
     return s.repeat(n)
 }

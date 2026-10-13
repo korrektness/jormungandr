@@ -9,7 +9,7 @@ fun interface Accumulator {
     @Unique @Borrowed operator fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int
     @SpecOf("invoke")
     fun invokeSpec(amount: Int) {
-        preconditions { amount >= 0 && total() >= 0 }
+        preconditions { amount >= 0 && total() >= 0 && total() <= 2147483647 - amount }
         postconditions<Int> { r -> total() == old(total()) + amount && r == total() }
     }
 }
@@ -62,7 +62,7 @@ fun <!VIPER_TEXT!>badObservation<!>() {
 class AccumulatorHolder(val action: @Unique Accumulator) {
     @Unique @Borrowed
     fun <!VIPER_TEXT!>apply<!>(amount: Int): Int {
-        preconditions { amount >= 0 && action.total() >= 0 }
+        preconditions { amount >= 0 && action.total() >= 0 && action.total() <= 2147483647 - amount }
         postconditions<Int> { r -> action.total() == old(action.total()) + amount && r == action.total() }
         return action(amount)
     }
@@ -114,8 +114,8 @@ fun interface Projection {
     @Unique @Borrowed fun <!VIPER_TEXT!>project<!>(x: Int, y: Int): Int
     @SpecOf("project")
     fun projectSpec(x: Int, y: Int) {
-        preconditions { x >= offset() && y >= x }
-        postconditions<Int> { r -> r == y - x + offset(); offset() == old(offset()) }
+        preconditions { offset() >= 0 && x >= offset() && y >= x }
+        postconditions<Int> { r -> offset() == old(offset()); r == y - x + old(offset()) }
     }
 }
 
@@ -173,13 +173,13 @@ fun <!VIPER_TEXT!>loopLiteral<!>(count: Int) {
 }
 
 fun <!VIPER_TEXT!>applyForwarded<!>(f: @Unique @Borrowed Accumulator, amount: Int): Int {
-    preconditions { amount >= 0 && f.total() >= 0 }
+    preconditions { amount >= 0 && f.total() >= 0 && f.total() <= 2147483647 - amount }
     postconditions<Int> { r -> f.total() == old(f.total()) + amount && r == f.total() }
     return f(amount)
 }
 
 fun <!VIPER_TEXT!>forward<!>(f: @Unique @Borrowed Accumulator, amount: Int): Int {
-    preconditions { amount >= 0 && f.total() >= 0 }
+    preconditions { amount >= 0 && f.total() >= 0 && f.total() <= 2147483647 - amount }
     postconditions<Int> { r -> f.total() == old(f.total()) + amount && r == f.total() }
     return applyForwarded(f, amount)
 }

@@ -61,19 +61,29 @@ predicate footprint(this: Ref)
 method invoke(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), ExposedCounter())
   requires acc(ExposedCounter_unique(this), write)
+  requires (unfolding acc(ExposedCounter_unique(this), wildcard) in
+      intFromRef(value(this)) <=
+      (let anon ==
+        (minusInts(intToRef(2147483647), step(this))) in
+        intFromRef(intToRef(2147483647)) - intFromRef(step(this))))
   ensures acc(ExposedCounter_unique(this), write)
   ensures isSubtype(typeOf(ret), intType())
-  ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
-      intFromRef(value(this)) ==
-      old((unfolding acc(ExposedCounter_unique(this), wildcard) in
-        intFromRef(value(this)))) +
-      intFromRef(step(this)))
-  ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
-      intFromRef(ret) == intFromRef(value(this)))
   ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
       intFromRef(step(this)) ==
       old((unfolding acc(ExposedCounter_unique(this), wildcard) in
         intFromRef(step(this)))))
+  ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
+      intFromRef(value(this)) ==
+      (let anon ==
+        (plusInts(old((unfolding acc(ExposedCounter_unique(this), wildcard) in
+          value(this))), old((unfolding acc(ExposedCounter_unique(this), wildcard) in
+          step(this))))) in
+        intFromRef(old((unfolding acc(ExposedCounter_unique(this), wildcard) in
+          value(this)))) +
+        intFromRef(old((unfolding acc(ExposedCounter_unique(this), wildcard) in
+          step(this))))))
+  ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
+      intFromRef(ret) == intFromRef(value(this)))
 
 
 /lifted_exposes.kt: info: Generated Viper text for createCounter:
@@ -236,19 +246,25 @@ method Lambda0_c_ExposedCounter_upcast(this: Ref)
 method Lambda0_invoke(this: Ref) returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
+  requires intFromRef(Lambda0_f_value(this)) <=
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), Lambda0_f_step(this))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(Lambda0_f_step(this)))
   ensures acc(Lambda0_unique(this), write)
   ensures isSubtype(typeOf(v_ret_4), intType())
-  ensures intFromRef(Lambda0_f_value(this)) ==
-    old(intFromRef(Lambda0_f_value(this))) +
-    intFromRef(Lambda0_f_step(this))
-  ensures intFromRef(v_ret_4) == intFromRef(Lambda0_f_value(this))
   ensures intFromRef(Lambda0_f_step(this)) ==
     old(intFromRef(Lambda0_f_step(this)))
+  ensures intFromRef(Lambda0_f_value(this)) ==
+    (let anon_builtin ==
+      (plusInts(old(Lambda0_f_value(this)), old(Lambda0_f_step(this)))) in
+      intFromRef(old(Lambda0_f_value(this))) +
+      intFromRef(old(Lambda0_f_step(this))))
+  ensures intFromRef(v_ret_4) == intFromRef(Lambda0_f_value(this))
 {
-  var anon: Ref
+  var anon_1: Ref
   unfold acc(Lambda0_unique(this), write)
-  anon := this.Lambda0_p_capture0
-  this.Lambda0_p_capture0 := plusInts(anon, intToRef(1))
+  anon_1 := this.Lambda0_p_capture0
+  this.Lambda0_p_capture0 := plusInts(anon_1, intToRef(1))
   v_ret_4 := this.Lambda0_p_capture0
   fold acc(Lambda0_unique(this), write)
   goto lbl_ret_4
@@ -276,19 +292,30 @@ method createCounter() returns (ret_1: Ref)
 method f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_ExposedCounter())
   requires acc(c_ExposedCounter_unique(this), write)
+  requires (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+      intFromRef(c_ExposedCounter_f_value(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), c_ExposedCounter_f_step(this))) in
+        intFromRef(intToRef(2147483647)) -
+        intFromRef(c_ExposedCounter_f_step(this))))
   ensures acc(c_ExposedCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_3), intType())
-  ensures (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
-      intFromRef(c_ExposedCounter_f_value(this)) ==
-      old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
-        intFromRef(c_ExposedCounter_f_value(this)))) +
-      intFromRef(c_ExposedCounter_f_step(this)))
-  ensures (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
-      intFromRef(ret_3) == intFromRef(c_ExposedCounter_f_value(this)))
   ensures (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
       intFromRef(c_ExposedCounter_f_step(this)) ==
       old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
         intFromRef(c_ExposedCounter_f_step(this)))))
+  ensures (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+      intFromRef(c_ExposedCounter_f_value(this)) ==
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+          c_ExposedCounter_f_value(this))), old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+          c_ExposedCounter_f_step(this))))) in
+        intFromRef(old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+          c_ExposedCounter_f_value(this)))) +
+        intFromRef(old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+          c_ExposedCounter_f_step(this))))))
+  ensures (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+      intFromRef(ret_3) == intFromRef(c_ExposedCounter_f_value(this)))
 
 
 method laws(this: Ref)
@@ -302,6 +329,12 @@ method laws(this: Ref)
 method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_ExposedCounter())
   requires acc(c_ExposedCounter_unique(this), write)
+  requires (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+      intFromRef(c_ExposedCounter_f_value(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), c_ExposedCounter_f_step(this))) in
+        intFromRef(intToRef(2147483647)) -
+        intFromRef(c_ExposedCounter_f_step(this))))
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_ExposedCounter_restore(this)
@@ -310,16 +343,21 @@ method refines_f_invoke(this: Ref) returns (ret_3: Ref)
   assert acc(c_ExposedCounter_unique(this), write)
   assert isSubtype(typeOf(ret_3), intType())
   assert (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
-      intFromRef(c_ExposedCounter_f_value(this)) ==
-      old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
-        intFromRef(c_ExposedCounter_f_value(this)))) +
-      intFromRef(c_ExposedCounter_f_step(this)))
-  assert (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
-      intFromRef(ret_3) == intFromRef(c_ExposedCounter_f_value(this)))
-  assert (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
       intFromRef(c_ExposedCounter_f_step(this)) ==
       old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
         intFromRef(c_ExposedCounter_f_step(this)))))
+  assert (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+      intFromRef(c_ExposedCounter_f_value(this)) ==
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+          c_ExposedCounter_f_value(this))), old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+          c_ExposedCounter_f_step(this))))) in
+        intFromRef(old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+          c_ExposedCounter_f_value(this)))) +
+        intFromRef(old((unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+          c_ExposedCounter_f_step(this))))))
+  assert (unfolding acc(c_ExposedCounter_unique(this), wildcard) in
+      intFromRef(ret_3) == intFromRef(c_ExposedCounter_f_value(this)))
 }
 
 /lifted_exposes.kt: info: Generated Viper text for useCreatedCounter:
@@ -378,19 +416,29 @@ method createCounter() returns (ret_1: Ref)
 method invoke(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), ExposedCounter())
   requires acc(ExposedCounter_unique(this), write)
+  requires (unfolding acc(ExposedCounter_unique(this), wildcard) in
+      intFromRef(value(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), step(this))) in
+        intFromRef(intToRef(2147483647)) - intFromRef(step(this))))
   ensures acc(ExposedCounter_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
-  ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
-      intFromRef(value(this)) ==
-      old((unfolding acc(ExposedCounter_unique(this), wildcard) in
-        intFromRef(value(this)))) +
-      intFromRef(step(this)))
-  ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
-      intFromRef(ret_2) == intFromRef(value(this)))
   ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
       intFromRef(step(this)) ==
       old((unfolding acc(ExposedCounter_unique(this), wildcard) in
         intFromRef(step(this)))))
+  ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
+      intFromRef(value(this)) ==
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(ExposedCounter_unique(this), wildcard) in
+          value(this))), old((unfolding acc(ExposedCounter_unique(this), wildcard) in
+          step(this))))) in
+        intFromRef(old((unfolding acc(ExposedCounter_unique(this), wildcard) in
+          value(this)))) +
+        intFromRef(old((unfolding acc(ExposedCounter_unique(this), wildcard) in
+          step(this))))))
+  ensures (unfolding acc(ExposedCounter_unique(this), wildcard) in
+      intFromRef(ret_2) == intFromRef(value(this)))
 
 
 method useCreatedCounter() returns (v_ret_0: Ref)

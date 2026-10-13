@@ -24,7 +24,9 @@ fun <!VERIFICATION_SKIPPED!>testFieldModification<!>(field: Field): Int {
 }<!>
 
 fun Field.<!VIPER_TEXT!>impureExtension<!>() {
-    this.value += 1
+    val before = value
+    if (before == 2147483647) throw IllegalArgumentException()
+    this.value = before + 1
 }
 
 <!PURITY_VIOLATION!>@Pure

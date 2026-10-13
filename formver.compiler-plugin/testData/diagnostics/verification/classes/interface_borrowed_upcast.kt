@@ -31,6 +31,7 @@ class BorrowedCell(var value: Int) : BorrowedView {
 
 @NeverConvert
 fun lend(cell: @Unique @Borrowed BorrowedView, n: Int): Int {
+    preconditions { n < 2147483647 }
     postconditions<Int> { result -> result == n + 1 }
     return n + 1
 }

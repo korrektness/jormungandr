@@ -4,10 +4,21 @@ method firstNotSortedIndex(s: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures 0 <= intFromRef(v_ret_0) &&
     intFromRef(v_ret_0) <= |stringFromRef(s)|
-  ensures (forall anon_builtin_0: Int ::0 <= anon_builtin_0 &&
-      anon_builtin_0 + 1 < intFromRef(v_ret_0) ==>
-      stringFromRef(s)[anon_builtin_0] <=
-      stringFromRef(s)[anon_builtin_0 + 1])
+  ensures (forall anon_builtin_0: Int ::
+      { stringFromRef(s)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
+      (let anon_builtin_neg1 ==
+        (minusInts(v_ret_0, intToRef(1))) in
+        intFromRef(v_ret_0) - intFromRef(intToRef(1))) ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(s, intToRef(anon_builtin_0))) in
+        stringFromRef(s)[anon_builtin_0]) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(s, plusInts(intToRef(anon_builtin_0), intToRef(1)))) in
+        stringFromRef(s)[intFromRef(plusInts(intToRef(anon_builtin_0), intToRef(1)))]))
 {
   if (|stringFromRef(s)| == 0) {
     v_ret_0 := intToRef(0)
@@ -20,10 +31,21 @@ method firstNotSortedIndex(s: Ref) returns (v_ret_0: Ref)
       invariant isSubtype(typeOf(i), intType())
       invariant isSubtype(typeOf(s), stringType())
       invariant intFromRef(i) <= |stringFromRef(s)| && intFromRef(i) >= 1
-      invariant (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-          anon_builtin_1 + 1 < intFromRef(i) ==>
-          stringFromRef(s)[anon_builtin_1] <=
-          stringFromRef(s)[anon_builtin_1 + 1])
+      invariant (forall anon_builtin_1: Int ::
+          { stringFromRef(s)[anon_builtin_1] }
+          anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+          0 <= anon_builtin_1 &&
+          anon_builtin_1 <
+          (let anon_builtin_neg1 ==
+            (minusInts(i, intToRef(1))) in
+            intFromRef(i) - intFromRef(intToRef(1))) ==>
+          (let anon_builtin_neg1 ==
+            (stringGet(s, intToRef(anon_builtin_1))) in
+            stringFromRef(s)[anon_builtin_1]) <=
+          (let anon_builtin_neg1 ==
+            (stringGet(s, plusInts(intToRef(anon_builtin_1), intToRef(1)))) in
+            stringFromRef(s)[intFromRef(plusInts(intToRef(anon_builtin_1), intToRef(1)))]))
     if (intFromRef(i) < |stringFromRef(s)|) {
       anon_0 := leChars(stringGet(s, minusInts(i, intToRef(1))), stringGet(s,
         i))
@@ -37,10 +59,21 @@ method firstNotSortedIndex(s: Ref) returns (v_ret_0: Ref)
     assert isSubtype(typeOf(i), intType())
     assert isSubtype(typeOf(s), stringType())
     assert intFromRef(i) <= |stringFromRef(s)| && intFromRef(i) >= 1
-    assert (forall anon_builtin_1: Int ::0 <= anon_builtin_1 &&
-        anon_builtin_1 + 1 < intFromRef(i) ==>
-        stringFromRef(s)[anon_builtin_1] <=
-        stringFromRef(s)[anon_builtin_1 + 1])
+    assert (forall anon_builtin_1: Int ::
+        { stringFromRef(s)[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 &&
+        anon_builtin_1 <
+        (let anon_builtin_neg1 ==
+          (minusInts(i, intToRef(1))) in
+          intFromRef(i) - intFromRef(intToRef(1))) ==>
+        (let anon_builtin_neg1 ==
+          (stringGet(s, intToRef(anon_builtin_1))) in
+          stringFromRef(s)[anon_builtin_1]) <=
+        (let anon_builtin_neg1 ==
+          (stringGet(s, plusInts(intToRef(anon_builtin_1), intToRef(1)))) in
+          stringFromRef(s)[intFromRef(plusInts(intToRef(anon_builtin_1), intToRef(1)))]))
     v_ret_0 := i
     goto lbl_ret_0
   }
@@ -62,12 +95,25 @@ method addCharacterTimes(s: Ref, c: Ref, n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(c), charType())
   requires isSubtype(typeOf(n), intType())
   requires intFromRef(n) >= 0
+  requires intFromRef(n) <=
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(2147483647), stringLength(s))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(stringLength(s)))
   ensures isSubtype(typeOf(v_ret_0), stringType())
-  ensures |stringFromRef(v_ret_0)| == |stringFromRef(s)| + intFromRef(n)
-  ensures (forall anon_builtin_0: Int ::|stringFromRef(s)| <=
-      anon_builtin_0 &&
+  ensures |stringFromRef(v_ret_0)| ==
+    (let anon_builtin_neg1 ==
+      (plusInts(stringLength(s), n)) in
+      intFromRef(stringLength(s)) + intFromRef(n))
+  ensures (forall anon_builtin_0: Int ::
+      { stringFromRef(v_ret_0)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      |stringFromRef(s)| <= anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_ret_0)| ==>
-      stringFromRef(v_ret_0)[anon_builtin_0] == charFromRef(c))
+      (let anon_builtin_neg1 ==
+        (stringGet(v_ret_0, intToRef(anon_builtin_0))) in
+        stringFromRef(v_ret_0)[anon_builtin_0]) ==
+      charFromRef(c))
 {
   var i: Ref
   var res: Ref
@@ -81,13 +127,25 @@ method addCharacterTimes(s: Ref, c: Ref, n: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(c), charType())
     invariant isSubtype(typeOf(n), intType())
     invariant 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n)
-    invariant |stringFromRef(res)| == |stringFromRef(s)| + intFromRef(i)
-    invariant (forall anon_builtin_1: Int ::|stringFromRef(s)| <=
-        anon_builtin_1 &&
+    invariant |stringFromRef(res)| ==
+      (let anon_builtin_neg1 ==
+        (plusInts(stringLength(s), i)) in
+        intFromRef(stringLength(s)) + intFromRef(i))
+    invariant (forall anon_builtin_1: Int ::
+        { stringFromRef(res)[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        |stringFromRef(s)| <= anon_builtin_1 &&
         anon_builtin_1 < |stringFromRef(res)| ==>
-        stringFromRef(res)[anon_builtin_1] == charFromRef(c))
+        (let anon_builtin_neg1 ==
+          (stringGet(res, intToRef(anon_builtin_1))) in
+          stringFromRef(res)[anon_builtin_1]) ==
+        charFromRef(c))
   anon_0 := ltInts(i, n)
   if (boolFromRef(anon_0)) {
+    if (!(|stringFromRef(res)| < 2147483647)) {
+      inhale false
+    }
     res := addStringChar(res, c)
     i := plusInts(i, intToRef(1))
     goto cont
@@ -99,10 +157,20 @@ method addCharacterTimes(s: Ref, c: Ref, n: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(c), charType())
   assert isSubtype(typeOf(n), intType())
   assert 0 <= intFromRef(i) && intFromRef(i) <= intFromRef(n)
-  assert |stringFromRef(res)| == |stringFromRef(s)| + intFromRef(i)
-  assert (forall anon_builtin_1: Int ::|stringFromRef(s)| <= anon_builtin_1 &&
+  assert |stringFromRef(res)| ==
+    (let anon_builtin_neg1 ==
+      (plusInts(stringLength(s), i)) in
+      intFromRef(stringLength(s)) + intFromRef(i))
+  assert (forall anon_builtin_1: Int ::
+      { stringFromRef(res)[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      |stringFromRef(s)| <= anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(res)| ==>
-      stringFromRef(res)[anon_builtin_1] == charFromRef(c))
+      (let anon_builtin_neg1 ==
+        (stringGet(res, intToRef(anon_builtin_1))) in
+        stringFromRef(res)[anon_builtin_1]) ==
+      charFromRef(c))
   v_ret_0 := res
   goto lbl_ret_0
   label lbl_ret_0

@@ -49,6 +49,7 @@ data class StringBuilderAppend(
     override val builder: ExpEmbedding,
     val value: ExpEmbedding,
     override val receiverOwned: Boolean,
+    val exceptionalExit: ExpEmbedding,
 ) : StringBuilderUpdate {
     override val type: TypeEmbedding = builder.type
 

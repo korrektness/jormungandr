@@ -75,13 +75,19 @@ method advance(v_this: Ref, step: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(step), intType())
   requires intFromRef(step) >= 0
   requires (unfolding acc(CounterModel_unique(v_this), wildcard) in
-      intFromRef(value(v_this)) <= 2147483647 - intFromRef(step))
+      intFromRef(value(v_this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), step)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(step)))
   ensures acc(CounterModel_unique(v_this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) ==
-    old((unfolding acc(CounterModel_unique(v_this), wildcard) in
-      intFromRef(value(v_this)))) +
-    intFromRef(step)
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(CounterModel_unique(v_this), wildcard) in
+        value(v_this))), step)) in
+      intFromRef(old((unfolding acc(CounterModel_unique(v_this), wildcard) in
+        value(v_this)))) +
+      intFromRef(step))
   ensures (unfolding acc(CounterModel_unique(v_this), wildcard) in
       intFromRef(value(v_this)) == intFromRef(ret_2))
 
@@ -137,13 +143,18 @@ method shiftModel(v_this_extension: Ref, amount: Ref) returns (ret_3: Ref)
   requires intFromRef(amount) >= 0
   requires (unfolding acc(CounterModel_unique(v_this_extension), wildcard) in
       intFromRef(value(v_this_extension)) <=
-      2147483647 - intFromRef(amount))
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), amount)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(CounterModel_unique(v_this_extension), write)
   ensures isSubtype(typeOf(ret_3), intType())
   ensures intFromRef(ret_3) ==
-    old((unfolding acc(CounterModel_unique(v_this_extension), wildcard) in
-      intFromRef(value(v_this_extension)))) +
-    intFromRef(amount)
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(CounterModel_unique(v_this_extension), wildcard) in
+        value(v_this_extension))), amount)) in
+      intFromRef(old((unfolding acc(CounterModel_unique(v_this_extension), wildcard) in
+        value(v_this_extension)))) +
+      intFromRef(amount))
   ensures (unfolding acc(CounterModel_unique(v_this_extension), wildcard) in
       intFromRef(value(v_this_extension)) == intFromRef(ret_3))
 
@@ -202,18 +213,23 @@ function size(this: Ref): Ref
 
 function twiceModel(x: Ref): Ref
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= -1073741824
+  requires intFromRef(x) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
-  ensures intFromRef(result) == intFromRef(x) * 2
+  ensures intFromRef(result) ==
+    (let anon_builtin ==
+      (timesInts(x, intToRef(2))) in
+      intFromRef(x) * intFromRef(intToRef(2)))
 
 
 method topLevelAndGeneric() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon: Ref
+  var anon_0: Ref
   assert intFromRef(twiceModel(intToRef(4))) == 8
-  anon := identityModel(intToRef(13))
-  inhale isSubtype(typeOf(anon), intType())
-  assert intFromRef(anon) == 13
+  anon_0 := identityModel(intToRef(13))
+  inhale isSubtype(typeOf(anon_0), intType())
+  assert intFromRef(anon_0) == 13
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -266,8 +282,13 @@ function size(this: Ref): Ref
 
 function twiceModel(x: Ref): Ref
   requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= -1073741824
+  requires intFromRef(x) <= 1073741823
   ensures isSubtype(typeOf(result), intType())
-  ensures intFromRef(result) == intFromRef(x) * 2
+  ensures intFromRef(result) ==
+    (let anon ==
+      (timesInts(x, intToRef(2))) in
+      intFromRef(x) * intFromRef(intToRef(2)))
 
 
 method incorrectClaim() returns (v_ret_0: Ref)
@@ -297,13 +318,19 @@ method advance(this: Ref, step: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(step), intType())
   requires intFromRef(step) >= 0
   requires (unfolding acc(CounterModel_unique(this), wildcard) in
-      intFromRef(value(this)) <= 2147483647 - intFromRef(step))
+      intFromRef(value(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), step)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(step)))
   ensures acc(CounterModel_unique(this), write)
   ensures isSubtype(typeOf(ret_2), intType())
   ensures intFromRef(ret_2) ==
-    old((unfolding acc(CounterModel_unique(this), wildcard) in
-      intFromRef(value(this)))) +
-    intFromRef(step)
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(CounterModel_unique(this), wildcard) in
+        value(this))), step)) in
+      intFromRef(old((unfolding acc(CounterModel_unique(this), wildcard) in
+        value(this)))) +
+      intFromRef(step))
   ensures (unfolding acc(CounterModel_unique(this), wildcard) in
       intFromRef(value(this)) == intFromRef(ret_2))
 
@@ -321,9 +348,9 @@ method unmetPrecondition() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var counter: Ref
-  var anon: Ref
+  var anon_0: Ref
   counter := createModel(intToRef(2))
-  anon := advance(counter, intToRef(-1))
+  anon_0 := advance(counter, intToRef(-1))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

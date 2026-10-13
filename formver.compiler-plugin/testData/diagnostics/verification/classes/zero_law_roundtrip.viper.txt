@@ -27,13 +27,18 @@ predicate footprint(this: Ref)
 method advance(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), ZeroLawBase())
   requires acc(ZeroLawBase_unique(this), write)
+  requires (unfolding acc(ZeroLawBase_unique(this), wildcard) in
+      intFromRef(observe(this)) < 2147483647)
   ensures acc(ZeroLawBase_unique(this), write)
   ensures isSubtype(typeOf(ret), unitType())
   ensures (unfolding acc(ZeroLawBase_unique(this), wildcard) in
       intFromRef(observe(this))) ==
-    old((unfolding acc(ZeroLawBase_unique(this), wildcard) in
-      intFromRef(observe(this)))) +
-    1
+    (let anon ==
+      (plusInts(old((unfolding acc(ZeroLawBase_unique(this), wildcard) in
+        observe(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(ZeroLawBase_unique(this), wildcard) in
+        observe(this)))) +
+      intFromRef(intToRef(1)))
 
 
 /zero_law_roundtrip.kt: info: Generated Viper text for observe:
@@ -194,15 +199,19 @@ method ZeroLawCell_c_ZeroLawBase_upcast(this: Ref)
 method ZeroLawCell_f_advance(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), ZeroLawCell())
   requires acc(ZeroLawCell_unique(this), write)
+  requires intFromRef(ZeroLawCell_f_observe(this)) < 2147483647
   ensures acc(ZeroLawCell_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(ZeroLawCell_f_observe(this)) ==
-    old(intFromRef(ZeroLawCell_f_observe(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(ZeroLawCell_f_observe(this)), intToRef(1))) in
+      intFromRef(old(ZeroLawCell_f_observe(this))) +
+      intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(ZeroLawCell_unique(this), write)
-  anon := this.value
-  this.value := plusInts(anon, intToRef(1))
+  anon_0 := this.value
+  this.value := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   fold acc(ZeroLawCell_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -211,18 +220,25 @@ method ZeroLawCell_f_advance(this: Ref) returns (v_ret_0: Ref)
 method c_ZeroLawBase_f_advance(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_ZeroLawBase())
   requires acc(c_ZeroLawBase_unique(this), write)
+  requires (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe(this)) < 2147483647)
   ensures acc(c_ZeroLawBase_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
       intFromRef(c_ZeroLawBase_f_observe(this))) ==
-    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
-      intFromRef(c_ZeroLawBase_f_observe(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+        c_ZeroLawBase_f_observe(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+        c_ZeroLawBase_f_observe(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method refines_c_ZeroLawBase_f_advance(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_ZeroLawBase())
   requires acc(c_ZeroLawBase_unique(this), write)
+  requires (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe(this)) < 2147483647)
   requires isSubtype(typeOf(this), ZeroLawCell())
 {
   ZeroLawCell_c_ZeroLawBase_restore(this)
@@ -232,9 +248,12 @@ method refines_c_ZeroLawBase_f_advance(this: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
       intFromRef(c_ZeroLawBase_f_observe(this))) ==
-    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
-      intFromRef(c_ZeroLawBase_f_observe(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+        c_ZeroLawBase_f_observe(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+        c_ZeroLawBase_f_observe(this)))) +
+      intFromRef(intToRef(1)))
 }
 
 /zero_law_roundtrip.kt: info: Generated Viper text for advanceDiamond:
@@ -311,32 +330,42 @@ method ZeroLawDiamond_c_ZeroLawBase_upcast(this: Ref)
       ZeroLawDiamond_c_ZeroLawBase_f_observe(this)))
 
 
-method advance(this: Ref) returns (ret_2: Ref)
+method advance(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_ZeroLawBase())
   requires acc(c_ZeroLawBase_unique(this), write)
+  requires (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe(this)) < 2147483647)
   ensures acc(c_ZeroLawBase_unique(this), write)
-  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
       intFromRef(c_ZeroLawBase_f_observe(this))) ==
-    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
-      intFromRef(c_ZeroLawBase_f_observe(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+        c_ZeroLawBase_f_observe(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+        c_ZeroLawBase_f_observe(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method advanceDiamond(view: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(view), ZeroLawDiamond())
   requires acc(ZeroLawDiamond_unique(view), write)
+  requires (unfolding acc(ZeroLawDiamond_unique(view), wildcard) in
+      intFromRef(ZeroLawDiamond_c_ZeroLawBase_f_observe(view)) < 2147483647)
   ensures acc(ZeroLawDiamond_unique(view), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(ZeroLawDiamond_unique(view), wildcard) in
       intFromRef(ZeroLawDiamond_c_ZeroLawBase_f_observe(view))) ==
-    old((unfolding acc(ZeroLawDiamond_unique(view), wildcard) in
-      intFromRef(ZeroLawDiamond_c_ZeroLawBase_f_observe(view)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(ZeroLawDiamond_unique(view), wildcard) in
+        ZeroLawDiamond_c_ZeroLawBase_f_observe(view))), intToRef(1))) in
+      intFromRef(old((unfolding acc(ZeroLawDiamond_unique(view), wildcard) in
+        ZeroLawDiamond_c_ZeroLawBase_f_observe(view)))) +
+      intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_0: Ref
   ZeroLawDiamond_c_ZeroLawBase_upcast(view)
-  anon := advance(view)
+  anon_0 := advance(view)
   ZeroLawDiamond_c_ZeroLawBase_restore(view)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -452,21 +481,30 @@ method ZeroLawCell_c_ZeroLawDiamond_upcast(this: Ref)
     old(ZeroLawCell_f_observe(this))
 
 
-method advanceDiamond(view: Ref) returns (ret_1: Ref)
+method advanceDiamond(view: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(view), c_ZeroLawDiamond())
   requires acc(c_ZeroLawDiamond_unique(view), write)
+  requires (unfolding acc(c_ZeroLawDiamond_unique(view), wildcard) in
+      intFromRef(c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(view)) <
+      2147483647)
   ensures acc(c_ZeroLawDiamond_unique(view), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(c_ZeroLawDiamond_unique(view), wildcard) in
       intFromRef(c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(view))) ==
-    old((unfolding acc(c_ZeroLawDiamond_unique(view), wildcard) in
-      intFromRef(c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(view)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_ZeroLawDiamond_unique(view), wildcard) in
+        c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(view))),
+      intToRef(1))) in
+      intFromRef(old((unfolding acc(c_ZeroLawDiamond_unique(view), wildcard) in
+        c_ZeroLawDiamond_c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(view)))) +
+      intFromRef(intToRef(1)))
 
 
 method borrowedZeroLaws(cell: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(cell), ZeroLawCell())
   requires acc(ZeroLawCell_unique(cell), write)
+  requires (unfolding acc(ZeroLawCell_unique(cell), write) in
+      intFromRef(cell.value) <= 2147483645)
   ensures acc(ZeroLawCell_unique(cell), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -483,14 +521,20 @@ method borrowedZeroLaws(cell: Ref) returns (v_ret_0: Ref)
   ZeroLawCell_c_ZeroLawDiamond_restore(cell)
   unfold acc(ZeroLawCell_unique(cell), write)
   anon_2 := cell.value
-  assert intFromRef(anon_2) == intFromRef(before) + 1
+  assert intFromRef(anon_2) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(1))) in
+      intFromRef(before) + intFromRef(intToRef(1)))
   fold acc(ZeroLawCell_unique(cell), write)
   ZeroLawCell_c_ZeroLawDiamond_upcast(cell)
   anon_3 := advanceDiamond(cell)
   ZeroLawCell_c_ZeroLawDiamond_restore(cell)
   unfold acc(ZeroLawCell_unique(cell), write)
   anon_4 := cell.value
-  assert intFromRef(anon_4) == intFromRef(before) + 2
+  assert intFromRef(anon_4) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(2))) in
+      intFromRef(before) + intFromRef(intToRef(2)))
   refute false
   label lbl_ret_0
   fold acc(ZeroLawCell_unique(cell), write)
@@ -597,16 +641,22 @@ method ZeroLawCell_c_ZeroLawDiamond_upcast(this: Ref)
     old(ZeroLawCell_f_observe(this))
 
 
-method advance(this: Ref) returns (ret_1: Ref)
+method advance(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), c_ZeroLawBase())
   requires acc(c_ZeroLawBase_unique(this), write)
+  requires (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+      intFromRef(c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this)) <
+      2147483647)
   ensures acc(c_ZeroLawBase_unique(this), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
       intFromRef(c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this))) ==
-    old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
-      intFromRef(c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this)))) +
-    1
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+        c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(c_ZeroLawBase_unique(this), wildcard) in
+        c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(this)))) +
+      intFromRef(intToRef(1)))
 
 
 method c_ZeroLawDiamond_c_ZeroLawBase_upcast(this: Ref)
@@ -622,6 +672,8 @@ method c_ZeroLawDiamond_c_ZeroLawBase_upcast(this: Ref)
 method permanentZeroLaws(cell: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(cell), ZeroLawCell())
   requires acc(ZeroLawCell_unique(cell), write)
+  requires (unfolding acc(ZeroLawCell_unique(cell), write) in
+      intFromRef(cell.value) < 2147483647)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var before: Ref
@@ -640,7 +692,10 @@ method permanentZeroLaws(cell: Ref) returns (v_ret_0: Ref)
   anon_1 := advance(base)
   anon_2 := (unfolding acc(c_ZeroLawBase_unique(base), wildcard) in
       c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(base))
-  assert intFromRef(anon_2) == intFromRef(before) + 1
+  assert intFromRef(anon_2) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(1))) in
+      intFromRef(before) + intFromRef(intToRef(1)))
   anon_3 := (unfolding acc(c_ZeroLawBase_unique(base), wildcard) in
       c_ZeroLawBase_f_observe_args_c_ZeroLawBase_ret_Int(base))
   assert intFromRef(anon_3) == intFromRef(before)

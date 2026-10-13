@@ -1,8 +1,12 @@
 /viper_keyword_names.kt: info: Generated Viper text for viperKeywordNames:
 method viperKeywordNames(par_exhale: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_exhale), intType())
+  requires intFromRef(par_exhale) <= 2147483645
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(par_exhale) + 2
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (plusInts(par_exhale, intToRef(2))) in
+      intFromRef(par_exhale) + intFromRef(intToRef(2)))
 {
   var l0_acc: Ref
   var l0_unfolding: Ref

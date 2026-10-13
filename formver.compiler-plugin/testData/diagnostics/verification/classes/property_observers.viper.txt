@@ -123,13 +123,18 @@ function c_Sized_g_size(this: Ref): Ref
 method grow(this: Ref) returns (ret: Ref)
   requires isSubtype(typeOf(this), Growing())
   requires acc(Growing_unique(this), write)
+  requires (unfolding acc(Growing_unique(this), wildcard) in
+      intFromRef(Growing_c_Sized_g_size(this)) <= 2147483645)
   ensures acc(Growing_unique(this), write)
   ensures isSubtype(typeOf(ret), unitType())
   ensures (unfolding acc(Growing_unique(this), wildcard) in
       intFromRef(Growing_c_Sized_g_size(this)) ==
-      old((unfolding acc(Growing_unique(this), wildcard) in
-        intFromRef(Growing_c_Sized_g_size(this)))) +
-      1)
+      (let anon ==
+        (plusInts(old((unfolding acc(Growing_unique(this), wildcard) in
+          Growing_c_Sized_g_size(this))), intToRef(1))) in
+        intFromRef(old((unfolding acc(Growing_unique(this), wildcard) in
+          Growing_c_Sized_g_size(this)))) +
+        intFromRef(intToRef(1))))
 
 
 /property_observers.kt: info: Generated Viper text for MutableSize:
@@ -264,15 +269,18 @@ method MutableSize_c_Growing_upcast(this: Ref)
 method MutableSize_f_grow(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), MutableSize())
   requires acc(MutableSize_unique(this), write)
+  requires intFromRef(MutableSize_g_size(this)) <= 2147483645
   ensures acc(MutableSize_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(MutableSize_g_size(this)) ==
-    old(intFromRef(MutableSize_g_size(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(MutableSize_g_size(this)), intToRef(1))) in
+      intFromRef(old(MutableSize_g_size(this))) + intFromRef(intToRef(1)))
 {
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(MutableSize_unique(this), write)
-  anon := this.n
-  this.n := plusInts(anon, intToRef(1))
+  anon_0 := this.n
+  this.n := plusInts(anon_0, intToRef(1))
   label lbl_ret_0
   assert (let this ==
       (this) in
@@ -284,18 +292,25 @@ method MutableSize_f_grow(this: Ref) returns (v_ret_0: Ref)
 method c_Growing_f_grow(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_Growing())
   requires acc(c_Growing_unique(this), write)
+  requires (unfolding acc(c_Growing_unique(this), wildcard) in
+      intFromRef(c_Growing_c_Sized_g_size(this)) <= 2147483645)
   ensures acc(c_Growing_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(c_Growing_unique(this), wildcard) in
       intFromRef(c_Growing_c_Sized_g_size(this)) ==
-      old((unfolding acc(c_Growing_unique(this), wildcard) in
-        intFromRef(c_Growing_c_Sized_g_size(this)))) +
-      1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Growing_unique(this), wildcard) in
+          c_Growing_c_Sized_g_size(this))), intToRef(1))) in
+        intFromRef(old((unfolding acc(c_Growing_unique(this), wildcard) in
+          c_Growing_c_Sized_g_size(this)))) +
+        intFromRef(intToRef(1))))
 
 
 method refines_c_Growing_f_grow(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_Growing())
   requires acc(c_Growing_unique(this), write)
+  requires (unfolding acc(c_Growing_unique(this), wildcard) in
+      intFromRef(c_Growing_c_Sized_g_size(this)) <= 2147483645)
   requires isSubtype(typeOf(this), MutableSize())
 {
   MutableSize_c_Growing_restore(this)
@@ -305,9 +320,12 @@ method refines_c_Growing_f_grow(this: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(c_Growing_unique(this), wildcard) in
       intFromRef(c_Growing_c_Sized_g_size(this)) ==
-      old((unfolding acc(c_Growing_unique(this), wildcard) in
-        intFromRef(c_Growing_c_Sized_g_size(this)))) +
-      1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Growing_unique(this), wildcard) in
+          c_Growing_c_Sized_g_size(this))), intToRef(1))) in
+        intFromRef(old((unfolding acc(c_Growing_unique(this), wildcard) in
+          c_Growing_c_Sized_g_size(this)))) +
+        intFromRef(intToRef(1))))
 }
 
 /property_observers.kt: info: Generated Viper text for growClient:
@@ -328,28 +346,38 @@ function c_Sized_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method grow(this: Ref) returns (ret_2: Ref)
+method grow(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), Growing())
   requires acc(Growing_unique(this), write)
+  requires (unfolding acc(Growing_unique(this), wildcard) in
+      intFromRef(Growing_c_Sized_g_size(this)) <= 2147483645)
   ensures acc(Growing_unique(this), write)
-  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures (unfolding acc(Growing_unique(this), wildcard) in
       intFromRef(Growing_c_Sized_g_size(this)) ==
-      old((unfolding acc(Growing_unique(this), wildcard) in
-        intFromRef(Growing_c_Sized_g_size(this)))) +
-      1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Growing_unique(this), wildcard) in
+          Growing_c_Sized_g_size(this))), intToRef(1))) in
+        intFromRef(old((unfolding acc(Growing_unique(this), wildcard) in
+          Growing_c_Sized_g_size(this)))) +
+        intFromRef(intToRef(1))))
 
 
 method growClient(s: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(s), Growing())
   requires acc(Growing_unique(s), write)
+  requires (unfolding acc(Growing_unique(s), wildcard) in
+      intFromRef(Growing_c_Sized_g_size(s)) <= 2147483645)
   ensures acc(Growing_unique(s), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Growing_unique(s), wildcard) in
       intFromRef(Growing_c_Sized_g_size(s)) ==
-      old((unfolding acc(Growing_unique(s), wildcard) in
-        intFromRef(Growing_c_Sized_g_size(s)))) +
-      1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(Growing_unique(s), wildcard) in
+          Growing_c_Sized_g_size(s))), intToRef(1))) in
+        intFromRef(old((unfolding acc(Growing_unique(s), wildcard) in
+          Growing_c_Sized_g_size(s)))) +
+        intFromRef(intToRef(1))))
 {
   var before: Ref
   var anon_0: Ref
@@ -361,7 +389,10 @@ method growClient(s: Ref) returns (v_ret_0: Ref)
   anon_1 := grow(s)
   anon_2 := (unfolding acc(Growing_unique(s), wildcard) in
       Growing_c_Sized_g_size(s))
-  assert intFromRef(anon_2) == intFromRef(before) + 1
+  assert intFromRef(anon_2) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(1))) in
+      intFromRef(before) + intFromRef(intToRef(1)))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -416,6 +447,7 @@ method MutableSize_c_Growing_upcast(this: Ref)
 method borrowedProperty(s: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(s), MutableSize())
   requires acc(MutableSize_unique(s), write)
+  requires intFromRef(MutableSize_g_size(s)) <= 2147483645
   ensures acc(MutableSize_unique(s), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
@@ -429,21 +461,29 @@ method borrowedProperty(s: Ref) returns (v_ret_0: Ref)
   anon_3 := growClient(s)
   MutableSize_c_Growing_restore(s)
   anon_4 := MutableSize_g_size(s)
-  assert intFromRef(anon_4) == intFromRef(before) + 1
+  assert intFromRef(anon_4) ==
+    (let anon_builtin ==
+      (plusInts(before, intToRef(1))) in
+      intFromRef(before) + intFromRef(intToRef(1)))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method growClient(s: Ref) returns (ret_1: Ref)
+method growClient(s: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(s), c_Growing())
   requires acc(c_Growing_unique(s), write)
+  requires (unfolding acc(c_Growing_unique(s), wildcard) in
+      intFromRef(c_Growing_c_Sized_g_size(s)) <= 2147483645)
   ensures acc(c_Growing_unique(s), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures (unfolding acc(c_Growing_unique(s), wildcard) in
       intFromRef(c_Growing_c_Sized_g_size(s)) ==
-      old((unfolding acc(c_Growing_unique(s), wildcard) in
-        intFromRef(c_Growing_c_Sized_g_size(s)))) +
-      1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Growing_unique(s), wildcard) in
+          c_Growing_c_Sized_g_size(s))), intToRef(1))) in
+        intFromRef(old((unfolding acc(c_Growing_unique(s), wildcard) in
+          c_Growing_c_Sized_g_size(s)))) +
+        intFromRef(intToRef(1))))
 
 
 /property_observers.kt: info: Generated Viper text for BrokenSize:
@@ -620,10 +660,13 @@ method WrongGrow_c_Growing_upcast(this: Ref)
 method WrongGrow_f_grow(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), WrongGrow())
   requires acc(WrongGrow_unique(this), write)
+  requires intFromRef(WrongGrow_g_size(this)) <= 2147483645
   ensures acc(WrongGrow_unique(this), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures intFromRef(WrongGrow_g_size(this)) ==
-    old(intFromRef(WrongGrow_g_size(this))) + 1
+    (let anon_builtin ==
+      (plusInts(old(WrongGrow_g_size(this)), intToRef(1))) in
+      intFromRef(old(WrongGrow_g_size(this))) + intFromRef(intToRef(1)))
 {
   var anon_2: Ref
   unfold acc(WrongGrow_unique(this), write)
@@ -643,18 +686,25 @@ method WrongGrow_f_grow(this: Ref) returns (v_ret_0: Ref)
 method c_Growing_f_grow(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_Growing())
   requires acc(c_Growing_unique(this), write)
+  requires (unfolding acc(c_Growing_unique(this), wildcard) in
+      intFromRef(c_Growing_c_Sized_g_size(this)) <= 2147483645)
   ensures acc(c_Growing_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(c_Growing_unique(this), wildcard) in
       intFromRef(c_Growing_c_Sized_g_size(this)) ==
-      old((unfolding acc(c_Growing_unique(this), wildcard) in
-        intFromRef(c_Growing_c_Sized_g_size(this)))) +
-      1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Growing_unique(this), wildcard) in
+          c_Growing_c_Sized_g_size(this))), intToRef(1))) in
+        intFromRef(old((unfolding acc(c_Growing_unique(this), wildcard) in
+          c_Growing_c_Sized_g_size(this)))) +
+        intFromRef(intToRef(1))))
 
 
 method refines_c_Growing_f_grow(this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(this), c_Growing())
   requires acc(c_Growing_unique(this), write)
+  requires (unfolding acc(c_Growing_unique(this), wildcard) in
+      intFromRef(c_Growing_c_Sized_g_size(this)) <= 2147483645)
   requires isSubtype(typeOf(this), WrongGrow())
 {
   WrongGrow_c_Growing_restore(this)
@@ -664,9 +714,12 @@ method refines_c_Growing_f_grow(this: Ref) returns (ret_1: Ref)
   assert isSubtype(typeOf(ret_1), unitType())
   assert (unfolding acc(c_Growing_unique(this), wildcard) in
       intFromRef(c_Growing_c_Sized_g_size(this)) ==
-      old((unfolding acc(c_Growing_unique(this), wildcard) in
-        intFromRef(c_Growing_c_Sized_g_size(this)))) +
-      1)
+      (let anon_builtin ==
+        (plusInts(old((unfolding acc(c_Growing_unique(this), wildcard) in
+          c_Growing_c_Sized_g_size(this))), intToRef(1))) in
+        intFromRef(old((unfolding acc(c_Growing_unique(this), wildcard) in
+          c_Growing_c_Sized_g_size(this)))) +
+        intFromRef(intToRef(1))))
 }
 
 /property_observers.kt: info: Generated Viper text for wrongObservation:

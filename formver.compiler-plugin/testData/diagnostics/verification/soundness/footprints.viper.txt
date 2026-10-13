@@ -566,10 +566,8 @@ method Line_f_shift(this: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(Line_f_at(this, intToRef(0))) ==
     old(intFromRef(Line_f_at(this, intToRef(0))))
 {
-  var anon: Ref
   unfold acc(Line_unique(this), write)
-  anon := this.below
-  this.below := plusInts(anon, intToRef(1))
+  this.below := intToRef(0)
   label lbl_ret_0
   fold acc(Line_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -787,7 +785,7 @@ method shift(this: Ref) returns (ret_2: Ref)
 function shown(this: Ref): Ref
   requires isSubtype(typeOf(this), Shown())
   requires acc(footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 
 
 /footprints.kt: info: Generated Viper text for shown:
@@ -796,23 +794,26 @@ field raw: Ref
 function Shown_f_shown(this: Ref): Ref
   requires isSubtype(typeOf(this), Shown())
   requires acc(footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 
 
-function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
   ensures typeOf(this) == c_Meter() ==>
-    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+    result == c_Meter_f_shown_args_c_Meter_ret_Long(this)
 
 
-function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 {
-  (unfolding acc(c_Meter_unique(this), write) in this.raw)
+  (unfolding acc(c_Meter_unique(this), write) in
+    (let anon_0_0 ==
+      (this.raw) in
+      convertIntToLong(anon_0_0)))
 }
 
 /footprints.kt: info: Generated Viper text for shown:
@@ -821,35 +822,38 @@ field raw: Ref
 function DoubledMeter_f_shown(this: Ref): Ref
   requires isSubtype(typeOf(this), DoubledMeter())
   requires acc(DoubledMeter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 {
   (unfolding acc(DoubledMeter_unique(this), write) in
     (unfolding acc(c_Meter_unique(this), write) in
       (let anon_0_0 ==
         (this.raw) in
-        timesInts(anon_0_0, intToRef(2)))))
+        timesLongLong(convertIntToLong(anon_0_0), longToRef(2)))))
 }
 
 function Shown_f_shown(this: Ref): Ref
   requires isSubtype(typeOf(this), Shown())
   requires acc(footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 
 
-function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
   ensures typeOf(this) == c_Meter() ==>
-    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+    result == c_Meter_f_shown_args_c_Meter_ret_Long(this)
 
 
-function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 {
-  (unfolding acc(c_Meter_unique(this), write) in this.raw)
+  (unfolding acc(c_Meter_unique(this), write) in
+    (let anon_1_0 ==
+      (this.raw) in
+      convertIntToLong(anon_1_0)))
 }
 
 /footprints.kt: info: Generated Viper text for openObserverView:
@@ -858,23 +862,26 @@ field raw: Ref
 function Shown_f_shown(this: Ref): Ref
   requires isSubtype(typeOf(this), Shown())
   requires acc(Shown_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 
 
-function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
   ensures typeOf(this) == c_Meter() ==>
-    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+    result == c_Meter_f_shown_args_c_Meter_ret_Long(this)
 
 
-function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 {
-  (unfolding acc(c_Meter_unique(this), write) in this.raw)
+  (unfolding acc(c_Meter_unique(this), write) in
+    (let anon_0_0 ==
+      (this.raw) in
+      convertIntToLong(anon_0_0)))
 }
 
 function size(this: Ref): Ref
@@ -890,10 +897,10 @@ method openObserverView(m: Ref) returns (v_ret_0: Ref)
 {
   var anon_1: Ref
   var anon_2: Ref
-  anon_1 := c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(m)
+  anon_1 := c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(m)
   unfold acc(c_Meter_unique(m), write)
   anon_2 := m.raw
-  assert intFromRef(anon_1) == intFromRef(anon_2)
+  assert longFromRef(anon_1) == intFromRef(anon_2)
   label lbl_ret_0
   fold acc(c_Meter_unique(m), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -905,23 +912,26 @@ field bf_raw: Ref
 function Shown_f_shown(this: Ref): Ref
   requires isSubtype(typeOf(this), Shown())
   requires acc(Shown_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 
 
-function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
   ensures typeOf(this) == c_Meter() ==>
-    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+    result == c_Meter_f_shown_args_c_Meter_ret_Long(this)
 
 
-function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 {
-  (unfolding acc(c_Meter_unique(this), write) in this.bf_raw)
+  (unfolding acc(c_Meter_unique(this), write) in
+    (let anon_0_0 ==
+      (this.bf_raw) in
+      convertIntToLong(anon_0_0)))
 }
 
 function size(this: Ref): Ref
@@ -941,11 +951,11 @@ method exactMeter() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var m: Ref
-  var anon: Ref
+  var anon_1: Ref
   m := con(intToRef(3))
   fold acc(c_Meter_unique(m), write)
-  anon := c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(m)
-  assert intFromRef(anon) == 3
+  anon_1 := c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(m)
+  assert longFromRef(anon_1) == 3
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -956,35 +966,38 @@ field bf_raw: Ref
 function DoubledMeter_f_shown(this: Ref): Ref
   requires isSubtype(typeOf(this), DoubledMeter())
   requires acc(DoubledMeter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 {
   (unfolding acc(DoubledMeter_unique(this), write) in
     (unfolding acc(c_Meter_unique(this), write) in
       (let anon_1_0 ==
         (this.bf_raw) in
-        timesInts(anon_1_0, intToRef(2)))))
+        timesLongLong(convertIntToLong(anon_1_0), longToRef(2)))))
 }
 
 function Shown_f_shown(this: Ref): Ref
   requires isSubtype(typeOf(this), Shown())
   requires acc(Shown_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 
 
-function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
   ensures typeOf(this) == c_Meter() ==>
-    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+    result == c_Meter_f_shown_args_c_Meter_ret_Long(this)
 
 
-function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 {
-  (unfolding acc(c_Meter_unique(this), write) in this.bf_raw)
+  (unfolding acc(c_Meter_unique(this), write) in
+    (let anon_0_0 ==
+      (this.bf_raw) in
+      convertIntToLong(anon_0_0)))
 }
 
 function size(this: Ref): Ref
@@ -996,7 +1009,7 @@ method DoubledMeter_c_Meter_upcast(this: Ref)
   requires acc(DoubledMeter_unique(this), write)
   ensures acc(c_Meter_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), DoubledMeter())) && true ==>
-    c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this) ==
+    c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this) ==
     old(DoubledMeter_f_shown(this))
 
 
@@ -1020,8 +1033,8 @@ method subclassAsMeter() returns (v_ret_0: Ref)
   fold acc(DoubledMeter_unique(anon_2), write)
   m := anon_2
   DoubledMeter_c_Meter_upcast(m)
-  anon_3 := c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(m)
-  assert intFromRef(anon_3) == 3
+  anon_3 := c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(m)
+  assert longFromRef(anon_3) == 3
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -1032,35 +1045,38 @@ field bf_raw: Ref
 function DoubledMeter_f_shown(this: Ref): Ref
   requires isSubtype(typeOf(this), DoubledMeter())
   requires acc(DoubledMeter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 {
   (unfolding acc(DoubledMeter_unique(this), write) in
     (unfolding acc(c_Meter_unique(this), write) in
       (let anon_0_0 ==
         (this.bf_raw) in
-        timesInts(anon_0_0, intToRef(2)))))
+        timesLongLong(convertIntToLong(anon_0_0), longToRef(2)))))
 }
 
-function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
   ensures typeOf(this) == c_Meter() ==>
-    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+    result == c_Meter_f_shown_args_c_Meter_ret_Long(this)
 
 
-function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+function c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Meter())
   requires acc(c_Meter_unique(this), write)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 {
-  (unfolding acc(c_Meter_unique(this), write) in this.bf_raw)
+  (unfolding acc(c_Meter_unique(this), write) in
+    (let anon_1_0 ==
+      (this.bf_raw) in
+      convertIntToLong(anon_1_0)))
 }
 
 function c_Shown_f_shown(this: Ref): Ref
   requires isSubtype(typeOf(this), c_Shown())
   requires acc(c_Shown_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
+  ensures isSubtype(typeOf(result), longType())
 
 
 function size(this: Ref): Ref
@@ -1072,7 +1088,7 @@ method DoubledMeter_c_Meter_upcast(this: Ref)
   requires acc(DoubledMeter_unique(this), write)
   ensures acc(c_Meter_unique(this), write)
   ensures true && old(isSubtype(typeOf(this), DoubledMeter())) && true ==>
-    c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this) ==
+    c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this) ==
     old(DoubledMeter_f_shown(this))
 
 
@@ -1082,7 +1098,7 @@ method c_Meter_c_Shown_upcast(this: Ref)
   ensures true && old(isSubtype(typeOf(this), c_Meter())) && true ==>
     (unfolding acc(c_Shown_unique(this), wildcard) in
       c_Shown_f_shown(this)) ==
-    old(c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this))
+    old(c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this))
 
 
 method con(par_raw: Ref) returns (ret_1: Ref)
@@ -1110,7 +1126,7 @@ method subclassThroughInterface() returns (v_ret_0: Ref)
   c_Meter_c_Shown_upcast(s)
   anon_3 := (unfolding acc(c_Shown_unique(s), wildcard) in
       c_Shown_f_shown(s))
-  assert intFromRef(anon_3) == 3
+  assert longFromRef(anon_3) == 3
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

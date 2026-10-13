@@ -47,6 +47,7 @@ open <!VIPER_TEXT!>class GoodSizedLaw<!> : SizedLawDiamond {
 
     @Unique @Borrowed
     fun <!VIPER_TEXT!>add<!>() {
+        preconditions { count < 2147483647 }
         verify(count >= 0)
         count++
         refute(false)

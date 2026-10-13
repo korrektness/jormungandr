@@ -18,15 +18,32 @@ function length(n: Ref): Ref
         plusInts(intToRef(1), length(anon_3_0)))))
 }
 
-/reverse_linked.kt: info: Generated Viper text for reverse:
+/reverse_linked.kt: info: Generated Viper text for capLength:
+function capLength(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+/reverse_linked.kt: info: Generated Viper text for cappedLength:
 field next: Ref
 
 field value: Ref
 
-function length(n: Ref): Ref
+function capLength(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedLength(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
   ensures n == nullValue() ==> result == intToRef(0)
   decreases n != nullValue(), Node_unique(n)
 {
@@ -35,7 +52,36 @@ function length(n: Ref): Ref
     (unfolding acc(Node_unique(n), write) in
       (let anon_3_0 ==
         (n.next) in
-        plusInts(intToRef(1), length(anon_3_0)))))
+        capLength(plusInts(intToRef(1), cappedLength(anon_3_0))))))
+}
+
+/reverse_linked.kt: info: Generated Viper text for reverse:
+field next: Ref
+
+field value: Ref
+
+function capLength(k: Ref): Ref
+  requires isSubtype(typeOf(k), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+{
+  (intFromRef(k) > 1000000 ? intToRef(1000000) : k)
+}
+
+function cappedLength(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 1000000
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_3_0 ==
+        (n.next) in
+        capLength(plusInts(intToRef(1), cappedLength(anon_3_0))))))
 }
 
 method reverse(head: Ref) returns (v_ret_0: Ref)
@@ -43,43 +89,44 @@ method reverse(head: Ref) returns (v_ret_0: Ref)
   requires head != nullValue() ==> acc(Node_unique(head), write)
   ensures isSubtype(typeOf(v_ret_0), nullable(Node()))
   ensures v_ret_0 != nullValue() ==> acc(Node_unique(v_ret_0), write)
-  ensures intFromRef(length(v_ret_0)) == old(intFromRef(length(head)))
+  ensures intFromRef(cappedLength(v_ret_0)) ==
+    old(intFromRef(cappedLength(head)))
 {
-  var l4_acc: Ref
+  var l8_acc: Ref
   var cur: Ref
-  var anon_4: Ref
-  l4_acc := nullValue()
+  var anon_7: Ref
+  l8_acc := nullValue()
   cur := head
   label cont
-    invariant l4_acc != nullValue() ==> acc(Node_unique(l4_acc), write)
+    invariant l8_acc != nullValue() ==> acc(Node_unique(l8_acc), write)
     invariant cur != nullValue() ==> acc(Node_unique(cur), write)
-    invariant isSubtype(typeOf(l4_acc), nullable(Node()))
+    invariant isSubtype(typeOf(l8_acc), nullable(Node()))
     invariant isSubtype(typeOf(cur), nullable(Node()))
     invariant isSubtype(typeOf(head), nullable(Node()))
-    invariant intFromRef(length(l4_acc)) + intFromRef(length(cur)) ==
-      old(intFromRef(length(head)))
-  anon_4 := notBool(boolToRef(cur == nullValue()))
-  if (boolFromRef(anon_4)) {
+    invariant intFromRef(capLength(plusInts(cappedLength(l8_acc), cappedLength(cur)))) ==
+      old(intFromRef(cappedLength(head)))
+  anon_7 := notBool(boolToRef(cur == nullValue()))
+  if (boolFromRef(anon_7)) {
     var nxt: Ref
     if (cur != nullValue()) {
       unfold acc(Node_unique(cur), write)
     }
     nxt := cur.next
-    cur.next := l4_acc
+    cur.next := l8_acc
     if (cur != nullValue()) {
       fold acc(Node_unique(cur), write)
     }
-    l4_acc := cur
+    l8_acc := cur
     cur := nxt
     goto cont
   }
   label break
-  assert isSubtype(typeOf(l4_acc), nullable(Node()))
+  assert isSubtype(typeOf(l8_acc), nullable(Node()))
   assert isSubtype(typeOf(cur), nullable(Node()))
   assert isSubtype(typeOf(head), nullable(Node()))
-  assert intFromRef(length(l4_acc)) + intFromRef(length(cur)) ==
-    old(intFromRef(length(head)))
-  v_ret_0 := l4_acc
+  assert intFromRef(capLength(plusInts(cappedLength(l8_acc), cappedLength(cur)))) ==
+    old(intFromRef(cappedLength(head)))
+  v_ret_0 := l8_acc
   goto lbl_ret_0
   label lbl_ret_0
 }

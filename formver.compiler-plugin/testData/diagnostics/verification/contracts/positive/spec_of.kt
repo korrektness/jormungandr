@@ -13,6 +13,10 @@ abstract class Counter {
 
     @SpecOf("step")
     fun stepTwiceSpec(n: Int, m: Int) {
+        preconditions {
+            -1000000000 <= n && n <= 1000000000
+            -1000000000 <= m && m <= 1000000000
+        }
         postconditions<Int> { r -> r >= n + m }
     }
 
@@ -32,7 +36,7 @@ interface Measure {
 class Doubler {
     @SpecOf("twice")
     fun twiceSpec(x: Int) {
-        preconditions { x >= 0 }
+        preconditions { 0 <= x && x <= 1073741823 }
         postconditions<Int> { r -> r == 2 * x }
     }
 
