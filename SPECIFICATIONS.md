@@ -338,7 +338,10 @@ recursive expansion is rejected with `INVALID_LAW` and a reason.
 Class laws must hold whenever an object is reachable through a shared path. A mutable field is **law-bound**
 when its declaring class's own laws read it after observer expansion, or its declaration carries `@LawBound`.
 Shared-path writes to law-bound fields are rejected with `UNSUPPORTED_FEATURE`; this applies to nested owned
-children according to the child's field declaration. `@LawBound` protects storage without asserting a law.
+children according to the child's field declaration. A shared-path write includes a call of a custom setter and the
+setter's own write to `field`. `@LawBound` protects storage without asserting a law. A class law may not read a
+property with accessor methods, which is an open property or a `var` with a custom setter; such a read produces
+`INVALID_LAW`.
 A class law may read its own fields and inherited `val` fields. It may read an inherited `var` only if that field
 is law-bound in its declaring class; other inherited `var` reads produce `INVALID_LAW` with a pointer to this
 section. This protection applies across superclass and subclass views.

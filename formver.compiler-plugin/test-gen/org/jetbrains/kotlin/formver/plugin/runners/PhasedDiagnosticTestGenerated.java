@@ -920,6 +920,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("law_bound_setter.kt")
+      public void testLaw_bound_setter() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/law_bound_setter.kt");
+      }
+
+      @Test
       @TestMetadata("law_function_property.kt")
       public void testLaw_function_property() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/law_function_property.kt");

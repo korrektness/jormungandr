@@ -113,6 +113,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 LawRule.ASSIGNMENT -> "Assignment in law."
                 LawRule.NON_VALUE_ACCESS -> "Non-value read or call in law."
                 LawRule.INHERITED_VAR_READ -> "Invalid inherited var read; see Class laws."
+                LawRule.ACCESSOR_PROPERTY_READ -> "Read of a property with accessor methods; see Class laws."
                 LawRule.ABSTRACT_OBSERVER -> "Abstract observer in class law."
                 LawRule.RECURSIVE_OBSERVER -> "Recursive observer in class law."
                 LawRule.DELEGATED_PROPERTY -> "Delegated property in invariant class."

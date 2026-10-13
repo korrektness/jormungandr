@@ -19,7 +19,7 @@ open class InheritedObservation : Observation {
 
 class InheritedInvariant : InheritedObservation() {
     @Law @Pure fun invariant(): Boolean = size() >= 0
-    @Law @Pure fun propertyInvariant(): Boolean = amount >= 0
+    @Law @Pure fun propertyInvariant(): Boolean = <!INVALID_LAW!>amount<!> >= 0
 }
 
 open class OpenObservation : Observation {

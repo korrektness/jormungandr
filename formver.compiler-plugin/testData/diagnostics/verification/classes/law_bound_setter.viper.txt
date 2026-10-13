@@ -1,0 +1,56 @@
+/law_bound_setter.kt: info: Generated Viper text for SetterLaw:
+method con(f0: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(f0), intType())
+  ensures isSubtype(typeOf(v_ret_2), SetterLaw())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == SetterLaw()
+  fold acc(SetterLaw_unique(v_ret_2), write)
+  anon_2 := g_f(v_ret_2)
+  anon_1 := anon_2
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_0 := require(gtInts(anon_1, intToRef(0)))
+  label lbl_ret_2
+}
+
+method g_f(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method require(value: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+method s_f(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/law_bound_setter.kt: info: Generated Viper text for OpenLaw:
+method con(par_f: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(par_f), intType())
+  ensures isSubtype(typeOf(v_ret_2), OpenLaw())
+{
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == OpenLaw()
+  fold acc(OpenLaw_unique(v_ret_2), write)
+  label lbl_ret_2
+  unfold acc(OpenLaw_unique(v_ret_2), write)
+}
+
+method g_f(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_f(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))

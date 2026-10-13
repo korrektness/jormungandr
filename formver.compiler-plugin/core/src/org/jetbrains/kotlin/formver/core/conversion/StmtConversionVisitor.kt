@@ -25,6 +25,8 @@ import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
 import org.jetbrains.kotlin.fir.references.toResolvedSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
+import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
+import org.jetbrains.kotlin.formver.core.embeddings.properties.CustomSetter
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.fir.types.resolvedType
@@ -492,12 +494,20 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val embedding = data.embedPropertyAccess(lValue, variableAssignment)
         val convertedRValue = data.convert(variableAssignment.rValue)
         val assignment = embedding.setValue(convertedRValue, data)
-        if (assignment is FieldModification && assignment.dropsWrite) {
-            val field = lValue.toResolvedCallableSymbol() as? FirPropertySymbol
+        val sharedSetterCall = embedding is ClassPropertyAccess && embedding.property.setter is CustomSetter &&
+            !embedding.receiverOwned
+        val droppedWrite = (assignment as? FieldModification)?.takeIf { it.dropsWrite }
+        if (sharedSetterCall || droppedWrite != null) {
+            val field = when (val callee = lValue.toResolvedCallableSymbol()) {
+                is FirBackingFieldSymbol -> callee.propertySymbol
+                else -> callee as? FirPropertySymbol
+            }
             if (field?.isLawBound(data.session) == true) {
                 throw UnsupportedFeatureException(variableAssignment.source, "See Class laws.")
             }
-            lValue.dispatchReceiver?.let { data.warnIfUntrackedWrite(variableAssignment, it, assignment.receiverOwned) }
+        }
+        if (droppedWrite != null) {
+            lValue.dispatchReceiver?.let { data.warnIfUntrackedWrite(variableAssignment, it, droppedWrite.receiverOwned) }
         }
         if (assignment !is Assign) return assignment
         val lValuePath = data.ownershipFrame.pathOf(lValue) ?: return assignment

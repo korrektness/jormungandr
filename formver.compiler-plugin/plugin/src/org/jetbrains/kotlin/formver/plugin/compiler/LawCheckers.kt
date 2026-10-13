@@ -44,6 +44,7 @@ import org.jetbrains.kotlin.formver.core.conversion.hasSuperclassLaws
 import org.jetbrains.kotlin.formver.core.conversion.isLawValueOperation
 import org.jetbrains.kotlin.formver.core.conversion.classLawObserverBody
 import org.jetbrains.kotlin.formver.core.conversion.classLawObserverFailure
+import org.jetbrains.kotlin.formver.core.conversion.hasAccessorMethods
 import org.jetbrains.kotlin.formver.core.conversion.isLawReadableFrom
 import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
@@ -168,6 +169,9 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
                         if (field) {
                             if (!(callee as FirPropertySymbol).isLawReadableFrom(classOwner!!, context.session)) {
                                 reject(element, LawRule.INHERITED_VAR_READ, callee)
+                            }
+                            if (callee.hasAccessorMethods(context.session)) {
+                                reject(element, LawRule.ACCESSOR_PROPERTY_READ, callee)
                             }
                         }
                         if (observer && classOwner != null && !field) expand(element, callee!!)

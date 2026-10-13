@@ -47,7 +47,8 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
 
     fun registerType(type: ClassTypeEmbedding, symbol: FirRegularClassSymbol) {
         if (!symbol.classKind.isInterface) {
-            val laws = symbol.ownClassLaws(program.session)
+            // A law that reads a property with accessor methods is rejected as INVALID_LAW and has no encoding.
+            val laws = symbol.ownClassLaws(program.session).filterNot { it.readsAccessorProperty(program.session) }
             if (laws.isNotEmpty()) {
                 program.typeResolver.registerClassLaws(type)
                 classes[type] = symbol to laws
