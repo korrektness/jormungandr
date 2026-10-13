@@ -87,10 +87,14 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
 }
 
 class IntNode(var value: Int, var next: @Unique IntNode?)
-@Pure fun <!VIPER_TEXT!>nodeSize<!>(node: @Unique IntNode?): Int =
-    if (node == null) 0 else 1 + nodeSize(node.next)
-@Pure fun <!VIPER_TEXT!>nodeGet<!>(node: @Unique IntNode?, i: Int): Int =
-    if (node == null) 0 else if (i == 0) node.value else nodeGet(node.next, i - 1)
+@Pure fun <!VIPER_TEXT!>nodeSize<!>(node: @Unique IntNode?): Int {
+    preconditions { decreases(node) }
+    return if (node == null) 0 else 1 + nodeSize(node.next)
+}
+@Pure fun <!VIPER_TEXT!>nodeGet<!>(node: @Unique IntNode?, i: Int): Int {
+    preconditions { decreases(node) }
+    return if (node == null) 0 else if (i == 0) node.value else nodeGet(node.next, i - 1)
+}
 
 fun <!VIPER_TEXT!>nonnegativeNodes<!>(node: @Unique @Borrowed IntNode?) {
     postconditions<Unit> {

@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Node(val value: Int, val next: Node?)
 
 @Pure
-fun <!VIPER_TEXT!>isAlternating<!>(node: Node, expectsPositive: Boolean): Boolean {
+fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>isAlternating<!>(node: Node, expectsPositive: Boolean): Boolean {
     val isCurrentValid = if (expectsPositive) {
         node.value > 0
     } else {
@@ -19,7 +19,7 @@ fun <!VIPER_TEXT!>isAlternating<!>(node: Node, expectsPositive: Boolean): Boolea
 }
 
 @Pure
-fun <!VIPER_TEXT!>isStrictlyAscendingAndPositive<!>(node: Node): Boolean {
+fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>isStrictlyAscendingAndPositive<!>(node: Node): Boolean {
     preconditions {
         node.value >= 0
     }
@@ -39,7 +39,7 @@ fun <!VIPER_TEXT!>isStrictlyAscendingAndPositive<!>(node: Node): Boolean {
 class TreeNode(val value: Int, val left: TreeNode?, val right: TreeNode?)
 
 @Pure
-fun <!VIPER_TEXT!>isLocallyValidBST<!>(node: TreeNode): Boolean {
+fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>isLocallyValidBST<!>(node: TreeNode): Boolean {
     val leftNode = node.left
     val leftValid = if (leftNode != null) {
         leftNode.value < node.value && isLocallyValidBST(leftNode)

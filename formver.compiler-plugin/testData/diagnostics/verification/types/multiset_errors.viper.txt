@@ -6,6 +6,7 @@ function contents(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), multisetType())
   ensures n == nullValue() ==> result == multisetToRef(Multiset[Int]())
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     multisetToRef(Multiset[Int]()) :
@@ -18,6 +19,7 @@ function contents(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 /multiset_errors.kt: info: Generated Viper text for handBackOld:
@@ -28,6 +30,7 @@ function contents(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), multisetType())
   ensures n == nullValue() ==> result == multisetToRef(Multiset[Int]())
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     multisetToRef(Multiset[Int]()) :
@@ -40,6 +43,7 @@ function contents(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 method handBackOld(n: Ref) returns (v_ret_0: Ref)

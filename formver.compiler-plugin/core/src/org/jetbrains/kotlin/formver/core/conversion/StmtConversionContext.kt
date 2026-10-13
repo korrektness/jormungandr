@@ -480,11 +480,12 @@ private fun FirBlock.isEmptyLambdaBody(): Boolean {
     return (statements.size == 1 && (statements.first() as? FirReturnExpression)?.result?.resolvedType?.isUnit ?: false)
 }
 
-fun StmtConversionContext.collectInvariants(block: FirBlock) = buildList {
+/** Converts [statements], by default all of [block]'s, as invariants. */
+fun StmtConversionContext.collectInvariants(block: FirBlock, statements: List<FirStatement> = block.statements) = buildList {
     if (block.isEmptyLambdaBody()) {
         return@buildList
     }
-    block.statements.forEach { stmt ->
+    statements.forEach { stmt ->
         stmt.requireInvariant()
         add(stmt.accept(StmtConversionVisitor, this@collectInvariants))
     }

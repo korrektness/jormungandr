@@ -2,13 +2,7 @@
 function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   ensures isSubtype(typeOf(result), boolType())
-{
-  (n == nullValue() ?
-    boolToRef(true) :
-    (next(n) == nullValue() ?
-      boolToRef(true) :
-      andBools(leInts(value(n), value(next(n))), isSorted(next(n)))))
-}
+
 
 function next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
@@ -24,11 +18,7 @@ function value(this: Ref): Ref
 function contents(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   ensures isSubtype(typeOf(result), multisetType())
-{
-  (n == nullValue() ?
-    multisetToRef(Multiset[Int]()) :
-    unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(next(n))))
-}
+
 
 function next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
@@ -44,11 +34,7 @@ function value(this: Ref): Ref
 function contents(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   ensures isSubtype(typeOf(result), multisetType())
-{
-  (n == nullValue() ?
-    multisetToRef(Multiset[Int]()) :
-    unionMultisets(multisetToRef(Multiset(intFromRef(g_value(n)))), contents(g_next(n))))
-}
+
 
 function g_next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
@@ -63,13 +49,7 @@ function g_value(this: Ref): Ref
 function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   ensures isSubtype(typeOf(result), boolType())
-{
-  (n == nullValue() ?
-    boolToRef(true) :
-    (g_next(n) == nullValue() ?
-      boolToRef(true) :
-      andBools(leInts(g_value(n), g_value(g_next(n))), isSorted(g_next(n)))))
-}
+
 
 method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
@@ -114,22 +94,12 @@ method insert(x: Ref, l: Ref) returns (v_ret_0: Ref)
 function contents(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   ensures isSubtype(typeOf(result), multisetType())
-{
-  (n == nullValue() ?
-    multisetToRef(Multiset[Int]()) :
-    unionMultisets(multisetToRef(Multiset(intFromRef(value(n)))), contents(next(n))))
-}
+
 
 function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   ensures isSubtype(typeOf(result), boolType())
-{
-  (n == nullValue() ?
-    boolToRef(true) :
-    (next(n) == nullValue() ?
-      boolToRef(true) :
-      andBools(leInts(value(n), value(next(n))), isSorted(next(n)))))
-}
+
 
 function next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())

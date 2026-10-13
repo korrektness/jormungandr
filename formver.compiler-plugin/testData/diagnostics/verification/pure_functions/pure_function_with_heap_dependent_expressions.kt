@@ -34,7 +34,7 @@ fun <!VIPER_TEXT!>isLastNode<!>(node: Node): Boolean {
 }
 
 @Pure
-fun <!VIPER_TEXT!>length<!>(node: Node): Int {
+fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>length<!>(node: Node): Int {
     val nextNode = node.next
     return if (nextNode == null) {
         1
@@ -44,7 +44,7 @@ fun <!VIPER_TEXT!>length<!>(node: Node): Int {
 }
 
 @Pure
-fun <!VIPER_TEXT!>sumAllNodes<!>(node: Node): Int {
+fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>sumAllNodes<!>(node: Node): Int {
     val nextNode = node.next
     return if (nextNode == null) {
         node.value
@@ -54,7 +54,7 @@ fun <!VIPER_TEXT!>sumAllNodes<!>(node: Node): Int {
 }
 
 @Pure
-fun <!VIPER_TEXT!>containsValue<!>(node: Node, target: Int): Boolean {
+fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>containsValue<!>(node: Node, target: Int): Boolean {
     if (node.value == target) return true
     val nextNode = node.next
     return if (nextNode != null) containsValue(nextNode, target) else false

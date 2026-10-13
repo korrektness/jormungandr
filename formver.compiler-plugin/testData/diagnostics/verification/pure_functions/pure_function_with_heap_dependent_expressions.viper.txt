@@ -102,13 +102,7 @@ function value(this: Ref): Ref
 function length(node: Ref): Ref
   requires isSubtype(typeOf(node), Node())
   ensures isSubtype(typeOf(result), intType())
-{
-  (let nextNode_0 ==
-    (next(node)) in
-    (nextNode_0 == nullValue() ?
-      intToRef(1) :
-      plusInts(intToRef(1), length(nextNode_0))))
-}
+
 
 function next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
@@ -129,13 +123,7 @@ function next(this: Ref): Ref
 function sumAllNodes(node: Ref): Ref
   requires isSubtype(typeOf(node), Node())
   ensures isSubtype(typeOf(result), intType())
-{
-  (let nextNode_0 ==
-    (next(node)) in
-    (nextNode_0 == nullValue() ?
-      value(node) :
-      plusInts(value(node), sumAllNodes(nextNode_0))))
-}
+
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
@@ -147,15 +135,7 @@ function containsValue(node: Ref, target: Ref): Ref
   requires isSubtype(typeOf(node), Node())
   requires isSubtype(typeOf(target), intType())
   ensures isSubtype(typeOf(result), boolType())
-{
-  (intFromRef(value(node)) == intFromRef(target) ?
-    boolToRef(true) :
-    (let nextNode_0 ==
-      (next(node)) in
-      (!(nextNode_0 == nullValue()) ?
-        containsValue(nextNode_0, target) :
-        boolToRef(false))))
-}
+
 
 function next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())

@@ -8,6 +8,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -27,6 +28,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :

@@ -16,6 +16,8 @@ import org.jetbrains.kotlin.formver.common.FailureKind
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.UnsupportedReason
 import org.jetbrains.kotlin.formver.common.PurityCondition
+import org.jetbrains.kotlin.formver.common.TerminationCondition
+import org.jetbrains.kotlin.formver.common.TerminationRule
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.formver.common.purityFailure
 import org.jetbrains.kotlin.formver.common.unsupportedOwnershipFailure
@@ -57,7 +59,6 @@ import org.jetbrains.kotlin.formver.core.purity.checkSpecificationVarReads
 import org.jetbrains.kotlin.formver.core.purity.checkNoMultisetValues
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isGuaranteedDefault
-import org.jetbrains.kotlin.formver.uniqueness.plugin.multisetClassId
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Program
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
@@ -139,10 +140,15 @@ class ProgramConverter(
     var hadOwnershipError: Boolean = false
         private set
 
+    /** Whether a registered function is recursive without a termination measure. It is not verified. */
+    private var hadMissingMeasure: Boolean = false
+
     val skipsVerification: Boolean
-        get() = hadUniquenessError || hadOwnershipError
+        get() = hadUniquenessError || hadOwnershipError || hadMissingMeasure
 
     override val typeResolver: TypeResolver = TypeResolver()
+
+    private val terminationMeasures = TerminationMeasures(typeResolver)
 
     val debugExpEmbeddings: Map<SymbolicName, ExpEmbedding>
         get() = buildMap {
@@ -172,18 +178,19 @@ class ProgramConverter(
 
     fun buildProgram(): Program = Program(
         domains = listOf(RuntimeTypeDomain(typeResolver)) +
-                listOfNotNull(SeqMultisetDomain.takeIf { usesIntArray && typeResolver.usesMultiset }),
+                listOfNotNull(SeqMultisetDomain.takeIf { usesIntArray && typeResolver.usesMultiset }) +
+                TerminationMeasures.domains(linearizedBodyResolver.functions),
         // Public fields with the same name are represented differently at `FieldEmbedding` level
         // but map to the same Viper field, so we deduplicate before emitting.
         fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
                 listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder }),
-        functions = SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
+        functions = TerminationMeasures.withTerminationSpecifications(
+            SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
                 linearizedBodyResolver.functions + typeResolver.observerViewFunctions() +
-                listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray }),
+                listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray })
+        ),
         methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods,
-        predicates = typeResolver.classTypeEmbeddings().flatMap {
-            with(typeResolver) { listOfNotNull(it.footprintPredicate(), it.uniquePredicate()) }
-        },
+        predicates = typeResolver.predicates(),
         adts = emptyList(),
     )
 
@@ -327,14 +334,27 @@ class ProgramConverter(
 
 
     private val bodyProcessor by lazy {
-        ProgramBodyProcessor(this, uniquenessOutcomes, fullSignatures, refinements) { error, signature ->
-            hadOwnershipError = true
-            context(checkerContext) {
-                reporter.reportFailure(unsupportedOwnershipFailure(error.source ?: signature.declarationSource, error.condition))
-            }
-            skips.report(signature.declarationSource,
-                KotlinCondition.SkipReason.UNSUPPORTED_OWNERSHIP, signature.symbol)
-        }
+        ProgramBodyProcessor(this, uniquenessOutcomes, fullSignatures, refinements, terminationMeasures.measures,
+            onOwnershipError = { error, signature ->
+                hadOwnershipError = true
+                context(checkerContext) {
+                    reporter.reportFailure(unsupportedOwnershipFailure(error.source ?: signature.declarationSource, error.condition))
+                }
+                skips.report(signature.declarationSource,
+                    KotlinCondition.SkipReason.UNSUPPORTED_OWNERSHIP, signature.symbol)
+            },
+            onMissingMeasure = { signature, cycle ->
+                val entry = registered.firstOrNull { it.declaration.symbol == signature.symbol } ?: return@ProgramBodyProcessor
+                hadMissingMeasure = true
+                val names = cycle.map { it.labelName ?: "<anonymous>" }
+                context(checkerContext) {
+                    reporter.reportFailure(Failure(FailureKind.MISSING_TERMINATION_MEASURE, signature.declarationSource,
+                        TerminationCondition(TerminationRule.MISSING_MEASURE, names)))
+                }
+                if (!entry.declaration.symbol.neverVerify(session)) skips.report(signature.declarationSource,
+                    KotlinCondition.SkipReason.MISSING_TERMINATION_MEASURE, signature.symbol)
+            },
+        )
     }
 
     /**
@@ -523,7 +543,11 @@ class ProgramConverter(
             holder.symbol, signature, firSpec, returnTarget, holderAnalysis
         )
 
-        val preconditions = firSpec.precond?.let { preconditionContext.collectInvariants(it) } ?: emptyList()
+        val (measureCalls, preconditionStatements) = firSpec.precond?.statements.orEmpty().partition { it.decreasesCall() != null }
+        terminationMeasures.embed(signature, measureCalls.mapNotNull { it.decreasesCall() }, preconditionContext) { source, rule ->
+            if (symbol == registeredSymbol) emit(Failure(FailureKind.INVALID_TERMINATION_MEASURE, source, TerminationCondition(rule)))
+        }
+        val preconditions = firSpec.precond?.let { preconditionContext.collectInvariants(it, preconditionStatements) } ?: emptyList()
         val postconditions = firSpec.postcond?.let { postconditionContext.collectInvariants(it) } ?: emptyList()
 
         checkVarReads(declaration, holderAnalysis) { source ->
@@ -752,7 +776,7 @@ class ProgramConverter(
 
     // region types (also classes)
 
-    override fun embedType(type: ConeKotlinType): TypeEmbedding = buildType { embedTypeWithBuilder(type) }
+    override fun embedType(type: ConeKotlinType): TypeEmbedding = buildType { with(this@ProgramConverter) { embedTypeWithBuilder(type) } }
 
     private val observerBindingRegistry = ObserverBindingRegistry()
     internal val lawEncoding = LawEncoding(this)
@@ -816,82 +840,8 @@ class ProgramConverter(
 
     // Note: keep in mind that this function is necessary to resolve the name of the function!
     override fun embedFunctionPretype(symbol: FirFunctionSymbol<*>): FunctionTypeEmbedding = buildFunctionPretype {
-        embedFunctionPretypeWithBuilder(symbol)
+        with(this@ProgramConverter) { embedFunctionPretypeWithBuilder(symbol) }
     }
-
-
-    private fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuilder = when {
-        type is ConeErrorType -> error("Encountered an erroneous type: $type")
-        type is ConeTypeParameterType -> {
-            isNullable = true; any()
-        }
-
-        type.isString -> {
-            val stringClassSymbol = type.toClassSymbol(session) as FirRegularClassSymbol
-            stringClassSymbol.propertySymbols.forEach {
-                embedProperty(it)
-            }
-            string()
-        }
-
-        type.isUnit -> unit()
-        type.isChar -> char()
-        type.isInt -> int()
-        type.isBoolean -> boolean()
-        type.isNothing -> nothing()
-        type.isSomeFunctionType(session) -> function {
-            check(type is ConeClassLikeType) { "Expected a ConeClassLikeType for a function type, got $type" }
-            type.receiverType(session)?.let { withDispatchReceiver { embedTypeWithBuilder(it) } }
-            type.valueParameterTypesWithoutReceivers(session).forEach { param ->
-                withParam { embedTypeWithBuilder(param) }
-            }
-            withReturnType { embedTypeWithBuilder(type.returnType(session)) }
-        }
-
-        type.canBeNull(session) -> {
-            isNullable = true
-            embedTypeWithBuilder(type.withNullability(false, session.typeContext))
-        }
-
-        type.isAny -> any()
-        type is ConeClassLikeType && type.lookupTag.classId == multisetClassId -> {
-            val element = type.typeArguments.single().type
-            if (element !is ConeTypeParameterType && element?.isInt != true) {
-                throw UnsupportedFeatureException(null, "type `$type`, a `Multiset` whose element type is not `Int`")
-            }
-            typeResolver.markMultisetUsed()
-            multiset()
-        }
-        type is ConeClassLikeType -> {
-            val classLikeSymbol = type.toClassSymbol(session)
-            if (classLikeSymbol is FirRegularClassSymbol) {
-                existing(embedClass(classLikeSymbol))
-            } else {
-                unimplementedTypeEmbedding(type)
-            }
-        }
-
-        else -> unimplementedTypeEmbedding(type)
-    }
-
-    private fun FunctionPretypeBuilder.embedFunctionPretypeWithBuilder(symbol: FirFunctionSymbol<*>) {
-        symbol.receiverType?.let {
-            withDispatchReceiver { embedTypeWithBuilder(it) }
-        }
-        symbol.extensionReceiverType?.let {
-            withExtensionReceiver { embedTypeWithBuilder(it) }
-        }
-        symbol.valueParameterSymbols.forEach { param ->
-            withParam {
-                embedTypeWithBuilder(param.resolvedReturnType)
-            }
-        }
-        withReturnType { embedTypeWithBuilder(symbol.resolvedReturnType) }
-        returnsUnique = context(checkerContext) { symbol.returnsUnique() }
-    }
-
-    private fun unimplementedTypeEmbedding(type: ConeKotlinType): Nothing =
-        throw UnsupportedFeatureException(null, "type `$type`")
 
     // endregion
 }

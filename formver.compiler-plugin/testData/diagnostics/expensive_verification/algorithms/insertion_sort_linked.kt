@@ -5,6 +5,7 @@ class Node(val value: Int, var next: @Unique Node?)
 
 @Pure
 fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
+    preconditions { decreases(n) }
     if (n == null) {
         return true
     }

@@ -7,6 +7,7 @@ class Node(val value: Int, var next: @Unique Node?)
 
 @Pure
 fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
+    preconditions { decreases(n) }
     if (n == null) {
         return true
     }
@@ -19,8 +20,10 @@ fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
 }
 
 @Pure
-fun <!VIPER_TEXT!>contents<!>(n: @Unique Node?): Multiset<Int> =
-    if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
+fun <!VIPER_TEXT!>contents<!>(n: @Unique Node?): Multiset<Int> {
+    preconditions { decreases(n) }
+    return if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
+}
 
 fun <!VIPER_TEXT!>insertSorted<!>(sorted: @Unique Node?, node: @Unique Node): @Unique Node {
     preconditions {

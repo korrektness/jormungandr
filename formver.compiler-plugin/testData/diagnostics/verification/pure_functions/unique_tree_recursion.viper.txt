@@ -6,6 +6,7 @@ field l: Ref
 function g_v(this: Ref): Ref
   requires isSubtype(typeOf(this), Tree())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 function size(par_t: Ref): Ref
@@ -13,6 +14,7 @@ function size(par_t: Ref): Ref
   requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
   ensures isSubtype(typeOf(result), intType())
   ensures par_t == nullValue() ==> result == intToRef(0)
+  decreases par_t != nullValue(), Tree_unique(par_t)
 {
   (par_t == nullValue() ?
     intToRef(0) :
@@ -32,6 +34,7 @@ field bf_r: Ref
 function g_v(this: Ref): Ref
   requires isSubtype(typeOf(this), Tree())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 function size(par_t: Ref): Ref
@@ -39,6 +42,7 @@ function size(par_t: Ref): Ref
   requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
   ensures isSubtype(typeOf(result), intType())
   ensures par_t == nullValue() ==> result == intToRef(0)
+  decreases par_t != nullValue(), Tree_unique(par_t)
 {
   (par_t == nullValue() ?
     intToRef(0) :
@@ -50,18 +54,18 @@ function size(par_t: Ref): Ref
           plusInts(plusInts(intToRef(1), size(anon_3_0)), size(anon_4_0))))))
 }
 
-method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (ret_2: Ref)
+method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_v), intType())
   requires isSubtype(typeOf(par_l), nullable(Tree()))
   requires isSubtype(typeOf(par_r), nullable(Tree()))
-  ensures isSubtype(typeOf(ret_2), Tree())
-  ensures isSubtype(typeOf(ret_2), Tree()) && acc(ret_2.bf_l, write) &&
-    isSubtype(typeOf(ret_2.bf_l), nullable(Tree())) &&
-    acc(ret_2.bf_r, write) &&
-    isSubtype(typeOf(ret_2.bf_r), nullable(Tree()))
-  ensures intFromRef(g_v(ret_2)) == intFromRef(par_v)
-  ensures ret_2.bf_l == par_l
-  ensures ret_2.bf_r == par_r
+  ensures isSubtype(typeOf(ret_3), Tree())
+  ensures isSubtype(typeOf(ret_3), Tree()) && acc(ret_3.bf_l, write) &&
+    isSubtype(typeOf(ret_3.bf_l), nullable(Tree())) &&
+    acc(ret_3.bf_r, write) &&
+    isSubtype(typeOf(ret_3.bf_r), nullable(Tree()))
+  ensures intFromRef(g_v(ret_3)) == intFromRef(par_v)
+  ensures ret_3.bf_l == par_l
+  ensures ret_3.bf_r == par_r
 
 
 method insert(par_t: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -115,6 +119,7 @@ field bf_r: Ref
 function g_v(this: Ref): Ref
   requires isSubtype(typeOf(this), Tree())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 function size(par_t: Ref): Ref
@@ -122,6 +127,7 @@ function size(par_t: Ref): Ref
   requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
   ensures isSubtype(typeOf(result), intType())
   ensures par_t == nullValue() ==> result == intToRef(0)
+  decreases par_t != nullValue(), Tree_unique(par_t)
 {
   (par_t == nullValue() ?
     intToRef(0) :
@@ -133,18 +139,18 @@ function size(par_t: Ref): Ref
           plusInts(plusInts(intToRef(1), size(anon_3_0)), size(anon_4_0))))))
 }
 
-method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (ret_2: Ref)
+method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_v), intType())
   requires isSubtype(typeOf(par_l), nullable(Tree()))
   requires isSubtype(typeOf(par_r), nullable(Tree()))
-  ensures isSubtype(typeOf(ret_2), Tree())
-  ensures isSubtype(typeOf(ret_2), Tree()) && acc(ret_2.bf_l, write) &&
-    isSubtype(typeOf(ret_2.bf_l), nullable(Tree())) &&
-    acc(ret_2.bf_r, write) &&
-    isSubtype(typeOf(ret_2.bf_r), nullable(Tree()))
-  ensures intFromRef(g_v(ret_2)) == intFromRef(par_v)
-  ensures ret_2.bf_l == par_l
-  ensures ret_2.bf_r == par_r
+  ensures isSubtype(typeOf(ret_3), Tree())
+  ensures isSubtype(typeOf(ret_3), Tree()) && acc(ret_3.bf_l, write) &&
+    isSubtype(typeOf(ret_3.bf_l), nullable(Tree())) &&
+    acc(ret_3.bf_r, write) &&
+    isSubtype(typeOf(ret_3.bf_r), nullable(Tree()))
+  ensures intFromRef(g_v(ret_3)) == intFromRef(par_v)
+  ensures ret_3.bf_l == par_l
+  ensures ret_3.bf_r == par_r
 
 
 method leaf(par_v: Ref) returns (v_ret_0: Ref)
@@ -169,6 +175,7 @@ function f_size(par_t: Ref): Ref
   requires par_t != nullValue() ==> acc(Tree_unique(par_t), write)
   ensures isSubtype(typeOf(result), intType())
   ensures par_t == nullValue() ==> result == intToRef(0)
+  decreases par_t != nullValue(), Tree_unique(par_t)
 {
   (par_t == nullValue() ?
     intToRef(0) :
@@ -183,11 +190,13 @@ function f_size(par_t: Ref): Ref
 function g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 function g_v(this: Ref): Ref
   requires isSubtype(typeOf(this), Tree())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 method rotateLeft(par_t: Ref) returns (v_ret_0: Ref)

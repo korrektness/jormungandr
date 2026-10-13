@@ -652,6 +652,7 @@ must be a value type.
 ```kotlin
 @Pure
 fun isSorted(n: @Unique Node?): Boolean {
+    preconditions { decreases(n) }
     if (n == null) return true
     val m = n.next
     return if (m == null) true else n.value <= m.value && isSorted(m)
@@ -668,7 +669,10 @@ because the body names `size(right)` before the move and `size(t)` after it:
 
 ```kotlin
 @Pure
-fun size(t: @Unique Tree?): Int = if (t == null) 0 else 1 + size(t.l) + size(t.r)
+fun size(t: @Unique Tree?): Int {
+    preconditions { decreases(t) }
+    return if (t == null) 0 else 1 + size(t.l) + size(t.r)
+}
 
 fun rotateLeft(t: @Unique Tree): @Unique Tree {
     postconditions<Tree> { r -> size(r) == old(size(t)) }
@@ -684,6 +688,48 @@ fun rotateLeft(t: @Unique Tree): @Unique Tree {
     return right
 }
 ```
+
+### Termination of pure functions
+
+A recursive `@Pure` function must declare a termination measure with
+`decreases(...)` in its `preconditions` block. Without one, a definition such
+as `loopy(x) == loopy(x) + 1` would let callers prove `false`. A function is
+recursive when it can reach itself through calls in its specification or body,
+directly, through other functions, or through the laws of a class whose
+predicate it unfolds. Non-recursive functions need no measure.
+
+```kotlin
+@Pure
+fun ackermann(m: Int, n: Int): Int {
+    preconditions {
+        m >= 0
+        n >= 0
+        decreases(m, n)
+    }
+    return if (m == 0) n + 1 else if (n == 0) ackermann(m - 1, 1) else ackermann(m - 1, ackermann(m, n - 1))
+}
+```
+
+Each argument of `decreases` is a measure, and several measures are compared
+lexicographically. A measure is one of:
+
+- An `Int`, ordered as a natural number: it must decrease and stay
+  non-negative at each recursive call.
+- A reference to an object of a class, not an interface, ordered by the nesting
+  of its unique predicate. A call on a field of a `@Unique` parameter, as in
+  `length(n.next)`, decreases it. A nullable reference also decreases when the
+  call passes `null`.
+
+Each recursive call, including the calls of mutually recursive functions, must
+decrease the measure; the verifier reports `TERMINATION_NOT_ESTABLISHED` at a
+call where it does not. A recursive function with no measure is reported as
+`MISSING_TERMINATION_MEASURE`, together with the call cycle, and is not
+verified; its callers see no definition for it. `INVALID_TERMINATION_MEASURE`
+rejects `decreases` on a function that is not `@Pure`, a second `decreases` in
+one function, and a measure of any other type.
+
+Recursion over shared objects has no measure: a shared node can reach itself
+through its `next` chain, so `length(n.next)` need not be smaller.
 
 ### Rejected constructs
 

@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Node(val value: Int, val next: Node?)
 
 @Pure
-fun <!VIPER_TEXT!>isSorted<!>(n: Node?): Boolean =
+fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>isSorted<!>(n: Node?): Boolean =
     if (n == null) {
         true
     } else if (n.next == null) {
@@ -14,10 +14,10 @@ fun <!VIPER_TEXT!>isSorted<!>(n: Node?): Boolean =
     }
 
 @Pure
-fun <!VIPER_TEXT!>contents<!>(n: Node?): Multiset<Int> =
+fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>contents<!>(n: Node?): Multiset<Int> =
     if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
 
-fun <!VIPER_TEXT!>insert<!>(x: Int, l: Node?): Node {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>insert<!>(x: Int, l: Node?): Node {
     preconditions { isSorted(l) }
     postconditions<Node> { r ->
         isSorted(r) && (r.value == x || (l != null && r.value == l.value))
@@ -28,12 +28,12 @@ fun <!VIPER_TEXT!>insert<!>(x: Int, l: Node?): Node {
         return Node(x, l)
     }
     return Node(l.value, insert(x, l.next))
-}
+}<!>
 
-fun <!VIPER_TEXT!>insertionSort<!>(l: Node?): Node? {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>insertionSort<!>(l: Node?): Node? {
     postconditions<Node?> { r -> isSorted(r) && contents(r) == contents(l) }
     if (l == null) {
         return null
     }
     return insert(l.value, insertionSort(l.next))
-}
+}<!>

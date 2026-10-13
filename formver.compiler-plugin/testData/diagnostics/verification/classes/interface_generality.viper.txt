@@ -2662,6 +2662,7 @@ function allTrue(node: Ref): Ref
   requires node != nullValue() ==> acc(BoolNode_unique(node), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures node == nullValue() ==> result == boolToRef(true)
+  decreases node != nullValue(), BoolNode_unique(node)
 {
   (node == nullValue() ?
     boolToRef(true) :
@@ -2705,6 +2706,7 @@ function BoolChain_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), BoolChain())
   requires acc(BoolChain_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  decreases _
 {
   (unfolding acc(BoolChain_unique(this), write) in
     (let anon_0_0 ==
@@ -2716,6 +2718,7 @@ function ChainView_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), ChainView())
   requires acc(footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
+  decreases _
 
 
 function allTrue(node: Ref): Ref
@@ -2723,6 +2726,7 @@ function allTrue(node: Ref): Ref
   requires node != nullValue() ==> acc(BoolNode_unique(node), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures node == nullValue() ==> result == boolToRef(true)
+  decreases node != nullValue(), BoolNode_unique(node)
 {
   (node == nullValue() ?
     boolToRef(true) :
@@ -2765,6 +2769,7 @@ function BoolChain_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), BoolChain())
   requires acc(BoolChain_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  decreases _
 {
   (unfolding acc(BoolChain_unique(this), write) in
     (let anon_0_0 ==
@@ -2777,6 +2782,7 @@ function allTrue(node: Ref): Ref
   requires node != nullValue() ==> acc(BoolNode_unique(node), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures node == nullValue() ==> result == boolToRef(true)
+  decreases node != nullValue(), BoolNode_unique(node)
 {
   (node == nullValue() ?
     boolToRef(true) :
@@ -2792,11 +2798,13 @@ function c_ChainView_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ChainView())
   requires acc(c_ChainView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
+  decreases _
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 predicate BoolChain_unique(this: Ref) {
@@ -2893,6 +2901,7 @@ function BoolChain_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), BoolChain())
   requires acc(BoolChain_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  decreases _
 {
   (unfolding acc(BoolChain_unique(this), write) in
     (let anon_0_0 ==
@@ -2905,6 +2914,7 @@ function allTrue(node: Ref): Ref
   requires node != nullValue() ==> acc(BoolNode_unique(node), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures node == nullValue() ==> result == boolToRef(true)
+  decreases node != nullValue(), BoolNode_unique(node)
 {
   (node == nullValue() ?
     boolToRef(true) :
@@ -2920,11 +2930,13 @@ function c_ChainView_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ChainView())
   requires acc(c_ChainView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
+  decreases _
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 predicate BoolChain_unique(this: Ref) {
@@ -3033,6 +3045,7 @@ function BoolChain_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), BoolChain())
   requires acc(BoolChain_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  decreases _
 {
   (unfolding acc(BoolChain_unique(this), write) in
     (let anon_0_0 ==
@@ -3046,6 +3059,7 @@ function allTrue(par_node: Ref): Ref
     acc(BoolNode_unique(par_node), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures par_node == nullValue() ==> result == boolToRef(true)
+  decreases par_node != nullValue(), BoolNode_unique(par_node)
 {
   (par_node == nullValue() ?
     boolToRef(true) :
@@ -3061,11 +3075,13 @@ function c_ChainView_f_all(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ChainView())
   requires acc(c_ChainView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
+  decreases _
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 predicate BoolChain_unique(this: Ref) {

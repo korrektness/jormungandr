@@ -127,6 +127,8 @@ internal fun Exp.subExps(): List<Exp> = when (this) {
     is AccessPredicate.FieldAccessPredicate -> listOf(access)
     is Exp.LetBinding -> listOf(varExp, body)
     is Exp.TernaryExp -> listOf(condExp, thenExp, elseExp)
+    is Exp.DecreasesTuple -> measures
+    is Exp.PredicateInstance -> args
     is Exp.IntLit, is Exp.NullLit, is Exp.BoolLit, is Exp.LocalVar, is Exp.Result, is Exp.EmptySeq,
-    is Exp.EmptyMultiset -> emptyList()
+    is Exp.EmptyMultiset, is Exp.DecreasesWildcard -> emptyList()
 }

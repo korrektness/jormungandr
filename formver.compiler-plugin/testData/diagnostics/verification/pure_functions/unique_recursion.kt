@@ -4,7 +4,10 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Node(var value: Int, var next: @Unique Node?)
 
 @Pure
-fun <!VIPER_TEXT!>length<!>(n: @Unique Node?): Int = if (n == null) 0 else 1 + length(n.next)
+fun <!VIPER_TEXT!>length<!>(n: @Unique Node?): Int {
+    preconditions { decreases(n) }
+    return if (n == null) 0 else 1 + length(n.next)
+}
 
 fun <!VIPER_TEXT!>appendGhost<!>(l: @Unique Node?, v: Int, n: Int): @Unique Node {
     preconditions { length(l) == n }
@@ -61,7 +64,10 @@ fun <!VIPER_TEXT!>nextLength<!>(n: @Unique Node?): Int {
 class VNode(val value: Int, val next: @Unique VNode?)
 
 @Pure
-fun <!VIPER_TEXT!>vLength<!>(n: @Unique VNode?): Int = if (n == null) 0 else 1 + vLength(n.next)
+fun <!VIPER_TEXT!>vLength<!>(n: @Unique VNode?): Int {
+    preconditions { decreases(n) }
+    return if (n == null) 0 else 1 + vLength(n.next)
+}
 
 fun <!VIPER_TEXT!>vTail<!>(l: @Unique VNode, n: Int): @Unique VNode? {
     preconditions { vLength(l) == n }
@@ -80,6 +86,7 @@ fun <!VIPER_TEXT!>oneNode<!>(v: Int): @Unique Node {
 
 @Pure
 fun <!VIPER_TEXT!>sum<!>(n: @Unique Node?): Int {
+    preconditions { decreases(n) }
     if (n == null) return 0
     return n.value + sum(n.next)
 }
@@ -90,7 +97,10 @@ fun <!VIPER_TEXT!>oneSum<!>(v: Int): @Unique Node {
 }
 
 @Pure
-fun <!VIPER_TEXT!>lengthFrom<!>(k: Int, n: @Unique Node?): Int = if (n == null) k else lengthFrom(k + 1, n.next)
+fun <!VIPER_TEXT!>lengthFrom<!>(k: Int, n: @Unique Node?): Int {
+    preconditions { decreases(n) }
+    return if (n == null) k else lengthFrom(k + 1, n.next)
+}
 
 fun <!VIPER_TEXT!>oneFrom<!>(v: Int): @Unique Node {
     postconditions<Node> { r -> lengthFrom(0, r) == 1 }
@@ -109,9 +119,12 @@ fun <!VIPER_TEXT!>headValue<!>(n: @Unique Node?): Int {
 }
 
 @Pure
-fun <!VIPER_TEXT!>lengthWhen<!>(n: @Unique Node?): Int = when (n) {
-    null -> 0
-    else -> 1 + lengthWhen(n.next)
+fun <!VIPER_TEXT!>lengthWhen<!>(n: @Unique Node?): Int {
+    preconditions { decreases(n) }
+    return when (n) {
+        null -> 0
+        else -> 1 + lengthWhen(n.next)
+    }
 }
 
 fun <!VIPER_TEXT!>oneNodeWhen<!>(v: Int): @Unique Node {
@@ -120,7 +133,10 @@ fun <!VIPER_TEXT!>oneNodeWhen<!>(v: Int): @Unique Node {
 }
 
 @Pure
-fun <!VIPER_TEXT!>lengthPlus<!>(n: @Unique Node?, k: Int): Int = if (n == null) k + 1 else 1 + lengthPlus(n.next, k)
+fun <!VIPER_TEXT!>lengthPlus<!>(n: @Unique Node?, k: Int): Int {
+    preconditions { decreases(n) }
+    return if (n == null) k + 1 else 1 + lengthPlus(n.next, k)
+}
 
 fun <!VIPER_TEXT!>oneNodePlus<!>(v: Int, k: Int): @Unique Node {
     postconditions<Node> { r -> lengthPlus(r, k) == k + 2 }
@@ -129,6 +145,7 @@ fun <!VIPER_TEXT!>oneNodePlus<!>(v: Int, k: Int): @Unique Node {
 
 @Pure
 fun <!VIPER_TEXT!>sumFrom<!>(n: @Unique Node?, k: Int): Int {
+    preconditions { decreases(n) }
     val base = k * 2
     if (n == null) return base
     return n.value + sumFrom(n.next, k)

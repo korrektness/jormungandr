@@ -4,7 +4,10 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Tree(val v: Int, var l: @Unique Tree?, var r: @Unique Tree?)
 
 @Pure
-fun <!VIPER_TEXT!>size<!>(t: @Unique Tree?): Int = if (t == null) 0 else 1 + size(t.l) + size(t.r)
+fun <!VIPER_TEXT!>size<!>(t: @Unique Tree?): Int {
+    preconditions { decreases(t) }
+    return if (t == null) 0 else 1 + size(t.l) + size(t.r)
+}
 
 fun <!VIPER_TEXT!>insert<!>(t: @Unique Tree?, v: Int): @Unique Tree {
     postconditions<Tree> { r -> size(r) == old(size(t)) + 1 }

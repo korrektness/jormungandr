@@ -6,6 +6,7 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures n == nullValue() ==> result == boolToRef(true)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     boolToRef(true) :
@@ -20,6 +21,7 @@ function isSorted(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 /insertion_sort_linked.kt: info: Generated Viper text for insertSorted:
@@ -30,6 +32,7 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures n == nullValue() ==> result == boolToRef(true)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     boolToRef(true) :
@@ -44,6 +47,7 @@ function isSorted(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
@@ -96,6 +100,7 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures n == nullValue() ==> result == boolToRef(true)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     boolToRef(true) :
@@ -110,21 +115,22 @@ function isSorted(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
-method insertSorted(par_sorted: Ref, node: Ref) returns (ret_3: Ref)
+method insertSorted(par_sorted: Ref, node: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_sorted), nullable(Node()))
   requires par_sorted != nullValue() ==>
     acc(Node_unique(par_sorted), write)
   requires isSubtype(typeOf(node), Node())
   requires acc(Node_unique(node), write)
   requires boolFromRef(isSorted(par_sorted))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures acc(Node_unique(ret_3), write)
-  ensures boolFromRef(isSorted(ret_3)) &&
-    (intFromRef(value(ret_3)) == intFromRef(value(node)) ||
+  ensures isSubtype(typeOf(ret_4), Node())
+  ensures acc(Node_unique(ret_4), write)
+  ensures boolFromRef(isSorted(ret_4)) &&
+    (intFromRef(value(ret_4)) == intFromRef(value(node)) ||
     !(par_sorted == nullValue()) &&
-    intFromRef(value(ret_3)) == intFromRef(value(par_sorted)))
+    intFromRef(value(ret_4)) == intFromRef(value(par_sorted)))
 
 
 method insertionSort(head: Ref) returns (v_ret_0: Ref)

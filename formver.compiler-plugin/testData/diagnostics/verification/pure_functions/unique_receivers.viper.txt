@@ -6,6 +6,7 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures n == nullValue() ==> result == boolToRef(true)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     boolToRef(true) :
@@ -20,6 +21,7 @@ function isSorted(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 /unique_receivers.kt: info: Generated Viper text for keepSorted:
@@ -30,6 +32,7 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures n == nullValue() ==> result == boolToRef(true)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     boolToRef(true) :
@@ -44,6 +47,7 @@ function isSorted(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 method keepSorted(n: Ref) returns (v_ret_0: Ref)
@@ -67,6 +71,7 @@ function isSorted(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), boolType())
   ensures n == nullValue() ==> result == boolToRef(true)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     boolToRef(true) :
@@ -81,6 +86,7 @@ function isSorted(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 method stillSorted(n: Ref) returns (v_ret_0: Ref)

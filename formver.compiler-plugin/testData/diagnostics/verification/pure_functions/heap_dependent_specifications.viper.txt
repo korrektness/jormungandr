@@ -3,19 +3,7 @@ function isAlternating(node: Ref, expectsPositive: Ref): Ref
   requires isSubtype(typeOf(node), Node())
   requires isSubtype(typeOf(expectsPositive), boolType())
   ensures isSubtype(typeOf(result), boolType())
-{
-  (let isCurrentValid_0 ==
-    ((boolFromRef(expectsPositive) ?
-      gtInts(value(node), intToRef(0)) :
-      ltInts(value(node), intToRef(0)))) in
-    (let nextNode_0 ==
-      (next(node)) in
-      (let anon_2_0 ==
-        ((!(nextNode_0 == nullValue()) ?
-          isAlternating(nextNode_0, notBool(expectsPositive)) :
-          boolToRef(true))) in
-        andBools(isCurrentValid_0, anon_2_0))))
-}
+
 
 function next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
@@ -32,15 +20,7 @@ function isStrictlyAscendingAndPositive(node: Ref): Ref
   requires isSubtype(typeOf(node), Node())
   requires intFromRef(value(node)) >= 0
   ensures isSubtype(typeOf(result), boolType())
-{
-  (let nextNode_0 ==
-    (next(node)) in
-    (!(nextNode_0 == nullValue()) ?
-      (intFromRef(value(nextNode_0)) < 0 ?
-        boolToRef(false) :
-        andBools(gtInts(value(nextNode_0), value(node)), isStrictlyAscendingAndPositive(nextNode_0))) :
-      boolToRef(true)))
-}
+
 
 function next(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
@@ -56,21 +36,7 @@ function value(this: Ref): Ref
 function isLocallyValidBST(node: Ref): Ref
   requires isSubtype(typeOf(node), TreeNode())
   ensures isSubtype(typeOf(result), boolType())
-{
-  (let leftNode_0 ==
-    (left(node)) in
-    (let leftValid_0 ==
-      ((!(leftNode_0 == nullValue()) ?
-        andBools(ltInts(value(leftNode_0), value(node)), isLocallyValidBST(leftNode_0)) :
-        boolToRef(true))) in
-      (let rightNode_0 ==
-        (right(node)) in
-        (let rightValid_0 ==
-          ((!(rightNode_0 == nullValue()) ?
-            andBools(gtInts(value(rightNode_0), value(node)), isLocallyValidBST(rightNode_0)) :
-            boolToRef(true))) in
-          andBools(leftValid_0, rightValid_0)))))
-}
+
 
 function left(this: Ref): Ref
   requires isSubtype(typeOf(this), TreeNode())

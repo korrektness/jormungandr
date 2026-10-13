@@ -8,6 +8,11 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 enum class PurityRule { FUNCTION_BODY, LAW_BODY, ASSERT_CONDITION, REFUTE_CONDITION }
 data class PurityCondition(val rule: PurityRule, val declaration: FirBasedSymbol<*>? = null) : KotlinCondition
 
+enum class TerminationRule { MISSING_MEASURE, IMPURE_FUNCTION, DUPLICATE, MEASURE_TYPE }
+
+/** A termination measure that is absent where recursion needs it, or is ill-formed. [cycle] names the recursion. */
+data class TerminationCondition(val rule: TerminationRule, val cycle: List<String> = emptyList()) : KotlinCondition
+
 /** Kotlin provenance of a converted receiver, without embedding or backend dependencies. */
 data class ConversionOwnershipPath(val root: Root, val members: List<Member> = emptyList()) {
     data class Root(val kind: Kind, val symbol: FirBasedSymbol<*>? = null, val name: String? = null)

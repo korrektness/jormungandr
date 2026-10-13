@@ -48,14 +48,16 @@ internal fun Exp.captureValueKey(): Any = capturePath() ?: when (this) {
     is Exp.Exists -> listOf(javaClass, variables.map { it.name to it.type }, exp.captureValueKey())
     is Exp.LetBinding -> listOf(javaClass, variable.name, varExp.captureValueKey(), body.captureValueKey())
     is Exp.PredicateAccess -> listOf(javaClass, predicateName, perm, formalArgs.map { it.captureValueKey() })
+    is Exp.PredicateInstance -> listOf(javaClass, predicateName, args.map { it.captureValueKey() })
     is Exp.Acc -> listOf(javaClass, perm, field.captureValueKey())
     is AccessPredicate.FieldAccessPredicate -> listOf(javaClass, perm, access.captureValueKey())
     is Exp.EmptySeq -> listOf(javaClass, elementType)
     is Exp.EmptyMultiset -> listOf(javaClass, elementType)
     is Exp.Result -> listOf(javaClass, type)
+    is Exp.DecreasesWildcard -> javaClass
     is BinaryExp, is UnaryExp, is Exp.ExplicitSeq, is Exp.ExplicitMultiset, is Exp.SeqLength,
     is Exp.SeqTake, is Exp.SeqIndex, is Exp.SeqUpdate, is Exp.Old, is Exp.PermissionCheck,
-    is Exp.TernaryExp -> listOf(javaClass, subExps().map { it.captureValueKey() })
+    is Exp.TernaryExp, is Exp.DecreasesTuple -> listOf(javaClass, subExps().map { it.captureValueKey() })
     is Exp.LocalVar -> error("A local variable has a capture path")
 }
 
@@ -120,8 +122,10 @@ internal fun Exp.rewriteCaptureValues(
         is Exp.LetBinding -> copy(varExp = varExp.rewrite(),
             body = body.rewriteCaptureValues(replacements, bound + variable.name))
         is Exp.TernaryExp -> copy(condExp = condExp.rewrite(), thenExp = thenExp.rewrite(), elseExp = elseExp.rewrite())
+        is Exp.DecreasesTuple -> copy(measures = measures.rewrite())
+        is Exp.PredicateInstance -> copy(args = args.rewrite())
         is Exp.IntLit, is Exp.NullLit, is Exp.BoolLit, is Exp.LocalVar, is Exp.Result, is Exp.EmptySeq,
-        is Exp.EmptyMultiset -> this
+        is Exp.EmptyMultiset, is Exp.DecreasesWildcard -> this
     }
 }
 

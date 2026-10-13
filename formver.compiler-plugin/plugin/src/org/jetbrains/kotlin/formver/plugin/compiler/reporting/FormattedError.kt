@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.formver.viper.ast.info
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
+import viper.silver.plugin.standard.termination.FunctionTerminationError
 import viper.silver.verifier.reasons
 
 /** Converts backend evidence into a Kotlin obligation without constructing diagnostic text. */
@@ -40,7 +41,7 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
             },
         )
         is SourceRole.ObserverAccess -> KotlinCondition.Ownership("the observer receiver", KotlinCondition.OwnershipSite.UNFOLD)
-        else -> KotlinCondition.Unclassified
+        else -> if (result is FunctionTerminationError) KotlinCondition.Termination else KotlinCondition.Unclassified
     }
     val kind = when (condition) {
         is KotlinCondition.Proof -> FailureKind.VERIFICATION_CONDITION_NOT_ESTABLISHED
@@ -50,6 +51,7 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
         is KotlinCondition.SubList -> FailureKind.INVALID_SUBLIST_RANGE
         is KotlinCondition.Ownership -> FailureKind.OWNERSHIP_NOT_ESTABLISHED
         is KotlinCondition.Override -> FailureKind.OVERRIDE_NOT_REFINING
+        KotlinCondition.Termination -> FailureKind.TERMINATION_NOT_ESTABLISHED
         KotlinCondition.Unclassified -> FailureKind.VIPER_VERIFICATION_ERROR
         else -> error("A proof adapter produced a non-proof condition")
     }
@@ -126,7 +128,9 @@ private fun VerificationError.lookupSourceRole(): SourceRole? {
         is SourceRole.Condition, null -> null
     }
     val location = applicable(locationNode.getInfoOrNull<SourceRole>())
-    val proposition = applicable(unverifiableProposition.getInfoOrNull<SourceRole>())
+    // A termination failure's reason names the function whose measure does not decrease, not a proposition.
+    val proposition = if (result.reason().offendingNode() !is viper.silver.ast.Exp) null
+        else applicable(unverifiableProposition.getInfoOrNull<SourceRole>())
     return if (location is SourceRole.Proof && proposition is SourceRole.ObserverAccess) proposition
         else location ?: proposition
 }

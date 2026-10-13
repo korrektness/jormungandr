@@ -130,6 +130,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 PurityRule.REFUTE_CONDITION -> "Refute condition is impure"
             }
             is ConversionOwnershipCondition -> conversionOwnershipMessage(condition)
+            is TerminationCondition -> terminationMessage(condition)
+            KotlinCondition.Termination -> "Could not prove that this recursive call decreases the termination measure."
             is AttributeCondition -> attributeMessage(failure.kind, condition)
             is KotlinCondition.Returns -> "Function may return a ${opposite(condition.effect)} value."
             is KotlinCondition.Conditional -> {
@@ -209,9 +211,18 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             KotlinCondition.SkipReason.UNIQUENESS_OR_LOCALITY_ERRORS -> "uniqueness or locality errors"
             KotlinCondition.SkipReason.UNSUPPORTED_OWNERSHIP -> "unsupported ownership"
             KotlinCondition.SkipReason.INTERNAL_ERROR -> "an internal error"
+            KotlinCondition.SkipReason.MISSING_TERMINATION_MEASURE -> "recursion without a termination measure"
         }
         val name = condition.function?.let { FirDiagnosticRenderers.DECLARATION_NAME.render(it) } ?: "<anonymous>"
         return "Verification skipped [${condition.reason.name}]: Function '$name' was not verified because of $reason"
+    }
+
+    private fun terminationMessage(condition: TerminationCondition): String = when (condition.rule) {
+        TerminationRule.MISSING_MEASURE ->
+            "Recursive @Pure function has no termination measure: ${condition.cycle.joinToString(" -> ")}. Add decreases(...) to its preconditions."
+        TerminationRule.IMPURE_FUNCTION -> "A termination measure is allowed only on a @Pure function."
+        TerminationRule.DUPLICATE -> "A function has at most one decreases(...)."
+        TerminationRule.MEASURE_TYPE -> "A termination measure must be an Int or a reference to an object of a class."
     }
 
     private fun conversionOwnershipMessage(condition: ConversionOwnershipCondition): String = when (condition) {

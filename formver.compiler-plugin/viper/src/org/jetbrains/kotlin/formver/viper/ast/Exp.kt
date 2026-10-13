@@ -908,6 +908,62 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         }
     }
 
+    /**
+     * A function's termination measure, compared lexicographically. It belongs among the function's preconditions,
+     * where Silver's termination plugin expects it.
+     */
+    data class DecreasesTuple(
+        val measures: List<Exp>,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : Exp {
+        override val type: Type = Type.Bool
+
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.Exp = viper.silver.plugin.standard.termination.DecreasesTuple.apply(
+            measures.toSilver().toScalaSeq(), null.toScalaOption(), pos.toSilver(), info.toSilver(), silverNoTrafos,
+        )
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() = measures.forEach { it.registerNames() }
+    }
+
+    /** `decreases _`: the function is assumed to terminate, so a function with a measure may call it. */
+    data class DecreasesWildcard(
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : Exp {
+        override val type: Type = Type.Bool
+
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.Exp = viper.silver.plugin.standard.termination.DecreasesWildcard.apply(
+            null.toScalaOption(), pos.toSilver(), info.toSilver(), silverNoTrafos,
+        )
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() {}
+    }
+
+    /** The predicate instance `predicateName(args)` as a value, ordered by nesting when used as a measure. */
+    data class PredicateInstance(
+        val predicateName: SymbolicName,
+        val args: List<Exp>,
+        override val type: Type,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : Exp {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.Exp = viper.silver.plugin.standard.predicateinstance.PredicateInstance.apply(
+            predicateName.mangled, args.toSilver().toScalaSeq(), pos.toSilver(), info.toSilver(), silverNoTrafos,
+        )
+
+        context(nameResolver: NameResolver)
+        override fun registerNames() {
+            nameResolver.register(predicateName)
+            args.forEach { it.registerNames() }
+        }
+    }
+
     // We can't pass all the available position and info here.
     // Living with that seems fine for the moment.
     fun fieldAccess(

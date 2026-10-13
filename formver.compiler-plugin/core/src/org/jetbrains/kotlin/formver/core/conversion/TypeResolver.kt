@@ -217,6 +217,8 @@ class TypeResolver {
 
     fun classTypeEmbeddings() = (classEmbedding.values.toList() + interfaceEmbedding.values.toList()).distinctBy { it.name }
 
+    fun predicates() = classTypeEmbeddings().flatMap { listOfNotNull(it.footprintPredicate(), it.uniquePredicate()) }
+
     fun getEmbeddingOrExecute(name: ScopedName, action: () -> ClassTypeEmbedding) = classEmbedding[name] ?: action()
 
     fun lookupClassTypeEmbedding(name: SymbolicName) = classEmbedding[name] ?: interfaceEmbedding[name]

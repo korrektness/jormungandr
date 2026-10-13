@@ -1602,6 +1602,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("termination.kt")
+      public void testTermination() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/termination.kt");
+      }
+
+      @Test
       @TestMetadata("unique_receivers.kt")
       public void testUnique_receivers() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/unique_receivers.kt");

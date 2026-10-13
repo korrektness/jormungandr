@@ -52,11 +52,14 @@ enum class FailureKind(
     INVALID_SUBLIST_RANGE,
     OWNERSHIP_NOT_ESTABLISHED,
     OVERRIDE_NOT_REFINING(declarationName = true),
+    TERMINATION_NOT_ESTABLISHED,
     INVALID_SPEC_OF(category = FailureCategory.SPECIFICATION),
     INVALID_EXPOSES(category = FailureCategory.SPECIFICATION),
     INVALID_OBSERVER(category = FailureCategory.SPECIFICATION),
     INVALID_LAW(category = FailureCategory.SPECIFICATION),
     PURITY_VIOLATION(category = FailureCategory.TRANSLATION),
+    MISSING_TERMINATION_MEASURE(declarationName = true, category = FailureCategory.TRANSLATION),
+    INVALID_TERMINATION_MEASURE(category = FailureCategory.TRANSLATION),
     UNSUPPORTED_OWNERSHIP(category = FailureCategory.TRANSLATION),
     UNTRACKED_WRITE(Severity.WARNING, category = FailureCategory.TRANSLATION),
     UNSUPPORTED_FEATURE(Severity.WARNING, category = FailureCategory.TRANSLATION),
@@ -106,12 +109,16 @@ sealed interface KotlinCondition {
     data class Ownership(val path: String, val site: OwnershipSite, val function: String? = null) : KotlinCondition
     enum class OverrideClause { PRECONDITION, POSTCONDITION }
     data class Override(val overridden: String, val clause: OverrideClause) : KotlinCondition
-    enum class SkipReason { CONVERSION_ERRORS, UNIQUENESS_OR_LOCALITY_ERRORS, UNSUPPORTED_OWNERSHIP, INTERNAL_ERROR }
+    enum class SkipReason {
+        CONVERSION_ERRORS, UNIQUENESS_OR_LOCALITY_ERRORS, UNSUPPORTED_OWNERSHIP, INTERNAL_ERROR, MISSING_TERMINATION_MEASURE,
+    }
     data class Skipped(val reason: SkipReason, val function: FirBasedSymbol<*>?) : KotlinCondition
     /** Evidence retains details independently of stable machine-readable reasons. */
     data class Translation(val reason: String, val detail: String) : KotlinCondition
     data class Tool(val reason: String, val detail: String) : KotlinCondition
     data object UntrackedWrite : KotlinCondition
+    /** A recursive call that may not decrease the caller's termination measure. */
+    data object Termination : KotlinCondition
     /** Backend obligations without Kotlin provenance remain explicitly unclassified. */
     data object Unclassified : KotlinCondition
 }

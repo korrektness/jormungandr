@@ -75,6 +75,14 @@ data class UserFunction(
     override val includeInDumpPolicy: IncludeInDumpPolicy = IncludeInDumpPolicy.ALWAYS
 }
 
+/** [inner] with `decreases _` among its preconditions. */
+class AssumedTerminating(private val inner: Function) : Function by inner {
+    override val pres: List<Exp> = inner.pres + Exp.DecreasesWildcard()
+
+    context(nameResolver: NameResolver)
+    override fun toSilver(): viper.silver.ast.Function = super<Function>.toSilver()
+}
+
 abstract class BuiltinFunction(
     override val name: SymbolicName,
     override val pos: Position = Position.NoPosition,

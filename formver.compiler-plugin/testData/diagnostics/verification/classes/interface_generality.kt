@@ -130,8 +130,10 @@ fun <!VIPER_TEXT!>consumerClient<!>(consumer: @Unique @Borrowed ViewConsumer, vi
 }
 
 class BoolNode(var flag: Boolean, var next: @Unique BoolNode?)
-@Pure fun <!VIPER_TEXT!>allTrue<!>(node: @Unique BoolNode?): Boolean =
-    if (node == null) true else node.flag && allTrue(node.next)
+@Pure fun <!VIPER_TEXT!>allTrue<!>(node: @Unique BoolNode?): Boolean {
+    preconditions { decreases(node) }
+    return if (node == null) true else node.flag && allTrue(node.next)
+}
 
 interface ChainView {
     @Pure @Unique fun <!VIPER_TEXT!>all<!>(): Boolean

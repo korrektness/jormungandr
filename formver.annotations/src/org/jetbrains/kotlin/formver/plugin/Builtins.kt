@@ -27,6 +27,12 @@ fun loopInvariants(@Suppress("UNUSED_PARAMETER") body: () -> Unit) = Unit
 
 fun preconditions(@Suppress("UNUSED_PARAMETER") body: () -> Unit) = Unit
 
+/**
+ * The termination measure of a recursive `@Pure` function, compared lexicographically; see "Termination" in
+ * SPECIFICATIONS.md. Usable only in the function's [preconditions] block.
+ */
+fun decreases(@Suppress("UNUSED_PARAMETER") vararg measures: Any?) = Unit
+
 fun <T> postconditions(@Suppress("UNUSED_PARAMETER") body: (T) -> Unit) = Unit
 
 /** Placeholder body for [GhostObserver]; see "Callable specifications" in SPECIFICATIONS.md. */

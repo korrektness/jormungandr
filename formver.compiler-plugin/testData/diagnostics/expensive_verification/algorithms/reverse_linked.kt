@@ -4,7 +4,10 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Node(var value: Int, var next: @Unique Node?)
 
 @Pure
-fun <!VIPER_TEXT!>length<!>(n: @Unique Node?): Int = if (n == null) 0 else 1 + length(n.next)
+fun <!VIPER_TEXT!>length<!>(n: @Unique Node?): Int {
+    preconditions { decreases(n) }
+    return if (n == null) 0 else 1 + length(n.next)
+}
 
 fun <!VIPER_TEXT!>reverse<!>(head: @Unique Node?): @Unique Node? {
     postconditions<Node?> { r -> length(r) == old(length(head)) }

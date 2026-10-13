@@ -13,8 +13,10 @@ fun <!VERIFICATION_SKIPPED!>multisetInBody<!>(x: Int): Int {
 class Node(val value: Int, var next: @Unique Node?)
 
 @Pure
-fun <!VIPER_TEXT!>contents<!>(n: @Unique Node?): Multiset<Int> =
-    if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
+fun <!VIPER_TEXT!>contents<!>(n: @Unique Node?): Multiset<Int> {
+    preconditions { decreases(n) }
+    return if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
+}
 
 fun <!VERIFICATION_SKIPPED!>handBack<!>(n: @Unique Node): @Unique Node {
     postconditions<Node> { r -> contents(r) == contents(<!UNSUPPORTED_OWNERSHIP!>n<!>) }

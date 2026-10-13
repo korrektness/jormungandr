@@ -8,6 +8,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -27,6 +28,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -67,16 +69,16 @@ method appendGhost(l: Ref, par_v: Ref, n: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_3), Node())
-  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
-    isSubtype(typeOf(ret_3.bf_value), intType()) &&
-    acc(ret_3.bf_next, write) &&
-    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
-  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
-  ensures ret_3.bf_next == par_next
+  ensures isSubtype(typeOf(ret_4), Node())
+  ensures isSubtype(typeOf(ret_4), Node()) && acc(ret_4.bf_value, write) &&
+    isSubtype(typeOf(ret_4.bf_value), intType()) &&
+    acc(ret_4.bf_next, write) &&
+    isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 /unique_recursion.kt: info: Generated Viper text for append:
@@ -89,6 +91,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -127,16 +130,16 @@ method append(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 /unique_recursion.kt: info: Generated Viper text for incAllRec:
@@ -149,6 +152,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -198,6 +202,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -207,16 +212,16 @@ function length(n: Ref): Ref
         plusInts(intToRef(1), length(anon_3_0)))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 method prepend(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -243,6 +248,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -252,16 +258,16 @@ function length(n: Ref): Ref
         plusInts(intToRef(1), length(anon_3_0)))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 method twoNodes(par_v: Ref) returns (v_ret_0: Ref)
@@ -289,6 +295,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -302,6 +309,7 @@ function nextLength(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 {
   (let m_0 ==
     ((n == nullValue() ?
@@ -320,6 +328,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -333,6 +342,7 @@ function nextLength(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 {
   (let m_0 ==
     ((n == nullValue() ?
@@ -358,6 +368,7 @@ method tail(l: Ref) returns (v_ret_0: Ref)
 function next(this: Ref): Ref
   requires isSubtype(typeOf(this), VNode())
   ensures isSubtype(typeOf(result), nullable(VNode()))
+  decreases _
 
 
 function vLength(n: Ref): Ref
@@ -365,6 +376,7 @@ function vLength(n: Ref): Ref
   requires n != nullValue() ==> acc(VNode_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), VNode_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -377,12 +389,14 @@ function vLength(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), VNode())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 /unique_recursion.kt: info: Generated Viper text for vTail:
 function next(this: Ref): Ref
   requires isSubtype(typeOf(this), VNode())
   ensures isSubtype(typeOf(result), nullable(VNode()))
+  decreases _
 
 
 function vLength(n: Ref): Ref
@@ -390,6 +404,7 @@ function vLength(n: Ref): Ref
   requires n != nullValue() ==> acc(VNode_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), VNode_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -402,6 +417,7 @@ function vLength(n: Ref): Ref
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), VNode())
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 
 
 method vTail(l: Ref, n: Ref) returns (v_ret_0: Ref)
@@ -447,6 +463,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -456,16 +473,16 @@ function length(n: Ref): Ref
         plusInts(intToRef(1), length(anon_3_0)))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 method oneNode(par_v: Ref) returns (v_ret_0: Ref)
@@ -490,6 +507,7 @@ function sum(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -511,6 +529,7 @@ function sum(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -522,16 +541,16 @@ function sum(n: Ref): Ref
           plusInts(anon_0_0, sum(anon_1_0))))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 method oneSum(par_v: Ref) returns (v_ret_0: Ref)
@@ -557,6 +576,7 @@ function lengthFrom(k: Ref, n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == k
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     k :
@@ -577,6 +597,7 @@ function lengthFrom(k: Ref, n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == k
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     k :
@@ -586,16 +607,16 @@ function lengthFrom(k: Ref, n: Ref): Ref
         lengthFrom(plusInts(k, intToRef(1)), anon_3_0))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 method oneFrom(par_v: Ref) returns (v_ret_0: Ref)
@@ -620,6 +641,7 @@ function length(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -635,6 +657,7 @@ function lengthOf(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), nullable(Node()))
   requires b != nullValue() ==> acc(Node_unique(b), write)
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 {
   (a == nullValue() ? length(b) : length(a))
 }
@@ -666,6 +689,7 @@ function lengthWhen(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -685,6 +709,7 @@ function lengthWhen(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -694,16 +719,16 @@ function lengthWhen(n: Ref): Ref
         plusInts(intToRef(1), lengthWhen(anon_4_0)))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 method oneNodeWhen(par_v: Ref) returns (v_ret_0: Ref)
@@ -729,6 +754,7 @@ function lengthPlus(n: Ref, k: Ref): Ref
   requires isSubtype(typeOf(k), intType())
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == plusInts(k, intToRef(1))
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     plusInts(k, intToRef(1)) :
@@ -749,6 +775,7 @@ function lengthPlus(n: Ref, k: Ref): Ref
   requires isSubtype(typeOf(k), intType())
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == plusInts(k, intToRef(1))
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     plusInts(k, intToRef(1)) :
@@ -758,16 +785,16 @@ function lengthPlus(n: Ref, k: Ref): Ref
         plusInts(intToRef(1), lengthPlus(anon_3_0, k)))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 method oneNodePlus(par_v: Ref, k: Ref) returns (v_ret_0: Ref)
@@ -794,6 +821,7 @@ function sumFrom(n: Ref, k: Ref): Ref
   requires isSubtype(typeOf(k), intType())
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == timesInts(k, intToRef(2))
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     timesInts(k, intToRef(2)) :
@@ -816,6 +844,7 @@ function sumFrom(n: Ref, k: Ref): Ref
   requires isSubtype(typeOf(k), intType())
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == timesInts(k, intToRef(2))
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     timesInts(k, intToRef(2)) :
@@ -827,16 +856,16 @@ function sumFrom(n: Ref, k: Ref): Ref
           plusInts(anon_0_0, sumFrom(anon_1_0, k))))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 method oneNodeSum(par_v: Ref) returns (v_ret_0: Ref)
@@ -862,6 +891,7 @@ function sum(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -873,16 +903,16 @@ function sum(n: Ref): Ref
           plusInts(anon_0_0, sum(anon_1_0))))))
 }
 
-method con(par_value: Ref, par_next: Ref) returns (ret_2: Ref)
+method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
-  ensures isSubtype(typeOf(ret_2), Node())
-  ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
-    isSubtype(typeOf(ret_2.bf_value), intType()) &&
-    acc(ret_2.bf_next, write) &&
-    isSubtype(typeOf(ret_2.bf_next), nullable(Node()))
-  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
-  ensures ret_2.bf_next == par_next
+  ensures isSubtype(typeOf(ret_3), Node())
+  ensures isSubtype(typeOf(ret_3), Node()) && acc(ret_3.bf_value, write) &&
+    isSubtype(typeOf(ret_3.bf_value), intType()) &&
+    acc(ret_3.bf_next, write) &&
+    isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
 
 
 method prependUnrolled(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -911,6 +941,7 @@ function sum(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -958,6 +989,7 @@ function sum(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -973,6 +1005,7 @@ function sumAndValue(n: Ref): Ref
   requires isSubtype(typeOf(n), Node())
   requires acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 {
   (let anon_0_0 ==
     ((unfolding acc(Node_unique(n), write) in n.value)) in
@@ -989,6 +1022,7 @@ function sum(n: Ref): Ref
   requires n != nullValue() ==> acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
   ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
 {
   (n == nullValue() ?
     intToRef(0) :
@@ -1004,6 +1038,7 @@ function valueThenSum(n: Ref): Ref
   requires isSubtype(typeOf(n), Node())
   requires acc(Node_unique(n), write)
   ensures isSubtype(typeOf(result), intType())
+  decreases _
 {
   (let v_0 ==
     ((unfolding acc(Node_unique(n), write) in n.value)) in

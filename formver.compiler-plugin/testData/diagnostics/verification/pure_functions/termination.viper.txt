@@ -1,0 +1,368 @@
+/termination.kt: info: Generated Viper text for loopy:
+function loopy(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+/termination.kt: info: Generated Viper text for loopyFalse:
+function loopy(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method loopyFalse() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var y: Ref
+  y := loopy(intToRef(0))
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/termination.kt: info: Generated Viper text for flip:
+function flip(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+/termination.kt: info: Generated Viper text for flipFalse:
+function flip(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method flipFalse() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var y: Ref
+  y := flip(intToRef(0))
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/termination.kt: info: Generated Viper text for isEven:
+function isEven(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function isOdd(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+/termination.kt: info: Generated Viper text for isOdd:
+function isEven(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function isOdd(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+/termination.kt: info: Generated Viper text for Cell:
+field bf_n: Ref
+
+function loopy(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Cell())
+  ensures isSubtype(typeOf(v_ret_0), Cell()) && acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        (let anon_1_0 ==
+          (this.bf_n) in
+          boolToRef(intFromRef(loopy(anon_0_0)) ==
+          intFromRef(loopy(anon_1_0)))))))
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == Cell()
+  v_ret_0.bf_n := par_n
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        (let anon_1_0 ==
+          (this.bf_n) in
+          boolToRef(intFromRef(loopy(anon_0_0)) ==
+          intFromRef(loopy(anon_1_0)))))))
+  fold acc(Cell_unique(v_ret_0), write)
+  unfold acc(Cell_unique(v_ret_0), write)
+}
+
+/termination.kt: info: Generated Viper text for cellFalse:
+field n: Ref
+
+function loopy(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cellFalse(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Cell())
+  requires acc(Cell_unique(c), write)
+  ensures acc(Cell_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var k: Ref
+  unfold acc(Cell_unique(c), write)
+  k := c.n
+  assert false
+  label lbl_ret_0
+  assert (let this ==
+      (c) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.n) in
+        (let anon_1_0 ==
+          (this.n) in
+          boolToRef(intFromRef(loopy(anon_0_0)) ==
+          intFromRef(loopy(anon_1_0)))))))
+  fold acc(Cell_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/termination.kt: info: Generated Viper text for growing:
+function growing(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  decreases intFromRef(x)
+{
+  (intFromRef(x) == 0 ? intToRef(0) : growing(plusInts(x, intToRef(1))))
+}
+
+/termination.kt: info: Generated Viper text for countdown:
+function countdown(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  decreases intFromRef(x)
+{
+  (intFromRef(x) == 0 ?
+    intToRef(0) :
+    plusInts(intToRef(1), countdown(minusInts(x, intToRef(1)))))
+}
+
+/termination.kt: info: Generated Viper text for countdownClient:
+function countdown(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  decreases intFromRef(x)
+{
+  (intFromRef(x) == 0 ?
+    intToRef(0) :
+    plusInts(intToRef(1), countdown(minusInts(x, intToRef(1)))))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
+
+method countdownClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(countdown(intToRef(0))) == 0
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/termination.kt: info: Generated Viper text for even:
+function even(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), boolType())
+  decreases intFromRef(n)
+{
+  (intFromRef(n) <= 0 ? boolToRef(true) : odd(minusInts(n, intToRef(1))))
+}
+
+function odd(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), boolType())
+  decreases intFromRef(n)
+{
+  (intFromRef(n) <= 0 ? boolToRef(false) : even(minusInts(n, intToRef(1))))
+}
+
+/termination.kt: info: Generated Viper text for odd:
+function even(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), boolType())
+  decreases intFromRef(n)
+{
+  (intFromRef(n) <= 0 ? boolToRef(true) : odd(minusInts(n, intToRef(1))))
+}
+
+function odd(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), boolType())
+  decreases intFromRef(n)
+{
+  (intFromRef(n) <= 0 ? boolToRef(false) : even(minusInts(n, intToRef(1))))
+}
+
+/termination.kt: info: Generated Viper text for ackermann:
+function ackermann(m: Ref, n: Ref): Ref
+  requires isSubtype(typeOf(m), intType())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(m) >= 0
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  decreases intFromRef(m), intFromRef(n)
+{
+  (intFromRef(m) == 0 ?
+    plusInts(n, intToRef(1)) :
+    (intFromRef(n) == 0 ?
+      ackermann(minusInts(m, intToRef(1)), intToRef(1)) :
+      ackermann(minusInts(m, intToRef(1)), ackermann(m, minusInts(n, intToRef(1))))))
+}
+
+/termination.kt: info: Generated Viper text for ackermannClient:
+function ackermann(m: Ref, n: Ref): Ref
+  requires isSubtype(typeOf(m), intType())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(m) >= 0
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  decreases intFromRef(m), intFromRef(n)
+{
+  (intFromRef(m) == 0 ?
+    plusInts(n, intToRef(1)) :
+    (intFromRef(n) == 0 ?
+      ackermann(minusInts(m, intToRef(1)), intToRef(1)) :
+      ackermann(minusInts(m, intToRef(1)), ackermann(m, minusInts(n, intToRef(1))))))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
+
+method ackermannClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(ackermann(intToRef(0), intToRef(3))) == 4
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/termination.kt: info: Generated Viper text for length:
+function length(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_3_0 ==
+        (next(n)) in
+        plusInts(intToRef(1), length(anon_3_0)))))
+}
+
+function next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), nullable(Node()))
+  decreases _
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
+
+/termination.kt: info: Generated Viper text for lengthClient:
+function length(n: Ref): Ref
+  requires isSubtype(typeOf(n), nullable(Node()))
+  requires n != nullValue() ==> acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures n == nullValue() ==> result == intToRef(0)
+  decreases n != nullValue(), Node_unique(n)
+{
+  (n == nullValue() ?
+    intToRef(0) :
+    (unfolding acc(Node_unique(n), write) in
+      (let anon_3_0 ==
+        (next(n)) in
+        plusInts(intToRef(1), length(anon_3_0)))))
+}
+
+function next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), nullable(Node()))
+  decreases _
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
+
+method lengthClient(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), Node())
+  requires acc(Node_unique(n), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_5 := length(n)
+  if (intFromRef(anon_5) >= 1) {
+    anon_4 := boolToRef(true)
+  } else {
+    var anon_6: Ref
+    anon_6 := length(n)
+    anon_4 := leInts(anon_6, intToRef(1))
+  }
+  assert boolFromRef(anon_4)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
