@@ -36,6 +36,99 @@ function read(this: Ref, par_index: Ref, limit: Ref, fallback: Ref): Ref
   ensures result == fallback
 
 
+/observer_domains.kt: info: Generated Viper text for TextWindow:
+field bf_start: Ref
+
+function ChildWindow_c_Window_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ChildWindow_c_Window_f_read(this: Ref, par_index: Ref, limit: Ref,
+  fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(ChildWindow_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(ChildWindow_c_Window_f_lower(this)) <=
+    intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+function TextWindow_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), TextWindow())
+  requires acc(TextWindow_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(TextWindow_unique(this), write) in this.bf_start)
+}
+
+function TextWindow_f_read(this: Ref, at: Ref, top: Ref, text: Ref): Ref
+  requires isSubtype(typeOf(this), TextWindow())
+  requires acc(TextWindow_unique(this), write)
+  requires isSubtype(typeOf(at), intType())
+  requires isSubtype(typeOf(top), intType())
+  requires isSubtype(typeOf(text), nullable(stringType()))
+  requires ((let anon ==
+      (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+      longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+      longFromRef(longToRef(1))) <
+    intFromRef(at) ?
+      -1 :
+      ((let anon ==
+        (minusLongLong(convertIntToLong(TextWindow_f_lower(this)), longToRef(1))) in
+        longFromRef(convertIntToLong(TextWindow_f_lower(this))) -
+        longFromRef(longToRef(1))) >
+      intFromRef(at) ?
+        1 :
+        0)) <=
+    0 &&
+    intFromRef(at) < intFromRef(top)
+  ensures isSubtype(typeOf(result), nullable(stringType()))
+  ensures result == text
+{
+  text
+}
+
+function c_Window_f_lower(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Window_f_read(this: Ref, par_index: Ref, limit: Ref, fallback: Ref): Ref
+  requires isSubtype(typeOf(this), c_Window())
+  requires acc(c_Window_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires isSubtype(typeOf(limit), intType())
+  requires isSubtype(typeOf(fallback), nullable(anyType()))
+  requires intFromRef(c_Window_f_lower(this)) <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(limit)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == fallback
+
+
+method con(par_start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_start), intType())
+  ensures isSubtype(typeOf(v_ret_0), TextWindow())
+  ensures isSubtype(typeOf(v_ret_0), TextWindow()) &&
+    acc(v_ret_0.bf_start, write) &&
+    isSubtype(typeOf(v_ret_0.bf_start), intType())
+  ensures intFromRef(v_ret_0.bf_start) == intFromRef(par_start)
+  ensures intFromRef(v_ret_0.bf_start) == intFromRef(par_start)
+{
+  v_ret_0 := new(bf_start)
+  inhale typeOf(v_ret_0) == TextWindow()
+  v_ret_0.bf_start := par_start
+  fold acc(TextWindow_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(TextWindow_unique(v_ret_0), write)
+}
+
 /observer_domains.kt: info: Generated Viper text for lower:
 field start: Ref
 
@@ -628,6 +721,39 @@ function read(this: Ref, i: Ref): Ref
   ensures intFromRef(result) >= intFromRef(i)
 
 
+/observer_domains.kt: info: Generated Viper text for WiderRead:
+function PositiveRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+
+
+function WiderRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), WiderRead())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= -1 && intFromRef(i) < 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (let anon ==
+      (plusInts(i, intToRef(1))) in
+      intFromRef(i) + intFromRef(intToRef(1)))
+{
+  plusInts(i, intToRef(1))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), WiderRead())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == WiderRead()
+  fold acc(WiderRead_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(WiderRead_unique(v_ret_0), write)
+}
+
 /observer_domains.kt: info: Generated Viper text for read:
 function PositiveRead_f_read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), PositiveRead())
@@ -663,6 +789,36 @@ method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
   assert intFromRef(ret) >= intFromRef(i)
 }
 
+/observer_domains.kt: info: Generated Viper text for NarrowRead:
+function NarrowRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), NarrowRead())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) > 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(i)
+{
+  i
+}
+
+function PositiveRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), NarrowRead())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == NarrowRead()
+  fold acc(NarrowRead_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(NarrowRead_unique(v_ret_0), write)
+}
+
 /observer_domains.kt: info: Generated Viper text for read:
 function NarrowRead_f_read(this: Ref, i: Ref): Ref
   requires isSubtype(typeOf(this), NarrowRead())
@@ -693,6 +849,39 @@ method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
   ret := NarrowRead_f_read(this, i)
   assert isSubtype(typeOf(ret), intType())
   assert intFromRef(ret) >= intFromRef(i)
+}
+
+/observer_domains.kt: info: Generated Viper text for WrongRead:
+function PositiveRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+
+
+function WrongRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), WrongRead())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (let anon ==
+      (minusInts(i, intToRef(1))) in
+      intFromRef(i) - intFromRef(intToRef(1)))
+{
+  minusInts(i, intToRef(1))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), WrongRead())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == WrongRead()
+  fold acc(WrongRead_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(WrongRead_unique(v_ret_0), write)
 }
 
 /observer_domains.kt: info: Generated Viper text for read:
@@ -728,6 +917,36 @@ method refines_PositiveRead_f_read(this: Ref, i: Ref) returns (ret: Ref)
   ret := WrongRead_f_read(this, i)
   assert isSubtype(typeOf(ret), intType())
   assert intFromRef(ret) >= intFromRef(i)
+}
+
+/observer_domains.kt: info: Generated Viper text for WrongBody:
+function PositiveRead_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), PositiveRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+
+
+function WrongBody_f_read(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), WrongBody())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 && intFromRef(i) < 2147483647
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= intFromRef(i)
+{
+  minusInts(i, intToRef(1))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), WrongBody())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == WrongBody()
+  fold acc(WrongBody_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(WrongBody_unique(v_ret_0), write)
 }
 
 /observer_domains.kt: info: Generated Viper text for read:
@@ -770,6 +989,35 @@ function read(this: Ref, value: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= 0
 
+
+/observer_domains.kt: info: Generated Viper text for NarrowTypeRead:
+function AnyRead_f_read(this: Ref, value: Ref): Ref
+  requires isSubtype(typeOf(this), AnyRead())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(value), anyType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+
+
+function NarrowTypeRead_f_read(this: Ref, value: Ref): Ref
+  requires isSubtype(typeOf(this), NarrowTypeRead())
+  requires isSubtype(typeOf(value), anyType())
+  requires isSubtype(typeOf(value), stringType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == 0
+{
+  intToRef(0)
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), NarrowTypeRead())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == NarrowTypeRead()
+  fold acc(NarrowTypeRead_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(NarrowTypeRead_unique(v_ret_0), write)
+}
 
 /observer_domains.kt: info: Generated Viper text for read:
 function AnyRead_f_read(this: Ref, value: Ref): Ref

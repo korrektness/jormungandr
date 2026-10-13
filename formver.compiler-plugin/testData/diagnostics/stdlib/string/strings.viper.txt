@@ -1,3 +1,29 @@
+/strings.kt: info: Generated Viper text for StringBox:
+function g_str(this: Ref): Ref
+  requires isSubtype(typeOf(this), StringBox())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+predicate StringBox_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBox())
+}
+
+method con(par_str: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_str), stringType())
+  ensures isSubtype(typeOf(v_ret_0), StringBox())
+  ensures stringFromRef(g_str(v_ret_0)) == stringFromRef(par_str)
+  ensures stringFromRef(g_str(v_ret_0)) == stringFromRef(par_str)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == StringBox()
+  anon := par_str
+  inhale stringFromRef(g_str(v_ret_0)) == stringFromRef(anon)
+  fold acc(StringBox_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(StringBox_unique(v_ret_0), write)
+}
+
 /strings.kt: info: Generated Viper text for testType:
 function g_str(this: Ref): Ref
   requires isSubtype(typeOf(this), StringBox())
@@ -34,6 +60,7 @@ predicate StringBox_unique(this: Ref) {
 method con(par_str: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_str), stringType())
   ensures isSubtype(typeOf(ret_1), StringBox())
+  ensures stringFromRef(g_str(ret_1)) == stringFromRef(par_str)
   ensures stringFromRef(g_str(ret_1)) == stringFromRef(par_str)
 
 
@@ -93,6 +120,7 @@ predicate StringBox_unique(this: Ref) {
 method con(par_str: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_str), stringType())
   ensures isSubtype(typeOf(ret_1), StringBox())
+  ensures stringFromRef(g_str(ret_1)) == stringFromRef(par_str)
   ensures stringFromRef(g_str(ret_1)) == stringFromRef(par_str)
 
 

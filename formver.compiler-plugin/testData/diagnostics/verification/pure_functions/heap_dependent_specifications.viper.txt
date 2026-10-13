@@ -1,3 +1,36 @@
+/heap_dependent_specifications.kt: info: Generated Viper text for Node:
+function g_next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), nullable(Node()))
+
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref, par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures g_next(v_ret_0) == par_next
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures g_next(v_ret_0) == par_next
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Node()
+  anon_0 := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_next
+  inhale g_next(v_ret_0) == anon_1
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
+}
+
 /heap_dependent_specifications.kt: info: Generated Viper text for isAlternating:
 function isAlternating(node: Ref, expectsPositive: Ref): Ref
   requires isSubtype(typeOf(node), Node())
@@ -31,6 +64,51 @@ function value(this: Ref): Ref
   requires isSubtype(typeOf(this), Node())
   ensures isSubtype(typeOf(result), intType())
 
+
+/heap_dependent_specifications.kt: info: Generated Viper text for TreeNode:
+function g_left(this: Ref): Ref
+  requires isSubtype(typeOf(this), TreeNode())
+  ensures isSubtype(typeOf(result), nullable(TreeNode()))
+
+
+function g_right(this: Ref): Ref
+  requires isSubtype(typeOf(this), TreeNode())
+  ensures isSubtype(typeOf(result), nullable(TreeNode()))
+
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), TreeNode())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref, par_left: Ref, par_right: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_left), nullable(TreeNode()))
+  requires isSubtype(typeOf(par_right), nullable(TreeNode()))
+  ensures isSubtype(typeOf(v_ret_0), TreeNode())
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures g_left(v_ret_0) == par_left
+  ensures g_right(v_ret_0) == par_right
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures g_left(v_ret_0) == par_left
+  ensures g_right(v_ret_0) == par_right
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == TreeNode()
+  anon_0 := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_left
+  inhale g_left(v_ret_0) == anon_1
+  anon_2 := par_right
+  inhale g_right(v_ret_0) == anon_2
+  fold acc(TreeNode_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(TreeNode_unique(v_ret_0), write)
+}
 
 /heap_dependent_specifications.kt: info: Generated Viper text for isLocallyValidBST:
 function isLocallyValidBST(node: Ref): Ref

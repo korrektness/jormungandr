@@ -1,6 +1,6 @@
 
-class Foo
-class Bar {
+<!VIPER_TEXT!>class Foo<!>
+<!VIPER_TEXT!>class Bar<!> {
     fun <!VIPER_TEXT!>baz<!>(f: Foo) {  }
     fun <!VIPER_TEXT!>baz<!>(b: Bar) {  }
 }

@@ -2,17 +2,17 @@
 // REPLACE_STDLIB_EXTENSIONS
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(val v: Int)
+<!VIPER_TEXT!>class Box<!>(val v: Int)
 
-class Counter(var x: Int)
+<!VIPER_TEXT!>class Counter<!>(var x: Int)
 
-class Node(val value: Int, var next: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, var next: @Unique Node?)
 
-class Inner(var x: Int)
+<!VIPER_TEXT!>class Inner<!>(var x: Int)
 
-class Middle(val inner: @Unique Inner)
+<!VIPER_TEXT!>class Middle<!>(val inner: @Unique Inner)
 
-class Outer(val middle: @Unique Middle)
+<!VIPER_TEXT!>class Outer<!>(val middle: @Unique Middle)
 
 fun <!VIPER_TEXT!>safeLetInPostcondition<!>(o: Box?): Int {
     postconditions<Int> { r -> r == (o?.let { 1 } ?: 0) }

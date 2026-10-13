@@ -1,3 +1,23 @@
+/pure_callee_error_once.kt: info: Generated Viper text for Box:
+field bf_content: Ref
+
+method con(par_content: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_content), intType())
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures isSubtype(typeOf(v_ret_0), Box()) &&
+    acc(v_ret_0.bf_content, write) &&
+    isSubtype(typeOf(v_ret_0.bf_content), intType())
+  ensures intFromRef(v_ret_0.bf_content) == intFromRef(par_content)
+  ensures intFromRef(v_ret_0.bf_content) == intFromRef(par_content)
+{
+  v_ret_0 := new(bf_content)
+  inhale typeOf(v_ret_0) == Box()
+  v_ret_0.bf_content := par_content
+  fold acc(Box_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Box_unique(v_ret_0), write)
+}
+
 /pure_callee_error_once.kt: info: Generated Viper text for firstCaller:
 field content: Ref
 

@@ -229,8 +229,8 @@ fun <!VIPER_TEXT!>nestedGuardDoesNotLeak<!>(step: Int, a: Boolean): @Unique Grow
     }<!>
 }
 
-class ImmutableStep(val amount: Int)
-class MutableStep(var amount: Int) {
+<!VIPER_TEXT!>class ImmutableStep<!>(val amount: Int)
+<!VIPER_TEXT!>class MutableStep<!>(var amount: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>positive<!>(): Boolean = amount > 0
 }
 

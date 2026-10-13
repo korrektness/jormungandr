@@ -21,6 +21,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
 import org.jetbrains.kotlin.formver.core.embeddings.properties.FieldEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.properties.UserFieldEmbedding
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.linearization.OwnedShape
@@ -129,6 +131,10 @@ fun constructionBody(
                 is FirProperty -> declaration.initializer?.let { initializer ->
                     val value = initializerContext(declaration).convert(initializer)
                     val property = program.embedProperty(declaration.symbol)
+                    val field = (property.getter as? BackingFieldGetter)?.field
+                    if (field != null && field !is UserFieldEmbedding) throw UnsupportedFeatureException(
+                        declaration.source, "initialization of a library-encoded field",
+                    )
                     actions += constructionStore(receiver, property, value).withPosition(declaration.source)
                 }
                 is FirAnonymousInitializer -> declaration.body?.let { actions += initializerContext(declaration).convert(it) }

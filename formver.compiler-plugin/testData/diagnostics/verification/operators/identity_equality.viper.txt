@@ -1,3 +1,14 @@
+/identity_equality.kt: info: Generated Viper text for C:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), C())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == C()
+  fold acc(C_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(C_unique(v_ret_0), write)
+}
+
 /identity_equality.kt: info: Generated Viper text for identity:
 method identity(x: Ref, y: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), C())

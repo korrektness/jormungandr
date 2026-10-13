@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Counter(var x: Int)
+<!VIPER_TEXT!>class Counter<!>(var x: Int)
 
 fun <!VIPER_TEXT!>takesLambda<!>(f: () -> Int): Int = 0
 

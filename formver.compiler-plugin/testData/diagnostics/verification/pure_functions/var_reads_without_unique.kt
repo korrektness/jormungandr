@@ -1,9 +1,9 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(var content: Int)
+<!VIPER_TEXT!>class Box<!>(var content: Int)
 
-class Node(val value: Int, var next: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, var next: @Unique Node?)
 
 <!VIPER_VERIFICATION_ERROR!>@Pure
 fun <!VERIFICATION_SKIPPED!>readShared<!>(b: Box): Int = <!UNSUPPORTED_OWNERSHIP!>b.content<!><!>

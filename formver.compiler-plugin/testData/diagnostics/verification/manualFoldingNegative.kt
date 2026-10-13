@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 @Manual
-class Cell(
+<!VIPER_TEXT!>class Cell<!>(
     var value: Int
 )
 

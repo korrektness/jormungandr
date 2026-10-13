@@ -2,7 +2,7 @@
 // RENDER_PREDICATES
 import org.jetbrains.kotlin.formver.plugin.*
 
-class GeneralToken(val flag: Boolean)
+<!VIPER_TEXT!>class GeneralToken<!>(val flag: Boolean)
 
 interface TruthView {
     @Pure @Unique fun <!VIPER_TEXT!>truth<!>(): Boolean
@@ -69,7 +69,7 @@ fun <!VIPER_TEXT!>falseGeneralBinding<!>() {
     @Pure @Unique override fun <!VIPER_TEXT!>other<!>(): Boolean = false
 }<!>
 
-class ViewHolder(var view: @Unique DetailedView)
+<!VIPER_TEXT!>class ViewHolder<!>(var view: @Unique DetailedView)
 
 fun <!VIPER_TEXT!>readDetailed<!>(view: @Unique @Borrowed DetailedView): GeneralToken? {
     postconditions<GeneralToken?> { result ->
@@ -110,12 +110,12 @@ interface ViewConsumer {
     @Unique @Borrowed fun <!VIPER_TEXT!>accept<!>(view: @Unique @Borrowed DetailedView): Boolean
 }
 
-class HonestConsumer : ViewConsumer {
+<!VIPER_TEXT!>class HonestConsumer<!> : ViewConsumer {
     @Unique @Borrowed
     override fun <!VIPER_TEXT!>accept<!>(view: @Unique @Borrowed DetailedView): Boolean = view.truth()
 }
 
-class DishonestConsumer : ViewConsumer {
+<!VIPER_TEXT!>class DishonestConsumer<!> : ViewConsumer {
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed
     override fun <!VIPER_TEXT!>accept<!>(view: @Unique @Borrowed DetailedView): Boolean = false<!>
 }
@@ -129,7 +129,7 @@ fun <!VIPER_TEXT!>consumerClient<!>(consumer: @Unique @Borrowed ViewConsumer, vi
     refute(false)
 }
 
-class BoolNode(var flag: Boolean, var next: @Unique BoolNode?)
+<!VIPER_TEXT!>class BoolNode<!>(var flag: Boolean, var next: @Unique BoolNode?)
 @Pure fun <!VIPER_TEXT!>allTrue<!>(node: @Unique BoolNode?): Boolean {
     preconditions { decreases(node) }
     return if (node == null) true else node.flag && allTrue(node.next)
@@ -138,7 +138,7 @@ class BoolNode(var flag: Boolean, var next: @Unique BoolNode?)
 interface ChainView {
     @Pure @Unique fun <!VIPER_TEXT!>all<!>(): Boolean
 }
-class BoolChain(var head: @Unique BoolNode?) : ChainView {
+<!VIPER_TEXT!>class BoolChain<!>(var head: @Unique BoolNode?) : ChainView {
     @Pure @Unique override fun <!VIPER_TEXT!>all<!>(): Boolean = allTrue(head)
 }
 

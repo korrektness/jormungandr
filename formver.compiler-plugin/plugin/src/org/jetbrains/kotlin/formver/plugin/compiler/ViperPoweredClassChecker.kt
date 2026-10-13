@@ -7,42 +7,30 @@ package org.jetbrains.kotlin.formver.plugin.compiler
 
 import org.jetbrains.kotlin.descriptors.isInterface
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChecker
-import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
-import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
-import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
-import org.jetbrains.kotlin.formver.core.conversion.InheritedImplementationObligation
-import org.jetbrains.kotlin.formver.core.conversion.inheritedImplementationObligations
 import org.jetbrains.kotlin.formver.common.*
-import org.jetbrains.kotlin.formver.core.conversion.classLawConstructionFailures
-import org.jetbrains.kotlin.formver.core.conversion.constructionDisciplineFailures
+import org.jetbrains.kotlin.formver.core.conversion.constructionFailures
+import org.jetbrains.kotlin.formver.core.conversion.constructionVerdicts
 import org.jetbrains.kotlin.formver.core.conversion.hasSuperclassLaws
 import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
-import org.jetbrains.kotlin.formver.core.conversion.ProgramConverter
-import org.jetbrains.kotlin.formver.core.conversion.interfaceLaws
-import org.jetbrains.kotlin.formver.core.conversion.registerClassLaws
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.common.reportTranslation
 import org.jetbrains.kotlin.formver.common.reportTool
 import org.jetbrains.kotlin.formver.common.reportInternalFailure
-import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.core.names.embedName
-import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportingPosition
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
-import org.jetbrains.kotlin.formver.viper.ast.registerAllNames
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
 
-/** Checks concrete implementations' laws and inherited member bodies and contracts. */
+/** Checks concrete classes' constructors, laws, and inherited member bodies and contracts. */
 class ViperPoweredClassChecker(
     private val session: FirSession,
     private val config: PluginConfiguration,
@@ -50,12 +38,11 @@ class ViperPoweredClassChecker(
     private val reportedErrors: ReportedVerifierErrors,
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
     private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors)
+    private val programs = ClassPrograms(session, config)
 
     context(context: CheckerContext)
     private fun shouldSkip(declaration: FirRegularClass): Boolean =
-        session.externalSpecifications?.errors?.isNotEmpty() == true ||
-            config.externalSpecs.isExternalSpec(context.containingFilePath) ||
-            declaration.origin != FirDeclarationOrigin.Source
+        programs.isSkipped(declaration, context.containingFilePath)
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun reportFailure(declaration: FirRegularClass, error: org.jetbrains.kotlin.formver.viper.errors.VerifierError) {
@@ -68,88 +55,44 @@ class ViperPoweredClassChecker(
         if (declaration.classKind.isInterface ||
             config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE)) return
         if (declaration.symbol.ownClassLaws(session).isNotEmpty() || declaration.symbol.hasSuperclassLaws(session)) return
-        constructionDisciplineFailures(declaration.symbol, session).forEach {
-            reporter.reportFailure(Failure(FailureKind.VERIFICATION_SKIPPED, declaration.source,
-                KotlinCondition.Law(it, declaration.symbol)))
+        constructionFailures(declaration.symbol, session).forEach {
+            reporter.reportFailure(Failure(FailureKind.VERIFICATION_SKIPPED, declaration.source, it))
         }
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirRegularClass) {
         if (shouldSkip(declaration)) return
-        lambdaChecker.checkStandaloneLambdas(declaration, declaration.symbol.classId.embedName())
+        val dumps = lambdaChecker.standaloneLambdaDumps(declaration, declaration.symbol.classId.embedName()).toMutableList()
         reportConstructionDiscipline(declaration)
-        val obligations = implementationObligations(declaration) ?: return
-        try {
-            val (program, verify) = convert(declaration, obligations) ?: return
-            if (System.getProperty("formver.testRun").toBoolean()) {
-                declaration.viperProgram = program
-                declaration.shouldVerify = verify
-            } else if (verify) {
-                verify(declaration, program)
-            }
-        } catch (error: UnsupportedFeatureException) {
-            reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
-        } catch (error: Exception) {
-            reportInternalError(declaration, error)
-        } catch (error: NotImplementedError) {
-            reportInternalError(declaration, error)
-        }
+        programs.implementationObligations(declaration)?.let { checkObligations(declaration, it, dumps) }
+        lambdaChecker.reportViperText(declaration, dumps)
     }
 
-    private data class Obligations(
-        val constructors: List<FirConstructorSymbol>,
-        val inherited: List<InheritedImplementationObligation>,
-    )
-
-    /** What a concrete class must prove, or null when it has nothing to prove or its laws cannot be constructed. */
-    context(context: CheckerContext)
-    @OptIn(DirectDeclarationsAccess::class)
-    private fun implementationObligations(declaration: FirRegularClass): Obligations? {
-        if (declaration.classKind.isInterface || declaration.isAbstract) return null
-        if (config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE)) return null
-        val symbol = declaration.symbol
-        val hasClassLaws = symbol.ownClassLaws(session).isNotEmpty() || symbol.hasSuperclassLaws(session)
-        val inherited = symbol.inheritedImplementationObligations()
-        val constructors = if (hasClassLaws) symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>() else emptyList()
-        val hasLawHarness = symbol.interfaceLaws().isNotEmpty() || symbol.declarationSymbols.any { it.isLaw(session) }
-        return when {
-            constructors.isEmpty() && inherited.isEmpty() && !hasLawHarness -> null
-            hasClassLaws && classLawConstructionFailures(symbol, session).isNotEmpty() -> null
-            else -> Obligations(constructors, inherited)
-        }
-    }
-
-    /** The checked Viper program for [obligations] and whether to verify it, or null after a conversion error. */
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun convert(declaration: FirRegularClass, obligations: Obligations): Pair<viper.silver.ast.Program, Boolean>? {
-        val converter = ProgramConverter(session, config, context, reporter)
-        converter.registerClassLaws(declaration.symbol)
-        obligations.constructors.forEach { converter.registerConstructor(it) }
-        for (obligation in obligations.inherited) {
-            converter.registerInheritedImplementation(declaration.symbol, obligation.implementation, obligation.contracts)
+    private fun checkObligations(declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>) {
+        val verdicts = checkNotNull(session.constructionVerdicts) { "the plugin registers construction verdicts" }
+        verdicts.decide(declaration.symbol) {
+            try {
+                val program = programs.convert(declaration, obligations, dumps) ?: return@decide false
+                if (System.getProperty("formver.testRun").toBoolean()) {
+                    declaration.viperProgram = program.program
+                    declaration.shouldVerify = program.verify
+                } else if (program.verify) {
+                    verify(declaration, program.program)
+                }
+                program.verifiesConstruction
+            } catch (error: UnsupportedFeatureException) {
+                reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
+                false
+            } catch (error: Exception) {
+                reportInternalError(declaration, error)
+                false
+            } catch (error: NotImplementedError) {
+                reportInternalError(declaration, error)
+                false
+            }
         }
-        converter.validateAll()
-        if (converter.hadConversionError) return null
-        converter.linearizeAll()
-        val program = converter.buildProgram()
-        with(converter.nameResolver) { program.registerAllNames() }
-        converter.nameResolver.resolve()
-        val dump = when (config.logLevel) {
-            LogLevel.ONLY_WARNINGS -> null
-            LogLevel.SHORT_VIPER_DUMP -> program.toShort().withoutPredicates()
-            LogLevel.SHORT_VIPER_DUMP_WITH_PREDICATES -> program.toShort()
-            LogLevel.FULL_VIPER_DUMP -> program
-        }
-        dump?.let {
-            reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.name.asString(),
-                with(converter.nameResolver) { it.toDebugOutput() })
-        }
-        val viperProgram = with(converter.nameResolver) { program.toSilver() }
-        SiliconFrontend.checkConsistency(viperProgram)
-        val verify = config.verificationSelection !in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) &&
-            !converter.skipsVerification
-        return viperProgram to verify
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)

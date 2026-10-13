@@ -9,5 +9,5 @@ import org.jetbrains.kotlin.formver.plugin.*
 @NeverConvert
 fun rejectedBorrow(counter: Counter) { <!UNIQUENESS_MISMATCH!>counter<!>.advance(1) }
 
-<!INVALID_EXTERNAL_SPEC!>class SourceGauge : Gauge { <!INVALID_OBSERVER, OVERRIDE_UNIQUENESS_MISMATCH!>override fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>read<!>(): Int = 1<!> }<!>
-<!INVALID_EXTERNAL_SPEC!>class IndirectGauge : DefaultGauge()<!>
+<!INVALID_EXTERNAL_SPEC!><!VIPER_TEXT!>class SourceGauge<!> : Gauge { <!INVALID_OBSERVER, OVERRIDE_UNIQUENESS_MISMATCH!>override fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>read<!>(): Int = 1<!> }<!>
+<!INVALID_EXTERNAL_SPEC!><!VIPER_TEXT!>class IndirectGauge<!> : DefaultGauge()<!>

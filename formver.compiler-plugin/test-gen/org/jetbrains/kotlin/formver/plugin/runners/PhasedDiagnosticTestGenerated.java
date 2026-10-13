@@ -1642,6 +1642,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("eager_boolean_operators.kt")
+      public void testEager_boolean_operators() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/eager_boolean_operators.kt");
+      }
+
+      @Test
       @TestMetadata("exposes_frontend.kt")
       public void testExposes_frontend() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/exposes_frontend.kt");
@@ -1842,6 +1848,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("construction_skips.kt")
+      public void testConstruction_skips() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/construction_skips.kt");
+      }
+
+      @Test
       @TestMetadata("constructor_bodies.kt")
       public void testConstructor_bodies() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/constructor_bodies.kt");
@@ -1860,9 +1872,21 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("law_free_constructors.kt")
+      public void testLaw_free_constructors() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/law_free_constructors.kt");
+      }
+
+      @Test
       @TestMetadata("local_functions.kt")
       public void testLocal_functions() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/local_functions.kt");
+      }
+
+      @Test
+      @TestMetadata("open_dispatch_chain.kt")
+      public void testOpen_dispatch_chain() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/open_dispatch_chain.kt");
       }
 
       @Test

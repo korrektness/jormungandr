@@ -3,9 +3,9 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Inner(var x: Int)
+<!VIPER_TEXT!>class Inner<!>(var x: Int)
 
-class Outer(var inner: @Unique Inner, var y: Int)
+<!VIPER_TEXT!>class Outer<!>(var inner: @Unique Inner, var y: Int)
 
 fun <!VIPER_TEXT!>freshNested<!>() {
     val o: @Unique Outer = Outer(Inner(0), 1)
@@ -19,9 +19,9 @@ fun <!VIPER_TEXT!>storedLocal<!>() {
     verify(o.inner.x == 4)
 }
 
-open class Sup(var s: @Unique Inner)
+open <!VIPER_TEXT!>class Sup<!>(var s: @Unique Inner)
 
-class Sub(s: @Unique Inner, var t: Int) : Sup(s)
+<!VIPER_TEXT!>class Sub<!>(s: @Unique Inner, var t: Int) : Sup(s)
 
 fun <!VIPER_TEXT!>storedBySuperclass<!>(i: @Unique Inner) {
     i.x = 7
@@ -30,7 +30,7 @@ fun <!VIPER_TEXT!>storedBySuperclass<!>(i: @Unique Inner) {
     refute(false)
 }
 
-class Holder(var y: Int) {
+<!VIPER_TEXT!>class Holder<!>(var y: Int) {
     var inner: @Unique Inner = Inner(0)
 }
 
@@ -45,7 +45,7 @@ fun <!VIPER_TEXT!>initializedInBodyUnconstrained<!>() {
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>h.inner.x == 0<!>)
 }
 
-class Node(val value: Int, var next: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, var next: @Unique Node?)
 
 fun <!VIPER_TEXT!>twoNodes<!>() {
     val l: @Unique Node = Node(1, Node(2, null))
@@ -56,7 +56,7 @@ fun <!VIPER_TEXT!>twoNodes<!>() {
     }
 }
 
-class Buf(val data: @Unique IntArray, var len: Int)
+<!VIPER_TEXT!>class Buf<!>(val data: @Unique IntArray, var len: Int)
 
 fun <!VIPER_TEXT!>storedInVal<!>(a: @Unique IntArray) {
     preconditions { a.size == 3 }
@@ -67,7 +67,7 @@ fun <!VIPER_TEXT!>storedInVal<!>(a: @Unique IntArray) {
 }
 
 @Manual
-class Tree(var left: @Unique Tree?, var data: Int)
+<!VIPER_TEXT!>class Tree<!>(var left: @Unique Tree?, var data: Int)
 
 fun <!VIPER_TEXT!>manualStored<!>(l: @Unique Tree) {
     unfold(UniquePred(l))

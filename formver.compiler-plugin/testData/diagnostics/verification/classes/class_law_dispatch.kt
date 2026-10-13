@@ -32,7 +32,7 @@ open <!VIPER_TEXT!>class LawBase<!>(var n: Int) : Reading {
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = -1
 }<!>
 
-open class PlainBase(@LawBound var n: Int = 3) : Reading {
+open <!VIPER_TEXT!>class PlainBase<!>(@LawBound var n: Int = 3) : Reading {
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = nested()
     @Pure @Unique fun <!VIPER_TEXT!>nested<!>(): Int = n
 }
@@ -88,7 +88,7 @@ fun <!VIPER_TEXT!>validConstruction<!>() {
     verify(computed.n >= 0)
 }
 
-open class ChangedInitializerBase(@LawBound var n: Int) : Reading {
+open <!VIPER_TEXT!>class ChangedInitializerBase<!>(@LawBound var n: Int) : Reading {
     init { n = 1 }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = n
 }
@@ -108,7 +108,7 @@ fun <!VIPER_TEXT!>unrelatedInitializerConstruction<!>() {
 }
 
 @Pure fun <!VIPER_TEXT!>first<!>(data: @Unique IntArray): Int = if (data.size > 0) data[0] else 0
-open class ChangedOwnedStateBase(val data: @Unique IntArray) : Reading {
+open <!VIPER_TEXT!>class ChangedOwnedStateBase<!>(val data: @Unique IntArray) : Reading {
     init { if (data.size > 0) data[0] = 1 }
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = first(data)
 }

@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.plugin.compiler
 
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
+import org.jetbrains.kotlin.formver.core.conversion.ConstructionVerdicts
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.common.FailureDiagnostics
 import org.jetbrains.kotlin.formver.common.ExternalSpecificationRegistry
@@ -16,6 +17,10 @@ class FormalVerificationPluginExtensionRegistrar(private val config: PluginConfi
         registerDiagnosticContainers(VerificationErrors)
         registerDiagnosticContainers(FailureDiagnostics)
         +{ session: org.jetbrains.kotlin.fir.FirSession -> ExternalSpecificationRegistry(session, config.externalSpecs) }
+        +{ session: org.jetbrains.kotlin.fir.FirSession ->
+            val programs = ClassPrograms(session, config)
+            ConstructionVerdicts(session, programs::constructionVerified)
+        }
         +PluginAdditionalCheckers.getFactory(config)
     }
 }

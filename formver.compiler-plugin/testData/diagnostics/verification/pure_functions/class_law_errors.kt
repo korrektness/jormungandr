@@ -81,11 +81,11 @@ open class SuperInvariant(val value: Int) {
 
 class SubInvariant(value: Int) : SuperInvariant(value)
 
-<!INVALID_LAW!>class PropertyInitializerInvariant(value: Int) {
+class PropertyInitializerInvariant(value: Int) {
     val first = value
     val second = first
     @Law @Pure fun invariant(): Boolean = second >= 0
-}<!>
+}
 
 class LambdaInitializerInvariant(value: Int) {
     val function = { parameter: Int -> parameter + value }

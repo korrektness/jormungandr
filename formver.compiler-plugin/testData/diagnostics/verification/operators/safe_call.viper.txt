@@ -1,3 +1,23 @@
+/safe_call.kt: info: Generated Viper text for Foo:
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Foo())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Foo())
+  ensures intFromRef(x(v_ret_0)) == 0
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Foo()
+  anon := intToRef(0)
+  inhale intFromRef(x(v_ret_0)) == intFromRef(anon)
+  fold acc(Foo_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Foo_unique(v_ret_0), write)
+}
+
 /safe_call.kt: info: Generated Viper text for testSafeCall:
 function x(this: Ref): Ref
   requires isSubtype(typeOf(this), Foo())
@@ -82,6 +102,28 @@ method testSafeCallPropertyNonNullable(foo: Ref) returns (v_ret_0: Ref)
     v_ret_0 := nullValue()}
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/safe_call.kt: info: Generated Viper text for Rec:
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Rec())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), Rec())
+  ensures intFromRef(g_v(v_ret_0)) == intFromRef(par_v)
+  ensures intFromRef(g_v(v_ret_0)) == intFromRef(par_v)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Rec()
+  anon := par_v
+  inhale intFromRef(g_v(v_ret_0)) == intFromRef(anon)
+  fold acc(Rec_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Rec_unique(v_ret_0), write)
 }
 
 /safe_call.kt: info: Generated Viper text for safeCallChain:

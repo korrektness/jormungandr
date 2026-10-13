@@ -2,7 +2,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
 interface Foo
-class Bar : Foo
+<!VIPER_TEXT!>class Bar<!> : Foo
 
 @OptIn(ExperimentalContracts::class)
 fun <!VIPER_TEXT!>asOperator<!>(foo: Foo) : Bar {
@@ -20,7 +20,7 @@ fun <!VIPER_TEXT!>safeAsOperator<!>(foo: Foo) : Bar? {
     return foo as Bar?
 }
 
-class IntHolder(val x: Int)
+<!VIPER_TEXT!>class IntHolder<!>(val x: Int)
 
 @OptIn(ExperimentalContracts::class)
 fun <!VIPER_TEXT!>getX<!>(a: Any): Int? {

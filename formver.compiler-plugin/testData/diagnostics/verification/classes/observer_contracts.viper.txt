@@ -173,6 +173,77 @@ method addFrom(this: Ref, source: Ref) returns (ret: Ref)
       intFromRef(get(source, intToRef(0)))))
 
 
+/observer_contracts.kt: info: Generated Viper text for ObservedCell:
+field bf_count: Ref
+
+field bf_item: Ref
+
+function ObservedCell_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ObservedCell())
+  requires acc(ObservedCell_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservedCell_unique(this), write) in this.bf_item)
+}
+
+function ObservedCell_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservedCell())
+  requires acc(ObservedCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ObservedCell_unique(this), write) in this.bf_count)
+}
+
+function ObservedList_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ObservedList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservedList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservedList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ObservedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), ObservedCell()) && acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  acc(this.bf_item, write) &&
+  isSubtype(typeOf(this.bf_item), intType())
+}
+
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_count: Ref, par_item: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  requires isSubtype(typeOf(par_item), intType())
+  ensures isSubtype(typeOf(v_ret_0), ObservedCell())
+  ensures isSubtype(typeOf(v_ret_0), ObservedCell()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType()) &&
+    acc(v_ret_0.bf_item, write) &&
+    isSubtype(typeOf(v_ret_0.bf_item), intType())
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_item) == intFromRef(par_item)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_item) == intFromRef(par_item)
+{
+  v_ret_0 := new(bf_count, bf_item)
+  inhale typeOf(v_ret_0) == ObservedCell()
+  v_ret_0.bf_count := par_count
+  v_ret_0.bf_item := par_item
+  fold acc(ObservedCell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ObservedCell_unique(v_ret_0), write)
+}
+
 /observer_contracts.kt: info: Generated Viper text for addFrom:
 field count: Ref
 
@@ -780,6 +851,78 @@ method refines_c_ObservedList_f_set(this: Ref, par_index: Ref, value: Ref)
   assert (unfolding acc(c_ObservedList_unique(this), wildcard) in
       intFromRef(c_ObservedList_f_get(this, par_index)) ==
       intFromRef(value))
+}
+
+/observer_contracts.kt: info: Generated Viper text for BrokenObservedCell:
+field bf_count: Ref
+
+field bf_item: Ref
+
+function BrokenObservedCell_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenObservedCell())
+  requires acc(BrokenObservedCell_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenObservedCell_unique(this), write) in this.bf_item)
+}
+
+function BrokenObservedCell_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BrokenObservedCell())
+  requires acc(BrokenObservedCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BrokenObservedCell_unique(this), write) in this.bf_count)
+}
+
+function ObservedList_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ObservedList())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ObservedList_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ObservedList())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BrokenObservedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BrokenObservedCell()) &&
+  acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType()) &&
+  acc(this.bf_item, write) &&
+  isSubtype(typeOf(this.bf_item), intType())
+}
+
+predicate ObservedList_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ObservedList())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_count: Ref, par_item: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  requires isSubtype(typeOf(par_item), intType())
+  ensures isSubtype(typeOf(v_ret_0), BrokenObservedCell())
+  ensures isSubtype(typeOf(v_ret_0), BrokenObservedCell()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType()) &&
+    acc(v_ret_0.bf_item, write) &&
+    isSubtype(typeOf(v_ret_0.bf_item), intType())
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_item) == intFromRef(par_item)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_item) == intFromRef(par_item)
+{
+  v_ret_0 := new(bf_count, bf_item)
+  inhale typeOf(v_ret_0) == BrokenObservedCell()
+  v_ret_0.bf_count := par_count
+  v_ret_0.bf_item := par_item
+  fold acc(BrokenObservedCell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BrokenObservedCell_unique(v_ret_0), write)
 }
 
 /observer_contracts.kt: info: Generated Viper text for addFrom:

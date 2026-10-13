@@ -4,7 +4,7 @@
 import org.jetbrains.kotlin.formver.plugin.verify
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 
-class StringBox(val str: String)
+<!VIPER_TEXT!>class StringBox<!>(val str: String)
 
 fun <!VIPER_TEXT!>testType<!>(s: String) {
     val cond1 = StringBox(s).str == s

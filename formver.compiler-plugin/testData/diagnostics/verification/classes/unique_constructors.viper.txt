@@ -1,3 +1,72 @@
+/unique_constructors.kt: info: Generated Viper text for Inner:
+field bf_x: Ref
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.bf_x, write) &&
+  isSubtype(typeOf(this.bf_x), intType())
+}
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Inner())
+  ensures isSubtype(typeOf(v_ret_0), Inner()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Inner()
+  v_ret_0.bf_x := par_x
+  fold acc(Inner_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Inner_unique(v_ret_0), write)
+}
+
+/unique_constructors.kt: info: Generated Viper text for Outer:
+field bf_inner: Ref
+
+field bf_y: Ref
+
+field x: Ref
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.x, write) &&
+  isSubtype(typeOf(this.x), intType())
+}
+
+predicate Outer_unique(this: Ref) {
+  isSubtype(typeOf(this), Outer()) && acc(this.bf_inner, write) &&
+  isSubtype(typeOf(this.bf_inner), Inner()) &&
+  acc(Inner_unique(this.bf_inner), write) &&
+  acc(this.bf_y, write) &&
+  isSubtype(typeOf(this.bf_y), intType())
+}
+
+method con(par_inner: Ref, par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_inner), Inner())
+  requires acc(Inner_unique(par_inner), write)
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(v_ret_0), Outer())
+  ensures isSubtype(typeOf(v_ret_0), Outer()) &&
+    acc(v_ret_0.bf_inner, write) &&
+    isSubtype(typeOf(v_ret_0.bf_inner), Inner()) &&
+    acc(Inner_unique(v_ret_0.bf_inner), write) &&
+    acc(v_ret_0.bf_y, write) &&
+    isSubtype(typeOf(v_ret_0.bf_y), intType())
+  ensures v_ret_0.bf_inner == par_inner
+  ensures intFromRef(v_ret_0.bf_y) == intFromRef(par_y)
+  ensures v_ret_0.bf_inner == par_inner
+  ensures intFromRef(v_ret_0.bf_y) == intFromRef(par_y)
+{
+  v_ret_0 := new(bf_inner, bf_y)
+  inhale typeOf(v_ret_0) == Outer()
+  v_ret_0.bf_inner := par_inner
+  v_ret_0.bf_y := par_y
+  fold acc(Outer_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Outer_unique(v_ret_0), write)
+}
+
 /unique_constructors.kt: info: Generated Viper text for freshNested:
 field bf_inner: Ref
 
@@ -41,12 +110,13 @@ predicate Serializable_unique(this: Ref) {
   isSubtype(typeOf(this), Serializable())
 }
 
-method con_Inner(par_x: Ref) returns (ret_2: Ref)
+method con_Inner(par_x: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_x), intType())
-  ensures isSubtype(typeOf(ret_2), Inner())
-  ensures isSubtype(typeOf(ret_2), Inner()) && acc(ret_2.bf_x, write) &&
-    isSubtype(typeOf(ret_2.bf_x), intType())
-  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
+  ensures isSubtype(typeOf(ret_3), Inner())
+  ensures isSubtype(typeOf(ret_3), Inner()) && acc(ret_3.bf_x, write) &&
+    isSubtype(typeOf(ret_3.bf_x), intType())
+  ensures intFromRef(ret_3.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_3.bf_x) == intFromRef(par_x)
 
 
 method con_Outer(par_inner: Ref, par_y: Ref) returns (ret_1: Ref)
@@ -57,6 +127,8 @@ method con_Outer(par_inner: Ref, par_y: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.bf_inner), Inner()) &&
     acc(ret_1.bf_y, write) &&
     isSubtype(typeOf(ret_1.bf_y), intType())
+  ensures ret_1.bf_inner == par_inner
+  ensures intFromRef(ret_1.bf_y) == intFromRef(par_y)
   ensures ret_1.bf_inner == par_inner
   ensures intFromRef(ret_1.bf_y) == intFromRef(par_y)
 
@@ -141,18 +213,21 @@ method con_Inner(par_x: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Inner()) && acc(ret_1.bf_x, write) &&
     isSubtype(typeOf(ret_1.bf_x), intType())
   ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
 
 
-method con_Outer(par_inner: Ref, par_y: Ref) returns (ret_2: Ref)
+method con_Outer(par_inner: Ref, par_y: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_inner), Inner())
   requires isSubtype(typeOf(par_y), intType())
-  ensures isSubtype(typeOf(ret_2), Outer())
-  ensures isSubtype(typeOf(ret_2), Outer()) && acc(ret_2.bf_inner, write) &&
-    isSubtype(typeOf(ret_2.bf_inner), Inner()) &&
-    acc(ret_2.bf_y, write) &&
-    isSubtype(typeOf(ret_2.bf_y), intType())
-  ensures ret_2.bf_inner == par_inner
-  ensures intFromRef(ret_2.bf_y) == intFromRef(par_y)
+  ensures isSubtype(typeOf(ret_3), Outer())
+  ensures isSubtype(typeOf(ret_3), Outer()) && acc(ret_3.bf_inner, write) &&
+    isSubtype(typeOf(ret_3.bf_inner), Inner()) &&
+    acc(ret_3.bf_y, write) &&
+    isSubtype(typeOf(ret_3.bf_y), intType())
+  ensures ret_3.bf_inner == par_inner
+  ensures intFromRef(ret_3.bf_y) == intFromRef(par_y)
+  ensures ret_3.bf_inner == par_inner
+  ensures intFromRef(ret_3.bf_y) == intFromRef(par_y)
 
 
 method storedLocal() returns (v_ret_0: Ref)
@@ -176,6 +251,92 @@ method storedLocal() returns (v_ret_0: Ref)
   assert intFromRef(anon_0) == 4
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for Sup:
+field bf_s: Ref
+
+field x: Ref
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.x, write) &&
+  isSubtype(typeOf(this.x), intType())
+}
+
+predicate Sup_unique(this: Ref) {
+  isSubtype(typeOf(this), Sup()) && acc(this.bf_s, write) &&
+  isSubtype(typeOf(this.bf_s), Inner()) &&
+  acc(Inner_unique(this.bf_s), write)
+}
+
+method con(par_s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_s), Inner())
+  requires acc(Inner_unique(par_s), write)
+  ensures isSubtype(typeOf(v_ret_0), Sup())
+  ensures isSubtype(typeOf(v_ret_0), Sup()) && acc(v_ret_0.bf_s, write) &&
+    isSubtype(typeOf(v_ret_0.bf_s), Inner()) &&
+    acc(Inner_unique(v_ret_0.bf_s), write)
+  ensures v_ret_0.bf_s == par_s
+  ensures v_ret_0.bf_s == par_s
+{
+  v_ret_0 := new(bf_s)
+  inhale typeOf(v_ret_0) == Sup()
+  v_ret_0.bf_s := par_s
+  fold acc(Sup_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Sup_unique(v_ret_0), write)
+}
+
+/unique_constructors.kt: info: Generated Viper text for Sub:
+field bf_s: Ref
+
+field bf_t: Ref
+
+field x: Ref
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.x, write) &&
+  isSubtype(typeOf(this.x), intType())
+}
+
+predicate Sub_unique(this: Ref) {
+  isSubtype(typeOf(this), Sub()) && acc(this.bf_t, write) &&
+  isSubtype(typeOf(this.bf_t), intType()) &&
+  acc(Sup_unique(this), write)
+}
+
+predicate Sup_unique(this: Ref) {
+  isSubtype(typeOf(this), Sup()) && acc(this.bf_s, write) &&
+  isSubtype(typeOf(this.bf_s), Inner()) &&
+  acc(Inner_unique(this.bf_s), write)
+}
+
+method con(par_s: Ref, par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_s), Inner())
+  requires acc(Inner_unique(par_s), write)
+  requires isSubtype(typeOf(par_t), intType())
+  ensures isSubtype(typeOf(v_ret_0), Sub())
+  ensures isSubtype(typeOf(v_ret_0), Sub()) && acc(v_ret_0.bf_t, write) &&
+    isSubtype(typeOf(v_ret_0.bf_t), intType()) &&
+    (isSubtype(typeOf(v_ret_0), Sup()) && acc(v_ret_0.bf_s, write) &&
+    isSubtype(typeOf(v_ret_0.bf_s), Inner()) &&
+    acc(Inner_unique(v_ret_0.bf_s), write))
+  ensures v_ret_0.bf_s == par_s
+  ensures intFromRef(v_ret_0.bf_t) == intFromRef(par_t)
+  ensures v_ret_0.bf_s == par_s
+  ensures intFromRef(v_ret_0.bf_t) == intFromRef(par_t)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_s, bf_t)
+  inhale typeOf(v_ret_0) == Sub()
+  anon := par_s
+  v_ret_0.bf_s := anon
+  fold acc(Sup_unique(v_ret_0), write)
+  v_ret_0.bf_t := par_t
+  fold acc(Sub_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Sub_unique(v_ret_0), write)
+  unfold acc(Sup_unique(v_ret_0), write)
 }
 
 /unique_constructors.kt: info: Generated Viper text for storedBySuperclass:
@@ -235,6 +396,8 @@ method con(par_s: Ref, par_t: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.bf_s), Inner()))
   ensures ret_1.bf_s == par_s
   ensures intFromRef(ret_1.bf_t) == intFromRef(par_t)
+  ensures ret_1.bf_s == par_s
+  ensures intFromRef(ret_1.bf_t) == intFromRef(par_t)
 
 
 method storedBySuperclass(i: Ref) returns (v_ret_0: Ref)
@@ -273,6 +436,58 @@ method storedBySuperclass(i: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/unique_constructors.kt: info: Generated Viper text for Holder:
+field bf_x: Ref
+
+field bf_y: Ref
+
+field inner: Ref
+
+predicate Holder_unique(this: Ref) {
+  isSubtype(typeOf(this), Holder()) && acc(this.bf_y, write) &&
+  isSubtype(typeOf(this.bf_y), intType()) &&
+  acc(this.inner, write) &&
+  isSubtype(typeOf(this.inner), Inner()) &&
+  acc(Inner_unique(this.inner), write)
+}
+
+predicate Inner_unique(this: Ref) {
+  isSubtype(typeOf(this), Inner()) && acc(this.bf_x, write) &&
+  isSubtype(typeOf(this.bf_x), intType())
+}
+
+method con_Holder(par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) && acc(v_ret_0.bf_y, write) &&
+    isSubtype(typeOf(v_ret_0.bf_y), intType()) &&
+    acc(v_ret_0.inner, write) &&
+    isSubtype(typeOf(v_ret_0.inner), Inner()) &&
+    acc(Inner_unique(v_ret_0.inner), write)
+  ensures intFromRef(v_ret_0.bf_y) == intFromRef(par_y)
+  ensures intFromRef(v_ret_0.bf_y) == intFromRef(par_y)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_y, inner)
+  inhale typeOf(v_ret_0) == Holder()
+  v_ret_0.bf_y := par_y
+  anon := con_Inner(intToRef(0))
+  fold acc(Inner_unique(anon), write)
+  v_ret_0.inner := anon
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
+method con_Inner(par_x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_2), Inner())
+  ensures isSubtype(typeOf(ret_2), Inner()) && acc(ret_2.bf_x, write) &&
+    isSubtype(typeOf(ret_2.bf_x), intType())
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
+
 
 /unique_constructors.kt: info: Generated Viper text for initializedInBody:
 field bf_y: Ref
@@ -325,6 +540,7 @@ method con(par_y: Ref) returns (ret_1: Ref)
     acc(ret_1.inner, write) &&
     isSubtype(typeOf(ret_1.inner), Inner()) &&
     acc(Inner_unique(ret_1.inner), write)
+  ensures intFromRef(ret_1.bf_y) == intFromRef(par_y)
   ensures intFromRef(ret_1.bf_y) == intFromRef(par_y)
 
 
@@ -413,6 +629,7 @@ method con(par_y: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.inner), Inner()) &&
     acc(Inner_unique(ret_1.inner), write)
   ensures intFromRef(ret_1.bf_y) == intFromRef(par_y)
+  ensures intFromRef(ret_1.bf_y) == intFromRef(par_y)
 
 
 method initializedInBodyUnconstrained() returns (v_ret_0: Ref)
@@ -430,6 +647,45 @@ method initializedInBodyUnconstrained() returns (v_ret_0: Ref)
   assert intFromRef(anon_0) == 0
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for Node:
+field bf_next: Ref
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Node_unique(this: Ref) {
+  isSubtype(typeOf(this), Node()) && acc(this.bf_next, write) &&
+  isSubtype(typeOf(this.bf_next), nullable(Node())) &&
+  (this.bf_next != nullValue() ==> acc(Node_unique(this.bf_next), write))
+}
+
+method con(par_value: Ref, par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  requires par_next != nullValue() ==> acc(Node_unique(par_next), write)
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures isSubtype(typeOf(v_ret_0), Node()) && acc(v_ret_0.bf_next, write) &&
+    isSubtype(typeOf(v_ret_0.bf_next), nullable(Node())) &&
+    (v_ret_0.bf_next != nullValue() ==>
+    acc(Node_unique(v_ret_0.bf_next), write))
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures v_ret_0.bf_next == par_next
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures v_ret_0.bf_next == par_next
+{
+  var anon: Ref
+  v_ret_0 := new(bf_next)
+  inhale typeOf(v_ret_0) == Node()
+  anon := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
+  v_ret_0.bf_next := par_next
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
 }
 
 /unique_constructors.kt: info: Generated Viper text for twoNodes:
@@ -477,6 +733,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.bf_next), nullable(Node()))
   ensures intFromRef(g_value(ret_1)) == intFromRef(par_value)
   ensures ret_1.bf_next == par_next
+  ensures intFromRef(g_value(ret_1)) == intFromRef(par_value)
+  ensures ret_1.bf_next == par_next
 
 
 method twoNodes() returns (v_ret_0: Ref)
@@ -515,6 +773,63 @@ method twoNodes() returns (v_ret_0: Ref)
   }
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for Buf:
+field bf_len: Ref
+
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Buf())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+predicate Buf_unique(this: Ref) {
+  isSubtype(typeOf(this), Buf()) &&
+  acc(IntArray_unique(g_data(this)), write) &&
+  acc(this.bf_len, write) &&
+  isSubtype(typeOf(this.bf_len), intType())
+}
+
+predicate IntArray_unique(this: Ref) {
+  isSubtype(typeOf(this), IntArray()) && acc(this.contents, write) &&
+  |this.contents| == arraySize(this) &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < arraySize(this) ==>
+    this.contents[index] >= -2147483648 &&
+    this.contents[index] <= 2147483647)
+}
+
+method con(par_data: Ref, par_len: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  requires isSubtype(typeOf(par_len), intType())
+  ensures isSubtype(typeOf(v_ret_0), Buf())
+  ensures isSubtype(typeOf(v_ret_0), Buf()) &&
+    acc(IntArray_unique(g_data(v_ret_0)), write) &&
+    acc(v_ret_0.bf_len, write) &&
+    isSubtype(typeOf(v_ret_0.bf_len), intType())
+  ensures g_data(v_ret_0) == par_data
+  ensures intFromRef(v_ret_0.bf_len) == intFromRef(par_len)
+  ensures g_data(v_ret_0) == par_data
+  ensures intFromRef(v_ret_0.bf_len) == intFromRef(par_len)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_len)
+  inhale typeOf(v_ret_0) == Buf()
+  anon := par_data
+  inhale g_data(v_ret_0) == anon
+  v_ret_0.bf_len := par_len
+  fold acc(Buf_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Buf_unique(v_ret_0), write)
 }
 
 /unique_constructors.kt: info: Generated Viper text for storedInVal:
@@ -580,6 +895,8 @@ method con(par_data: Ref, par_len: Ref) returns (ret_2: Ref)
     isSubtype(typeOf(ret_2.bf_len), intType())
   ensures g_data(ret_2) == par_data
   ensures intFromRef(ret_2.bf_len) == intFromRef(par_len)
+  ensures g_data(ret_2) == par_data
+  ensures intFromRef(ret_2.bf_len) == intFromRef(par_len)
 
 
 method storedInVal(a: Ref) returns (v_ret_0: Ref)
@@ -622,6 +939,42 @@ method storedInVal(a: Ref) returns (v_ret_0: Ref)
   assert boolFromRef(anon_0)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_constructors.kt: info: Generated Viper text for Tree:
+field bf_data: Ref
+
+field bf_left: Ref
+
+predicate Tree_unique(this: Ref) {
+  isSubtype(typeOf(this), Tree()) && acc(this.bf_left, write) &&
+  isSubtype(typeOf(this.bf_left), nullable(Tree())) &&
+  (this.bf_left != nullValue() ==> acc(Tree_unique(this.bf_left), write)) &&
+  acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), intType())
+}
+
+method con(par_left: Ref, par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_left), nullable(Tree()))
+  requires par_left != nullValue() ==> acc(Tree_unique(par_left), write)
+  requires isSubtype(typeOf(par_data), intType())
+  ensures isSubtype(typeOf(v_ret_0), Tree())
+  ensures isSubtype(typeOf(v_ret_0), Tree()) && acc(v_ret_0.bf_left, write) &&
+    isSubtype(typeOf(v_ret_0.bf_left), nullable(Tree())) &&
+    (v_ret_0.bf_left != nullValue() ==>
+    acc(Tree_unique(v_ret_0.bf_left), write)) &&
+    acc(v_ret_0.bf_data, write) &&
+    isSubtype(typeOf(v_ret_0.bf_data), intType())
+  ensures v_ret_0.bf_left == par_left
+  ensures intFromRef(v_ret_0.bf_data) == intFromRef(par_data)
+  ensures v_ret_0.bf_left == par_left
+  ensures intFromRef(v_ret_0.bf_data) == intFromRef(par_data)
+{
+  v_ret_0 := new(bf_left, bf_data)
+  inhale typeOf(v_ret_0) == Tree()
+  v_ret_0.bf_left := par_left
+  v_ret_0.bf_data := par_data
+  label lbl_ret_0
 }
 
 /unique_constructors.kt: info: Generated Viper text for manualStored:
@@ -694,6 +1047,8 @@ method con_Tree(par_left: Ref, par_data: Ref) returns (ret_2: Ref)
     isSubtype(typeOf(ret_2.bf_left), nullable(Tree())) &&
     acc(ret_2.bf_data, write) &&
     isSubtype(typeOf(ret_2.bf_data), intType())
+  ensures ret_2.bf_left == par_left
+  ensures intFromRef(ret_2.bf_data) == intFromRef(par_data)
   ensures ret_2.bf_left == par_left
   ensures intFromRef(ret_2.bf_data) == intFromRef(par_data)
 

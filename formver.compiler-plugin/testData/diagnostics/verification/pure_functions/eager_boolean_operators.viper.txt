@@ -1,0 +1,91 @@
+/eager_boolean_operators.kt: info: Generated Viper text for eagerAnd:
+function eagerAnd(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0
+  ensures isSubtype(typeOf(result), boolType())
+{
+  andBools(notBool(boolToRef(intFromRef(b) == 0)), gtInts(divInts(a, b), intToRef(0)))
+}
+
+/eager_boolean_operators.kt: info: Generated Viper text for eagerOr:
+function eagerOr(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0
+  ensures isSubtype(typeOf(result), boolType())
+{
+  orBools(boolToRef(intFromRef(b) == 0), gtInts(divInts(a, b), intToRef(0)))
+}
+
+/eager_boolean_operators.kt: info: Generated Viper text for eagerAndInBody:
+method eagerAndInBody(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := andBools(notBool(boolToRef(intFromRef(b) == 0)), gtInts(divInts(a,
+    b), intToRef(0)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/eager_boolean_operators.kt: info: Generated Viper text for eagerOrInPostcondition:
+method eagerOrInPostcondition(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures (intFromRef(b) == 0) !=
+    ((let anon ==
+      (divInts(a, b)) in
+      (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b)))) ==
+    intFromRef(v_ret_0)) ||
+    intFromRef(b) == 0
+{
+  if (intFromRef(b) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    v_ret_0 := divInts(a, b)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/eager_boolean_operators.kt: info: Generated Viper text for shortCircuitOrInPostcondition:
+method shortCircuitOrInPostcondition(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(b) == 0 ||
+    (let anon ==
+      (divInts(a, b)) in
+      (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+        -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+        (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+        (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b)))) ==
+    intFromRef(v_ret_0)
+{
+  if (intFromRef(b) == 0) {
+    v_ret_0 := intToRef(0)
+  } else {
+    v_ret_0 := divInts(a, b)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/eager_boolean_operators.kt: info: Generated Viper text for guardedEagerAnd:
+function guardedEagerAnd(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0 && !(intFromRef(b) == 0)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  andBools(notBool(boolToRef(intFromRef(b) == 0)), gtInts(divInts(a, b), intToRef(0)))
+}

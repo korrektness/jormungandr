@@ -3,7 +3,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Node(var value: Int, var next: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(var value: Int, var next: @Unique Node?)
 
 @Pure
 fun <!VIPER_TEXT!>length<!>(n: @Unique Node?): Int {

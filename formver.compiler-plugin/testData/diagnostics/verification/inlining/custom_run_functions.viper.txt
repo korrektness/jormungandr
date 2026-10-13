@@ -691,6 +691,26 @@ method ifTrue(v_this_extension: Ref, block: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
+/custom_run_functions.kt: info: Generated Viper text for CustomClass:
+function member(this: Ref): Ref
+  requires isSubtype(typeOf(this), CustomClass())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), CustomClass())
+  ensures intFromRef(member(v_ret_0)) == 42
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CustomClass()
+  anon := intToRef(42)
+  inhale intFromRef(member(v_ret_0)) == intFromRef(anon)
+  fold acc(CustomClass_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CustomClass_unique(v_ret_0), write)
+}
+
 /custom_run_functions.kt: info: Generated Viper text for testCustomClass:
 function member(v_this: Ref): Ref
   requires isSubtype(typeOf(v_this), CustomClass())
@@ -704,18 +724,19 @@ function size(v_this: Ref): Ref
 
 method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), CustomClass())
+  ensures intFromRef(member(ret_1)) == 42
 
 
-method extensionRun(v_this_extension: Ref, block: Ref) returns (ret_6: Ref)
+method extensionRun(v_this_extension: Ref, block: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(v_this_extension), CustomClass())
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
 
 
-method memberRun(v_this: Ref, block: Ref) returns (ret_2: Ref)
+method memberRun(v_this: Ref, block: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(v_this), CustomClass())
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
 
 
 method testCustomClass() returns (v_ret_0: Ref)
@@ -725,36 +746,36 @@ method testCustomClass() returns (v_ret_0: Ref)
   var cond1: Ref
   var anon_0: Ref
   var anon_1: Ref
-  var v_ret_4: Ref
-  var anon_2: Ref
   var v_ret_5: Ref
+  var anon_2: Ref
+  var v_ret_6: Ref
   var anon_3: Ref
   var anon_4: Ref
-  var v_ret_8: Ref
-  var anon_5: Ref
   var v_ret_9: Ref
+  var anon_5: Ref
+  var v_ret_10: Ref
   custom := con()
   fold acc(CustomClass_unique(custom), write)
-  v_ret_5 := member(custom)
+  v_ret_6 := member(custom)
+  goto lbl_ret_6
+  label lbl_ret_6
+  anon_2 := v_ret_6
+  v_ret_5 := anon_2
+  inhale isSubtype(typeOf(v_ret_5), nullable(anyType()))
   goto lbl_ret_5
   label lbl_ret_5
-  anon_2 := v_ret_5
-  v_ret_4 := anon_2
-  inhale isSubtype(typeOf(v_ret_4), nullable(anyType()))
-  goto lbl_ret_4
-  label lbl_ret_4
-  anon_1 := v_ret_4
+  anon_1 := v_ret_5
   anon_0 := anon_1
   inhale isSubtype(typeOf(anon_0), intType())
-  v_ret_9 := member(custom)
+  v_ret_10 := member(custom)
+  goto lbl_ret_10
+  label lbl_ret_10
+  anon_5 := v_ret_10
+  v_ret_9 := anon_5
+  inhale isSubtype(typeOf(v_ret_9), nullable(anyType()))
   goto lbl_ret_9
   label lbl_ret_9
-  anon_5 := v_ret_9
-  v_ret_8 := anon_5
-  inhale isSubtype(typeOf(v_ret_8), nullable(anyType()))
-  goto lbl_ret_8
-  label lbl_ret_8
-  anon_4 := v_ret_8
+  anon_4 := v_ret_9
   anon_3 := anon_4
   inhale isSubtype(typeOf(anon_3), intType())
   cond1 := boolToRef(intFromRef(anon_0) == intFromRef(anon_3))

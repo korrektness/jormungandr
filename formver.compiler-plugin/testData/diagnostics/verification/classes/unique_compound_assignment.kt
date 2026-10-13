@@ -2,9 +2,9 @@
 // USE_STDLIB
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Counter(var x: Int)
+<!VIPER_TEXT!>class Counter<!>(var x: Int)
 
-class Holder(val inner: @Unique Counter)
+<!VIPER_TEXT!>class Holder<!>(val inner: @Unique Counter)
 
 fun <!VIPER_TEXT!>plusAssign<!>(c: @Unique @Borrowed Counter) {
     preconditions { c.x < 2147483647 }

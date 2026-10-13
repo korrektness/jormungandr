@@ -1,3 +1,30 @@
+/property_accessors.kt: info: Generated Viper text for PrimitiveProperty:
+method con() returns (v_ret_3: Ref)
+  ensures isSubtype(typeOf(v_ret_3), PrimitiveProperty())
+{
+  v_ret_3 := new()
+  inhale typeOf(v_ret_3) == PrimitiveProperty()
+  fold acc(PrimitiveProperty_unique(v_ret_3), write)
+  label lbl_ret_3
+  unfold acc(PrimitiveProperty_unique(v_ret_3), write)
+}
+
+method g_aProp(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method nProp(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_aProp(this: Ref, arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
 /property_accessors.kt: info: Generated Viper text for nProp:
 method g_aProp(this: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), anyType())
@@ -98,6 +125,56 @@ method testPrimitivePropertySetter(pp: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/property_accessors.kt: info: Generated Viper text for ReferenceProperty:
+method con_PrimitiveProperty() returns (ret_8: Ref)
+  ensures isSubtype(typeOf(ret_8), PrimitiveProperty())
+
+
+method con_ReferenceProperty() returns (v_ret_6: Ref)
+  ensures isSubtype(typeOf(v_ret_6), ReferenceProperty())
+{
+  var anon: Ref
+  v_ret_6 := new()
+  inhale typeOf(v_ret_6) == ReferenceProperty()
+  anon := con_PrimitiveProperty()
+  fold acc(PrimitiveProperty_unique(anon), write)
+  fold acc(ReferenceProperty_unique(v_ret_6), write)
+  label lbl_ret_6
+  unfold acc(ReferenceProperty_unique(v_ret_6), write)
+}
+
+method g_aProp(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method g_ppProp(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method nProp(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method rProp(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method s_aProp(this: Ref, arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method s_ppProp(this: Ref, arg_0: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
 
 /property_accessors.kt: info: Generated Viper text for rProp:
 method con() returns (ret_7: Ref)

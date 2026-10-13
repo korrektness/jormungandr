@@ -1,3 +1,25 @@
+/private_properties.kt: info: Generated Viper text for A:
+method con() returns (v_ret_2: Ref)
+  ensures isSubtype(typeOf(v_ret_2), A())
+{
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == A()
+  fold acc(A_unique(v_ret_2), write)
+  label lbl_ret_2
+  unfold acc(A_unique(v_ret_2), write)
+}
+
+method g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_field(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
 /private_properties.kt: info: Generated Viper text for field:
 method g_field(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), anyType())
@@ -41,6 +63,41 @@ method s_field(this: Ref, arg_0: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
+/private_properties.kt: info: Generated Viper text for B:
+function B_g_field(this: Ref): Ref
+  requires isSubtype(typeOf(this), B())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method con() returns (v_ret_2: Ref)
+  ensures isSubtype(typeOf(v_ret_2), B())
+  ensures isSubtype(typeOf(v_ret_2), B()) &&
+    isSubtype(typeOf(v_ret_2), A())
+  ensures stringFromRef(B_g_field(v_ret_2)) == Seq[Int]()
+{
+  var anon: Ref
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == B()
+  fold acc(A_unique(v_ret_2), write)
+  anon := stringToRef(Seq[Int]())
+  inhale stringFromRef(B_g_field(v_ret_2)) == stringFromRef(anon)
+  fold acc(B_unique(v_ret_2), write)
+  label lbl_ret_2
+  unfold acc(B_unique(v_ret_2), write)
+  unfold acc(A_unique(v_ret_2), write)
+}
+
+method public_g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_field(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
 /private_properties.kt: info: Generated Viper text for getStringField:
 function B_g_field(this: Ref): Ref
   requires isSubtype(typeOf(this), B())
@@ -67,6 +124,94 @@ method s_field(this: Ref, arg_0: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), nullable(anyType()))
 
 
+/private_properties.kt: info: Generated Viper text for C:
+field bf_field: Ref
+
+function B_g_field(this: Ref): Ref
+  requires isSubtype(typeOf(this), B())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+method con() returns (v_ret_2: Ref)
+  ensures isSubtype(typeOf(v_ret_2), C())
+  ensures isSubtype(typeOf(v_ret_2), C()) && acc(v_ret_2.bf_field, write) &&
+    isSubtype(typeOf(v_ret_2.bf_field), intType()) &&
+    (isSubtype(typeOf(v_ret_2), B()) && isSubtype(typeOf(v_ret_2), A()))
+  ensures stringFromRef(B_g_field(v_ret_2)) == Seq[Int]()
+  ensures intFromRef(v_ret_2.bf_field) == 0
+{
+  var anon: Ref
+  v_ret_2 := new(bf_field)
+  inhale typeOf(v_ret_2) == C()
+  fold acc(A_unique(v_ret_2), write)
+  anon := stringToRef(Seq[Int]())
+  inhale stringFromRef(B_g_field(v_ret_2)) == stringFromRef(anon)
+  fold acc(B_unique(v_ret_2), write)
+  v_ret_2.bf_field := intToRef(0)
+  fold acc(C_unique(v_ret_2), write)
+  label lbl_ret_2
+  unfold acc(C_unique(v_ret_2), write)
+  unfold acc(B_unique(v_ret_2), write)
+  unfold acc(A_unique(v_ret_2), write)
+}
+
+method public_g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_field(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/private_properties.kt: info: Generated Viper text for D:
+function B_g_field(this: Ref): Ref
+  requires isSubtype(typeOf(this), B())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function D_g_field(this: Ref): Ref
+  requires isSubtype(typeOf(this), D())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_2: Ref)
+  ensures isSubtype(typeOf(v_ret_2), D())
+  ensures isSubtype(typeOf(v_ret_2), D()) &&
+    (isSubtype(typeOf(v_ret_2), B()) && isSubtype(typeOf(v_ret_2), A()))
+  ensures stringFromRef(B_g_field(v_ret_2)) == Seq[Int]()
+  ensures intFromRef(D_g_field(v_ret_2)) == 0
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == D()
+  fold acc(A_unique(v_ret_2), write)
+  anon_0 := stringToRef(Seq[Int]())
+  inhale stringFromRef(B_g_field(v_ret_2)) == stringFromRef(anon_0)
+  fold acc(B_unique(v_ret_2), write)
+  anon_1 := intToRef(0)
+  inhale intFromRef(D_g_field(v_ret_2)) == intFromRef(anon_1)
+  fold acc(D_unique(v_ret_2), write)
+  label lbl_ret_2
+  unfold acc(D_unique(v_ret_2), write)
+  unfold acc(B_unique(v_ret_2), write)
+  unfold acc(A_unique(v_ret_2), write)
+}
+
+method public_g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_field(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
 /private_properties.kt: info: Generated Viper text for extractPublic:
 field bf_field: Ref
 
@@ -90,12 +235,16 @@ method con_C() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), C()) && acc(ret_3.bf_field, write) &&
     isSubtype(typeOf(ret_3.bf_field), intType()) &&
     (isSubtype(typeOf(ret_3), B()) && isSubtype(typeOf(ret_3), A()))
+  ensures stringFromRef(B_g_field(ret_3)) == Seq[Int]()
+  ensures intFromRef(ret_3.bf_field) == 0
 
 
-method con_D() returns (ret_4: Ref)
-  ensures isSubtype(typeOf(ret_4), D())
-  ensures isSubtype(typeOf(ret_4), D()) &&
-    (isSubtype(typeOf(ret_4), B()) && isSubtype(typeOf(ret_4), A()))
+method con_D() returns (ret_7: Ref)
+  ensures isSubtype(typeOf(ret_7), D())
+  ensures isSubtype(typeOf(ret_7), D()) &&
+    (isSubtype(typeOf(ret_7), B()) && isSubtype(typeOf(ret_7), A()))
+  ensures stringFromRef(B_g_field(ret_7)) == Seq[Int]()
+  ensures intFromRef(D_g_field(ret_7)) == 0
 
 
 method extractPublic() returns (v_ret_0: Ref)

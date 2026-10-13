@@ -29,7 +29,7 @@ fun <!VIPER_TEXT!>wrapClient<!>(g: @Unique ReviewAcc) {
     verify(r == 2)
 }
 
-class ReviewOwned(var n: Int) {
+<!VIPER_TEXT!>class ReviewOwned<!>(var n: Int) {
     @Unique fun <!VIPER_TEXT!>implicitReceiver<!>(): @Unique ReviewAcc {
         preconditions { n >= 0 }
         return ReviewAcc { amount ->
@@ -95,7 +95,7 @@ fun interface NamedCounterSpec {
     }
 }
 
-class NamedReviewAcc(var n: Int) : NamedCounterSpec {
+<!VIPER_TEXT!>class NamedReviewAcc<!>(var n: Int) : NamedCounterSpec {
     @Pure @Unique override fun <!VIPER_TEXT!>total<!>(): Int = n
     @Unique @Borrowed override fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int {
         n += amount
@@ -103,7 +103,7 @@ class NamedReviewAcc(var n: Int) : NamedCounterSpec {
     }
 }
 
-class BrokenNamedReviewAcc(var n: Int) : NamedCounterSpec {
+<!VIPER_TEXT!>class BrokenNamedReviewAcc<!>(var n: Int) : NamedCounterSpec {
     @Pure @Unique override fun <!VIPER_TEXT!>total<!>(): Int = n
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed override fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int = -7<!>
 }

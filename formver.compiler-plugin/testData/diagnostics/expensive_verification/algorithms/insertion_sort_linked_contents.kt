@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 // The contents specifications of the linked insertion sort.
 
-class Node(val value: Int, var next: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, var next: @Unique Node?)
 
 @Pure
 fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {

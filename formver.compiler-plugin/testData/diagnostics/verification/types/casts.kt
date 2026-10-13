@@ -1,6 +1,6 @@
 
-open class Foo
-class Bar : Foo()
+open <!VIPER_TEXT!>class Foo<!>
+<!VIPER_TEXT!>class Bar<!> : Foo()
 
 fun <!VIPER_TEXT!>smartcastReturn<!>(n: Int?): Int =
 if (n != null) n else 0

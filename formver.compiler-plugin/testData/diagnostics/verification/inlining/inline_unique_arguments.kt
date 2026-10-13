@@ -1,15 +1,15 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-open class Counter(var x: Int)
+open <!VIPER_TEXT!>class Counter<!>(var x: Int)
 
-class Tagged(x: Int) : Counter(x) {
+<!VIPER_TEXT!>class Tagged<!>(x: Int) : Counter(x) {
     var tag = 0
 }
 
-class Holder(var inner: @Unique Counter, var count: Int)
+<!VIPER_TEXT!>class Holder<!>(var inner: @Unique Counter, var count: Int)
 
-class TaggedHolder(var inner: @Unique Tagged)
+<!VIPER_TEXT!>class TaggedHolder<!>(var inner: @Unique Tagged)
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>setX<!>(c: @Unique @Borrowed Counter, v: Int) {
     c.x = v

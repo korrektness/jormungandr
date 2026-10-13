@@ -1,6 +1,6 @@
 
 
-class Box<T>(var t: T) {
+<!VIPER_TEXT!>class Box<!><T>(var t: T) {
     fun <!VIPER_TEXT!>genericMethod<!>(x: T): T {
         return x
     }

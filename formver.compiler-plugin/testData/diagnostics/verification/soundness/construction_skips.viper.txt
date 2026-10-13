@@ -1,0 +1,246 @@
+/construction_skips.kt: info: Generated Viper text for total:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Acc())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/construction_skips.kt: info: Generated Viper text for invoke:
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Acc())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke(this: Ref, amount: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Acc())
+  requires acc(Acc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires 0 <= intFromRef(amount) && intFromRef(amount) <= 1000 &&
+    (unfolding acc(Acc_unique(this), wildcard) in
+      0 <= intFromRef(total(this))) &&
+    (unfolding acc(Acc_unique(this), wildcard) in
+      intFromRef(total(this)) <= 1000)
+  ensures acc(Acc_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures (unfolding acc(Acc_unique(this), wildcard) in
+      intFromRef(total(this)) ==
+      (let anon ==
+        (plusInts(old((unfolding acc(Acc_unique(this), wildcard) in
+          total(this))), amount)) in
+        intFromRef(old((unfolding acc(Acc_unique(this), wildcard) in
+          total(this)))) +
+        intFromRef(amount))) &&
+    (unfolding acc(Acc_unique(this), wildcard) in
+      intFromRef(ret) == intFromRef(total(this)))
+
+
+/construction_skips.kt: info: Generated Viper text for LazyHolder:
+LazyHolder.lambda0.invoke:
+function Lambda0_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_Acc_f_total(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Acc())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_c_Acc_restore(this: Ref)
+  requires acc(c_Acc_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Acc())) && true ==>
+    Lambda0_f_total(this) ==
+    old((unfolding acc(c_Acc_unique(this), wildcard) in
+      c_Acc_f_total(this)))
+
+
+method Lambda0_c_Acc_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_Acc_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_Acc_unique(this), wildcard) in c_Acc_f_total(this)) ==
+    old(Lambda0_f_total(this))
+
+
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires 0 <= intFromRef(amount) && intFromRef(amount) <= 1000 &&
+    0 <= intFromRef(Lambda0_f_total(this)) &&
+    intFromRef(Lambda0_f_total(this)) <= 1000
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(Lambda0_f_total(this)) ==
+    (let anon ==
+      (plusInts(old(Lambda0_f_total(this)), amount)) in
+      intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
+    intFromRef(v_ret_2) == intFromRef(Lambda0_f_total(this))
+{
+  v_ret_2 := intToRef(-9)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_Acc())
+  requires acc(c_Acc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires 0 <= intFromRef(amount) && intFromRef(amount) <= 1000 &&
+    (unfolding acc(c_Acc_unique(this), wildcard) in
+      0 <= intFromRef(c_Acc_f_total(this))) &&
+    (unfolding acc(c_Acc_unique(this), wildcard) in
+      intFromRef(c_Acc_f_total(this)) <= 1000)
+  ensures acc(c_Acc_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures (unfolding acc(c_Acc_unique(this), wildcard) in
+      intFromRef(c_Acc_f_total(this)) ==
+      (let anon ==
+        (plusInts(old((unfolding acc(c_Acc_unique(this), wildcard) in
+          c_Acc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Acc_unique(this), wildcard) in
+          c_Acc_f_total(this)))) +
+        intFromRef(amount))) &&
+    (unfolding acc(c_Acc_unique(this), wildcard) in
+      intFromRef(ret_1) == intFromRef(c_Acc_f_total(this)))
+
+
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_Acc())
+  requires acc(c_Acc_unique(this), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires 0 <= intFromRef(amount) && intFromRef(amount) <= 1000 &&
+    (unfolding acc(c_Acc_unique(this), wildcard) in
+      0 <= intFromRef(c_Acc_f_total(this))) &&
+    (unfolding acc(c_Acc_unique(this), wildcard) in
+      intFromRef(c_Acc_f_total(this)) <= 1000)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_Acc_restore(this)
+  ret_1 := Lambda0_invoke(this, amount)
+  Lambda0_c_Acc_upcast(this)
+  assert acc(c_Acc_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert (unfolding acc(c_Acc_unique(this), wildcard) in
+      intFromRef(c_Acc_f_total(this)) ==
+      (let anon ==
+        (plusInts(old((unfolding acc(c_Acc_unique(this), wildcard) in
+          c_Acc_f_total(this))), amount)) in
+        intFromRef(old((unfolding acc(c_Acc_unique(this), wildcard) in
+          c_Acc_f_total(this)))) +
+        intFromRef(amount))) &&
+    (unfolding acc(c_Acc_unique(this), wildcard) in
+      intFromRef(ret_1) == intFromRef(c_Acc_f_total(this)))
+}
+
+/construction_skips.kt: info: Generated Viper text for lazyHolderClient:
+function g_n(this: Ref): Ref
+  requires isSubtype(typeOf(this), LazyHolder())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Acc())
+  requires acc(Acc_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method action(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method con(par_n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_2), LazyHolder())
+
+
+method lazyHolderClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var h: Ref
+  h := con(intToRef(1))
+  fold acc(LazyHolder_unique(h), write)
+  assert intFromRef(g_n(h)) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_skips.kt: info: Generated Viper text for lazyValueClient:
+function g_n(this: Ref): Ref
+  requires isSubtype(typeOf(this), LazyValue())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_2), LazyValue())
+
+
+method doubled(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method lazyValueClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  l0_v := con(intToRef(1))
+  assert intFromRef(g_n(l0_v)) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_skips.kt: info: Generated Viper text for lateClient:
+field s: Ref
+
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Late())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(ret_1), Late())
+  ensures isSubtype(typeOf(ret_1), Late()) && acc(ret_1.s, write) &&
+    isSubtype(typeOf(ret_1.s), stringType())
+
+
+method lateClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l: Ref
+  l := con(intToRef(1))
+  fold acc(Late_unique(l), write)
+  assert intFromRef(g_a(l)) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

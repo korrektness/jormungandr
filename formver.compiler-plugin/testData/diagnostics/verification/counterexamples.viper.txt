@@ -94,6 +94,26 @@ method enumLike(x: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/counterexamples.kt: info: Generated Viper text for CounterexampleBox:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), CounterexampleBox())
+  ensures isSubtype(typeOf(v_ret_0), CounterexampleBox()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == CounterexampleBox()
+  v_ret_0.bf_value := par_value
+  fold acc(CounterexampleBox_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CounterexampleBox_unique(v_ret_0), write)
+}
+
 /counterexamples.kt: info: Generated Viper text for fields:
 field value: Ref
 

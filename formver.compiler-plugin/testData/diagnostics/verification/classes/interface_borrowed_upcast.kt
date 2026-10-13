@@ -11,7 +11,7 @@ interface BorrowedView {
     fun <!VIPER_TEXT!>touch<!>()
 }
 
-class BorrowedCell(var value: Int) : BorrowedView {
+<!VIPER_TEXT!>class BorrowedCell<!>(var value: Int) : BorrowedView {
     @Pure @Unique
     override fun <!VIPER_TEXT!>observe<!>(): Int = value
 
@@ -105,7 +105,7 @@ fun <!VIPER_TEXT!>freshBorrow<!>() {
     refute(false)
 }
 
-class CellHolder(val cell: @Unique BorrowedCell)
+<!VIPER_TEXT!>class CellHolder<!>(val cell: @Unique BorrowedCell)
 
 fun <!VIPER_TEXT!>inlineFieldBorrow<!>(holder: @Unique @Borrowed CellHolder) {
     inlineLend(holder.cell)

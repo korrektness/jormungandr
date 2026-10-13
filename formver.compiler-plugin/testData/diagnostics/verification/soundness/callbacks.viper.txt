@@ -1,3 +1,22 @@
+/callbacks.kt: info: Generated Viper text for Box:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures isSubtype(typeOf(v_ret_0), Box()) && acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == Box()
+  v_ret_0.bf_n := par_n
+  fold acc(Box_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Box_unique(v_ret_0), write)
+}
+
 /callbacks.kt: info: Generated Viper text for callbackMutation:
 field n: Ref
 
@@ -43,6 +62,30 @@ method callbackUnique(c: Ref, f: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(anon), unitType())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callbacks.kt: info: Generated Viper text for Holder:
+field bf_child: Ref
+
+field n: Ref
+
+method con(par_child: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_child), Box())
+  requires acc(Box_unique(par_child), write)
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(v_ret_0.bf_child, write) &&
+    isSubtype(typeOf(v_ret_0.bf_child), Box()) &&
+    acc(Box_unique(v_ret_0.bf_child), write)
+  ensures v_ret_0.bf_child == par_child
+  ensures v_ret_0.bf_child == par_child
+{
+  v_ret_0 := new(bf_child)
+  inhale typeOf(v_ret_0) == Holder()
+  v_ret_0.bf_child := par_child
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
 }
 
 /callbacks.kt: info: Generated Viper text for callbackNested:
@@ -185,9 +228,9 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   unfold acc(CountedBox_unique(v_ret_0), write)
 }
 
-method require(value: Ref) returns (ret_3: Ref)
+method require(value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(value)
 
 

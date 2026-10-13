@@ -1,3 +1,22 @@
+/owned_writes.kt: info: Generated Viper text for Counter:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_x := par_x
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
 /owned_writes.kt: info: Generated Viper text for setX:
 field x: Ref
 

@@ -1,3 +1,27 @@
+/acc_precondition.kt: info: Generated Viper text for X:
+field bf_a: Ref
+
+predicate X_unique(this: Ref) {
+  isSubtype(typeOf(this), X()) && acc(this.bf_a, write) &&
+  isSubtype(typeOf(this.bf_a), anyType())
+}
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), anyType())
+  ensures isSubtype(typeOf(v_ret_0), X())
+  ensures isSubtype(typeOf(v_ret_0), X()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), anyType())
+  ensures v_ret_0.bf_a == par_a
+  ensures v_ret_0.bf_a == par_a
+{
+  v_ret_0 := new(bf_a)
+  inhale typeOf(v_ret_0) == X()
+  v_ret_0.bf_a := par_a
+  fold acc(X_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(X_unique(v_ret_0), write)
+}
+
 /acc_precondition.kt: info: Generated Viper text for test_acc_precondition:
 field a: Ref
 

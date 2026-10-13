@@ -24,7 +24,7 @@ fun <!VIPER_TEXT!>sharedLawClient<!>(c: @Unique SharedLaw) {
     @Law @Pure @Unique fun invariant(): Boolean = indirect() > 0
 }
 
-class Parent(val child: @Unique ChildLaw) {
+<!VIPER_TEXT!>class Parent<!>(val child: @Unique ChildLaw) {
     @Borrowed fun <!VERIFICATION_SKIPPED!>clearChild<!>() { <!UNSUPPORTED_FEATURE!>child.value = 0<!> }
 }
 
@@ -34,7 +34,7 @@ fun <!VIPER_TEXT!>nestedLawClient<!>(p: @Unique Parent) {
     refute(false)
 }
 
-open class UnprotectedBase(var value: Int) {
+open <!VIPER_TEXT!>class UnprotectedBase<!>(var value: Int) {
     @Borrowed fun <!VIPER_TEXT!>clear<!>() { value = 0 }
 }
 
@@ -45,7 +45,7 @@ open class UnprotectedBase(var value: Int) {
     @Law @Pure @Unique fun indirectInvariant(): Boolean = <!INVALID_LAW!>observed()<!> > 0
 }
 
-open class ProtectedBase(@LawBound var value: Int) {
+open <!VIPER_TEXT!>class ProtectedBase<!>(@LawBound var value: Int) {
     @Borrowed fun <!VERIFICATION_SKIPPED, VERIFICATION_SKIPPED!>clear<!>() { <!UNSUPPORTED_FEATURE, UNSUPPORTED_FEATURE!>value = 0<!> }
 }
 
@@ -65,7 +65,7 @@ class ImplicitDerived<!VERIFICATION_SKIPPED!>(value: Int)<!> : ImplicitBase(valu
     @Law @Pure @Unique fun additionalLaw(): Boolean = observed() > 0
 }
 
-open class AnnotatedBase(@LawBound var value: Int)
+open <!VIPER_TEXT!>class AnnotatedBase<!>(@LawBound var value: Int)
 <!VIPER_TEXT!>class AnnotatedDerived<!>(value: Int) : AnnotatedBase(value) {
     init { require(value > 0) }
     @Law @Pure @Unique fun invariant(): Boolean = value > 0
@@ -76,7 +76,7 @@ fun <!VIPER_TEXT!>annotatedClient<!>(c: @Unique AnnotatedDerived) {
     refute(false)
 }
 
-open class UnprotectedPropertyBase(var value: Int) {
+open <!VIPER_TEXT!>class UnprotectedPropertyBase<!>(var value: Int) {
     @get:Unique @Pure val observation: Int <!VIPER_TEXT!>get<!>() = value
 }
 <!VIPER_TEXT!>class UnprotectedPropertyDerived<!>(value: Int) : UnprotectedPropertyBase(value) {
@@ -84,7 +84,7 @@ open class UnprotectedPropertyBase(var value: Int) {
     @Law @Pure fun invariant(): Boolean = <!INVALID_LAW!>observation<!> > 0
 }
 
-open class ProtectedPropertyBase(@LawBound var value: Int) {
+open <!VIPER_TEXT!>class ProtectedPropertyBase<!>(@LawBound var value: Int) {
     @get:Unique @Pure val observation: Int <!VIPER_TEXT!>get<!>() = value
 }
 <!VIPER_TEXT!>class ProtectedPropertyDerived<!>(value: Int) : ProtectedPropertyBase(value) {
@@ -97,7 +97,7 @@ fun <!VIPER_TEXT!>inheritedPropertyClient<!>(c: @Unique ProtectedPropertyDerived
     refute(false)
 }
 
-open class StableBase(val stable: Int)
+open <!VIPER_TEXT!>class StableBase<!>(val stable: Int)
 <!VIPER_TEXT!>class StableDerived<!>(stable: Int) : StableBase(stable) {
     init { require(stable > 0) }
     @Law @Pure fun invariant(): Boolean = stable > 0

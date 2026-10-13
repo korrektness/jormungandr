@@ -15,13 +15,13 @@ import org.jetbrains.kotlin.formver.plugin.*
     @Law @Pure fun invariant(): Boolean = value >= 0
 }<!>
 
-<!INVALID_LAW!>class OrderedInitialization {
+<!VIPER_TEXT!>class OrderedInitialization<!> {
     var value = 1
     init { value += 2 }
     val snapshot = value
     init { value += snapshot }
     @Law @Pure fun invariant(): Boolean = value == 6 && snapshot == 3
-}<!>
+}
 
 <!VIPER_TEXT!>class InitializedLater<!>(start: Int) {
     var value: Int
@@ -110,11 +110,11 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
     @Law @Pure @Unique fun invariant(): Boolean = initializedHead(data) > 0
 }<!>
 
-<!INVALID_LAW!>class ObservedBeforeInitialization(val data: @Unique IntArray) {
+<!VIPER_TEXT!>class ObservedBeforeInitialization<!>(val data: @Unique IntArray) {
     val snapshot = initializedHead(data)
     init { require(data.size > 0); data[0] = 1 }
     @Law @Pure @Unique fun invariant(): Boolean = initializedHead(data) > 0
-}<!>
+}
 
 <!VIPER_TEXT!>class SharedBorrowedInitialization<!> {
     var value = 1

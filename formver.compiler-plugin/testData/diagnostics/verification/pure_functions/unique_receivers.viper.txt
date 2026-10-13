@@ -1,3 +1,36 @@
+/unique_receivers.kt: info: Generated Viper text for Node:
+field bf_next: Ref
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref, par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  requires par_next != nullValue() ==> acc(Node_unique(par_next), write)
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures isSubtype(typeOf(v_ret_0), Node()) && acc(v_ret_0.bf_next, write) &&
+    isSubtype(typeOf(v_ret_0.bf_next), nullable(Node())) &&
+    (v_ret_0.bf_next != nullValue() ==>
+    acc(Node_unique(v_ret_0.bf_next), write))
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures v_ret_0.bf_next == par_next
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures v_ret_0.bf_next == par_next
+{
+  var anon: Ref
+  v_ret_0 := new(bf_next)
+  inhale typeOf(v_ret_0) == Node()
+  anon := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
+  v_ret_0.bf_next := par_next
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
+}
+
 /unique_receivers.kt: info: Generated Viper text for isSorted:
 field next: Ref
 
@@ -104,6 +137,50 @@ method stillSorted(n: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/unique_receivers.kt: info: Generated Viper text for Cell:
+field bf_content: Ref
+
+method con(par_content: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_content), intType())
+  ensures isSubtype(typeOf(v_ret_0), Cell())
+  ensures isSubtype(typeOf(v_ret_0), Cell()) &&
+    acc(v_ret_0.bf_content, write) &&
+    isSubtype(typeOf(v_ret_0.bf_content), intType())
+  ensures intFromRef(v_ret_0.bf_content) == intFromRef(par_content)
+  ensures intFromRef(v_ret_0.bf_content) == intFromRef(par_content)
+{
+  v_ret_0 := new(bf_content)
+  inhale typeOf(v_ret_0) == Cell()
+  v_ret_0.bf_content := par_content
+  fold acc(Cell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Cell_unique(v_ret_0), write)
+}
+
+/unique_receivers.kt: info: Generated Viper text for Holder:
+field bf_cell: Ref
+
+field content: Ref
+
+method con(par_cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_cell), Cell())
+  requires acc(Cell_unique(par_cell), write)
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(v_ret_0.bf_cell, write) &&
+    isSubtype(typeOf(v_ret_0.bf_cell), Cell()) &&
+    acc(Cell_unique(v_ret_0.bf_cell), write)
+  ensures v_ret_0.bf_cell == par_cell
+  ensures v_ret_0.bf_cell == par_cell
+{
+  v_ret_0 := new(bf_cell)
+  inhale typeOf(v_ret_0) == Holder()
+  v_ret_0.bf_cell := par_cell
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
 /unique_receivers.kt: info: Generated Viper text for content:
 field bf_content: Ref
 
@@ -118,6 +195,56 @@ function f_content(h: Ref): Ref
     (let anon_1_0 ==
       (h.cell) in
       (unfolding acc(Cell_unique(anon_1_0), write) in anon_1_0.bf_content)))
+}
+
+/unique_receivers.kt: info: Generated Viper text for Base:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Base())
+  ensures isSubtype(typeOf(v_ret_0), Base()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Base()
+  v_ret_0.bf_x := par_x
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/unique_receivers.kt: info: Generated Viper text for Derived:
+field bf_x: Ref
+
+field bf_y: Ref
+
+method con(par_x: Ref, par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(v_ret_0), Derived())
+  ensures isSubtype(typeOf(v_ret_0), Derived()) && acc(v_ret_0.bf_y, write) &&
+    isSubtype(typeOf(v_ret_0.bf_y), intType()) &&
+    (isSubtype(typeOf(v_ret_0), Base()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType()))
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_y) == intFromRef(par_y)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_y) == intFromRef(par_y)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_x, bf_y)
+  inhale typeOf(v_ret_0) == Derived()
+  anon := par_x
+  v_ret_0.bf_x := anon
+  fold acc(Base_unique(v_ret_0), write)
+  v_ret_0.bf_y := par_y
+  fold acc(Derived_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Derived_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
 }
 
 /unique_receivers.kt: info: Generated Viper text for sum:

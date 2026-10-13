@@ -34,11 +34,11 @@ method con() returns (v_ret_0: Ref)
   unfold acc(PhaseTwoPassing_unique(v_ret_0), write)
 }
 
-method observe(par_value: Ref) returns (ret_3: Ref)
+method observe(par_value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_value), PhaseTwoPassing())
   requires acc(PhaseTwoPassing_unique(par_value), write)
   ensures acc(PhaseTwoPassing_unique(par_value), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
 
 
 /two_phase_constructor_unique_this.kt: info: Generated Viper text for observe:
@@ -71,6 +71,47 @@ method require(par_value: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures true ==> boolFromRef(par_value)
 
+
+/two_phase_constructor_unique_this.kt: info: Generated Viper text for LawFreeFallback:
+function early(this: Ref): Ref
+  requires isSubtype(typeOf(this), LawFreeFallback())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function later(this: Ref): Ref
+  requires isSubtype(typeOf(this), LawFreeFallback())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function stored(this: Ref): Ref
+  requires isSubtype(typeOf(this), LawFreeFallback())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate LawFreeFallback_unique(this: Ref) {
+  isSubtype(typeOf(this), LawFreeFallback())
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), LawFreeFallback())
+  ensures intFromRef(stored(v_ret_0)) == 1
+  ensures intFromRef(later(v_ret_0)) == 2
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == LawFreeFallback()
+  anon_0 := intToRef(1)
+  inhale intFromRef(stored(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := stored(v_ret_0)
+  inhale intFromRef(early(v_ret_0)) == intFromRef(anon_1)
+  anon_2 := intToRef(2)
+  inhale intFromRef(later(v_ret_0)) == intFromRef(anon_2)
+  fold acc(LawFreeFallback_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(LawFreeFallback_unique(v_ret_0), write)
+}
 
 /two_phase_constructor_unique_this.kt: info: Generated Viper text for fallbackFacts:
 function early(this: Ref): Ref
@@ -112,7 +153,7 @@ method fallbackFacts() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method require(par_value: Ref) returns (ret_4: Ref)
+method require(par_value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures true ==> boolFromRef(par_value)

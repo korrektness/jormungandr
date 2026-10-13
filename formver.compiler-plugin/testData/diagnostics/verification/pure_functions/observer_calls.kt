@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Cell(var value: Int)
+<!VIPER_TEXT!>class Cell<!>(var value: Int)
 
 interface Measure {
     @Pure
@@ -20,7 +20,7 @@ interface Measure {
     fun <!VIPER_TEXT!>amount<!>(): Int
 }
 
-class Fixed(var value: Int) : Measure {
+<!VIPER_TEXT!>class Fixed<!>(var value: Int) : Measure {
     @Pure
     override fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int {
         preconditions { -1073741824 <= factor && factor <= 1073741823 }

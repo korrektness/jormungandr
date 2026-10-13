@@ -206,6 +206,9 @@ fun StmtConversionContext.embedPropertyAccess(
             ClassPropertyAccess(receiver, property, embedType(calleeSymbol.resolvedReturnType))
         }
 
+        is FirDelegateFieldSymbol ->
+            throw UnsupportedFeatureException(accessExpression.source, "Delegated properties are not supported.")
+
         else ->
             error("Property access symbol $calleeSymbol has unsupported type.")
     }

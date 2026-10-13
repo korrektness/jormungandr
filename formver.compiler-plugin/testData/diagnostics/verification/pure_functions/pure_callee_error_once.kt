@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(var content: Int)
+<!VIPER_TEXT!>class Box<!>(var content: Int)
 
 // Each caller's program embeds this body; its well-formedness error is reported once, not once per caller.
 <!VIPER_VERIFICATION_ERROR!>@Pure

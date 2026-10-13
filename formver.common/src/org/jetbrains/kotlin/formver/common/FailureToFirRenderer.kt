@@ -116,7 +116,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 LawRule.ACCESSOR_PROPERTY_READ -> "Read of a property with accessor methods; see Class laws."
                 LawRule.ABSTRACT_OBSERVER -> "Abstract observer in class law."
                 LawRule.RECURSIVE_OBSERVER -> "Recursive observer in class law."
-                LawRule.DELEGATED_PROPERTY -> "Delegated property in invariant class."
+                LawRule.DELEGATED_PROPERTY -> "Delegated property; see Class laws."
                 LawRule.CONSTRUCTION_THIS_USE -> "Phase-one this use; see Class laws."
                 LawRule.CONSTRUCTION_CALL -> "Phase-one member call; see Class laws."
                 LawRule.CONSTRUCTION_READ -> "Phase-one property read; see Class laws."

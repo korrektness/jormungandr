@@ -1,3 +1,83 @@
+/secondary_constructors.kt: info: Generated Viper text for NoPrimaryConstructor:
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_NoPrimaryConstructor())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_c_NoPrimaryConstructor_args_Boolean(b: Ref)
+  returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(b), boolType())
+  ensures isSubtype(typeOf(v_ret_3), c_NoPrimaryConstructor())
+{
+  var v_ret_5: Ref
+  var anon_1: Ref
+  v_ret_3 := new()
+  inhale typeOf(v_ret_3) == c_NoPrimaryConstructor()
+  anon_1 := intToRef(0)
+  inhale intFromRef(a(v_ret_3)) == intFromRef(anon_1)
+  label lbl_ret_5
+  fold acc(c_NoPrimaryConstructor_unique(v_ret_3), write)
+  label lbl_ret_3
+  unfold acc(c_NoPrimaryConstructor_unique(v_ret_3), write)
+}
+
+method con_c_NoPrimaryConstructor_args_Int(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_NoPrimaryConstructor())
+{
+  var v_ret_2: Ref
+  var anon_0: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == c_NoPrimaryConstructor()
+  anon_0 := n
+  inhale intFromRef(a(v_ret_0)) == intFromRef(anon_0)
+  label lbl_ret_2
+  fold acc(c_NoPrimaryConstructor_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_NoPrimaryConstructor_unique(v_ret_0), write)
+}
+
+/secondary_constructors.kt: info: Generated Viper text for BothConstructors:
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BothConstructors())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_c_BothConstructors_args_Boolean(b: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(b), boolType())
+  ensures isSubtype(typeOf(v_ret_2), c_BothConstructors())
+  ensures intFromRef(g_a(v_ret_2)) == 0
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var v_ret_5: Ref
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == c_BothConstructors()
+  anon_1 := intToRef(0)
+  anon_2 := anon_1
+  inhale intFromRef(g_a(v_ret_2)) == intFromRef(anon_2)
+  fold acc(c_BothConstructors_unique(v_ret_2), write)
+  label lbl_ret_5
+  label lbl_ret_2
+  unfold acc(c_BothConstructors_unique(v_ret_2), write)
+}
+
+method con_c_BothConstructors_args_Int(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_BothConstructors())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+{
+  var anon_0: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == c_BothConstructors()
+  anon_0 := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon_0)
+  fold acc(c_BothConstructors_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_BothConstructors_unique(v_ret_0), write)
+}
+
 /secondary_constructors.kt: info: Generated Viper text for onlySecondConstructors:
 function a(this: Ref): Ref
   requires isSubtype(typeOf(this), c_NoPrimaryConstructor())
@@ -9,9 +89,9 @@ method con_c_NoPrimaryConstructor_args_Boolean(b: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), c_NoPrimaryConstructor())
 
 
-method con_c_NoPrimaryConstructor_args_Int(n: Ref) returns (ret_2: Ref)
+method con_c_NoPrimaryConstructor_args_Int(n: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(n), intType())
-  ensures isSubtype(typeOf(ret_2), c_NoPrimaryConstructor())
+  ensures isSubtype(typeOf(ret_3), c_NoPrimaryConstructor())
 
 
 method onlySecondConstructors() returns (v_ret_0: Ref)
@@ -36,12 +116,14 @@ function g_a(this: Ref): Ref
 method con_c_BothConstructors_args_Boolean(b: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(ret_1), c_BothConstructors())
+  ensures intFromRef(g_a(ret_1)) == 0
 
 
-method con_c_BothConstructors_args_Int(par_a: Ref) returns (ret_2: Ref)
+method con_c_BothConstructors_args_Int(par_a: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_a), intType())
-  ensures isSubtype(typeOf(ret_2), c_BothConstructors())
-  ensures intFromRef(g_a(ret_2)) == intFromRef(par_a)
+  ensures isSubtype(typeOf(ret_4), c_BothConstructors())
+  ensures intFromRef(g_a(ret_4)) == intFromRef(par_a)
+  ensures intFromRef(g_a(ret_4)) == intFromRef(par_a)
 
 
 method primaryAndSecondConstructor() returns (v_ret_0: Ref)

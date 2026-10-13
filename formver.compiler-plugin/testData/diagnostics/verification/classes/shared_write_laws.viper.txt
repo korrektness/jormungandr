@@ -45,9 +45,9 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   unfold acc(SharedLaw_unique(v_ret_0), write)
 }
 
-method require(par_value: Ref) returns (ret_3: Ref)
+method require(par_value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(par_value)
 
 
@@ -182,9 +182,9 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   unfold acc(ChildLaw_unique(v_ret_0), write)
 }
 
-method require(par_value: Ref) returns (ret_3: Ref)
+method require(par_value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(par_value)
 
 
@@ -232,6 +232,46 @@ predicate ChildLaw_unique(this: Ref) {
   (let this ==
     (this) in
     true && boolFromRef(gtInts(this.value, intToRef(0))))
+}
+
+/shared_write_laws.kt: info: Generated Viper text for Parent:
+field value: Ref
+
+function g_child(this: Ref): Ref
+  requires isSubtype(typeOf(this), Parent())
+  ensures isSubtype(typeOf(result), ChildLaw())
+
+
+predicate ChildLaw_unique(this: Ref) {
+  isSubtype(typeOf(this), ChildLaw()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType()) &&
+  (let this ==
+    (this) in
+    true && boolFromRef(gtInts(this.value, intToRef(0))))
+}
+
+predicate Parent_unique(this: Ref) {
+  isSubtype(typeOf(this), Parent()) &&
+  acc(ChildLaw_unique(g_child(this)), write)
+}
+
+method con(par_child: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_child), ChildLaw())
+  requires acc(ChildLaw_unique(par_child), write)
+  ensures isSubtype(typeOf(v_ret_0), Parent())
+  ensures isSubtype(typeOf(v_ret_0), Parent()) &&
+    acc(ChildLaw_unique(g_child(v_ret_0)), write)
+  ensures g_child(v_ret_0) == par_child
+  ensures g_child(v_ret_0) == par_child
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Parent()
+  anon := par_child
+  inhale g_child(v_ret_0) == anon
+  fold acc(Parent_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Parent_unique(v_ret_0), write)
 }
 
 /shared_write_laws.kt: info: Generated Viper text for nestedLawClient:
@@ -302,6 +342,31 @@ method nestedLawClient(p: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/shared_write_laws.kt: info: Generated Viper text for UnprotectedBase:
+field bf_value: Ref
+
+predicate UnprotectedBase_unique(this: Ref) {
+  isSubtype(typeOf(this), UnprotectedBase()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), UnprotectedBase())
+  ensures isSubtype(typeOf(v_ret_0), UnprotectedBase()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == UnprotectedBase()
+  v_ret_0.bf_value := par_value
+  fold acc(UnprotectedBase_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(UnprotectedBase_unique(v_ret_0), write)
+}
+
 /shared_write_laws.kt: info: Generated Viper text for clear:
 field value: Ref
 
@@ -340,20 +405,20 @@ predicate c_UnprotectedBase_unique(this: Ref) {
 }
 
 method UnprotectedDerived_c_UnprotectedBase_f_clear_inherited_body_c_UnprotectedBase_f_clear(this: Ref)
-  returns (v_ret_5: Ref)
+  returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), UnprotectedDerived())
   requires typeOf(this) == UnprotectedDerived()
-  ensures isSubtype(typeOf(v_ret_5), unitType())
+  ensures isSubtype(typeOf(v_ret_4), unitType())
 {
-  label lbl_ret_5
-  inhale isSubtype(typeOf(v_ret_5), unitType())
+  label lbl_ret_4
+  inhale isSubtype(typeOf(v_ret_4), unitType())
 }
 
 method UnprotectedDerived_c_UnprotectedBase_f_clear_inherited_contract_c_UnprotectedBase_f_clear(this: Ref)
-  returns (ret_6: Ref)
+  returns (ret_5: Ref)
   requires isSubtype(typeOf(this), UnprotectedDerived())
   requires typeOf(this) == UnprotectedDerived()
-  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures isSubtype(typeOf(ret_5), unitType())
 
 
 method con(par_value: Ref) returns (v_ret_0: Ref)
@@ -396,18 +461,18 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
 }
 
 method refines_UnprotectedDerived_c_UnprotectedBase_f_clear_inherited_contract_c_UnprotectedBase_f_clear(this: Ref)
-  returns (ret_6: Ref)
+  returns (ret_5: Ref)
   requires isSubtype(typeOf(this), UnprotectedDerived())
   requires typeOf(this) == UnprotectedDerived()
   requires isSubtype(typeOf(this), UnprotectedDerived())
 {
-  ret_6 := UnprotectedDerived_c_UnprotectedBase_f_clear_inherited_body_c_UnprotectedBase_f_clear(this)
-  assert isSubtype(typeOf(ret_6), unitType())
+  ret_5 := UnprotectedDerived_c_UnprotectedBase_f_clear_inherited_body_c_UnprotectedBase_f_clear(this)
+  assert isSubtype(typeOf(ret_5), unitType())
 }
 
-method require(par_value: Ref) returns (ret_4: Ref)
+method require(par_value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures true ==> boolFromRef(par_value)
 
 
@@ -439,6 +504,31 @@ predicate UnprotectedDerived_unique(this: Ref) {
         (this.value) in
         gtInts(anon_0_0, intToRef(0)))) &&
       boolFromRef(gtInts(this.value, intToRef(0)))))
+}
+
+/shared_write_laws.kt: info: Generated Viper text for ProtectedBase:
+field bf_value: Ref
+
+predicate ProtectedBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ProtectedBase()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), ProtectedBase())
+  ensures isSubtype(typeOf(v_ret_0), ProtectedBase()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == ProtectedBase()
+  v_ret_0.bf_value := par_value
+  fold acc(ProtectedBase_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ProtectedBase_unique(v_ret_0), write)
 }
 
 /shared_write_laws.kt: info: Generated Viper text for ImplicitBase:
@@ -479,9 +569,9 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   unfold acc(ImplicitBase_unique(v_ret_0), write)
 }
 
-method require(par_value: Ref) returns (ret_3: Ref)
+method require(par_value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(par_value)
 
 
@@ -502,6 +592,31 @@ predicate ImplicitBase_unique(this: Ref) {
   (let this ==
     (this) in
     true && boolFromRef(gtInts(this.value, intToRef(0))))
+}
+
+/shared_write_laws.kt: info: Generated Viper text for AnnotatedBase:
+field bf_value: Ref
+
+predicate AnnotatedBase_unique(this: Ref) {
+  isSubtype(typeOf(this), AnnotatedBase()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), AnnotatedBase())
+  ensures isSubtype(typeOf(v_ret_0), AnnotatedBase()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == AnnotatedBase()
+  v_ret_0.bf_value := par_value
+  fold acc(AnnotatedBase_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(AnnotatedBase_unique(v_ret_0), write)
 }
 
 /shared_write_laws.kt: info: Generated Viper text for AnnotatedDerived:
@@ -561,9 +676,9 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   unfold acc(AnnotatedBase_unique(v_ret_0), write)
 }
 
-method require(par_value: Ref) returns (ret_4: Ref)
+method require(par_value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures true ==> boolFromRef(par_value)
 
 
@@ -624,6 +739,41 @@ method annotatedClient(c: Ref) returns (v_ret_0: Ref)
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/shared_write_laws.kt: info: Generated Viper text for UnprotectedPropertyBase:
+field bf_value: Ref
+
+function observation(this: Ref): Ref
+  requires isSubtype(typeOf(this), UnprotectedPropertyBase())
+  requires acc(UnprotectedPropertyBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(UnprotectedPropertyBase_unique(this), write) in
+    this.bf_value)
+}
+
+predicate UnprotectedPropertyBase_unique(this: Ref) {
+  isSubtype(typeOf(this), UnprotectedPropertyBase()) &&
+  acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), UnprotectedPropertyBase())
+  ensures isSubtype(typeOf(v_ret_0), UnprotectedPropertyBase()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == UnprotectedPropertyBase()
+  v_ret_0.bf_value := par_value
+  fold acc(UnprotectedPropertyBase_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(UnprotectedPropertyBase_unique(v_ret_0), write)
 }
 
 /shared_write_laws.kt: info: Generated Viper text for observation:
@@ -702,11 +852,46 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   unfold acc(UnprotectedPropertyBase_unique(v_ret_0), write)
 }
 
-method require(par_value: Ref) returns (ret_4: Ref)
+method require(par_value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures true ==> boolFromRef(par_value)
 
+
+/shared_write_laws.kt: info: Generated Viper text for ProtectedPropertyBase:
+field bf_value: Ref
+
+function observation(this: Ref): Ref
+  requires isSubtype(typeOf(this), ProtectedPropertyBase())
+  requires acc(ProtectedPropertyBase_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ProtectedPropertyBase_unique(this), write) in
+    this.bf_value)
+}
+
+predicate ProtectedPropertyBase_unique(this: Ref) {
+  isSubtype(typeOf(this), ProtectedPropertyBase()) &&
+  acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), ProtectedPropertyBase())
+  ensures isSubtype(typeOf(v_ret_0), ProtectedPropertyBase()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == ProtectedPropertyBase()
+  v_ret_0.bf_value := par_value
+  fold acc(ProtectedPropertyBase_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ProtectedPropertyBase_unique(v_ret_0), write)
+}
 
 /shared_write_laws.kt: info: Generated Viper text for observation:
 field value: Ref
@@ -783,9 +968,9 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   unfold acc(ProtectedPropertyBase_unique(v_ret_0), write)
 }
 
-method require(par_value: Ref) returns (ret_4: Ref)
+method require(par_value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures true ==> boolFromRef(par_value)
 
 
@@ -853,6 +1038,32 @@ method inheritedPropertyClient(c: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/shared_write_laws.kt: info: Generated Viper text for StableBase:
+function g_stable(this: Ref): Ref
+  requires isSubtype(typeOf(this), StableBase())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate StableBase_unique(this: Ref) {
+  isSubtype(typeOf(this), StableBase())
+}
+
+method con(par_stable: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_stable), intType())
+  ensures isSubtype(typeOf(v_ret_0), StableBase())
+  ensures intFromRef(g_stable(v_ret_0)) == intFromRef(par_stable)
+  ensures intFromRef(g_stable(v_ret_0)) == intFromRef(par_stable)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == StableBase()
+  anon := par_stable
+  inhale intFromRef(g_stable(v_ret_0)) == intFromRef(anon)
+  fold acc(StableBase_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(StableBase_unique(v_ret_0), write)
+}
+
 /shared_write_laws.kt: info: Generated Viper text for StableDerived:
 function g_stable(this: Ref): Ref
   requires isSubtype(typeOf(this), StableBase())
@@ -903,9 +1114,9 @@ method con(par_stable: Ref) returns (v_ret_0: Ref)
   unfold acc(StableBase_unique(v_ret_0), write)
 }
 
-method require(value: Ref) returns (ret_4: Ref)
+method require(value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures true ==> boolFromRef(value)
 
 
@@ -1081,9 +1292,9 @@ method con(par_bound: Ref, par_free: Ref) returns (v_ret_0: Ref)
   unfold acc(PartlyBound_unique(v_ret_0), write)
 }
 
-method require(value: Ref) returns (ret_3: Ref)
+method require(value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(value)
 
 
@@ -1159,9 +1370,9 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   unfold acc(PropertyLaw_unique(v_ret_0), write)
 }
 
-method require(par_value: Ref) returns (ret_3: Ref)
+method require(par_value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(par_value)
 
 

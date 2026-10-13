@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.formver.plugin.Unique
 
-class UniquePrimitiveFields(
+<!VIPER_TEXT!>class UniquePrimitiveFields<!>(
     val sharedVal: Int,
     var sharedVar: Int,
 )
@@ -23,7 +23,7 @@ fun <!VIPER_TEXT!>testPrimitiveFieldSetterShared<!>(pf: UniquePrimitiveFields) {
     pf.sharedVar = 3
 }
 
-class UniqueReferenceFields(
+<!VIPER_TEXT!>class UniqueReferenceFields<!>(
     val sharedVal: UniquePrimitiveFields,
     var sharedVar: UniquePrimitiveFields,
     val uniqueVal: @Unique UniquePrimitiveFields,

@@ -19,6 +19,48 @@ method reset(this: Ref) returns (ret: Ref)
   ensures isSubtype(typeOf(ret), unitType())
 
 
+/footprints.kt: info: Generated Viper text for Dial:
+field bf_level: Ref
+
+field bf_spare: Ref
+
+function Dial_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.bf_level)
+}
+
+function Gauge_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_level: Ref, par_spare: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_level), intType())
+  requires isSubtype(typeOf(par_spare), intType())
+  ensures isSubtype(typeOf(v_ret_0), Dial())
+  ensures isSubtype(typeOf(v_ret_0), Dial()) &&
+    acc(v_ret_0.bf_level, write) &&
+    isSubtype(typeOf(v_ret_0.bf_level), intType()) &&
+    acc(v_ret_0.bf_spare, write) &&
+    isSubtype(typeOf(v_ret_0.bf_spare), intType())
+  ensures intFromRef(v_ret_0.bf_level) == intFromRef(par_level)
+  ensures intFromRef(v_ret_0.bf_spare) == intFromRef(par_spare)
+  ensures intFromRef(v_ret_0.bf_level) == intFromRef(par_level)
+  ensures intFromRef(v_ret_0.bf_spare) == intFromRef(par_spare)
+{
+  v_ret_0 := new(bf_level, bf_spare)
+  inhale typeOf(v_ret_0) == Dial()
+  v_ret_0.bf_level := par_level
+  v_ret_0.bf_spare := par_spare
+  fold acc(Dial_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Dial_unique(v_ret_0), write)
+}
+
 /footprints.kt: info: Generated Viper text for reading:
 field level: Ref
 
@@ -441,6 +483,52 @@ method shift(this: Ref) returns (ret: Ref)
       intFromRef(at(this, intToRef(0)))))
 
 
+/footprints.kt: info: Generated Viper text for Line:
+field bf_base: Ref
+
+field bf_below: Ref
+
+function Line_f_at(this: Ref, j: Ref): Ref
+  requires isSubtype(typeOf(this), Line())
+  requires acc(Line_unique(this), write)
+  requires isSubtype(typeOf(j), intType())
+  requires intFromRef(j) >= -1
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Line_unique(this), write) in
+    (intFromRef(j) < 0 ? this.bf_below : this.bf_base))
+}
+
+function Probe_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Probe())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_base: Ref, par_below: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_base), intType())
+  requires isSubtype(typeOf(par_below), intType())
+  ensures isSubtype(typeOf(v_ret_0), Line())
+  ensures isSubtype(typeOf(v_ret_0), Line()) && acc(v_ret_0.bf_base, write) &&
+    isSubtype(typeOf(v_ret_0.bf_base), intType()) &&
+    acc(v_ret_0.bf_below, write) &&
+    isSubtype(typeOf(v_ret_0.bf_below), intType())
+  ensures intFromRef(v_ret_0.bf_base) == intFromRef(par_base)
+  ensures intFromRef(v_ret_0.bf_below) == intFromRef(par_below)
+  ensures intFromRef(v_ret_0.bf_base) == intFromRef(par_base)
+  ensures intFromRef(v_ret_0.bf_below) == intFromRef(par_below)
+{
+  v_ret_0 := new(bf_base, bf_below)
+  inhale typeOf(v_ret_0) == Line()
+  v_ret_0.bf_base := par_base
+  v_ret_0.bf_below := par_below
+  fold acc(Line_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Line_unique(v_ret_0), write)
+}
+
 /footprints.kt: info: Generated Viper text for at:
 field base: Ref
 
@@ -788,6 +876,51 @@ function shown(this: Ref): Ref
   ensures isSubtype(typeOf(result), longType())
 
 
+/footprints.kt: info: Generated Viper text for Meter:
+field bf_raw: Ref
+
+function Shown_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), Shown())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), longType())
+
+
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), longType())
+  ensures typeOf(this) == c_Meter() ==>
+    result == c_Meter_f_shown_args_c_Meter_ret_Long(this)
+
+
+function c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), longType())
+{
+  (unfolding acc(c_Meter_unique(this), write) in
+    (let anon_0_0 ==
+      (this.bf_raw) in
+      convertIntToLong(anon_0_0)))
+}
+
+method con(par_raw: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_raw), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_Meter())
+  ensures isSubtype(typeOf(v_ret_0), c_Meter()) &&
+    acc(v_ret_0.bf_raw, write) &&
+    isSubtype(typeOf(v_ret_0.bf_raw), intType())
+  ensures intFromRef(v_ret_0.bf_raw) == intFromRef(par_raw)
+  ensures intFromRef(v_ret_0.bf_raw) == intFromRef(par_raw)
+{
+  v_ret_0 := new(bf_raw)
+  inhale typeOf(v_ret_0) == c_Meter()
+  v_ret_0.bf_raw := par_raw
+  fold acc(c_Meter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_Meter_unique(v_ret_0), write)
+}
+
 /footprints.kt: info: Generated Viper text for shown:
 field raw: Ref
 
@@ -814,6 +947,67 @@ function c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
     (let anon_0_0 ==
       (this.raw) in
       convertIntToLong(anon_0_0)))
+}
+
+/footprints.kt: info: Generated Viper text for DoubledMeter:
+field bf_raw: Ref
+
+function DoubledMeter_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), DoubledMeter())
+  requires acc(DoubledMeter_unique(this), write)
+  ensures isSubtype(typeOf(result), longType())
+{
+  (unfolding acc(DoubledMeter_unique(this), write) in
+    (unfolding acc(c_Meter_unique(this), write) in
+      (let anon_1_0 ==
+        (this.bf_raw) in
+        timesLongLong(convertIntToLong(anon_1_0), longToRef(2)))))
+}
+
+function Shown_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), Shown())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), longType())
+
+
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), longType())
+  ensures typeOf(this) == c_Meter() ==>
+    result == c_Meter_f_shown_args_c_Meter_ret_Long(this)
+
+
+function c_Meter_f_shown_args_c_Meter_ret_Long(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), longType())
+{
+  (unfolding acc(c_Meter_unique(this), write) in
+    (let anon_2_0 ==
+      (this.bf_raw) in
+      convertIntToLong(anon_2_0)))
+}
+
+method con(par_raw: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_raw), intType())
+  ensures isSubtype(typeOf(v_ret_0), DoubledMeter())
+  ensures isSubtype(typeOf(v_ret_0), DoubledMeter()) &&
+    (isSubtype(typeOf(v_ret_0), c_Meter()) && acc(v_ret_0.bf_raw, write) &&
+    isSubtype(typeOf(v_ret_0.bf_raw), intType()))
+  ensures intFromRef(v_ret_0.bf_raw) == intFromRef(par_raw)
+  ensures intFromRef(v_ret_0.bf_raw) == intFromRef(par_raw)
+{
+  var anon_0: Ref
+  v_ret_0 := new(bf_raw)
+  inhale typeOf(v_ret_0) == DoubledMeter()
+  anon_0 := par_raw
+  v_ret_0.bf_raw := anon_0
+  fold acc(c_Meter_unique(v_ret_0), write)
+  fold acc(DoubledMeter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(DoubledMeter_unique(v_ret_0), write)
+  unfold acc(c_Meter_unique(v_ret_0), write)
 }
 
 /footprints.kt: info: Generated Viper text for shown:
@@ -945,6 +1139,7 @@ method con(par_raw: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), c_Meter()) && acc(ret_1.bf_raw, write) &&
     isSubtype(typeOf(ret_1.bf_raw), intType())
   ensures intFromRef(ret_1.bf_raw) == intFromRef(par_raw)
+  ensures intFromRef(ret_1.bf_raw) == intFromRef(par_raw)
 
 
 method exactMeter() returns (v_ret_0: Ref)
@@ -1019,6 +1214,7 @@ method con(par_raw: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), DoubledMeter()) &&
     (isSubtype(typeOf(ret_1), c_Meter()) && acc(ret_1.bf_raw, write) &&
     isSubtype(typeOf(ret_1.bf_raw), intType()))
+  ensures intFromRef(ret_1.bf_raw) == intFromRef(par_raw)
   ensures intFromRef(ret_1.bf_raw) == intFromRef(par_raw)
 
 
@@ -1107,6 +1303,7 @@ method con(par_raw: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), DoubledMeter()) &&
     (isSubtype(typeOf(ret_1), c_Meter()) && acc(ret_1.bf_raw, write) &&
     isSubtype(typeOf(ret_1.bf_raw), intType()))
+  ensures intFromRef(ret_1.bf_raw) == intFromRef(par_raw)
   ensures intFromRef(ret_1.bf_raw) == intFromRef(par_raw)
 
 

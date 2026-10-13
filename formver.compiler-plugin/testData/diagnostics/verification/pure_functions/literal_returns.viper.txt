@@ -49,6 +49,36 @@ function annotatedStringLitReturn(): Ref
   stringToRef(Seq(72, 101, 108, 108, 111, 32, 83, 110, 97, 75, 116))
 }
 
+/literal_returns.kt: info: Generated Viper text for X:
+field bf_b: Ref
+
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), X())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), X())
+  ensures isSubtype(typeOf(v_ret_0), X()) && acc(v_ret_0.bf_b, write) &&
+    isSubtype(typeOf(v_ret_0.bf_b), intType())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_b)
+  inhale typeOf(v_ret_0) == X()
+  anon := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon)
+  v_ret_0.bf_b := par_b
+  fold acc(X_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(X_unique(v_ret_0), write)
+}
+
 /literal_returns.kt: info: Generated Viper text for annotatedReferenceReturn:
 field b: Ref
 

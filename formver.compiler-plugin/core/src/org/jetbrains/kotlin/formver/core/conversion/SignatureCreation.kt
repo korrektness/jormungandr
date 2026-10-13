@@ -189,11 +189,12 @@ fun SignatureWithTarget<NonInlineCallable>.toCompleteSignature(
 /**
  * The class whose object a call of this function returns open. The caller folds the returned representation into the
  * object's predicates.
- * `null` for every other function.
+ * `null` for every other function, including a constructor whose construction lets `this` escape: it returns the
+ * object shared and promises none of the permissions it gave away.
  */
 val NamedFunctionSignature.constructedOpen: ClassTypeEmbedding?
     get() = (this as? NonInlineFunctionSignature)?.openConstructedClass ?: (returns.type.pretype as? ClassTypeEmbedding)
-        ?.takeIf { symbol is FirConstructorSymbol && !it.hasBuiltinPredicate }
+        ?.takeIf { symbol is FirConstructorSymbol && callableType.returnsUnique && !it.hasBuiltinPredicate }
 
 /**
  * The properties that this primary constructor initializes with each of its parameters: those the parameter declares,
@@ -230,9 +231,9 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
         val result = returnTarget.variable
         val constructed = current.signature.constructedOpen
         val initialized = symbol.initializedProperties(converter.session)
-        val writes = (symbol.resolvedReturnType.toRegularClassSymbol(converter.session)
-            ?: throw SnaktInternalException(symbol.source, "A constructor does not construct a class."))
-            .constructionWrites(converter.session)
+        val owner = symbol.resolvedReturnType.toRegularClassSymbol(converter.session)
+            ?: throw SnaktInternalException(symbol.source, "A constructor does not construct a class.")
+        val writes = owner.constructionWrites(converter.session)
         val parameterProperties = current.signature.params.flatMap { param ->
             require(param is FirVariableEmbedding) { "Constructor parameters must be represented by FirVariableEmbeddings" }
             initialized[param.symbol].orEmpty().mapNotNull { property ->
@@ -244,8 +245,9 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
             property.ownedStep?.takeIf { param.isUnique && !writes.mayReach(firProperty) }?.let { param to it }
         }
 
+        val factsJustified = converter.constructorFactsJustified(owner)
         val fieldPostconditions = parameterProperties.filter { (_, _, firProperty) ->
-            !writes.mayChange(firProperty)
+            factsJustified && !writes.mayChange(firProperty)
         }.map { (param, property, _) ->
             val getter = property.getter!!
             val value = if (constructed != null && getter is BackingFieldGetter) PrimitiveFieldAccess(result, getter.field)
@@ -254,9 +256,9 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
         }
 
         val initializerPostconditions = constructorInitializerConditions(symbol, current.signature, result)
-        val owner = symbol.resolvedReturnType.toRegularClassSymbol(converter.session)
-        val verifiedConstruction = symbol.origin == FirDeclarationOrigin.Source && constructed != null && owner != null &&
-            (owner.ownClassLaws(converter.session).isNotEmpty() || owner.hasSuperclassLaws(converter.session))
+        val verifiedConstruction = symbol.origin == FirDeclarationOrigin.Source && constructed != null &&
+            (owner.ownClassLaws(converter.session).isNotEmpty() || owner.hasSuperclassLaws(converter.session) ||
+                owner == converter.provenConstruction)
         val contract = current.signature.buildConditions(typeResolver) {
             userFunctionPreconditions(consumes = { param -> verifiedConstruction || stored.none { it.first == param } })
             userFunctionPostcondition(resultFolded = constructed == null)

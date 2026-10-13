@@ -31,6 +31,51 @@ method touch(this: Ref) returns (ret: Ref)
   ensures isSubtype(typeOf(ret), unitType())
 
 
+/interface_borrowed_upcast.kt: info: Generated Viper text for BorrowedCell:
+field bf_value: Ref
+
+function BorrowedCell_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), BorrowedCell())
+  requires acc(BorrowedCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BorrowedCell_unique(this), write) in this.bf_value)
+}
+
+function BorrowedView_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), BorrowedView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate BorrowedView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BorrowedView())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), BorrowedCell())
+  ensures isSubtype(typeOf(v_ret_0), BorrowedCell()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == BorrowedCell()
+  v_ret_0.bf_value := par_value
+  fold acc(BorrowedCell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BorrowedCell_unique(v_ret_0), write)
+}
+
 /interface_borrowed_upcast.kt: info: Generated Viper text for observe:
 field value: Ref
 
@@ -388,16 +433,17 @@ method con(par_value: Ref) returns (ret_1: Ref)
     acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
-method lend(par_cell: Ref, n: Ref) returns (ret_2: Ref)
+method lend(par_cell: Ref, n: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_cell), c_BorrowedView())
   requires acc(c_BorrowedView_unique(par_cell), write)
   requires isSubtype(typeOf(n), intType())
   requires intFromRef(n) < 2147483647
   ensures acc(c_BorrowedView_unique(par_cell), write)
-  ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(ret_2) ==
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) ==
     (let anon_builtin ==
       (plusInts(n, intToRef(1))) in
       intFromRef(n) + intFromRef(intToRef(1)))
@@ -1110,6 +1156,7 @@ method con(par_value: Ref) returns (ret_2: Ref)
     acc(ret_2.bf_value, write) &&
     isSubtype(typeOf(ret_2.bf_value), intType())
   ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
+  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
 
 
 method freshBorrow() returns (v_ret_0: Ref)
@@ -1140,6 +1187,63 @@ method lend(cell: Ref, n: Ref) returns (ret_1: Ref)
       (plusInts(n, intToRef(1))) in
       intFromRef(n) + intFromRef(intToRef(1)))
 
+
+/interface_borrowed_upcast.kt: info: Generated Viper text for CellHolder:
+field value: Ref
+
+function BorrowedCell_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), BorrowedCell())
+  requires acc(BorrowedCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(BorrowedCell_unique(this), write) in this.value)
+}
+
+function BorrowedView_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), BorrowedView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_cell(this: Ref): Ref
+  requires isSubtype(typeOf(this), CellHolder())
+  ensures isSubtype(typeOf(result), BorrowedCell())
+
+
+predicate BorrowedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), BorrowedCell()) && acc(this.value, write) &&
+  isSubtype(typeOf(this.value), intType())
+}
+
+predicate BorrowedView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BorrowedView())
+}
+
+predicate CellHolder_unique(this: Ref) {
+  isSubtype(typeOf(this), CellHolder()) &&
+  acc(BorrowedCell_unique(g_cell(this)), write)
+}
+
+predicate footprint(this: Ref)
+
+method con(par_cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_cell), BorrowedCell())
+  requires acc(BorrowedCell_unique(par_cell), write)
+  ensures isSubtype(typeOf(v_ret_0), CellHolder())
+  ensures isSubtype(typeOf(v_ret_0), CellHolder()) &&
+    acc(BorrowedCell_unique(g_cell(v_ret_0)), write)
+  ensures g_cell(v_ret_0) == par_cell
+  ensures g_cell(v_ret_0) == par_cell
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CellHolder()
+  anon := par_cell
+  inhale g_cell(v_ret_0) == anon
+  fold acc(CellHolder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CellHolder_unique(v_ret_0), write)
+}
 
 /interface_borrowed_upcast.kt: info: Generated Viper text for inlineFieldBorrow:
 field value: Ref

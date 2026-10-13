@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 // UNSOUND marks an assertion that is false at runtime but verifies: a sound verifier reports
 // VERIFICATION_CONDITION_NOT_ESTABLISHED on it.
 
-class Cell<T>(val item: T)
+<!VIPER_TEXT!>class Cell<!><T>(val item: T)
 
 // `as Cell<Int>` checks only the class; the element is still a `String`.
 // UNSOUND: reading `item` inhales the substituted type `Int`.

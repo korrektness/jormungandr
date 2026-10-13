@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Meter(var reading: Int) {
+<!VIPER_TEXT!>class Meter<!>(var reading: Int) {
     @Unique @Borrowed
     fun <!VIPER_TEXT!>advance<!>(by: Int) {
         preconditions { by >= 0 && reading <= 2147483647 - by }
@@ -41,7 +41,7 @@ fun <!VIPER_TEXT!>staleAfterAdvance<!>(m: @Unique @Borrowed Meter) {
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>m.reading == 0<!>)
 }
 
-open class Gauge(var level: Int) {
+open <!VIPER_TEXT!>class Gauge<!>(var level: Int) {
     @Unique @Borrowed
     open fun <!VIPER_TEXT!>tick<!>() {
         postconditions<Unit> { level == old(level) }
@@ -55,14 +55,14 @@ open class Gauge(var level: Int) {
     }
 }
 
-class CountingGauge(level: Int, var ticks: Int) : Gauge(level) {
+<!VIPER_TEXT!>class CountingGauge<!>(level: Int, var ticks: Int) : Gauge(level) {
     @Unique @Borrowed
     override fun <!VIPER_TEXT!>tick<!>() {
         if (ticks < 2147483647) ticks = ticks + 1
     }
 }
 
-class DriftingGauge(level: Int) : Gauge(level) {
+<!VIPER_TEXT!>class DriftingGauge<!>(level: Int) : Gauge(level) {
     @Unique @Borrowed
     override fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>tick<!>() {
         postconditions<Unit> { true }
@@ -72,7 +72,7 @@ class DriftingGauge(level: Int) : Gauge(level) {
 
 open <!VIPER_TEXT!>class PlainGauge<!>(level: Int) : Gauge(level)
 
-class FlaggingGauge(level: Int, var flagged: Boolean) : PlainGauge(level) {
+<!VIPER_TEXT!>class FlaggingGauge<!>(level: Int, var flagged: Boolean) : PlainGauge(level) {
     @Unique @Borrowed
     override fun <!VIPER_TEXT!>tick<!>() {
         flagged = true

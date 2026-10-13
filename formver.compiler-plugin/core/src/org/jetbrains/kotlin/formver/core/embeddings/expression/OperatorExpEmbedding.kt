@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.formver.core.domains.InjectionImageFunction
 import org.jetbrains.kotlin.formver.core.embeddings.ExpVisitor
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.viper.ast.Applicable
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 
 interface InjectionBasedExpEmbedding : ExpEmbedding {
@@ -70,6 +71,17 @@ class BinaryOperatorExpEmbeddingTemplate(
             override val right = right
             override val exceptionalExit = exceptionalExit
             override val sourceRole = sourceRole
+        }
+
+    /** An application of this operator whose builtin form is [builtins] in place of the operator's Viper implementation. */
+    fun withBuiltins(left: ExpEmbedding, right: ExpEmbedding, builtins: Applicable): BinaryOperatorExpEmbedding =
+        object : BinaryOperatorExpEmbedding {
+            override val refsOperation: InjectionImageFunction = this@BinaryOperatorExpEmbeddingTemplate.refsOperation
+            override val builtinsOperation = builtins
+            override val type = this@BinaryOperatorExpEmbeddingTemplate.type
+            override val left = left
+            override val right = right
+            override val sourceRole: SourceRole? = null
         }
 }
 

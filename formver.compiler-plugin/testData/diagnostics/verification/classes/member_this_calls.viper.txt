@@ -1,3 +1,23 @@
+/member_this_calls.kt: info: Generated Viper text for Counter:
+field bf_count: Ref
+
+method con(par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType())
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  v_ret_0 := new(bf_count)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_count := par_count
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
 /member_this_calls.kt: info: Generated Viper text for plain:
 field count: Ref
 
@@ -357,136 +377,164 @@ method finish(this: Ref) returns (ret_1: Ref)
 
 
 /member_this_calls.kt: info: Generated Viper text for Tally:
-field count: Ref
+field bf_count: Ref
 
-field total: Ref
+field bf_total: Ref
 
 method Tally_c_Counter_f_bump_inherited_body_c_Counter_f_bump(this: Ref)
-  returns (v_ret_0: Ref)
+  returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), Tally())
   requires acc(Tally_unique(this), write)
   requires (unfolding acc(Tally_unique(this), write) in
       (unfolding acc(c_Counter_unique(this), write) in
-        intFromRef(this.count) < 2147483647))
+        intFromRef(this.bf_count) < 2147483647))
   requires typeOf(this) == Tally()
   ensures acc(Tally_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures isSubtype(typeOf(v_ret_3), unitType())
   ensures (unfolding acc(Tally_unique(this), write) in
       (unfolding acc(c_Counter_unique(this), write) in
-        intFromRef(this.count) ==
+        intFromRef(this.bf_count) ==
         (let anon_builtin ==
           (plusInts(old((unfolding acc(Tally_unique(this), write) in
-            (unfolding acc(c_Counter_unique(this), write) in this.count))),
+            (unfolding acc(c_Counter_unique(this), write) in this.bf_count))),
           intToRef(1))) in
           intFromRef(old((unfolding acc(Tally_unique(this), write) in
-            (unfolding acc(c_Counter_unique(this), write) in this.count)))) +
+            (unfolding acc(c_Counter_unique(this), write) in this.bf_count)))) +
           intFromRef(intToRef(1)))))
-{
-  var anon_0: Ref
-  unfold acc(Tally_unique(this), write)
-  unfold acc(c_Counter_unique(this), write)
-  anon_0 := this.count
-  this.count := plusInts(anon_0, intToRef(1))
-  label lbl_ret_0
-  fold acc(c_Counter_unique(this), write)
-  fold acc(Tally_unique(this), write)
-  inhale isSubtype(typeOf(v_ret_0), unitType())
-}
-
-method Tally_c_Counter_f_bump_inherited_contract_c_Counter_f_bump(this: Ref)
-  returns (ret_3: Ref)
-  requires isSubtype(typeOf(this), Tally())
-  requires acc(Tally_unique(this), write)
-  requires (unfolding acc(Tally_unique(this), write) in
-      (unfolding acc(c_Counter_unique(this), write) in
-        intFromRef(this.count) < 2147483647))
-  requires typeOf(this) == Tally()
-  ensures acc(Tally_unique(this), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
-  ensures (unfolding acc(Tally_unique(this), write) in
-      (unfolding acc(c_Counter_unique(this), write) in
-        intFromRef(this.count) ==
-        (let anon_builtin ==
-          (plusInts(old((unfolding acc(Tally_unique(this), write) in
-            (unfolding acc(c_Counter_unique(this), write) in this.count))),
-          intToRef(1))) in
-          intFromRef(old((unfolding acc(Tally_unique(this), write) in
-            (unfolding acc(c_Counter_unique(this), write) in this.count)))) +
-          intFromRef(intToRef(1)))))
-
-
-method Tally_c_Counter_f_touch_inherited_body_c_Counter_f_touch(this: Ref)
-  returns (v_ret_4: Ref)
-  requires isSubtype(typeOf(this), Tally())
-  requires acc(Tally_unique(this), write)
-  requires (unfolding acc(Tally_unique(this), write) in
-      (unfolding acc(c_Counter_unique(this), write) in
-        intFromRef(this.count) < 2147483647))
-  requires typeOf(this) == Tally()
-  ensures acc(Tally_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_4), unitType())
 {
   var anon_1: Ref
   unfold acc(Tally_unique(this), write)
   unfold acc(c_Counter_unique(this), write)
-  anon_1 := this.count
-  this.count := plusInts(anon_1, intToRef(1))
-  label lbl_ret_4
+  anon_1 := this.bf_count
+  this.bf_count := plusInts(anon_1, intToRef(1))
+  label lbl_ret_3
   fold acc(c_Counter_unique(this), write)
   fold acc(Tally_unique(this), write)
-  inhale isSubtype(typeOf(v_ret_4), unitType())
+  inhale isSubtype(typeOf(v_ret_3), unitType())
 }
 
-method Tally_c_Counter_f_touch_inherited_contract_c_Counter_f_touch(this: Ref)
+method Tally_c_Counter_f_bump_inherited_contract_c_Counter_f_bump(this: Ref)
   returns (ret_6: Ref)
   requires isSubtype(typeOf(this), Tally())
   requires acc(Tally_unique(this), write)
   requires (unfolding acc(Tally_unique(this), write) in
       (unfolding acc(c_Counter_unique(this), write) in
-        intFromRef(this.count) < 2147483647))
+        intFromRef(this.bf_count) < 2147483647))
   requires typeOf(this) == Tally()
   ensures acc(Tally_unique(this), write)
   ensures isSubtype(typeOf(ret_6), unitType())
+  ensures (unfolding acc(Tally_unique(this), write) in
+      (unfolding acc(c_Counter_unique(this), write) in
+        intFromRef(this.bf_count) ==
+        (let anon_builtin ==
+          (plusInts(old((unfolding acc(Tally_unique(this), write) in
+            (unfolding acc(c_Counter_unique(this), write) in this.bf_count))),
+          intToRef(1))) in
+          intFromRef(old((unfolding acc(Tally_unique(this), write) in
+            (unfolding acc(c_Counter_unique(this), write) in this.bf_count)))) +
+          intFromRef(intToRef(1)))))
 
 
-method refines_Tally_c_Counter_f_bump_inherited_contract_c_Counter_f_bump(this: Ref)
-  returns (ret_3: Ref)
+method Tally_c_Counter_f_touch_inherited_body_c_Counter_f_touch(this: Ref)
+  returns (v_ret_7: Ref)
   requires isSubtype(typeOf(this), Tally())
   requires acc(Tally_unique(this), write)
   requires (unfolding acc(Tally_unique(this), write) in
       (unfolding acc(c_Counter_unique(this), write) in
-        intFromRef(this.count) < 2147483647))
+        intFromRef(this.bf_count) < 2147483647))
+  requires typeOf(this) == Tally()
+  ensures acc(Tally_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_7), unitType())
+{
+  var anon_2: Ref
+  unfold acc(Tally_unique(this), write)
+  unfold acc(c_Counter_unique(this), write)
+  anon_2 := this.bf_count
+  this.bf_count := plusInts(anon_2, intToRef(1))
+  label lbl_ret_7
+  fold acc(c_Counter_unique(this), write)
+  fold acc(Tally_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_7), unitType())
+}
+
+method Tally_c_Counter_f_touch_inherited_contract_c_Counter_f_touch(this: Ref)
+  returns (ret_9: Ref)
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), write)
+  requires (unfolding acc(Tally_unique(this), write) in
+      (unfolding acc(c_Counter_unique(this), write) in
+        intFromRef(this.bf_count) < 2147483647))
+  requires typeOf(this) == Tally()
+  ensures acc(Tally_unique(this), write)
+  ensures isSubtype(typeOf(ret_9), unitType())
+
+
+method con(par_count: Ref, par_total: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  requires isSubtype(typeOf(par_total), intType())
+  ensures isSubtype(typeOf(v_ret_0), Tally())
+  ensures isSubtype(typeOf(v_ret_0), Tally()) &&
+    acc(v_ret_0.bf_total, write) &&
+    isSubtype(typeOf(v_ret_0.bf_total), intType()) &&
+    (isSubtype(typeOf(v_ret_0), c_Counter()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType()))
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_total) == intFromRef(par_total)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_total) == intFromRef(par_total)
+{
+  var anon_0: Ref
+  v_ret_0 := new(bf_count, bf_total)
+  inhale typeOf(v_ret_0) == Tally()
+  anon_0 := par_count
+  v_ret_0.bf_count := anon_0
+  fold acc(c_Counter_unique(v_ret_0), write)
+  v_ret_0.bf_total := par_total
+  fold acc(Tally_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Tally_unique(v_ret_0), write)
+  unfold acc(c_Counter_unique(v_ret_0), write)
+}
+
+method refines_Tally_c_Counter_f_bump_inherited_contract_c_Counter_f_bump(this: Ref)
+  returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), Tally())
+  requires acc(Tally_unique(this), write)
+  requires (unfolding acc(Tally_unique(this), write) in
+      (unfolding acc(c_Counter_unique(this), write) in
+        intFromRef(this.bf_count) < 2147483647))
   requires typeOf(this) == Tally()
   requires isSubtype(typeOf(this), Tally())
 {
-  ret_3 := Tally_c_Counter_f_bump_inherited_body_c_Counter_f_bump(this)
+  ret_6 := Tally_c_Counter_f_bump_inherited_body_c_Counter_f_bump(this)
   assert acc(Tally_unique(this), write)
-  assert isSubtype(typeOf(ret_3), unitType())
+  assert isSubtype(typeOf(ret_6), unitType())
   assert (unfolding acc(Tally_unique(this), write) in
       (unfolding acc(c_Counter_unique(this), write) in
-        intFromRef(this.count) ==
+        intFromRef(this.bf_count) ==
         (let anon_builtin ==
           (plusInts(old((unfolding acc(Tally_unique(this), write) in
-            (unfolding acc(c_Counter_unique(this), write) in this.count))),
+            (unfolding acc(c_Counter_unique(this), write) in this.bf_count))),
           intToRef(1))) in
           intFromRef(old((unfolding acc(Tally_unique(this), write) in
-            (unfolding acc(c_Counter_unique(this), write) in this.count)))) +
+            (unfolding acc(c_Counter_unique(this), write) in this.bf_count)))) +
           intFromRef(intToRef(1)))))
 }
 
 method refines_Tally_c_Counter_f_touch_inherited_contract_c_Counter_f_touch(this: Ref)
-  returns (ret_6: Ref)
+  returns (ret_9: Ref)
   requires isSubtype(typeOf(this), Tally())
   requires acc(Tally_unique(this), write)
   requires (unfolding acc(Tally_unique(this), write) in
       (unfolding acc(c_Counter_unique(this), write) in
-        intFromRef(this.count) < 2147483647))
+        intFromRef(this.bf_count) < 2147483647))
   requires typeOf(this) == Tally()
   requires isSubtype(typeOf(this), Tally())
 {
-  ret_6 := Tally_c_Counter_f_touch_inherited_body_c_Counter_f_touch(this)
+  ret_9 := Tally_c_Counter_f_touch_inherited_body_c_Counter_f_touch(this)
   assert acc(Tally_unique(this), write)
-  assert isSubtype(typeOf(ret_6), unitType())
+  assert isSubtype(typeOf(ret_9), unitType())
 }
 
 /member_this_calls.kt: info: Generated Viper text for bumpInBase:
@@ -594,6 +642,60 @@ method subclassFieldsLost(this: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/member_this_calls.kt: info: Generated Viper text for Built:
+field b: Ref
+
+field bf_a: Ref
+
+function g_tag(this: Ref): Ref
+  requires isSubtype(typeOf(this), Built())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_tag: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_tag), intType())
+  ensures isSubtype(typeOf(v_ret_0), Built())
+  ensures isSubtype(typeOf(v_ret_0), Built()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType()) &&
+    acc(v_ret_0.b, write) &&
+    isSubtype(typeOf(v_ret_0.b), intType())
+  ensures intFromRef(g_tag(v_ret_0)) == intFromRef(par_tag)
+  ensures intFromRef(g_tag(v_ret_0)) == intFromRef(par_tag)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new(bf_a, b)
+  inhale typeOf(v_ret_0) == Built()
+  v_ret_0.bf_a := par_a
+  anon_0 := par_tag
+  inhale intFromRef(g_tag(v_ret_0)) == intFromRef(anon_0)
+  v_ret_0.b := intToRef(0)
+  fold acc(Built_unique(v_ret_0), write)
+  anon_1 := reset(v_ret_0)
+  anon_2 := peek(v_ret_0)
+  exhale acc(Built_unique(v_ret_0), write)
+  inhale acc(Built_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Built_unique(v_ret_0), write)
+}
+
+method peek(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Built())
+  ensures isSubtype(typeOf(ret_3), unitType())
+
+
+method reset(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Built())
+  requires acc(Built_unique(this), write)
+  ensures acc(Built_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Built_unique(this), write) in
+      intFromRef(this.bf_a) == 0) &&
+    (unfolding acc(Built_unique(this), write) in intFromRef(this.b) == 0)
+
+
 /member_this_calls.kt: info: Generated Viper text for reset:
 field a: Ref
 
@@ -674,6 +776,7 @@ method con(par_a: Ref, par_tag: Ref) returns (ret_1: Ref)
     acc(ret_1.b, write) &&
     isSubtype(typeOf(ret_1.b), intType())
   ensures intFromRef(g_tag(ret_1)) == intFromRef(par_tag)
+  ensures intFromRef(g_tag(ret_1)) == intFromRef(par_tag)
 
 
 /member_this_calls.kt: info: Generated Viper text for builtKeepsA:
@@ -713,4 +816,5 @@ method con(par_a: Ref, par_tag: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.bf_a), intType()) &&
     acc(ret_1.b, write) &&
     isSubtype(typeOf(ret_1.b), intType())
+  ensures intFromRef(g_tag(ret_1)) == intFromRef(par_tag)
   ensures intFromRef(g_tag(ret_1)) == intFromRef(par_tag)

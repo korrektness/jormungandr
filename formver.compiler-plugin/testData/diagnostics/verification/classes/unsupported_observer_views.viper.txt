@@ -41,6 +41,31 @@ method inc(this: Ref) returns (ret: Ref)
       intFromRef(intToRef(1)))
 
 
+/unsupported_observer_views.kt: info: Generated Viper text for TallyBase:
+field bf_v: Ref
+
+predicate TallyBase_unique(this: Ref) {
+  isSubtype(typeOf(this), TallyBase()) && acc(this.bf_v, write) &&
+  isSubtype(typeOf(this.bf_v), intType())
+}
+
+method con(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), TallyBase())
+  ensures isSubtype(typeOf(v_ret_0), TallyBase()) &&
+    acc(v_ret_0.bf_v, write) &&
+    isSubtype(typeOf(v_ret_0.bf_v), intType())
+  ensures intFromRef(v_ret_0.bf_v) == intFromRef(par_v)
+  ensures intFromRef(v_ret_0.bf_v) == intFromRef(par_v)
+{
+  v_ret_0 := new(bf_v)
+  inhale typeOf(v_ret_0) == TallyBase()
+  v_ret_0.bf_v := par_v
+  fold acc(TallyBase_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(TallyBase_unique(v_ret_0), write)
+}
+
 /unsupported_observer_views.kt: info: Generated Viper text for count:
 field bf_v: Ref
 
@@ -109,39 +134,39 @@ predicate c_Tally_unique(this: Ref) {
 predicate footprint(this: Ref)
 
 method InheritedTally_c_TallyBase_f_inc_inherited_body_c_Tally_f_inc(this: Ref)
-  returns (v_ret_0: Ref)
+  returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), InheritedTally())
   requires acc(InheritedTally_unique(this), write)
   requires (unfolding acc(InheritedTally_unique(this), wildcard) in
       intFromRef(c_TallyBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedTally()
   ensures acc(InheritedTally_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures isSubtype(typeOf(v_ret_3), unitType())
   ensures (unfolding acc(InheritedTally_unique(this), wildcard) in
       intFromRef(c_TallyBase_f_count(this))) ==
-    (let anon ==
+    (let anon_builtin ==
       (plusInts(old((unfolding acc(InheritedTally_unique(this), wildcard) in
         c_TallyBase_f_count(this))), intToRef(1))) in
       intFromRef(old((unfolding acc(InheritedTally_unique(this), wildcard) in
         c_TallyBase_f_count(this)))) +
       intFromRef(intToRef(1)))
 {
-  label lbl_ret_0
-  inhale isSubtype(typeOf(v_ret_0), unitType())
+  label lbl_ret_3
+  inhale isSubtype(typeOf(v_ret_3), unitType())
 }
 
 method InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(this: Ref)
-  returns (ret_1: Ref)
+  returns (ret_4: Ref)
   requires isSubtype(typeOf(this), InheritedTally())
   requires acc(InheritedTally_unique(this), write)
   requires (unfolding acc(InheritedTally_unique(this), wildcard) in
       intFromRef(c_TallyBase_f_count(this)) < 2147483647)
   requires typeOf(this) == InheritedTally()
   ensures acc(InheritedTally_unique(this), write)
-  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
   ensures (unfolding acc(InheritedTally_unique(this), wildcard) in
       intFromRef(c_TallyBase_f_count(this))) ==
-    (let anon ==
+    (let anon_builtin ==
       (plusInts(old((unfolding acc(InheritedTally_unique(this), wildcard) in
         c_TallyBase_f_count(this))), intToRef(1))) in
       intFromRef(old((unfolding acc(InheritedTally_unique(this), wildcard) in
@@ -149,8 +174,27 @@ method InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(this: Ref)
       intFromRef(intToRef(1)))
 
 
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), InheritedTally())
+  ensures isSubtype(typeOf(v_ret_0), InheritedTally()) &&
+    (isSubtype(typeOf(v_ret_0), c_TallyBase()) && acc(v_ret_0.bf_v, write) &&
+    isSubtype(typeOf(v_ret_0.bf_v), intType()))
+  ensures intFromRef(v_ret_0.bf_v) == 0
+{
+  var anon_0: Ref
+  v_ret_0 := new(bf_v)
+  inhale typeOf(v_ret_0) == InheritedTally()
+  anon_0 := intToRef(0)
+  v_ret_0.bf_v := anon_0
+  fold acc(c_TallyBase_unique(v_ret_0), write)
+  fold acc(InheritedTally_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(InheritedTally_unique(v_ret_0), write)
+  unfold acc(c_TallyBase_unique(v_ret_0), write)
+}
+
 method refines_InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(this: Ref)
-  returns (ret_1: Ref)
+  returns (ret_4: Ref)
   requires isSubtype(typeOf(this), InheritedTally())
   requires acc(InheritedTally_unique(this), write)
   requires (unfolding acc(InheritedTally_unique(this), wildcard) in
@@ -158,12 +202,12 @@ method refines_InheritedTally_c_Tally_f_inc_inherited_contract_c_Tally_f_inc(thi
   requires typeOf(this) == InheritedTally()
   requires isSubtype(typeOf(this), InheritedTally())
 {
-  ret_1 := InheritedTally_c_TallyBase_f_inc_inherited_body_c_Tally_f_inc(this)
+  ret_4 := InheritedTally_c_TallyBase_f_inc_inherited_body_c_Tally_f_inc(this)
   assert acc(InheritedTally_unique(this), write)
-  assert isSubtype(typeOf(ret_1), unitType())
+  assert isSubtype(typeOf(ret_4), unitType())
   assert (unfolding acc(InheritedTally_unique(this), wildcard) in
       intFromRef(c_TallyBase_f_count(this))) ==
-    (let anon ==
+    (let anon_builtin ==
       (plusInts(old((unfolding acc(InheritedTally_unique(this), wildcard) in
         c_TallyBase_f_count(this))), intToRef(1))) in
       intFromRef(old((unfolding acc(InheritedTally_unique(this), wildcard) in
@@ -520,9 +564,9 @@ method laws(this: Ref)
   assert boolFromRef(geInts(ConcreteLevel_f_level(this), intToRef(0)))
 }
 
-method require(value: Ref) returns (ret_4: Ref)
+method require(value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
   ensures true ==> boolFromRef(value)
 
 
@@ -621,6 +665,20 @@ predicate c_AbstractLevel_unique(this: Ref) {
 }
 
 predicate footprint(this: Ref)
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), NegativeLevel())
+  ensures isSubtype(typeOf(v_ret_0), NegativeLevel()) &&
+    isSubtype(typeOf(v_ret_0), c_AbstractLevel())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == NegativeLevel()
+  fold acc(c_AbstractLevel_unique(v_ret_0), write)
+  fold acc(NegativeLevel_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(NegativeLevel_unique(v_ret_0), write)
+  unfold acc(c_AbstractLevel_unique(v_ret_0), write)
+}
 
 method laws(this: Ref)
   requires acc(NegativeLevel_unique(this), write)

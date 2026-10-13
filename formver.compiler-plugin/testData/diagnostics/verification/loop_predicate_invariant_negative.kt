@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 @Manual
-class Counter(
+<!VIPER_TEXT!>class Counter<!>(
     var n: Int
 )
 

@@ -1,3 +1,36 @@
+/insertion_sort_functional.kt: info: Generated Viper text for Node:
+function g_next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), nullable(Node()))
+
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref, par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures g_next(v_ret_0) == par_next
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures g_next(v_ret_0) == par_next
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Node()
+  anon_0 := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_next
+  inhale g_next(v_ret_0) == anon_1
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
+}
+
 /insertion_sort_functional.kt: info: Generated Viper text for isSorted:
 function isSorted(n: Ref): Ref
   requires isSubtype(typeOf(n), nullable(Node()))
@@ -55,6 +88,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), intType())
   requires isSubtype(typeOf(par_next), nullable(Node()))
   ensures isSubtype(typeOf(ret_3), Node())
+  ensures intFromRef(g_value(ret_3)) == intFromRef(par_value)
+  ensures g_next(ret_3) == par_next
   ensures intFromRef(g_value(ret_3)) == intFromRef(par_value)
   ensures g_next(ret_3) == par_next
 

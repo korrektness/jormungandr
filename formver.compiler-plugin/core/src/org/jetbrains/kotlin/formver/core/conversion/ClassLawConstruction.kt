@@ -61,30 +61,33 @@ private fun FirQualifiedAccessExpression.isAllowedInitializerAccess(
 }
 
 @OptIn(SymbolInternals::class, DirectDeclarationsAccess::class)
-private fun ownClassLawConstructionFailures(symbol: FirRegularClassSymbol): List<KotlinCondition.Law> {
-    val failures = mutableListOf<KotlinCondition.Law>()
-    symbol.fir.declarations.filterIsInstance<FirProperty>().forEach { property ->
-        if (property.delegate != null) failures += KotlinCondition.Law(LawRule.DELEGATED_PROPERTY, property.symbol)
-    }
-    return failures
-}
+private fun delegatedPropertyFailures(symbol: FirRegularClassSymbol): List<KotlinCondition.Law> =
+    symbol.fir.declarations.filterIsInstance<FirProperty>().filter { it.delegate != null }
+        .map { KotlinCondition.Law(LawRule.DELEGATED_PROPERTY, it.symbol) }
 
-fun classLawConstructionFailures(symbol: FirRegularClassSymbol, session: FirSession): List<KotlinCondition.Law> {
+/** Why the construction of [symbol], including its source superclasses' construction code, cannot be converted. */
+fun constructionFailures(symbol: FirRegularClassSymbol, session: FirSession): List<KotlinCondition.Law> {
     val failures = mutableListOf<KotlinCondition.Law>()
     val visited = mutableSetOf<FirRegularClassSymbol>()
     fun visit(current: FirRegularClassSymbol) {
-        if (!visited.add(current)) return
-        if (current.ownClassLaws(session).isNotEmpty() || current.hasSuperclassLaws(session)) {
-            failures += ownClassLawConstructionFailures(current)
-        }
+        if (!visited.add(current) || current.origin != FirDeclarationOrigin.Source) return
+        failures += delegatedPropertyFailures(current)
         failures += constructionDisciplineFailures(current, session).map { KotlinCondition.Law(it, current) }
         current.resolvedSuperTypes.mapNotNull { it.toRegularClassSymbol(session) }
-            .filter { !it.classKind.isInterface && it.origin == FirDeclarationOrigin.Source }
+            .filter { !it.classKind.isInterface }
             .forEach(::visit)
     }
     visit(symbol)
     return failures.distinct()
 }
+
+/**
+ * Whether the constructor headers of [owner] may carry synthesized field facts: its construction is verified, or this
+ * program proves it. A constructor from another module keeps its header as a bodiless contract.
+ */
+fun ProgramConversionContext.constructorFactsJustified(owner: FirRegularClassSymbol): Boolean =
+    owner.origin != FirDeclarationOrigin.Source || owner == provenConstruction ||
+        session.constructionVerdicts?.verifies(owner, checkerContext) == true
 
 context(program: ProgramConversionContext)
 private fun isStableInitializer(initializer: FirExpression, parameters: Set<FirValueParameterSymbol>): Boolean {
@@ -109,10 +112,7 @@ fun constructorInitializerConditions(
     symbol: FirConstructorSymbol, signature: NonInlineCallable, result: ExpEmbedding,
 ): List<ExpEmbedding> {
     val owner = symbol.resolvedReturnType.toRegularClassSymbol(program.session) ?: return emptyList()
-    if (owner.ownClassLaws(program.session).isEmpty() && !owner.hasSuperclassLaws(program.session) &&
-        constructionDisciplineFailures(owner, program.session).isEmpty()) {
-        return emptyList()
-    }
+    if (owner.origin != FirDeclarationOrigin.Source || !program.constructorFactsJustified(owner)) return emptyList()
     val receiver = PlaceholderVariableEmbedding(DispatchReceiverName, program.embedType(symbol.resolvedReturnType), isUnique = true)
     val substitutions = symbol.valueParameterSymbols.zip(signature.params).associate { (symbol, value) ->
         SubstitutedArgument.ValueParameter(symbol) to value
@@ -129,7 +129,15 @@ fun constructorInitializerConditions(
         ).statementCtxt()
         val delegation = constructor.fir.delegatedConstructor
         val superConstructor = delegation?.calleeReference?.toResolvedConstructorSymbol()
-        if (superConstructor != null) {
+        val superArgumentsStable = superConstructor != null && superConstructor.origin == FirDeclarationOrigin.Source &&
+            delegation.resolvedArgumentMapping.orEmpty().keys.all {
+                isStableInitializer(it, constructor.valueParameterSymbols.toSet())
+            } &&
+            superConstructor.valueParameterSymbols.all { parameter ->
+                delegation.resolvedArgumentMapping.orEmpty().values.any { it.symbol == parameter } ||
+                    parameter.fir.defaultValue?.let { isStableInitializer(it, superConstructor.valueParameterSymbols.toSet()) } == true
+            }
+        if (superConstructor != null && superArgumentsStable) {
             val superArguments = delegation.resolvedArgumentMapping.orEmpty().map { (argument, parameter) ->
                 SubstitutedArgument.ValueParameter(parameter.symbol) to context.convert(argument)
             }.toMap().toMutableMap<SubstitutedArgument, ExpEmbedding>()

@@ -35,9 +35,9 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   unfold acc(CheckedPrimary_unique(v_ret_0), write)
 }
 
-method require(par_value: Ref) returns (ret_3: Ref)
+method require(par_value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(par_value)
 
 
@@ -72,18 +72,18 @@ method con() returns (v_ret_0: Ref)
       true && boolFromRef(gtInts(value(this), intToRef(0))))
 {
   var anon: Ref
+  var v_ret_4: Ref
   var v_ret_5: Ref
-  var v_ret_6: Ref
   v_ret_0 := new()
   inhale typeOf(v_ret_0) == CheckedInitializer()
   assert false
-  v_ret_6 := intToRef(1)
-  goto lbl_ret_6
-  label lbl_ret_6
-  v_ret_5 := v_ret_6
+  v_ret_5 := intToRef(1)
   goto lbl_ret_5
   label lbl_ret_5
-  anon := v_ret_5
+  v_ret_4 := v_ret_5
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon := v_ret_4
   inhale intFromRef(value(v_ret_0)) == intFromRef(anon)
   assert (let this ==
       (v_ret_0) in
@@ -93,9 +93,9 @@ method con() returns (v_ret_0: Ref)
   unfold acc(CheckedInitializer_unique(v_ret_0), write)
 }
 
-method initializeValue(block: Ref) returns (ret_3: Ref)
+method initializeValue(block: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_3), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
 
 
 /constructor_bodies.kt: info: Generated Viper text for CheckedSecondary:
@@ -109,31 +109,31 @@ function value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method con_c_CheckedSecondary(checked: Ref) returns (v_ret_4: Ref)
+method con_c_CheckedSecondary(checked: Ref) returns (v_ret_3: Ref)
   requires isSubtype(typeOf(checked), boolType())
-  ensures isSubtype(typeOf(v_ret_4), c_CheckedSecondary())
-  ensures isSubtype(typeOf(v_ret_4), c_CheckedSecondary()) &&
+  ensures isSubtype(typeOf(v_ret_3), c_CheckedSecondary())
+  ensures isSubtype(typeOf(v_ret_3), c_CheckedSecondary()) &&
     (let this ==
-      (v_ret_4) in
+      (v_ret_3) in
       true && boolFromRef(gtInts(value(this), intToRef(0))))
-  ensures intFromRef(value(v_ret_4)) == 1
+  ensures intFromRef(value(v_ret_3)) == 1
 {
   var anon_1: Ref
-  var v_ret_8: Ref
-  v_ret_4 := new()
-  inhale typeOf(v_ret_4) == c_CheckedSecondary()
+  var v_ret_6: Ref
+  v_ret_3 := new()
+  inhale typeOf(v_ret_3) == c_CheckedSecondary()
   anon_1 := intToRef(1)
-  inhale intFromRef(value(v_ret_4)) == intFromRef(anon_1)
+  inhale intFromRef(value(v_ret_3)) == intFromRef(anon_1)
   assert (let this ==
-      (v_ret_4) in
+      (v_ret_3) in
       true && boolFromRef(gtInts(value(this), intToRef(0))))
-  fold acc(c_CheckedSecondary_unique(v_ret_4), write)
+  fold acc(c_CheckedSecondary_unique(v_ret_3), write)
   if (boolFromRef(checked)) {
     assert false
   }
-  label lbl_ret_8
-  label lbl_ret_4
-  unfold acc(c_CheckedSecondary_unique(v_ret_4), write)
+  label lbl_ret_6
+  label lbl_ret_3
+  unfold acc(c_CheckedSecondary_unique(v_ret_3), write)
 }
 
 method con_c_CheckedSecondary_args() returns (v_ret_0: Ref)
@@ -155,4 +155,60 @@ method con_c_CheckedSecondary_args() returns (v_ret_0: Ref)
   fold acc(c_CheckedSecondary_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(c_CheckedSecondary_unique(v_ret_0), write)
+}
+
+/constructor_bodies.kt: info: Generated Viper text for LawFreePrimary:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), LawFreePrimary())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), LawFreePrimary())
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == LawFreePrimary()
+  anon := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
+  assert false
+  fold acc(LawFreePrimary_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(LawFreePrimary_unique(v_ret_0), write)
+}
+
+/constructor_bodies.kt: info: Generated Viper text for LawFreeSecondary:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), LawFreeSecondary())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), LawFreeSecondary())
+{
+  var v_ret_2: Ref
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == LawFreeSecondary()
+  anon := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
+  assert intFromRef(par_value) > 0
+  label lbl_ret_2
+  fold acc(LawFreeSecondary_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(LawFreeSecondary_unique(v_ret_0), write)
 }

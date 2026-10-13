@@ -34,7 +34,7 @@ fun <!VIPER_TEXT!>incorrectBody<!>(): @Unique LiftedSpec = LiftedSpec <!VERIFICA
     x - 1
 }<!>
 
-class LiftedCell(var n: Int) {
+<!VIPER_TEXT!>class LiftedCell<!>(var n: Int) {
     @Unique
     fun <!VIPER_TEXT!>captureReceiver<!>(): @Unique LiftedSpec = LiftedSpec { x ->
         exposes(LiftedSpec::class) { state() == 0 }

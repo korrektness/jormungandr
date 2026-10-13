@@ -143,6 +143,32 @@ method unusedResult() returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
+/when.kt: info: Generated Viper text for Foo:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Foo())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Foo()
+  fold acc(Foo_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Foo_unique(v_ret_0), write)
+}
+
+/when.kt: info: Generated Viper text for Bar:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Bar())
+  ensures isSubtype(typeOf(v_ret_0), Bar()) &&
+    isSubtype(typeOf(v_ret_0), Foo())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Bar()
+  fold acc(Foo_unique(v_ret_0), write)
+  fold acc(Bar_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Bar_unique(v_ret_0), write)
+  unfold acc(Foo_unique(v_ret_0), write)
+}
+
 /when.kt: info: Generated Viper text for whenIs:
 method whenIs(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), Foo())

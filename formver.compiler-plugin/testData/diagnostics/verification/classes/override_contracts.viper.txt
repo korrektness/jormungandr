@@ -1,3 +1,34 @@
+/override_contracts.kt: info: Generated Viper text for Cell:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Cell())
+  ensures isSubtype(typeOf(v_ret_0), Cell()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == Cell()
+  v_ret_0.bf_value := par_value
+  fold acc(Cell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Cell_unique(v_ret_0), write)
+}
+
+/override_contracts.kt: info: Generated Viper text for Base:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
 /override_contracts.kt: info: Generated Viper text for positive:
 method positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Base())
@@ -46,6 +77,21 @@ method positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
   v_ret_0 := plusInts(x, intToRef(1))
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/override_contracts.kt: info: Generated Viper text for Refining:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Refining())
+  ensures isSubtype(typeOf(v_ret_0), Refining()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Refining()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(Refining_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Refining_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
 }
 
 /override_contracts.kt: info: Generated Viper text for positive:
@@ -160,7 +206,7 @@ method refines_Base_f_bump(this: Ref, c: Ref) returns (ret_3: Ref)
 field value: Ref
 
 method Inheriting_c_Base_f_bump_inherited_body_c_Base_f_bump(this: Ref, c: Ref)
-  returns (v_ret_0: Ref)
+  returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), Inheriting())
   requires isSubtype(typeOf(c), Cell())
   requires acc(Cell_unique(c), write)
@@ -168,7 +214,7 @@ method Inheriting_c_Base_f_bump_inherited_body_c_Base_f_bump(this: Ref, c: Ref)
       intFromRef(c.value) <= 2147483645)
   requires typeOf(this) == Inheriting()
   ensures acc(Cell_unique(c), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures isSubtype(typeOf(v_ret_3), unitType())
   ensures (unfolding acc(Cell_unique(c), write) in
       intFromRef(c.value) >
       old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
@@ -177,14 +223,14 @@ method Inheriting_c_Base_f_bump_inherited_body_c_Base_f_bump(this: Ref, c: Ref)
   unfold acc(Cell_unique(c), write)
   anon := c.value
   c.value := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  label lbl_ret_3
   fold acc(Cell_unique(c), write)
-  inhale isSubtype(typeOf(v_ret_0), unitType())
+  inhale isSubtype(typeOf(v_ret_3), unitType())
 }
 
 method Inheriting_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref,
   c: Ref)
-  returns (ret_3: Ref)
+  returns (ret_6: Ref)
   requires isSubtype(typeOf(this), Inheriting())
   requires isSubtype(typeOf(c), Cell())
   requires acc(Cell_unique(c), write)
@@ -192,15 +238,29 @@ method Inheriting_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref,
       intFromRef(c.value) <= 2147483645)
   requires typeOf(this) == Inheriting()
   ensures acc(Cell_unique(c), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_6), unitType())
   ensures (unfolding acc(Cell_unique(c), write) in
       intFromRef(c.value) >
       old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
 
 
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Inheriting())
+  ensures isSubtype(typeOf(v_ret_0), Inheriting()) &&
+    isSubtype(typeOf(v_ret_0), c_Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Inheriting()
+  fold acc(c_Base_unique(v_ret_0), write)
+  fold acc(Inheriting_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Inheriting_unique(v_ret_0), write)
+  unfold acc(c_Base_unique(v_ret_0), write)
+}
+
 method refines_Inheriting_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref,
   c: Ref)
-  returns (ret_3: Ref)
+  returns (ret_6: Ref)
   requires isSubtype(typeOf(this), Inheriting())
   requires isSubtype(typeOf(c), Cell())
   requires acc(Cell_unique(c), write)
@@ -209,9 +269,9 @@ method refines_Inheriting_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: R
   requires typeOf(this) == Inheriting()
   requires isSubtype(typeOf(this), Inheriting())
 {
-  ret_3 := Inheriting_c_Base_f_bump_inherited_body_c_Base_f_bump(this, c)
+  ret_6 := Inheriting_c_Base_f_bump_inherited_body_c_Base_f_bump(this, c)
   assert acc(Cell_unique(c), write)
-  assert isSubtype(typeOf(ret_3), unitType())
+  assert isSubtype(typeOf(ret_6), unitType())
   assert (unfolding acc(Cell_unique(c), write) in
       intFromRef(c.value) >
       old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
@@ -253,7 +313,7 @@ method refines_Base_f_positive(this: Ref, x: Ref) returns (ret_1: Ref)
 field value: Ref
 
 method Deeper_c_Base_f_bump_inherited_body_c_Base_f_bump(this: Ref, c: Ref)
-  returns (v_ret_0: Ref)
+  returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), Deeper())
   requires isSubtype(typeOf(c), Cell())
   requires acc(Cell_unique(c), write)
@@ -261,7 +321,7 @@ method Deeper_c_Base_f_bump_inherited_body_c_Base_f_bump(this: Ref, c: Ref)
       intFromRef(c.value) <= 2147483645)
   requires typeOf(this) == Deeper()
   ensures acc(Cell_unique(c), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures isSubtype(typeOf(v_ret_4), unitType())
   ensures (unfolding acc(Cell_unique(c), write) in
       intFromRef(c.value) >
       old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
@@ -270,13 +330,13 @@ method Deeper_c_Base_f_bump_inherited_body_c_Base_f_bump(this: Ref, c: Ref)
   unfold acc(Cell_unique(c), write)
   anon := c.value
   c.value := plusInts(anon, intToRef(1))
-  label lbl_ret_0
+  label lbl_ret_4
   fold acc(Cell_unique(c), write)
-  inhale isSubtype(typeOf(v_ret_0), unitType())
+  inhale isSubtype(typeOf(v_ret_4), unitType())
 }
 
 method Deeper_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref, c: Ref)
-  returns (ret_3: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), Deeper())
   requires isSubtype(typeOf(c), Cell())
   requires acc(Cell_unique(c), write)
@@ -284,15 +344,32 @@ method Deeper_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref, c: Ref)
       intFromRef(c.value) <= 2147483645)
   requires typeOf(this) == Deeper()
   ensures acc(Cell_unique(c), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
   ensures (unfolding acc(Cell_unique(c), write) in
       intFromRef(c.value) >
       old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))
 
 
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Deeper())
+  ensures isSubtype(typeOf(v_ret_0), Deeper()) &&
+    (isSubtype(typeOf(v_ret_0), Inheriting()) &&
+    isSubtype(typeOf(v_ret_0), c_Base()))
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Deeper()
+  fold acc(c_Base_unique(v_ret_0), write)
+  fold acc(Inheriting_unique(v_ret_0), write)
+  fold acc(Deeper_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Deeper_unique(v_ret_0), write)
+  unfold acc(Inheriting_unique(v_ret_0), write)
+  unfold acc(c_Base_unique(v_ret_0), write)
+}
+
 method refines_Deeper_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref,
   c: Ref)
-  returns (ret_3: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), Deeper())
   requires isSubtype(typeOf(c), Cell())
   requires acc(Cell_unique(c), write)
@@ -301,9 +378,9 @@ method refines_Deeper_c_Base_f_bump_inherited_contract_c_Base_f_bump(this: Ref,
   requires typeOf(this) == Deeper()
   requires isSubtype(typeOf(this), Deeper())
 {
-  ret_3 := Deeper_c_Base_f_bump_inherited_body_c_Base_f_bump(this, c)
+  ret_7 := Deeper_c_Base_f_bump_inherited_body_c_Base_f_bump(this, c)
   assert acc(Cell_unique(c), write)
-  assert isSubtype(typeOf(ret_3), unitType())
+  assert isSubtype(typeOf(ret_7), unitType())
   assert (unfolding acc(Cell_unique(c), write) in
       intFromRef(c.value) >
       old((unfolding acc(Cell_unique(c), write) in intFromRef(c.value))))

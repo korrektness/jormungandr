@@ -1,9 +1,9 @@
 // FULL_VIPER_DUMP
 
 
-class B()
+<!VIPER_TEXT!>class B<!>()
 
-class A(
+<!VIPER_TEXT!>class A<!>(
     var unit: Unit,
     var nothing: Nothing,
     var any: Any,

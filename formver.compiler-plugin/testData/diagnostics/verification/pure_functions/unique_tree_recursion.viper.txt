@@ -1,3 +1,45 @@
+/unique_tree_recursion.kt: info: Generated Viper text for Tree:
+field bf_l: Ref
+
+field bf_r: Ref
+
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Tree())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  requires isSubtype(typeOf(par_l), nullable(Tree()))
+  requires par_l != nullValue() ==> acc(Tree_unique(par_l), write)
+  requires isSubtype(typeOf(par_r), nullable(Tree()))
+  requires par_r != nullValue() ==> acc(Tree_unique(par_r), write)
+  ensures isSubtype(typeOf(v_ret_0), Tree())
+  ensures isSubtype(typeOf(v_ret_0), Tree()) && acc(v_ret_0.bf_l, write) &&
+    isSubtype(typeOf(v_ret_0.bf_l), nullable(Tree())) &&
+    (v_ret_0.bf_l != nullValue() ==> acc(Tree_unique(v_ret_0.bf_l), write)) &&
+    acc(v_ret_0.bf_r, write) &&
+    isSubtype(typeOf(v_ret_0.bf_r), nullable(Tree())) &&
+    (v_ret_0.bf_r != nullValue() ==> acc(Tree_unique(v_ret_0.bf_r), write))
+  ensures intFromRef(g_v(v_ret_0)) == intFromRef(par_v)
+  ensures v_ret_0.bf_l == par_l
+  ensures v_ret_0.bf_r == par_r
+  ensures intFromRef(g_v(v_ret_0)) == intFromRef(par_v)
+  ensures v_ret_0.bf_l == par_l
+  ensures v_ret_0.bf_r == par_r
+{
+  var anon: Ref
+  v_ret_0 := new(bf_l, bf_r)
+  inhale typeOf(v_ret_0) == Tree()
+  anon := par_v
+  inhale intFromRef(g_v(v_ret_0)) == intFromRef(anon)
+  v_ret_0.bf_l := par_l
+  v_ret_0.bf_r := par_r
+  fold acc(Tree_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Tree_unique(v_ret_0), write)
+}
+
 /unique_tree_recursion.kt: info: Generated Viper text for size:
 field bf_r: Ref
 
@@ -120,6 +162,9 @@ method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (ret_4: Ref)
   ensures intFromRef(g_v(ret_4)) == intFromRef(par_v)
   ensures ret_4.bf_l == par_l
   ensures ret_4.bf_r == par_r
+  ensures intFromRef(g_v(ret_4)) == intFromRef(par_v)
+  ensures ret_4.bf_l == par_l
+  ensures ret_4.bf_r == par_r
 
 
 method insert(par_t: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -219,6 +264,9 @@ method con(par_v: Ref, par_l: Ref, par_r: Ref) returns (ret_3: Ref)
     isSubtype(typeOf(ret_3.bf_l), nullable(Tree())) &&
     acc(ret_3.bf_r, write) &&
     isSubtype(typeOf(ret_3.bf_r), nullable(Tree()))
+  ensures intFromRef(g_v(ret_3)) == intFromRef(par_v)
+  ensures ret_3.bf_l == par_l
+  ensures ret_3.bf_r == par_r
   ensures intFromRef(g_v(ret_3)) == intFromRef(par_v)
   ensures ret_3.bf_l == par_l
   ensures ret_3.bf_r == par_r

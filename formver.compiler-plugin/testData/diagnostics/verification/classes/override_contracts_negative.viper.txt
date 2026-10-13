@@ -1,3 +1,14 @@
+/override_contracts_negative.kt: info: Generated Viper text for Base:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
 /override_contracts_negative.kt: info: Generated Viper text for positive:
 method positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Base())
@@ -9,6 +20,21 @@ method positive(this: Ref, x: Ref) returns (v_ret_0: Ref)
   v_ret_0 := x
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/override_contracts_negative.kt: info: Generated Viper text for StrongerPrecondition:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), StrongerPrecondition())
+  ensures isSubtype(typeOf(v_ret_0), StrongerPrecondition()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == StrongerPrecondition()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(StrongerPrecondition_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(StrongerPrecondition_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
 }
 
 /override_contracts_negative.kt: info: Generated Viper text for positive:
@@ -44,6 +70,21 @@ method refines_Base_f_positive(this: Ref, x: Ref) returns (ret_3: Ref)
   assert intFromRef(ret_3) > 0
 }
 
+/override_contracts_negative.kt: info: Generated Viper text for WeakerPostcondition:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), WeakerPostcondition())
+  ensures isSubtype(typeOf(v_ret_0), WeakerPostcondition()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == WeakerPostcondition()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(WeakerPostcondition_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(WeakerPostcondition_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
 /override_contracts_negative.kt: info: Generated Viper text for positive:
 method Base_f_positive(this: Ref, x: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), Base())
@@ -75,6 +116,21 @@ method refines_Base_f_positive(this: Ref, x: Ref) returns (ret_3: Ref)
   ret_3 := WeakerPostcondition_f_positive(this, x)
   assert isSubtype(typeOf(ret_3), intType())
   assert intFromRef(ret_3) > 0
+}
+
+/override_contracts_negative.kt: info: Generated Viper text for InheritedViolated:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), InheritedViolated())
+  ensures isSubtype(typeOf(v_ret_0), InheritedViolated()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == InheritedViolated()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(InheritedViolated_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(InheritedViolated_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
 }
 
 /override_contracts_negative.kt: info: Generated Viper text for positive:

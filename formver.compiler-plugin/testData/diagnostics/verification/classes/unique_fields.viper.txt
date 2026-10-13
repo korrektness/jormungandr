@@ -1,3 +1,34 @@
+/unique_fields.kt: info: Generated Viper text for UniquePrimitiveFields:
+field bf_sharedVar: Ref
+
+function g_sharedVal(this: Ref): Ref
+  requires isSubtype(typeOf(this), UniquePrimitiveFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_sharedVal: Ref, par_sharedVar: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_sharedVal), intType())
+  requires isSubtype(typeOf(par_sharedVar), intType())
+  ensures isSubtype(typeOf(v_ret_0), UniquePrimitiveFields())
+  ensures isSubtype(typeOf(v_ret_0), UniquePrimitiveFields()) &&
+    acc(v_ret_0.bf_sharedVar, write) &&
+    isSubtype(typeOf(v_ret_0.bf_sharedVar), intType())
+  ensures intFromRef(g_sharedVal(v_ret_0)) == intFromRef(par_sharedVal)
+  ensures intFromRef(v_ret_0.bf_sharedVar) == intFromRef(par_sharedVar)
+  ensures intFromRef(g_sharedVal(v_ret_0)) == intFromRef(par_sharedVal)
+  ensures intFromRef(v_ret_0.bf_sharedVar) == intFromRef(par_sharedVar)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_sharedVar)
+  inhale typeOf(v_ret_0) == UniquePrimitiveFields()
+  anon := par_sharedVal
+  inhale intFromRef(g_sharedVal(v_ret_0)) == intFromRef(anon)
+  v_ret_0.bf_sharedVar := par_sharedVar
+  fold acc(UniquePrimitiveFields_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(UniquePrimitiveFields_unique(v_ret_0), write)
+}
+
 /unique_fields.kt: info: Generated Viper text for testPrimitiveFieldGetterUnique:
 field bf_sharedVar: Ref
 
@@ -73,6 +104,66 @@ method testPrimitiveFieldSetterShared(pf: Ref) returns (v_ret_0: Ref)
 {
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_fields.kt: info: Generated Viper text for UniqueReferenceFields:
+field bf_sharedVar: Ref
+
+field bf_uniqueVar: Ref
+
+function UniquePrimitiveFields_g_sharedVal(this: Ref): Ref
+  requires isSubtype(typeOf(this), UniquePrimitiveFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function UniqueReferenceFields_g_sharedVal(this: Ref): Ref
+  requires isSubtype(typeOf(this), UniqueReferenceFields())
+  ensures isSubtype(typeOf(result), UniquePrimitiveFields())
+
+
+function g_uniqueVal(this: Ref): Ref
+  requires isSubtype(typeOf(this), UniqueReferenceFields())
+  ensures isSubtype(typeOf(result), UniquePrimitiveFields())
+
+
+method con(par_sharedVal: Ref, par_sharedVar: Ref, par_uniqueVal: Ref, par_uniqueVar: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_sharedVal), UniquePrimitiveFields())
+  requires isSubtype(typeOf(par_sharedVar), UniquePrimitiveFields())
+  requires isSubtype(typeOf(par_uniqueVal), UniquePrimitiveFields())
+  requires acc(UniquePrimitiveFields_unique(par_uniqueVal), write)
+  requires isSubtype(typeOf(par_uniqueVar), UniquePrimitiveFields())
+  requires acc(UniquePrimitiveFields_unique(par_uniqueVar), write)
+  ensures isSubtype(typeOf(v_ret_0), UniqueReferenceFields())
+  ensures isSubtype(typeOf(v_ret_0), UniqueReferenceFields()) &&
+    acc(v_ret_0.bf_sharedVar, write) &&
+    isSubtype(typeOf(v_ret_0.bf_sharedVar), UniquePrimitiveFields()) &&
+    acc(UniquePrimitiveFields_unique(g_uniqueVal(v_ret_0)), write) &&
+    acc(v_ret_0.bf_uniqueVar, write) &&
+    isSubtype(typeOf(v_ret_0.bf_uniqueVar), UniquePrimitiveFields()) &&
+    acc(UniquePrimitiveFields_unique(v_ret_0.bf_uniqueVar), write)
+  ensures UniqueReferenceFields_g_sharedVal(v_ret_0) == par_sharedVal
+  ensures v_ret_0.bf_sharedVar == par_sharedVar
+  ensures g_uniqueVal(v_ret_0) == par_uniqueVal
+  ensures v_ret_0.bf_uniqueVar == par_uniqueVar
+  ensures UniqueReferenceFields_g_sharedVal(v_ret_0) == par_sharedVal
+  ensures v_ret_0.bf_sharedVar == par_sharedVar
+  ensures g_uniqueVal(v_ret_0) == par_uniqueVal
+  ensures v_ret_0.bf_uniqueVar == par_uniqueVar
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(bf_sharedVar, bf_uniqueVar)
+  inhale typeOf(v_ret_0) == UniqueReferenceFields()
+  anon_0 := par_sharedVal
+  inhale UniqueReferenceFields_g_sharedVal(v_ret_0) == anon_0
+  v_ret_0.bf_sharedVar := par_sharedVar
+  anon_1 := par_uniqueVal
+  inhale g_uniqueVal(v_ret_0) == anon_1
+  v_ret_0.bf_uniqueVar := par_uniqueVar
+  fold acc(UniqueReferenceFields_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(UniqueReferenceFields_unique(v_ret_0), write)
 }
 
 /unique_fields.kt: info: Generated Viper text for testReferenceFieldGetterUnique:
@@ -179,6 +270,9 @@ method con(par_sharedVal: Ref, par_sharedVar: Ref) returns (ret_1: Ref)
   ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
     intFromRef(par_sharedVal)
   ensures intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar)
+  ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
+    intFromRef(par_sharedVal)
+  ensures intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar)
 
 
 method testReferenceFieldSetterUnique(rf: Ref) returns (v_ret_0: Ref)
@@ -226,6 +320,9 @@ method con(par_sharedVal: Ref, par_sharedVar: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), UniquePrimitiveFields()) &&
     acc(ret_1.bf_sharedVar, write) &&
     isSubtype(typeOf(ret_1.bf_sharedVar), intType())
+  ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
+    intFromRef(par_sharedVal)
+  ensures intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar)
   ensures intFromRef(UniquePrimitiveFields_g_sharedVal(ret_1)) ==
     intFromRef(par_sharedVal)
   ensures intFromRef(ret_1.bf_sharedVar) == intFromRef(par_sharedVar)

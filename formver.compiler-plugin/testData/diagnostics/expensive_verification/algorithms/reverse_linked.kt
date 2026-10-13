@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Node(var value: Int, var next: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(var value: Int, var next: @Unique Node?)
 
 // A list has no bound on its length, so the addition in `length` is an overflow-negative test and callers see no
 // definition of `length`.

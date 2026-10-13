@@ -1,3 +1,57 @@
+/unique_val_fields.kt: info: Generated Viper text for Inner:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Inner())
+  ensures isSubtype(typeOf(v_ret_0), Inner()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Inner()
+  v_ret_0.bf_x := par_x
+  fold acc(Inner_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Inner_unique(v_ret_0), write)
+}
+
+/unique_val_fields.kt: info: Generated Viper text for Outer:
+field bf_y: Ref
+
+field x: Ref
+
+function g_inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer())
+  ensures isSubtype(typeOf(result), Inner())
+
+
+method con(par_inner: Ref, par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_inner), Inner())
+  requires acc(Inner_unique(par_inner), write)
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(v_ret_0), Outer())
+  ensures isSubtype(typeOf(v_ret_0), Outer()) &&
+    acc(Inner_unique(g_inner(v_ret_0)), write) &&
+    acc(v_ret_0.bf_y, write) &&
+    isSubtype(typeOf(v_ret_0.bf_y), intType())
+  ensures g_inner(v_ret_0) == par_inner
+  ensures intFromRef(v_ret_0.bf_y) == intFromRef(par_y)
+  ensures g_inner(v_ret_0) == par_inner
+  ensures intFromRef(v_ret_0.bf_y) == intFromRef(par_y)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_y)
+  inhale typeOf(v_ret_0) == Outer()
+  anon := par_inner
+  inhale g_inner(v_ret_0) == anon
+  v_ret_0.bf_y := par_y
+  fold acc(Outer_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Outer_unique(v_ret_0), write)
+}
+
 /unique_val_fields.kt: info: Generated Viper text for bumpBoth:
 field x: Ref
 
@@ -248,6 +302,46 @@ method readThroughSharedVal(o: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
+/unique_val_fields.kt: info: Generated Viper text for Buf:
+field bf_count: Ref
+
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Buf())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+method con(par_data: Ref, par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), IntArray())
+  requires acc(IntArray_unique(par_data), write)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), Buf())
+  ensures isSubtype(typeOf(v_ret_0), Buf()) &&
+    acc(IntArray_unique(g_data(v_ret_0)), write) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType())
+  ensures g_data(v_ret_0) == par_data
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures g_data(v_ret_0) == par_data
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_count)
+  inhale typeOf(v_ret_0) == Buf()
+  anon := par_data
+  inhale g_data(v_ret_0) == anon
+  v_ret_0.bf_count := par_count
+  fold acc(Buf_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Buf_unique(v_ret_0), write)
+}
+
 /unique_val_fields.kt: info: Generated Viper text for push:
 field contents: Seq[Int]
 
@@ -400,6 +494,84 @@ method pushTwice(b: Ref) returns (v_ret_0: Ref)
   fold acc(IntArray_unique(data(b)), write)
   fold acc(Buf_unique(b), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/unique_val_fields.kt: info: Generated Viper text for C:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), C())
+  ensures isSubtype(typeOf(v_ret_0), C()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == C()
+  v_ret_0.bf_x := par_x
+  fold acc(C_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(C_unique(v_ret_0), write)
+}
+
+/unique_val_fields.kt: info: Generated Viper text for B:
+field x: Ref
+
+function g_c(this: Ref): Ref
+  requires isSubtype(typeOf(this), B())
+  ensures isSubtype(typeOf(result), C())
+
+
+method con(par_c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_c), C())
+  requires acc(C_unique(par_c), write)
+  ensures isSubtype(typeOf(v_ret_0), B())
+  ensures isSubtype(typeOf(v_ret_0), B()) &&
+    acc(C_unique(g_c(v_ret_0)), write)
+  ensures g_c(v_ret_0) == par_c
+  ensures g_c(v_ret_0) == par_c
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == B()
+  anon := par_c
+  inhale g_c(v_ret_0) == anon
+  fold acc(B_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(B_unique(v_ret_0), write)
+}
+
+/unique_val_fields.kt: info: Generated Viper text for A:
+field x: Ref
+
+function c(this: Ref): Ref
+  requires isSubtype(typeOf(this), B())
+  ensures isSubtype(typeOf(result), C())
+
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), A())
+  ensures isSubtype(typeOf(result), B())
+
+
+method con(par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_b), B())
+  requires acc(B_unique(par_b), write)
+  ensures isSubtype(typeOf(v_ret_0), A())
+  ensures isSubtype(typeOf(v_ret_0), A()) &&
+    acc(B_unique(g_b(v_ret_0)), write)
+  ensures g_b(v_ret_0) == par_b
+  ensures g_b(v_ret_0) == par_b
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == A()
+  anon := par_b
+  inhale g_b(v_ret_0) == anon
+  fold acc(A_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(A_unique(v_ret_0), write)
 }
 
 /unique_val_fields.kt: info: Generated Viper text for xOf:

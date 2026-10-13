@@ -48,7 +48,7 @@ fun <!VIPER_TEXT!>insertionSort<!>(arr: @Unique @Borrowed IntArray) {
     refute(false)
 }
 
-class Sorter(val arr: @Unique IntArray)
+<!VIPER_TEXT!>class Sorter<!>(val arr: @Unique IntArray)
 
 fun <!VIPER_TEXT!>insertionSortThroughVal<!>(s: @Unique @Borrowed Sorter) {
     postconditions<Unit> {

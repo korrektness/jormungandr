@@ -11,13 +11,13 @@ import org.jetbrains.kotlin.formver.core.conversion.insertQuantifierFunctionCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.AddCharInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.AddIntInt
-import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.And
+import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.eagerAnd
+import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.eagerOr
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.DivIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Implies
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.MulIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.NegInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Not
-import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Or
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.RemIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.StringGet
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.SubCharChar
@@ -173,7 +173,7 @@ object SpecialKotlinFunctions {
                 className = "Boolean",
                 name = "and"
             ) { args, _ ->
-                And(args[0], args[1])
+                eagerAnd(args[0], args[1])
             }
 
             addFunction(
@@ -182,7 +182,7 @@ object SpecialKotlinFunctions {
                 className = "Boolean",
                 name = "or"
             ) { args, _ ->
-                Or(args[0], args[1])
+                eagerOr(args[0], args[1])
             }
 
             addFunction(

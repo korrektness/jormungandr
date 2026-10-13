@@ -1,3 +1,29 @@
+/interface_generality.kt: info: Generated Viper text for GeneralToken:
+function g_flag(this: Ref): Ref
+  requires isSubtype(typeOf(this), GeneralToken())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+predicate GeneralToken_unique(this: Ref) {
+  isSubtype(typeOf(this), GeneralToken())
+}
+
+method con(par_flag: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_flag), boolType())
+  ensures isSubtype(typeOf(v_ret_0), GeneralToken())
+  ensures boolFromRef(g_flag(v_ret_0)) == boolFromRef(par_flag)
+  ensures boolFromRef(g_flag(v_ret_0)) == boolFromRef(par_flag)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == GeneralToken()
+  anon := par_flag
+  inhale boolFromRef(g_flag(v_ret_0)) == boolFromRef(anon)
+  fold acc(GeneralToken_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(GeneralToken_unique(v_ret_0), write)
+}
+
 /interface_generality.kt: info: Generated Viper text for truth:
 function truth(this: Ref): Ref
   requires isSubtype(typeOf(this), TruthView())
@@ -292,9 +318,9 @@ method laws(this: Ref)
   assert boolFromRef(GeneralCell_f_other(this))
 }
 
-method require(value: Ref) returns (ret_3: Ref)
+method require(value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(value)
 
 
@@ -1176,18 +1202,18 @@ method generalBindings(par_token: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method inheritedTruth(par_view: Ref) returns (ret_4: Ref)
+method inheritedTruth(par_view: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_view), c_DetailedView())
   requires acc(c_DetailedView_unique(par_view), write)
   ensures acc(c_DetailedView_unique(par_view), write)
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
 
 
-method otherTruth(par_view: Ref) returns (ret_5: Ref)
+method otherTruth(par_view: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_view), c_OtherView())
   requires acc(c_OtherView_unique(par_view), write)
   ensures acc(c_OtherView_unique(par_view), write)
-  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
 
 
 /interface_generality.kt: info: Generated Viper text for falseGeneralBinding:
@@ -1468,6 +1494,16 @@ predicate c_TruthView_unique(this: Ref) {
   acc(c_TruthView_footprint(this), write) &&
   isSubtype(typeOf(this), c_TruthView()) &&
   boolFromRef(c_TruthView_f_truth(this))
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), FalseTruth())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == FalseTruth()
+  fold acc(FalseTruth_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(FalseTruth_unique(v_ret_0), write)
 }
 
 method laws(this: Ref)
@@ -1779,6 +1815,16 @@ predicate TruthView_unique(this: Ref) {
   boolFromRef(TruthView_f_truth(this))
 }
 
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), FalseOther())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == FalseOther()
+  fold acc(FalseOther_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(FalseOther_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(FalseOther_unique(this), write)
 {
@@ -1884,6 +1930,86 @@ predicate TruthView_unique(this: Ref) {
   acc(TruthView_footprint(this), write) &&
   isSubtype(typeOf(this), TruthView()) &&
   boolFromRef(TruthView_f_truth(this))
+}
+
+/interface_generality.kt: info: Generated Viper text for ViewHolder:
+field bf_view: Ref
+
+function DetailedView_c_TruthView_f_truth(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_TruthView())
+  requires acc(DetailedView_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function c_TruthView_f_truth(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_TruthView())
+  requires acc(c_TruthView_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function f_token(this: Ref): Ref
+  requires isSubtype(typeOf(this), DetailedView())
+  requires acc(DetailedView_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), nullable(GeneralToken()))
+
+
+function flag(this: Ref): Ref
+  requires isSubtype(typeOf(this), GeneralToken())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function matches(this: Ref, first: Ref, second: Ref, par_token: Ref): Ref
+  requires isSubtype(typeOf(this), DetailedView())
+  requires acc(DetailedView_footprint(this), wildcard)
+  requires isSubtype(typeOf(first), boolType())
+  requires isSubtype(typeOf(second), boolType())
+  requires isSubtype(typeOf(par_token), nullable(GeneralToken()))
+  ensures isSubtype(typeOf(result), boolType())
+
+
+predicate DetailedView_footprint(this: Ref)
+
+predicate DetailedView_unique(this: Ref) {
+  acc(DetailedView_footprint(this), write) &&
+  isSubtype(typeOf(this), DetailedView()) &&
+  boolFromRef(DetailedView_c_TruthView_f_truth(this))
+}
+
+predicate GeneralToken_unique(this: Ref) {
+  isSubtype(typeOf(this), GeneralToken())
+}
+
+predicate ViewHolder_unique(this: Ref) {
+  isSubtype(typeOf(this), ViewHolder()) && acc(this.bf_view, write) &&
+  isSubtype(typeOf(this.bf_view), DetailedView()) &&
+  acc(DetailedView_unique(this.bf_view), write)
+}
+
+predicate c_TruthView_footprint(this: Ref)
+
+predicate c_TruthView_unique(this: Ref) {
+  acc(c_TruthView_footprint(this), write) &&
+  isSubtype(typeOf(this), c_TruthView()) &&
+  boolFromRef(c_TruthView_f_truth(this))
+}
+
+method con(par_view: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_view), DetailedView())
+  requires acc(DetailedView_unique(par_view), write)
+  ensures isSubtype(typeOf(v_ret_0), ViewHolder())
+  ensures isSubtype(typeOf(v_ret_0), ViewHolder()) &&
+    acc(v_ret_0.bf_view, write) &&
+    isSubtype(typeOf(v_ret_0.bf_view), DetailedView()) &&
+    acc(DetailedView_unique(v_ret_0.bf_view), write)
+  ensures v_ret_0.bf_view == par_view
+  ensures v_ret_0.bf_view == par_view
+{
+  v_ret_0 := new(bf_view)
+  inhale typeOf(v_ret_0) == ViewHolder()
+  v_ret_0.bf_view := par_view
+  fold acc(ViewHolder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ViewHolder_unique(v_ret_0), write)
 }
 
 /interface_generality.kt: info: Generated Viper text for readDetailed:
@@ -2248,6 +2374,27 @@ method accept(this: Ref, view: Ref) returns (ret: Ref)
       f_token(view)))
 
 
+/interface_generality.kt: info: Generated Viper text for HonestConsumer:
+predicate HonestConsumer_unique(this: Ref) {
+  isSubtype(typeOf(this), HonestConsumer())
+}
+
+predicate ViewConsumer_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ViewConsumer())
+}
+
+predicate footprint(this: Ref)
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), HonestConsumer())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == HonestConsumer()
+  fold acc(HonestConsumer_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(HonestConsumer_unique(v_ret_0), write)
+}
+
 /interface_generality.kt: info: Generated Viper text for accept:
 function DetailedView_c_TruthView_f_truth(this: Ref): Ref
   requires isSubtype(typeOf(this), c_TruthView())
@@ -2385,6 +2532,27 @@ method refines_c_ViewConsumer_f_accept(this: Ref, view: Ref)
       f_token(view)) ==
     old((unfolding acc(DetailedView_unique(view), wildcard) in
       f_token(view)))
+}
+
+/interface_generality.kt: info: Generated Viper text for DishonestConsumer:
+predicate DishonestConsumer_unique(this: Ref) {
+  isSubtype(typeOf(this), DishonestConsumer())
+}
+
+predicate ViewConsumer_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ViewConsumer())
+}
+
+predicate footprint(this: Ref)
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), DishonestConsumer())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == DishonestConsumer()
+  fold acc(DishonestConsumer_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(DishonestConsumer_unique(v_ret_0), write)
 }
 
 /interface_generality.kt: info: Generated Viper text for accept:
@@ -2654,6 +2822,47 @@ method consumerClient(consumer: Ref, view: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/interface_generality.kt: info: Generated Viper text for BoolNode:
+field bf_flag: Ref
+
+field bf_next: Ref
+
+predicate BoolNode_unique(this: Ref) {
+  isSubtype(typeOf(this), BoolNode()) && acc(this.bf_flag, write) &&
+  isSubtype(typeOf(this.bf_flag), boolType()) &&
+  acc(this.bf_next, write) &&
+  isSubtype(typeOf(this.bf_next), nullable(BoolNode())) &&
+  (this.bf_next != nullValue() ==>
+  acc(BoolNode_unique(this.bf_next), write))
+}
+
+method con(par_flag: Ref, par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_flag), boolType())
+  requires isSubtype(typeOf(par_next), nullable(BoolNode()))
+  requires par_next != nullValue() ==>
+    acc(BoolNode_unique(par_next), write)
+  ensures isSubtype(typeOf(v_ret_0), BoolNode())
+  ensures isSubtype(typeOf(v_ret_0), BoolNode()) &&
+    acc(v_ret_0.bf_flag, write) &&
+    isSubtype(typeOf(v_ret_0.bf_flag), boolType()) &&
+    acc(v_ret_0.bf_next, write) &&
+    isSubtype(typeOf(v_ret_0.bf_next), nullable(BoolNode())) &&
+    (v_ret_0.bf_next != nullValue() ==>
+    acc(BoolNode_unique(v_ret_0.bf_next), write))
+  ensures boolFromRef(v_ret_0.bf_flag) == boolFromRef(par_flag)
+  ensures v_ret_0.bf_next == par_next
+  ensures boolFromRef(v_ret_0.bf_flag) == boolFromRef(par_flag)
+  ensures v_ret_0.bf_next == par_next
+{
+  v_ret_0 := new(bf_flag, bf_next)
+  inhale typeOf(v_ret_0) == BoolNode()
+  v_ret_0.bf_flag := par_flag
+  v_ret_0.bf_next := par_next
+  fold acc(BoolNode_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BoolNode_unique(v_ret_0), write)
+}
+
 /interface_generality.kt: info: Generated Viper text for allTrue:
 field flag: Ref
 
@@ -2698,6 +2907,93 @@ predicate ChainView_unique(this: Ref) {
 }
 
 predicate footprint(this: Ref)
+
+/interface_generality.kt: info: Generated Viper text for BoolChain:
+field bf_head: Ref
+
+field flag: Ref
+
+field next: Ref
+
+function BoolChain_f_all(this: Ref): Ref
+  requires isSubtype(typeOf(this), BoolChain())
+  requires acc(BoolChain_unique(this), write)
+  ensures isSubtype(typeOf(result), boolType())
+  decreases _
+{
+  (unfolding acc(BoolChain_unique(this), write) in
+    (let anon_0_0 ==
+      (this.bf_head) in
+      allTrue(anon_0_0)))
+}
+
+function ChainView_f_all(this: Ref): Ref
+  requires isSubtype(typeOf(this), ChainView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  decreases _
+
+
+function allTrue(node: Ref): Ref
+  requires isSubtype(typeOf(node), nullable(BoolNode()))
+  requires node != nullValue() ==> acc(BoolNode_unique(node), write)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures node == nullValue() ==> result == boolToRef(true)
+  decreases node != nullValue(), BoolNode_unique(node)
+{
+  (node == nullValue() ?
+    boolToRef(true) :
+    (unfolding acc(BoolNode_unique(node), write) in
+      (let anon_4_0 ==
+        (node.flag) in
+        boolToRef(boolFromRef(anon_4_0) &&
+        (unfolding acc(BoolNode_unique(node), write) in
+          (let anon_5_0 ==
+            (node.next) in
+            boolFromRef(allTrue(anon_5_0))))))))
+}
+
+predicate BoolChain_unique(this: Ref) {
+  isSubtype(typeOf(this), BoolChain()) && acc(this.bf_head, write) &&
+  isSubtype(typeOf(this.bf_head), nullable(BoolNode())) &&
+  (this.bf_head != nullValue() ==>
+  acc(BoolNode_unique(this.bf_head), write))
+}
+
+predicate BoolNode_unique(this: Ref) {
+  isSubtype(typeOf(this), BoolNode()) && acc(this.flag, write) &&
+  isSubtype(typeOf(this.flag), boolType()) &&
+  acc(this.next, write) &&
+  isSubtype(typeOf(this.next), nullable(BoolNode())) &&
+  (this.next != nullValue() ==> acc(BoolNode_unique(this.next), write))
+}
+
+predicate ChainView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), ChainView())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_head: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_head), nullable(BoolNode()))
+  requires par_head != nullValue() ==>
+    acc(BoolNode_unique(par_head), write)
+  ensures isSubtype(typeOf(v_ret_0), BoolChain())
+  ensures isSubtype(typeOf(v_ret_0), BoolChain()) &&
+    acc(v_ret_0.bf_head, write) &&
+    isSubtype(typeOf(v_ret_0.bf_head), nullable(BoolNode())) &&
+    (v_ret_0.bf_head != nullValue() ==>
+    acc(BoolNode_unique(v_ret_0.bf_head), write))
+  ensures v_ret_0.bf_head == par_head
+  ensures v_ret_0.bf_head == par_head
+{
+  v_ret_0 := new(bf_head)
+  inhale typeOf(v_ret_0) == BoolChain()
+  v_ret_0.bf_head := par_head
+  fold acc(BoolChain_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BoolChain_unique(v_ret_0), write)
+}
 
 /interface_generality.kt: info: Generated Viper text for all:
 field flag: Ref
@@ -2871,6 +3167,7 @@ method con(par_head: Ref) returns (ret_1: Ref)
     acc(ret_1.bf_head, write) &&
     isSubtype(typeOf(ret_1.bf_head), nullable(BoolNode()))
   ensures ret_1.bf_head == par_head
+  ensures ret_1.bf_head == par_head
 
 
 method recursiveView(par_head: Ref) returns (v_ret_0: Ref)
@@ -2999,13 +3296,14 @@ method BoolChain_c_ChainView_upcast(this: Ref)
     old(BoolChain_f_all(this))
 
 
-method con_BoolChain(par_head: Ref) returns (ret_2: Ref)
+method con_BoolChain(par_head: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_head), nullable(BoolNode()))
-  ensures isSubtype(typeOf(ret_2), BoolChain())
-  ensures isSubtype(typeOf(ret_2), BoolChain()) &&
-    acc(ret_2.bf_head, write) &&
-    isSubtype(typeOf(ret_2.bf_head), nullable(BoolNode()))
-  ensures ret_2.bf_head == par_head
+  ensures isSubtype(typeOf(ret_3), BoolChain())
+  ensures isSubtype(typeOf(ret_3), BoolChain()) &&
+    acc(ret_3.bf_head, write) &&
+    isSubtype(typeOf(ret_3.bf_head), nullable(BoolNode()))
+  ensures ret_3.bf_head == par_head
+  ensures ret_3.bf_head == par_head
 
 
 method con_BoolNode(par_flag: Ref, par_next: Ref) returns (ret_1: Ref)
@@ -3016,6 +3314,8 @@ method con_BoolNode(par_flag: Ref, par_next: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.bf_flag), boolType()) &&
     acc(ret_1.bf_next, write) &&
     isSubtype(typeOf(ret_1.bf_next), nullable(BoolNode()))
+  ensures boolFromRef(ret_1.bf_flag) == boolFromRef(par_flag)
+  ensures ret_1.bf_next == par_next
   ensures boolFromRef(ret_1.bf_flag) == boolFromRef(par_flag)
   ensures ret_1.bf_next == par_next
 
@@ -3146,13 +3446,14 @@ method BoolChain_c_ChainView_upcast(this: Ref)
     old(BoolChain_f_all(this))
 
 
-method con_BoolChain(par_head: Ref) returns (ret_2: Ref)
+method con_BoolChain(par_head: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_head), nullable(BoolNode()))
-  ensures isSubtype(typeOf(ret_2), BoolChain())
-  ensures isSubtype(typeOf(ret_2), BoolChain()) &&
-    acc(ret_2.bf_head, write) &&
-    isSubtype(typeOf(ret_2.bf_head), nullable(BoolNode()))
-  ensures ret_2.bf_head == par_head
+  ensures isSubtype(typeOf(ret_3), BoolChain())
+  ensures isSubtype(typeOf(ret_3), BoolChain()) &&
+    acc(ret_3.bf_head, write) &&
+    isSubtype(typeOf(ret_3.bf_head), nullable(BoolNode()))
+  ensures ret_3.bf_head == par_head
+  ensures ret_3.bf_head == par_head
 
 
 method con_BoolNode(par_flag: Ref, par_next: Ref) returns (ret_1: Ref)
@@ -3163,6 +3464,8 @@ method con_BoolNode(par_flag: Ref, par_next: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.bf_flag), boolType()) &&
     acc(ret_1.bf_next, write) &&
     isSubtype(typeOf(ret_1.bf_next), nullable(BoolNode()))
+  ensures boolFromRef(ret_1.bf_flag) == boolFromRef(par_flag)
+  ensures ret_1.bf_next == par_next
   ensures boolFromRef(ret_1.bf_flag) == boolFromRef(par_flag)
   ensures ret_1.bf_next == par_next
 

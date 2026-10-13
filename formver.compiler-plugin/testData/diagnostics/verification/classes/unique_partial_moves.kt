@@ -2,11 +2,11 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(var value: Int)
+<!VIPER_TEXT!>class Box<!>(var value: Int)
 
-class A(var count: Int, var x: @Unique Box)
+<!VIPER_TEXT!>class A<!>(var count: Int, var x: @Unique Box)
 
-class B(var y: @Unique A)
+<!VIPER_TEXT!>class B<!>(var y: @Unique A)
 
 fun <!VIPER_TEXT!>consume<!>(b: @Unique Box) {}
 

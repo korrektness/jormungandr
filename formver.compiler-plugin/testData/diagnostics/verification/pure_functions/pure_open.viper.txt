@@ -1,0 +1,25 @@
+/pure_open.kt: info: Generated Viper text for Shape:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Shape())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Shape()
+  fold acc(Shape_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Shape_unique(v_ret_0), write)
+}
+
+/pure_open.kt: info: Generated Viper text for Square:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Square())
+  ensures isSubtype(typeOf(v_ret_0), Square()) &&
+    isSubtype(typeOf(v_ret_0), Shape())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Square()
+  fold acc(Shape_unique(v_ret_0), write)
+  fold acc(Square_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Square_unique(v_ret_0), write)
+  unfold acc(Shape_unique(v_ret_0), write)
+}

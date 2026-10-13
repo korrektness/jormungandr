@@ -12,7 +12,7 @@ abstract class Counter {
     abstract fun <!VIPER_TEXT!>step<!>(n: Int): Int
 }
 
-class Incrementer : Counter() {
+<!VIPER_TEXT!>class Incrementer<!> : Counter() {
     override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
         preconditions { n >= -1 && n < 2147483647 }
         postconditions<Int> { r -> r == n + 1 }
@@ -20,14 +20,14 @@ class Incrementer : Counter() {
     }
 }
 
-class Identity : Counter() {
+<!VIPER_TEXT!>class Identity<!> : Counter() {
     override fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>step<!>(n: Int): Int {
         postconditions<Int> { r -> r == n }
         return n
     }
 }
 
-class Inheriting : Counter() {
+<!VIPER_TEXT!>class Inheriting<!> : Counter() {
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
         return n
     }<!>
@@ -43,7 +43,7 @@ interface Measure {
     fun <!VIPER_TEXT!>size<!>(limit: Int): Int
 }
 
-class Halving : Measure {
+<!VIPER_TEXT!>class Halving<!> : Measure {
     @SpecOf("size")
     fun halvingSpec(limit: Int) {
         preconditions { limit > 0 }
@@ -53,7 +53,7 @@ class Halving : Measure {
     override fun <!VIPER_TEXT!>size<!>(limit: Int): Int = limit / 2
 }
 
-class Positive : Measure {
+<!VIPER_TEXT!>class Positive<!> : Measure {
     @SpecOf("size")
     fun positiveSpec(limit: Int) {
         preconditions { limit > 1 }

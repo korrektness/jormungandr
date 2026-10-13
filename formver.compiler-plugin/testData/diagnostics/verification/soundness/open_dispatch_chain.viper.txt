@@ -1,0 +1,618 @@
+/open_dispatch_chain.kt: info: Generated Viper text for compute:
+field bf_v: Ref
+
+method compute(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires acc(Base_unique(this), write)
+  ensures acc(Base_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := seed(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method seed(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires acc(Base_unique(this), write)
+  ensures acc(Base_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) > 0
+
+
+/open_dispatch_chain.kt: info: Generated Viper text for seed:
+field bf_v: Ref
+
+method seed(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires acc(Base_unique(this), write)
+  ensures acc(Base_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for seed:
+field bf_v: Ref
+
+field w: Ref
+
+method Base_f_seed(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires acc(Base_unique(this), write)
+  ensures acc(Base_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) > 0
+
+
+method SubVar_f_seed(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), SubVar())
+  requires acc(SubVar_unique(this), write)
+  ensures acc(SubVar_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  unfold acc(SubVar_unique(this), write)
+  v_ret_0 := this.w
+  assert (let this ==
+      (this) in
+      (unfolding acc(Base_unique(this), write) in
+        true &&
+        boolFromRef((let anon_0_0 ==
+          (this.w) in
+          gtInts(anon_0_0, intToRef(0))))))
+  fold acc(SubVar_unique(this), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Base_f_seed(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires acc(Base_unique(this), write)
+  requires isSubtype(typeOf(this), SubVar())
+{
+  inhale isSubtype(typeOf(this), SubVar()) && acc(this.w, write) &&
+    isSubtype(typeOf(this.w), intType()) &&
+    (let this ==
+      (this) in
+      (unfolding acc(Base_unique(this), write) in
+        true &&
+        boolFromRef((let anon_0_0 ==
+          (this.w) in
+          gtInts(anon_0_0, intToRef(0))))))
+  fold acc(SubVar_unique(this), write)
+  ret_1 := SubVar_f_seed(this)
+  unfold acc(SubVar_unique(this), write)
+  assert acc(Base_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) > 0
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for seed:
+field bf_v: Ref
+
+field q: Ref
+
+function w(this: Ref): Ref
+  requires isSubtype(typeOf(this), SubVal())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Base_f_seed(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires acc(Base_unique(this), write)
+  ensures acc(Base_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) > 0
+
+
+method SubVal_f_seed(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), SubVal())
+  requires acc(SubVal_unique(this), write)
+  ensures acc(SubVal_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  var unused: Ref
+  unfold acc(SubVal_unique(this), write)
+  unused := this.q
+  v_ret_0 := w(this)
+  assert (let this ==
+      (this) in
+      (unfolding acc(Base_unique(this), write) in
+        true &&
+        boolFromRef(boolToRef(intFromRef(w(this)) > 0 &&
+        (let anon_0_0 ==
+          (this.q) in
+          intFromRef(anon_0_0) == 0)))))
+  fold acc(SubVal_unique(this), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Base_f_seed(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Base())
+  requires acc(Base_unique(this), write)
+  requires isSubtype(typeOf(this), SubVal())
+{
+  inhale isSubtype(typeOf(this), SubVal()) && acc(this.q, write) &&
+    isSubtype(typeOf(this.q), intType()) &&
+    (let this ==
+      (this) in
+      (unfolding acc(Base_unique(this), write) in
+        true &&
+        boolFromRef(boolToRef(intFromRef(w(this)) > 0 &&
+        (let anon_0_0 ==
+          (this.q) in
+          intFromRef(anon_0_0) == 0)))))
+  fold acc(SubVal_unique(this), write)
+  ret_1 := SubVal_f_seed(this)
+  unfold acc(SubVal_unique(this), write)
+  assert acc(Base_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) > 0
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for subVarClient:
+field bf_v: Ref
+
+field w: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), SubVar())
+  ensures isSubtype(typeOf(ret_1), SubVar()) && acc(ret_1.w, write) &&
+    isSubtype(typeOf(ret_1.w), intType()) &&
+    (isSubtype(typeOf(ret_1), Base()) && acc(ret_1.bf_v, write) &&
+    isSubtype(typeOf(ret_1.bf_v), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_v) in
+        gtInts(anon_1_0, intToRef(0)))))) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.w) in
+        gtInts(anon_0_0, intToRef(0)))))
+
+
+method subVarClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var s: Ref
+  var anon_2: Ref
+  s := con()
+  fold acc(Base_unique(s), write)
+  fold acc(SubVar_unique(s), write)
+  unfold acc(SubVar_unique(s), write)
+  unfold acc(Base_unique(s), write)
+  anon_2 := s.bf_v
+  assert intFromRef(anon_2) > 0
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for subValClient:
+field bf_v: Ref
+
+field q: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function w(this: Ref): Ref
+  requires isSubtype(typeOf(this), SubVal())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), SubVal())
+  ensures isSubtype(typeOf(ret_1), SubVal()) && acc(ret_1.q, write) &&
+    isSubtype(typeOf(ret_1.q), intType()) &&
+    (isSubtype(typeOf(ret_1), Base()) && acc(ret_1.bf_v, write) &&
+    isSubtype(typeOf(ret_1.bf_v), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_1_0 ==
+        (this.bf_v) in
+        gtInts(anon_1_0, intToRef(0)))))) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef(boolToRef(intFromRef(w(this)) > 0 &&
+      (let anon_0_0 ==
+        (this.q) in
+        intFromRef(anon_0_0) == 0))))
+
+
+method subValClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var s: Ref
+  var anon_2: Ref
+  s := con()
+  fold acc(Base_unique(s), write)
+  fold acc(SubVal_unique(s), write)
+  unfold acc(SubVal_unique(s), write)
+  unfold acc(Base_unique(s), write)
+  anon_2 := s.bf_v
+  assert intFromRef(anon_2) > 0
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for benignClient:
+field bf_v: Ref
+
+field w: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method benignClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var s: Ref
+  var anon_1: Ref
+  s := con()
+  fold acc(Base_unique(s), write)
+  fold acc(Benign_unique(s), write)
+  unfold acc(Benign_unique(s), write)
+  unfold acc(Base_unique(s), write)
+  anon_1 := s.bf_v
+  assert intFromRef(anon_1) > 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Benign())
+  ensures isSubtype(typeOf(ret_1), Benign()) && acc(ret_1.w, write) &&
+    isSubtype(typeOf(ret_1.w), intType()) &&
+    (isSubtype(typeOf(ret_1), Base()) && acc(ret_1.bf_v, write) &&
+    isSubtype(typeOf(ret_1.bf_v), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_v) in
+        gtInts(anon_0_0, intToRef(0))))))
+
+
+/open_dispatch_chain.kt: info: Generated Viper text for FixedBase:
+field bf_v: Ref
+
+method compute(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), FixedBase())
+  requires acc(FixedBase_unique(this), write)
+  ensures acc(FixedBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) > 0
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), FixedBase())
+  ensures isSubtype(typeOf(v_ret_0), FixedBase()) &&
+    acc(v_ret_0.bf_v, write) &&
+    isSubtype(typeOf(v_ret_0.bf_v), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_v) in
+        gtInts(anon_0_0, intToRef(0)))))
+{
+  var anon_1: Ref
+  v_ret_0 := new(bf_v)
+  inhale typeOf(v_ret_0) == FixedBase()
+  v_ret_0.bf_v := intToRef(1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_v) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(FixedBase_unique(v_ret_0), write)
+  anon_1 := compute(v_ret_0)
+  unfold acc(FixedBase_unique(v_ret_0), write)
+  v_ret_0.bf_v := anon_1
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_v) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(FixedBase_unique(v_ret_0), write)
+  unfold acc(FixedBase_unique(v_ret_0), write)
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for compute:
+field bf_v: Ref
+
+method compute(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), FixedBase())
+  requires acc(FixedBase_unique(this), write)
+  ensures acc(FixedBase_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := seed(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method seed(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), FixedBase())
+  requires acc(FixedBase_unique(this), write)
+  ensures acc(FixedBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) > 0
+
+
+/open_dispatch_chain.kt: info: Generated Viper text for seed:
+field bf_v: Ref
+
+method seed(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), FixedBase())
+  requires acc(FixedBase_unique(this), write)
+  ensures acc(FixedBase_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for FixedSub:
+field bf_v: Ref
+
+field w: Ref
+
+method FixedSub_c_FixedBase_f_compute_inherited_body_c_FixedBase_f_compute(this: Ref)
+  returns (v_ret_4: Ref)
+  requires isSubtype(typeOf(this), FixedSub())
+  requires acc(FixedSub_unique(this), write)
+  requires typeOf(this) == FixedSub()
+  ensures acc(FixedSub_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_4), intType())
+  ensures intFromRef(v_ret_4) > 0
+{
+  unfold acc(FixedSub_unique(this), write)
+  v_ret_4 := c_FixedBase_f_seed(this)
+  exhale isSubtype(typeOf(this), FixedSub()) && acc(this.w, write) &&
+    isSubtype(typeOf(this.w), intType())
+  inhale isSubtype(typeOf(this), FixedSub()) && acc(this.w, write) &&
+    isSubtype(typeOf(this.w), intType())
+  fold acc(FixedSub_unique(this), write)
+  goto lbl_ret_4
+  label lbl_ret_4
+}
+
+method FixedSub_c_FixedBase_f_compute_inherited_contract_c_FixedBase_f_compute(this: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), FixedSub())
+  requires acc(FixedSub_unique(this), write)
+  requires typeOf(this) == FixedSub()
+  ensures acc(FixedSub_unique(this), write)
+  ensures isSubtype(typeOf(ret_7), intType())
+  ensures intFromRef(ret_7) > 0
+
+
+method FixedSub_c_FixedBase_f_seed_inherited_body_c_FixedBase_f_seed(this: Ref)
+  returns (v_ret_8: Ref)
+  requires isSubtype(typeOf(this), FixedSub())
+  requires acc(FixedSub_unique(this), write)
+  requires typeOf(this) == FixedSub()
+  ensures acc(FixedSub_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_8), intType())
+  ensures intFromRef(v_ret_8) > 0
+{
+  v_ret_8 := intToRef(1)
+  goto lbl_ret_8
+  label lbl_ret_8
+}
+
+method FixedSub_c_FixedBase_f_seed_inherited_contract_c_FixedBase_f_seed(this: Ref)
+  returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), FixedSub())
+  requires acc(FixedSub_unique(this), write)
+  requires typeOf(this) == FixedSub()
+  ensures acc(FixedSub_unique(this), write)
+  ensures isSubtype(typeOf(ret_10), intType())
+  ensures intFromRef(ret_10) > 0
+
+
+method c_FixedBase_f_compute(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), c_FixedBase())
+  requires acc(c_FixedBase_unique(this), write)
+  ensures acc(c_FixedBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) > 0
+
+
+method c_FixedBase_f_seed(this: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), c_FixedBase())
+  requires acc(c_FixedBase_unique(this), write)
+  ensures acc(c_FixedBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_6), intType())
+  ensures intFromRef(ret_6) > 0
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), FixedSub())
+  ensures isSubtype(typeOf(v_ret_0), FixedSub()) && acc(v_ret_0.w, write) &&
+    isSubtype(typeOf(v_ret_0.w), intType()) &&
+    (isSubtype(typeOf(v_ret_0), c_FixedBase()) && acc(v_ret_0.bf_v, write) &&
+    isSubtype(typeOf(v_ret_0.bf_v), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_v) in
+        gtInts(anon_0_0, intToRef(0))))))
+{
+  var anon_1: Ref
+  v_ret_0 := new(bf_v, w)
+  inhale typeOf(v_ret_0) == FixedSub()
+  v_ret_0.bf_v := intToRef(1)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_v) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(c_FixedBase_unique(v_ret_0), write)
+  anon_1 := c_FixedBase_f_compute(v_ret_0)
+  unfold acc(c_FixedBase_unique(v_ret_0), write)
+  v_ret_0.bf_v := anon_1
+  v_ret_0.w := intToRef(5)
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_v) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(c_FixedBase_unique(v_ret_0), write)
+  fold acc(FixedSub_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(FixedSub_unique(v_ret_0), write)
+  unfold acc(c_FixedBase_unique(v_ret_0), write)
+}
+
+method refines_FixedSub_c_FixedBase_f_compute_inherited_contract_c_FixedBase_f_compute(this: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), FixedSub())
+  requires acc(FixedSub_unique(this), write)
+  requires typeOf(this) == FixedSub()
+  requires isSubtype(typeOf(this), FixedSub())
+{
+  ret_7 := FixedSub_c_FixedBase_f_compute_inherited_body_c_FixedBase_f_compute(this)
+  assert acc(FixedSub_unique(this), write)
+  assert isSubtype(typeOf(ret_7), intType())
+  assert intFromRef(ret_7) > 0
+}
+
+method refines_FixedSub_c_FixedBase_f_seed_inherited_contract_c_FixedBase_f_seed(this: Ref)
+  returns (ret_10: Ref)
+  requires isSubtype(typeOf(this), FixedSub())
+  requires acc(FixedSub_unique(this), write)
+  requires typeOf(this) == FixedSub()
+  requires isSubtype(typeOf(this), FixedSub())
+{
+  ret_10 := FixedSub_c_FixedBase_f_seed_inherited_body_c_FixedBase_f_seed(this)
+  assert acc(FixedSub_unique(this), write)
+  assert isSubtype(typeOf(ret_10), intType())
+  assert intFromRef(ret_10) > 0
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for fixedSubClient:
+field bf_v: Ref
+
+field w: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), FixedSub())
+  ensures isSubtype(typeOf(ret_1), FixedSub()) && acc(ret_1.w, write) &&
+    isSubtype(typeOf(ret_1.w), intType()) &&
+    (isSubtype(typeOf(ret_1), FixedBase()) && acc(ret_1.bf_v, write) &&
+    isSubtype(typeOf(ret_1.bf_v), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_v) in
+        gtInts(anon_0_0, intToRef(0))))))
+
+
+method fixedSubClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var s: Ref
+  var anon_1: Ref
+  s := con()
+  fold acc(FixedBase_unique(s), write)
+  fold acc(FixedSub_unique(s), write)
+  unfold acc(FixedSub_unique(s), write)
+  unfold acc(FixedBase_unique(s), write)
+  anon_1 := s.bf_v
+  assert intFromRef(anon_1) > 0
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for seedOf:
+field bf_v: Ref
+
+method seed(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), PassedBase())
+  requires acc(PassedBase_unique(this), write)
+  ensures acc(PassedBase_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) > 0
+
+
+method seedOf(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), PassedBase())
+  requires acc(PassedBase_unique(b), write)
+  ensures acc(PassedBase_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := seed(b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for seed:
+field bf_v: Ref
+
+method seed(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), PassedBase())
+  requires acc(PassedBase_unique(this), write)
+  ensures acc(PassedBase_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/open_dispatch_chain.kt: info: Generated Viper text for extensionSeed:
+field bf_v: Ref
+
+method extensionSeed(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), PassedExtension())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

@@ -2,15 +2,15 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-open class Base
+open <!VIPER_TEXT!>class Base<!>
 
-class Sub : Base() {
+<!VIPER_TEXT!>class Sub<!> : Base() {
     var extra = 0
 }
 
-class Cell(var value: Int)
+<!VIPER_TEXT!>class Cell<!>(var value: Int)
 
-class Rich(val fixed: @Unique Cell, val plain: Int) : Base() {
+<!VIPER_TEXT!>class Rich<!>(val fixed: @Unique Cell, val plain: Int) : Base() {
     var next: @Unique Cell? = null
 }
 

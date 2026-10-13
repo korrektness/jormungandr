@@ -1,6 +1,6 @@
 // NEVER_VALIDATE
 
-class PrimitiveProperty {
+<!VIPER_TEXT!>class PrimitiveProperty<!> {
     val nProp: Int
         <!VIPER_TEXT!>get<!>() {
             return 0
@@ -16,7 +16,7 @@ fun <!VIPER_TEXT!>testPrimitivePropertySetter<!>(pp: PrimitiveProperty) {
     pp.aProp = 0
 }
 
-class ReferenceProperty {
+<!VIPER_TEXT!>class ReferenceProperty<!> {
     val rProp: PrimitiveProperty
         <!VIPER_TEXT!>get<!>() {
             return PrimitiveProperty()

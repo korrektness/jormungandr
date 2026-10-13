@@ -109,10 +109,11 @@ class ViperPoweredDeclarationChecker(
         }
     }
 
+    /** Converts the specified lambdas of [declaration] that no function contains, and returns their Viper dumps. */
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    fun checkStandaloneLambdas(declaration: FirDeclaration, scopeName: ScopedName) {
-        if (shouldSkip()) return
-        if (config.conversionSelection != TargetsSelection.ALL_TARGETS || declaration.hasAnnotation(neverConvertId, session)) return
+    fun standaloneLambdaDumps(declaration: FirDeclaration, scopeName: ScopedName): List<String> {
+        if (shouldSkip()) return emptyList()
+        if (config.conversionSelection != TargetsSelection.ALL_TARGETS || declaration.hasAnnotation(neverConvertId, session)) return emptyList()
         val collector = ProgramConverter(session, config, context, reporter)
         val lambdas = with(collector) { SpecifiedLambda.collect(declaration, scopeName) }
         declaration.lambdaPrograms = emptyList()
@@ -125,6 +126,12 @@ class ViperPoweredDeclarationChecker(
                 convert(declaration, converter, index + 1, dumps)
             }
         }
+        return dumps
+    }
+
+    /** Reports the Viper [dumps] of [declaration] as one diagnostic. */
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    fun reportViperText(declaration: FirDeclaration, dumps: List<String>) {
         if (dumps.isNotEmpty()) {
             reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.verificationName, dumps.joinToString("\n\n"))
         }

@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.verify
 
-open class A {
+open <!VIPER_TEXT!>class A<!> {
     private var field: Boolean = false
         <!VIPER_TEXT!>get<!>() {
             return !field
@@ -11,17 +11,17 @@ open class A {
     fun <!VIPER_TEXT!>getBooleanField<!>() = field
 }
 
-open class B : A() {
+open <!VIPER_TEXT!>class B<!> : A() {
     private val field: String = ""
 
     fun <!VIPER_TEXT!>getStringField<!>() = field
 }
 
-class C : B() {
+<!VIPER_TEXT!>class C<!> : B() {
     var field: Int = 0
 }
 
-class D: B() {
+<!VIPER_TEXT!>class D<!>: B() {
     val field: Int = 0
 }
 

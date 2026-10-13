@@ -119,16 +119,19 @@ owned paths only.
 
 ### Unconverted bodies
 
-Callers use constructor headers. For classes with own or inherited laws, SnaKt
-verifies constructors, property initializers and `init` blocks against those
-headers (SPECIFICATIONS.md, "Class laws"). Bodies of law-free classes and
-top-level initializers are unconverted.
+Callers use constructor headers. SnaKt verifies the constructors, property
+initializers and `init` blocks of every source class against those headers
+(SPECIFICATIONS.md, "Verification Control"). A construction it cannot convert or
+that breaks the construction discipline is skipped, and its header then states
+no field values. Top-level initializers are unconverted.
 
 Property accessor bodies are verified against their callers' header
 (SPECIFICATIONS.md, "Verification Control").
 
 Tests: `verification/soundness/accessors.kt`,
-`verification/soundness/constructor_bodies.kt`.
+`verification/soundness/constructor_bodies.kt`,
+`verification/soundness/law_free_constructors.kt`,
+`verification/soundness/construction_skips.kt`.
 
 ### Family transfers and observer views
 
@@ -180,10 +183,16 @@ Test: `verification/soundness/construction.kt::allocationExactType`.
 
 A constructor fixes each default `val` getter once per receiver, and its header
 relates parameters to fields. Write and reach analysis removes any relation that
-the construction can invalidate.
+the construction can invalidate. A construction that lets `this` escape gives
+its object shared and states nothing about its fields. In an open class, the
+construction may call on `this` only members that are fixed for every subclass,
+checked through the bodies of the members it calls; a subclass override could
+otherwise run before the subclass's fields are assigned.
 
 Tests: `verification/soundness/construction.kt::overriddenValInit`,
-`verification/classes/construction_writes.kt`.
+`verification/classes/construction_writes.kt`,
+`verification/soundness/law_free_constructors.kt::ExtWrite`,
+`verification/soundness/open_dispatch_chain.kt`.
 
 ### Lambda creation facts
 

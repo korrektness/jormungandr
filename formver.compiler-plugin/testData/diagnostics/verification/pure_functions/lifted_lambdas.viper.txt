@@ -521,6 +521,31 @@ method refines_f_invoke(this: Ref, x: Ref) returns (ret_2: Ref)
   assert intFromRef(ret_2) >= intFromRef(x)
 }
 
+/lifted_lambdas.kt: info: Generated Viper text for LiftedCell:
+field bf_n: Ref
+
+predicate LiftedCell_unique(this: Ref) {
+  isSubtype(typeOf(this), LiftedCell()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType())
+}
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), LiftedCell())
+  ensures isSubtype(typeOf(v_ret_0), LiftedCell()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == LiftedCell()
+  v_ret_0.bf_n := par_n
+  fold acc(LiftedCell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(LiftedCell_unique(v_ret_0), write)
+}
+
 /lifted_lambdas.kt: info: Generated Viper text for captureReceiver:
 field Lambda0_p_capture0: Ref
 

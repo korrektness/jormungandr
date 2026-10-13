@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Tree(val v: Int, var l: @Unique Tree?, var r: @Unique Tree?)
+<!VIPER_TEXT!>class Tree<!>(val v: Int, var l: @Unique Tree?, var r: @Unique Tree?)
 
 // A tree has no bound on its node count, so the additions in `size` are overflow-negative tests and callers see no
 // definition of `size`.

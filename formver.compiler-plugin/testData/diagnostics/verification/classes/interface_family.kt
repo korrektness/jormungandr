@@ -12,13 +12,13 @@ interface LeftFamily : Family
 interface RightFamily : Family
 interface DiamondFamily : LeftFamily, RightFamily
 
-class Representation(var value: Int) : DiamondFamily {
+<!VIPER_TEXT!>class Representation<!>(var value: Int) : DiamondFamily {
     @Pure
     @Unique
     override fun <!VIPER_TEXT!>observe<!>(): Int = value
 }
 
-class OtherRepresentation(var other: Int) : Family {
+<!VIPER_TEXT!>class OtherRepresentation<!>(var other: Int) : Family {
     @Pure
     @Unique
     override fun <!VIPER_TEXT!>observe<!>(): Int = other

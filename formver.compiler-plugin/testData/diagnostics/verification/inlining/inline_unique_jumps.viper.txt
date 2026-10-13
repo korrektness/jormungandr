@@ -1,3 +1,54 @@
+/inline_unique_jumps.kt: info: Generated Viper text for Counter:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_x := par_x
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/inline_unique_jumps.kt: info: Generated Viper text for Holder:
+field bf_count: Ref
+
+field bf_inner: Ref
+
+field x: Ref
+
+method con(par_inner: Ref, par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_inner), Counter())
+  requires acc(Counter_unique(par_inner), write)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(v_ret_0.bf_inner, write) &&
+    isSubtype(typeOf(v_ret_0.bf_inner), Counter()) &&
+    acc(Counter_unique(v_ret_0.bf_inner), write) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType())
+  ensures v_ret_0.bf_inner == par_inner
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures v_ret_0.bf_inner == par_inner
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  v_ret_0 := new(bf_inner, bf_count)
+  inhale typeOf(v_ret_0) == Holder()
+  v_ret_0.bf_inner := par_inner
+  v_ret_0.bf_count := par_count
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
 /inline_unique_jumps.kt: info: Generated Viper text for borrowThen:
 field x: Ref
 

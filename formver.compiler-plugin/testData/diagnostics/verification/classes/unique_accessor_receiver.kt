@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(var value: Int) {
+<!VIPER_TEXT!>class Box<!>(var value: Int) {
     val doubled: Int
         <!VIPER_TEXT!>get<!>() {
             val n = value

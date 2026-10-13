@@ -92,7 +92,7 @@ fun <!VIPER_TEXT!>ackermannClient<!>() {
     refute(false)
 }
 
-class Node(val value: Int, val next: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, val next: @Unique Node?)
 
 // A list has no bound on its length, so `1 + length(n.next)` is an overflow-negative test.
 @Pure fun <!VIPER_TEXT!>length<!>(n: @Unique Node?): Int {

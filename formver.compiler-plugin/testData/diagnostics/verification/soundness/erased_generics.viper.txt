@@ -1,3 +1,25 @@
+/erased_generics.kt: info: Generated Viper text for Cell:
+function g_item(this: Ref): Ref
+  requires isSubtype(typeOf(this), Cell())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method con(par_item: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_item), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), Cell())
+  ensures g_item(v_ret_0) == par_item
+  ensures g_item(v_ret_0) == par_item
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Cell()
+  anon := par_item
+  inhale g_item(v_ret_0) == anon
+  fold acc(Cell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Cell_unique(v_ret_0), write)
+}
+
 /erased_generics.kt: info: Generated Viper text for castCellElement:
 function g_item(this: Ref): Ref
   requires isSubtype(typeOf(this), Cell())
@@ -33,6 +55,7 @@ method castCellElement() returns (v_ret_0: Ref)
 method con(par_item: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_item), nullable(anyType()))
   ensures isSubtype(typeOf(ret_1), Cell())
+  ensures g_item(ret_1) == par_item
   ensures g_item(ret_1) == par_item
 
 

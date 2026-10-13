@@ -27,6 +27,11 @@ The body of a custom property getter or setter is verified too, against the cont
 nothing beyond the Kotlin types of its receivers, parameters and result. A `@Pure` getter is a pure function instead.
 A custom accessor of a top-level property is an unsupported construct.
 
+The constructors, property initializers and `init` blocks of every class are verified as one construction against
+the constructor's header. A construction that SnaKt cannot convert, or that breaks the construction discipline
+(Class laws), is not verified, and its constructor header gives callers no field values. A delegated property makes
+the construction unconvertible, and a `lateinit` property that construction leaves unassigned breaks the discipline.
+
 A function that uses a construct SnaKt does not translate gets an `UNSUPPORTED_FEATURE` warning at the construct and a
 `VERIFICATION_SKIPPED` warning at its name, and is not verified. Compilation continues.
 
@@ -354,13 +359,15 @@ is law-bound in its declaring class; other inherited `var` reads produce `INVALI
 section. This protection applies across superclass and subclass views.
 
 Constructor initialization has two phases. Phase one lasts until Kotlin definite assignment establishes every
-property of the declaring class. During this phase, construction may initialize backing fields but may not read,
-pass, capture, or call on `this`. After definite assignment, own-field reads and writes, checks, local computation,
+property of the declaring class. During this phase, construction may initialize backing fields and read its own
+non-open stored properties that every path has already assigned, as in `class C(var a: Int, val b: Int) { var sum =
+a + b }`. It may not otherwise read, pass, capture, or call on `this`. After definite assignment, own-field reads and writes, checks, local computation,
 and calls without `this` or a member reference may execute before establishment. The proof establishes the
 declaring class's laws without assuming them at the first exposure of `this`, or at constructor end, whichever
 comes first. Throws before establishment are abnormal exits. After establishment, ordinary ownership operations
 preserve the constructed representation. In a non-escaping constructor, phase-two `this` is unique.
-An open class may dispatch only to final members on `this`.
+During construction, an open class may call on `this` only members that no subclass overrides, and the bodies of
+those members are held to the same rule. It may not pass `this` to another function or call an extension on it.
 
 Constructor proofs allocate fresh field permissions, execute delegated construction, and execute property
 initializers and init blocks in declaration order. Secondary constructors execute phase-two bodies after delegation.
@@ -368,7 +375,7 @@ The returned representation and its opened-predicate description include the inv
 verification error on the class. Delegated properties in law-bearing classes are rejected with `INVALID_LAW`.
 
 A construction-discipline violation is reported with its reason: `INVALID_LAW` for classes with own or inherited
-class laws, and `VERIFICATION_SKIPPED` for other classes. The latter retain trusted stable field equalities.
+class laws, and `VERIFICATION_SKIPPED` for other classes. Callers of such a constructor still assume the class laws.
 
 Unfolding an owned class receiver exposes its invariant to the member body. Every refold proves the invariant,
 including refolds for calls and control-flow joins. On member exit, a retained unique receiver with class laws is
@@ -528,7 +535,7 @@ val b = Node(2, null)             // shared: writes to b.next are dropped, with 
 val c: @Unique Node = Node(3, null)  // unique
 ```
 
-A constructor call gives a shared object when the class lets `this` escape
+A constructor call gives a shared object, and no facts about its fields, when the class lets `this` escape
 while it is constructed. That happens when a constructor body, an `init` block
 or a property initializer, of the class or of a superclass, uses `this` in executable code other
 than to read or write a field, to pass it to a `@Borrowed` parameter, or to
@@ -747,7 +754,8 @@ as Kotlin does. The preconditions and reads in the right operand of `&&` need
 to hold only where the left operand is true, in the right operand of `||` only
 where it is false, and in a branch of an `if` only where the condition selects
 that branch. A law `size <= 0 || at(0) != null` needs the precondition of `at`
-only when `size > 0`.
+only when `size > 0`. The infix `and` and `or` evaluate both operands, so
+`(b != 0) and (a / b > 0)` needs `b != 0` for its division.
 
 A `@Pure` function cannot return an alias into data its caller still owns. Its
 result cannot be `@Unique`, and when it has a `@Unique` parameter its result

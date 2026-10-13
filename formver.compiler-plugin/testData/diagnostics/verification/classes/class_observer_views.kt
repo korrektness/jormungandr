@@ -12,14 +12,14 @@ interface ClassObservation {
     @Pure @get:Unique val size: Int
 }
 
-open class ObservationBase(var n: Int) : ClassObservation {
+open <!VIPER_TEXT!>class ObservationBase<!>(var n: Int) : ClassObservation {
     @Pure @Unique final override fun <!VIPER_TEXT!>value<!>(): Int = n
     @Pure @Unique final override fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int = n * factor
     @Pure @get:Unique final override val size: Int <!VIPER_TEXT!>get<!>() = n
 }
 
 abstract class ObservationMiddle(n: Int) : ObservationBase(n)
-class ObservationLeaf(n: Int, var extra: Int) : ObservationMiddle(n) {
+<!VIPER_TEXT!>class ObservationLeaf<!>(n: Int, var extra: Int) : ObservationMiddle(n) {
     @Pure @Unique fun <!VIPER_TEXT!>throughThis<!>(): Int {
         preconditions { -1073741824 <= n && n <= 1073741823 }
         return value() + size
@@ -75,7 +75,7 @@ fun <!VIPER_TEXT!>inlineClassBorrow<!>(leaf: @Unique @Borrowed ObservationLeaf) 
     verify(leaf.extra == 7)
 }
 
-class ObservationHolder(val leaf: @Unique ObservationLeaf)
+<!VIPER_TEXT!>class ObservationHolder<!>(val leaf: @Unique ObservationLeaf)
 
 fun <!VIPER_TEXT!>classFieldBorrow<!>(holder: @Unique @Borrowed ObservationHolder) {
     preconditions { -715827886 <= holder.leaf.n && holder.leaf.n <= 715827878 }
@@ -117,7 +117,7 @@ fun <!VIPER_TEXT!>freshClassView<!>(): @Unique ObservationBase = ObservationLeaf
 
 abstract class AbstractObservation : ClassObservation
 
-class DirectObservation(var n: Int) : AbstractObservation() {
+<!VIPER_TEXT!>class DirectObservation<!>(var n: Int) : AbstractObservation() {
     @Pure @Unique override fun <!VIPER_TEXT!>value<!>(): Int = n
     @Pure @Unique override fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int = n * factor
     @Pure @get:Unique override val size: Int <!VIPER_TEXT!>get<!>() = n
@@ -140,7 +140,7 @@ fun <!VIPER_TEXT!>abstractToInterface<!>(base: @Unique AbstractObservation): @Un
     return base
 }
 
-open class RefinementBase(var state: Int) : ClassObservation {
+open <!VIPER_TEXT!>class RefinementBase<!>(var state: Int) : ClassObservation {
     @Pure @Unique final override fun <!VIPER_TEXT!>value<!>(): Int = state
     @Pure @Unique final override fun <!VIPER_TEXT!>scaled<!>(factor: Int): Int = state * factor
     @Pure @get:Unique final override val size: Int <!VIPER_TEXT!>get<!>() = state
@@ -152,7 +152,7 @@ open class RefinementBase(var state: Int) : ClassObservation {
     }
 }
 
-class RefinementLeaf(state: Int) : RefinementBase(state) {
+<!VIPER_TEXT!>class RefinementLeaf<!>(state: Int) : RefinementBase(state) {
     @Unique @Borrowed override fun <!VIPER_TEXT!>advance<!>() { state++ }
 }
 
@@ -167,11 +167,11 @@ interface SharedObservation {
     @Pure fun <!VIPER_TEXT!>constant<!>(): Int
 }
 
-open class SharedObservationBase : SharedObservation {
+open <!VIPER_TEXT!>class SharedObservationBase<!> : SharedObservation {
     @Pure final override fun <!VIPER_TEXT!>constant<!>(): Int = 4
 }
 
-class SharedObservationLeaf : SharedObservationBase()
+<!VIPER_TEXT!>class SharedObservationLeaf<!> : SharedObservationBase()
 
 fun <!VIPER_TEXT!>sharedInheritedObservation<!>(leaf: SharedObservationLeaf) {
     verify(leaf.constant() == 4)

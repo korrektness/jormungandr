@@ -78,7 +78,7 @@ fun <!VIPER_TEXT!>defaultReadsReceiver<!>(n: Int): Int {
     return n.doubled { it }
 }
 
-class Counter(var x: Int)
+<!VIPER_TEXT!>class Counter<!>(var x: Int)
 
 inline fun <!VIPER_TEXT!>withCounter<!>(c: @Unique @Borrowed Counter, k: Int = c.x, f: (Int) -> Int): Int = f(k)
 

@@ -1,3 +1,67 @@
+/backing_field_getters.kt: info: Generated Viper text for Z:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Z())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Z()
+  fold acc(Z_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Z_unique(v_ret_0), write)
+}
+
+/backing_field_getters.kt: info: Generated Viper text for Y:
+function z(this: Ref): Ref
+  requires isSubtype(typeOf(this), Y())
+  ensures isSubtype(typeOf(result), Z())
+
+
+method con_Y() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Y())
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Y()
+  anon := con_Z()
+  fold acc(Z_unique(anon), write)
+  inhale z(v_ret_0) == anon
+  fold acc(Y_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Y_unique(v_ret_0), write)
+}
+
+method con_Z() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Z())
+
+
+/backing_field_getters.kt: info: Generated Viper text for X:
+function y(this: Ref): Ref
+  requires isSubtype(typeOf(this), X())
+  ensures isSubtype(typeOf(result), Y())
+
+
+function z(this: Ref): Ref
+  requires isSubtype(typeOf(this), Y())
+  ensures isSubtype(typeOf(result), Z())
+
+
+method con_X() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), X())
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == X()
+  anon := con_Y()
+  fold acc(Y_unique(anon), write)
+  inhale y(v_ret_0) == anon
+  fold acc(X_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(X_unique(v_ret_0), write)
+}
+
+method con_Y() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Y())
+
+
 /backing_field_getters.kt: info: Generated Viper text for cascadeGet:
 function y(this: Ref): Ref
   requires isSubtype(typeOf(this), X())
@@ -43,6 +107,59 @@ method receiverNotNullProved(x: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/backing_field_getters.kt: info: Generated Viper text for NullableY:
+function z(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullableY())
+  ensures isSubtype(typeOf(result), nullable(Z()))
+
+
+method con_NullableY() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), NullableY())
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == NullableY()
+  anon := con_Z()
+  fold acc(Z_unique(anon), write)
+  inhale z(v_ret_0) == anon
+  fold acc(NullableY_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(NullableY_unique(v_ret_0), write)
+}
+
+method con_Z() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Z())
+
+
+/backing_field_getters.kt: info: Generated Viper text for NullableX:
+function y(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullableX())
+  ensures isSubtype(typeOf(result), nullable(NullableY()))
+
+
+function z(this: Ref): Ref
+  requires isSubtype(typeOf(this), NullableY())
+  ensures isSubtype(typeOf(result), nullable(Z()))
+
+
+method con_NullableX() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), NullableX())
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == NullableX()
+  anon := con_NullableY()
+  fold acc(NullableY_unique(anon), write)
+  inhale y(v_ret_0) == anon
+  fold acc(NullableX_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(NullableX_unique(v_ret_0), write)
+}
+
+method con_NullableY() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), NullableY())
+
 
 /backing_field_getters.kt: info: Generated Viper text for cascadeNullableGet:
 function y(this: Ref): Ref
@@ -103,6 +220,26 @@ method cascadeNullableSmartcastGet(x: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
+/backing_field_getters.kt: info: Generated Viper text for Baz:
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Baz())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Baz())
+  ensures intFromRef(x(v_ret_0)) == 4
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Baz()
+  anon := intToRef(4)
+  inhale intFromRef(x(v_ret_0)) == intFromRef(anon)
+  fold acc(Baz_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Baz_unique(v_ret_0), write)
+}
+
 /backing_field_getters.kt: info: Generated Viper text for nullableReceiverNotNullSafeGet:
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
@@ -116,6 +253,7 @@ function x(this: Ref): Ref
 
 method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Baz())
+  ensures intFromRef(x(ret_1)) == 4
 
 
 method nullableReceiverNotNullSafeGet() returns (v_ret_0: Ref)
@@ -179,6 +317,7 @@ function x(this: Ref): Ref
 
 method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Baz())
+  ensures intFromRef(x(ret_1)) == 4
 
 
 method nonNullableReceiverSafeGet() returns (v_ret_0: Ref)
@@ -198,6 +337,111 @@ method nonNullableReceiverSafeGet() returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/backing_field_getters.kt: info: Generated Viper text for ClassI:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassI())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassI())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_ClassI(par_x: Ref, par_y: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(v_ret_1), ClassI())
+  ensures intFromRef(g_x(v_ret_1)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_1)) == intFromRef(par_y)
+  ensures intFromRef(g_x(v_ret_1)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_1)) == intFromRef(par_y)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == ClassI()
+  anon_0 := par_x
+  inhale intFromRef(g_x(v_ret_1)) == intFromRef(anon_0)
+  anon_1 := par_y
+  inhale intFromRef(g_y(v_ret_1)) == intFromRef(anon_1)
+  anon_2 := con_Z()
+  fold acc(Z_unique(anon_2), write)
+  fold acc(ClassI_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(ClassI_unique(v_ret_1), write)
+}
+
+method con_Z() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), Z())
+
+
+method z(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/backing_field_getters.kt: info: Generated Viper text for ClassII:
+function ClassII_g_z(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassII())
+  ensures isSubtype(typeOf(result), Z())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassI())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function y(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassI())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_ClassII(par_z: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(par_z), Z())
+  ensures isSubtype(typeOf(v_ret_1), ClassII())
+  ensures isSubtype(typeOf(v_ret_1), ClassII()) &&
+    isSubtype(typeOf(v_ret_1), ClassI())
+  ensures intFromRef(x(v_ret_1)) == 10
+  ensures intFromRef(y(v_ret_1)) == 10
+  ensures ClassII_g_z(v_ret_1) == par_z
+  ensures ClassII_g_z(v_ret_1) == par_z
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_5: Ref
+  var anon_4: Ref
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == ClassII()
+  anon_0 := intToRef(10)
+  anon_1 := intToRef(10)
+  anon_2 := anon_0
+  inhale intFromRef(x(v_ret_1)) == intFromRef(anon_2)
+  anon_3 := anon_1
+  inhale intFromRef(y(v_ret_1)) == intFromRef(anon_3)
+  anon_5 := con_Z()
+  fold acc(Z_unique(anon_5), write)
+  fold acc(ClassI_unique(v_ret_1), write)
+  anon_4 := par_z
+  inhale ClassII_g_z(v_ret_1) == anon_4
+  fold acc(ClassII_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(ClassII_unique(v_ret_1), write)
+  unfold acc(ClassI_unique(v_ret_1), write)
+}
+
+method con_Z() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), Z())
+
+
+method public_g_z(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
 
 /backing_field_getters.kt: info: Generated Viper text for checkPrimary:
 function ClassII_g_z(this: Ref): Ref
@@ -254,18 +498,23 @@ method con_ClassI(par_x: Ref, par_y: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), ClassI())
   ensures intFromRef(g_x(ret_2)) == intFromRef(par_x)
   ensures intFromRef(g_y(ret_2)) == intFromRef(par_y)
+  ensures intFromRef(g_x(ret_2)) == intFromRef(par_x)
+  ensures intFromRef(g_y(ret_2)) == intFromRef(par_y)
 
 
-method con_ClassII(par_z: Ref) returns (ret_4: Ref)
+method con_ClassII(par_z: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(par_z), Z())
-  ensures isSubtype(typeOf(ret_4), ClassII())
-  ensures isSubtype(typeOf(ret_4), ClassII()) &&
-    isSubtype(typeOf(ret_4), ClassI())
-  ensures ClassII_g_z(ret_4) == par_z
+  ensures isSubtype(typeOf(ret_6), ClassII())
+  ensures isSubtype(typeOf(ret_6), ClassII()) &&
+    isSubtype(typeOf(ret_6), ClassI())
+  ensures intFromRef(g_x(ret_6)) == 10
+  ensures intFromRef(g_y(ret_6)) == 10
+  ensures ClassII_g_z(ret_6) == par_z
+  ensures ClassII_g_z(ret_6) == par_z
 
 
-method con_Z() returns (ret_3: Ref)
-  ensures isSubtype(typeOf(ret_3), Z())
+method con_Z() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), Z())
 
 
 method public_g_z(this: Ref) returns (ret_1: Ref)

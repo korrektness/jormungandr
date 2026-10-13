@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Node(val value: Int, val next: Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, val next: Node?)
 
 @Pure
 fun <!VIPER_TEXT!>getValue<!>(node: Node): Int {

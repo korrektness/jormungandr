@@ -23,7 +23,7 @@ interface Second {
         <!VIPER_TEXT!>get<!>() = 2
 }
 
-class Impl(override val number: Int) : First, Second
+<!VIPER_TEXT!>class Impl<!>(override val number: Int) : First, Second
 
 fun <!VIPER_TEXT!>createImpl<!>() {
     val impl = Impl(-1)
@@ -77,16 +77,16 @@ fun <!VIPER_TEXT!>take4<!>(obj: AbstractWithOpenImplementation4) {
     obj.field
 }
 
-class Impl12 : InterfaceWithImplementation1, InterfaceWithoutImplementation2 {
+<!VIPER_TEXT!>class Impl12<!> : InterfaceWithImplementation1, InterfaceWithoutImplementation2 {
     override val field: Int = 0
 }
 
-class Impl3 : AbstractWithFinalImplementation3()
-class Impl23 : InheritingInterfaceWithoutImplementation6, AbstractWithFinalImplementation3()
+<!VIPER_TEXT!>class Impl3<!> : AbstractWithFinalImplementation3()
+<!VIPER_TEXT!>class Impl23<!> : InheritingInterfaceWithoutImplementation6, AbstractWithFinalImplementation3()
 
-class Impl24 : InterfaceWithoutImplementation2, AbstractWithOpenImplementation4()
+<!VIPER_TEXT!>class Impl24<!> : InterfaceWithoutImplementation2, AbstractWithOpenImplementation4()
 
-class Impl14 : InterfaceWithImplementation1, AbstractWithOpenImplementation4() {
+<!VIPER_TEXT!>class Impl14<!> : InterfaceWithImplementation1, AbstractWithOpenImplementation4() {
     override val field: Int = 0
 }
 
@@ -150,7 +150,7 @@ abstract class C : A {
     override val field = 0
 }
 
-class D : B, C()
+<!VIPER_TEXT!>class D<!> : B, C()
 
 fun <!VIPER_TEXT!>testDiamond<!>() = D().field
 
@@ -169,8 +169,8 @@ abstract class H {
         }
 }
 
-class G : E, F()
-class I : E, H()
+<!VIPER_TEXT!>class G<!> : E, F()
+<!VIPER_TEXT!>class I<!> : E, H()
 
 fun <!VIPER_TEXT!>testVarVal<!>() {
     val g = G()

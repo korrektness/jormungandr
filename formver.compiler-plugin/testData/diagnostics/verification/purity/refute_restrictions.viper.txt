@@ -1,3 +1,23 @@
+/refute_restrictions.kt: info: Generated Viper text for RefuteBox:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), RefuteBox())
+  ensures isSubtype(typeOf(v_ret_0), RefuteBox()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == RefuteBox()
+  v_ret_0.bf_value := par_value
+  fold acc(RefuteBox_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(RefuteBox_unique(v_ret_0), write)
+}
+
 /refute_restrictions.kt: info: Generated Viper text for ownedRead:
 field value: Ref
 

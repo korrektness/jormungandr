@@ -9,6 +9,59 @@ method needsPositive(d: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
+/accessors.kt: info: Generated Viper text for SetterBody:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_6: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_6), SetterBody())
+  ensures isSubtype(typeOf(v_ret_6), SetterBody()) &&
+    acc(v_ret_6.bf_value, write) &&
+    isSubtype(typeOf(v_ret_6.bf_value), intType())
+  ensures intFromRef(v_ret_6.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_6.bf_value) == intFromRef(par_value)
+{
+  v_ret_6 := new(bf_value)
+  inhale typeOf(v_ret_6) == SetterBody()
+  v_ret_6.bf_value := par_value
+  fold acc(SetterBody_unique(v_ret_6), write)
+  label lbl_ret_6
+  unfold acc(SetterBody_unique(v_ret_6), write)
+}
+
+method g_falseSetter(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method g_guardedSetter(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method g_violatingSetter(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method s_falseSetter(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method s_guardedSetter(this: Ref, arg_0: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method s_violatingSetter(this: Ref, arg_0: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
 /accessors.kt: info: Generated Viper text for falseSetter:
 field value: Ref
 
@@ -283,6 +336,41 @@ method s_violatingSetter(this: Ref, arg_0: Ref) returns (ret_6: Ref)
   ensures isSubtype(typeOf(ret_6), nullable(anyType()))
 
 
+/accessors.kt: info: Generated Viper text for GetterBody:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_3), GetterBody())
+  ensures isSubtype(typeOf(v_ret_3), GetterBody()) &&
+    acc(v_ret_3.bf_value, write) &&
+    isSubtype(typeOf(v_ret_3.bf_value), intType())
+  ensures intFromRef(v_ret_3.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_3.bf_value) == intFromRef(par_value)
+{
+  v_ret_3 := new(bf_value)
+  inhale typeOf(v_ret_3) == GetterBody()
+  v_ret_3.bf_value := par_value
+  fold acc(GetterBody_unique(v_ret_3), write)
+  label lbl_ret_3
+  unfold acc(GetterBody_unique(v_ret_3), write)
+}
+
+method falseGetter(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method guardedGetter(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method violatingGetter(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
 /accessors.kt: info: Generated Viper text for falseGetter:
 field value: Ref
 
@@ -380,6 +468,39 @@ method needsPositive(d: Ref) returns (ret_4: Ref)
 method violatingGetter(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), anyType())
   ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+/accessors.kt: info: Generated Viper text for BackingField:
+method con() returns (v_ret_4: Ref)
+  ensures isSubtype(typeOf(v_ret_4), BackingField())
+{
+  v_ret_4 := new()
+  inhale typeOf(v_ret_4) == BackingField()
+  fold acc(BackingField_unique(v_ret_4), write)
+  label lbl_ret_4
+  unfold acc(BackingField_unique(v_ret_4), write)
+}
+
+method g_guarded(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method g_violating(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_guarded(this: Ref, arg_0: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method s_violating(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
 
 
 /accessors.kt: info: Generated Viper text for violating:
@@ -526,6 +647,22 @@ method s_violating(this: Ref, arg_0: Ref) returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), nullable(anyType()))
 
 
+/accessors.kt: info: Generated Viper text for OpenGetter:
+method con() returns (v_ret_1: Ref)
+  ensures isSubtype(typeOf(v_ret_1), OpenGetter())
+{
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == OpenGetter()
+  fold acc(OpenGetter_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(OpenGetter_unique(v_ret_1), write)
+}
+
+method value(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
 /accessors.kt: info: Generated Viper text for value:
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
@@ -542,6 +679,26 @@ method value(this: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/accessors.kt: info: Generated Viper text for OverridingGetter:
+method con() returns (v_ret_2: Ref)
+  ensures isSubtype(typeOf(v_ret_2), OverridingGetter())
+  ensures isSubtype(typeOf(v_ret_2), OverridingGetter()) &&
+    isSubtype(typeOf(v_ret_2), OpenGetter())
+{
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == OverridingGetter()
+  fold acc(OpenGetter_unique(v_ret_2), write)
+  fold acc(OverridingGetter_unique(v_ret_2), write)
+  label lbl_ret_2
+  unfold acc(OverridingGetter_unique(v_ret_2), write)
+  unfold acc(OpenGetter_unique(v_ret_2), write)
+}
+
+method value(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
 
 /accessors.kt: info: Generated Viper text for value:
 method needsPositive(d: Ref) returns (ret_3: Ref)

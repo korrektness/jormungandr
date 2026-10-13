@@ -1,3 +1,80 @@
+/unique_partial_moves.kt: info: Generated Viper text for Box:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures isSubtype(typeOf(v_ret_0), Box()) && acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == Box()
+  v_ret_0.bf_value := par_value
+  fold acc(Box_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Box_unique(v_ret_0), write)
+}
+
+/unique_partial_moves.kt: info: Generated Viper text for A:
+field bf_count: Ref
+
+field bf_x: Ref
+
+field value: Ref
+
+method con(par_count: Ref, par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  requires isSubtype(typeOf(par_x), Box())
+  requires acc(Box_unique(par_x), write)
+  ensures isSubtype(typeOf(v_ret_0), A())
+  ensures isSubtype(typeOf(v_ret_0), A()) && acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType()) &&
+    acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), Box()) &&
+    acc(Box_unique(v_ret_0.bf_x), write)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures v_ret_0.bf_x == par_x
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures v_ret_0.bf_x == par_x
+{
+  v_ret_0 := new(bf_count, bf_x)
+  inhale typeOf(v_ret_0) == A()
+  v_ret_0.bf_count := par_count
+  v_ret_0.bf_x := par_x
+  fold acc(A_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(A_unique(v_ret_0), write)
+}
+
+/unique_partial_moves.kt: info: Generated Viper text for B:
+field bf_y: Ref
+
+field count: Ref
+
+field value: Ref
+
+field x: Ref
+
+method con(par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_y), A())
+  requires acc(A_unique(par_y), write)
+  ensures isSubtype(typeOf(v_ret_0), B())
+  ensures isSubtype(typeOf(v_ret_0), B()) && acc(v_ret_0.bf_y, write) &&
+    isSubtype(typeOf(v_ret_0.bf_y), A()) &&
+    acc(A_unique(v_ret_0.bf_y), write)
+  ensures v_ret_0.bf_y == par_y
+  ensures v_ret_0.bf_y == par_y
+{
+  v_ret_0 := new(bf_y)
+  inhale typeOf(v_ret_0) == B()
+  v_ret_0.bf_y := par_y
+  fold acc(B_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(B_unique(v_ret_0), write)
+}
+
 /unique_partial_moves.kt: info: Generated Viper text for consume:
 field value: Ref
 
@@ -18,6 +95,7 @@ method con(par_value: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Box())
   ensures isSubtype(typeOf(ret_1), Box()) && acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 

@@ -1,3 +1,14 @@
+/as_type_contract.kt: info: Generated Viper text for Bar:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Bar())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Bar()
+  fold acc(Bar_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Bar_unique(v_ret_0), write)
+}
+
 /as_type_contract.kt: info: Generated Viper text for asOperator:
 method asOperator(foo: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(foo), Foo())
@@ -20,6 +31,28 @@ method safeAsOperator(foo: Ref) returns (v_ret_0: Ref)
   v_ret_0 := foo
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/as_type_contract.kt: info: Generated Viper text for IntHolder:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntHolder())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), IntHolder())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == IntHolder()
+  anon := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon)
+  fold acc(IntHolder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(IntHolder_unique(v_ret_0), write)
 }
 
 /as_type_contract.kt: info: Generated Viper text for getX:

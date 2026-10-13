@@ -13,7 +13,7 @@ fun <!VIPER_TEXT!>observe<!>(value: @Unique @Borrowed PhaseTwoPassing) {
     require(value.value > 0)
 }
 
-<!VERIFICATION_SKIPPED!>class LawFreeFallback<!> {
+<!VIPER_TEXT!>class LawFreeFallback<!> {
     val stored = 1
     val early = stored
     val later = 2

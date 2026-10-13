@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 
-class C(
+<!VIPER_TEXT!>class C<!>(
     var field: Int
 )
 

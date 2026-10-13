@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 
-class Foo {
+<!VIPER_TEXT!>class Foo<!> {
     @NeverConvert
     fun f() {}
     val x = 0
@@ -16,7 +16,7 @@ fun <!VIPER_TEXT!>testSafeCallProperty<!>(foo: Foo?): Int? = foo?.x
 @Suppress("UNNECESSARY_SAFE_CALL")
 fun <!VIPER_TEXT!>testSafeCallPropertyNonNullable<!>(foo: Foo): Int? = foo?.x
 
-class Rec(val v: Int) {
+<!VIPER_TEXT!>class Rec<!>(val v: Int) {
     @NeverConvert
     fun nullable(): Rec? = this
 }

@@ -1,3 +1,52 @@
+/unique_hierarchy_moves.kt: info: Generated Viper text for Base:
+field bf_count: Ref
+
+method con(par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), Base())
+  ensures isSubtype(typeOf(v_ret_0), Base()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType())
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  v_ret_0 := new(bf_count)
+  inhale typeOf(v_ret_0) == Base()
+  v_ret_0.bf_count := par_count
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/unique_hierarchy_moves.kt: info: Generated Viper text for Sub:
+field bf_count: Ref
+
+field extra: Ref
+
+method con(par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), Sub())
+  ensures isSubtype(typeOf(v_ret_0), Sub()) && acc(v_ret_0.extra, write) &&
+    isSubtype(typeOf(v_ret_0.extra), intType()) &&
+    (isSubtype(typeOf(v_ret_0), Base()) && acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType()))
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.extra) == 0
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_count, extra)
+  inhale typeOf(v_ret_0) == Sub()
+  anon := par_count
+  v_ret_0.bf_count := anon
+  fold acc(Base_unique(v_ret_0), write)
+  v_ret_0.extra := intToRef(0)
+  fold acc(Sub_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Sub_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
 /unique_hierarchy_moves.kt: info: Generated Viper text for keepBase:
 field count: Ref
 

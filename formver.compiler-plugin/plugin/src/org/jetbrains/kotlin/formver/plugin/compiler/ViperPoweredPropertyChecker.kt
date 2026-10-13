@@ -34,6 +34,6 @@ class ViperPoweredPropertyChecker(
             embedScope(declaration.symbol.callableId!!)
             GetterKotlinName(declaration.name)
         }
-        lambdaChecker.checkStandaloneLambdas(declaration, scopeName)
+        lambdaChecker.reportViperText(declaration, lambdaChecker.standaloneLambdaDumps(declaration, scopeName))
     }
 }

@@ -1,3 +1,54 @@
+/unique_fold_state.kt: info: Generated Viper text for Box:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures isSubtype(typeOf(v_ret_0), Box()) && acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == Box()
+  v_ret_0.bf_value := par_value
+  fold acc(Box_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Box_unique(v_ret_0), write)
+}
+
+/unique_fold_state.kt: info: Generated Viper text for Holder:
+field bf_box: Ref
+
+field bf_count: Ref
+
+field value: Ref
+
+method con(par_count: Ref, par_box: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  requires isSubtype(typeOf(par_box), Box())
+  requires acc(Box_unique(par_box), write)
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType()) &&
+    acc(v_ret_0.bf_box, write) &&
+    isSubtype(typeOf(v_ret_0.bf_box), Box()) &&
+    acc(Box_unique(v_ret_0.bf_box), write)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures v_ret_0.bf_box == par_box
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures v_ret_0.bf_box == par_box
+{
+  v_ret_0 := new(bf_count, bf_box)
+  inhale typeOf(v_ret_0) == Holder()
+  v_ret_0.bf_count := par_count
+  v_ret_0.bf_box := par_box
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
 /unique_fold_state.kt: info: Generated Viper text for bump:
 field value: Ref
 

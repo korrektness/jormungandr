@@ -4,7 +4,7 @@
 import org.jetbrains.kotlin.formver.plugin.Unique
 import org.jetbrains.kotlin.formver.plugin.verify
 
-class Node(var data: Int, val left: @Unique Node?, val right: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(var data: Int, val left: @Unique Node?, val right: @Unique Node?)
 
 fun <!VIPER_TEXT!>get_left_val<!>(n: @Unique Node): Int? {
     return n.left?.data

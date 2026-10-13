@@ -7,6 +7,26 @@ method iAmAMethod() returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
+/wrongly_annotated.kt: info: Generated Viper text for Field:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Field())
+  ensures isSubtype(typeOf(v_ret_0), Field()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == Field()
+  v_ret_0.bf_value := par_value
+  fold acc(Field_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Field_unique(v_ret_0), write)
+}
+
 /wrongly_annotated.kt: info: Generated Viper text for impureExtension:
 field value: Ref
 
@@ -46,3 +66,28 @@ method impureExtension(v_this_extension: Ref) returns (v_ret_0: Ref)
 method message(v_this: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(v_this), anyType())
   ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/wrongly_annotated.kt: info: Generated Viper text for Wrapper:
+field value: Ref
+
+function g_field(this: Ref): Ref
+  requires isSubtype(typeOf(this), Wrapper())
+  ensures isSubtype(typeOf(result), Field())
+
+
+method con(par_field: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_field), Field())
+  ensures isSubtype(typeOf(v_ret_0), Wrapper())
+  ensures g_field(v_ret_0) == par_field
+  ensures g_field(v_ret_0) == par_field
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Wrapper()
+  anon := par_field
+  inhale g_field(v_ret_0) == anon
+  fold acc(Wrapper_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Wrapper_unique(v_ret_0), write)
+}

@@ -1,3 +1,14 @@
+/contracts_with_receivers.kt: info: Generated Viper text for Class:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Class())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Class()
+  fold acc(Class_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Class_unique(v_ret_0), write)
+}
+
 /contracts_with_receivers.kt: info: Generated Viper text for is2:
 method is2(this: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Class())
@@ -21,6 +32,36 @@ method is1butWithDispatch(v_this: Ref, v_this_extension: Ref)
   v_ret_0 := boolToRef(isSubtype(typeOf(v_this_extension), Impl1()))
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/contracts_with_receivers.kt: info: Generated Viper text for Impl1:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Impl1())
+  ensures isSubtype(typeOf(v_ret_0), Impl1()) &&
+    isSubtype(typeOf(v_ret_0), Class())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Impl1()
+  fold acc(Class_unique(v_ret_0), write)
+  fold acc(Impl1_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Impl1_unique(v_ret_0), write)
+  unfold acc(Class_unique(v_ret_0), write)
+}
+
+/contracts_with_receivers.kt: info: Generated Viper text for Impl2:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Impl2())
+  ensures isSubtype(typeOf(v_ret_0), Impl2()) &&
+    isSubtype(typeOf(v_ret_0), Class())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Impl2()
+  fold acc(Class_unique(v_ret_0), write)
+  fold acc(Impl2_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Impl2_unique(v_ret_0), write)
+  unfold acc(Class_unique(v_ret_0), write)
 }
 
 /contracts_with_receivers.kt: info: Generated Viper text for is1:

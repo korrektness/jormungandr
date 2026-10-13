@@ -38,7 +38,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isBoolean
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
-import org.jetbrains.kotlin.formver.core.conversion.classLawConstructionFailures
+import org.jetbrains.kotlin.formver.core.conversion.constructionFailures
 import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
 import org.jetbrains.kotlin.formver.core.conversion.hasSuperclassLaws
 import org.jetbrains.kotlin.formver.core.conversion.isLawValueOperation
@@ -61,7 +61,7 @@ object LawImplementationChecker : FirRegularClassChecker(MppCheckerKind.Common) 
     override fun check(declaration: FirRegularClass) {
         if (!declaration.classKind.isInterface &&
             (declaration.symbol.ownClassLaws(context.session).isNotEmpty() || declaration.symbol.hasSuperclassLaws(context.session))) {
-            val failures = classLawConstructionFailures(declaration.symbol, context.session)
+            val failures = constructionFailures(declaration.symbol, context.session)
             failures.forEach { reporter.reportLaw(declaration.source, it) }
         }
         val scope = declaration.symbol.unsubstitutedScope()

@@ -69,7 +69,7 @@ fun <!VIPER_TEXT!>withBreak<!>() {
     verify(i == 10)
 }
 
-class WithVar(var e: Int) {
+<!VIPER_TEXT!>class WithVar<!>(var e: Int) {
     @NeverConvert
     fun doSomething() = e > 10
 }
@@ -83,7 +83,7 @@ fun <!VIPER_TEXT!>test_boolean_postcondition<!>() {
     verify(!boolean)
 }
 
-class ClassWithField(val field: Int)
+<!VIPER_TEXT!>class ClassWithField<!>(val field: Int)
 
 fun <!VIPER_TEXT!>test_while<!>(param: ClassWithField) {
     preconditions { param.field >= -46339 }

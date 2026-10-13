@@ -12,7 +12,7 @@ interface Meter {
     @Unique @Borrowed fun <!VIPER_TEXT!>bump<!>()
 }
 
-open class BaseMeter(var a: Int, var b: Int) : Meter {
+open <!VIPER_TEXT!>class BaseMeter<!>(var a: Int, var b: Int) : Meter {
     @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = a
     @Unique @Borrowed override fun <!VIPER_TEXT!>bump<!>() {
         val before = a
@@ -25,7 +25,7 @@ open class BaseMeter(var a: Int, var b: Int) : Meter {
     @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = b
 }<!>
 
-class GoodDerivedMeter : BaseMeter(0, 5) {
+<!VIPER_TEXT!>class GoodDerivedMeter<!> : BaseMeter(0, 5) {
     @Pure @Unique override fun <!VIPER_TEXT!>level<!>(): Int = b
     @Unique @Borrowed override fun <!VIPER_TEXT!>bump<!>() { b++ }
 }
@@ -62,7 +62,7 @@ fun <!VIPER_TEXT!>baseRoundTrip<!>(base: @Unique @Borrowed BaseMeter) {
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>base.level() == base.a<!>)
 }
 
-open class FinalObserver(var a: Int) : Meter {
+open <!VIPER_TEXT!>class FinalObserver<!>(var a: Int) : Meter {
     @Pure @Unique final override fun <!VIPER_TEXT!>level<!>(): Int = a
     @Unique @Borrowed override fun <!VIPER_TEXT!>bump<!>() { a++ }
 }
@@ -71,17 +71,17 @@ interface DefaultMeter {
     @SpecOf("bump") fun bumpSpec() { postconditions<Unit> { true } }
     fun <!VIPER_TEXT!>bump<!>() {}
 }
-class ExplicitDefaultOverride : DefaultMeter {
+<!VIPER_TEXT!>class ExplicitDefaultOverride<!> : DefaultMeter {
     override fun <!VIPER_TEXT!>bump<!>() {}
 }
 
 interface PropertyMeter {
     @Pure val size: Int
 }
-open class OpenSize : PropertyMeter {
+open <!VIPER_TEXT!>class OpenSize<!> : PropertyMeter {
     @Pure override val size: Int <!VIPER_TEXT!>get<!>() = 3
 }
-class DerivedSize : OpenSize() {
+<!VIPER_TEXT!>class DerivedSize<!> : OpenSize() {
     @Pure override val size: Int <!VIPER_TEXT!>get<!>() = 4
 }
 fun <!VIPER_TEXT!>propertyBinding<!>(s: @Unique @Borrowed OpenSize) {
@@ -90,7 +90,7 @@ fun <!VIPER_TEXT!>propertyBinding<!>(s: @Unique @Borrowed OpenSize) {
 abstract class AbstractSize : PropertyMeter {
     @Pure abstract override val size: Int
 }
-class ConcreteSize : AbstractSize() {
+<!VIPER_TEXT!>class ConcreteSize<!> : AbstractSize() {
     @Pure override val size: Int <!VIPER_TEXT!>get<!>() = 4
 }
 fun <!VIPER_TEXT!>abstractProperty<!>(s: @Unique @Borrowed AbstractSize): Int = s.size

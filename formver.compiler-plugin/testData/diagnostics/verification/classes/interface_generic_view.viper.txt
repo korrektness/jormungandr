@@ -38,6 +38,68 @@ predicate GenericView_unique(this: Ref) {
 
 predicate footprint(this: Ref)
 
+/interface_generic_view.kt: info: Generated Viper text for GenericCell:
+function GenericCell_f_same(this: Ref, candidate: Ref): Ref
+  requires isSubtype(typeOf(this), GenericCell())
+  requires acc(GenericCell_unique(this), write)
+  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(candidate == g_contents(this))
+}
+
+function GenericCell_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), GenericCell())
+  requires acc(GenericCell_unique(this), write)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  g_contents(this)
+}
+
+function GenericView_f_same(this: Ref, candidate: Ref): Ref
+  requires isSubtype(typeOf(this), GenericView())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function GenericView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), GenericView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_contents(this: Ref): Ref
+  requires isSubtype(typeOf(this), GenericCell())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+predicate GenericCell_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericCell())
+}
+
+predicate GenericView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), GenericView())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_contents: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_contents), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), GenericCell())
+  ensures g_contents(v_ret_0) == par_contents
+  ensures g_contents(v_ret_0) == par_contents
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == GenericCell()
+  anon := par_contents
+  inhale g_contents(v_ret_0) == anon
+  fold acc(GenericCell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(GenericCell_unique(v_ret_0), write)
+}
+
 /interface_generic_view.kt: info: Generated Viper text for value:
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
@@ -220,6 +282,7 @@ method con(par_contents: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_contents), nullable(anyType()))
   ensures isSubtype(typeOf(ret_1), GenericCell())
   ensures g_contents(ret_1) == par_contents
+  ensures g_contents(ret_1) == par_contents
 
 
 method genericBooleanView() returns (v_ret_0: Ref)
@@ -249,6 +312,68 @@ method genericBooleanView() returns (v_ret_0: Ref)
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/interface_generic_view.kt: info: Generated Viper text for BooleanView:
+function BooleanView_f_same(this: Ref, candidate: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanView())
+  requires acc(BooleanView_unique(this), write)
+  requires isSubtype(typeOf(candidate), boolType())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(boolFromRef(candidate) == boolFromRef(g_contents(this)))
+}
+
+function BooleanView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanView())
+  requires acc(BooleanView_unique(this), write)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  g_contents(this)
+}
+
+function GenericView_f_same(this: Ref, candidate: Ref): Ref
+  requires isSubtype(typeOf(this), GenericView())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(candidate), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function GenericView_f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), GenericView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_contents(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanView())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+predicate BooleanView_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanView())
+}
+
+predicate GenericView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), GenericView())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_contents: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_contents), boolType())
+  ensures isSubtype(typeOf(v_ret_0), BooleanView())
+  ensures boolFromRef(g_contents(v_ret_0)) == boolFromRef(par_contents)
+  ensures boolFromRef(g_contents(v_ret_0)) == boolFromRef(par_contents)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == BooleanView()
+  anon := par_contents
+  inhale boolFromRef(g_contents(v_ret_0)) == boolFromRef(anon)
+  fold acc(BooleanView_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BooleanView_unique(v_ret_0), write)
 }
 
 /interface_generic_view.kt: info: Generated Viper text for value:
@@ -433,6 +558,7 @@ method BooleanView_c_GenericView_upcast(this: Ref)
 method con(par_contents: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_contents), boolType())
   ensures isSubtype(typeOf(ret_1), BooleanView())
+  ensures boolFromRef(g_contents(ret_1)) == boolFromRef(par_contents)
   ensures boolFromRef(g_contents(ret_1)) == boolFromRef(par_contents)
 
 
@@ -650,14 +776,15 @@ method con(par_contents: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_contents), nullable(anyType()))
   ensures isSubtype(typeOf(ret_1), GenericCell())
   ensures g_contents(ret_1) == par_contents
+  ensures g_contents(ret_1) == par_contents
 
 
-method lendGeneric(view: Ref) returns (ret_2: Ref)
+method lendGeneric(view: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(view), c_GenericView())
   requires acc(c_GenericView_unique(view), write)
   ensures acc(c_GenericView_unique(view), write)
-  ensures isSubtype(typeOf(ret_2), boolType())
-  ensures boolFromRef(ret_2) ==
+  ensures isSubtype(typeOf(ret_3), boolType())
+  ensures boolFromRef(ret_3) ==
     old((unfolding acc(c_GenericView_unique(view), wildcard) in
       boolFromRef(c_GenericView_f_value(view))))
   ensures (unfolding acc(c_GenericView_unique(view), wildcard) in
@@ -671,6 +798,21 @@ method lendGeneric(view: Ref) returns (ret_2: Ref)
         old((unfolding acc(c_GenericView_unique(view), wildcard) in
           boolFromRef(c_GenericView_f_same(view, boolToRef(anon_builtin)))))))
 
+
+/interface_generic_view.kt: info: Generated Viper text for GenericToken:
+predicate GenericToken_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericToken())
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), GenericToken())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == GenericToken()
+  fold acc(GenericToken_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(GenericToken_unique(v_ret_0), write)
+}
 
 /interface_generic_view.kt: info: Generated Viper text for genericNullableView:
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
@@ -765,6 +907,7 @@ method GenericCell_c_GenericView_upcast(this: Ref)
 method con(par_contents: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_contents), nullable(anyType()))
   ensures isSubtype(typeOf(ret_1), GenericCell())
+  ensures g_contents(ret_1) == par_contents
   ensures g_contents(ret_1) == par_contents
 
 
@@ -883,6 +1026,7 @@ method GenericCell_c_GenericView_upcast(this: Ref)
 method con(par_contents: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_contents), nullable(anyType()))
   ensures isSubtype(typeOf(ret_1), GenericCell())
+  ensures g_contents(ret_1) == par_contents
   ensures g_contents(ret_1) == par_contents
 
 

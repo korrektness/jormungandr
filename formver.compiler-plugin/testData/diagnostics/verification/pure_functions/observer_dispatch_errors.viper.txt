@@ -41,6 +41,69 @@ method bump(this: Ref) returns (ret: Ref)
       intFromRef(intToRef(1)))
 
 
+/observer_dispatch_errors.kt: info: Generated Viper text for BaseMeter:
+field bf_a: Ref
+
+field bf_b: Ref
+
+function Meter_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BaseMeter_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BaseMeter())
+  requires acc(c_BaseMeter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_BaseMeter() ==>
+    result == c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)
+
+
+function c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BaseMeter())
+  requires acc(c_BaseMeter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_BaseMeter_unique(this), write) in this.bf_a)
+}
+
+predicate Meter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Meter())
+}
+
+predicate c_BaseMeter_unique(this: Ref) {
+  isSubtype(typeOf(this), c_BaseMeter()) && acc(this.bf_a, write) &&
+  isSubtype(typeOf(this.bf_a), intType()) &&
+  acc(this.bf_b, write) &&
+  isSubtype(typeOf(this.bf_b), intType())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), c_BaseMeter())
+  ensures isSubtype(typeOf(v_ret_0), c_BaseMeter()) &&
+    acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType()) &&
+    acc(v_ret_0.bf_b, write) &&
+    isSubtype(typeOf(v_ret_0.bf_b), intType())
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+{
+  v_ret_0 := new(bf_a, bf_b)
+  inhale typeOf(v_ret_0) == c_BaseMeter()
+  v_ret_0.bf_a := par_a
+  v_ret_0.bf_b := par_b
+  fold acc(c_BaseMeter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_BaseMeter_unique(v_ret_0), write)
+}
+
 /observer_dispatch_errors.kt: info: Generated Viper text for level:
 field a: Ref
 
@@ -355,13 +418,13 @@ predicate c_Meter_unique(this: Ref) {
 }
 
 method DerivedMeter_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: Ref)
-  returns (v_ret_0: Ref)
+  returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), DerivedMeter())
   requires acc(DerivedMeter_unique(this), write)
   requires intFromRef(DerivedMeter_f_level(this)) < 2147483647
   requires typeOf(this) == DerivedMeter()
   ensures acc(DerivedMeter_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures isSubtype(typeOf(v_ret_3), unitType())
   ensures intFromRef(DerivedMeter_f_level(this)) ==
     (let anon_builtin ==
       (plusInts(old(DerivedMeter_f_level(this)), intToRef(1))) in
@@ -374,66 +437,91 @@ method DerivedMeter_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: Ref)
   fold acc(c_BaseMeter_unique(this), write)
   fold acc(DerivedMeter_unique(this), write)
   if (intFromRef(before) == 2147483647) {
-    var anon_2: Ref
-    anon_2 := con()
-    fold acc(Throwable_unique(anon_2), write)
-    fold acc(Exception_unique(anon_2), write)
-    fold acc(RuntimeException_unique(anon_2), write)
-    fold acc(IllegalArgumentException_unique(anon_2), write)
+    var anon_4: Ref
+    anon_4 := con_IllegalArgumentException()
+    fold acc(Throwable_unique(anon_4), write)
+    fold acc(Exception_unique(anon_4), write)
+    fold acc(RuntimeException_unique(anon_4), write)
+    fold acc(IllegalArgumentException_unique(anon_4), write)
     inhale false
   }
   unfold acc(DerivedMeter_unique(this), write)
   unfold acc(c_BaseMeter_unique(this), write)
   this.a := plusInts(before, intToRef(1))
-  label lbl_ret_0
+  label lbl_ret_3
   fold acc(c_BaseMeter_unique(this), write)
   fold acc(DerivedMeter_unique(this), write)
-  inhale isSubtype(typeOf(v_ret_0), unitType())
+  inhale isSubtype(typeOf(v_ret_3), unitType())
 }
 
 method DerivedMeter_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Ref)
-  returns (ret_4: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), DerivedMeter())
   requires acc(DerivedMeter_unique(this), write)
   requires intFromRef(DerivedMeter_f_level(this)) < 2147483647
   requires typeOf(this) == DerivedMeter()
   ensures acc(DerivedMeter_unique(this), write)
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
   ensures intFromRef(DerivedMeter_f_level(this)) ==
     (let anon_builtin ==
       (plusInts(old(DerivedMeter_f_level(this)), intToRef(1))) in
       intFromRef(old(DerivedMeter_f_level(this))) + intFromRef(intToRef(1)))
 
 
-method cause(this: Ref) returns (ret_2: Ref)
+method cause(this: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
 
 
-method con() returns (ret_3: Ref)
-  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
-  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
-    (isSubtype(typeOf(ret_3), RuntimeException()) &&
-    (isSubtype(typeOf(ret_3), Exception()) &&
-    isSubtype(typeOf(ret_3), Throwable())))
+method con_DerivedMeter() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), DerivedMeter())
+  ensures isSubtype(typeOf(v_ret_0), DerivedMeter()) &&
+    (isSubtype(typeOf(v_ret_0), c_BaseMeter()) && acc(v_ret_0.a, write) &&
+    isSubtype(typeOf(v_ret_0.a), intType()) &&
+    acc(v_ret_0.b, write) &&
+    isSubtype(typeOf(v_ret_0.b), intType()))
+  ensures intFromRef(v_ret_0.a) == 0
+  ensures intFromRef(v_ret_0.b) == 5
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(a, b)
+  inhale typeOf(v_ret_0) == DerivedMeter()
+  anon_0 := intToRef(0)
+  anon_1 := intToRef(5)
+  v_ret_0.a := anon_0
+  v_ret_0.b := anon_1
+  fold acc(c_BaseMeter_unique(v_ret_0), write)
+  fold acc(DerivedMeter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(DerivedMeter_unique(v_ret_0), write)
+  unfold acc(c_BaseMeter_unique(v_ret_0), write)
+}
+
+method con_IllegalArgumentException() returns (ret_6: Ref)
+  ensures isSubtype(typeOf(ret_6), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_6), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_6), RuntimeException()) &&
+    (isSubtype(typeOf(ret_6), Exception()) &&
+    isSubtype(typeOf(ret_6), Throwable())))
 
 
-method message(this: Ref) returns (ret_1: Ref)
+method message(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
 
 
 method refines_DerivedMeter_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Ref)
-  returns (ret_4: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), DerivedMeter())
   requires acc(DerivedMeter_unique(this), write)
   requires intFromRef(DerivedMeter_f_level(this)) < 2147483647
   requires typeOf(this) == DerivedMeter()
   requires isSubtype(typeOf(this), DerivedMeter())
 {
-  ret_4 := DerivedMeter_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this)
+  ret_7 := DerivedMeter_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this)
   assert acc(DerivedMeter_unique(this), write)
-  assert isSubtype(typeOf(ret_4), unitType())
+  assert isSubtype(typeOf(ret_7), unitType())
   assert intFromRef(DerivedMeter_f_level(this)) ==
     (let anon_builtin ==
       (plusInts(old(DerivedMeter_f_level(this)), intToRef(1))) in
@@ -493,6 +581,85 @@ predicate c_BaseMeter_unique(this: Ref) {
 }
 
 predicate footprint(this: Ref)
+
+/observer_dispatch_errors.kt: info: Generated Viper text for GoodDerivedMeter:
+field a: Ref
+
+field b: Ref
+
+function GoodDerivedMeter_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), GoodDerivedMeter())
+  requires acc(GoodDerivedMeter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(GoodDerivedMeter_unique(this), write) in
+    (unfolding acc(c_BaseMeter_unique(this), write) in this.b))
+}
+
+function Meter_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_BaseMeter_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BaseMeter())
+  requires acc(c_BaseMeter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_BaseMeter() ==>
+    result == c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)
+
+
+function c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BaseMeter())
+  requires acc(c_BaseMeter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_BaseMeter_unique(this), write) in this.a)
+}
+
+predicate GoodDerivedMeter_unique(this: Ref) {
+  isSubtype(typeOf(this), GoodDerivedMeter()) &&
+  acc(c_BaseMeter_unique(this), write)
+}
+
+predicate Meter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Meter())
+}
+
+predicate c_BaseMeter_unique(this: Ref) {
+  isSubtype(typeOf(this), c_BaseMeter()) && acc(this.a, write) &&
+  isSubtype(typeOf(this.a), intType()) &&
+  acc(this.b, write) &&
+  isSubtype(typeOf(this.b), intType())
+}
+
+predicate footprint(this: Ref)
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), GoodDerivedMeter())
+  ensures isSubtype(typeOf(v_ret_0), GoodDerivedMeter()) &&
+    (isSubtype(typeOf(v_ret_0), c_BaseMeter()) && acc(v_ret_0.a, write) &&
+    isSubtype(typeOf(v_ret_0.a), intType()) &&
+    acc(v_ret_0.b, write) &&
+    isSubtype(typeOf(v_ret_0.b), intType()))
+  ensures intFromRef(v_ret_0.a) == 0
+  ensures intFromRef(v_ret_0.b) == 5
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(a, b)
+  inhale typeOf(v_ret_0) == GoodDerivedMeter()
+  anon_0 := intToRef(0)
+  anon_1 := intToRef(5)
+  v_ret_0.a := anon_0
+  v_ret_0.b := anon_1
+  fold acc(c_BaseMeter_unique(v_ret_0), write)
+  fold acc(GoodDerivedMeter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(GoodDerivedMeter_unique(v_ret_0), write)
+  unfold acc(c_BaseMeter_unique(v_ret_0), write)
+}
 
 /observer_dispatch_errors.kt: info: Generated Viper text for level:
 field a: Ref
@@ -1222,6 +1389,51 @@ method meterClient(m: Ref) returns (ret_2: Ref)
       intFromRef(intToRef(1)))
 
 
+/observer_dispatch_errors.kt: info: Generated Viper text for FinalObserver:
+field bf_a: Ref
+
+function FinalObserver_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), FinalObserver())
+  requires acc(FinalObserver_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(FinalObserver_unique(this), write) in this.bf_a)
+}
+
+function Meter_f_level(this: Ref): Ref
+  requires isSubtype(typeOf(this), Meter())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate FinalObserver_unique(this: Ref) {
+  isSubtype(typeOf(this), FinalObserver()) && acc(this.bf_a, write) &&
+  isSubtype(typeOf(this.bf_a), intType())
+}
+
+predicate Meter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Meter())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), FinalObserver())
+  ensures isSubtype(typeOf(v_ret_0), FinalObserver()) &&
+    acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType())
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+{
+  v_ret_0 := new(bf_a)
+  inhale typeOf(v_ret_0) == FinalObserver()
+  v_ret_0.bf_a := par_a
+  fold acc(FinalObserver_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(FinalObserver_unique(v_ret_0), write)
+}
+
 /observer_dispatch_errors.kt: info: Generated Viper text for level:
 field a: Ref
 
@@ -1373,6 +1585,27 @@ method bump(this: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/observer_dispatch_errors.kt: info: Generated Viper text for ExplicitDefaultOverride:
+predicate DefaultMeter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), DefaultMeter())
+}
+
+predicate ExplicitDefaultOverride_unique(this: Ref) {
+  isSubtype(typeOf(this), ExplicitDefaultOverride())
+}
+
+predicate footprint(this: Ref)
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), ExplicitDefaultOverride())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ExplicitDefaultOverride()
+  fold acc(ExplicitDefaultOverride_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ExplicitDefaultOverride_unique(v_ret_0), write)
+}
+
 /observer_dispatch_errors.kt: info: Generated Viper text for bump:
 predicate DefaultMeter_unique(this: Ref) {
   acc(footprint(this), write) && isSubtype(typeOf(this), DefaultMeter())
@@ -1408,6 +1641,47 @@ method refines_DefaultMeter_f_bump(this: Ref) returns (ret_1: Ref)
   assert true
 }
 
+/observer_dispatch_errors.kt: info: Generated Viper text for OpenSize:
+function PropertyMeter_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), PropertyMeter())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_OpenSize_c_OpenSize_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_OpenSize())
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_OpenSize() ==>
+    result == c_OpenSize_g_size(this)
+
+
+function c_OpenSize_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_OpenSize())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(3)
+}
+
+predicate PropertyMeter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), PropertyMeter())
+}
+
+predicate c_OpenSize_unique(this: Ref) {
+  isSubtype(typeOf(this), c_OpenSize())
+}
+
+predicate footprint(this: Ref)
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_OpenSize())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == c_OpenSize()
+  fold acc(c_OpenSize_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_OpenSize_unique(v_ret_0), write)
+}
+
 /observer_dispatch_errors.kt: info: Generated Viper text for size:
 function PropertyMeter_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), PropertyMeter())
@@ -1438,6 +1712,63 @@ predicate c_OpenSize_unique(this: Ref) {
 }
 
 predicate footprint(this: Ref)
+
+/observer_dispatch_errors.kt: info: Generated Viper text for DerivedSize:
+function DerivedSize_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DerivedSize())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(4)
+}
+
+function PropertyMeter_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), PropertyMeter())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_OpenSize_c_OpenSize_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_OpenSize())
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_OpenSize() ==>
+    result == c_OpenSize_g_size(this)
+
+
+function c_OpenSize_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_OpenSize())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(3)
+}
+
+predicate DerivedSize_unique(this: Ref) {
+  isSubtype(typeOf(this), DerivedSize()) &&
+  acc(c_OpenSize_unique(this), write)
+}
+
+predicate PropertyMeter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), PropertyMeter())
+}
+
+predicate c_OpenSize_unique(this: Ref) {
+  isSubtype(typeOf(this), c_OpenSize())
+}
+
+predicate footprint(this: Ref)
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), DerivedSize())
+  ensures isSubtype(typeOf(v_ret_0), DerivedSize()) &&
+    isSubtype(typeOf(v_ret_0), c_OpenSize())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == DerivedSize()
+  fold acc(c_OpenSize_unique(v_ret_0), write)
+  fold acc(DerivedSize_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(DerivedSize_unique(v_ret_0), write)
+  unfold acc(c_OpenSize_unique(v_ret_0), write)
+}
 
 /observer_dispatch_errors.kt: info: Generated Viper text for size:
 function DerivedSize_g_size(this: Ref): Ref
@@ -1546,6 +1877,59 @@ method propertyBinding(s: Ref) returns (v_ret_0: Ref)
   assert intFromRef(c_OpenSize_c_OpenSize_g_size(s)) == 3
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/observer_dispatch_errors.kt: info: Generated Viper text for ConcreteSize:
+function ConcreteSize_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ConcreteSize())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(4)
+}
+
+function PropertyMeter_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), PropertyMeter())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractSize_c_AbstractSize_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractSize())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_AbstractSize_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_AbstractSize())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ConcreteSize_unique(this: Ref) {
+  isSubtype(typeOf(this), ConcreteSize()) &&
+  acc(c_AbstractSize_unique(this), write)
+}
+
+predicate PropertyMeter_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), PropertyMeter())
+}
+
+predicate c_AbstractSize_unique(this: Ref) {
+  isSubtype(typeOf(this), c_AbstractSize())
+}
+
+predicate footprint(this: Ref)
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), ConcreteSize())
+  ensures isSubtype(typeOf(v_ret_0), ConcreteSize()) &&
+    isSubtype(typeOf(v_ret_0), c_AbstractSize())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ConcreteSize()
+  fold acc(c_AbstractSize_unique(v_ret_0), write)
+  fold acc(ConcreteSize_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ConcreteSize_unique(v_ret_0), write)
+  unfold acc(c_AbstractSize_unique(v_ret_0), write)
 }
 
 /observer_dispatch_errors.kt: info: Generated Viper text for size:
@@ -1700,9 +2084,9 @@ method concreteProperty(s: Ref) returns (v_ret_0: Ref)
 }
 
 /observer_dispatch_errors.kt: info: Generated Viper text for ObserverMiddle:
-field a: Ref
+field bf_a: Ref
 
-field b: Ref
+field bf_b: Ref
 
 function ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BaseMeter())
@@ -1727,7 +2111,7 @@ function c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
   requires acc(c_BaseMeter_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(c_BaseMeter_unique(this), write) in this.a)
+  (unfolding acc(c_BaseMeter_unique(this), write) in this.bf_a)
 }
 
 function c_Meter_f_level(this: Ref): Ref
@@ -1768,10 +2152,10 @@ predicate Throwable_unique(this: Ref) {
 }
 
 predicate c_BaseMeter_unique(this: Ref) {
-  isSubtype(typeOf(this), c_BaseMeter()) && acc(this.a, write) &&
-  isSubtype(typeOf(this.a), intType()) &&
-  acc(this.b, write) &&
-  isSubtype(typeOf(this.b), intType())
+  isSubtype(typeOf(this), c_BaseMeter()) && acc(this.bf_a, write) &&
+  isSubtype(typeOf(this.bf_a), intType()) &&
+  acc(this.bf_b, write) &&
+  isSubtype(typeOf(this.bf_b), intType())
 }
 
 predicate c_Meter_footprint(this: Ref)
@@ -1781,14 +2165,14 @@ predicate c_Meter_unique(this: Ref) {
 }
 
 method ObserverMiddle_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: Ref)
-  returns (v_ret_0: Ref)
+  returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), ObserverMiddle())
   requires acc(ObserverMiddle_unique(this), write)
   requires intFromRef(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)) <
     2147483647
   requires typeOf(this) == ObserverMiddle()
   ensures acc(ObserverMiddle_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures isSubtype(typeOf(v_ret_3), unitType())
   ensures intFromRef(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)) ==
     (let anon_builtin ==
       (plusInts(old(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)),
@@ -1798,7 +2182,7 @@ method ObserverMiddle_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: Ref
 
 
 method ObserverMiddle_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump_runtime_body_ObserverMiddle_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: Ref)
-  returns (v_ret_0: Ref)
+  returns (v_ret_3: Ref)
   requires isSubtype(typeOf(this), ObserverMiddle())
   requires acc(ObserverMiddle_unique(this), write)
   requires intFromRef(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)) <
@@ -1806,7 +2190,7 @@ method ObserverMiddle_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump_runtime_b
   requires typeOf(this) == ObserverMiddle()
   requires typeOf(this) == ObserverMiddle()
   ensures acc(ObserverMiddle_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures isSubtype(typeOf(v_ret_3), unitType())
   ensures intFromRef(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)) ==
     (let anon_builtin ==
       (plusInts(old(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)),
@@ -1817,36 +2201,36 @@ method ObserverMiddle_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump_runtime_b
   var before: Ref
   unfold acc(ObserverMiddle_unique(this), write)
   unfold acc(c_BaseMeter_unique(this), write)
-  before := this.a
+  before := this.bf_a
   fold acc(c_BaseMeter_unique(this), write)
   fold acc(ObserverMiddle_unique(this), write)
   if (intFromRef(before) == 2147483647) {
-    var anon_1: Ref
-    anon_1 := con()
-    fold acc(Throwable_unique(anon_1), write)
-    fold acc(Exception_unique(anon_1), write)
-    fold acc(RuntimeException_unique(anon_1), write)
-    fold acc(IllegalArgumentException_unique(anon_1), write)
+    var anon_3: Ref
+    anon_3 := con_IllegalArgumentException()
+    fold acc(Throwable_unique(anon_3), write)
+    fold acc(Exception_unique(anon_3), write)
+    fold acc(RuntimeException_unique(anon_3), write)
+    fold acc(IllegalArgumentException_unique(anon_3), write)
     inhale false
   }
   unfold acc(ObserverMiddle_unique(this), write)
   unfold acc(c_BaseMeter_unique(this), write)
-  this.a := plusInts(before, intToRef(1))
-  label lbl_ret_0
+  this.bf_a := plusInts(before, intToRef(1))
+  label lbl_ret_3
   fold acc(c_BaseMeter_unique(this), write)
   fold acc(ObserverMiddle_unique(this), write)
-  inhale isSubtype(typeOf(v_ret_0), unitType())
+  inhale isSubtype(typeOf(v_ret_3), unitType())
 }
 
 method ObserverMiddle_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Ref)
-  returns (ret_4: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), ObserverMiddle())
   requires acc(ObserverMiddle_unique(this), write)
   requires intFromRef(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)) <
     2147483647
   requires typeOf(this) == ObserverMiddle()
   ensures acc(ObserverMiddle_unique(this), write)
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
   ensures intFromRef(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)) ==
     (let anon_builtin ==
       (plusInts(old(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)),
@@ -1855,26 +2239,55 @@ method ObserverMiddle_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Ref
       intFromRef(intToRef(1)))
 
 
-method cause(this: Ref) returns (ret_2: Ref)
+method cause(this: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
 
 
-method con() returns (ret_3: Ref)
-  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
-  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
-    (isSubtype(typeOf(ret_3), RuntimeException()) &&
-    (isSubtype(typeOf(ret_3), Exception()) &&
-    isSubtype(typeOf(ret_3), Throwable())))
+method con_IllegalArgumentException() returns (ret_6: Ref)
+  ensures isSubtype(typeOf(ret_6), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_6), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_6), RuntimeException()) &&
+    (isSubtype(typeOf(ret_6), Exception()) &&
+    isSubtype(typeOf(ret_6), Throwable())))
 
 
-method message(this: Ref) returns (ret_1: Ref)
+method con_ObserverMiddle(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), ObserverMiddle())
+  ensures isSubtype(typeOf(v_ret_0), ObserverMiddle()) &&
+    (isSubtype(typeOf(v_ret_0), c_BaseMeter()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType()) &&
+    acc(v_ret_0.bf_b, write) &&
+    isSubtype(typeOf(v_ret_0.bf_b), intType()))
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(bf_a, bf_b)
+  inhale typeOf(v_ret_0) == ObserverMiddle()
+  anon_0 := par_a
+  anon_1 := par_b
+  v_ret_0.bf_a := anon_0
+  v_ret_0.bf_b := anon_1
+  fold acc(c_BaseMeter_unique(v_ret_0), write)
+  fold acc(ObserverMiddle_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ObserverMiddle_unique(v_ret_0), write)
+  unfold acc(c_BaseMeter_unique(v_ret_0), write)
+}
+
+method message(this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
 
 
 method refines_ObserverMiddle_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Ref)
-  returns (ret_4: Ref)
+  returns (ret_7: Ref)
   requires isSubtype(typeOf(this), ObserverMiddle())
   requires acc(ObserverMiddle_unique(this), write)
   requires intFromRef(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)) <
@@ -1882,9 +2295,9 @@ method refines_ObserverMiddle_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(t
   requires typeOf(this) == ObserverMiddle()
   requires isSubtype(typeOf(this), ObserverMiddle())
 {
-  ret_4 := ObserverMiddle_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this)
+  ret_7 := ObserverMiddle_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this)
   assert acc(ObserverMiddle_unique(this), write)
-  assert isSubtype(typeOf(ret_4), unitType())
+  assert isSubtype(typeOf(ret_7), unitType())
   assert intFromRef(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)) ==
     (let anon_builtin ==
       (plusInts(old(ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)),
@@ -1894,9 +2307,9 @@ method refines_ObserverMiddle_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(t
 }
 
 /observer_dispatch_errors.kt: info: Generated Viper text for GoodObserverLeaf:
-field a: Ref
+field bf_a: Ref
 
-field b: Ref
+field bf_b: Ref
 
 function ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
   requires isSubtype(typeOf(this), c_BaseMeter())
@@ -1921,7 +2334,7 @@ function c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
   requires acc(c_BaseMeter_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(c_BaseMeter_unique(this), write) in this.a)
+  (unfolding acc(c_BaseMeter_unique(this), write) in this.bf_a)
 }
 
 function c_Meter_f_level(this: Ref): Ref
@@ -1967,10 +2380,10 @@ predicate Throwable_unique(this: Ref) {
 }
 
 predicate c_BaseMeter_unique(this: Ref) {
-  isSubtype(typeOf(this), c_BaseMeter()) && acc(this.a, write) &&
-  isSubtype(typeOf(this.a), intType()) &&
-  acc(this.b, write) &&
-  isSubtype(typeOf(this.b), intType())
+  isSubtype(typeOf(this), c_BaseMeter()) && acc(this.bf_a, write) &&
+  isSubtype(typeOf(this.bf_a), intType()) &&
+  acc(this.bf_b, write) &&
+  isSubtype(typeOf(this.bf_b), intType())
 }
 
 predicate c_Meter_footprint(this: Ref)
@@ -1980,7 +2393,7 @@ predicate c_Meter_unique(this: Ref) {
 }
 
 method GoodObserverLeaf_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: Ref)
-  returns (v_ret_0: Ref)
+  returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), GoodObserverLeaf())
   requires acc(GoodObserverLeaf_unique(this), write)
   requires (unfolding acc(GoodObserverLeaf_unique(this), wildcard) in
@@ -1989,7 +2402,7 @@ method GoodObserverLeaf_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: R
         2147483647))
   requires typeOf(this) == GoodObserverLeaf()
   ensures acc(GoodObserverLeaf_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures isSubtype(typeOf(v_ret_4), unitType())
   ensures (unfolding acc(GoodObserverLeaf_unique(this), wildcard) in
       (unfolding acc(ObserverMiddle_unique(this), wildcard) in
         intFromRef(c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)))) ==
@@ -2006,32 +2419,32 @@ method GoodObserverLeaf_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: R
   unfold acc(GoodObserverLeaf_unique(this), write)
   unfold acc(ObserverMiddle_unique(this), write)
   unfold acc(c_BaseMeter_unique(this), write)
-  before := this.a
+  before := this.bf_a
   fold acc(c_BaseMeter_unique(this), write)
   fold acc(ObserverMiddle_unique(this), write)
   fold acc(GoodObserverLeaf_unique(this), write)
   if (intFromRef(before) == 2147483647) {
-    var anon_1: Ref
-    anon_1 := con()
-    fold acc(Throwable_unique(anon_1), write)
-    fold acc(Exception_unique(anon_1), write)
-    fold acc(RuntimeException_unique(anon_1), write)
-    fold acc(IllegalArgumentException_unique(anon_1), write)
+    var anon_5: Ref
+    anon_5 := con_IllegalArgumentException()
+    fold acc(Throwable_unique(anon_5), write)
+    fold acc(Exception_unique(anon_5), write)
+    fold acc(RuntimeException_unique(anon_5), write)
+    fold acc(IllegalArgumentException_unique(anon_5), write)
     inhale false
   }
   unfold acc(GoodObserverLeaf_unique(this), write)
   unfold acc(ObserverMiddle_unique(this), write)
   unfold acc(c_BaseMeter_unique(this), write)
-  this.a := plusInts(before, intToRef(1))
-  label lbl_ret_0
+  this.bf_a := plusInts(before, intToRef(1))
+  label lbl_ret_4
   fold acc(c_BaseMeter_unique(this), write)
   fold acc(ObserverMiddle_unique(this), write)
   fold acc(GoodObserverLeaf_unique(this), write)
-  inhale isSubtype(typeOf(v_ret_0), unitType())
+  inhale isSubtype(typeOf(v_ret_4), unitType())
 }
 
 method GoodObserverLeaf_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Ref)
-  returns (ret_4: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), GoodObserverLeaf())
   requires acc(GoodObserverLeaf_unique(this), write)
   requires (unfolding acc(GoodObserverLeaf_unique(this), wildcard) in
@@ -2040,7 +2453,7 @@ method GoodObserverLeaf_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: R
         2147483647))
   requires typeOf(this) == GoodObserverLeaf()
   ensures acc(GoodObserverLeaf_unique(this), write)
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_8), unitType())
   ensures (unfolding acc(GoodObserverLeaf_unique(this), wildcard) in
       (unfolding acc(ObserverMiddle_unique(this), wildcard) in
         intFromRef(c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)))) ==
@@ -2054,26 +2467,62 @@ method GoodObserverLeaf_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: R
       intFromRef(intToRef(1)))
 
 
-method cause(this: Ref) returns (ret_2: Ref)
+method cause(this: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
 
 
-method con() returns (ret_3: Ref)
-  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
-  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
-    (isSubtype(typeOf(ret_3), RuntimeException()) &&
-    (isSubtype(typeOf(ret_3), Exception()) &&
-    isSubtype(typeOf(ret_3), Throwable())))
+method con_GoodObserverLeaf(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), GoodObserverLeaf())
+  ensures isSubtype(typeOf(v_ret_0), GoodObserverLeaf()) &&
+    (isSubtype(typeOf(v_ret_0), ObserverMiddle()) &&
+    (isSubtype(typeOf(v_ret_0), c_BaseMeter()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType()) &&
+    acc(v_ret_0.bf_b, write) &&
+    isSubtype(typeOf(v_ret_0.bf_b), intType())))
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  v_ret_0 := new(bf_a, bf_b)
+  inhale typeOf(v_ret_0) == GoodObserverLeaf()
+  anon_0 := par_a
+  anon_1 := par_b
+  anon_2 := anon_0
+  anon_3 := anon_1
+  v_ret_0.bf_a := anon_2
+  v_ret_0.bf_b := anon_3
+  fold acc(c_BaseMeter_unique(v_ret_0), write)
+  fold acc(ObserverMiddle_unique(v_ret_0), write)
+  fold acc(GoodObserverLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(GoodObserverLeaf_unique(v_ret_0), write)
+  unfold acc(ObserverMiddle_unique(v_ret_0), write)
+  unfold acc(c_BaseMeter_unique(v_ret_0), write)
+}
+
+method con_IllegalArgumentException() returns (ret_7: Ref)
+  ensures isSubtype(typeOf(ret_7), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_7), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_7), RuntimeException()) &&
+    (isSubtype(typeOf(ret_7), Exception()) &&
+    isSubtype(typeOf(ret_7), Throwable())))
 
 
-method message(this: Ref) returns (ret_1: Ref)
+method message(this: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
 
 
 method refines_GoodObserverLeaf_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Ref)
-  returns (ret_4: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), GoodObserverLeaf())
   requires acc(GoodObserverLeaf_unique(this), write)
   requires (unfolding acc(GoodObserverLeaf_unique(this), wildcard) in
@@ -2083,9 +2532,9 @@ method refines_GoodObserverLeaf_c_Meter_f_bump_inherited_contract_c_Meter_f_bump
   requires typeOf(this) == GoodObserverLeaf()
   requires isSubtype(typeOf(this), GoodObserverLeaf())
 {
-  ret_4 := GoodObserverLeaf_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this)
+  ret_8 := GoodObserverLeaf_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this)
   assert acc(GoodObserverLeaf_unique(this), write)
-  assert isSubtype(typeOf(ret_4), unitType())
+  assert isSubtype(typeOf(ret_8), unitType())
   assert (unfolding acc(GoodObserverLeaf_unique(this), wildcard) in
       (unfolding acc(ObserverMiddle_unique(this), wildcard) in
         intFromRef(c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this)))) ==
@@ -2100,9 +2549,9 @@ method refines_GoodObserverLeaf_c_Meter_f_bump_inherited_contract_c_Meter_f_bump
 }
 
 /observer_dispatch_errors.kt: info: Generated Viper text for BadObserverLeaf:
-field a: Ref
+field bf_a: Ref
 
-field b: Ref
+field bf_b: Ref
 
 function BadObserverLeaf_f_level(this: Ref): Ref
   requires isSubtype(typeOf(this), BadObserverLeaf())
@@ -2111,7 +2560,7 @@ function BadObserverLeaf_f_level(this: Ref): Ref
 {
   (unfolding acc(BadObserverLeaf_unique(this), write) in
     (unfolding acc(ObserverMiddle_unique(this), write) in
-      (unfolding acc(c_BaseMeter_unique(this), write) in this.b)))
+      (unfolding acc(c_BaseMeter_unique(this), write) in this.bf_b)))
 }
 
 function ObserverMiddle_c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
@@ -2137,7 +2586,7 @@ function c_BaseMeter_f_level_args_c_BaseMeter_ret_Int(this: Ref): Ref
   requires acc(c_BaseMeter_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(c_BaseMeter_unique(this), write) in this.a)
+  (unfolding acc(c_BaseMeter_unique(this), write) in this.bf_a)
 }
 
 function c_Meter_f_level(this: Ref): Ref
@@ -2183,10 +2632,10 @@ predicate Throwable_unique(this: Ref) {
 }
 
 predicate c_BaseMeter_unique(this: Ref) {
-  isSubtype(typeOf(this), c_BaseMeter()) && acc(this.a, write) &&
-  isSubtype(typeOf(this.a), intType()) &&
-  acc(this.b, write) &&
-  isSubtype(typeOf(this.b), intType())
+  isSubtype(typeOf(this), c_BaseMeter()) && acc(this.bf_a, write) &&
+  isSubtype(typeOf(this.bf_a), intType()) &&
+  acc(this.bf_b, write) &&
+  isSubtype(typeOf(this.bf_b), intType())
 }
 
 predicate c_Meter_footprint(this: Ref)
@@ -2196,13 +2645,13 @@ predicate c_Meter_unique(this: Ref) {
 }
 
 method BadObserverLeaf_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: Ref)
-  returns (v_ret_0: Ref)
+  returns (v_ret_4: Ref)
   requires isSubtype(typeOf(this), BadObserverLeaf())
   requires acc(BadObserverLeaf_unique(this), write)
   requires intFromRef(BadObserverLeaf_f_level(this)) < 2147483647
   requires typeOf(this) == BadObserverLeaf()
   ensures acc(BadObserverLeaf_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures isSubtype(typeOf(v_ret_4), unitType())
   ensures intFromRef(BadObserverLeaf_f_level(this)) ==
     (let anon_builtin ==
       (plusInts(old(BadObserverLeaf_f_level(this)), intToRef(1))) in
@@ -2213,38 +2662,38 @@ method BadObserverLeaf_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this: Re
   unfold acc(BadObserverLeaf_unique(this), write)
   unfold acc(ObserverMiddle_unique(this), write)
   unfold acc(c_BaseMeter_unique(this), write)
-  before := this.a
+  before := this.bf_a
   fold acc(c_BaseMeter_unique(this), write)
   fold acc(ObserverMiddle_unique(this), write)
   fold acc(BadObserverLeaf_unique(this), write)
   if (intFromRef(before) == 2147483647) {
-    var anon_2: Ref
-    anon_2 := con()
-    fold acc(Throwable_unique(anon_2), write)
-    fold acc(Exception_unique(anon_2), write)
-    fold acc(RuntimeException_unique(anon_2), write)
-    fold acc(IllegalArgumentException_unique(anon_2), write)
+    var anon_6: Ref
+    anon_6 := con_IllegalArgumentException()
+    fold acc(Throwable_unique(anon_6), write)
+    fold acc(Exception_unique(anon_6), write)
+    fold acc(RuntimeException_unique(anon_6), write)
+    fold acc(IllegalArgumentException_unique(anon_6), write)
     inhale false
   }
   unfold acc(BadObserverLeaf_unique(this), write)
   unfold acc(ObserverMiddle_unique(this), write)
   unfold acc(c_BaseMeter_unique(this), write)
-  this.a := plusInts(before, intToRef(1))
-  label lbl_ret_0
+  this.bf_a := plusInts(before, intToRef(1))
+  label lbl_ret_4
   fold acc(c_BaseMeter_unique(this), write)
   fold acc(ObserverMiddle_unique(this), write)
   fold acc(BadObserverLeaf_unique(this), write)
-  inhale isSubtype(typeOf(v_ret_0), unitType())
+  inhale isSubtype(typeOf(v_ret_4), unitType())
 }
 
 method BadObserverLeaf_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Ref)
-  returns (ret_4: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), BadObserverLeaf())
   requires acc(BadObserverLeaf_unique(this), write)
   requires intFromRef(BadObserverLeaf_f_level(this)) < 2147483647
   requires typeOf(this) == BadObserverLeaf()
   ensures acc(BadObserverLeaf_unique(this), write)
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_8), unitType())
   ensures intFromRef(BadObserverLeaf_f_level(this)) ==
     (let anon_builtin ==
       (plusInts(old(BadObserverLeaf_f_level(this)), intToRef(1))) in
@@ -2252,35 +2701,71 @@ method BadObserverLeaf_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Re
       intFromRef(intToRef(1)))
 
 
-method cause(this: Ref) returns (ret_2: Ref)
+method cause(this: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
 
 
-method con() returns (ret_3: Ref)
-  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
-  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
-    (isSubtype(typeOf(ret_3), RuntimeException()) &&
-    (isSubtype(typeOf(ret_3), Exception()) &&
-    isSubtype(typeOf(ret_3), Throwable())))
+method con_BadObserverLeaf(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), BadObserverLeaf())
+  ensures isSubtype(typeOf(v_ret_0), BadObserverLeaf()) &&
+    (isSubtype(typeOf(v_ret_0), ObserverMiddle()) &&
+    (isSubtype(typeOf(v_ret_0), c_BaseMeter()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType()) &&
+    acc(v_ret_0.bf_b, write) &&
+    isSubtype(typeOf(v_ret_0.bf_b), intType())))
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  v_ret_0 := new(bf_a, bf_b)
+  inhale typeOf(v_ret_0) == BadObserverLeaf()
+  anon_0 := par_a
+  anon_1 := par_b
+  anon_2 := anon_0
+  anon_3 := anon_1
+  v_ret_0.bf_a := anon_2
+  v_ret_0.bf_b := anon_3
+  fold acc(c_BaseMeter_unique(v_ret_0), write)
+  fold acc(ObserverMiddle_unique(v_ret_0), write)
+  fold acc(BadObserverLeaf_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BadObserverLeaf_unique(v_ret_0), write)
+  unfold acc(ObserverMiddle_unique(v_ret_0), write)
+  unfold acc(c_BaseMeter_unique(v_ret_0), write)
+}
+
+method con_IllegalArgumentException() returns (ret_7: Ref)
+  ensures isSubtype(typeOf(ret_7), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_7), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_7), RuntimeException()) &&
+    (isSubtype(typeOf(ret_7), Exception()) &&
+    isSubtype(typeOf(ret_7), Throwable())))
 
 
-method message(this: Ref) returns (ret_1: Ref)
+method message(this: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
 
 
 method refines_BadObserverLeaf_c_Meter_f_bump_inherited_contract_c_Meter_f_bump(this: Ref)
-  returns (ret_4: Ref)
+  returns (ret_8: Ref)
   requires isSubtype(typeOf(this), BadObserverLeaf())
   requires acc(BadObserverLeaf_unique(this), write)
   requires intFromRef(BadObserverLeaf_f_level(this)) < 2147483647
   requires typeOf(this) == BadObserverLeaf()
   requires isSubtype(typeOf(this), BadObserverLeaf())
 {
-  ret_4 := BadObserverLeaf_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this)
+  ret_8 := BadObserverLeaf_c_BaseMeter_f_bump_inherited_body_c_Meter_f_bump(this)
   assert acc(BadObserverLeaf_unique(this), write)
-  assert isSubtype(typeOf(ret_4), unitType())
+  assert isSubtype(typeOf(ret_8), unitType())
   assert intFromRef(BadObserverLeaf_f_level(this)) ==
     (let anon_builtin ==
       (plusInts(old(BadObserverLeaf_f_level(this)), intToRef(1))) in

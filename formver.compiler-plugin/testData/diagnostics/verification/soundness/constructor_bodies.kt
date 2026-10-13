@@ -28,3 +28,17 @@ inline fun <!VIPER_TEXT!>initializeValue<!>(block: () -> Int): Int = block()
     }
     @Law @Pure fun positive(): Boolean = value > 0
 }
+
+<!VIPER_TEXT!>class LawFreePrimary<!>(val value: Int) {
+    init {
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>)
+    }
+}
+
+<!VIPER_TEXT!>class LawFreeSecondary<!> {
+    val value: Int
+    constructor(value: Int) {
+        this.value = value
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>value > 0<!>)
+    }
+}

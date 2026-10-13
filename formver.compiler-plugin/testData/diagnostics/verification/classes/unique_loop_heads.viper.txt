@@ -1,3 +1,22 @@
+/unique_loop_heads.kt: info: Generated Viper text for Box:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures isSubtype(typeOf(v_ret_0), Box()) && acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == Box()
+  v_ret_0.bf_value := par_value
+  fold acc(Box_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Box_unique(v_ret_0), write)
+}
+
 /unique_loop_heads.kt: info: Generated Viper text for reset:
 field value: Ref
 
@@ -90,6 +109,7 @@ method con(par_value: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Box()) && acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
 method cycle(n: Ref) returns (v_ret_0: Ref)
@@ -123,17 +143,17 @@ method cycle(n: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method reset(par_b: Ref) returns (ret_2: Ref)
+method reset(par_b: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_b), Box())
   requires acc(Box_unique(par_b), write)
-  ensures isSubtype(typeOf(ret_2), Box())
-  ensures acc(Box_unique(ret_2), write)
+  ensures isSubtype(typeOf(ret_3), Box())
+  ensures acc(Box_unique(ret_3), write)
 
 
-method sink(par_b: Ref) returns (ret_3: Ref)
+method sink(par_b: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_b), Box())
   requires acc(Box_unique(par_b), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
 
 
 /unique_loop_heads.kt: info: Generated Viper text for jumps:
@@ -213,6 +233,7 @@ method con(par_value: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Box()) && acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
 method movedAtHead(n: Ref) returns (v_ret_0: Ref)
@@ -246,10 +267,10 @@ method movedAtHead(n: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method sink(par_b: Ref) returns (ret_2: Ref)
+method sink(par_b: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_b), Box())
   requires acc(Box_unique(par_b), write)
-  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
 
 
 /unique_loop_heads.kt: info: Generated Viper text for pickThenLoop:

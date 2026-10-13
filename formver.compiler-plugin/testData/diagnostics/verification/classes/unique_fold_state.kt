@@ -2,9 +2,9 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(var value: Int)
+<!VIPER_TEXT!>class Box<!>(var value: Int)
 
-class Holder(var count: Int, var box: @Unique Box)
+<!VIPER_TEXT!>class Holder<!>(var count: Int, var box: @Unique Box)
 
 fun <!VIPER_TEXT!>bump<!>(b: @Unique @Borrowed Box) {
     preconditions { b.value < 2147483647 }

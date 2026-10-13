@@ -33,7 +33,7 @@ interface Measure {
     fun <!VIPER_TEXT!>size<!>(limit: Int): Int
 }
 
-class Doubler {
+<!VIPER_TEXT!>class Doubler<!> {
     @SpecOf("twice")
     fun twiceSpec(x: Int) {
         preconditions { 0 <= x && x <= 1073741823 }

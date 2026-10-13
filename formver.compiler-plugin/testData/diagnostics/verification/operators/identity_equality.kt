@@ -1,7 +1,7 @@
 // FULL_JDK
 // NEVER_VALIDATE
 
-class C
+<!VIPER_TEXT!>class C<!>
 
 fun <!VIPER_TEXT!>identity<!>(x: C, y: C): Boolean {
     return x === y

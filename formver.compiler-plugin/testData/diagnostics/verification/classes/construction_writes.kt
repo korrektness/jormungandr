@@ -2,21 +2,21 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-<!VERIFICATION_SKIPPED!>class Checked<!>(var a: Int, val b: Int) {
-    var sum = a + b
+<!VIPER_TEXT!>class Checked<!>(var a: Int, val b: Int) {
+    var sum = a.toLong() + b.toLong()
 
     init {
         verify(a == a)
     }
 }
 
-class Reset(var a: Int, val b: Int) {
+<!VIPER_TEXT!>class Reset<!>(var a: Int, val b: Int) {
     init {
         a = 0
     }
 }
 
-class Lending(var a: Int, val b: Int) {
+<!VIPER_TEXT!>class Lending<!>(var a: Int, val b: Int) {
     init {
         clear()
     }
@@ -27,7 +27,7 @@ class Lending(var a: Int, val b: Int) {
     }
 }
 
-class Resetting(var a: Int, val b: Int) {
+<!VIPER_TEXT!>class Resetting<!>(var a: Int, val b: Int) {
     var c: Int = 1
 
     init {
@@ -42,9 +42,9 @@ class Resetting(var a: Int, val b: Int) {
     }
 }
 
-class Node(var value: Int)
+<!VIPER_TEXT!>class Node<!>(var value: Int)
 
-class Holder(val child: @Unique Node) {
+<!VIPER_TEXT!>class Holder<!>(val child: @Unique Node) {
     init {
         clearChild()
     }
@@ -55,17 +55,17 @@ class Holder(val child: @Unique Node) {
     }
 }
 
-class DirectHolder(val child: @Unique Node) {
+<!VIPER_TEXT!>class DirectHolder<!>(val child: @Unique Node) {
     init {
         child.value = 0
     }
 }
 
-class QuietHolder(val child: @Unique Node)
+<!VIPER_TEXT!>class QuietHolder<!>(val child: @Unique Node)
 
-open class Base(var a: Int)
+open <!VIPER_TEXT!>class Base<!>(var a: Int)
 
-class Derived(a: Int) : Base(a) {
+<!VIPER_TEXT!>class Derived<!>(a: Int) : Base(a) {
     init {
         this.a = 0
     }

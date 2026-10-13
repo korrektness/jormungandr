@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(val value: Int)
+<!VIPER_TEXT!>class Box<!>(val value: Int)
 
 <!UNSUPPORTED_FEATURE!>@Pure
 fun <!VERIFICATION_SKIPPED!>boxes<!>(b: Box): Multiset<Box> = multisetOf(b)<!>
@@ -10,7 +10,7 @@ fun <!VERIFICATION_SKIPPED!>multisetInBody<!>(x: Int): Int {
     return x
 }
 
-class Node(val value: Int, var next: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, var next: @Unique Node?)
 
 @Pure
 fun <!VIPER_TEXT!>contents<!>(n: @Unique Node?): Multiset<Int> {

@@ -1,3 +1,57 @@
+/ownership_not_established.kt: info: Generated Viper text for Leaf:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Leaf())
+  ensures isSubtype(typeOf(v_ret_0), Leaf()) && acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == Leaf()
+  v_ret_0.bf_n := par_n
+  fold acc(Leaf_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Leaf_unique(v_ret_0), write)
+}
+
+/ownership_not_established.kt: info: Generated Viper text for Holder:
+field bf_count: Ref
+
+field n: Ref
+
+function g_leaf(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Leaf())
+
+
+method con(par_leaf: Ref, par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_leaf), Leaf())
+  requires acc(Leaf_unique(par_leaf), write)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(Leaf_unique(g_leaf(v_ret_0)), write) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType())
+  ensures g_leaf(v_ret_0) == par_leaf
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures g_leaf(v_ret_0) == par_leaf
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_count)
+  inhale typeOf(v_ret_0) == Holder()
+  anon := par_leaf
+  inhale g_leaf(v_ret_0) == anon
+  v_ret_0.bf_count := par_count
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
 /ownership_not_established.kt: info: Generated Viper text for bump:
 field n: Ref
 
@@ -36,14 +90,17 @@ method con_Holder(par_leaf: Ref, par_count: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.bf_count), intType())
   ensures g_leaf(ret_1) == par_leaf
   ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+  ensures g_leaf(ret_1) == par_leaf
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
 
 
-method con_Leaf(par_n: Ref) returns (ret_2: Ref)
+method con_Leaf(par_n: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_n), intType())
-  ensures isSubtype(typeOf(ret_2), Leaf())
-  ensures isSubtype(typeOf(ret_2), Leaf()) && acc(ret_2.bf_n, write) &&
-    isSubtype(typeOf(ret_2.bf_n), intType())
-  ensures intFromRef(ret_2.bf_n) == intFromRef(par_n)
+  ensures isSubtype(typeOf(ret_3), Leaf())
+  ensures isSubtype(typeOf(ret_3), Leaf()) && acc(ret_3.bf_n, write) &&
+    isSubtype(typeOf(ret_3.bf_n), intType())
+  ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
 
 
 method makeHolder() returns (v_ret_0: Ref)

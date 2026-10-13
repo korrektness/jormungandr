@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Counter(var x: Int)
+<!VIPER_TEXT!>class Counter<!>(var x: Int)
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>probe<!>(c: @Unique @Borrowed Counter): Int = c.x
 

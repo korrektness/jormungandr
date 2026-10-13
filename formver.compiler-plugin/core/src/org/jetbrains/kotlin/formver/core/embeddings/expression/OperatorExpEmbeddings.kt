@@ -172,6 +172,22 @@ object OperatorExpEmbeddings {
         viperImplementation { Exp.Or(args[0], args[1], pos, info) }
     }
 
+    /**
+     * Kotlin's infix `and` and `or` evaluate both operands, while Viper checks the right operand of `&&` and `||` only
+     * when the left one does not decide the result. Their builtin forms compare the operands first, which makes Viper
+     * check both. The domain functions behind [And] and [Or] already take both operands as arguments.
+     */
+    fun eagerAnd(left: ExpEmbedding, right: ExpEmbedding): BinaryOperatorExpEmbedding =
+        And.withBuiltins(left, right, eagerBuiltin { l, r, pos, info -> Exp.And(Exp.EqCmp(l, r, pos, info), l, pos, info) })
+
+    /** See [eagerAnd]. */
+    fun eagerOr(left: ExpEmbedding, right: ExpEmbedding): BinaryOperatorExpEmbedding =
+        Or.withBuiltins(left, right, eagerBuiltin { l, r, pos, info -> Exp.Or(Exp.NeCmp(l, r, pos, info), l, pos, info) })
+
+    private fun eagerBuiltin(build: (Exp, Exp, Position, Info) -> Exp) = object : Applicable {
+        override fun toFuncApp(args: List<Exp>, pos: Position, info: Info): Exp = build(args[0], args[1], pos, info)
+    }
+
     val Xor = buildBinaryOperator {
         setName("xorBools")
         setSignature(booleanBooleanToBooleanType)

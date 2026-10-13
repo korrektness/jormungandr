@@ -4,7 +4,7 @@
 import org.jetbrains.kotlin.formver.plugin.Unique
 import org.jetbrains.kotlin.formver.plugin.verify
 
-class Link(var data: Int, val next: @Unique Link?)
+<!VIPER_TEXT!>class Link<!>(var data: Int, val next: @Unique Link?)
 
 fun <!VIPER_TEXT!>getVal<!>(l: @Unique Link): Int? {
     return l.next?.data

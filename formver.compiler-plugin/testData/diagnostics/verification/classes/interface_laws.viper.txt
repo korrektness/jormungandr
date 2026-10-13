@@ -54,9 +54,9 @@ predicate SizedLawDiamond_footprint(this: Ref)
 predicate SizedLawDiamond_unique(this: Ref) {
   acc(SizedLawDiamond_footprint(this), write) &&
   isSubtype(typeOf(this), SizedLawDiamond()) &&
-  boolFromRef((let v_l1_count_0 ==
+  boolFromRef((let v_l3_count_0 ==
     (SizedLawDiamond_c_SizedLaw_f_size(this)) in
-    leInts(v_l1_count_0, intToRef(10)))) &&
+    leInts(v_l3_count_0, intToRef(10)))) &&
   boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
 }
 
@@ -84,14 +84,24 @@ predicate c_SizedLaw_unique(this: Ref) {
   boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
 }
 
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), GoodSizedLaw())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == GoodSizedLaw()
+  fold acc(GoodSizedLaw_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(GoodSizedLaw_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(GoodSizedLaw_unique(this), write)
 {
   unfold acc(GoodSizedLaw_unique(this), write)
   fold acc(GoodSizedLaw_unique(this), write)
-  assert boolFromRef((let v_l6_count_0 ==
+  assert boolFromRef((let v_l8_count_0 ==
       (GoodSizedLaw_f_size(this)) in
-      leInts(v_l6_count_0, intToRef(10))))
+      leInts(v_l8_count_0, intToRef(10))))
   assert boolFromRef(geInts(GoodSizedLaw_f_size(this), intToRef(0)))
 }
 
@@ -209,9 +219,9 @@ predicate SizedLawDiamond_footprint(this: Ref)
 predicate SizedLawDiamond_unique(this: Ref) {
   acc(SizedLawDiamond_footprint(this), write) &&
   isSubtype(typeOf(this), SizedLawDiamond()) &&
-  boolFromRef((let v_l1_count_0 ==
+  boolFromRef((let v_l3_count_0 ==
     (SizedLawDiamond_c_SizedLaw_f_size(this)) in
-    leInts(v_l1_count_0, intToRef(10)))) &&
+    leInts(v_l3_count_0, intToRef(10)))) &&
   boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
 }
 
@@ -239,14 +249,24 @@ predicate c_SizedLaw_unique(this: Ref) {
   boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
 }
 
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), BrokenSizedLaw())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == BrokenSizedLaw()
+  fold acc(BrokenSizedLaw_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BrokenSizedLaw_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(BrokenSizedLaw_unique(this), write)
 {
   unfold acc(BrokenSizedLaw_unique(this), write)
   fold acc(BrokenSizedLaw_unique(this), write)
-  assert boolFromRef((let v_l6_count_0 ==
+  assert boolFromRef((let v_l8_count_0 ==
       (BrokenSizedLaw_f_size(this)) in
-      leInts(v_l6_count_0, intToRef(10))))
+      leInts(v_l8_count_0, intToRef(10))))
   assert boolFromRef(geInts(BrokenSizedLaw_f_size(this), intToRef(0)))
 }
 
@@ -369,9 +389,9 @@ predicate SizedLawDiamond_footprint(this: Ref)
 predicate SizedLawDiamond_unique(this: Ref) {
   acc(SizedLawDiamond_footprint(this), write) &&
   isSubtype(typeOf(this), SizedLawDiamond()) &&
-  boolFromRef((let v_l1_count_0 ==
+  boolFromRef((let v_l5_count_0 ==
     (SizedLawDiamond_c_SizedLaw_f_size(this)) in
-    leInts(v_l1_count_0, intToRef(10)))) &&
+    leInts(v_l5_count_0, intToRef(10)))) &&
   boolFromRef(geInts(SizedLawDiamond_c_SizedLaw_f_size(this), intToRef(0)))
 }
 
@@ -399,28 +419,42 @@ predicate c_SizedLaw_unique(this: Ref) {
   boolFromRef(geInts(c_SizedLaw_f_size(this), intToRef(0)))
 }
 
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), InheritedSizedLaw())
+  ensures isSubtype(typeOf(v_ret_0), InheritedSizedLaw()) &&
+    isSubtype(typeOf(v_ret_0), GoodSizedLaw())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == InheritedSizedLaw()
+  fold acc(GoodSizedLaw_unique(v_ret_0), write)
+  fold acc(InheritedSizedLaw_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(InheritedSizedLaw_unique(v_ret_0), write)
+  unfold acc(GoodSizedLaw_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(InheritedSizedLaw_unique(this), write)
 {
   unfold acc(InheritedSizedLaw_unique(this), write)
   fold acc(InheritedSizedLaw_unique(this), write)
   assert boolFromRef((unfolding acc(InheritedSizedLaw_unique(this), wildcard) in
-      (let v_l6_count_0 ==
+      (let v_l10_count_0 ==
         (GoodSizedLaw_f_size(this)) in
-        leInts(v_l6_count_0, intToRef(10)))))
+        leInts(v_l10_count_0, intToRef(10)))))
   assert boolFromRef((unfolding acc(InheritedSizedLaw_unique(this), wildcard) in
       geInts(GoodSizedLaw_f_size(this), intToRef(0))))
 }
 
 /interface_laws.kt: info: Generated Viper text for FieldSizedLaw:
-field count: Ref
+field bf_count: Ref
 
 function FieldSizedLaw_f_size(this: Ref): Ref
   requires isSubtype(typeOf(this), FieldSizedLaw())
   requires acc(FieldSizedLaw_unique(this), write)
   ensures isSubtype(typeOf(result), intType())
 {
-  (unfolding acc(FieldSizedLaw_unique(this), write) in this.count)
+  (unfolding acc(FieldSizedLaw_unique(this), write) in this.bf_count)
 }
 
 function SizedLaw_f_size(this: Ref): Ref
@@ -430,8 +464,8 @@ function SizedLaw_f_size(this: Ref): Ref
 
 
 predicate FieldSizedLaw_unique(this: Ref) {
-  isSubtype(typeOf(this), FieldSizedLaw()) && acc(this.count, write) &&
-  isSubtype(typeOf(this.count), intType())
+  isSubtype(typeOf(this), FieldSizedLaw()) && acc(this.bf_count, write) &&
+  isSubtype(typeOf(this.bf_count), intType())
 }
 
 predicate SizedLaw_unique(this: Ref) {
@@ -440,6 +474,23 @@ predicate SizedLaw_unique(this: Ref) {
 }
 
 predicate footprint(this: Ref)
+
+method con(par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), FieldSizedLaw())
+  ensures isSubtype(typeOf(v_ret_0), FieldSizedLaw()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType())
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  v_ret_0 := new(bf_count)
+  inhale typeOf(v_ret_0) == FieldSizedLaw()
+  v_ret_0.bf_count := par_count
+  fold acc(FieldSizedLaw_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(FieldSizedLaw_unique(v_ret_0), write)
+}
 
 method laws(this: Ref)
   requires acc(FieldSizedLaw_unique(this), write)
@@ -545,9 +596,9 @@ method laws(this: Ref)
   assert boolFromRef(geInts(InvariantSizedLaw_f_size(this), intToRef(0)))
 }
 
-method require(value: Ref) returns (ret_3: Ref)
+method require(value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(value)
 
 
@@ -738,13 +789,13 @@ method InvariantSizedLaw_c_SizedLaw_upcast(this: Ref)
     old(InvariantSizedLaw_f_size(this))
 
 
-method add(this: Ref) returns (ret_4: Ref)
+method add(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), InvariantSizedLaw())
   requires acc(InvariantSizedLaw_unique(this), write)
   requires (unfolding acc(InvariantSizedLaw_unique(this), write) in
       intFromRef(this.bf_count) < 2147483647)
   ensures acc(InvariantSizedLaw_unique(this), write)
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
 
 
 method con(par_count: Ref) returns (ret_1: Ref)
@@ -785,11 +836,11 @@ method invariantLawTransfer() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method lawClient(par_view: Ref) returns (ret_5: Ref)
+method lawClient(par_view: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_view), c_SizedLaw())
   requires acc(c_SizedLaw_unique(par_view), write)
   ensures acc(c_SizedLaw_unique(par_view), write)
-  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
 
 
 /interface_laws.kt: info: Generated Viper text for borrowedLawTransfer:
@@ -961,18 +1012,18 @@ method con() returns (ret_1: Ref)
     isSubtype(typeOf(ret_1), GoodSizedLaw())
 
 
-method inheritedLawClient(par_view: Ref) returns (ret_3: Ref)
+method inheritedLawClient(par_view: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(par_view), c_SizedLawDiamond())
   requires acc(c_SizedLawDiamond_unique(par_view), write)
   ensures acc(c_SizedLawDiamond_unique(par_view), write)
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_5), unitType())
 
 
-method lawClient(par_view: Ref) returns (ret_2: Ref)
+method lawClient(par_view: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_view), c_SizedLaw())
   requires acc(c_SizedLaw_unique(par_view), write)
   ensures acc(c_SizedLaw_unique(par_view), write)
-  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
 
 
 /interface_laws.kt: info: Generated Viper text for lawPostcondition:

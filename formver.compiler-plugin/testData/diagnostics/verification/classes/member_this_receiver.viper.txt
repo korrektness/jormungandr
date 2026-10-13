@@ -1,3 +1,40 @@
+/member_this_receiver.kt: info: Generated Viper text for TomlMultilineString:
+field isInMultilineBasic: Ref
+
+field isInMultilineLiteral: Ref
+
+function g_isStringType(this: Ref): Ref
+  requires isSubtype(typeOf(this), TomlMultilineString())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+method con(par_isStringType: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_isStringType), boolType())
+  ensures isSubtype(typeOf(v_ret_0), TomlMultilineString())
+  ensures isSubtype(typeOf(v_ret_0), TomlMultilineString()) &&
+    acc(v_ret_0.isInMultilineBasic, write) &&
+    isSubtype(typeOf(v_ret_0.isInMultilineBasic), boolType()) &&
+    acc(v_ret_0.isInMultilineLiteral, write) &&
+    isSubtype(typeOf(v_ret_0.isInMultilineLiteral), boolType())
+  ensures boolFromRef(g_isStringType(v_ret_0)) ==
+    boolFromRef(par_isStringType)
+  ensures boolFromRef(v_ret_0.isInMultilineBasic) == false
+  ensures boolFromRef(v_ret_0.isInMultilineLiteral) == false
+  ensures boolFromRef(g_isStringType(v_ret_0)) ==
+    boolFromRef(par_isStringType)
+{
+  var anon: Ref
+  v_ret_0 := new(isInMultilineBasic, isInMultilineLiteral)
+  inhale typeOf(v_ret_0) == TomlMultilineString()
+  anon := par_isStringType
+  inhale boolFromRef(g_isStringType(v_ret_0)) == boolFromRef(anon)
+  v_ret_0.isInMultilineBasic := boolToRef(false)
+  v_ret_0.isInMultilineLiteral := boolToRef(false)
+  fold acc(TomlMultilineString_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(TomlMultilineString_unique(v_ret_0), write)
+}
+
 /member_this_receiver.kt: info: Generated Viper text for trackMultilineString:
 field isInMultilineBasic: Ref
 

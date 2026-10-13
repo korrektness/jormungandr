@@ -4,8 +4,8 @@ function testAnd(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(result), boolType())
 {
-  boolToRef(boolFromRef(a) && boolFromRef(b) &&
-  (boolFromRef(a) && boolFromRef(b)))
+  boolToRef(boolFromRef(a) == boolFromRef(b) && boolFromRef(a) &&
+  (boolFromRef(a) == boolFromRef(b) && boolFromRef(a)))
 }
 
 /operators.kt: info: Generated Viper text for testOr:
@@ -14,8 +14,8 @@ function testOr(a: Ref, b: Ref): Ref
   requires isSubtype(typeOf(b), boolType())
   ensures isSubtype(typeOf(result), boolType())
 {
-  boolToRef(boolFromRef(a) || boolFromRef(b) ||
-  (boolFromRef(a) || boolFromRef(b)))
+  boolToRef(boolFromRef(a) != boolFromRef(b) || boolFromRef(a) ||
+  (boolFromRef(a) != boolFromRef(b) || boolFromRef(a)))
 }
 
 /operators.kt: info: Generated Viper text for testShortCircuitAnd:

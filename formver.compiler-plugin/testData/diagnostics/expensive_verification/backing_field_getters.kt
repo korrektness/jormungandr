@@ -3,12 +3,12 @@ import kotlin.contracts.contract
 import kotlin.contracts.ExperimentalContracts
 import org.jetbrains.kotlin.formver.plugin.verify
 
-class Z
-class Y {
+<!VIPER_TEXT!>class Z<!>
+<!VIPER_TEXT!>class Y<!> {
     val z = Z()
 }
 
-class X {
+<!VIPER_TEXT!>class X<!> {
     val y = Y()
 }
 
@@ -24,11 +24,11 @@ fun <!VIPER_TEXT!>receiverNotNullProved<!>(x: X?): Boolean {
     return x?.y != null
 }
 
-class NullableY {
+<!VIPER_TEXT!>class NullableY<!> {
     val z: Z? = Z()
 }
 
-class NullableX {
+<!VIPER_TEXT!>class NullableX<!> {
     val y: NullableY? = NullableY()
 }
 
@@ -48,7 +48,7 @@ fun <!VIPER_TEXT!>cascadeNullableSmartcastGet<!>(x: NullableX?): Z? {
     return if (x == null) null else if (x.y == null) null else x.y.z
 }
 
-class Baz {
+<!VIPER_TEXT!>class Baz<!> {
     val x: Int = 4
 }
 
@@ -71,11 +71,11 @@ fun <!VIPER_TEXT!>nonNullableReceiverSafeGet<!>() {
     verify(cond1)
 }
 
-open class ClassI(val x: Int, val y: Int) {
+open <!VIPER_TEXT!>class ClassI<!>(val x: Int, val y: Int) {
     open val z: Z = Z()
 }
 
-class ClassII(final override val z: Z) : ClassI(10, 10)
+<!VIPER_TEXT!>class ClassII<!>(final override val z: Z) : ClassI(10, 10)
 
 fun <!VIPER_TEXT!>checkPrimary<!>(x: Int, y: Int) {
     val classI = ClassI(x, y)

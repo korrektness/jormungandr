@@ -1,3 +1,23 @@
+/untracked_write.kt: info: Generated Viper text for Node:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures isSubtype(typeOf(v_ret_0), Node()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == Node()
+  v_ret_0.bf_value := par_value
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
+}
+
 /untracked_write.kt: info: Generated Viper text for sharedNode:
 field bf_value: Ref
 
@@ -6,6 +26,7 @@ method con(par_value: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Node())
   ensures isSubtype(typeOf(ret_1), Node()) && acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
@@ -31,6 +52,7 @@ method con(par_value: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Node())
   ensures isSubtype(typeOf(ret_1), Node()) && acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
@@ -106,16 +128,16 @@ function g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-method con_IntArray(par_size: Ref) returns (ret_2: Ref)
+method con_IntArray(par_size: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_size), intType())
   requires intFromRef(par_size) >= 0
-  ensures isSubtype(typeOf(ret_2), IntArray())
-  ensures acc(IntArray_unique(ret_2), write)
-  ensures arraySize(ret_2) == intFromRef(par_size)
-  ensures (unfolding acc(IntArray_unique(ret_2), write) in
+  ensures isSubtype(typeOf(ret_3), IntArray())
+  ensures acc(IntArray_unique(ret_3), write)
+  ensures arraySize(ret_3) == intFromRef(par_size)
+  ensures (unfolding acc(IntArray_unique(ret_3), write) in
       (forall j: Int ::
-        { ret_2.contents[j] }
-        j >= 0 && j < arraySize(ret_2) ==> ret_2.contents[j] == 0))
+        { ret_3.contents[j] }
+        j >= 0 && j < arraySize(ret_3) ==> ret_3.contents[j] == 0))
 
 
 method con_Node(par_value: Ref) returns (ret_1: Ref)
@@ -123,6 +145,7 @@ method con_Node(par_value: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Node())
   ensures isSubtype(typeOf(ret_1), Node()) && acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 

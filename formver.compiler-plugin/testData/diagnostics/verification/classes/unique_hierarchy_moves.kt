@@ -2,9 +2,9 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-open class Base(var count: Int)
+open <!VIPER_TEXT!>class Base<!>(var count: Int)
 
-class Sub(count: Int) : Base(count) {
+<!VIPER_TEXT!>class Sub<!>(count: Int) : Base(count) {
     var extra = 0
 }
 

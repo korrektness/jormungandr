@@ -1,3 +1,126 @@
+/predicates.kt: info: Generated Viper text for Baz:
+predicate Baz_unique(this: Ref) {
+  isSubtype(typeOf(this), Baz())
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Baz())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Baz()
+  fold acc(Baz_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Baz_unique(v_ret_0), write)
+}
+
+/predicates.kt: info: Generated Viper text for PrimitiveFields:
+field bf_b: Ref
+
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), PrimitiveFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate PrimitiveFields_unique(this: Ref) {
+  isSubtype(typeOf(this), PrimitiveFields()) && acc(this.bf_b, write) &&
+  isSubtype(typeOf(this.bf_b), intType())
+}
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), PrimitiveFields())
+  ensures isSubtype(typeOf(v_ret_0), PrimitiveFields()) &&
+    acc(v_ret_0.bf_b, write) &&
+    isSubtype(typeOf(v_ret_0.bf_b), intType())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_b)
+  inhale typeOf(v_ret_0) == PrimitiveFields()
+  anon := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon)
+  v_ret_0.bf_b := par_b
+  fold acc(PrimitiveFields_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(PrimitiveFields_unique(v_ret_0), write)
+}
+
+/predicates.kt: info: Generated Viper text for ReferenceField:
+field b: Ref
+
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), PrimitiveFields())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_pf(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceField())
+  ensures isSubtype(typeOf(result), PrimitiveFields())
+
+
+predicate Baz_unique(this: Ref) {
+  isSubtype(typeOf(this), Baz())
+}
+
+predicate PrimitiveFields_unique(this: Ref) {
+  isSubtype(typeOf(this), PrimitiveFields()) && acc(this.b, write) &&
+  isSubtype(typeOf(this.b), intType())
+}
+
+predicate ReferenceField_unique(this: Ref) {
+  isSubtype(typeOf(this), ReferenceField()) && acc(Baz_unique(this), write)
+}
+
+method con(par_pf: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_pf), PrimitiveFields())
+  ensures isSubtype(typeOf(v_ret_0), ReferenceField())
+  ensures isSubtype(typeOf(v_ret_0), ReferenceField()) &&
+    isSubtype(typeOf(v_ret_0), Baz())
+  ensures g_pf(v_ret_0) == par_pf
+  ensures g_pf(v_ret_0) == par_pf
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ReferenceField()
+  fold acc(Baz_unique(v_ret_0), write)
+  anon := par_pf
+  inhale g_pf(v_ret_0) == anon
+  fold acc(ReferenceField_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ReferenceField_unique(v_ret_0), write)
+  unfold acc(Baz_unique(v_ret_0), write)
+}
+
+/predicates.kt: info: Generated Viper text for Recursive:
+function g_next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Recursive())
+  ensures isSubtype(typeOf(result), nullable(Recursive()))
+
+
+predicate Recursive_unique(this: Ref) {
+  isSubtype(typeOf(this), Recursive())
+}
+
+method con(par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_next), nullable(Recursive()))
+  ensures isSubtype(typeOf(v_ret_0), Recursive())
+  ensures g_next(v_ret_0) == par_next
+  ensures g_next(v_ret_0) == par_next
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Recursive()
+  anon := par_next
+  inhale g_next(v_ret_0) == anon
+  fold acc(Recursive_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Recursive_unique(v_ret_0), write)
+}
+
 /predicates.kt: info: Generated Viper text for useClasses:
 field b: Ref
 
@@ -40,6 +163,120 @@ method useClasses(rf: Ref, rec: Ref) returns (v_ret_0: Ref)
 {
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/predicates.kt: info: Generated Viper text for A:
+field y: Ref
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), A())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate A_unique(this: Ref) {
+  isSubtype(typeOf(this), A()) && acc(this.y, write) &&
+  isSubtype(typeOf(this.y), intType())
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), A())
+  ensures isSubtype(typeOf(v_ret_0), A()) && acc(v_ret_0.y, write) &&
+    isSubtype(typeOf(v_ret_0.y), intType())
+  ensures intFromRef(x(v_ret_0)) == 1
+  ensures intFromRef(v_ret_0.y) == 2
+{
+  var anon: Ref
+  v_ret_0 := new(y)
+  inhale typeOf(v_ret_0) == A()
+  anon := intToRef(1)
+  inhale intFromRef(x(v_ret_0)) == intFromRef(anon)
+  v_ret_0.y := intToRef(2)
+  fold acc(A_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(A_unique(v_ret_0), write)
+}
+
+/predicates.kt: info: Generated Viper text for B:
+field y: Ref
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), A())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate A_unique(this: Ref) {
+  isSubtype(typeOf(this), A()) && acc(this.y, write) &&
+  isSubtype(typeOf(this.y), intType())
+}
+
+predicate B_unique(this: Ref) {
+  isSubtype(typeOf(this), B()) && acc(A_unique(this), write)
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), B())
+  ensures isSubtype(typeOf(v_ret_0), B()) &&
+    (isSubtype(typeOf(v_ret_0), A()) && acc(v_ret_0.y, write) &&
+    isSubtype(typeOf(v_ret_0.y), intType()))
+  ensures intFromRef(x(v_ret_0)) == 1
+  ensures intFromRef(v_ret_0.y) == 2
+{
+  var anon: Ref
+  v_ret_0 := new(y)
+  inhale typeOf(v_ret_0) == B()
+  anon := intToRef(1)
+  inhale intFromRef(x(v_ret_0)) == intFromRef(anon)
+  v_ret_0.y := intToRef(2)
+  fold acc(A_unique(v_ret_0), write)
+  fold acc(B_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(B_unique(v_ret_0), write)
+  unfold acc(A_unique(v_ret_0), write)
+}
+
+/predicates.kt: info: Generated Viper text for C:
+field y: Ref
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), A())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate A_unique(this: Ref) {
+  isSubtype(typeOf(this), A()) && acc(this.y, write) &&
+  isSubtype(typeOf(this.y), intType())
+}
+
+predicate B_unique(this: Ref) {
+  isSubtype(typeOf(this), B()) && acc(A_unique(this), write)
+}
+
+predicate C_unique(this: Ref) {
+  isSubtype(typeOf(this), C()) && acc(B_unique(this), write)
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), C())
+  ensures isSubtype(typeOf(v_ret_0), C()) &&
+    (isSubtype(typeOf(v_ret_0), B()) &&
+    (isSubtype(typeOf(v_ret_0), A()) && acc(v_ret_0.y, write) &&
+    isSubtype(typeOf(v_ret_0.y), intType())))
+  ensures intFromRef(x(v_ret_0)) == 1
+  ensures intFromRef(v_ret_0.y) == 2
+{
+  var anon: Ref
+  v_ret_0 := new(y)
+  inhale typeOf(v_ret_0) == C()
+  anon := intToRef(1)
+  inhale intFromRef(x(v_ret_0)) == intFromRef(anon)
+  v_ret_0.y := intToRef(2)
+  fold acc(A_unique(v_ret_0), write)
+  fold acc(B_unique(v_ret_0), write)
+  fold acc(C_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(C_unique(v_ret_0), write)
+  unfold acc(B_unique(v_ret_0), write)
+  unfold acc(A_unique(v_ret_0), write)
 }
 
 /predicates.kt: info: Generated Viper text for threeLayersHierarchy:
@@ -127,6 +364,111 @@ method listHierarchy(xs: Ref) returns (v_ret_0: Ref)
 {
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/predicates.kt: info: Generated Viper text for T:
+predicate T_unique(this: Ref) {
+  isSubtype(typeOf(this), T())
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), T())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == T()
+  fold acc(T_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(T_unique(v_ret_0), write)
+}
+
+/predicates.kt: info: Generated Viper text for S:
+predicate S_unique(this: Ref) {
+  isSubtype(typeOf(this), S())
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), S())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == S()
+  fold acc(S_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(S_unique(v_ret_0), write)
+}
+
+/predicates.kt: info: Generated Viper text for Foo:
+field bf_x: Ref
+
+field bf_z: Ref
+
+function g_w(this: Ref): Ref
+  requires isSubtype(typeOf(this), Foo())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Foo())
+  ensures isSubtype(typeOf(result), T())
+
+
+predicate Foo_unique(this: Ref) {
+  isSubtype(typeOf(this), Foo()) && acc(this.bf_x, write) &&
+  isSubtype(typeOf(this.bf_x), intType()) &&
+  acc(T_unique(g_y(this)), write) &&
+  acc(this.bf_z, write) &&
+  isSubtype(typeOf(this.bf_z), T()) &&
+  acc(T_unique(this.bf_z), write) &&
+  acc(S_unique(this), write)
+}
+
+predicate S_unique(this: Ref) {
+  isSubtype(typeOf(this), S())
+}
+
+predicate T_unique(this: Ref) {
+  isSubtype(typeOf(this), T())
+}
+
+method con(par_w: Ref, par_x: Ref, par_y: Ref, par_z: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_w), intType())
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), T())
+  requires acc(T_unique(par_y), write)
+  requires isSubtype(typeOf(par_z), T())
+  requires acc(T_unique(par_z), write)
+  ensures isSubtype(typeOf(v_ret_0), Foo())
+  ensures isSubtype(typeOf(v_ret_0), Foo()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType()) &&
+    acc(T_unique(g_y(v_ret_0)), write) &&
+    acc(v_ret_0.bf_z, write) &&
+    isSubtype(typeOf(v_ret_0.bf_z), T()) &&
+    acc(T_unique(v_ret_0.bf_z), write) &&
+    isSubtype(typeOf(v_ret_0), S())
+  ensures intFromRef(g_w(v_ret_0)) == intFromRef(par_w)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures g_y(v_ret_0) == par_y
+  ensures v_ret_0.bf_z == par_z
+  ensures intFromRef(g_w(v_ret_0)) == intFromRef(par_w)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures g_y(v_ret_0) == par_y
+  ensures v_ret_0.bf_z == par_z
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(bf_x, bf_z)
+  inhale typeOf(v_ret_0) == Foo()
+  fold acc(S_unique(v_ret_0), write)
+  anon_0 := par_w
+  inhale intFromRef(g_w(v_ret_0)) == intFromRef(anon_0)
+  v_ret_0.bf_x := par_x
+  anon_1 := par_y
+  inhale g_y(v_ret_0) == anon_1
+  v_ret_0.bf_z := par_z
+  fold acc(Foo_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Foo_unique(v_ret_0), write)
+  unfold acc(S_unique(v_ret_0), write)
 }
 
 /predicates.kt: info: Generated Viper text for unique_foo_arg:

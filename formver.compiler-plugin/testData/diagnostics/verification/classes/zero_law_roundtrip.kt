@@ -18,7 +18,7 @@ interface ZeroLawLeft : ZeroLawBase
 interface ZeroLawRight : ZeroLawBase
 interface ZeroLawDiamond : ZeroLawLeft, ZeroLawRight
 
-class ZeroLawCell(var value: Int) : ZeroLawDiamond {
+<!VIPER_TEXT!>class ZeroLawCell<!>(var value: Int) : ZeroLawDiamond {
     @Pure @Unique override fun <!VIPER_TEXT!>observe<!>(): Int = value
 
     @Unique @Borrowed override fun <!VIPER_TEXT!>advance<!>() {

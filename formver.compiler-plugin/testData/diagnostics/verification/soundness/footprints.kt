@@ -9,7 +9,7 @@ interface Gauge {
     @Unique @Borrowed fun <!VIPER_TEXT!>reset<!>()
 }
 
-class Dial(var level: Int, var spare: Int) : Gauge {
+<!VIPER_TEXT!>class Dial<!>(var level: Int, var spare: Int) : Gauge {
     @Pure @Unique override fun <!VIPER_TEXT!>reading<!>(): Int = level
     @Pure @Unique fun <!VIPER_TEXT!>hidden<!>(): Int = spare
     @Unique @Borrowed override fun <!VIPER_TEXT!>reset<!>() { level = 0 }
@@ -70,7 +70,7 @@ interface Probe {
 }
 
 @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-class Line(var base: Int, var below: Int) : Probe {
+<!VIPER_TEXT!>class Line<!>(var base: Int, var below: Int) : Probe {
     @Pure @Unique override fun <!VIPER_TEXT!>at<!>(j: Int): Int {
         preconditions { j >= -1 }
         return if (j < 0) below else base
@@ -98,11 +98,11 @@ interface Shown {
     @Pure @Unique fun <!VIPER_TEXT!>shown<!>(): Long
 }
 
-open class Meter(var raw: Int) : Shown {
+open <!VIPER_TEXT!>class Meter<!>(var raw: Int) : Shown {
     @Pure @Unique override fun <!VIPER_TEXT!>shown<!>(): Long = raw.toLong()
 }
 
-class DoubledMeter(raw: Int) : Meter(raw) {
+<!VIPER_TEXT!>class DoubledMeter<!>(raw: Int) : Meter(raw) {
     @Pure @Unique override fun <!VIPER_TEXT!>shown<!>(): Long = raw.toLong() * 2L
 }
 

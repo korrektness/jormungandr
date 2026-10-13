@@ -1,3 +1,36 @@
+/insertion_sort_linked_contents.kt: info: Generated Viper text for Node:
+field bf_next: Ref
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref, par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  requires par_next != nullValue() ==> acc(Node_unique(par_next), write)
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures isSubtype(typeOf(v_ret_0), Node()) && acc(v_ret_0.bf_next, write) &&
+    isSubtype(typeOf(v_ret_0.bf_next), nullable(Node())) &&
+    (v_ret_0.bf_next != nullValue() ==>
+    acc(Node_unique(v_ret_0.bf_next), write))
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures v_ret_0.bf_next == par_next
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures v_ret_0.bf_next == par_next
+{
+  var anon: Ref
+  v_ret_0 := new(bf_next)
+  inhale typeOf(v_ret_0) == Node()
+  anon := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
+  v_ret_0.bf_next := par_next
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
+}
+
 /insertion_sort_linked_contents.kt: info: Generated Viper text for isSorted:
 field next: Ref
 

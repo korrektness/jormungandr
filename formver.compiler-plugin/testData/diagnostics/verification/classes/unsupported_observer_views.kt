@@ -11,7 +11,7 @@ interface Tally {
     }
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>()
 }
-open class TallyBase(var v: Int) {
+open <!VIPER_TEXT!>class TallyBase<!>(var v: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int = v
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>() {}
 }

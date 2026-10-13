@@ -12,19 +12,19 @@ interface RuntimeTally {
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>()
 }
 
-open class CountingBase(var n: Int) {
+open <!VIPER_TEXT!>class CountingBase<!>(var n: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int = n
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>() { if (n < 2147483647) n++ }
 }
 <!VIPER_TEXT!>class InheritedCounting<!> : CountingBase(0), RuntimeTally
 
-open class IdleBase(var n: Int) {
+open <!VIPER_TEXT!>class IdleBase<!>(var n: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int = n
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>() {}
 }
 <!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class InheritedIdle<!> : IdleBase(0), RuntimeTally<!>
 
-open class BoundBase(var n: Int, var other: Int) : RuntimeTally {
+open <!VIPER_TEXT!>class BoundBase<!>(var n: Int, var other: Int) : RuntimeTally {
     @Pure @Unique override fun <!VIPER_TEXT!>count<!>(): Int = n
     @NeverVerify @Unique @Borrowed override fun <!VIPER_TEXT!>inc<!>() { if (n < 2147483647) n++ }
 }
@@ -57,7 +57,7 @@ interface StrongerTally {
 }
 <!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class InheritedStronger<!> : CountingBase(0), StrongerTally<!>
 
-open class ContractBase(var n: Int) {
+open <!VIPER_TEXT!>class ContractBase<!>(var n: Int) {
     @Unique @Borrowed fun <!VIPER_TEXT!>add<!>(amount: Int): Int {
         preconditions { amount > 0 && n <= 2147483647 - amount }
         postconditions<Int> { result -> n == old(n) + amount && result == n }
@@ -75,7 +75,7 @@ interface LeftTally : RuntimeTally
 interface RightTally : RuntimeTally
 <!VIPER_TEXT!>class DiamondCounting<!> : CountingBase(0), LeftTally, RightTally
 
-open class RestrictedBase(var n: Int) {
+open <!VIPER_TEXT!>class RestrictedBase<!>(var n: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int = n
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>() {
         preconditions { count() > 0 && count() < 2147483647 }
@@ -85,7 +85,7 @@ open class RestrictedBase(var n: Int) {
 }
 <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>class InheritedRestricted<!> : RestrictedBase(0), RuntimeTally
 
-open class HonestIdleBase(var n: Int) {
+open <!VIPER_TEXT!>class HonestIdleBase<!>(var n: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int = n
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>() {
         postconditions<Unit> { count() == old(count()) }
@@ -93,7 +93,7 @@ open class HonestIdleBase(var n: Int) {
 }
 <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>class InheritedHonestIdle<!> : HonestIdleBase(0), RuntimeTally
 
-open class SpecifiedCountingBase(var n: Int) {
+open <!VIPER_TEXT!>class SpecifiedCountingBase<!>(var n: Int) {
     @Pure @Unique fun <!VIPER_TEXT!>count<!>(): Int = n
     @Unique @Borrowed fun <!VIPER_TEXT!>inc<!>() {
         preconditions { count() < 2147483647 }

@@ -1,3 +1,22 @@
+/conditional_specifications.kt: info: Generated Viper text for Counter:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_x := par_x
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
 /conditional_specifications.kt: info: Generated Viper text for ifInPrecondition:
 method ifInPrecondition(flag: Ref, n: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(flag), boolType())
@@ -187,6 +206,39 @@ method callsClamp(n: Ref) returns (v_ret_0: Ref)
   assert intFromRef(clamp(n, intToRef(5))) <= 5
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/conditional_specifications.kt: info: Generated Viper text for Link:
+function g_n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Link())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_next(this: Ref): Ref
+  requires isSubtype(typeOf(this), Link())
+  ensures isSubtype(typeOf(result), nullable(Link()))
+
+
+method con(par_n: Ref, par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  requires isSubtype(typeOf(par_next), nullable(Link()))
+  ensures isSubtype(typeOf(v_ret_0), Link())
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+  ensures g_next(v_ret_0) == par_next
+  ensures intFromRef(g_n(v_ret_0)) == intFromRef(par_n)
+  ensures g_next(v_ret_0) == par_next
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Link()
+  anon_0 := par_n
+  inhale intFromRef(g_n(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_next
+  inhale g_next(v_ret_0) == anon_1
+  fold acc(Link_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Link_unique(v_ret_0), write)
 }
 
 /conditional_specifications.kt: info: Generated Viper text for nullableOperatorsInPostcondition:

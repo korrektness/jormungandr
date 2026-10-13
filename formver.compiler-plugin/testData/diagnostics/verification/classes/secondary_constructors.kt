@@ -1,6 +1,6 @@
 // NEVER_VALIDATE
 
-class NoPrimaryConstructor {
+<!VIPER_TEXT!>class NoPrimaryConstructor<!> {
     val a: Int
 
     constructor(n: Int) {
@@ -12,7 +12,7 @@ class NoPrimaryConstructor {
     }
 }
 
-class BothConstructors(val a: Int) {
+<!VIPER_TEXT!>class BothConstructors<!>(val a: Int) {
     constructor(b: Boolean) : this(0) {}
 }
 

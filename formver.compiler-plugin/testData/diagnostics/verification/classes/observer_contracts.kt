@@ -48,7 +48,7 @@ interface ObservedList {
     fun <!VIPER_TEXT!>addFrom<!>(source: @Unique @Borrowed ObservedList)
 }
 
-class ObservedCell(var count: Int, var item: Int) : ObservedList {
+<!VIPER_TEXT!>class ObservedCell<!>(var count: Int, var item: Int) : ObservedList {
     @Unique @Borrowed
     override fun <!VIPER_TEXT!>addFrom<!>(source: @Unique @Borrowed ObservedList) {
         item = source.get(0)
@@ -80,7 +80,7 @@ class ObservedCell(var count: Int, var item: Int) : ObservedList {
     }
 }
 
-class BrokenObservedCell(var count: Int, var item: Int) : ObservedList {
+<!VIPER_TEXT!>class BrokenObservedCell<!>(var count: Int, var item: Int) : ObservedList {
     @Unique @Borrowed
     override fun <!VIPER_TEXT!>addFrom<!>(source: @Unique @Borrowed ObservedList) {
         item = source.get(0)

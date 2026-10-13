@@ -7,7 +7,7 @@ abstract class Super(
 )
 
 @Manual
-class Test(
+<!VIPER_TEXT!>class Test<!>(
     x: Int
 ) : Super(x)
 
@@ -21,7 +21,7 @@ fun <!VIPER_TEXT!>test<!>(p: @Unique Test) {
 
 
 @Manual
-class Tree(
+<!VIPER_TEXT!>class Tree<!>(
     var left: @Unique Tree?,
     var right: @Unique Tree?,
     var data: Int,

@@ -3,32 +3,32 @@
 import org.jetbrains.kotlin.formver.plugin.Unique
 import org.jetbrains.kotlin.formver.plugin.Borrowed
 
-open class Baz()
+open <!VIPER_TEXT!>class Baz<!>()
 
-class PrimitiveFields(val a: Int, var b: Int)
+<!VIPER_TEXT!>class PrimitiveFields<!>(val a: Int, var b: Int)
 
-class ReferenceField(val pf: PrimitiveFields) : Baz()
+<!VIPER_TEXT!>class ReferenceField<!>(val pf: PrimitiveFields) : Baz()
 
-class Recursive(val next: Recursive?)
+<!VIPER_TEXT!>class Recursive<!>(val next: Recursive?)
 
 fun <!VIPER_TEXT!>useClasses<!>(rf: ReferenceField, rec: Recursive) { }
 
-open class A() {
+open <!VIPER_TEXT!>class A<!>() {
     val x: Int = 1
     var y: Int = 2
 }
-open class B() : A()
-class C() : B()
+open <!VIPER_TEXT!>class B<!>() : A()
+<!VIPER_TEXT!>class C<!>() : B()
 
 fun <!VIPER_TEXT!>threeLayersHierarchy<!>(c: C) { }
 
 fun <!VIPER_TEXT!>listHierarchy<!>(xs: MutableList<Int>) { }
 
-class T()
+<!VIPER_TEXT!>class T<!>()
 
-open class S()
+open <!VIPER_TEXT!>class S<!>()
 
-class Foo(val w: Int, var x: Int, val y: @Unique T, var z: @Unique T) : S()
+<!VIPER_TEXT!>class Foo<!>(val w: Int, var x: Int, val y: @Unique T, var z: @Unique T) : S()
 
 fun <!VIPER_TEXT!>unique_foo_arg<!>(foo: @Unique Foo) {}
 

@@ -1,3 +1,34 @@
+/unique_recursion.kt: info: Generated Viper text for Node:
+field bf_next: Ref
+
+field bf_value: Ref
+
+method con(par_value: Ref, par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(Node()))
+  requires par_next != nullValue() ==> acc(Node_unique(par_next), write)
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures isSubtype(typeOf(v_ret_0), Node()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType()) &&
+    acc(v_ret_0.bf_next, write) &&
+    isSubtype(typeOf(v_ret_0.bf_next), nullable(Node())) &&
+    (v_ret_0.bf_next != nullValue() ==>
+    acc(Node_unique(v_ret_0.bf_next), write))
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures v_ret_0.bf_next == par_next
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures v_ret_0.bf_next == par_next
+{
+  v_ret_0 := new(bf_value, bf_next)
+  inhale typeOf(v_ret_0) == Node()
+  v_ret_0.bf_value := par_value
+  v_ret_0.bf_next := par_next
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
+}
+
 /unique_recursion.kt: info: Generated Viper text for length:
 field next: Ref
 
@@ -129,6 +160,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_5: Ref)
     isSubtype(typeOf(ret_5.bf_next), nullable(Node()))
   ensures intFromRef(ret_5.bf_value) == intFromRef(par_value)
   ensures ret_5.bf_next == par_next
+  ensures intFromRef(ret_5.bf_value) == intFromRef(par_value)
+  ensures ret_5.bf_next == par_next
 
 
 /unique_recursion.kt: info: Generated Viper text for append:
@@ -198,6 +231,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
     isSubtype(typeOf(ret_4.bf_value), intType()) &&
     acc(ret_4.bf_next, write) &&
     isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
   ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
   ensures ret_4.bf_next == par_next
 
@@ -301,6 +336,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
     isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
   ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
   ensures ret_4.bf_next == par_next
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method prepend(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
@@ -374,6 +411,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
     isSubtype(typeOf(ret_4.bf_value), intType()) &&
     acc(ret_4.bf_next, write) &&
     isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
   ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
   ensures ret_4.bf_next == par_next
 
@@ -470,6 +509,43 @@ method tail(l: Ref) returns (v_ret_0: Ref)
   v_ret_0 := l.next
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/unique_recursion.kt: info: Generated Viper text for VNode:
+function g_next(this: Ref): Ref
+  requires isSubtype(typeOf(this), VNode())
+  ensures isSubtype(typeOf(result), nullable(VNode()))
+
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), VNode())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref, par_next: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  requires isSubtype(typeOf(par_next), nullable(VNode()))
+  requires par_next != nullValue() ==> acc(VNode_unique(par_next), write)
+  ensures isSubtype(typeOf(v_ret_0), VNode())
+  ensures isSubtype(typeOf(v_ret_0), VNode()) &&
+    (g_next(v_ret_0) != nullValue() ==>
+    acc(VNode_unique(g_next(v_ret_0)), write))
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures g_next(v_ret_0) == par_next
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures g_next(v_ret_0) == par_next
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == VNode()
+  anon_0 := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_next
+  inhale g_next(v_ret_0) == anon_1
+  fold acc(VNode_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(VNode_unique(v_ret_0), write)
 }
 
 /unique_recursion.kt: info: Generated Viper text for vLength:
@@ -635,6 +711,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
     isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
   ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
   ensures ret_4.bf_next == par_next
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method oneNode(par_v: Ref) returns (v_ret_0: Ref)
@@ -715,6 +793,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
     isSubtype(typeOf(ret_3.bf_value), intType()) &&
     acc(ret_3.bf_next, write) &&
     isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
   ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
   ensures ret_3.bf_next == par_next
 
@@ -835,6 +915,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
     isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
   ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
   ensures ret_4.bf_next == par_next
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method oneFrom(par_v: Ref) returns (v_ret_0: Ref)
@@ -953,6 +1035,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
     isSubtype(typeOf(ret_4.bf_value), intType()) &&
     acc(ret_4.bf_next, write) &&
     isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
   ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
   ensures ret_4.bf_next == par_next
 
@@ -1106,6 +1190,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_6: Ref)
     isSubtype(typeOf(ret_6.bf_value), intType()) &&
     acc(ret_6.bf_next, write) &&
     isSubtype(typeOf(ret_6.bf_next), nullable(Node()))
+  ensures intFromRef(ret_6.bf_value) == intFromRef(par_value)
+  ensures ret_6.bf_next == par_next
   ensures intFromRef(ret_6.bf_value) == intFromRef(par_value)
   ensures ret_6.bf_next == par_next
 
@@ -1291,6 +1377,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
     isSubtype(typeOf(ret_4.bf_next), nullable(Node()))
   ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
   ensures ret_4.bf_next == par_next
+  ensures intFromRef(ret_4.bf_value) == intFromRef(par_value)
+  ensures ret_4.bf_next == par_next
 
 
 method oneNodeSum(par_v: Ref) returns (v_ret_0: Ref)
@@ -1348,6 +1436,8 @@ method con(par_value: Ref, par_next: Ref) returns (ret_3: Ref)
     isSubtype(typeOf(ret_3.bf_value), intType()) &&
     acc(ret_3.bf_next, write) &&
     isSubtype(typeOf(ret_3.bf_next), nullable(Node()))
+  ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
+  ensures ret_3.bf_next == par_next
   ensures intFromRef(ret_3.bf_value) == intFromRef(par_value)
   ensures ret_3.bf_next == par_next
 

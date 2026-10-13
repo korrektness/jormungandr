@@ -5,7 +5,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Element(val number: Int)
+<!VIPER_TEXT!>class Element<!>(val number: Int)
 
 fun <!VIPER_TEXT!>listSharedReferences<!>(first: Element, second: Element) {
     val list = mutableListOf<Element>()

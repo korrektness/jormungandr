@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(var value: Int)
+<!VIPER_TEXT!>class Box<!>(var value: Int)
 
 fun <!VIPER_TEXT!>boundAll<!>(b: @Unique @Borrowed Box) {
     postconditions<Unit> {
@@ -26,7 +26,7 @@ fun <!VIPER_TEXT!>inRange<!>(b: @Unique @Borrowed Box) {
     b.value = 5
 }
 
-class ArrayHolder(var arr: @Unique IntArray)
+<!VIPER_TEXT!>class ArrayHolder<!>(var arr: @Unique IntArray)
 
 fun <!VIPER_TEXT!>sizeGuardThroughVar<!>(h: @Unique @Borrowed ArrayHolder) {
     postconditions<Unit> {

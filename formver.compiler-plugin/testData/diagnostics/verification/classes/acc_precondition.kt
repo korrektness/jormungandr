@@ -3,7 +3,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class X(@property:Manual var a: Any)
+<!VIPER_TEXT!>class X<!>(@property:Manual var a: Any)
 
 fun <!VIPER_TEXT!>test_acc_precondition<!>(x: X) {
     preconditions { acc(x.a) }

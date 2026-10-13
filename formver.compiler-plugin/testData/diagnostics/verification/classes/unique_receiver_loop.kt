@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(var value: Int)
+<!VIPER_TEXT!>class Box<!>(var value: Int)
 
 fun @Unique @Borrowed Box.<!VIPER_TEXT!>countUp<!>(n: Int) {
     preconditions { 0 <= n }

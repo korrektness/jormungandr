@@ -1,3 +1,127 @@
+/override_properties_types.kt: info: Generated Viper text for Base:
+method con() returns (v_ret_1: Ref)
+  ensures isSubtype(typeOf(v_ret_1), Base())
+{
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == Base()
+  fold acc(Base_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(Base_unique(v_ret_1), write)
+}
+
+method g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/override_properties_types.kt: info: Generated Viper text for OpenClassOpenFieldVarDerived:
+method con() returns (v_ret_3: Ref)
+  ensures isSubtype(typeOf(v_ret_3), OpenClassOpenFieldVarDerived())
+  ensures isSubtype(typeOf(v_ret_3), OpenClassOpenFieldVarDerived()) &&
+    isSubtype(typeOf(v_ret_3), Base())
+{
+  v_ret_3 := new()
+  inhale typeOf(v_ret_3) == OpenClassOpenFieldVarDerived()
+  fold acc(Base_unique(v_ret_3), write)
+  fold acc(OpenClassOpenFieldVarDerived_unique(v_ret_3), write)
+  label lbl_ret_3
+  unfold acc(OpenClassOpenFieldVarDerived_unique(v_ret_3), write)
+  unfold acc(Base_unique(v_ret_3), write)
+}
+
+method g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_field(this: Ref, arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/override_properties_types.kt: info: Generated Viper text for FinalClassOpenFieldVarDerived:
+field bf_field: Ref
+
+method con() returns (v_ret_1: Ref)
+  ensures isSubtype(typeOf(v_ret_1), FinalClassOpenFieldVarDerived())
+  ensures isSubtype(typeOf(v_ret_1), FinalClassOpenFieldVarDerived()) &&
+    acc(v_ret_1.bf_field, write) &&
+    isSubtype(typeOf(v_ret_1.bf_field), intType()) &&
+    isSubtype(typeOf(v_ret_1), Base())
+  ensures intFromRef(v_ret_1.bf_field) == 0
+{
+  v_ret_1 := new(bf_field)
+  inhale typeOf(v_ret_1) == FinalClassOpenFieldVarDerived()
+  fold acc(Base_unique(v_ret_1), write)
+  v_ret_1.bf_field := intToRef(0)
+  fold acc(FinalClassOpenFieldVarDerived_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(FinalClassOpenFieldVarDerived_unique(v_ret_1), write)
+  unfold acc(Base_unique(v_ret_1), write)
+}
+
+method g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/override_properties_types.kt: info: Generated Viper text for OpenClassFinalFieldVarDerived:
+field bf_field: Ref
+
+method con() returns (v_ret_1: Ref)
+  ensures isSubtype(typeOf(v_ret_1), OpenClassFinalFieldVarDerived())
+  ensures isSubtype(typeOf(v_ret_1), OpenClassFinalFieldVarDerived()) &&
+    acc(v_ret_1.bf_field, write) &&
+    isSubtype(typeOf(v_ret_1.bf_field), intType()) &&
+    isSubtype(typeOf(v_ret_1), Base())
+  ensures intFromRef(v_ret_1.bf_field) == 0
+{
+  v_ret_1 := new(bf_field)
+  inhale typeOf(v_ret_1) == OpenClassFinalFieldVarDerived()
+  fold acc(Base_unique(v_ret_1), write)
+  v_ret_1.bf_field := intToRef(0)
+  fold acc(OpenClassFinalFieldVarDerived_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(OpenClassFinalFieldVarDerived_unique(v_ret_1), write)
+  unfold acc(Base_unique(v_ret_1), write)
+}
+
+method g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/override_properties_types.kt: info: Generated Viper text for FinalClassFinalFieldValDerived:
+function FinalClassFinalFieldValDerived_g_field(this: Ref): Ref
+  requires isSubtype(typeOf(this), FinalClassFinalFieldValDerived())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_1: Ref)
+  ensures isSubtype(typeOf(v_ret_1), FinalClassFinalFieldValDerived())
+  ensures isSubtype(typeOf(v_ret_1), FinalClassFinalFieldValDerived()) &&
+    isSubtype(typeOf(v_ret_1), Base())
+  ensures intFromRef(FinalClassFinalFieldValDerived_g_field(v_ret_1)) == 0
+{
+  var anon: Ref
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == FinalClassFinalFieldValDerived()
+  fold acc(Base_unique(v_ret_1), write)
+  anon := intToRef(0)
+  inhale intFromRef(FinalClassFinalFieldValDerived_g_field(v_ret_1)) ==
+    intFromRef(anon)
+  fold acc(FinalClassFinalFieldValDerived_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(FinalClassFinalFieldValDerived_unique(v_ret_1), write)
+  unfold acc(Base_unique(v_ret_1), write)
+}
+
+method public_g_field(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
 /override_properties_types.kt: info: Generated Viper text for extractInt:
 field bf_field: Ref
 

@@ -4,8 +4,8 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 // Facts assumed when an object is created (docs/soundness.md, L2, L3 and M3).
 
-open class Animal
-class Dog : Animal()
+open <!VIPER_TEXT!>class Animal<!>
+<!VIPER_TEXT!>class Dog<!> : Animal()
 
 // An allocation fixes the exact runtime type, not a subtype.
 fun <!VIPER_TEXT!>allocationExactType<!>() {
@@ -13,11 +13,11 @@ fun <!VIPER_TEXT!>allocationExactType<!>() {
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>a is Dog<!>)
 }
 
-open class GetterBase {
+open <!VIPER_TEXT!>class GetterBase<!> {
     open val x: Int = 1
 }
 
-class GetterSub : GetterBase() {
+<!VIPER_TEXT!>class GetterSub<!> : GetterBase() {
     override val x: Int = 2
 }
 

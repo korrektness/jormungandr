@@ -1,3 +1,54 @@
+/unique_conditional_values.kt: info: Generated Viper text for Counter:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_x := par_x
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/unique_conditional_values.kt: info: Generated Viper text for Holder:
+field bf_inner: Ref
+
+field bf_tag: Ref
+
+field x: Ref
+
+method con(par_inner: Ref, par_tag: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_inner), Counter())
+  requires acc(Counter_unique(par_inner), write)
+  requires isSubtype(typeOf(par_tag), intType())
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(v_ret_0.bf_inner, write) &&
+    isSubtype(typeOf(v_ret_0.bf_inner), Counter()) &&
+    acc(Counter_unique(v_ret_0.bf_inner), write) &&
+    acc(v_ret_0.bf_tag, write) &&
+    isSubtype(typeOf(v_ret_0.bf_tag), intType())
+  ensures v_ret_0.bf_inner == par_inner
+  ensures intFromRef(v_ret_0.bf_tag) == intFromRef(par_tag)
+  ensures v_ret_0.bf_inner == par_inner
+  ensures intFromRef(v_ret_0.bf_tag) == intFromRef(par_tag)
+{
+  v_ret_0 := new(bf_inner, bf_tag)
+  inhale typeOf(v_ret_0) == Holder()
+  v_ret_0.bf_inner := par_inner
+  v_ret_0.bf_tag := par_tag
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
 /unique_conditional_values.kt: info: Generated Viper text for make:
 field bf_x: Ref
 
@@ -6,6 +57,7 @@ method con(par_x: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), Counter())
   ensures isSubtype(typeOf(ret_2), Counter()) && acc(ret_2.bf_x, write) &&
     isSubtype(typeOf(ret_2.bf_x), intType())
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
   ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
 
 
@@ -30,6 +82,7 @@ method con(par_x: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Counter())
   ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
     isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
   ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
 
 
@@ -70,6 +123,7 @@ method con(par_x: Ref) returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), Counter()) && acc(ret_3.bf_x, write) &&
     isSubtype(typeOf(ret_3.bf_x), intType())
   ensures intFromRef(ret_3.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_3.bf_x) == intFromRef(par_x)
 
 
 method conditionalInlineIntoLocal(b: Ref) returns (v_ret_0: Ref)
@@ -90,14 +144,14 @@ method conditionalInlineIntoLocal(b: Ref) returns (v_ret_0: Ref)
     label lbl_ret_2
     anon_2 := v_ret_2
   } else {
-    var v_ret_4: Ref
+    var v_ret_5: Ref
     var anon_1: Ref
     anon_1 := intToRef(2)
-    v_ret_4 := con(anon_1)
-    fold acc(Counter_unique(v_ret_4), write)
-    goto lbl_ret_4
-    label lbl_ret_4
-    anon_2 := v_ret_4
+    v_ret_5 := con(anon_1)
+    fold acc(Counter_unique(v_ret_5), write)
+    goto lbl_ret_5
+    label lbl_ret_5
+    anon_2 := v_ret_5
   }
   c := anon_2
   if (boolFromRef(b)) {
@@ -143,6 +197,7 @@ method con(par_x: Ref) returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), Counter()) && acc(ret_3.bf_x, write) &&
     isSubtype(typeOf(ret_3.bf_x), intType())
   ensures intFromRef(ret_3.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_3.bf_x) == intFromRef(par_x)
 
 
 method makeInline(par_v: Ref) returns (ret_1: Ref)
@@ -168,14 +223,14 @@ method wrongConditionalInlineIntoLocal(b: Ref) returns (v_ret_0: Ref)
     label lbl_ret_2
     anon_2 := v_ret_2
   } else {
-    var v_ret_4: Ref
+    var v_ret_5: Ref
     var anon_1: Ref
     anon_1 := intToRef(2)
-    v_ret_4 := con(anon_1)
-    fold acc(Counter_unique(v_ret_4), write)
-    goto lbl_ret_4
-    label lbl_ret_4
-    anon_2 := v_ret_4
+    v_ret_5 := con(anon_1)
+    fold acc(Counter_unique(v_ret_5), write)
+    goto lbl_ret_5
+    label lbl_ret_5
+    anon_2 := v_ret_5
   }
   c := anon_2
   unfold acc(Counter_unique(c), write)
@@ -203,6 +258,7 @@ method con(par_x: Ref) returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), Counter()) && acc(ret_3.bf_x, write) &&
     isSubtype(typeOf(ret_3.bf_x), intType())
   ensures intFromRef(ret_3.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_3.bf_x) == intFromRef(par_x)
 
 
 method conditionalValueIntoFieldViaLocal(h: Ref, b: Ref)
@@ -227,14 +283,14 @@ method conditionalValueIntoFieldViaLocal(h: Ref, b: Ref)
     label lbl_ret_2
     anon_2 := v_ret_2
   } else {
-    var v_ret_4: Ref
+    var v_ret_5: Ref
     var anon_1: Ref
     anon_1 := intToRef(2)
-    v_ret_4 := con(anon_1)
-    fold acc(Counter_unique(v_ret_4), write)
-    goto lbl_ret_4
-    label lbl_ret_4
-    anon_2 := v_ret_4
+    v_ret_5 := con(anon_1)
+    fold acc(Counter_unique(v_ret_5), write)
+    goto lbl_ret_5
+    label lbl_ret_5
+    anon_2 := v_ret_5
   }
   c := anon_2
   unfold acc(Holder_unique(h), write)
@@ -294,6 +350,7 @@ method con(par_x: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Counter())
   ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
     isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
   ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
 
 
@@ -367,6 +424,7 @@ method con(par_x: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
     isSubtype(typeOf(ret_1.bf_x), intType())
   ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
 
 
 method wrongConditionalConstructorIntoField(h: Ref, b: Ref)
@@ -408,26 +466,27 @@ method con(par_x: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), Counter()) && acc(ret_2.bf_x, write) &&
     isSubtype(typeOf(ret_2.bf_x), intType())
   ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
 
 
-method consume(par_c: Ref) returns (ret_6: Ref)
+method consume(par_c: Ref) returns (ret_7: Ref)
   requires isSubtype(typeOf(par_c), Counter())
   requires acc(Counter_unique(par_c), write)
-  ensures isSubtype(typeOf(ret_6), unitType())
+  ensures isSubtype(typeOf(ret_7), unitType())
 
 
-method make(par_v: Ref) returns (ret_3: Ref)
-  requires isSubtype(typeOf(par_v), intType())
-  ensures isSubtype(typeOf(ret_3), Counter())
-  ensures acc(Counter_unique(ret_3), write)
-  ensures (unfolding acc(Counter_unique(ret_3), write) in
-      intFromRef(ret_3.bf_x) == intFromRef(par_v))
-
-
-method makeInline(par_v: Ref) returns (ret_4: Ref)
+method make(par_v: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_v), intType())
   ensures isSubtype(typeOf(ret_4), Counter())
   ensures acc(Counter_unique(ret_4), write)
+  ensures (unfolding acc(Counter_unique(ret_4), write) in
+      intFromRef(ret_4.bf_x) == intFromRef(par_v))
+
+
+method makeInline(par_v: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(ret_5), Counter())
+  ensures acc(Counter_unique(ret_5), write)
 
 
 method whenOfFreshValues(n: Ref) returns (v_ret_0: Ref)
@@ -447,12 +506,12 @@ method whenOfFreshValues(n: Ref) returns (v_ret_0: Ref)
   } elseif (intFromRef(anon_0) == 1) {
     anon_1 := make(intToRef(1))
   } else {
-    var v_ret_5: Ref
-    v_ret_5 := con(n)
-    fold acc(Counter_unique(v_ret_5), write)
-    goto lbl_ret_5
-    label lbl_ret_5
-    anon_1 := v_ret_5
+    var v_ret_6: Ref
+    v_ret_6 := con(n)
+    fold acc(Counter_unique(v_ret_6), write)
+    goto lbl_ret_6
+    label lbl_ret_6
+    anon_1 := v_ret_6
   }
   l0_c := anon_1
   unfold acc(Counter_unique(l0_c), write)
@@ -478,6 +537,7 @@ method con(par_x: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
     isSubtype(typeOf(ret_1.bf_x), intType())
   ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
 
 
 method conditionalBlocks(b: Ref) returns (v_ret_0: Ref)
@@ -493,25 +553,25 @@ method conditionalBlocks(b: Ref) returns (v_ret_0: Ref)
   fold acc(Counter_unique(c), write)
   if (boolFromRef(b)) {
     var d: Ref
-    var v_ret_3: Ref
-    var anon_0: Ref
     var v_ret_4: Ref
+    var anon_0: Ref
+    var v_ret_5: Ref
     var anon_1: Ref
     anon_0 := intToRef(1)
-    v_ret_3 := con(anon_0)
-    fold acc(Counter_unique(v_ret_3), write)
-    goto lbl_ret_3
-    label lbl_ret_3
-    d := v_ret_3
+    v_ret_4 := con(anon_0)
+    fold acc(Counter_unique(v_ret_4), write)
+    goto lbl_ret_4
+    label lbl_ret_4
+    d := v_ret_4
     unfold acc(Counter_unique(d), write)
     d.bf_x := intToRef(5)
     anon_1 := d.bf_x
-    v_ret_4 := con(anon_1)
-    fold acc(Counter_unique(v_ret_4), write)
+    v_ret_5 := con(anon_1)
+    fold acc(Counter_unique(v_ret_5), write)
     fold acc(Counter_unique(d), write)
-    goto lbl_ret_4
-    label lbl_ret_4
-    anon_2 := v_ret_4
+    goto lbl_ret_5
+    label lbl_ret_5
+    anon_2 := v_ret_5
   } else {
     anon_2 := con(intToRef(6))
     fold acc(Counter_unique(anon_2), write)
@@ -535,10 +595,10 @@ method conditionalBlocks(b: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-method makeInline(par_v: Ref) returns (ret_2: Ref)
+method makeInline(par_v: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_v), intType())
-  ensures isSubtype(typeOf(ret_2), Counter())
-  ensures acc(Counter_unique(ret_2), write)
+  ensures isSubtype(typeOf(ret_3), Counter())
+  ensures acc(Counter_unique(ret_3), write)
 
 
 /unique_conditional_values.kt: info: Generated Viper text for conditionalMoveOfOwnedPath:
@@ -554,6 +614,7 @@ method con(par_x: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Counter())
   ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
     isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
   ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
 
 

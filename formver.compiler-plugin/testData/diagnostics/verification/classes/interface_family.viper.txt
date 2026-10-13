@@ -11,6 +11,91 @@ predicate Family_unique(this: Ref) {
 
 predicate footprint(this: Ref)
 
+/interface_family.kt: info: Generated Viper text for Representation:
+field bf_value: Ref
+
+function DiamondFamily_c_Family_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Family())
+  requires acc(DiamondFamily_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function LeftFamily_c_Family_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Family())
+  requires acc(LeftFamily_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Representation_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), Representation())
+  requires acc(Representation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Representation_unique(this), write) in this.bf_value)
+}
+
+function RightFamily_c_Family_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Family())
+  requires acc(RightFamily_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Family_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Family())
+  requires acc(c_Family_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate DiamondFamily_footprint(this: Ref)
+
+predicate DiamondFamily_unique(this: Ref) {
+  acc(DiamondFamily_footprint(this), write) &&
+  isSubtype(typeOf(this), DiamondFamily())
+}
+
+predicate LeftFamily_footprint(this: Ref)
+
+predicate LeftFamily_unique(this: Ref) {
+  acc(LeftFamily_footprint(this), write) &&
+  isSubtype(typeOf(this), LeftFamily())
+}
+
+predicate Representation_unique(this: Ref) {
+  isSubtype(typeOf(this), Representation()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate RightFamily_footprint(this: Ref)
+
+predicate RightFamily_unique(this: Ref) {
+  acc(RightFamily_footprint(this), write) &&
+  isSubtype(typeOf(this), RightFamily())
+}
+
+predicate c_Family_footprint(this: Ref)
+
+predicate c_Family_unique(this: Ref) {
+  acc(c_Family_footprint(this), write) &&
+  isSubtype(typeOf(this), c_Family())
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Representation())
+  ensures isSubtype(typeOf(v_ret_0), Representation()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == Representation()
+  v_ret_0.bf_value := par_value
+  fold acc(Representation_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Representation_unique(v_ret_0), write)
+}
+
 /interface_family.kt: info: Generated Viper text for observe:
 field value: Ref
 
@@ -77,6 +162,52 @@ predicate c_Family_footprint(this: Ref)
 predicate c_Family_unique(this: Ref) {
   acc(c_Family_footprint(this), write) &&
   isSubtype(typeOf(this), c_Family())
+}
+
+/interface_family.kt: info: Generated Viper text for OtherRepresentation:
+field bf_other: Ref
+
+function Family_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), Family())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function OtherRepresentation_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), OtherRepresentation())
+  requires acc(OtherRepresentation_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(OtherRepresentation_unique(this), write) in this.bf_other)
+}
+
+predicate Family_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Family())
+}
+
+predicate OtherRepresentation_unique(this: Ref) {
+  isSubtype(typeOf(this), OtherRepresentation()) &&
+  acc(this.bf_other, write) &&
+  isSubtype(typeOf(this.bf_other), intType())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_other: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_other), intType())
+  ensures isSubtype(typeOf(v_ret_0), OtherRepresentation())
+  ensures isSubtype(typeOf(v_ret_0), OtherRepresentation()) &&
+    acc(v_ret_0.bf_other, write) &&
+    isSubtype(typeOf(v_ret_0.bf_other), intType())
+  ensures intFromRef(v_ret_0.bf_other) == intFromRef(par_other)
+  ensures intFromRef(v_ret_0.bf_other) == intFromRef(par_other)
+{
+  v_ret_0 := new(bf_other)
+  inhale typeOf(v_ret_0) == OtherRepresentation()
+  v_ret_0.bf_other := par_other
+  fold acc(OtherRepresentation_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(OtherRepresentation_unique(v_ret_0), write)
 }
 
 /interface_family.kt: info: Generated Viper text for observe:
@@ -377,6 +508,7 @@ method con(par_value: Ref) returns (ret_2: Ref)
     acc(ret_2.bf_value, write) &&
     isSubtype(typeOf(ret_2.bf_value), intType())
   ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
+  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
 
 
 method consume(par_value: Ref) returns (ret_1: Ref)
@@ -502,13 +634,14 @@ method Representation_c_Family_upcast(this: Ref)
     old(Representation_f_observe(this))
 
 
-method con_OtherRepresentation(par_other: Ref) returns (ret_3: Ref)
+method con_OtherRepresentation(par_other: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(par_other), intType())
-  ensures isSubtype(typeOf(ret_3), OtherRepresentation())
-  ensures isSubtype(typeOf(ret_3), OtherRepresentation()) &&
-    acc(ret_3.bf_other, write) &&
-    isSubtype(typeOf(ret_3.bf_other), intType())
-  ensures intFromRef(ret_3.bf_other) == intFromRef(par_other)
+  ensures isSubtype(typeOf(ret_4), OtherRepresentation())
+  ensures isSubtype(typeOf(ret_4), OtherRepresentation()) &&
+    acc(ret_4.bf_other, write) &&
+    isSubtype(typeOf(ret_4.bf_other), intType())
+  ensures intFromRef(ret_4.bf_other) == intFromRef(par_other)
+  ensures intFromRef(ret_4.bf_other) == intFromRef(par_other)
 
 
 method con_Representation(par_value: Ref) returns (ret_2: Ref)
@@ -517,6 +650,7 @@ method con_Representation(par_value: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), Representation()) &&
     acc(ret_2.bf_value, write) &&
     isSubtype(typeOf(ret_2.bf_value), intType())
+  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
   ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
 
 
@@ -631,12 +765,13 @@ method con(par_value: Ref) returns (ret_1: Ref)
     acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
-method consume(par_value: Ref) returns (ret_2: Ref)
+method consume(par_value: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_value), c_Family())
   requires acc(c_Family_unique(par_value), write)
-  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
 
 
 method localFresh() returns (v_ret_0: Ref)
@@ -1028,6 +1163,7 @@ method con(par_value: Ref) returns (ret_1: Ref)
     acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 
 method returnFresh() returns (v_ret_0: Ref)
@@ -1147,13 +1283,14 @@ method Representation_c_Family_upcast(this: Ref)
     old(Representation_f_observe(this))
 
 
-method con_OtherRepresentation(par_other: Ref) returns (ret_2: Ref)
+method con_OtherRepresentation(par_other: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_other), intType())
-  ensures isSubtype(typeOf(ret_2), OtherRepresentation())
-  ensures isSubtype(typeOf(ret_2), OtherRepresentation()) &&
-    acc(ret_2.bf_other, write) &&
-    isSubtype(typeOf(ret_2.bf_other), intType())
-  ensures intFromRef(ret_2.bf_other) == intFromRef(par_other)
+  ensures isSubtype(typeOf(ret_3), OtherRepresentation())
+  ensures isSubtype(typeOf(ret_3), OtherRepresentation()) &&
+    acc(ret_3.bf_other, write) &&
+    isSubtype(typeOf(ret_3.bf_other), intType())
+  ensures intFromRef(ret_3.bf_other) == intFromRef(par_other)
+  ensures intFromRef(ret_3.bf_other) == intFromRef(par_other)
 
 
 method con_Representation(par_value: Ref) returns (ret_1: Ref)
@@ -1162,6 +1299,7 @@ method con_Representation(par_value: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Representation()) &&
     acc(ret_1.bf_value, write) &&
     isSubtype(typeOf(ret_1.bf_value), intType())
+  ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
   ensures intFromRef(ret_1.bf_value) == intFromRef(par_value)
 
 

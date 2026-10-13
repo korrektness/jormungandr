@@ -93,6 +93,28 @@ method extensionSetterProperty() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/extension_properties.kt: info: Generated Viper text for PrimitiveField:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), PrimitiveField())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), PrimitiveField())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == PrimitiveField()
+  anon := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon)
+  fold acc(PrimitiveField_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(PrimitiveField_unique(v_ret_0), write)
+}
+
 /extension_properties.kt: info: Generated Viper text for pfValProp:
 function x(v_this: Ref): Ref
   requires isSubtype(typeOf(v_this), PrimitiveField())

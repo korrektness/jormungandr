@@ -2,7 +2,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class BindingArgument(var number: Int)
+<!VIPER_TEXT!>class BindingArgument<!>(var number: Int)
 
 interface BindingView {
     @Pure @Unique
@@ -25,7 +25,7 @@ interface BindingView {
     }
 }
 
-open class BindingCell(var contents: Int) : BindingView {
+open <!VIPER_TEXT!>class BindingCell<!>(var contents: Int) : BindingView {
     @Pure @Unique
     final override fun <!VIPER_TEXT!>value<!>(): Int = contents
 
@@ -36,7 +36,7 @@ open class BindingCell(var contents: Int) : BindingView {
     final override fun <!VIPER_TEXT!>read<!>(argument: @Unique BindingArgument): Int = contents + argument.number
 }
 
-class InheritedBindingCell(contents: Int) : BindingCell(contents)
+<!VIPER_TEXT!>class InheritedBindingCell<!>(contents: Int) : BindingCell(contents)
 
 fun <!VIPER_TEXT!>inheritedBinding<!>() {
     val cell: @Unique InheritedBindingCell = InheritedBindingCell(1)

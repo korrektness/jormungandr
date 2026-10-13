@@ -2,7 +2,7 @@
 import org.jetbrains.kotlin.formver.plugin.verify
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 
-class CharBox(val char: Char)
+<!VIPER_TEXT!>class CharBox<!>(val char: Char)
 
 fun <!VIPER_TEXT!>testChars<!>(c: Char) {
     val box = CharBox('a')

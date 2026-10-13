@@ -9,7 +9,7 @@ fun <!VIPER_TEXT!>needsPositive<!>(d: Int): Int {
     return d
 }
 
-class SetterBody(var value: Int) {
+<!VIPER_TEXT!>class SetterBody<!>(var value: Int) {
     var falseSetter: Int
         <!VIPER_TEXT!>get<!>() = 0
         <!VIPER_TEXT!>set<!>(v) { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>) }
@@ -26,7 +26,7 @@ class SetterBody(var value: Int) {
         }
 }
 
-class GetterBody(var value: Int) {
+<!VIPER_TEXT!>class GetterBody<!>(var value: Int) {
     val falseGetter: Int
         <!VIPER_TEXT!>get<!>() { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>); return 0 }
 
@@ -41,7 +41,7 @@ class GetterBody(var value: Int) {
         }
 }
 
-class BackingField {
+<!VIPER_TEXT!>class BackingField<!> {
     var violating: Int = 1
         <!VIPER_TEXT!>get<!>() { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>); return field }
         <!VIPER_TEXT!>set<!>(v) { field = <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>needsPositive(v)<!> }
@@ -57,12 +57,12 @@ class BackingField {
         }
 }
 
-open class OpenGetter {
+open <!VIPER_TEXT!>class OpenGetter<!> {
     open val value: Int
         <!VIPER_TEXT!>get<!>() { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>); return 0 }
 }
 
-class OverridingGetter : OpenGetter() {
+<!VIPER_TEXT!>class OverridingGetter<!> : OpenGetter() {
     override val value: Int
         <!VIPER_TEXT!>get<!>() = <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>needsPositive(0)<!>
 }

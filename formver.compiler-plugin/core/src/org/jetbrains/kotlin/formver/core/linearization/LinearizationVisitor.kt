@@ -324,7 +324,8 @@ data class LinearizationVisitor(
                 if (signature.callableType.returnsUnique) {
                     foldState.close(ctx, OwnedPath(signature.returns))
                     val constructed = (signature as? NamedFunctionSignature)?.constructedOpen
-                    if (constructed != null) {
+                    // A manual class's construction holds its fields unfolded throughout.
+                    if (constructed != null && !with(ctx.typeResolver) { constructed.isManual }) {
                         val returned = signature.returns.toLocalVarUse()
                         for (cls in generateSequence(constructed, ctx.typeResolver::superClass)) {
                             ctx.addStatement { Stmt.Unfold(hierarchyPredicateAccess(returned, cls, ctx.source), ctx.source.asPosition) }

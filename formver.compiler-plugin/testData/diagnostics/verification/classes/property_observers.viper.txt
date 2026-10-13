@@ -12,6 +12,16 @@ function Sized_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), FixedSize())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == FixedSize()
+  fold acc(FixedSize_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(FixedSize_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(FixedSize_unique(this), write)
 {
@@ -195,9 +205,9 @@ method laws(this: Ref)
   assert boolFromRef(geInts(MutableSize_g_size(this), intToRef(0)))
 }
 
-method require(value: Ref) returns (ret_3: Ref)
+method require(value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(value)
 
 
@@ -500,6 +510,16 @@ function Sized_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), BrokenSize())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == BrokenSize()
+  fold acc(BrokenSize_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BrokenSize_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(BrokenSize_unique(this), write)
 {
@@ -586,9 +606,9 @@ method laws(this: Ref)
   assert boolFromRef(geInts(WrongGrow_g_size(this), intToRef(0)))
 }
 
-method require(value: Ref) returns (ret_3: Ref)
+method require(value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(value)
 
 

@@ -1,3 +1,49 @@
+/unique_compound_assignment.kt: info: Generated Viper text for Counter:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_x := par_x
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/unique_compound_assignment.kt: info: Generated Viper text for Holder:
+field x: Ref
+
+function g_inner(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Counter())
+
+
+method con(par_inner: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_inner), Counter())
+  requires acc(Counter_unique(par_inner), write)
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(Counter_unique(g_inner(v_ret_0)), write)
+  ensures g_inner(v_ret_0) == par_inner
+  ensures g_inner(v_ret_0) == par_inner
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Holder()
+  anon := par_inner
+  inhale g_inner(v_ret_0) == anon
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
 /unique_compound_assignment.kt: info: Generated Viper text for plusAssign:
 field x: Ref
 
@@ -248,6 +294,7 @@ method con(par_x: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), Counter()) && acc(ret_2.bf_x, write) &&
     isSubtype(typeOf(ret_2.bf_x), intType())
   ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
 
 
 method localPlusAssign() returns (v_ret_0: Ref)
@@ -275,6 +322,7 @@ method con(par_x: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), Counter())
   ensures isSubtype(typeOf(ret_2), Counter()) && acc(ret_2.bf_x, write) &&
     isSubtype(typeOf(ret_2.bf_x), intType())
+  ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
   ensures intFromRef(ret_2.bf_x) == intFromRef(par_x)
 
 

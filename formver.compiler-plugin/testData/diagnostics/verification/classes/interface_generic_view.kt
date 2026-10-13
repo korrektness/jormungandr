@@ -7,7 +7,7 @@ interface GenericView<T> {
     @Pure @Unique fun <!VIPER_TEXT!>same<!>(candidate: T): Boolean
 }
 
-class GenericCell<T>(val contents: T) : GenericView<T> {
+<!VIPER_TEXT!>class GenericCell<!><T>(val contents: T) : GenericView<T> {
     @Pure @Unique override fun <!VIPER_TEXT!>value<!>(): T = contents
     @Pure @Unique override fun <!VIPER_TEXT!>same<!>(candidate: T): Boolean = candidate == contents
 }
@@ -21,7 +21,7 @@ fun <!VIPER_TEXT!>genericBooleanView<!>() {
     refute(false)
 }
 
-class BooleanView(val contents: Boolean) : GenericView<Boolean> {
+<!VIPER_TEXT!>class BooleanView<!>(val contents: Boolean) : GenericView<Boolean> {
     @Pure @Unique override fun <!VIPER_TEXT!>value<!>(): Boolean = contents
     @Pure @Unique override fun <!VIPER_TEXT!>same<!>(candidate: Boolean): Boolean = candidate == contents
 }
@@ -52,7 +52,7 @@ fun <!VIPER_TEXT!>borrowGenericBinding<!>() {
     refute(false)
 }
 
-class GenericToken
+<!VIPER_TEXT!>class GenericToken<!>
 
 fun <!VIPER_TEXT!>genericNullableView<!>(token: GenericToken?) {
     val cell: @Unique GenericCell<GenericToken?> = GenericCell(token)

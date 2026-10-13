@@ -1,3 +1,29 @@
+/construction.kt: info: Generated Viper text for Animal:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Animal())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Animal()
+  fold acc(Animal_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Animal_unique(v_ret_0), write)
+}
+
+/construction.kt: info: Generated Viper text for Dog:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Dog())
+  ensures isSubtype(typeOf(v_ret_0), Dog()) &&
+    isSubtype(typeOf(v_ret_0), Animal())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Dog()
+  fold acc(Animal_unique(v_ret_0), write)
+  fold acc(Dog_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Dog_unique(v_ret_0), write)
+  unfold acc(Animal_unique(v_ret_0), write)
+}
+
 /construction.kt: info: Generated Viper text for allocationExactType:
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
@@ -19,6 +45,51 @@ method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Animal())
 
 
+/construction.kt: info: Generated Viper text for GetterBase:
+method con() returns (v_ret_1: Ref)
+  ensures isSubtype(typeOf(v_ret_1), GetterBase())
+{
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == GetterBase()
+  fold acc(GetterBase_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(GetterBase_unique(v_ret_1), write)
+}
+
+method x(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/construction.kt: info: Generated Viper text for GetterSub:
+function GetterSub_g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), GetterSub())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_1: Ref)
+  ensures isSubtype(typeOf(v_ret_1), GetterSub())
+  ensures isSubtype(typeOf(v_ret_1), GetterSub()) &&
+    isSubtype(typeOf(v_ret_1), GetterBase())
+  ensures intFromRef(GetterSub_g_x(v_ret_1)) == 2
+{
+  var anon: Ref
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == GetterSub()
+  fold acc(GetterBase_unique(v_ret_1), write)
+  anon := intToRef(2)
+  inhale intFromRef(GetterSub_g_x(v_ret_1)) == intFromRef(anon)
+  fold acc(GetterSub_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(GetterSub_unique(v_ret_1), write)
+  unfold acc(GetterBase_unique(v_ret_1), write)
+}
+
+method public_g_x(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
 /construction.kt: info: Generated Viper text for overriddenValInit:
 function GetterSub_g_x(this: Ref): Ref
   requires isSubtype(typeOf(this), GetterSub())
@@ -34,6 +105,7 @@ method con() returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), GetterSub())
   ensures isSubtype(typeOf(ret_2), GetterSub()) &&
     isSubtype(typeOf(ret_2), GetterBase())
+  ensures intFromRef(GetterSub_g_x(ret_2)) == 2
 
 
 method overriddenValInit() returns (v_ret_0: Ref)

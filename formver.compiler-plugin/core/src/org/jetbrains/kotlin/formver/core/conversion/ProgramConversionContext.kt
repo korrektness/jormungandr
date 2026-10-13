@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.symbols.impl.FirEnumEntrySymbol
@@ -40,6 +41,12 @@ interface ProgramConversionContext : ErrorCollectionContext {
 
     /** The context of the checker that runs the conversion, through which uniqueness and locality are resolved. */
     val checkerContext: CheckerContext
+
+    /**
+     * The class whose constructors this program proves. Here its constructors take every stored argument, so the
+     * proof covers the whole representation; elsewhere a law-free class lets the caller keep an unreachable one.
+     */
+    val provenConstruction: FirRegularClassSymbol? get() = null
 
     val whileIndexProducer: SimpleFreshEntityProducer<Int>
     val catchLabelNameProducer: SimpleFreshEntityProducer<CatchLabelName>

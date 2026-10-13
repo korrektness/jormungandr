@@ -1,16 +1,16 @@
 // RENDER_PREDICATES
 
 
-open class A(val a: Int)
+open <!VIPER_TEXT!>class A<!>(val a: Int)
 
-open class B(val b: Int) : A(0)
+open <!VIPER_TEXT!>class B<!>(val b: Int) : A(0)
 
 interface D {
     val d: Int
         <!VIPER_TEXT!>get<!>() = 2
 }
 
-class C(val x: A, var y: A) : D, B(0)
+<!VIPER_TEXT!>class C<!>(val x: A, var y: A) : D, B(0)
 
 fun <!VIPER_TEXT!>accessSuperTypeProperty<!>(c: C){
     val temp = c.a

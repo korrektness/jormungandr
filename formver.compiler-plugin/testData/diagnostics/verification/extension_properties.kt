@@ -17,7 +17,7 @@ fun <!VIPER_TEXT!>extensionSetterProperty<!>() {
     42.intVarProp = 0
 }
 
-class PrimitiveField(val x: Int)
+<!VIPER_TEXT!>class PrimitiveField<!>(val x: Int)
 
 val PrimitiveField.pfValProp: Int <!VIPER_TEXT!>get<!>() = this.x
 

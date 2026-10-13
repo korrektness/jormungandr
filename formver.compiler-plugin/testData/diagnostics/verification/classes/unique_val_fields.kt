@@ -2,8 +2,8 @@
 // USE_STDLIB
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Inner(var x: Int)
-class Outer(val inner: @Unique Inner, var y: Int)
+<!VIPER_TEXT!>class Inner<!>(var x: Int)
+<!VIPER_TEXT!>class Outer<!>(val inner: @Unique Inner, var y: Int)
 
 fun <!VIPER_TEXT!>bumpBoth<!>(o: @Unique @Borrowed Outer) {
     preconditions { o.inner.x < 2147483647 && o.y < 2147483647 }
@@ -44,7 +44,7 @@ fun <!VIPER_TEXT!>readThroughSharedVal<!>(o: Outer): Inner {
     return o.inner
 }
 
-class Buf(val data: @Unique IntArray, var count: Int)
+<!VIPER_TEXT!>class Buf<!>(val data: @Unique IntArray, var count: Int)
 
 fun <!VIPER_TEXT!>push<!>(b: @Unique @Borrowed Buf, v: Int) {
     preconditions { 0 <= b.count && b.count < b.data.size }
@@ -65,9 +65,9 @@ fun <!VIPER_TEXT!>pushTwice<!>(b: @Unique @Borrowed Buf) {
     verify(b.data[1] == 8)
 }
 
-class C(var x: Int)
-class B(val c: @Unique C)
-class A(val b: @Unique B)
+<!VIPER_TEXT!>class C<!>(var x: Int)
+<!VIPER_TEXT!>class B<!>(val c: @Unique C)
+<!VIPER_TEXT!>class A<!>(val b: @Unique B)
 
 @Pure
 fun <!VIPER_TEXT!>xOf<!>(a: @Unique A): Int = a.b.c.x

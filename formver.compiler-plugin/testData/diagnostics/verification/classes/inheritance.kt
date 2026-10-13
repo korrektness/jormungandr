@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.formver.plugin.preconditions
 
 
-open class Foo(val x: Int) {
+open <!VIPER_TEXT!>class Foo<!>(val x: Int) {
     val y: Int = 3
     var b = false
     fun <!VIPER_TEXT!>getY<!>(): Int {
@@ -11,7 +11,7 @@ open class Foo(val x: Int) {
     }
 }
 
-open class Bar(x: Int) : Foo(x) {
+open <!VIPER_TEXT!>class Bar<!>(x: Int) : Foo(x) {
     val z = 5
 
     fun <!VIPER_TEXT!>sum<!>(): Int {

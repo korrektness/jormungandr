@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Node(val value: Int, var next: @Unique Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, var next: @Unique Node?)
 
 @Pure
 fun <!VIPER_TEXT!>isSorted<!>(n: @Unique Node?): Boolean {
@@ -34,16 +34,16 @@ fun <!VIPER_TEXT!>stillSorted<!>(n: @Unique @Borrowed Node) {
     }
 }
 
-class Cell(var content: Int)
+<!VIPER_TEXT!>class Cell<!>(var content: Int)
 
-class Holder(var cell: @Unique Cell)
+<!VIPER_TEXT!>class Holder<!>(var cell: @Unique Cell)
 
 @Pure
 fun <!VIPER_TEXT!>content<!>(h: @Unique Holder): Int = h.cell.content
 
-open class Base(var x: Int)
+open <!VIPER_TEXT!>class Base<!>(var x: Int)
 
-class Derived(x: Int, var y: Int) : Base(x)
+<!VIPER_TEXT!>class Derived<!>(x: Int, var y: Int) : Base(x)
 
 @Pure
 fun <!VIPER_TEXT!>sum<!>(d: @Unique Derived): Int {

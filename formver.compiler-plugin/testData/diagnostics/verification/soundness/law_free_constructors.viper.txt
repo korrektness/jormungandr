@@ -1,0 +1,646 @@
+/law_free_constructors.kt: info: Generated Viper text for Law1:
+field bf_f: Ref
+
+method con(par_f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_f), intType())
+  ensures isSubtype(typeOf(v_ret_0), Law1())
+  ensures isSubtype(typeOf(v_ret_0), Law1()) && acc(v_ret_0.bf_f, write) &&
+    isSubtype(typeOf(v_ret_0.bf_f), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_f) in
+        gtInts(anon_0_0, intToRef(0)))))
+  ensures intFromRef(v_ret_0.bf_f) == intFromRef(par_f)
+  ensures intFromRef(v_ret_0.bf_f) == intFromRef(par_f)
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new(bf_f)
+  inhale typeOf(v_ret_0) == Law1()
+  v_ret_0.bf_f := par_f
+  anon_2 := v_ret_0.bf_f
+  anon_1 := require(gtInts(anon_2, intToRef(0)))
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_f) in
+        gtInts(anon_0_0, intToRef(0)))))
+  fold acc(Law1_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Law1_unique(v_ret_0), write)
+}
+
+method require(value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/law_free_constructors.kt: info: Generated Viper text for ctorClient:
+field f: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Law1())
+  ensures isSubtype(typeOf(ret_1), CtorWriter())
+
+
+method ctorClient(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Law1())
+  requires acc(Law1_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_1 := con(c)
+  fold acc(CtorWriter_unique(anon_1), write)
+  exhale acc(Law1_unique(c), write)
+  inhale acc(Law1_unique(c), write)
+  unfold acc(Law1_unique(c), write)
+  anon_2 := c.f
+  assert intFromRef(anon_2) > 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for initializerClient:
+field f: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function x(this: Ref): Ref
+  requires isSubtype(typeOf(this), InitializerWriter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(c: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(c), Law1())
+  ensures isSubtype(typeOf(ret_1), InitializerWriter())
+
+
+method initializerClient(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Law1())
+  requires acc(Law1_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_1 := con(c)
+  exhale acc(Law1_unique(c), write)
+  inhale acc(Law1_unique(c), write)
+  unfold acc(Law1_unique(c), write)
+  anon_2 := c.f
+  assert intFromRef(anon_2) > 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for zap:
+field a: Ref
+
+method zap(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), PhaseTwo())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for zapOne:
+field a: Ref
+
+function later(this: Ref): Ref
+  requires isSubtype(typeOf(this), PhaseOne())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method zapOne(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), PhaseOne())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for zapSpec:
+field a: Ref
+
+method zapSpec(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), InSpec())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := boolToRef(true)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/law_free_constructors.kt: info: Generated Viper text for zapExt:
+field a: Ref
+
+method zapExt(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), ExtWrite())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for zapMe:
+field a: Ref
+
+method zapMe(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), ExtWrite())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for PhaseTwo:
+field bf_a: Ref
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), PhaseTwo())
+  ensures isSubtype(typeOf(v_ret_0), PhaseTwo()) &&
+    acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType())
+{
+  var anon: Ref
+  v_ret_0 := new(bf_a)
+  inhale typeOf(v_ret_0) == PhaseTwo()
+  v_ret_0.bf_a := par_a
+  fold acc(PhaseTwo_unique(v_ret_0), write)
+  anon := zap(v_ret_0)
+  exhale acc(PhaseTwo_unique(v_ret_0), write)
+  inhale acc(PhaseTwo_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(PhaseTwo_unique(v_ret_0), write)
+}
+
+method zap(par_t: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_t), PhaseTwo())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+/law_free_constructors.kt: info: Generated Viper text for ExtWrite:
+field bf_a: Ref
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), ExtWrite())
+{
+  var anon: Ref
+  v_ret_0 := new(bf_a)
+  inhale typeOf(v_ret_0) == ExtWrite()
+  v_ret_0.bf_a := par_a
+  fold acc(ExtWrite_unique(v_ret_0), write)
+  anon := zapMe(v_ret_0)
+  label lbl_ret_0
+}
+
+method zapMe(v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), ExtWrite())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+/law_free_constructors.kt: info: Generated Viper text for InPrecondition:
+field bf_a: Ref
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), InPrecondition())
+  ensures isSubtype(typeOf(v_ret_0), InPrecondition()) &&
+    acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType())
+{
+  v_ret_0 := new(bf_a)
+  inhale typeOf(v_ret_0) == InPrecondition()
+  v_ret_0.bf_a := par_a
+  fold acc(InPrecondition_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(InPrecondition_unique(v_ret_0), write)
+}
+
+/law_free_constructors.kt: info: Generated Viper text for phaseTwoClient:
+field bf_a: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(ret_1), PhaseTwo())
+  ensures isSubtype(typeOf(ret_1), PhaseTwo()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType())
+
+
+method phaseTwoClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_t: Ref
+  var anon: Ref
+  l0_t := con(intToRef(1))
+  fold acc(PhaseTwo_unique(l0_t), write)
+  unfold acc(PhaseTwo_unique(l0_t), write)
+  anon := l0_t.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for phaseOneClient:
+field bf_a: Ref
+
+function later(this: Ref): Ref
+  requires isSubtype(typeOf(this), PhaseOne())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(ret_1), PhaseOne())
+  ensures isSubtype(typeOf(ret_1), PhaseOne()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType())
+
+
+method phaseOneClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_t: Ref
+  var anon: Ref
+  l0_t := con(intToRef(1))
+  fold acc(PhaseOne_unique(l0_t), write)
+  unfold acc(PhaseOne_unique(l0_t), write)
+  anon := l0_t.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for phaseOneLater:
+field bf_a: Ref
+
+function later(this: Ref): Ref
+  requires isSubtype(typeOf(this), PhaseOne())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(ret_1), PhaseOne())
+  ensures isSubtype(typeOf(ret_1), PhaseOne()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType())
+
+
+method phaseOneLater() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_t: Ref
+  l0_t := con(intToRef(1))
+  fold acc(PhaseOne_unique(l0_t), write)
+  assert intFromRef(later(l0_t)) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for inSpecClient:
+field bf_a: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(ret_1), InSpec())
+  ensures isSubtype(typeOf(ret_1), InSpec()) && acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType())
+
+
+method inSpecClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_t: Ref
+  var anon: Ref
+  l0_t := con(intToRef(1))
+  fold acc(InSpec_unique(l0_t), write)
+  unfold acc(InSpec_unique(l0_t), write)
+  anon := l0_t.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for extClient:
+field bf_a: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(ret_1), ExtWrite())
+
+
+method extClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_t: Ref
+  var anon: Ref
+  l0_t := con(intToRef(1))
+  anon := havoc(intType())
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for inPreconditionClient:
+field bf_a: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(ret_1), InPrecondition())
+  ensures isSubtype(typeOf(ret_1), InPrecondition()) &&
+    acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType())
+
+
+method inPreconditionClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_t: Ref
+  var anon: Ref
+  l0_t := con(intToRef(1))
+  fold acc(InPrecondition_unique(l0_t), write)
+  unfold acc(InPrecondition_unique(l0_t), write)
+  anon := l0_t.bf_a
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for Plain:
+field bf_b: Ref
+
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Plain())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function sum(this: Ref): Ref
+  requires isSubtype(typeOf(this), Plain())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), Plain())
+  ensures isSubtype(typeOf(v_ret_0), Plain()) && acc(v_ret_0.bf_b, write) &&
+    isSubtype(typeOf(v_ret_0.bf_b), intType())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+  ensures intFromRef(sum(v_ret_0)) == 3
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_b) == intFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(bf_b)
+  inhale typeOf(v_ret_0) == Plain()
+  anon_0 := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon_0)
+  v_ret_0.bf_b := par_b
+  anon_1 := intToRef(3)
+  inhale intFromRef(sum(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Plain_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Plain_unique(v_ret_0), write)
+}
+
+/law_free_constructors.kt: info: Generated Viper text for plainClient:
+field bf_b: Ref
+
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Plain())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function sum(this: Ref): Ref
+  requires isSubtype(typeOf(this), Plain())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(ret_1), Plain())
+  ensures isSubtype(typeOf(ret_1), Plain()) && acc(ret_1.bf_b, write) &&
+    isSubtype(typeOf(ret_1.bf_b), intType())
+  ensures intFromRef(g_a(ret_1)) == intFromRef(par_a)
+  ensures intFromRef(ret_1.bf_b) == intFromRef(par_b)
+  ensures intFromRef(sum(ret_1)) == 3
+  ensures intFromRef(g_a(ret_1)) == intFromRef(par_a)
+  ensures intFromRef(ret_1.bf_b) == intFromRef(par_b)
+
+
+method plainClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var p: Ref
+  var anon: Ref
+  p := con(intToRef(1), intToRef(2))
+  fold acc(Plain_unique(p), write)
+  assert intFromRef(g_a(p)) == 1
+  unfold acc(Plain_unique(p), write)
+  anon := p.bf_b
+  assert intFromRef(anon) == 2
+  assert intFromRef(sum(p)) == 3
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for skippedEarlyClient:
+field value: Ref
+
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), SkippedConstruction())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, flag: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(flag), boolType())
+  ensures isSubtype(typeOf(ret_1), SkippedConstruction())
+  ensures isSubtype(typeOf(ret_1), SkippedConstruction()) &&
+    acc(ret_1.value, write) &&
+    isSubtype(typeOf(ret_1.value), intType())
+
+
+method skippedEarlyClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var s: Ref
+  s := con(intToRef(1), boolToRef(false))
+  fold acc(SkippedConstruction_unique(s), write)
+  assert intFromRef(g_a(s)) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for skippedLateClient:
+field value: Ref
+
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), SkippedConstruction())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, flag: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(flag), boolType())
+  ensures isSubtype(typeOf(ret_1), SkippedConstruction())
+  ensures isSubtype(typeOf(ret_1), SkippedConstruction()) &&
+    acc(ret_1.value, write) &&
+    isSubtype(typeOf(ret_1.value), intType())
+
+
+method skippedLateClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var s: Ref
+  s := con(intToRef(1), boolToRef(false))
+  fold acc(SkippedConstruction_unique(s), write)
+  assert intFromRef(g_a(s)) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_free_constructors.kt: info: Generated Viper text for SumOfParameters:
+field bf_a: Ref
+
+field sum: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), SumOfParameters())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), SumOfParameters())
+  ensures isSubtype(typeOf(v_ret_0), SumOfParameters()) &&
+    acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType()) &&
+    acc(v_ret_0.sum, write) &&
+    isSubtype(typeOf(v_ret_0.sum), longType())
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_a, sum)
+  inhale typeOf(v_ret_0) == SumOfParameters()
+  v_ret_0.bf_a := par_a
+  anon := par_b
+  inhale intFromRef(g_b(v_ret_0)) == intFromRef(anon)
+  v_ret_0.sum := plusLongLong(convertIntToLong(v_ret_0.bf_a), convertIntToLong(g_b(v_ret_0)))
+  fold acc(SumOfParameters_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(SumOfParameters_unique(v_ret_0), write)
+}
+
+/law_free_constructors.kt: info: Generated Viper text for sumClient:
+field bf_a: Ref
+
+field sum: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), SumOfParameters())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(ret_1), SumOfParameters())
+  ensures isSubtype(typeOf(ret_1), SumOfParameters()) &&
+    acc(ret_1.bf_a, write) &&
+    isSubtype(typeOf(ret_1.bf_a), intType()) &&
+    acc(ret_1.sum, write) &&
+    isSubtype(typeOf(ret_1.sum), longType())
+  ensures intFromRef(ret_1.bf_a) == intFromRef(par_a)
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
+  ensures intFromRef(ret_1.bf_a) == intFromRef(par_a)
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
+
+
+method sumClient() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var s: Ref
+  var anon: Ref
+  s := con(intToRef(1), intToRef(2))
+  fold acc(SumOfParameters_unique(s), write)
+  unfold acc(SumOfParameters_unique(s), write)
+  anon := s.bf_a
+  assert intFromRef(anon) == 1
+  assert intFromRef(g_b(s)) == 2
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

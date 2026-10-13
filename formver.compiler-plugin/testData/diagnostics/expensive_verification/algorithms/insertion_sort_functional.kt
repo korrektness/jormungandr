@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Node(val value: Int, val next: Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, val next: Node?)
 
 @Pure
 fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>isSorted<!>(n: Node?): Boolean =

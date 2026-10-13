@@ -1,3 +1,22 @@
+/old.kt: info: Generated Viper text for C:
+field bf_field: Ref
+
+method con(par_field: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_field), intType())
+  ensures isSubtype(typeOf(v_ret_0), C())
+  ensures isSubtype(typeOf(v_ret_0), C()) && acc(v_ret_0.bf_field, write) &&
+    isSubtype(typeOf(v_ret_0.bf_field), intType())
+  ensures intFromRef(v_ret_0.bf_field) == intFromRef(par_field)
+  ensures intFromRef(v_ret_0.bf_field) == intFromRef(par_field)
+{
+  v_ret_0 := new(bf_field)
+  inhale typeOf(v_ret_0) == C()
+  v_ret_0.bf_field := par_field
+  fold acc(C_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(C_unique(v_ret_0), write)
+}
+
 /old.kt: info: Generated Viper text for test:
 field bf_field: Ref
 

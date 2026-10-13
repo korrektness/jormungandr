@@ -1,7 +1,7 @@
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-open class Class {
+open <!VIPER_TEXT!>class Class<!> {
     @OptIn(ExperimentalContracts::class)
     fun <!VIPER_TEXT!>is2<!>(): Boolean {
         contract {
@@ -19,8 +19,8 @@ open class Class {
     }
 }
 
-class Impl1: Class()
-class Impl2: Class()
+<!VIPER_TEXT!>class Impl1<!>: Class()
+<!VIPER_TEXT!>class Impl2<!>: Class()
 
 @OptIn(ExperimentalContracts::class)
 fun Class.<!VIPER_TEXT!>is1<!>(): Boolean {

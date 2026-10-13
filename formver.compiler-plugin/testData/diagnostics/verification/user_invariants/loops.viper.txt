@@ -151,6 +151,25 @@ method withBreak() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/loops.kt: info: Generated Viper text for WithVar:
+field bf_e: Ref
+
+method con(par_e: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_e), intType())
+  ensures isSubtype(typeOf(v_ret_0), WithVar())
+  ensures isSubtype(typeOf(v_ret_0), WithVar()) && acc(v_ret_0.bf_e, write) &&
+    isSubtype(typeOf(v_ret_0.bf_e), intType())
+  ensures intFromRef(v_ret_0.bf_e) == intFromRef(par_e)
+  ensures intFromRef(v_ret_0.bf_e) == intFromRef(par_e)
+{
+  v_ret_0 := new(bf_e)
+  inhale typeOf(v_ret_0) == WithVar()
+  v_ret_0.bf_e := par_e
+  fold acc(WithVar_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(WithVar_unique(v_ret_0), write)
+}
+
 /loops.kt: info: Generated Viper text for test_boolean_postcondition:
 field bf_e: Ref
 
@@ -165,11 +184,12 @@ method con(par_e: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), WithVar()) && acc(ret_1.bf_e, write) &&
     isSubtype(typeOf(ret_1.bf_e), intType())
   ensures intFromRef(ret_1.bf_e) == intFromRef(par_e)
+  ensures intFromRef(ret_1.bf_e) == intFromRef(par_e)
 
 
-method doSomething(this: Ref) returns (ret_2: Ref)
+method doSomething(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), WithVar())
-  ensures isSubtype(typeOf(ret_2), boolType())
+  ensures isSubtype(typeOf(ret_3), boolType())
 
 
 method test_boolean_postcondition() returns (v_ret_0: Ref)
@@ -197,6 +217,28 @@ method test_boolean_postcondition() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/loops.kt: info: Generated Viper text for ClassWithField:
+function g_field(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassWithField())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_field: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_field), intType())
+  ensures isSubtype(typeOf(v_ret_0), ClassWithField())
+  ensures intFromRef(g_field(v_ret_0)) == intFromRef(par_field)
+  ensures intFromRef(g_field(v_ret_0)) == intFromRef(par_field)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ClassWithField()
+  anon := par_field
+  inhale intFromRef(g_field(v_ret_0)) == intFromRef(anon)
+  fold acc(ClassWithField_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ClassWithField_unique(v_ret_0), write)
+}
+
 /loops.kt: info: Generated Viper text for test_while:
 function g_field(this: Ref): Ref
   requires isSubtype(typeOf(this), ClassWithField())
@@ -211,6 +253,7 @@ function size(this: Ref): Ref
 method con(par_field: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(par_field), intType())
   ensures isSubtype(typeOf(ret_2), ClassWithField())
+  ensures intFromRef(g_field(ret_2)) == intFromRef(par_field)
   ensures intFromRef(g_field(ret_2)) == intFromRef(par_field)
 
 
@@ -248,9 +291,9 @@ method test_while(param: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(param), ClassWithField())
   anon_1 := ltInts(iteration, intToRef(10))
   if (boolFromRef(anon_1)) {
-    var l4_field: Ref
+    var l5_field: Ref
     var paramField: Ref
-    l4_field := g_field(c)
+    l5_field := g_field(c)
     paramField := g_field(param)
     iteration := plusInts(iteration, intToRef(1))
     goto cont
@@ -284,12 +327,13 @@ method con(par_field: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_field), intType())
   ensures isSubtype(typeOf(ret_1), ClassWithField())
   ensures intFromRef(g_field(ret_1)) == intFromRef(par_field)
+  ensures intFromRef(g_field(ret_1)) == intFromRef(par_field)
 
 
-method run(v_this_extension: Ref, block: Ref) returns (ret_2: Ref)
+method run(v_this_extension: Ref, block: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
   requires isSubtype(typeOf(block), functionType())
-  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
 
 
 method test_while_with_inlining(param: Ref) returns (v_ret_0: Ref)
@@ -299,11 +343,11 @@ method test_while_with_inlining(param: Ref) returns (v_ret_0: Ref)
   var local: Ref
   var anon_1: Ref
   var anon_2: Ref
-  var v_ret_4: Ref
+  var v_ret_5: Ref
   var anon_0: Ref
   var anon_3: Ref
   var anon_4: Ref
-  var v_ret_5: Ref
+  var v_ret_6: Ref
   var iteration: Ref
   var anon_5: Ref
   local := con(intToRef(13))
@@ -338,14 +382,14 @@ method test_while_with_inlining(param: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(anon_0), ClassWithField())
   assert intFromRef(g_field(anon_0)) == 42
   assert intFromRef(g_field(local)) == 13
+  label lbl_ret_6
+  inhale isSubtype(typeOf(v_ret_6), unitType())
+  anon_4 := v_ret_6
+  v_ret_5 := anon_4
+  inhale isSubtype(typeOf(v_ret_5), nullable(anyType()))
+  goto lbl_ret_5
   label lbl_ret_5
-  inhale isSubtype(typeOf(v_ret_5), unitType())
-  anon_4 := v_ret_5
-  v_ret_4 := anon_4
-  inhale isSubtype(typeOf(v_ret_4), nullable(anyType()))
-  goto lbl_ret_4
-  label lbl_ret_4
-  anon_2 := v_ret_4
+  anon_2 := v_ret_5
   anon_1 := anon_2
   inhale isSubtype(typeOf(anon_1), unitType())
   label lbl_ret_0

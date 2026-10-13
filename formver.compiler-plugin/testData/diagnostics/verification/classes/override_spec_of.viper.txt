@@ -7,6 +7,21 @@ method step(this: Ref, n: Ref) returns (ret: Ref)
   ensures intFromRef(ret) > intFromRef(n)
 
 
+/override_spec_of.kt: info: Generated Viper text for Incrementer:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Incrementer())
+  ensures isSubtype(typeOf(v_ret_0), Incrementer()) &&
+    isSubtype(typeOf(v_ret_0), Counter())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Incrementer()
+  fold acc(Counter_unique(v_ret_0), write)
+  fold acc(Incrementer_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Incrementer_unique(v_ret_0), write)
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
 /override_spec_of.kt: info: Generated Viper text for step:
 method Counter_f_step(this: Ref, n: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), Counter())
@@ -42,6 +57,21 @@ method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_3: Ref)
   assert intFromRef(ret_3) > intFromRef(n)
 }
 
+/override_spec_of.kt: info: Generated Viper text for Identity:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Identity())
+  ensures isSubtype(typeOf(v_ret_0), Identity()) &&
+    isSubtype(typeOf(v_ret_0), Counter())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Identity()
+  fold acc(Counter_unique(v_ret_0), write)
+  fold acc(Identity_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Identity_unique(v_ret_0), write)
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
 /override_spec_of.kt: info: Generated Viper text for step:
 method Counter_f_step(this: Ref, n: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(this), Counter())
@@ -71,6 +101,21 @@ method refines_Counter_f_step(this: Ref, n: Ref) returns (ret_2: Ref)
   ret_2 := Identity_f_step(this, n)
   assert isSubtype(typeOf(ret_2), intType())
   assert intFromRef(ret_2) > intFromRef(n)
+}
+
+/override_spec_of.kt: info: Generated Viper text for Inheriting:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Inheriting())
+  ensures isSubtype(typeOf(v_ret_0), Inheriting()) &&
+    isSubtype(typeOf(v_ret_0), Counter())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Inheriting()
+  fold acc(Counter_unique(v_ret_0), write)
+  fold acc(Inheriting_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Inheriting_unique(v_ret_0), write)
+  unfold acc(Counter_unique(v_ret_0), write)
 }
 
 /override_spec_of.kt: info: Generated Viper text for step:
@@ -114,6 +159,17 @@ method size(this: Ref, limit: Ref) returns (ret: Ref)
   ensures 0 <= intFromRef(ret) && intFromRef(ret) <= intFromRef(limit)
 
 
+/override_spec_of.kt: info: Generated Viper text for Halving:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Halving())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Halving()
+  fold acc(Halving_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Halving_unique(v_ret_0), write)
+}
+
 /override_spec_of.kt: info: Generated Viper text for size:
 method Halving_f_size(this: Ref, limit: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Halving())
@@ -155,6 +211,17 @@ method refines_Measure_f_size(this: Ref, limit: Ref) returns (ret_1: Ref)
   ret_1 := Halving_f_size(this, limit)
   assert isSubtype(typeOf(ret_1), intType())
   assert 0 <= intFromRef(ret_1) && intFromRef(ret_1) <= intFromRef(limit)
+}
+
+/override_spec_of.kt: info: Generated Viper text for Positive:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Positive())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Positive()
+  fold acc(Positive_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Positive_unique(v_ret_0), write)
 }
 
 /override_spec_of.kt: info: Generated Viper text for size:

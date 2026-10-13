@@ -26,11 +26,11 @@ fun <!VIPER_TEXT!>subtypeTransitive<!>(x: Unit) {
     }
 }
 
-open class Foo() {
+open <!VIPER_TEXT!>class Foo<!>() {
     val bar = Bar()
 }
 
-class Bar() : Foo()
+<!VIPER_TEXT!>class Bar<!>() : Foo()
 
 @OptIn(ExperimentalContracts::class)
 fun <!VIPER_TEXT!>constructorReturnType<!>(): Boolean {

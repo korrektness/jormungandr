@@ -1,3 +1,22 @@
+/exp_side_effects.kt: info: Generated Viper text for Foo:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Foo())
+  ensures isSubtype(typeOf(v_ret_0), Foo()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType())
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Foo()
+  v_ret_0.bf_x := par_x
+  fold acc(Foo_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Foo_unique(v_ret_0), write)
+}
+
 /exp_side_effects.kt: info: Generated Viper text for test:
 field x: Ref
 

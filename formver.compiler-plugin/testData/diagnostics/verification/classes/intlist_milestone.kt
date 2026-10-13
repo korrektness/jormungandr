@@ -86,7 +86,7 @@ fun <!VIPER_TEXT!>get<!>(list: @Unique @Borrowed IntList, i: Int): Int {
         if (0 <= i && i < count) data[i] else 0<!>
 }
 
-class IntNode(var value: Int, var next: @Unique IntNode?)
+<!VIPER_TEXT!>class IntNode<!>(var value: Int, var next: @Unique IntNode?)
 // The recursive measure has no bound on its tail, so its addition is overflow-negative.
 @Pure fun <!VIPER_TEXT!>nodeSize<!>(node: @Unique IntNode?): Int {
     preconditions { decreases(node) }

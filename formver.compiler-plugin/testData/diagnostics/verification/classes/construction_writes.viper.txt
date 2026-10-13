@@ -1,3 +1,114 @@
+/construction_writes.kt: info: Generated Viper text for Checked:
+field bf_a: Ref
+
+field sum: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Checked())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), Checked())
+  ensures isSubtype(typeOf(v_ret_0), Checked()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType()) &&
+    acc(v_ret_0.sum, write) &&
+    isSubtype(typeOf(v_ret_0.sum), longType())
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new(bf_a, sum)
+  inhale typeOf(v_ret_0) == Checked()
+  v_ret_0.bf_a := par_a
+  anon_0 := par_b
+  inhale intFromRef(g_b(v_ret_0)) == intFromRef(anon_0)
+  v_ret_0.sum := plusLongLong(convertIntToLong(v_ret_0.bf_a), convertIntToLong(g_b(v_ret_0)))
+  anon_1 := v_ret_0.bf_a
+  anon_2 := v_ret_0.bf_a
+  assert intFromRef(anon_1) == intFromRef(anon_2)
+  fold acc(Checked_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Checked_unique(v_ret_0), write)
+}
+
+/construction_writes.kt: info: Generated Viper text for Reset:
+field bf_a: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Reset())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), Reset())
+  ensures isSubtype(typeOf(v_ret_0), Reset()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType())
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_a)
+  inhale typeOf(v_ret_0) == Reset()
+  v_ret_0.bf_a := par_a
+  anon := par_b
+  inhale intFromRef(g_b(v_ret_0)) == intFromRef(anon)
+  v_ret_0.bf_a := intToRef(0)
+  fold acc(Reset_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Reset_unique(v_ret_0), write)
+}
+
+/construction_writes.kt: info: Generated Viper text for Lending:
+field bf_a: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lending())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method clear(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Lending())
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), Lending())
+  ensures isSubtype(typeOf(v_ret_0), Lending()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType())
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(bf_a)
+  inhale typeOf(v_ret_0) == Lending()
+  v_ret_0.bf_a := par_a
+  anon_0 := par_b
+  inhale intFromRef(g_b(v_ret_0)) == intFromRef(anon_0)
+  fold acc(Lending_unique(v_ret_0), write)
+  anon_1 := clear(v_ret_0)
+  exhale acc(Lending_unique(v_ret_0), write)
+  inhale acc(Lending_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Lending_unique(v_ret_0), write)
+}
+
 /construction_writes.kt: info: Generated Viper text for clear:
 field a: Ref
 
@@ -13,6 +124,53 @@ method clear(this: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/construction_writes.kt: info: Generated Viper text for Resetting:
+field bf_a: Ref
+
+field c: Ref
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), Resetting())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_a: Ref, par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), Resetting())
+  ensures isSubtype(typeOf(v_ret_0), Resetting()) &&
+    acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType()) &&
+    acc(v_ret_0.c, write) &&
+    isSubtype(typeOf(v_ret_0.c), intType())
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(bf_a, c)
+  inhale typeOf(v_ret_0) == Resetting()
+  v_ret_0.bf_a := par_a
+  anon_0 := par_b
+  inhale intFromRef(g_b(v_ret_0)) == intFromRef(anon_0)
+  v_ret_0.c := intToRef(1)
+  fold acc(Resetting_unique(v_ret_0), write)
+  anon_1 := reset(v_ret_0)
+  label lbl_ret_0
+  unfold acc(Resetting_unique(v_ret_0), write)
+}
+
+method reset(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Resetting())
+  requires acc(Resetting_unique(this), write)
+  ensures acc(Resetting_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(Resetting_unique(this), write) in
+      intFromRef(this.bf_a) == 0) &&
+    (unfolding acc(Resetting_unique(this), write) in
+      intFromRef(this.c) == 0)
+
 
 /construction_writes.kt: info: Generated Viper text for reset:
 field a: Ref
@@ -42,6 +200,62 @@ method reset(this: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/construction_writes.kt: info: Generated Viper text for Node:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures isSubtype(typeOf(v_ret_0), Node()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == Node()
+  v_ret_0.bf_value := par_value
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
+}
+
+/construction_writes.kt: info: Generated Viper text for Holder:
+field value: Ref
+
+function g_child(this: Ref): Ref
+  requires isSubtype(typeOf(this), Holder())
+  ensures isSubtype(typeOf(result), Node())
+
+
+method clearChild(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Holder())
+  requires acc(Holder_unique(this), write)
+  ensures acc(Holder_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+
+
+method con(par_child: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_child), Node())
+  requires acc(Node_unique(par_child), write)
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+  ensures isSubtype(typeOf(v_ret_0), Holder()) &&
+    acc(Node_unique(g_child(v_ret_0)), write)
+  ensures g_child(v_ret_0) == par_child
+  ensures g_child(v_ret_0) == par_child
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Holder()
+  anon_0 := par_child
+  inhale g_child(v_ret_0) == anon_0
+  fold acc(Holder_unique(v_ret_0), write)
+  anon_1 := clearChild(v_ret_0)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
 /construction_writes.kt: info: Generated Viper text for clearChild:
 field value: Ref
 
@@ -63,6 +277,107 @@ method clearChild(this: Ref) returns (v_ret_0: Ref)
   fold acc(Node_unique(child(this)), write)
   fold acc(Holder_unique(this), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/construction_writes.kt: info: Generated Viper text for DirectHolder:
+field value: Ref
+
+function g_child(this: Ref): Ref
+  requires isSubtype(typeOf(this), DirectHolder())
+  ensures isSubtype(typeOf(result), Node())
+
+
+method con(par_child: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_child), Node())
+  requires acc(Node_unique(par_child), write)
+  ensures isSubtype(typeOf(v_ret_0), DirectHolder())
+  ensures isSubtype(typeOf(v_ret_0), DirectHolder()) &&
+    acc(Node_unique(g_child(v_ret_0)), write)
+  ensures g_child(v_ret_0) == par_child
+  ensures g_child(v_ret_0) == par_child
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == DirectHolder()
+  anon := par_child
+  inhale g_child(v_ret_0) == anon
+  unfold acc(Node_unique(g_child(v_ret_0)), write)
+  g_child(v_ret_0).value := intToRef(0)
+  fold acc(Node_unique(g_child(v_ret_0)), write)
+  fold acc(DirectHolder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(DirectHolder_unique(v_ret_0), write)
+}
+
+/construction_writes.kt: info: Generated Viper text for QuietHolder:
+field value: Ref
+
+function g_child(this: Ref): Ref
+  requires isSubtype(typeOf(this), QuietHolder())
+  ensures isSubtype(typeOf(result), Node())
+
+
+method con(par_child: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_child), Node())
+  requires acc(Node_unique(par_child), write)
+  ensures isSubtype(typeOf(v_ret_0), QuietHolder())
+  ensures isSubtype(typeOf(v_ret_0), QuietHolder()) &&
+    acc(Node_unique(g_child(v_ret_0)), write)
+  ensures g_child(v_ret_0) == par_child
+  ensures g_child(v_ret_0) == par_child
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == QuietHolder()
+  anon := par_child
+  inhale g_child(v_ret_0) == anon
+  fold acc(QuietHolder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(QuietHolder_unique(v_ret_0), write)
+}
+
+/construction_writes.kt: info: Generated Viper text for Base:
+field bf_a: Ref
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), Base())
+  ensures isSubtype(typeOf(v_ret_0), Base()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType())
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+  ensures intFromRef(v_ret_0.bf_a) == intFromRef(par_a)
+{
+  v_ret_0 := new(bf_a)
+  inhale typeOf(v_ret_0) == Base()
+  v_ret_0.bf_a := par_a
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/construction_writes.kt: info: Generated Viper text for Derived:
+field bf_a: Ref
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), Derived())
+  ensures isSubtype(typeOf(v_ret_0), Derived()) &&
+    (isSubtype(typeOf(v_ret_0), Base()) && acc(v_ret_0.bf_a, write) &&
+    isSubtype(typeOf(v_ret_0.bf_a), intType()))
+{
+  var anon: Ref
+  v_ret_0 := new(bf_a)
+  inhale typeOf(v_ret_0) == Derived()
+  anon := par_a
+  v_ret_0.bf_a := anon
+  fold acc(Base_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+  v_ret_0.bf_a := intToRef(0)
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(Derived_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Derived_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
 }
 
 /construction_writes.kt: info: Generated Viper text for ForwardLoanSink:
@@ -101,9 +416,9 @@ method con(par_n: Ref) returns (v_ret_0: Ref)
   unfold acc(ForwardLoanSink_unique(v_ret_0), write)
 }
 
-method require(value: Ref) returns (ret_3: Ref)
+method require(value: Ref) returns (ret_2: Ref)
   requires isSubtype(typeOf(value), boolType())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_2), unitType())
   ensures true ==> boolFromRef(value)
 
 
@@ -165,12 +480,11 @@ method con_ForwardLoanSink(par_n: Ref) returns (ret_1: Ref)
   ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
 
 
-method con_ForwardLoanSource(par_sink: Ref) returns (ret_4: Ref)
+method con_ForwardLoanSource(par_sink: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(par_sink), ForwardLoanSink())
   requires acc(ForwardLoanSink_unique(par_sink), write)
   ensures acc(ForwardLoanSink_unique(par_sink), write)
-  ensures isSubtype(typeOf(ret_4), ForwardLoanSource())
-  ensures intFromRef(age(ret_4)) == 1
+  ensures isSubtype(typeOf(ret_3), ForwardLoanSource())
 
 
 method forwardLoanClient() returns (v_ret_0: Ref)
@@ -212,7 +526,7 @@ method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Checked()) && acc(ret_1.bf_a, write) &&
     isSubtype(typeOf(ret_1.bf_a), intType()) &&
     acc(ret_1.sum, write) &&
-    isSubtype(typeOf(ret_1.sum), intType())
+    isSubtype(typeOf(ret_1.sum), longType())
   ensures intFromRef(ret_1.bf_a) == intFromRef(par_a)
   ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
   ensures intFromRef(ret_1.bf_a) == intFromRef(par_a)
@@ -254,6 +568,7 @@ method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Reset()) && acc(ret_1.bf_a, write) &&
     isSubtype(typeOf(ret_1.bf_a), intType())
   ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
 
 
 method initAssigns() returns (v_ret_0: Ref)
@@ -290,6 +605,7 @@ method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Lending())
   ensures isSubtype(typeOf(ret_1), Lending()) && acc(ret_1.bf_a, write) &&
     isSubtype(typeOf(ret_1.bf_a), intType())
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
   ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
 
 
@@ -331,6 +647,7 @@ method con(par_a: Ref, par_b: Ref) returns (ret_1: Ref)
     isSubtype(typeOf(ret_1.bf_a), intType()) &&
     acc(ret_1.c, write) &&
     isSubtype(typeOf(ret_1.c), intType())
+  ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
   ensures intFromRef(g_b(ret_1)) == intFromRef(par_b)
 
 
@@ -401,6 +718,7 @@ method con(par_child: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Holder()) &&
     acc(Node_unique(g_child(ret_1)), write)
   ensures g_child(ret_1) == par_child
+  ensures g_child(ret_1) == par_child
 
 
 method memberChangesChild(n: Ref) returns (v_ret_0: Ref)
@@ -443,6 +761,7 @@ method con(par_child: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), DirectHolder()) &&
     acc(Node_unique(g_child(ret_1)), write)
   ensures g_child(ret_1) == par_child
+  ensures g_child(ret_1) == par_child
 
 
 method initChangesChild(n: Ref) returns (v_ret_0: Ref)
@@ -481,6 +800,7 @@ function size(this: Ref): Ref
 method con(par_child: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_child), Node())
   ensures isSubtype(typeOf(ret_1), QuietHolder())
+  ensures g_child(ret_1) == par_child
   ensures g_child(ret_1) == par_child
 
 

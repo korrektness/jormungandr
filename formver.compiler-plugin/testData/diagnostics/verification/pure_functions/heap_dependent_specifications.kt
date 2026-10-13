@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Node(val value: Int, val next: Node?)
+<!VIPER_TEXT!>class Node<!>(val value: Int, val next: Node?)
 
 @Pure
 fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>isAlternating<!>(node: Node, expectsPositive: Boolean): Boolean {
@@ -36,7 +36,7 @@ fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>isStrictlyA
 }
 
 
-class TreeNode(val value: Int, val left: TreeNode?, val right: TreeNode?)
+<!VIPER_TEXT!>class TreeNode<!>(val value: Int, val left: TreeNode?, val right: TreeNode?)
 
 @Pure
 fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>isLocallyValidBST<!>(node: TreeNode): Boolean {

@@ -13,7 +13,7 @@ interface Window<T> {
 interface ChildWindow<T> : Window<T>
 
 @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-class TextWindow(var start: Int) : ChildWindow<String?> {
+<!VIPER_TEXT!>class TextWindow<!>(var start: Int) : ChildWindow<String?> {
     @Pure @Unique override fun <!VIPER_TEXT!>lower<!>(): Int = start
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(at: Int, top: Int, text: String?): String? {
         preconditions { lower().toLong() - 1L <= at.toLong() && at < top }
@@ -53,7 +53,7 @@ interface PositiveRead {
     }
 }
 
-class WiderRead : PositiveRead {
+<!VIPER_TEXT!>class WiderRead<!> : PositiveRead {
     @SpecOf("read")
     fun widerSpec(i: Int) {
         preconditions { i >= -1 && i < 2147483647 }
@@ -62,7 +62,7 @@ class WiderRead : PositiveRead {
     @Pure override fun <!VIPER_TEXT!>read<!>(i: Int): Int = i + 1
 }
 
-class NarrowRead : PositiveRead {
+<!VIPER_TEXT!>class NarrowRead<!> : PositiveRead {
     @Pure override fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>read<!>(i: Int): Int {
         preconditions { i > 0 }
         postconditions<Int> { result -> result == i }
@@ -70,7 +70,7 @@ class NarrowRead : PositiveRead {
     }
 }
 
-class WrongRead : PositiveRead {
+<!VIPER_TEXT!>class WrongRead<!> : PositiveRead {
     @Pure override fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>read<!>(i: Int): Int {
         preconditions { i >= 0 }
         postconditions<Int> { result -> result == i - 1 }
@@ -78,7 +78,7 @@ class WrongRead : PositiveRead {
     }
 }
 
-class WrongBody : PositiveRead {
+<!VIPER_TEXT!>class WrongBody<!> : PositiveRead {
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Pure override fun <!VIPER_TEXT!>read<!>(i: Int): Int = i - 1<!>
 }
 
@@ -89,7 +89,7 @@ interface AnyRead {
     }
 }
 
-class NarrowTypeRead : AnyRead {
+<!VIPER_TEXT!>class NarrowTypeRead<!> : AnyRead {
     @Pure override fun <!OVERRIDE_NOT_REFINING, VIPER_TEXT!>read<!>(value: Any): Int {
         preconditions { value is String }
         postconditions<Int> { result -> result == 0 }

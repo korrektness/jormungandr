@@ -74,8 +74,8 @@ fun <!VIPER_TEXT!>unusedResult<!>(): Int {
     return x
 }
 
-open class Foo()
-class Bar() : Foo()
+open <!VIPER_TEXT!>class Foo<!>()
+<!VIPER_TEXT!>class Bar<!>() : Foo()
 
 fun <!VIPER_TEXT!>whenIs<!>(x: Foo): Boolean = when(x) {
     is Bar -> true

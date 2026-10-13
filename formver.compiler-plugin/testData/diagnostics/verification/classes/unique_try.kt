@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Node(var value: Int)
+<!VIPER_TEXT!>class Node<!>(var value: Int)
 
 fun <!VIPER_TEXT!>borrow<!>(n: @Borrowed Node) {}
 

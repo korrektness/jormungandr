@@ -7,7 +7,7 @@ fun <!VERIFICATION_SKIPPED!>impurePredicate<!>() {
     refute(<!PURITY_VIOLATION!>x++ > 0<!>)
 }
 
-class RefuteBox(var value: Int)
+<!VIPER_TEXT!>class RefuteBox<!>(var value: Int)
 
 fun <!VERIFICATION_SKIPPED!>unownedRead<!>(box: RefuteBox) {
     refute(<!UNSUPPORTED_OWNERSHIP!>box.value<!> > 0)

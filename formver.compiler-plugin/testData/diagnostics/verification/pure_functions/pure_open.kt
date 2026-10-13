@@ -1,11 +1,11 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
-open class Shape {
+open <!VIPER_TEXT!>class Shape<!> {
     <!UNSUPPORTED_FEATURE!>@Pure
     open fun <!VERIFICATION_SKIPPED!>sides<!>(): Int = 0<!>
 }
 
-class Square : Shape() {
+<!VIPER_TEXT!>class Square<!> : Shape() {
     <!INVALID_OBSERVER, UNSUPPORTED_FEATURE!>@Pure
     override fun <!VERIFICATION_SKIPPED!>sides<!>(): Int = 4<!>
 }

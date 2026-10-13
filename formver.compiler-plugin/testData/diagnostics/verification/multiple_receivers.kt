@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.formver.plugin.preconditions
 import org.jetbrains.kotlin.formver.plugin.verify
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
 
-class ClassWithExtension(val delta: Int) {
+<!VIPER_TEXT!>class ClassWithExtension<!>(val delta: Int) {
     fun Int.<!VIPER_TEXT!>applyDelta<!>() {
         preconditions { this >= -100; this <= 100; delta >= -100; delta <= 100 }
         val withoutLabels = this + delta

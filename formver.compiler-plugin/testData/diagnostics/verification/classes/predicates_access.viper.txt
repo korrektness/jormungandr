@@ -1,3 +1,74 @@
+/predicates_access.kt: info: Generated Viper text for A:
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), A())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate A_unique(this: Ref) {
+  isSubtype(typeOf(this), A())
+}
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), intType())
+  ensures isSubtype(typeOf(v_ret_0), A())
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+  ensures intFromRef(g_a(v_ret_0)) == intFromRef(par_a)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == A()
+  anon := par_a
+  inhale intFromRef(g_a(v_ret_0)) == intFromRef(anon)
+  fold acc(A_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(A_unique(v_ret_0), write)
+}
+
+/predicates_access.kt: info: Generated Viper text for B:
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), A())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_b(this: Ref): Ref
+  requires isSubtype(typeOf(this), B())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate A_unique(this: Ref) {
+  isSubtype(typeOf(this), A())
+}
+
+predicate B_unique(this: Ref) {
+  isSubtype(typeOf(this), B()) && acc(A_unique(this), write)
+}
+
+method con(par_b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_b), intType())
+  ensures isSubtype(typeOf(v_ret_0), B())
+  ensures isSubtype(typeOf(v_ret_0), B()) &&
+    isSubtype(typeOf(v_ret_0), A())
+  ensures intFromRef(a(v_ret_0)) == 0
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+  ensures intFromRef(g_b(v_ret_0)) == intFromRef(par_b)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == B()
+  anon_0 := intToRef(0)
+  anon_1 := anon_0
+  inhale intFromRef(a(v_ret_0)) == intFromRef(anon_1)
+  fold acc(A_unique(v_ret_0), write)
+  anon_2 := par_b
+  inhale intFromRef(g_b(v_ret_0)) == intFromRef(anon_2)
+  fold acc(B_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(B_unique(v_ret_0), write)
+  unfold acc(A_unique(v_ret_0), write)
+}
+
 /predicates_access.kt: info: Generated Viper text for d:
 predicate D_unique(this: Ref) {
   acc(footprint(this), write) && isSubtype(typeOf(this), D())
@@ -14,6 +85,88 @@ method d(this: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/predicates_access.kt: info: Generated Viper text for C:
+field bf_y: Ref
+
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), A())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function b(this: Ref): Ref
+  requires isSubtype(typeOf(this), B())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), C())
+  ensures isSubtype(typeOf(result), A())
+
+
+predicate A_unique(this: Ref) {
+  isSubtype(typeOf(this), A())
+}
+
+predicate B_unique(this: Ref) {
+  isSubtype(typeOf(this), B()) && acc(A_unique(this), write)
+}
+
+predicate C_unique(this: Ref) {
+  isSubtype(typeOf(this), C()) && acc(this.bf_y, write) &&
+  isSubtype(typeOf(this.bf_y), A()) &&
+  acc(B_unique(this), write)
+}
+
+predicate D_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), D())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_x: Ref, par_y: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(par_x), A())
+  requires isSubtype(typeOf(par_y), A())
+  ensures isSubtype(typeOf(v_ret_1), C())
+  ensures isSubtype(typeOf(v_ret_1), C()) && acc(v_ret_1.bf_y, write) &&
+    isSubtype(typeOf(v_ret_1.bf_y), A()) &&
+    (isSubtype(typeOf(v_ret_1), B()) && isSubtype(typeOf(v_ret_1), A()))
+  ensures intFromRef(a(v_ret_1)) == 0
+  ensures intFromRef(b(v_ret_1)) == 0
+  ensures g_x(v_ret_1) == par_x
+  ensures v_ret_1.bf_y == par_y
+  ensures g_x(v_ret_1) == par_x
+  ensures v_ret_1.bf_y == par_y
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  v_ret_1 := new(bf_y)
+  inhale typeOf(v_ret_1) == C()
+  anon_0 := intToRef(0)
+  anon_1 := intToRef(0)
+  anon_2 := anon_1
+  inhale intFromRef(a(v_ret_1)) == intFromRef(anon_2)
+  fold acc(A_unique(v_ret_1), write)
+  anon_3 := anon_0
+  inhale intFromRef(b(v_ret_1)) == intFromRef(anon_3)
+  fold acc(B_unique(v_ret_1), write)
+  anon_4 := par_x
+  inhale g_x(v_ret_1) == anon_4
+  v_ret_1.bf_y := par_y
+  fold acc(C_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(C_unique(v_ret_1), write)
+  unfold acc(B_unique(v_ret_1), write)
+  unfold acc(A_unique(v_ret_1), write)
+}
+
+method d(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
 
 /predicates_access.kt: info: Generated Viper text for accessSuperTypeProperty:
 field y: Ref

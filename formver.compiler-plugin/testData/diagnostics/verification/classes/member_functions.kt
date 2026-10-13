@@ -1,5 +1,5 @@
 
-class Foo(val x: Int) {
+<!VIPER_TEXT!>class Foo<!>(val x: Int) {
     fun <!VIPER_TEXT!>memberFun<!>(): Int {
         return x
     }

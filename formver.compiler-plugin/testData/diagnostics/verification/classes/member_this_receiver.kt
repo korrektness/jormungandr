@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class TomlMultilineString(private val isStringType: Boolean) {
+<!VIPER_TEXT!>class TomlMultilineString<!>(private val isStringType: Boolean) {
     private var isInMultilineBasic = false
     private var isInMultilineLiteral = false
 

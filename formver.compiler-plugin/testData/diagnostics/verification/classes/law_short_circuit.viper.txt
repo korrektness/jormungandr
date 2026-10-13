@@ -22,7 +22,7 @@ function Single_f_at(this: Ref, i: Ref): Ref
     intFromRef(i) < intFromRef(Single_g_size(this))
   ensures isSubtype(typeOf(result), anyType())
 {
-  x(this)
+  g_x(this)
 }
 
 function Single_g_size(this: Ref): Ref
@@ -48,10 +48,26 @@ function c_Seq_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function x(this: Ref): Ref
+function g_x(this: Ref): Ref
   requires isSubtype(typeOf(this), Single())
   ensures isSubtype(typeOf(result), anyType())
 
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), anyType())
+  ensures isSubtype(typeOf(v_ret_0), Single())
+  ensures g_x(v_ret_0) == par_x
+  ensures g_x(v_ret_0) == par_x
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Single()
+  anon := par_x
+  inhale g_x(v_ret_0) == anon
+  fold acc(Single_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Single_unique(v_ret_0), write)
+}
 
 method laws(this: Ref)
   requires acc(Single_unique(this), write)
@@ -207,7 +223,7 @@ function NullSingle_f_at(this: Ref, i: Ref): Ref
     intFromRef(i) < intFromRef(NullSingle_g_size(this))
   ensures isSubtype(typeOf(result), nullable(anyType()))
 {
-  x(this)
+  g_x(this)
 }
 
 function NullSingle_g_size(this: Ref): Ref
@@ -233,10 +249,26 @@ function c_Seq_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function x(this: Ref): Ref
+function g_x(this: Ref): Ref
   requires isSubtype(typeOf(this), NullSingle())
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), NullSingle())
+  ensures g_x(v_ret_0) == par_x
+  ensures g_x(v_ret_0) == par_x
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == NullSingle()
+  anon := par_x
+  inhale g_x(v_ret_0) == anon
+  fold acc(NullSingle_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(NullSingle_unique(v_ret_0), write)
+}
 
 method laws(this: Ref)
   requires acc(NullSingle_unique(this), write)
@@ -552,6 +584,7 @@ method con(par_x: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_x), anyType())
   ensures isSubtype(typeOf(ret_1), Single())
   ensures g_x(ret_1) == par_x
+  ensures g_x(ret_1) == par_x
 
 
 method singleClient() returns (v_ret_0: Ref)
@@ -644,6 +677,7 @@ method NullSingle_c_Seq_upcast(this: Ref)
 method con(par_x: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_x), nullable(anyType()))
   ensures isSubtype(typeOf(ret_1), NullSingle())
+  ensures g_x(ret_1) == par_x
   ensures g_x(ret_1) == par_x
 
 

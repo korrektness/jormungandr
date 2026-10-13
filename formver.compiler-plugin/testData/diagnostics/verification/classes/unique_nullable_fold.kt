@@ -2,9 +2,9 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Box(var value: Int)
+<!VIPER_TEXT!>class Box<!>(var value: Int)
 
-class Cell(var count: Int, var box: @Unique Box?)
+<!VIPER_TEXT!>class Cell<!>(var count: Int, var box: @Unique Box?)
 
 fun <!VIPER_TEXT!>readSafeCall<!>(b: @Unique @Borrowed Box?): Int {
     return b?.value ?: 0

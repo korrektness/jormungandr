@@ -5492,6 +5492,57 @@ method refines_f_invoke(this: Ref) returns (ret_3: Ref)
       intFromRef(ret_3) == intFromRef(c_GrowingCounter_f_state(this)))
 }
 
+/lifted_lambda_creation_facts.kt: info: Generated Viper text for ImmutableStep:
+function g_amount(this: Ref): Ref
+  requires isSubtype(typeOf(this), ImmutableStep())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ImmutableStep_unique(this: Ref) {
+  isSubtype(typeOf(this), ImmutableStep())
+}
+
+method con(par_amount: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_amount), intType())
+  ensures isSubtype(typeOf(v_ret_0), ImmutableStep())
+  ensures intFromRef(g_amount(v_ret_0)) == intFromRef(par_amount)
+  ensures intFromRef(g_amount(v_ret_0)) == intFromRef(par_amount)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ImmutableStep()
+  anon := par_amount
+  inhale intFromRef(g_amount(v_ret_0)) == intFromRef(anon)
+  fold acc(ImmutableStep_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ImmutableStep_unique(v_ret_0), write)
+}
+
+/lifted_lambda_creation_facts.kt: info: Generated Viper text for MutableStep:
+field bf_amount: Ref
+
+predicate MutableStep_unique(this: Ref) {
+  isSubtype(typeOf(this), MutableStep()) && acc(this.bf_amount, write) &&
+  isSubtype(typeOf(this.bf_amount), intType())
+}
+
+method con(par_amount: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_amount), intType())
+  ensures isSubtype(typeOf(v_ret_0), MutableStep())
+  ensures isSubtype(typeOf(v_ret_0), MutableStep()) &&
+    acc(v_ret_0.bf_amount, write) &&
+    isSubtype(typeOf(v_ret_0.bf_amount), intType())
+  ensures intFromRef(v_ret_0.bf_amount) == intFromRef(par_amount)
+  ensures intFromRef(v_ret_0.bf_amount) == intFromRef(par_amount)
+{
+  v_ret_0 := new(bf_amount)
+  inhale typeOf(v_ret_0) == MutableStep()
+  v_ret_0.bf_amount := par_amount
+  fold acc(MutableStep_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(MutableStep_unique(v_ret_0), write)
+}
+
 /lifted_lambda_creation_facts.kt: info: Generated Viper text for positive:
 field amount: Ref
 

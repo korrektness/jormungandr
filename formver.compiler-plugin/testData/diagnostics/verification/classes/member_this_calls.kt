@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-open class Counter(var count: Int) {
+open <!VIPER_TEXT!>class Counter<!>(var count: Int) {
     fun <!VIPER_TEXT!>plain<!>() {}
 
     @Borrowed
@@ -98,7 +98,7 @@ open class Counter(var count: Int) {
     }
 }
 
-class Built(var a: Int, val tag: Int) {
+<!VIPER_TEXT!>class Built<!>(var a: Int, val tag: Int) {
     var b: Int = 0
 
     init {

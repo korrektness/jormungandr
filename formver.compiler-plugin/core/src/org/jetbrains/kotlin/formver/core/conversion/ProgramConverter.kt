@@ -92,6 +92,8 @@ class ProgramConverter(
     var hadConversionError: Boolean = false
         private set
 
+    override var provenConstruction: FirRegularClassSymbol? = null
+
     private fun emit(failure: Failure) {
         context(checkerContext) { reporter.reportFailure(failure) }
         hadConversionError = true

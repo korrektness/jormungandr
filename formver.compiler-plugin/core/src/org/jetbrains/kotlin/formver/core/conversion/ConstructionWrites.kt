@@ -28,7 +28,6 @@ import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
-import org.jetbrains.kotlin.formver.readonly.plugin.isSpecificationCall
 
 /**
  * What the constructor bodies, property initializers and `init` blocks of [this] class and its superclasses may do
@@ -96,7 +95,6 @@ private class ConstructionWriteFinder(private val constructedIsFinal: Boolean) :
         }
 
     override fun visitElement(element: FirElement) {
-        if (element.isSpecificationCall()) return
         when {
             element is FirVariableAssignment -> {
                 val target = when (val lValue = element.lValue) {

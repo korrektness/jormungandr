@@ -30,6 +30,17 @@ method size(this: Ref, limit: Ref) returns (ret: Ref)
   ensures 0 <= intFromRef(ret) && intFromRef(ret) <= intFromRef(limit)
 
 
+/spec_of.kt: info: Generated Viper text for Doubler:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Doubler())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Doubler()
+  fold acc(Doubler_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Doubler_unique(v_ret_0), write)
+}
+
 /spec_of.kt: info: Generated Viper text for twice:
 method twice(this: Ref, x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Doubler())

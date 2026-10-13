@@ -1,3 +1,25 @@
+/stdlib_references.kt: info: Generated Viper text for Element:
+function g_number(this: Ref): Ref
+  requires isSubtype(typeOf(this), Element())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_number: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_number), intType())
+  ensures isSubtype(typeOf(v_ret_0), Element())
+  ensures intFromRef(g_number(v_ret_0)) == intFromRef(par_number)
+  ensures intFromRef(g_number(v_ret_0)) == intFromRef(par_number)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Element()
+  anon := par_number
+  inhale intFromRef(g_number(v_ret_0)) == intFromRef(anon)
+  fold acc(Element_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Element_unique(v_ret_0), write)
+}
+
 /stdlib_references.kt: info: Generated Viper text for listSharedReferences:
 function BooleanArray_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())

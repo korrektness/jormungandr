@@ -1,3 +1,25 @@
+/function_overloading.kt: info: Generated Viper text for Foo:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Foo())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Foo()
+  fold acc(Foo_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Foo_unique(v_ret_0), write)
+}
+
+/function_overloading.kt: info: Generated Viper text for Bar:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Bar())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Bar()
+  fold acc(Bar_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Bar_unique(v_ret_0), write)
+}
+
 /function_overloading.kt: info: Generated Viper text for baz:
 method baz(this: Ref, f: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(this), Bar())
@@ -73,17 +95,17 @@ method differInNullability(i: Ref) returns (v_ret_0: Ref)
 }
 
 /function_overloading.kt: info: Generated Viper text for testGlobalScopeOverloading:
-method con_Bar() returns (ret_6: Ref)
-  ensures isSubtype(typeOf(ret_6), Bar())
+method con_Bar() returns (ret_7: Ref)
+  ensures isSubtype(typeOf(ret_7), Bar())
 
 
 method con_Foo() returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), Foo())
 
 
-method f_fakePrint_args_Bar_ret_Unit(b: Ref) returns (ret_5: Ref)
+method f_fakePrint_args_Bar_ret_Unit(b: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(b), Bar())
-  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures isSubtype(typeOf(ret_6), unitType())
 
 
 method f_fakePrint_args_Boolean_ret_Unit(truth: Ref) returns (ret_2: Ref)
@@ -124,21 +146,21 @@ method testGlobalScopeOverloading() returns (v_ret_0: Ref)
 
 /function_overloading.kt: info: Generated Viper text for testClassFunctionOverloading:
 method c_Bar_f_baz_args_c_Bar_Foo_ret_Unit(this: Ref, f: Ref)
-  returns (ret_2: Ref)
+  returns (ret_3: Ref)
   requires isSubtype(typeOf(this), c_Bar())
   requires isSubtype(typeOf(f), Foo())
-  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures isSubtype(typeOf(ret_3), unitType())
 
 
 method c_Bar_f_baz_args_c_Bar_c_Bar_ret_Unit(this: Ref, par_b: Ref)
-  returns (ret_4: Ref)
+  returns (ret_6: Ref)
   requires isSubtype(typeOf(this), c_Bar())
   requires isSubtype(typeOf(par_b), c_Bar())
-  ensures isSubtype(typeOf(ret_4), unitType())
+  ensures isSubtype(typeOf(ret_6), unitType())
 
 
-method con_Foo() returns (ret_3: Ref)
-  ensures isSubtype(typeOf(ret_3), Foo())
+method con_Foo() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), Foo())
 
 
 method con_c_Bar() returns (ret_1: Ref)

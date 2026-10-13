@@ -1,3 +1,58 @@
+/binary_tree.kt: info: Generated Viper text for Node:
+field bf_data: Ref
+
+function g_left(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), nullable(Node()))
+
+
+function g_right(this: Ref): Ref
+  requires isSubtype(typeOf(this), Node())
+  ensures isSubtype(typeOf(result), nullable(Node()))
+
+
+predicate Node_unique(this: Ref) {
+  isSubtype(typeOf(this), Node()) && acc(this.bf_data, write) &&
+  isSubtype(typeOf(this.bf_data), intType()) &&
+  (g_left(this) != nullValue() ==> acc(Node_unique(g_left(this)), write)) &&
+  (g_right(this) != nullValue() ==> acc(Node_unique(g_right(this)), write))
+}
+
+method con(par_data: Ref, par_left: Ref, par_right: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), intType())
+  requires isSubtype(typeOf(par_left), nullable(Node()))
+  requires par_left != nullValue() ==> acc(Node_unique(par_left), write)
+  requires isSubtype(typeOf(par_right), nullable(Node()))
+  requires par_right != nullValue() ==> acc(Node_unique(par_right), write)
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures isSubtype(typeOf(v_ret_0), Node()) && acc(v_ret_0.bf_data, write) &&
+    isSubtype(typeOf(v_ret_0.bf_data), intType()) &&
+    (g_left(v_ret_0) != nullValue() ==>
+    acc(Node_unique(g_left(v_ret_0)), write)) &&
+    (g_right(v_ret_0) != nullValue() ==>
+    acc(Node_unique(g_right(v_ret_0)), write))
+  ensures intFromRef(v_ret_0.bf_data) == intFromRef(par_data)
+  ensures g_left(v_ret_0) == par_left
+  ensures g_right(v_ret_0) == par_right
+  ensures intFromRef(v_ret_0.bf_data) == intFromRef(par_data)
+  ensures g_left(v_ret_0) == par_left
+  ensures g_right(v_ret_0) == par_right
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(bf_data)
+  inhale typeOf(v_ret_0) == Node()
+  v_ret_0.bf_data := par_data
+  anon_0 := par_left
+  inhale g_left(v_ret_0) == anon_0
+  anon_1 := par_right
+  inhale g_right(v_ret_0) == anon_1
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
+}
+
 /binary_tree.kt: info: Generated Viper text for get_left_val:
 field data: Ref
 
@@ -92,6 +147,9 @@ method con(par_data: Ref, par_left: Ref, par_right: Ref)
   ensures isSubtype(typeOf(ret_1), Node())
   ensures isSubtype(typeOf(ret_1), Node()) && acc(ret_1.bf_data, write) &&
     isSubtype(typeOf(ret_1.bf_data), intType())
+  ensures intFromRef(ret_1.bf_data) == intFromRef(par_data)
+  ensures g_left(ret_1) == par_left
+  ensures g_right(ret_1) == par_right
   ensures intFromRef(ret_1.bf_data) == intFromRef(par_data)
   ensures g_left(ret_1) == par_left
   ensures g_right(ret_1) == par_right

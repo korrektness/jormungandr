@@ -32,6 +32,58 @@ method f_subtypeTransitive(x: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/is_type_contract.kt: info: Generated Viper text for Foo:
+function bar(this: Ref): Ref
+  requires isSubtype(typeOf(this), Foo())
+  ensures isSubtype(typeOf(result), Bar())
+
+
+method con_Bar() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Bar())
+  ensures isSubtype(typeOf(ret_2), Bar()) &&
+    isSubtype(typeOf(ret_2), Foo())
+
+
+method con_Foo() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Foo())
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Foo()
+  anon := con_Bar()
+  fold acc(Foo_unique(anon), write)
+  fold acc(Bar_unique(anon), write)
+  inhale bar(v_ret_0) == anon
+  fold acc(Foo_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Foo_unique(v_ret_0), write)
+}
+
+/is_type_contract.kt: info: Generated Viper text for Bar:
+function bar(this: Ref): Ref
+  requires isSubtype(typeOf(this), Foo())
+  ensures isSubtype(typeOf(result), Bar())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Bar())
+  ensures isSubtype(typeOf(v_ret_0), Bar()) &&
+    isSubtype(typeOf(v_ret_0), Foo())
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Bar()
+  anon := con()
+  fold acc(Foo_unique(anon), write)
+  fold acc(Bar_unique(anon), write)
+  inhale bar(v_ret_0) == anon
+  fold acc(Foo_unique(v_ret_0), write)
+  fold acc(Bar_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Bar_unique(v_ret_0), write)
+  unfold acc(Foo_unique(v_ret_0), write)
+}
+
 /is_type_contract.kt: info: Generated Viper text for constructorReturnType:
 function bar(this: Ref): Ref
   requires isSubtype(typeOf(this), Foo())

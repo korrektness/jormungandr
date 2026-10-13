@@ -1,7 +1,7 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Counter(var x: Int)
+<!VIPER_TEXT!>class Counter<!>(var x: Int)
 
 fun <!VIPER_TEXT!>ifInPrecondition<!>(flag: Boolean, n: Int): Int {
     preconditions { n == (if (flag) 1 else 0) }
@@ -68,7 +68,7 @@ fun <!VIPER_TEXT!>callsClamp<!>(n: Int) {
     verify(clamp(n, 5) <= 5)
 }
 
-class Link(val n: Int, val next: Link?)
+<!VIPER_TEXT!>class Link<!>(val n: Int, val next: Link?)
 
 fun <!VIPER_TEXT!>nullableOperatorsInPostcondition<!>(l: Link, fallback: Int): Int {
     postconditions<Int> { r -> r == (l.next?.n ?: fallback) }

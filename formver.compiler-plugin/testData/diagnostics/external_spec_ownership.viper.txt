@@ -1,3 +1,25 @@
+/external_spec_ownership.kt: info: Generated Viper text for SourceGauge:
+function GaugeModel_f_read(this: Ref): Ref
+  requires isSubtype(typeOf(this), GaugeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method SourceGauge_f_read(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), SourceGauge())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SourceGauge())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == SourceGauge()
+  fold acc(SourceGauge_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(SourceGauge_unique(v_ret_0), write)
+}
+
 /external_spec_ownership.kt: info: Generated Viper text for read:
 function GaugeModel_f_read(this: Ref): Ref
   requires isSubtype(typeOf(this), GaugeModel())
@@ -12,4 +34,25 @@ method SourceGauge_f_read(this: Ref) returns (v_ret_0: Ref)
   v_ret_0 := intToRef(1)
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/external_spec_ownership.kt: info: Generated Viper text for IndirectGauge:
+function read(this: Ref): Ref
+  requires isSubtype(typeOf(this), GaugeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), IndirectGauge())
+  ensures isSubtype(typeOf(v_ret_0), IndirectGauge()) &&
+    isSubtype(typeOf(v_ret_0), DefaultGauge())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == IndirectGauge()
+  fold acc(DefaultGauge_unique(v_ret_0), write)
+  fold acc(IndirectGauge_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(IndirectGauge_unique(v_ret_0), write)
+  unfold acc(DefaultGauge_unique(v_ret_0), write)
 }

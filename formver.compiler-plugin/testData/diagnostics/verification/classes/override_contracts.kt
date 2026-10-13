@@ -2,9 +2,9 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Cell(var value: Int)
+<!VIPER_TEXT!>class Cell<!>(var value: Int)
 
-open class Base {
+open <!VIPER_TEXT!>class Base<!> {
     open fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
         preconditions { x > 0 && x <= 2147483645 }
         postconditions<Int> { result -> result > 0 }
@@ -27,7 +27,7 @@ interface AtLeastOne {
 }
 
 // A weaker precondition and a stronger postcondition refine both overridden declarations.
-class Refining : Base(), AtLeastOne {
+<!VIPER_TEXT!>class Refining<!> : Base(), AtLeastOne {
     override fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
         preconditions { x >= 0 && x <= 2147483645 }
         postconditions<Int> { result -> result > 1 }

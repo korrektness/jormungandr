@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Foo(var x: Int)
+<!VIPER_TEXT!>class Foo<!>(var x: Int)
 
 @NeverConvert
 fun getFoo(): Foo = Foo(0)

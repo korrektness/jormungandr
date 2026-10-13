@@ -1,7 +1,7 @@
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
-class IntHolder(val x: Int)
+<!VIPER_TEXT!>class IntHolder<!>(val x: Int)
 
 @OptIn(ExperimentalContracts::class)
 fun <!VIPER_TEXT!>getX<!>(a: Any): Int? {

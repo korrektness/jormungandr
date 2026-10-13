@@ -1,3 +1,20 @@
+/loop_predicate_invariant_negative.kt: info: Generated Viper text for Counter:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures isSubtype(typeOf(v_ret_0), Counter()) && acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == Counter()
+  v_ret_0.bf_n := par_n
+  label lbl_ret_0
+}
+
 /loop_predicate_invariant_negative.kt: info: Generated Viper text for bump:
 field n: Ref
 

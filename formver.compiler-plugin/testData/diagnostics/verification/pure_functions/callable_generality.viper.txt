@@ -50,6 +50,31 @@ method invoke(this: Ref, amount: Ref) returns (ret: Ref)
       intFromRef(ret) == intFromRef(total(this)))
 
 
+/callable_generality.kt: info: Generated Viper text for AccumulatorCell:
+field bf_n: Ref
+
+predicate AccumulatorCell_unique(this: Ref) {
+  isSubtype(typeOf(this), AccumulatorCell()) && acc(this.bf_n, write) &&
+  isSubtype(typeOf(this.bf_n), intType())
+}
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), AccumulatorCell())
+  ensures isSubtype(typeOf(v_ret_0), AccumulatorCell()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType())
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == AccumulatorCell()
+  v_ret_0.bf_n := par_n
+  fold acc(AccumulatorCell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(AccumulatorCell_unique(v_ret_0), write)
+}
+
 /callable_generality.kt: info: Generated Viper text for ownedCapture:
 field Lambda0_p_capture0: Ref
 
@@ -105,6 +130,7 @@ method con(par_n: Ref) returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), AccumulatorCell()) &&
     acc(ret_3.bf_n, write) &&
     isSubtype(typeOf(ret_3.bf_n), intType())
+  ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
   ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
 
 
@@ -195,7 +221,7 @@ method Lambda0_c_Accumulator_upcast(this: Ref)
     old(Lambda0_f_total(this))
 
 
-method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_5: Ref)
+method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_6: Ref)
   requires isSubtype(typeOf(this), Lambda0())
   requires acc(Lambda0_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
@@ -206,12 +232,12 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_5: Ref)
       (minusInts(intToRef(2147483647), amount)) in
       intFromRef(intToRef(2147483647)) - intFromRef(amount))
   ensures acc(Lambda0_unique(this), write)
-  ensures isSubtype(typeOf(v_ret_5), intType())
+  ensures isSubtype(typeOf(v_ret_6), intType())
   ensures intFromRef(Lambda0_f_total(this)) ==
     (let anon_builtin ==
       (plusInts(old(Lambda0_f_total(this)), amount)) in
       intFromRef(old(Lambda0_f_total(this))) + intFromRef(amount)) &&
-    intFromRef(v_ret_5) == intFromRef(Lambda0_f_total(this))
+    intFromRef(v_ret_6) == intFromRef(Lambda0_f_total(this))
 {
   var anon_2: Ref
   var anon_3: Ref
@@ -224,11 +250,11 @@ method Lambda0_invoke(this: Ref, amount: Ref) returns (v_ret_5: Ref)
   anon_3 := anon_4.bf_n
   anon_2.bf_n := plusInts(anon_3, amount)
   anon_5 := this.Lambda0_p_capture0
-  v_ret_5 := anon_5.bf_n
+  v_ret_6 := anon_5.bf_n
   fold acc(AccumulatorCell_unique(this.Lambda0_p_capture0), write)
   fold acc(Lambda0_unique(this), write)
-  goto lbl_ret_5
-  label lbl_ret_5
+  goto lbl_ret_6
+  label lbl_ret_6
 }
 
 method con(par_n: Ref) returns (ret_3: Ref)
@@ -237,6 +263,7 @@ method con(par_n: Ref) returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), AccumulatorCell()) &&
     acc(ret_3.bf_n, write) &&
     isSubtype(typeOf(ret_3.bf_n), intType())
+  ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
   ensures intFromRef(ret_3.bf_n) == intFromRef(par_n)
 
 
@@ -249,7 +276,7 @@ method create(captureArg0: Ref) returns (ret_0: Ref)
   ensures ret_0.Lambda0_p_capture0 == captureArg0
 
 
-method f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
+method f_invoke(this: Ref, amount: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), c_Accumulator())
   requires acc(c_Accumulator_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
@@ -262,7 +289,7 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
         (minusInts(intToRef(2147483647), amount)) in
         intFromRef(intToRef(2147483647)) - intFromRef(amount)))
   ensures acc(c_Accumulator_unique(this), write)
-  ensures isSubtype(typeOf(ret_4), intType())
+  ensures isSubtype(typeOf(ret_5), intType())
   ensures (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
       (let anon_builtin ==
@@ -272,7 +299,7 @@ method f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
           c_Accumulator_f_total(this)))) +
         intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this)))
+      intFromRef(ret_5) == intFromRef(c_Accumulator_f_total(this)))
 
 
 method ownedCapture() returns (ret_1: Ref)
@@ -282,7 +309,7 @@ method ownedCapture() returns (ret_1: Ref)
       intFromRef(c_Accumulator_f_total(ret_1)) == 0)
 
 
-method refines_f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
+method refines_f_invoke(this: Ref, amount: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), c_Accumulator())
   requires acc(c_Accumulator_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
@@ -297,10 +324,10 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), Lambda0())
 {
   Lambda0_c_Accumulator_restore(this)
-  ret_4 := Lambda0_invoke(this, amount)
+  ret_5 := Lambda0_invoke(this, amount)
   Lambda0_c_Accumulator_upcast(this)
   assert acc(c_Accumulator_unique(this), write)
-  assert isSubtype(typeOf(ret_4), intType())
+  assert isSubtype(typeOf(ret_5), intType())
   assert (unfolding acc(c_Accumulator_unique(this), wildcard) in
       intFromRef(c_Accumulator_f_total(this)) ==
       (let anon_builtin ==
@@ -310,7 +337,7 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_4: Ref)
           c_Accumulator_f_total(this)))) +
         intFromRef(amount))) &&
     (unfolding acc(c_Accumulator_unique(this), wildcard) in
-      intFromRef(ret_4) == intFromRef(c_Accumulator_f_total(this)))
+      intFromRef(ret_5) == intFromRef(c_Accumulator_f_total(this)))
 }
 
 /callable_generality.kt: info: Generated Viper text for wrongParameterizedBody:
@@ -901,6 +928,48 @@ method refines_f_invoke(this: Ref, amount: Ref) returns (ret_3: Ref)
       intFromRef(ret_3) == intFromRef(c_Accumulator_f_total(this)))
 }
 
+/callable_generality.kt: info: Generated Viper text for AccumulatorHolder:
+function g_action(this: Ref): Ref
+  requires isSubtype(typeOf(this), AccumulatorHolder())
+  ensures isSubtype(typeOf(result), Accumulator())
+
+
+function total(this: Ref): Ref
+  requires isSubtype(typeOf(this), Accumulator())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate AccumulatorHolder_unique(this: Ref) {
+  isSubtype(typeOf(this), AccumulatorHolder()) &&
+  acc(Accumulator_unique(g_action(this)), write)
+}
+
+predicate Accumulator_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), Accumulator())
+}
+
+predicate footprint(this: Ref)
+
+method con(par_action: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_action), Accumulator())
+  requires acc(Accumulator_unique(par_action), write)
+  ensures isSubtype(typeOf(v_ret_0), AccumulatorHolder())
+  ensures isSubtype(typeOf(v_ret_0), AccumulatorHolder()) &&
+    acc(Accumulator_unique(g_action(v_ret_0)), write)
+  ensures g_action(v_ret_0) == par_action
+  ensures g_action(v_ret_0) == par_action
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == AccumulatorHolder()
+  anon := par_action
+  inhale g_action(v_ret_0) == anon
+  fold acc(AccumulatorHolder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(AccumulatorHolder_unique(v_ret_0), write)
+}
+
 /callable_generality.kt: info: Generated Viper text for apply:
 function action(this: Ref): Ref
   requires isSubtype(typeOf(this), AccumulatorHolder())
@@ -1039,9 +1108,10 @@ method con(par_action: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_action), Accumulator())
   ensures isSubtype(typeOf(ret_1), AccumulatorHolder())
   ensures g_action(ret_1) == par_action
+  ensures g_action(ret_1) == par_action
 
 
-method f_apply(this: Ref, amount: Ref) returns (ret_3: Ref)
+method f_apply(this: Ref, amount: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(this), AccumulatorHolder())
   requires acc(AccumulatorHolder_unique(this), write)
   requires isSubtype(typeOf(amount), intType())
@@ -1056,7 +1126,7 @@ method f_apply(this: Ref, amount: Ref) returns (ret_3: Ref)
           (minusInts(intToRef(2147483647), amount)) in
           intFromRef(intToRef(2147483647)) - intFromRef(amount))))
   ensures acc(AccumulatorHolder_unique(this), write)
-  ensures isSubtype(typeOf(ret_3), intType())
+  ensures isSubtype(typeOf(ret_4), intType())
   ensures (unfolding acc(AccumulatorHolder_unique(this), write) in
       (unfolding acc(Accumulator_unique(g_action(this)), wildcard) in
         intFromRef(total(g_action(this))) ==
@@ -1070,7 +1140,7 @@ method f_apply(this: Ref, amount: Ref) returns (ret_3: Ref)
           intFromRef(amount)))) &&
     (unfolding acc(AccumulatorHolder_unique(this), write) in
       (unfolding acc(Accumulator_unique(g_action(this)), wildcard) in
-        intFromRef(ret_3) == intFromRef(total(g_action(this)))))
+        intFromRef(ret_4) == intFromRef(total(g_action(this)))))
 
 
 method fieldClient() returns (v_ret_0: Ref)
@@ -1091,11 +1161,11 @@ method fieldClient() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method ownedCapture() returns (ret_2: Ref)
-  ensures isSubtype(typeOf(ret_2), Accumulator())
-  ensures acc(Accumulator_unique(ret_2), write)
-  ensures (unfolding acc(Accumulator_unique(ret_2), wildcard) in
-      intFromRef(total(ret_2)) == 0)
+method ownedCapture() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), Accumulator())
+  ensures acc(Accumulator_unique(ret_3), write)
+  ensures (unfolding acc(Accumulator_unique(ret_3), wildcard) in
+      intFromRef(total(ret_3)) == 0)
 
 
 /callable_generality.kt: info: Generated Viper text for initial:

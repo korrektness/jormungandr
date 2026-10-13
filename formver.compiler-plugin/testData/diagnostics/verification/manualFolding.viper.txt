@@ -1,3 +1,23 @@
+/manualFolding.kt: info: Generated Viper text for Test:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(v_ret_0), Test())
+  ensures isSubtype(typeOf(v_ret_0), Test()) &&
+    (isSubtype(typeOf(v_ret_0), Super()) && acc(v_ret_0.bf_x, write) &&
+    isSubtype(typeOf(v_ret_0.bf_x), intType()))
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+  ensures intFromRef(v_ret_0.bf_x) == intFromRef(par_x)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_x)
+  inhale typeOf(v_ret_0) == Test()
+  anon := par_x
+  v_ret_0.bf_x := anon
+  label lbl_ret_0
+}
+
 /manualFolding.kt: info: Generated Viper text for test:
 field x: Ref
 
@@ -30,6 +50,46 @@ method test(p: Ref) returns (v_ret_0: Ref)
   fold acc(Test_unique(p), write)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/manualFolding.kt: info: Generated Viper text for Tree:
+field bf_data: Ref
+
+field bf_left: Ref
+
+field bf_right: Ref
+
+method con(par_left: Ref, par_right: Ref, par_data: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_left), nullable(Tree()))
+  requires par_left != nullValue() ==> acc(Tree_unique(par_left), write)
+  requires isSubtype(typeOf(par_right), nullable(Tree()))
+  requires par_right != nullValue() ==> acc(Tree_unique(par_right), write)
+  requires isSubtype(typeOf(par_data), intType())
+  ensures isSubtype(typeOf(v_ret_0), Tree())
+  ensures isSubtype(typeOf(v_ret_0), Tree()) && acc(v_ret_0.bf_left, write) &&
+    isSubtype(typeOf(v_ret_0.bf_left), nullable(Tree())) &&
+    (v_ret_0.bf_left != nullValue() ==>
+    acc(Tree_unique(v_ret_0.bf_left), write)) &&
+    acc(v_ret_0.bf_right, write) &&
+    isSubtype(typeOf(v_ret_0.bf_right), nullable(Tree())) &&
+    (v_ret_0.bf_right != nullValue() ==>
+    acc(Tree_unique(v_ret_0.bf_right), write)) &&
+    acc(v_ret_0.bf_data, write) &&
+    isSubtype(typeOf(v_ret_0.bf_data), intType())
+  ensures v_ret_0.bf_left == par_left
+  ensures v_ret_0.bf_right == par_right
+  ensures intFromRef(v_ret_0.bf_data) == intFromRef(par_data)
+  ensures v_ret_0.bf_left == par_left
+  ensures v_ret_0.bf_right == par_right
+  ensures intFromRef(v_ret_0.bf_data) == intFromRef(par_data)
+{
+  v_ret_0 := new(bf_left, bf_right, bf_data)
+  inhale typeOf(v_ret_0) == Tree()
+  v_ret_0.bf_left := par_left
+  v_ret_0.bf_right := par_right
+  v_ret_0.bf_data := par_data
+  label lbl_ret_0
 }
 
 /manualFolding.kt: info: Generated Viper text for contains:
@@ -156,6 +216,9 @@ method con_Tree(par_left: Ref, par_right: Ref, par_data: Ref)
     isSubtype(typeOf(ret_3.bf_right), nullable(Tree())) &&
     acc(ret_3.bf_data, write) &&
     isSubtype(typeOf(ret_3.bf_data), intType())
+  ensures ret_3.bf_left == par_left
+  ensures ret_3.bf_right == par_right
+  ensures intFromRef(ret_3.bf_data) == intFromRef(par_data)
   ensures ret_3.bf_left == par_left
   ensures ret_3.bf_right == par_right
   ensures intFromRef(ret_3.bf_data) == intFromRef(par_data)

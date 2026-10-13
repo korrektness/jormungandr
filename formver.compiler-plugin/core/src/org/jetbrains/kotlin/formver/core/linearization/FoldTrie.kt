@@ -286,14 +286,15 @@ class FoldTrie<R, F, C, S>(private val hierarchy: FoldHierarchy<R, F, C>) {
      * Havoc what [path] holds besides the folded predicate [expose] made held: close its children, which must have no
      * moved-out field, and refresh the fields of each unfolded class of its chain together with their nested
      * predicates. The callee of a borrowing call that received a supertype predicate may have written them through a
-     * view the caller does not see.
+     * view the caller does not see. The classes of a construction root whose representation is not yet established
+     * keep their values: their fields are fresh storage that no view of the object reaches.
      */
     fun refreshRetained(sink: FoldSink<R, F, C, S>, path: FoldPath<R, F>) {
         if (roots == null || classOf(path) == null) return
         val node = locate(sink, path) ?: notHeld(sink, path)
         val opened = (node.status as? FoldStatus.Open)?.opened ?: return
         closeChildren(sink, node, path)
-        for (cls in opened) sink.refreshOwn(path, cls)
+        for (cls in opened) if (!isConstructing(path, cls)) sink.refreshOwn(path, cls)
     }
 
     /** Fold everything under [path] that can be folded, keeping its holes. */

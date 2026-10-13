@@ -14,7 +14,7 @@ fun interface Accumulator {
     }
 }
 
-class AccumulatorCell(var n: Int)
+<!VIPER_TEXT!>class AccumulatorCell<!>(var n: Int)
 
 fun <!VIPER_TEXT!>ownedCapture<!>(): @Unique Accumulator {
     postconditions<Accumulator> { r -> r.total() == 0 }
@@ -59,7 +59,7 @@ fun <!VIPER_TEXT!>badObservation<!>() {
     <!VIPER_VERIFICATION_ERROR!>f(1)<!>
 }
 
-class AccumulatorHolder(val action: @Unique Accumulator) {
+<!VIPER_TEXT!>class AccumulatorHolder<!>(val action: @Unique Accumulator) {
     @Unique @Borrowed
     fun <!VIPER_TEXT!>apply<!>(amount: Int): Int {
         preconditions { amount >= 0 && action.total() >= 0 && action.total() <= 2147483647 - amount }

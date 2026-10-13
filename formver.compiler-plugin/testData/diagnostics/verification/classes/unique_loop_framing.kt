@@ -1,9 +1,9 @@
 // FULL_JDK
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Counter(var x: Int)
+<!VIPER_TEXT!>class Counter<!>(var x: Int)
 
-class Holder(var inner: @Unique Counter, var count: Int)
+<!VIPER_TEXT!>class Holder<!>(var inner: @Unique Counter, var count: Int)
 
 <!NOTHING_TO_INLINE!>inline<!> fun <!VIPER_TEXT!>countTo<!>(c: @Unique @Borrowed Counter, n: Int): Int {
     c.x = 0

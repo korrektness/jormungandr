@@ -138,7 +138,7 @@ public fun <!VIPER_TEXT!>complexScenario<!>(arg: Boolean): Boolean {
     }
 }
 
-class CustomClass {
+<!VIPER_TEXT!>class CustomClass<!> {
     val member: Int = 42
 
     @NeverConvert

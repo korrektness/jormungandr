@@ -1,3 +1,23 @@
+/unique_try.kt: info: Generated Viper text for Node:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Node())
+  ensures isSubtype(typeOf(v_ret_0), Node()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == Node()
+  v_ret_0.bf_value := par_value
+  fold acc(Node_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Node_unique(v_ret_0), write)
+}
+
 /unique_try.kt: info: Generated Viper text for borrow:
 field value: Ref
 
@@ -24,14 +44,14 @@ method consume(n: Ref) returns (v_ret_0: Ref)
 /unique_try.kt: info: Generated Viper text for tryPassingConstructorResults:
 field bf_value: Ref
 
-method borrow(n: Ref) returns (ret_3: Ref)
+method borrow(n: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(n), Node())
-  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures isSubtype(typeOf(ret_4), unitType())
 
 
-method cause(this: Ref) returns (ret_5: Ref)
+method cause(this: Ref) returns (ret_6: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_6), nullable(anyType()))
 
 
 method con(par_value: Ref) returns (ret_2: Ref)
@@ -39,6 +59,7 @@ method con(par_value: Ref) returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), Node())
   ensures isSubtype(typeOf(ret_2), Node()) && acc(ret_2.bf_value, write) &&
     isSubtype(typeOf(ret_2.bf_value), intType())
+  ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
   ensures intFromRef(ret_2.bf_value) == intFromRef(par_value)
 
 
@@ -48,9 +69,9 @@ method consume(n: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), unitType())
 
 
-method message(this: Ref) returns (ret_4: Ref)
+method message(this: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
 
 
 method tryPassingConstructorResults() returns (v_ret_0: Ref)

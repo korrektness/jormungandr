@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 @Manual
-class Counter(var n: Int)
+<!VIPER_TEXT!>class Counter<!>(var n: Int)
 
 // The receiver is shared, so the write is dropped: it needs no permission.
 fun <!VIPER_TEXT!>writeShared<!>(c: Counter) {

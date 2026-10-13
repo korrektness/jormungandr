@@ -219,6 +219,38 @@ method insertionSort(arr: Ref) returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/insertion_sort_array.kt: info: Generated Viper text for Sorter:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function g_arr(this: Ref): Ref
+  requires isSubtype(typeOf(this), Sorter())
+  ensures isSubtype(typeOf(result), IntArray())
+
+
+method con(par_arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_arr), IntArray())
+  requires acc(IntArray_unique(par_arr), write)
+  ensures isSubtype(typeOf(v_ret_0), Sorter())
+  ensures isSubtype(typeOf(v_ret_0), Sorter()) &&
+    acc(IntArray_unique(g_arr(v_ret_0)), write)
+  ensures g_arr(v_ret_0) == par_arr
+  ensures g_arr(v_ret_0) == par_arr
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Sorter()
+  anon := par_arr
+  inhale g_arr(v_ret_0) == anon
+  fold acc(Sorter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Sorter_unique(v_ret_0), write)
+}
+
 /insertion_sort_array.kt: info: Generated Viper text for insertionSortThroughVal:
 field contents: Seq[Int]
 

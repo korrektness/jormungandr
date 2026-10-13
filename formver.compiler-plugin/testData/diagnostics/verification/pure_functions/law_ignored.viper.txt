@@ -1,13 +1,23 @@
 /law_ignored.kt: info: Generated Viper text for LawImplementation:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), LawImplementation())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == LawImplementation()
+  fold acc(LawImplementation_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(LawImplementation_unique(v_ret_0), write)
+}
+
 method laws(this: Ref)
   requires acc(LawImplementation_unique(this), write)
 {
   unfold acc(LawImplementation_unique(this), write)
   fold acc(LawImplementation_unique(this), write)
   assert boolFromRef(boolToRef(true))
-  assert boolFromRef((let v_l3_n_0 ==
+  assert boolFromRef((let v_l5_n_0 ==
       (plusInts(intToRef(1), intToRef(2))) in
-      gtInts(v_l3_n_0, intToRef(0))))
+      gtInts(v_l5_n_0, intToRef(0))))
 }
 
 /law_ignored.kt: info: Generated Viper text for unrelated:

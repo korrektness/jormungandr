@@ -1,3 +1,22 @@
+/generics.kt: info: Generated Viper text for Box:
+field bf_t: Ref
+
+method con(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures isSubtype(typeOf(v_ret_0), Box()) && acc(v_ret_0.bf_t, write) &&
+    isSubtype(typeOf(v_ret_0.bf_t), nullable(anyType()))
+  ensures v_ret_0.bf_t == par_t
+  ensures v_ret_0.bf_t == par_t
+{
+  v_ret_0 := new(bf_t)
+  inhale typeOf(v_ret_0) == Box()
+  v_ret_0.bf_t := par_t
+  fold acc(Box_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Box_unique(v_ret_0), write)
+}
+
 /generics.kt: info: Generated Viper text for genericMethod:
 field bf_t: Ref
 
@@ -19,6 +38,7 @@ method con(par_t: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Box())
   ensures isSubtype(typeOf(ret_1), Box()) && acc(ret_1.bf_t, write) &&
     isSubtype(typeOf(ret_1.bf_t), nullable(anyType()))
+  ensures ret_1.bf_t == par_t
   ensures ret_1.bf_t == par_t
 
 
@@ -52,6 +72,7 @@ method con(par_t: Ref) returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), Box())
   ensures isSubtype(typeOf(ret_1), Box()) && acc(ret_1.bf_t, write) &&
     isSubtype(typeOf(ret_1.bf_t), nullable(anyType()))
+  ensures ret_1.bf_t == par_t
   ensures ret_1.bf_t == par_t
 
 

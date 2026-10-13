@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 // Calls of function objects, which have no contract (docs/soundness.md, H3).
 
-class Box(var n: Int)
+<!VIPER_TEXT!>class Box<!>(var n: Int)
 
 fun <!VIPER_TEXT!>callbackMutation<!>(c: @Unique @Borrowed Box, f: (@Borrowed Box) -> Unit) {
     c.n = 1
@@ -17,7 +17,7 @@ fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>callbackUnique<!>(c: @Unique @Borrowed B
     f(c)
 }
 
-class Holder(var child: @Unique Box)
+<!VIPER_TEXT!>class Holder<!>(var child: @Unique Box)
 
 fun <!VIPER_TEXT!>callbackNested<!>(h: @Unique @Borrowed Holder, f: (@Borrowed Holder) -> Unit) {
     h.child.n = 1

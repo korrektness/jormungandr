@@ -2,9 +2,9 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-class Counter(var x: Int)
+<!VIPER_TEXT!>class Counter<!>(var x: Int)
 
-class Holder(var inner: @Unique Counter, var tag: Int)
+<!VIPER_TEXT!>class Holder<!>(var inner: @Unique Counter, var tag: Int)
 
 fun <!VIPER_TEXT!>make<!>(v: Int): @Unique Counter {
     postconditions<Counter> { result -> result.x == v }

@@ -3,11 +3,11 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-<!INVALID_LAW!>class EarlyPropertyRead {
+<!VIPER_TEXT!>class EarlyPropertyRead<!> {
     val first = 1
     val second = first
     @Law @Pure fun invariant(): Boolean = second > 0
-}<!>
+}
 
 <!INVALID_LAW!>class EarlyThisArgument {
     val first = 1
@@ -31,7 +31,7 @@ import org.jetbrains.kotlin.formver.plugin.*
     @Law @Pure fun invariant(): Boolean = value > 0
 }<!>
 
-<!VERIFICATION_SKIPPED!>class TrustedEarlyRead<!> {
+<!VIPER_TEXT!>class LawFreeEarlyRead<!> {
     val first = 1
     val second = first
 }
@@ -55,7 +55,7 @@ open <!VIPER_TEXT!>class CompletedFinalCall<!> {
     @Law @Pure fun invariant(): Boolean = value > 0
 }
 
-<!INVALID_LAW!>class ReadBeforeDelayedAssignment(flag: Boolean) {
+<!VIPER_TEXT!>class ReadBeforeDelayedAssignment<!>(flag: Boolean) {
     val first = 1
     val second: Int
     init {
@@ -63,17 +63,17 @@ open <!VIPER_TEXT!>class CompletedFinalCall<!> {
         if (flag) second = 1 else second = 2
     }
     @Law @Pure fun invariant(): Boolean = second > 0
-}<!>
+}
 
-class AssignedThroughTry(flag: Boolean) {
+class AssignedThroughTry<!VERIFICATION_SKIPPED!>(flag: Boolean)<!> {
     var value: Int
     init {
-        try {
+        <!UNSUPPORTED_OWNERSHIP!>try {
             if (flag) throw IllegalArgumentException()
             value = 1
         } catch (error: IllegalArgumentException) {
             value = 2
-        }
+        }<!>
         require(value > 0)
     }
 }
@@ -87,11 +87,11 @@ class AssignedThroughTry(flag: Boolean) {
     @Law @Pure fun invariant(): Boolean = value > 0
 }
 
-open class DispatchBase {
+open <!VIPER_TEXT!>class DispatchBase<!> {
     @Unique @Borrowed open fun <!VIPER_TEXT!>observe<!>() {}
 }
 
-open class DispatchFinal : DispatchBase() {
+open <!VIPER_TEXT!>class DispatchFinal<!> : DispatchBase() {
     @Unique @Borrowed final override fun <!VIPER_TEXT!>observe<!>() {}
 }
 
@@ -113,7 +113,7 @@ open <!VIPER_TEXT!>class InheritedFinalDispatch<!> : DispatchFinal() {
     @Law @Pure fun invariant(): Boolean = value > 0
 }
 
-open class GenericFinalDispatch<T> {
+open <!VIPER_TEXT!>class GenericFinalDispatch<!><T> {
     @Unique @Borrowed fun <!VIPER_TEXT!>observe<!>(argument: T) {}
 }
 
@@ -126,7 +126,7 @@ open <!VIPER_TEXT!>class SubstitutedFinalDispatch<!> : GenericFinalDispatch<Int>
     @Law @Pure fun invariant(): Boolean = value > 0
 }
 
-open class GenericOpenDispatch<T> {
+open <!VIPER_TEXT!>class GenericOpenDispatch<!><T> {
     @Unique @Borrowed open fun <!VIPER_TEXT!>observe<!>(argument: T) {}
 }
 

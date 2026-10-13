@@ -21,7 +21,7 @@ fun <!VIPER_TEXT!>annotatedCharLitReturn<!>(): Char { return 'A' }
 @Pure
 fun <!VIPER_TEXT!>annotatedStringLitReturn<!>(): String { return "Hello SnaKt" }
 
-class X(val a: Int, var b: Int) {}
+<!VIPER_TEXT!>class X<!>(val a: Int, var b: Int) {}
 
 @Pure
 fun <!VIPER_TEXT!>annotatedReferenceReturn<!>(x : X) : X {

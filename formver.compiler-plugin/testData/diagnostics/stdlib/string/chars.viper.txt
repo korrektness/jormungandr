@@ -1,3 +1,25 @@
+/chars.kt: info: Generated Viper text for CharBox:
+function g_char(this: Ref): Ref
+  requires isSubtype(typeOf(this), CharBox())
+  ensures isSubtype(typeOf(result), charType())
+
+
+method con(par_char: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_char), charType())
+  ensures isSubtype(typeOf(v_ret_0), CharBox())
+  ensures charFromRef(g_char(v_ret_0)) == charFromRef(par_char)
+  ensures charFromRef(g_char(v_ret_0)) == charFromRef(par_char)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CharBox()
+  anon := par_char
+  inhale charFromRef(g_char(v_ret_0)) == charFromRef(anon)
+  fold acc(CharBox_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CharBox_unique(v_ret_0), write)
+}
+
 /chars.kt: info: Generated Viper text for testChars:
 function g_char(this: Ref): Ref
   requires isSubtype(typeOf(this), CharBox())
@@ -12,6 +34,7 @@ function size(this: Ref): Ref
 method con(par_char: Ref) returns (ret_1: Ref)
   requires isSubtype(typeOf(par_char), charType())
   ensures isSubtype(typeOf(ret_1), CharBox())
+  ensures charFromRef(g_char(ret_1)) == charFromRef(par_char)
   ensures charFromRef(g_char(ret_1)) == charFromRef(par_char)
 
 

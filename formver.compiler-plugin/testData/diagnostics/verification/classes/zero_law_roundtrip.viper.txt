@@ -41,6 +41,91 @@ method advance(this: Ref) returns (ret: Ref)
       intFromRef(intToRef(1)))
 
 
+/zero_law_roundtrip.kt: info: Generated Viper text for ZeroLawCell:
+field bf_value: Ref
+
+function ZeroLawCell_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), ZeroLawCell())
+  requires acc(ZeroLawCell_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ZeroLawCell_unique(this), write) in this.bf_value)
+}
+
+function ZeroLawDiamond_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawDiamond_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawLeft_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawLeft_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ZeroLawRight_c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(ZeroLawRight_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_ZeroLawBase_f_observe(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ZeroLawBase())
+  requires acc(c_ZeroLawBase_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate ZeroLawCell_unique(this: Ref) {
+  isSubtype(typeOf(this), ZeroLawCell()) && acc(this.bf_value, write) &&
+  isSubtype(typeOf(this.bf_value), intType())
+}
+
+predicate ZeroLawDiamond_footprint(this: Ref)
+
+predicate ZeroLawDiamond_unique(this: Ref) {
+  acc(ZeroLawDiamond_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawDiamond())
+}
+
+predicate ZeroLawLeft_footprint(this: Ref)
+
+predicate ZeroLawLeft_unique(this: Ref) {
+  acc(ZeroLawLeft_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawLeft())
+}
+
+predicate ZeroLawRight_footprint(this: Ref)
+
+predicate ZeroLawRight_unique(this: Ref) {
+  acc(ZeroLawRight_footprint(this), write) &&
+  isSubtype(typeOf(this), ZeroLawRight())
+}
+
+predicate c_ZeroLawBase_footprint(this: Ref)
+
+predicate c_ZeroLawBase_unique(this: Ref) {
+  acc(c_ZeroLawBase_footprint(this), write) &&
+  isSubtype(typeOf(this), c_ZeroLawBase())
+}
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), ZeroLawCell())
+  ensures isSubtype(typeOf(v_ret_0), ZeroLawCell()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == ZeroLawCell()
+  v_ret_0.bf_value := par_value
+  fold acc(ZeroLawCell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ZeroLawCell_unique(v_ret_0), write)
+}
+
 /zero_law_roundtrip.kt: info: Generated Viper text for observe:
 field value: Ref
 
