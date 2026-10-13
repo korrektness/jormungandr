@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.fir.expressions.arguments
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.references.toResolvedValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.types.isString
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
@@ -58,23 +60,29 @@ private enum class StdlibHof(val callableName: Name, val arity: Int) {
         get() = this in AnyMatch..FirstOrNull
 }
 
+private fun stdlibHofKind(symbol: FirCallableSymbol<*>, arity: Int): StdlibHof? {
+    val id = symbol.callableId ?: return null
+    val hof = StdlibHof.entries.firstOrNull { it.callableName == id.callableName && it.arity == arity } ?: return null
+    return when (id.packageName) {
+        FqName("kotlin") -> hof.takeIf { it == StdlibHof.Repeat }
+        textPackage, collectionsPackage -> hof.takeIf { it != StdlibHof.Repeat }
+        else -> null
+    }
+}
+
+/** Whether a callable belongs to the higher-order conversion path, including its opaque function-value calls. */
+internal fun hasStdlibHofTemplate(symbol: FirFunctionSymbol<*>): Boolean =
+    stdlibHofKind(symbol, symbol.valueParameterSymbols.size) != null
+
 /**
  * The template [call] converts as, with the lambda it calls; `null` when [call] is not a call a template supports or
  * its last argument is neither a lambda nor an inline parameter bound to one.
  */
 private fun StmtConversionContext.stdlibHof(call: FirFunctionCall): Pair<StdlibHof, LambdaExp>? {
-    val callableId = call.toResolvedCallableSymbol()?.callableId ?: return null
+    val symbol = call.toResolvedCallableSymbol() ?: return null
     // The arity tells overloads without a lambda, such as `CharSequence.count()`, apart.
-    val hof = StdlibHof.entries.firstOrNull {
-        it.callableName == callableId.callableName && it.arity == call.arguments.size
-    } ?: return null
-    val supported = when (callableId.packageName) {
-        FqName("kotlin") -> hof == StdlibHof.Repeat
-        textPackage -> hof != StdlibHof.Repeat
-        collectionsPackage -> call.isIntArrayLoop(session)
-        else -> false
-    }
-    if (!supported) return null
+    val hof = stdlibHofKind(symbol, call.arguments.size) ?: return null
+    if (symbol.callableId?.packageName == collectionsPackage && !call.isIntArrayLoop(session)) return null
     val lambda = when (val argument = call.arguments.last()) {
         is FirAnonymousFunctionExpression -> convert(argument)
         is FirPropertyAccessExpression ->

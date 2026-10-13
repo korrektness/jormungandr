@@ -5,7 +5,7 @@
 # dependency in the shadow jar.
 #
 # The consumer verifies calls into a stand-in library through an external spec
-# of it, and calls to kotlin.math.abs through the bundled spec. The check fails
+# of it, and calls through the bundled standard-library specs. The check fails
 # if a spec declaration reaches the compiled output, if a reference to one from
 # compiled code is accepted, if a spec binding to a missing library declaration
 # is accepted, or if a false claim about a specified call verifies.
@@ -214,6 +214,25 @@ fun doubling() {
 fun absolute() {
     verify(abs(-3) == 3)
 }
+
+class Element(val number: Int)
+
+fun stdlibModels(element: Element) {
+    val singleton = listOf(7)
+    verify(singleton.size == 1 && singleton[0] == 7 && singleton.indexOf(7) == 0)
+    val list = mutableListOf<Element>()
+    list.add(element)
+    verify(list[0] == element && list[0].number == element.number)
+    val set = mutableSetOf<Int>()
+    set.add(4)
+    val duplicate = set.add(4)
+    verify(!duplicate && set.size == 1)
+    val map = mutableMapOf<Int, Element>()
+    map.put(2, element)
+    verify(map.containsKey(2) && map[2] == element)
+    val text = "hello".substring(1, 4)
+    verify(text.length == 3 && text[0] == 'e')
+}
 SRC
 cat >"$consumer/src/badReference/kotlin/BadReference.kt" <<'SRC'
 fun badReference(x: Int): Int = stand.specs.twiceModel(x)
@@ -230,6 +249,11 @@ fun wrongDouble() {
 fun unguardedAbs(x: Int): Int = abs(x)
 
 fun negativeCreate(): Int = create(-1).value()
+
+fun wrongListElement() {
+    val list = listOf(7)
+    verify(list[0] == 8)
+}
 SRC
 
 # The consumer is not part of this build, so the repository's own gradle

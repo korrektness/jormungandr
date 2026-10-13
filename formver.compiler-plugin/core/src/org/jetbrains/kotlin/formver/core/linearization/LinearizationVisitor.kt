@@ -60,7 +60,11 @@ data class LinearizationVisitor(
         triggerExpressions: List<ExpEmbedding>,
         ctx: LinearizationContext,
     ): Pair<Exp, List<Exp.Trigger>> {
-        val conjunction = conditions.pureToViper(true, ctx.typeResolver, ctx.source).toConjunction()
+        val conjunction = if (ctx is PureExpLinearizer && ctx.observerReceiver != null) {
+            conditions.map { it.linearize().toViperBuiltinType(ctx) }.toConjunction()
+        } else {
+            conditions.pureToViper(true, ctx.typeResolver, ctx.source).toConjunction()
+        }
         if (triggerExpressions.isEmpty()) return conjunction to derivedTriggers(variable.name, conjunction)
         val viperTriggers = triggerExpressions.map { triggerExpr ->
             Exp.Trigger(listOf(triggerExpr.linearize().toViperBuiltinType(ctx)))

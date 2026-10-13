@@ -559,6 +559,7 @@ class ProgramConverter(
 
         // check if it must be handled specially
         embedSpecialFunction(symbol)?.let { return it }
+        rejectUnsupportedStdlibMember(symbol, session)
 
         // check if it already was embedded
         callable[symbol.embedName(this)]?.let { return it.signature }
@@ -649,6 +650,7 @@ class ProgramConverter(
         val model = symbol.externalSpecificationSymbol(session)
         if (model != symbol) return embedProperty(model)
         if (symbol.receiverParameterSymbol != null) {
+            rejectUnsupportedStdlibMember(symbol, session)
             return embedExtensionProperty(symbol)
         } else {
             val name = symbol.embedMemberPropertyName(this)
@@ -660,6 +662,7 @@ class ProgramConverter(
                     }
                 }
 
+                rejectUnsupportedStdlibMember(symbol, session)
                 val classSymbol = symbol.dispatchReceiverType?.toClassSymbol(session)
 
                 val regularClass = classSymbol as? FirRegularClassSymbol ?: throw SnaktInternalException(

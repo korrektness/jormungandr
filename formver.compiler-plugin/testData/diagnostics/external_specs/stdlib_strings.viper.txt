@@ -1,0 +1,125 @@
+/stdlib_strings.kt: info: Generated Viper text for substringBasics:
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function substringModel(v_this_extension: Ref, startIndex: Ref, endIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(endIndex), intType())
+  requires intFromRef(startIndex) >= 0 &&
+    intFromRef(startIndex) <= intFromRef(endIndex) &&
+    intFromRef(endIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    intFromRef(endIndex) - intFromRef(startIndex)
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= 0 &&
+      anon_builtin_0 < |stringFromRef(result)| ==>
+      stringFromRef(result)[anon_builtin_0] ==
+      stringFromRef(v_this_extension)[anon_builtin_0 +
+      intFromRef(startIndex)])
+
+
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0 &&
+    intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    |stringFromRef(v_this_extension)| - intFromRef(startIndex)
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= 0 &&
+      anon_builtin_1 < |stringFromRef(result)| ==>
+      stringFromRef(result)[anon_builtin_1] ==
+      stringFromRef(v_this_extension)[anon_builtin_1 +
+      intFromRef(startIndex)])
+
+
+method substringBasics() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var middle: Ref
+  var anon_0: Ref
+  var suffix: Ref
+  var anon_1: Ref
+  var empty: Ref
+  middle := substringModel(stringToRef(Seq(104, 101, 108, 108, 111)), intToRef(1),
+    intToRef(4))
+  assert |stringFromRef(middle)| == 3
+  if (stringFromRef(middle)[0] == 101) {
+    anon_0 := boolToRef(stringFromRef(middle)[2] == 108)
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  suffix := suffixModel(stringToRef(Seq(104, 101, 108, 108, 111)), intToRef(3))
+  if (|stringFromRef(suffix)| == 2) {
+    anon_1 := boolToRef(stringFromRef(suffix)[1] == 111)
+  } else {
+    anon_1 := boolToRef(false)}
+  assert boolFromRef(anon_1)
+  empty := substringModel(stringToRef(Seq(104, 101, 108, 108, 111)), intToRef(5),
+    intToRef(5))
+  assert |stringFromRef(empty)| == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_strings.kt: info: Generated Viper text for substringBounds:
+function substringModel(v_this_extension: Ref, startIndex: Ref, endIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(endIndex), intType())
+  requires intFromRef(startIndex) >= 0 &&
+    intFromRef(startIndex) <= intFromRef(endIndex) &&
+    intFromRef(endIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    intFromRef(endIndex) - intFromRef(startIndex)
+  ensures (forall anon_builtin: Int ::anon_builtin >= 0 &&
+      anon_builtin < |stringFromRef(result)| ==>
+      stringFromRef(result)[anon_builtin] ==
+      stringFromRef(v_this_extension)[anon_builtin + intFromRef(startIndex)])
+
+
+method substringBounds() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  anon_0 := substringModel(stringToRef(Seq(104, 101, 108, 108, 111)), intToRef(2),
+    intToRef(6))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_strings.kt: info: Generated Viper text for substringWrongCharacter:
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function substringModel(v_this_extension: Ref, startIndex: Ref, endIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(endIndex), intType())
+  requires intFromRef(startIndex) >= 0 &&
+    intFromRef(startIndex) <= intFromRef(endIndex) &&
+    intFromRef(endIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    intFromRef(endIndex) - intFromRef(startIndex)
+  ensures (forall anon: Int ::anon >= 0 && anon < |stringFromRef(result)| ==>
+      stringFromRef(result)[anon] ==
+      stringFromRef(v_this_extension)[anon + intFromRef(startIndex)])
+
+
+method substringWrongCharacter() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var middle: Ref
+  middle := substringModel(stringToRef(Seq(104, 101, 108, 108, 111)), intToRef(1),
+    intToRef(4))
+  assert stringFromRef(middle)[0] == 104
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

@@ -85,6 +85,13 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
         return classes[symbol]
     }
 
+    /** Whether a dependency receiver class has a bound extension contract. */
+    fun hasExtensionModel(receiver: ConeKotlinType): Boolean {
+        initialize()
+        val receiverClass = receiver.classId ?: return false
+        return callables.keys.any { it.resolvedReceiverTypeRef?.coneType?.classId == receiverClass }
+    }
+
     fun isSpecificationFile(path: String?): Boolean = sources.isExternalSpec(path)
 
     fun isModel(symbol: FirBasedSymbol<*>): Boolean {

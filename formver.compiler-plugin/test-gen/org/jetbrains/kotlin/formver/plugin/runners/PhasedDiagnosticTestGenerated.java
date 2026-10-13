@@ -163,6 +163,36 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     public void testExternal_spec_loading() {
       runTest("formver.compiler-plugin/testData/diagnostics/external_specs/external_spec_loading.kt");
     }
+
+    @Test
+    @TestMetadata("stdlib_associative.kt")
+    public void testStdlib_associative() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/stdlib_associative.kt");
+    }
+
+    @Test
+    @TestMetadata("stdlib_lists.kt")
+    public void testStdlib_lists() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/stdlib_lists.kt");
+    }
+
+    @Test
+    @TestMetadata("stdlib_references.kt")
+    public void testStdlib_references() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/stdlib_references.kt");
+    }
+
+    @Test
+    @TestMetadata("stdlib_strings.kt")
+    public void testStdlib_strings() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/stdlib_strings.kt");
+    }
+
+    @Test
+    @TestMetadata("stdlib_unsupported.kt")
+    public void testStdlib_unsupported() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/stdlib_unsupported.kt");
+    }
   }
 
   @Nested

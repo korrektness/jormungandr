@@ -1,0 +1,751 @@
+/stdlib_associative.kt: info: Generated Viper text for setBasics:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableSetModel_c_SetModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(MutableSetModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(MutableSetModel_c_SetModel_g_size(this)) == 0 ==>
+    !boolFromRef(result)
+
+
+function MutableSetModel_c_SetModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(MutableSetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(MutableSetModel_c_SetModel_g_size(this)) == 0)
+
+
+function MutableSetModel_c_SetModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(MutableSetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableSetModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MutableSetModel())
+  requires acc(MutableSetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SetModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(c_SetModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(c_SetModel_g_size(this)) == 0 ==> !boolFromRef(result)
+
+
+function c_SetModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(c_SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(c_SetModel_g_size(this)) == 0)
+
+
+function c_SetModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(c_SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method add(this: Ref, element: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), MutableSetModel())
+  requires acc(MutableSetModel_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  requires (unfolding acc(MutableSetModel_unique(this), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(this)) < 2147483647)
+  ensures acc(MutableSetModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), boolType())
+  ensures boolFromRef(ret_4) ==
+    !old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+      boolFromRef(MutableSetModel_c_SetModel_f_contains(this, element))))
+  ensures (unfolding acc(MutableSetModel_unique(this), wildcard) in
+      boolFromRef(MutableSetModel_c_SetModel_f_contains(this, element)))
+  ensures (unfolding acc(MutableSetModel_unique(this), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(this))) ==
+    old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(this)))) +
+    intFromRef((boolFromRef(ret_4) ? intToRef(1) : intToRef(0)))
+
+
+method emptyMutableSetModel() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), MutableSetModel())
+  ensures acc(MutableSetModel_unique(ret_3), write)
+  ensures (unfolding acc(MutableSetModel_unique(ret_3), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(ret_3)) == 0)
+
+
+method emptySetModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_SetModel())
+  ensures acc(c_SetModel_unique(ret_1), write)
+  ensures (unfolding acc(c_SetModel_unique(ret_1), wildcard) in
+      intFromRef(c_SetModel_g_size(ret_1)) == 0)
+
+
+method remove(this: Ref, element: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), MutableSetModel())
+  requires acc(MutableSetModel_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures acc(MutableSetModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_5), boolType())
+  ensures boolFromRef(ret_5) ==
+    old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+      boolFromRef(MutableSetModel_c_SetModel_f_contains(this, element))))
+  ensures (unfolding acc(MutableSetModel_unique(this), wildcard) in
+      !boolFromRef(MutableSetModel_c_SetModel_f_contains(this, element)))
+  ensures (unfolding acc(MutableSetModel_unique(this), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(this))) ==
+    old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(this)))) -
+    intFromRef((boolFromRef(ret_5) ? intToRef(1) : intToRef(0)))
+
+
+method setBasics() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var empty: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var single: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var set: Ref
+  var added: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var duplicate: Ref
+  var anon_10: Ref
+  var removed: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var missing: Ref
+  var anon_16: Ref
+  empty := emptySetModel()
+  anon_1 := (unfolding acc(c_SetModel_unique(empty), wildcard) in
+      c_SetModel_f_isEmpty(empty))
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    anon_2 := (unfolding acc(c_SetModel_unique(empty), wildcard) in
+        c_SetModel_f_contains(empty, intToRef(4)))
+    anon_0 := notBool(anon_2)
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  single := singletonSetModel(intToRef(4))
+  anon_4 := (unfolding acc(c_SetModel_unique(single), wildcard) in
+      c_SetModel_g_size(single))
+  if (intFromRef(anon_4) == 1) {
+    var anon_5: Ref
+    anon_5 := (unfolding acc(c_SetModel_unique(single), wildcard) in
+        c_SetModel_f_contains(single, intToRef(4)))
+    anon_3 := anon_5
+  } else {
+    anon_3 := boolToRef(false)}
+  assert boolFromRef(anon_3)
+  set := emptyMutableSetModel()
+  added := add(set, intToRef(4))
+  if (boolFromRef(added)) {
+    var anon_8: Ref
+    anon_8 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
+        MutableSetModel_c_SetModel_f_contains(set, intToRef(4)))
+    anon_7 := anon_8
+  } else {
+    anon_7 := boolToRef(false)}
+  if (boolFromRef(anon_7)) {
+    var anon_9: Ref
+    anon_9 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
+        MutableSetModel_c_SetModel_g_size(set))
+    anon_6 := boolToRef(intFromRef(anon_9) == 1)
+  } else {
+    anon_6 := boolToRef(false)}
+  assert boolFromRef(anon_6)
+  duplicate := add(set, intToRef(4))
+  if (!boolFromRef(duplicate)) {
+    var anon_11: Ref
+    anon_11 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
+        MutableSetModel_c_SetModel_g_size(set))
+    anon_10 := boolToRef(intFromRef(anon_11) == 1)
+  } else {
+    anon_10 := boolToRef(false)}
+  assert boolFromRef(anon_10)
+  removed := remove(set, intToRef(4))
+  if (boolFromRef(removed)) {
+    var anon_14: Ref
+    anon_14 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
+        MutableSetModel_c_SetModel_f_isEmpty(set))
+    anon_13 := anon_14
+  } else {
+    anon_13 := boolToRef(false)}
+  if (boolFromRef(anon_13)) {
+    var anon_15: Ref
+    anon_15 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
+        MutableSetModel_c_SetModel_f_contains(set, intToRef(4)))
+    anon_12 := notBool(anon_15)
+  } else {
+    anon_12 := boolToRef(false)}
+  assert boolFromRef(anon_12)
+  missing := remove(set, intToRef(4))
+  if (!boolFromRef(missing)) {
+    var anon_17: Ref
+    anon_17 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
+        MutableSetModel_c_SetModel_f_isEmpty(set))
+    anon_16 := anon_17
+  } else {
+    anon_16 := boolToRef(false)}
+  assert boolFromRef(anon_16)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method singletonSetModel(element: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), c_SetModel())
+  ensures acc(c_SetModel_unique(ret_2), write)
+  ensures (unfolding acc(c_SetModel_unique(ret_2), wildcard) in
+      intFromRef(c_SetModel_g_size(ret_2)) == 1)
+  ensures (unfolding acc(c_SetModel_unique(ret_2), wildcard) in
+      boolFromRef(c_SetModel_f_contains(ret_2, element)))
+
+
+/stdlib_associative.kt: info: Generated Viper text for mapBasics:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableMapModel_c_MapModel_f_containsKey(this: Ref, key: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(MutableMapModel_c_MapModel_g_size(this)) == 0 ==>
+    !boolFromRef(result)
+
+
+function MutableMapModel_c_MapModel_f_containsValue(this: Ref, value: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(MutableMapModel_c_MapModel_g_size(this)) == 0 ==>
+    !boolFromRef(result)
+
+
+function MutableMapModel_c_MapModel_f_get(this: Ref, key: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)) ==>
+    result == nullValue()
+
+
+function MutableMapModel_c_MapModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(MutableMapModel_c_MapModel_g_size(this)) == 0)
+
+
+function MutableMapModel_c_MapModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableMapModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MutableMapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_MapModel_f_containsKey(this: Ref, key: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(c_MapModel_g_size(this)) == 0 ==> !boolFromRef(result)
+
+
+function c_MapModel_f_containsValue(this: Ref, value: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(c_MapModel_g_size(this)) == 0 ==> !boolFromRef(result)
+
+
+function c_MapModel_f_get(this: Ref, key: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(c_MapModel_f_containsKey(this, key)) ==>
+    result == nullValue()
+
+
+function c_MapModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(c_MapModel_g_size(this)) == 0)
+
+
+function c_MapModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method emptyMapModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_MapModel())
+  ensures acc(c_MapModel_unique(ret_1), write)
+  ensures (unfolding acc(c_MapModel_unique(ret_1), wildcard) in
+      intFromRef(c_MapModel_g_size(ret_1)) == 0)
+
+
+method emptyMutableMapModel() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), MutableMapModel())
+  ensures acc(MutableMapModel_unique(ret_2), write)
+  ensures (unfolding acc(MutableMapModel_unique(ret_2), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(ret_2)) == 0)
+
+
+method mapBasics() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var empty: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var map: Ref
+  var previous: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  var anon_9: Ref
+  var anon_13: Ref
+  var replaced: Ref
+  var anon_14: Ref
+  var anon_15: Ref
+  var anon_16: Ref
+  var removed: Ref
+  var anon_20: Ref
+  var anon_21: Ref
+  var anon_22: Ref
+  empty := emptyMapModel()
+  anon_2 := (unfolding acc(c_MapModel_unique(empty), wildcard) in
+      c_MapModel_f_isEmpty(empty))
+  if (boolFromRef(anon_2)) {
+    var anon_3: Ref
+    var anon_4: Ref
+    anon_4 := (unfolding acc(c_MapModel_unique(empty), wildcard) in
+        c_MapModel_f_get(empty, intToRef(2)))
+    anon_3 := anon_4
+    inhale isSubtype(typeOf(anon_3), nullable(intType()))
+    anon_1 := boolToRef(anon_3 == nullValue())
+  } else {
+    anon_1 := boolToRef(false)}
+  if (boolFromRef(anon_1)) {
+    var anon_5: Ref
+    anon_5 := (unfolding acc(c_MapModel_unique(empty), wildcard) in
+        c_MapModel_f_containsValue(empty, intToRef(4)))
+    anon_0 := notBool(anon_5)
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  map := emptyMutableMapModel()
+  anon_6 := put(map, intToRef(2), intToRef(4))
+  previous := anon_6
+  inhale isSubtype(typeOf(previous), nullable(intType()))
+  assert previous == nullValue()
+  anon_9 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+      MutableMapModel_c_MapModel_g_size(map))
+  if (intFromRef(anon_9) == 1) {
+    var anon_10: Ref
+    anon_10 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+        MutableMapModel_c_MapModel_f_containsKey(map, intToRef(2)))
+    anon_8 := anon_10
+  } else {
+    anon_8 := boolToRef(false)}
+  if (boolFromRef(anon_8)) {
+    var anon_11: Ref
+    var anon_12: Ref
+    anon_12 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+        MutableMapModel_c_MapModel_f_get(map, intToRef(2)))
+    anon_11 := anon_12
+    inhale isSubtype(typeOf(anon_11), nullable(intType()))
+    anon_7 := boolToRef(anon_11 == intToRef(4))
+  } else {
+    anon_7 := boolToRef(false)}
+  assert boolFromRef(anon_7)
+  anon_13 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+      MutableMapModel_c_MapModel_f_containsValue(map, intToRef(4)))
+  assert boolFromRef(anon_13)
+  anon_14 := put(map, intToRef(2), intToRef(6))
+  replaced := anon_14
+  inhale isSubtype(typeOf(replaced), nullable(intType()))
+  if (replaced == intToRef(4)) {
+    var anon_17: Ref
+    anon_17 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+        MutableMapModel_c_MapModel_g_size(map))
+    anon_16 := boolToRef(intFromRef(anon_17) == 1)
+  } else {
+    anon_16 := boolToRef(false)}
+  if (boolFromRef(anon_16)) {
+    var anon_18: Ref
+    var anon_19: Ref
+    anon_19 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+        MutableMapModel_c_MapModel_f_get(map, intToRef(2)))
+    anon_18 := anon_19
+    inhale isSubtype(typeOf(anon_18), nullable(intType()))
+    anon_15 := boolToRef(anon_18 == intToRef(6))
+  } else {
+    anon_15 := boolToRef(false)}
+  assert boolFromRef(anon_15)
+  anon_20 := remove(map, intToRef(2))
+  removed := anon_20
+  inhale isSubtype(typeOf(removed), nullable(intType()))
+  if (removed == intToRef(6)) {
+    var anon_23: Ref
+    anon_23 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+        MutableMapModel_c_MapModel_f_isEmpty(map))
+    anon_22 := anon_23
+  } else {
+    anon_22 := boolToRef(false)}
+  if (boolFromRef(anon_22)) {
+    var anon_24: Ref
+    var anon_25: Ref
+    anon_25 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+        MutableMapModel_c_MapModel_f_get(map, intToRef(2)))
+    anon_24 := anon_25
+    inhale isSubtype(typeOf(anon_24), nullable(intType()))
+    anon_21 := boolToRef(anon_24 == nullValue())
+  } else {
+    anon_21 := boolToRef(false)}
+  assert boolFromRef(anon_21)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method put(this: Ref, key: Ref, value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), MutableMapModel())
+  requires acc(MutableMapModel_unique(this), write)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  requires (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(this)) < 2147483647)
+  ensures acc(MutableMapModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+  ensures ret_3 ==
+    old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+      MutableMapModel_c_MapModel_f_get(this, key)))
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      MutableMapModel_c_MapModel_f_get(this, key) == value)
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      boolFromRef(MutableMapModel_c_MapModel_f_containsValue(this, value)))
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(this))) ==
+    old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(this)))) +
+    intFromRef((old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+      boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
+      intToRef(0) :
+      intToRef(1)))
+
+
+method remove(this: Ref, key: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), MutableMapModel())
+  requires acc(MutableMapModel_unique(this), write)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  ensures acc(MutableMapModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+  ensures ret_4 ==
+    old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+      MutableMapModel_c_MapModel_f_get(this, key)))
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      !boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(this))) ==
+    old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(this)))) -
+    intFromRef((old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+      boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
+      intToRef(1) :
+      intToRef(0)))
+
+
+/stdlib_associative.kt: info: Generated Viper text for nullIsMappedValue:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableMapModel_c_MapModel_f_containsKey(this: Ref, key: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(MutableMapModel_c_MapModel_g_size(this)) == 0 ==>
+    !boolFromRef(result)
+
+
+function MutableMapModel_c_MapModel_f_containsValue(this: Ref, value: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(MutableMapModel_c_MapModel_g_size(this)) == 0 ==>
+    !boolFromRef(result)
+
+
+function MutableMapModel_c_MapModel_f_get(this: Ref, key: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)) ==>
+    result == nullValue()
+
+
+function MutableMapModel_c_MapModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(MutableMapModel_c_MapModel_g_size(this)) == 0)
+
+
+function MutableMapModel_c_MapModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableMapModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MutableMapModel())
+  requires acc(MutableMapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_MapModel_f_containsKey(this: Ref, key: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(c_MapModel_g_size(this)) == 0 ==> !boolFromRef(result)
+
+
+function c_MapModel_f_containsValue(this: Ref, value: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(c_MapModel_g_size(this)) == 0 ==> !boolFromRef(result)
+
+
+function c_MapModel_f_get(this: Ref, key: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(c_MapModel_f_containsKey(this, key)) ==>
+    result == nullValue()
+
+
+function c_MapModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(c_MapModel_g_size(this)) == 0)
+
+
+function c_MapModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_MapModel())
+  requires acc(c_MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method emptyMutableMapModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), MutableMapModel())
+  ensures acc(MutableMapModel_unique(ret_1), write)
+  ensures (unfolding acc(MutableMapModel_unique(ret_1), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(ret_1)) == 0)
+
+
+method nullIsMappedValue() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var map: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_8: Ref
+  map := emptyMutableMapModel()
+  anon_1 := put(map, intToRef(2), nullValue())
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), nullable(intType()))
+  anon_4 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+      MutableMapModel_c_MapModel_f_containsKey(map, intToRef(2)))
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var anon_6: Ref
+    anon_6 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+        MutableMapModel_c_MapModel_f_get(map, intToRef(2)))
+    anon_5 := anon_6
+    inhale isSubtype(typeOf(anon_5), nullable(intType()))
+    anon_3 := boolToRef(anon_5 == nullValue())
+  } else {
+    anon_3 := boolToRef(false)}
+  if (boolFromRef(anon_3)) {
+    var anon_7: Ref
+    anon_7 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+        MutableMapModel_c_MapModel_g_size(map))
+    anon_2 := boolToRef(intFromRef(anon_7) == 1)
+  } else {
+    anon_2 := boolToRef(false)}
+  assert boolFromRef(anon_2)
+  anon_8 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+      MutableMapModel_c_MapModel_f_containsKey(map, intToRef(2)))
+  assert !boolFromRef(anon_8)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method put(this: Ref, key: Ref, value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), MutableMapModel())
+  requires acc(MutableMapModel_unique(this), write)
+  requires isSubtype(typeOf(key), nullable(anyType()))
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  requires (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(this)) < 2147483647)
+  ensures acc(MutableMapModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures ret_2 ==
+    old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+      MutableMapModel_c_MapModel_f_get(this, key)))
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      MutableMapModel_c_MapModel_f_get(this, key) == value)
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      boolFromRef(MutableMapModel_c_MapModel_f_containsValue(this, value)))
+  ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(this))) ==
+    old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+      intFromRef(MutableMapModel_c_MapModel_g_size(this)))) +
+    intFromRef((old((unfolding acc(MutableMapModel_unique(this), wildcard) in
+      boolFromRef(MutableMapModel_c_MapModel_f_containsKey(this, key)))) ?
+      intToRef(0) :
+      intToRef(1)))
+
+
+/stdlib_associative.kt: info: Generated Viper text for duplicateSetDoesNotGrow:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableSetModel_c_SetModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(MutableSetModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(MutableSetModel_c_SetModel_g_size(this)) == 0 ==>
+    !boolFromRef(result)
+
+
+function MutableSetModel_c_SetModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(MutableSetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(MutableSetModel_c_SetModel_g_size(this)) == 0)
+
+
+function MutableSetModel_c_SetModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(MutableSetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableSetModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MutableSetModel())
+  requires acc(MutableSetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_SetModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(c_SetModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures intFromRef(c_SetModel_g_size(this)) == 0 ==> !boolFromRef(result)
+
+
+function c_SetModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(c_SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(c_SetModel_g_size(this)) == 0)
+
+
+function c_SetModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_SetModel())
+  requires acc(c_SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method add(this: Ref, element: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), MutableSetModel())
+  requires acc(MutableSetModel_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  requires (unfolding acc(MutableSetModel_unique(this), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(this)) < 2147483647)
+  ensures acc(MutableSetModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), boolType())
+  ensures boolFromRef(ret_2) ==
+    !old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+      boolFromRef(MutableSetModel_c_SetModel_f_contains(this, element))))
+  ensures (unfolding acc(MutableSetModel_unique(this), wildcard) in
+      boolFromRef(MutableSetModel_c_SetModel_f_contains(this, element)))
+  ensures (unfolding acc(MutableSetModel_unique(this), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(this))) ==
+    old((unfolding acc(MutableSetModel_unique(this), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(this)))) +
+    intFromRef((boolFromRef(ret_2) ? intToRef(1) : intToRef(0)))
+
+
+method duplicateSetDoesNotGrow() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var set: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  set := emptyMutableSetModel()
+  anon_0 := add(set, intToRef(4))
+  anon_1 := add(set, intToRef(4))
+  anon_2 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
+      MutableSetModel_c_SetModel_g_size(set))
+  assert intFromRef(anon_2) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method emptyMutableSetModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), MutableSetModel())
+  ensures acc(MutableSetModel_unique(ret_1), write)
+  ensures (unfolding acc(MutableSetModel_unique(ret_1), wildcard) in
+      intFromRef(MutableSetModel_c_SetModel_g_size(ret_1)) == 0)
