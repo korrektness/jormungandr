@@ -14,7 +14,12 @@ import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 
-data class WithPosition(val inner: ExpEmbedding, val source: KtSourceElement, override val sourceRole: SourceRole? = null) : ExpEmbedding {
+data class WithPosition(
+    val inner: ExpEmbedding,
+    val source: KtSourceElement,
+    override val sourceRole: SourceRole? = null,
+    val specificationSnapshot: Boolean = false,
+) : ExpEmbedding {
     override val type: TypeEmbedding
         get() = inner.type
 

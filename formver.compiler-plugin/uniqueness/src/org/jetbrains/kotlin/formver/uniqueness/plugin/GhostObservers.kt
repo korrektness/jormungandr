@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.formver.common.ObserverRule
+import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -37,7 +38,8 @@ fun FirSimpleFunction.ghostObserverViolation(): ObserverRule? {
     val validBody = (placeholder?.toResolvedCallableSymbol() as? FirNamedFunctionSymbol)
         ?.callableId == CallableId(FqName("org.jetbrains.kotlin.formver.plugin"), Name.identifier("ghostObserver"))
     return when {
-        owner?.fir?.isInterface != true || !owner.fir.status.isFun -> ObserverRule.GHOST_OWNER
+        owner?.fir?.isInterface != true ||
+            (!owner.fir.status.isFun && context.session.externalSpecifications?.isModel(owner) != true) -> ObserverRule.GHOST_OWNER
         !symbol.hasAnnotation(ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.Pure")), context.session) -> ObserverRule.GHOST_PURITY
         status.isSuspend -> ObserverRule.GHOST_SUSPEND
         symbol.hasAnnotation(ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.Law")), context.session) -> ObserverRule.GHOST_LAW

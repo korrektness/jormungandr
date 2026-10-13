@@ -63,7 +63,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
 import org.jetbrains.kotlin.formver.core.boundDispatchReceiver
 import org.jetbrains.kotlin.formver.core.functionCallArguments
 import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
-import org.jetbrains.kotlin.formver.uniqueness.plugin.isIntArrayElementAccess
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayElementAccess
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -388,6 +388,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     override fun visitSamConversionExpression(expression: FirSamConversionExpression, data: StmtConversionContext): ExpEmbedding =
         data.liftedLambda(expression)?.let { data.constructLambda(it) } ?: visitElement(expression, data)
+
+    override fun visitComponentCall(componentCall: FirComponentCall, data: StmtConversionContext): ExpEmbedding =
+        data.convertMapEntryComponent(componentCall) ?: visitElement(componentCall, data)
 
     override fun visitFunctionCall(functionCall: FirFunctionCall, data: StmtConversionContext): ExpEmbedding {
         data.liftedLambda(functionCall)?.let { return data.constructLambda(it) }

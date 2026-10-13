@@ -237,6 +237,11 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
                 fail(member, ExternalSpecRule.UNSUPPORTED_MEMBER)
                 continue
             }
+            // Ghost observers belong to the model's verification view and have no dependency member.
+            if (member.getAnnotationByClassId(annotationId("GhostObserver"), session) != null) {
+                models += member
+                continue
+            }
             // Laws and contract holders are specification declarations, not dependency members.
             if (member.getAnnotationByClassId(annotationId("Law"), session) != null ||
                 member.getAnnotationByClassId(annotationId("SpecOf"), session) != null) continue

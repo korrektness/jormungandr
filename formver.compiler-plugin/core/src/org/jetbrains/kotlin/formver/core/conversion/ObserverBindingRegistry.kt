@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedCallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
+import org.jetbrains.kotlin.formver.core.isGhostObserver
 import org.jetbrains.kotlin.formver.core.isObserver
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
 import org.jetbrains.kotlin.formver.core.names.embedName
@@ -81,7 +82,7 @@ class ObserverBindingRegistry {
                                 val observerName = (ctx.embedAnyFunction(declaration) as NamedCallableEmbedding).name
                                 ctx.typeResolver.bindObserver(type, observerName, binding,
                                     dynamicDispatch = !entry.value.isFinal && !implementation.isFinal,
-                                    hasImplementation = !implementation.isAbstract)
+                                    hasImplementation = !implementation.isAbstract && !implementation.isGhostObserver(ctx.session))
                             }
                             symbol.directOverriddenSymbolsSafe().filterIsInstance<FirNamedFunctionSymbol>().forEach(::bind)
                         }

@@ -3,7 +3,12 @@ package org.jetbrains.kotlin.formver.external.collections
 import org.jetbrains.kotlin.formver.plugin.*
 
 @ExternalSpec("kotlin.collections.List")
-interface ListModel<out E> {
+interface ListModel<out E> : IterableModel<E> {
+    @Law @Pure @Unique fun iterationElements(): Boolean =
+        iterationSequence().size == size && forAll<Int> { i ->
+            (i >= 0 && i < iterationSequence().size && i < size) implies (iterationSequence()[i] == get(i))
+        }
+
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-collection/size.html: number of elements.
     @Pure @get:Unique val size: Int
     @Law @Pure @Unique fun nonnegativeSize(): Boolean = size >= 0
@@ -39,6 +44,12 @@ interface ListModel<out E> {
         }
     }
 }
+
+@ExternalFunction("kotlin.collections.map")
+fun <T, R> (@Unique @Borrowed IterableModel<T>).mapModel(transform: (T) -> R): @Unique ListModel<R> = TODO()
+
+@ExternalFunction("kotlin.collections.filter")
+fun <T> (@Unique @Borrowed IterableModel<T>).filterModel(predicate: (T) -> Boolean): @Unique ListModel<T> = TODO()
 
 @ExternalSpec("kotlin.collections.MutableList")
 interface MutableListModel<E> : ListModel<E> {

@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.readonly.plugin
 
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isCollectionLoop
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -65,7 +66,7 @@ fun FirFunctionCall.isPureCall(session: FirSession): Boolean =
     toResolvedCallableSymbol()?.isPure(session) == true
 
 private fun FirFunctionSymbol<*>.borrowsParameterOfType(type: ConeKotlinType, session: FirSession): Boolean =
-    callableId in specificationFunctionIds || isUniquePredConstructor ||
+    callableId in specificationFunctionIds || isUniquePredConstructor || isCollectionLoop() ||
             isPure(session) && type.attributes.uniquenessAttribute != null
 
 /**

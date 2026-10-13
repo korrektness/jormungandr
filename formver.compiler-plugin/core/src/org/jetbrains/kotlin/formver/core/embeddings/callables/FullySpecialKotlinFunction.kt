@@ -349,6 +349,19 @@ object SpecialKotlinFunctions {
             addNoOpFunction(SpecialPackages.formver, name = "preconditions")
         }
 
+        val prefixInvariantsBuilderCallableType = buildFunctionPretype {
+            withParam {
+                function {
+                    withParam { iterationSequence() }
+                    withReturnType { unit() }
+                }
+            }
+            withReturnType { unit() }
+        }
+        withCallableType(prefixInvariantsBuilderCallableType) {
+            addNoOpFunction(SpecialPackages.formver, name = "loopInvariants")
+        }
+
         val postconditionsBuilderCallableType = buildFunctionPretype {
             withParam {
                 function {

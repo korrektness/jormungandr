@@ -1,0 +1,668 @@
+/collection_iteration.kt: info: Generated Viper text for listIteration:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_0)) == element))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==> get(this, result) == element
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
+      !(get(this, intToRef(anon_builtin_1)) == element))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate ListModel_footprint(this: Ref)
+
+predicate ListModel_unique(this: Ref) {
+  acc(ListModel_footprint(this), write) &&
+  isSubtype(typeOf(this), ListModel()) &&
+  boolFromRef(boolToRef(|iterationSequenceFromRef(ListModel_c_IterableModel_f_iterationSequence(this))| ==
+  intFromRef(ListModel_g_size(this)) &&
+  (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+    anon_builtin_2 <= 2147483647 &&
+    isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+    anon_builtin_2 >= 0 &&
+    anon_builtin_2 <
+    |iterationSequenceFromRef(ListModel_c_IterableModel_f_iterationSequence(this))| &&
+    anon_builtin_2 < intFromRef(ListModel_g_size(this)) ==>
+    iterationSequenceGet(ListModel_c_IterableModel_f_iterationSequence(this),
+    intToRef(anon_builtin_2)) ==
+    get(this, intToRef(anon_builtin_2))))) &&
+  boolFromRef(geInts(ListModel_g_size(this), intToRef(0)))
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_IterableModel_footprint(this: Ref)
+
+predicate c_IterableModel_unique(this: Ref) {
+  acc(c_IterableModel_footprint(this), write) &&
+  isSubtype(typeOf(this), c_IterableModel())
+}
+
+method listIteration(values: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(values), ListModel())
+  requires acc(ListModel_unique(values), write)
+  ensures acc(ListModel_unique(values), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := (unfolding acc(ListModel_unique(values), wildcard) in
+      ListModel_c_IterableModel_f_iterationSequence(values))
+  anon_1 := (unfolding acc(ListModel_unique(values), wildcard) in
+      ListModel_g_size(values))
+  assert |iterationSequenceFromRef(anon_0)| == intFromRef(anon_1)
+  anon_2 := (unfolding acc(ListModel_unique(values), wildcard) in
+      ListModel_g_size(values))
+  if (intFromRef(anon_2) > 0) {
+    var anon_3: Ref
+    var anon_4: Ref
+    var anon_5: Ref
+    var anon_6: Ref
+    anon_4 := (unfolding acc(ListModel_unique(values), wildcard) in
+        ListModel_c_IterableModel_f_iterationSequence(values))
+    anon_3 := iterationSequenceGet(anon_4, intToRef(0))
+    inhale isSubtype(typeOf(anon_3), intType())
+    anon_6 := (unfolding acc(ListModel_unique(values), wildcard) in
+        get(values, intToRef(0)))
+    anon_5 := anon_6
+    inhale isSubtype(typeOf(anon_5), intType())
+    assert intFromRef(anon_3) == intFromRef(anon_5)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/collection_iteration.kt: info: Generated Viper text for setIteration:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SetModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function SetModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (element in
+    iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this)))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(SetModel_g_size(this)) == 0)
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate SetModel_footprint(this: Ref)
+
+predicate SetModel_unique(this: Ref) {
+  acc(SetModel_footprint(this), write) &&
+  isSubtype(typeOf(this), SetModel()) &&
+  boolFromRef(boolToRef(|iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this))| ==
+  intFromRef(SetModel_g_size(this)))) &&
+  boolFromRef(boolToRef((forall anon_builtin_0: Int ::anon_builtin_0 >=
+    -2147483648 &&
+    anon_builtin_0 <= 2147483647 &&
+    isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+    (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      |iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this))| &&
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 <
+      |iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this))| &&
+      anon_builtin_0 < anon_builtin_1 ==>
+      !(iterationSequenceGet(SetModel_c_IterableModel_f_iterationSequence(this),
+      intToRef(anon_builtin_0)) ==
+      iterationSequenceGet(SetModel_c_IterableModel_f_iterationSequence(this),
+      intToRef(anon_builtin_1))))))) &&
+  boolFromRef(geInts(SetModel_g_size(this), intToRef(0)))
+}
+
+predicate c_IterableModel_footprint(this: Ref)
+
+predicate c_IterableModel_unique(this: Ref) {
+  acc(c_IterableModel_footprint(this), write) &&
+  isSubtype(typeOf(this), c_IterableModel())
+}
+
+method setIteration(values: Ref, element: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(values), SetModel())
+  requires acc(SetModel_unique(values), write)
+  requires isSubtype(typeOf(element), intType())
+  ensures acc(SetModel_unique(values), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := (unfolding acc(SetModel_unique(values), wildcard) in
+      SetModel_c_IterableModel_f_iterationSequence(values))
+  anon_1 := (unfolding acc(SetModel_unique(values), wildcard) in
+      SetModel_g_size(values))
+  assert |iterationSequenceFromRef(anon_0)| == intFromRef(anon_1)
+  anon_2 := (unfolding acc(SetModel_unique(values), wildcard) in
+      SetModel_c_IterableModel_f_iterationSequence(values))
+  anon_3 := (unfolding acc(SetModel_unique(values), wildcard) in
+      contains(values, element))
+  assert (intToRef(intFromRef(element)) in
+    iterationSequenceFromRef(anon_2)) ==
+    boolFromRef(anon_3)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/collection_iteration.kt: info: Generated Viper text for setDistinct:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SetModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function SetModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (element in
+    iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this)))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(SetModel_g_size(this)) == 0)
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate SetModel_footprint(this: Ref)
+
+predicate SetModel_unique(this: Ref) {
+  acc(SetModel_footprint(this), write) &&
+  isSubtype(typeOf(this), SetModel()) &&
+  boolFromRef(boolToRef(|iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this))| ==
+  intFromRef(SetModel_g_size(this)))) &&
+  boolFromRef(boolToRef((forall anon_builtin_0: Int ::anon_builtin_0 >=
+    -2147483648 &&
+    anon_builtin_0 <= 2147483647 &&
+    isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+    (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      |iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this))| &&
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 <
+      |iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this))| &&
+      anon_builtin_0 < anon_builtin_1 ==>
+      !(iterationSequenceGet(SetModel_c_IterableModel_f_iterationSequence(this),
+      intToRef(anon_builtin_0)) ==
+      iterationSequenceGet(SetModel_c_IterableModel_f_iterationSequence(this),
+      intToRef(anon_builtin_1))))))) &&
+  boolFromRef(geInts(SetModel_g_size(this), intToRef(0)))
+}
+
+predicate c_IterableModel_footprint(this: Ref)
+
+predicate c_IterableModel_unique(this: Ref) {
+  acc(c_IterableModel_footprint(this), write) &&
+  isSubtype(typeOf(this), c_IterableModel())
+}
+
+method setDistinct(values: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(values), SetModel())
+  requires acc(SetModel_unique(values), write)
+  ensures acc(SetModel_unique(values), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  anon_0 := (unfolding acc(SetModel_unique(values), wildcard) in
+      SetModel_g_size(values))
+  if (intFromRef(anon_0) > 1) {
+    var anon_1: Ref
+    var anon_2: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    anon_2 := (unfolding acc(SetModel_unique(values), wildcard) in
+        SetModel_c_IterableModel_f_iterationSequence(values))
+    anon_1 := iterationSequenceGet(anon_2, intToRef(0))
+    inhale isSubtype(typeOf(anon_1), intType())
+    anon_4 := (unfolding acc(SetModel_unique(values), wildcard) in
+        SetModel_c_IterableModel_f_iterationSequence(values))
+    anon_3 := iterationSequenceGet(anon_4, intToRef(1))
+    inhale isSubtype(typeOf(anon_3), intType())
+    assert !(intFromRef(anon_1) == intFromRef(anon_3))
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/collection_iteration.kt: info: Generated Viper text for immutableEntry:
+function g_key(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate EntryModel_footprint(this: Ref)
+
+predicate EntryModel_unique(this: Ref) {
+  acc(EntryModel_footprint(this), write) &&
+  isSubtype(typeOf(this), EntryModel())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method immutableEntry(entry: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(entry), EntryModel())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_key: Ref
+  var l0_value: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  l0_key := g_key(entry)
+  inhale isSubtype(typeOf(l0_key), stringType())
+  l0_value := g_value(entry)
+  inhale isSubtype(typeOf(l0_value), intType())
+  anon_0 := g_key(entry)
+  inhale isSubtype(typeOf(anon_0), stringType())
+  assert stringFromRef(anon_0) == stringFromRef(l0_key)
+  anon_1 := g_value(entry)
+  inhale isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) == intFromRef(l0_value)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/collection_iteration.kt: info: Generated Viper text for mapIteration:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MapModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function containsKey(this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (par_key in iterationSequenceFromRef(keysSequence(this)))
+
+
+function containsValue(this: Ref, par_value: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_value), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < |iterationSequenceFromRef(keysSequence(this))| &&
+      get(this, iterationSequenceGet(keysSequence(this), intToRef(anon_builtin_0))) ==
+      par_value))
+
+
+function g_key(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function get(this: Ref, par_key: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_key), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures !boolFromRef(containsKey(this, par_key)) ==>
+    result == nullValue()
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(MapModel_g_size(this)) == 0)
+
+
+function iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function keysSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), MapModel())
+  requires acc(MapModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate EntryModel_footprint(this: Ref)
+
+predicate EntryModel_unique(this: Ref) {
+  acc(EntryModel_footprint(this), write) &&
+  isSubtype(typeOf(this), EntryModel())
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate MapModel_footprint(this: Ref)
+
+predicate MapModel_unique(this: Ref) {
+  acc(MapModel_footprint(this), write) &&
+  isSubtype(typeOf(this), MapModel()) &&
+  boolFromRef(boolToRef(|iterationSequenceFromRef(keysSequence(this))| ==
+  intFromRef(MapModel_g_size(this)) &&
+  |iterationSequenceFromRef(iterationSequence(this))| ==
+  |iterationSequenceFromRef(keysSequence(this))|)) &&
+  boolFromRef(boolToRef((forall anon_builtin_1: Int ::anon_builtin_1 >=
+    -2147483648 &&
+    anon_builtin_1 <= 2147483647 &&
+    isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+    anon_builtin_1 >= 0 &&
+    anon_builtin_1 < |iterationSequenceFromRef(keysSequence(this))| &&
+    anon_builtin_1 < |iterationSequenceFromRef(iterationSequence(this))| ==>
+    g_key(iterationSequenceGet(iterationSequence(this), intToRef(anon_builtin_1))) ==
+    iterationSequenceGet(keysSequence(this), intToRef(anon_builtin_1)) &&
+    g_value(iterationSequenceGet(iterationSequence(this), intToRef(anon_builtin_1))) ==
+    get(this, iterationSequenceGet(keysSequence(this), intToRef(anon_builtin_1)))))) &&
+  boolFromRef(boolToRef((forall anon_builtin_2: Int ::anon_builtin_2 >=
+    -2147483648 &&
+    anon_builtin_2 <= 2147483647 &&
+    isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+    (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_2 >= 0 &&
+      anon_builtin_2 < |iterationSequenceFromRef(keysSequence(this))| &&
+      anon_builtin_3 >= 0 &&
+      anon_builtin_3 < |iterationSequenceFromRef(keysSequence(this))| &&
+      anon_builtin_2 < anon_builtin_3 ==>
+      !(iterationSequenceGet(keysSequence(this), intToRef(anon_builtin_2)) ==
+      iterationSequenceGet(keysSequence(this), intToRef(anon_builtin_3))))))) &&
+  boolFromRef(geInts(MapModel_g_size(this), intToRef(0)))
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method mapIteration(values: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(values), MapModel())
+  requires acc(MapModel_unique(values), write)
+  ensures acc(MapModel_unique(values), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := (unfolding acc(MapModel_unique(values), wildcard) in
+      iterationSequence(values))
+  anon_1 := (unfolding acc(MapModel_unique(values), wildcard) in
+      MapModel_g_size(values))
+  assert |iterationSequenceFromRef(anon_0)| == intFromRef(anon_1)
+  anon_2 := (unfolding acc(MapModel_unique(values), wildcard) in
+      MapModel_g_size(values))
+  if (intFromRef(anon_2) > 0) {
+    var anon_3: Ref
+    var anon_4: Ref
+    var anon_5: Ref
+    var anon_6: Ref
+    var anon_7: Ref
+    var anon_8: Ref
+    var anon_9: Ref
+    var anon_10: Ref
+    var anon_11: Ref
+    var anon_12: Ref
+    var anon_13: Ref
+    var anon_14: Ref
+    anon_5 := (unfolding acc(MapModel_unique(values), wildcard) in
+        iterationSequence(values))
+    anon_4 := iterationSequenceGet(anon_5, intToRef(0))
+    inhale isSubtype(typeOf(anon_4), EntryModel())
+    anon_3 := g_key(anon_4)
+    inhale isSubtype(typeOf(anon_3), intType())
+    anon_6 := (unfolding acc(MapModel_unique(values), wildcard) in
+        containsKey(values, anon_3))
+    assert boolFromRef(anon_6)
+    anon_10 := (unfolding acc(MapModel_unique(values), wildcard) in
+        iterationSequence(values))
+    anon_9 := iterationSequenceGet(anon_10, intToRef(0))
+    inhale isSubtype(typeOf(anon_9), EntryModel())
+    anon_8 := g_key(anon_9)
+    inhale isSubtype(typeOf(anon_8), intType())
+    anon_11 := (unfolding acc(MapModel_unique(values), wildcard) in
+        get(values, anon_8))
+    anon_7 := anon_11
+    inhale isSubtype(typeOf(anon_7), nullable(intType()))
+    anon_14 := (unfolding acc(MapModel_unique(values), wildcard) in
+        iterationSequence(values))
+    anon_13 := iterationSequenceGet(anon_14, intToRef(0))
+    inhale isSubtype(typeOf(anon_13), EntryModel())
+    anon_12 := g_value(anon_13)
+    inhale isSubtype(typeOf(anon_12), intType())
+    assert anon_7 == anon_12
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

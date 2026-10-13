@@ -7,13 +7,17 @@ function size(this: Ref): Ref
 method integerSequence() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
+  var anon_0: Ref
+  var anon_1: Ref
   assert |Seq(intToRef(3), intToRef(7))| == 2
-  assert intFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3),
-    intToRef(7))), intToRef(0))) ==
-    3
-  assert intFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3),
-    intToRef(7))), intToRef(1))) ==
-    7
+  anon_0 := iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3), intToRef(7))),
+    intToRef(0))
+  inhale isSubtype(typeOf(anon_0), intType())
+  assert intFromRef(anon_0) == 3
+  anon_1 := iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3), intToRef(7))),
+    intToRef(1))
+  inhale isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) == 7
   assert (intToRef(intFromRef(intToRef(7))) in
     Seq(intToRef(3), intToRef(7)))
   assert !((intToRef(intFromRef(intToRef(9))) in
@@ -40,16 +44,20 @@ method referenceSequence(first: Ref, second: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(second), stringType())
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert stringFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(first,
-    second)), intToRef(0))) ==
-    stringFromRef(first)
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := iterationSequenceGet(iterationSequenceToRef(Seq(first, second)),
+    intToRef(0))
+  inhale isSubtype(typeOf(anon_0), stringType())
+  assert stringFromRef(anon_0) == stringFromRef(first)
   assert Seq(first, second)[..(0 < 0 ?
       0 :
       (0 > |Seq(first, second)| ? |Seq(first, second)| : 0))] ==
     Seq[Ref]()
-  assert iterationSequenceGet(iterationSequenceToRef(Seq(nullValue(), first)),
-    intToRef(0)) ==
-    nullValue()
+  anon_1 := iterationSequenceGet(iterationSequenceToRef(Seq(nullValue(), first)),
+    intToRef(0))
+  inhale isSubtype(typeOf(anon_1), nullable(stringType()))
+  assert anon_1 == nullValue()
   assert (stringToRef(stringFromRef(first)) in Seq(first, second))
   assert !((stringToRef(stringFromRef(stringLit_0())) in
     Seq(stringLit_1())))
@@ -90,9 +98,10 @@ function size(this: Ref): Ref
 method sequenceBounds() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert intFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3))),
-    intToRef(1))) ==
-    3
+  var anon: Ref
+  anon := iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3))), intToRef(1))
+  inhale isSubtype(typeOf(anon), intType())
+  assert intFromRef(anon) == 3
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -127,9 +136,11 @@ function size(this: Ref): Ref
 method wrongSequenceElement() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert intFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3),
-    intToRef(7))), intToRef(0))) ==
-    7
+  var anon: Ref
+  anon := iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3), intToRef(7))),
+    intToRef(0))
+  inhale isSubtype(typeOf(anon), intType())
+  assert intFromRef(anon) == 7
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

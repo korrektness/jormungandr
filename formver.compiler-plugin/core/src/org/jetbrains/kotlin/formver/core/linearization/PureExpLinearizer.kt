@@ -48,6 +48,8 @@ data class PureExpLinearizer(
     private val predicateParameters: MutableSet<PredicateParameter> = mutableSetOf(),
     /** The ownership view for observations of the contract receiver. */
     val observerReceiver: Pair<ClassTypeEmbedding, Exp>? = null,
+    /** Observer bindings used inside a quantified law. */
+    val lawView: ClassTypeEmbedding? = null,
     val observerFootprintOpen: Boolean = true,
     val functionResult: Exp? = null,
     val variableNames: Map<SymbolicName, SymbolicName> = emptyMap(),

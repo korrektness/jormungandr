@@ -1,5 +1,6 @@
 // FULL_JDK
 // WITH_STDLIB
+// EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Iterable.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Collections.kt
 
 import org.jetbrains.kotlin.formver.plugin.*

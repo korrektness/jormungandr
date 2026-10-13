@@ -23,6 +23,7 @@ fun ExpEmbedding.checkNoSpecificationValues(source: KtSourceElement, errors: Err
     val nextSource = (this as? WithPosition)?.source ?: source
     when {
         this is Assert || this is Refute || this is VariableEmbedding -> {}
+        this is WithPosition && specificationSnapshot -> {}
         type.pretype == MultisetTypeEmbedding ->
             errors.reportUnsupportedFeature(nextSource, "a `Multiset` outside a specification",
                 org.jetbrains.kotlin.formver.common.UnsupportedReason.MULTISET_OUTSIDE_SPECIFICATION)

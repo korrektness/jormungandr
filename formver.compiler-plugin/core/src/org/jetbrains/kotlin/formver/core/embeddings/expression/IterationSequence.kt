@@ -13,6 +13,7 @@ data class IterationSequenceGet(
     val sequence: ExpEmbedding,
     val index: ExpEmbedding,
     override val type: TypeEmbedding,
+    val direct: Boolean = false,
 ) : ExpEmbedding {
     override fun children() = sequenceOf(sequence, index)
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitIterationSequenceGet(this)

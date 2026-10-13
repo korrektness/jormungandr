@@ -682,6 +682,9 @@ class ProgramConverter(
                 val returnType = embedType(symbol.resolvedReturnType)
 
                 val (getter, setter) = when {
+                    symbol.isMapEntryValueObserver(session) -> Pair(
+                        CustomGetter(embedAccessorFunction(symbol, propertyGetterType(buildType { nullableAny() }, returnType), true)), null
+                    )
                     symbol.isPure(session) && !isDefaultProperty -> {
                         val accessor = symbol.getterSymbol ?: error("Pure property has no getter")
                         val callable = embedAnyFunction(accessor) as NamedCallableEmbedding
@@ -696,10 +699,7 @@ class ProgramConverter(
 
                     isDefaultProperty -> {
                         // use pure function
-                        val functionType = buildFunctionPretype {
-                            withDispatchReceiver(embedType(symbol.dispatchReceiverType!!))
-                            withReturnType(returnType)
-                        }
+                        val functionType = propertyGetterType(embedType(symbol.dispatchReceiverType!!), returnType)
                         val getter = embedAccessorFunction(symbol, functionType, defaultBehaviour = true)
                         Pair(
                             if (isUnique) UniqueValGetter(UniqueValStep(symbol, returnType, embedClass(regularClass), getter))

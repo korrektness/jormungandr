@@ -1504,6 +1504,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("collection_hofs.kt")
+      public void testCollection_hofs() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/collection_hofs.kt");
+      }
+
+      @Test
+      @TestMetadata("collection_iteration.kt")
+      public void testCollection_iteration() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/collection_iteration.kt");
+      }
+
+      @Test
       @TestMetadata("custom_run_functions.kt")
       public void testCustom_run_functions() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/custom_run_functions.kt");

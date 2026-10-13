@@ -113,6 +113,7 @@ internal class ExprPurityVisitor(
     override fun visitUnfold(e: Unfold): Boolean = false
     override fun visitIntArraySet(e: IntArraySet): Boolean = false
     override fun visitIntArrayInit(e: IntArrayInit): Boolean = false
+    override fun visitCollectionListAllocation(e: CollectionListAllocation): Boolean = false
     override fun visitStringBuilderAppend(e: StringBuilderAppend): Boolean = false
     override fun visitStringBuilderClear(e: StringBuilderClear): Boolean = false
 }

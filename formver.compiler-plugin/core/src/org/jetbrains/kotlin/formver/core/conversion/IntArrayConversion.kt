@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.linearization.OwnedShape
 import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
-import org.jetbrains.kotlin.formver.uniqueness.plugin.intArrayGetId
+import org.jetbrains.kotlin.formver.intrinsics.plugin.intArrayGetId
 
 /**
  * Converts a call to `IntArray.get` or `IntArray.set`, in any syntactic form, to the intrinsic element access.
@@ -152,7 +152,10 @@ fun StmtConversionContext.pureLambdaValue(
         parent = this,
     )
     val value = withNoScope { withMethodCtx(methodCtxFactory) { convert(result) } }
-    return value.takeIf { it.isPure() }
+    // Observer reads may carry inferred result typing; a pure relation needs only the read itself.
+    var relation = value.ignoringMetaNodes()
+    while (relation is InhaleInvariants) relation = relation.exp.ignoringMetaNodes()
+    return relation.takeIf { it.isPure() }
 }
 
 /** The variable or property that [this] array expression reads, for naming it in a bounds error. */

@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.utils.isOverride
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.declarations.utils.isConst
@@ -48,6 +49,7 @@ import org.jetbrains.kotlin.formver.core.conversion.hasAccessorMethods
 import org.jetbrains.kotlin.formver.core.conversion.isLawReadableFrom
 import org.jetbrains.kotlin.formver.core.isLaw
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
+import org.jetbrains.kotlin.formver.core.isMapEntryValueObserver
 import org.jetbrains.kotlin.formver.core.isGhostObserver
 import org.jetbrains.kotlin.formver.core.isPure
 
@@ -147,6 +149,13 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
 
             override fun visitElement(element: FirElement) {
                 when (element) {
+                    is FirAnonymousFunction -> {
+                        val savedValues = values.toSet()
+                        values.addAll(element.valueParameters.map { it.symbol })
+                        element.body?.accept(this)
+                        values.clear()
+                        values.addAll(savedValues)
+                    }
                     is FirProperty -> {
                         if (element.isVar || element.delegate != null) {
                             reject(element, LawRule.MUTABLE_LOCAL)
@@ -159,7 +168,6 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
                     }
                     is FirQualifiedAccessExpression -> {
                         val callee = element.toResolvedCallableSymbol()
-                        // Observers reached through another observer's result are deliberately out of scope.
                         val ownAccess = element.dispatchReceiver.isOwnThis() && element.extensionReceiver == null
                         val field = classOwner != null && ownAccess && callee is FirPropertySymbol &&
                                 callee.fir.backingField != null && callee.fir.getter?.body == null
@@ -181,7 +189,7 @@ object LawDeclarationChecker : FirSimpleFunctionChecker(MppCheckerKind.Common) {
                                 (callee.callableId?.let { it.className == null && !it.isLocal } == true || companionHelper)
                         val value = callee in values || (callee is FirPropertySymbol && callee.isConst)
                         val operation = element.isLawValueOperation()
-                        val allowedAccess = observer || field || value || operation
+                        val allowedAccess = observer || field || value || operation || callee?.isMapEntryValueObserver(context.session) == true
                         if (!allowedAccess && !pureHelper) {
                             reject(element, LawRule.NON_VALUE_ACCESS, callee)
                         }

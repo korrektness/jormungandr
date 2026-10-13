@@ -663,6 +663,53 @@ obligation, and `in` tests membership. Equality compares the elements in order.
 `take(n)` gives the prefix of length `n` clamped between zero and the sequence's
 size. Elements may be primitive values, references, or null.
 
+`iterationSequence(collection)` reads the abstract iteration observer of an
+owned `Iterable`; for a `List`, its length and elements agree with `size` and
+indexed access. For a `Set`, the sequence is duplicate-free and its membership
+agrees with `contains`. `iterationSequence(map)` gives entries aligned with a
+duplicate-free keys sequence whose membership agrees with `containsKey`;
+entry values agree with lookup at those keys. Set and Map iteration order has
+no guarantee. `Map.Entry.key` and `value` are immutable observations that
+require no ownership of the entry.
+
+The inline collection templates `forEach`, `forEachIndexed`, `map`, `filter`,
+`any`, `all`, `none`, `count`, `indexOfFirst`, `firstOrNull`, and `fold` use this observer
+for `Iterable` receivers. The supported Map overloads are `Map.forEach` and
+`Map.map` with a single immutable-entry lambda parameter. A literal
+lambda, or an inline parameter bound to one, is verified through the inline
+call path with Kotlin's calls-in-place ownership analysis. A search whose
+lambda is a single pure expression preserves the predicate at its witness
+and its negation before that witness. `count` is bounded by the collection
+size. `fold` carries its accumulator through the loop and returns it.
+`map` and `filter` return an owned List described by the computed iteration
+sequence. A single pure `map` expression determines every result element at
+its corresponding source index. A single pure `filter` predicate holds for
+every result element; its size lies between zero and the source size. A
+parameter-independent predicate also determines the size exactly. For
+element-dependent predicates, completeness and source order are not modelled.
+The trusted allocation boundary is registered in docs/soundness.md, "Collection builder
+allocation".
+
+Ordinary iterator-based collection `for` loops are unsupported; the templates
+provide collection iteration with prefix invariants.
+
+At the start of a collection-template lambda,
+`loopInvariants<E> { prefix -> ... }` binds `prefix` to the iteration sequence
+of elements already processed. It is empty on entry and contains every
+visited element on exit; a search stops after visiting its witness. In a
+`fold` lambda, the accumulator parameter names the current accumulator in
+these invariants. The element parameter is unavailable at the loop head.
+For example:
+
+```kotlin
+var visited = 0
+values.forEach {
+    loopInvariants<Int> { prefix -> visited == prefix.size }
+    visited++
+}
+verify(visited == values.size)
+```
+
 ### Exceptions
 
 Verification establishes postconditions and Kotlin return effects on normal

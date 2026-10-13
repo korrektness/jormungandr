@@ -31,6 +31,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.asInfo
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toFuncApp
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toMethodCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
+import org.jetbrains.kotlin.formver.viper.ast.PermExp
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
@@ -66,7 +67,15 @@ data class LinearizationVisitor(
         triggerExpressions: List<ExpEmbedding>,
         ctx: LinearizationContext,
     ): Pair<Exp, List<Exp.Trigger>> {
-        val conjunction = if (ctx is PureExpLinearizer && ctx.observerReceiver != null) {
+        val lawView = when (ctx) {
+            is PureFunBodyLinearizer -> ctx.lawView
+            is PureExpLinearizer -> ctx.lawView
+            else -> null
+        }
+        val conjunction = if (lawView != null) {
+            val lawContext = PureExpLinearizer(ctx.source, ctx.typeResolver, lawView = lawView)
+            conditions.map { it.linearize().toViperBuiltinType(lawContext) }.toConjunction()
+        } else if (ctx is PureExpLinearizer && ctx.observerReceiver != null) {
             conditions.map { it.linearize().toViperBuiltinType(ctx) }.toConjunction()
         } else {
             conditions.pureToViper(true, ctx.typeResolver, ctx.source).toConjunction()
@@ -234,7 +243,11 @@ data class LinearizationVisitor(
 
         override fun toViper(ctx: LinearizationContext): Exp {
             val argsViper = e.args.map { it.linearize().toViper(ctx) }
-            val lawView = (ctx as? PureFunBodyLinearizer)?.lawView
+            val lawView = when (ctx) {
+                is PureFunBodyLinearizer -> ctx.lawView
+                is PureExpLinearizer -> ctx.lawView
+                else -> null
+            }
             if (lawView != null) {
                 val binding = if (ctx.typeResolver.isInterface(lawView)) ctx.typeResolver.observerBinding(lawView, e.function.name)
                 else ctx.typeResolver.observerImplementation(lawView, e.function.name)
@@ -906,6 +919,28 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitCollectionListAllocation(e: CollectionListAllocation): Linearizable =
+        object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            override fun toViper(ctx: LinearizationContext): Exp {
+                val result = e.result.toLocalVarUse()
+                val cls = e.type.pretype as ClassTypeEmbedding
+                ctx.addDeclaration(e.result.toLocalVarDecl(ctx.source.asPosition))
+                ctx.addStatement { Stmt.New(result, emptyList(), ctx.source.asPosition) }
+                ctx.addStatement {
+                    Stmt.Inhale(Exp.PredicateAccess(cls.uniquePredicateName, listOf(result), PermExp.FullPerm()), ctx.source.asPosition)
+                }
+                ctx.foldState?.acquire(ctx, OwnedPath(e.result))
+                e.sequenceBinding.linearize().toViperBuiltinType(ctx).let { binding ->
+                    ctx.addStatement { Stmt.Inhale(binding, ctx.source.asPosition) }
+                }
+                return result
+            }
+
+            override fun toViperUnusedResult(ctx: LinearizationContext) {
+                toViper(ctx)
+            }
+        }
+
     override fun visitIntArrayInit(e: IntArrayInit): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp {
             e.initialization.linearize().toViperUnusedResult(ctx)
@@ -944,7 +979,9 @@ data class LinearizationVisitor(
     override fun visitIterationSequenceGet(e: IterationSequenceGet): Linearizable =
         object : DirectResultLinearizable(e, this@LinearizationVisitor) {
             override fun toViper(ctx: LinearizationContext): Exp =
-                org.jetbrains.kotlin.formver.core.domains.IterationSequenceElementFunction.toFuncApp(
+                if (e.direct) Exp.SeqIndex(
+                    e.sequence.linearize().toViperBuiltinType(ctx), e.index.linearize().toViperBuiltinType(ctx), ctx.source.asPosition,
+                ) else org.jetbrains.kotlin.formver.core.domains.IterationSequenceElementFunction.toFuncApp(
                     listOf(e.sequence.linearize().toViper(ctx), e.index.linearize().toViper(ctx)),
                     ctx.source.asPosition,
                 )
@@ -1092,6 +1129,10 @@ data class LinearizationVisitor(
             value.linearize().toViperUnusedResult(ctx)
             return root.array
         }
+        if (root is CollectionListAllocation) {
+            value.linearize().toViperUnusedResult(ctx)
+            return root.result
+        }
         if (root is InlineCall && root.returnsUnique) {
             value.linearize().toViperUnusedResult(ctx)
             return root.result
@@ -1142,7 +1183,10 @@ data class LinearizationVisitor(
 
     // region ForAll / Acc
 
-    override fun visitForAllEmbedding(e: ForAllEmbedding): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {
+    override fun visitForAllEmbedding(e: ForAllEmbedding): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp =
+            RuntimeTypeDomain.boolInjection.toRef(toViperBuiltinType(ctx), pos = ctx.source.asPosition)
+
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp {
             val (conjunction, viperTriggers) = getQuantifierParts(e.variable, e.conditions, e.triggerExpressions, ctx)
             return Exp.Forall(
@@ -1155,7 +1199,10 @@ data class LinearizationVisitor(
         }
     }
 
-    override fun visitExistsEmbedding(e: ExistsEmbedding): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {
+    override fun visitExistsEmbedding(e: ExistsEmbedding): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp =
+            RuntimeTypeDomain.boolInjection.toRef(toViperBuiltinType(ctx), pos = ctx.source.asPosition)
+
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp {
             val (conjunction, viperTriggers) = getQuantifierParts(e.variable, e.conditions, e.triggerExpressions, ctx)
             return Exp.Exists(
@@ -1478,7 +1525,7 @@ private fun LinearizationContext.foldConstructed(obj: VariableEmbedding, cls: Cl
 private fun ExpEmbedding.isFreshUnique(): Boolean = when (val exp = ignoringCastsAndMetaNodes()) {
     is MethodCall -> exp.method.callableType.returnsUnique
     is FunctionCall -> exp.function.callableType.returnsUnique
-    is NullLit -> true
+    is NullLit, is CollectionListAllocation -> true
     else -> false
 }
 

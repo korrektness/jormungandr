@@ -2,8 +2,19 @@ package org.jetbrains.kotlin.formver.external.collections
 
 import org.jetbrains.kotlin.formver.plugin.*
 
+@ExternalFunction("kotlin.collections.map")
+fun <K, V, R> (@Unique @Borrowed MapModel<out K, V>).mapEntriesModel(transform: (EntryModel<K, V>) -> R): @Unique ListModel<R> = TODO()
+
 @ExternalSpec("kotlin.collections.Set")
-interface SetModel<out E> {
+interface SetModel<out E> : IterableModel<E> {
+    @Law @Pure @Unique fun iterationSize(): Boolean = iterationSequence().size == size
+    @Law @Pure @Unique fun distinctElements(): Boolean = forAll<Int> { i ->
+        forAll<Int> { j ->
+            (i >= 0 && i < iterationSequence().size && j >= 0 && j < iterationSequence().size && i < j) implies
+                (iterationSequence()[i] != iterationSequence()[j])
+        }
+    }
+
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/size.html: number of elements.
     @Pure @get:Unique val size: Int
     @Law @Pure @Unique fun nonnegativeSize(): Boolean = size >= 0
@@ -14,10 +25,10 @@ interface SetModel<out E> {
         postconditions<Boolean> { result -> result == (size == 0) }
     }
 
-    // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/contains.html: membership; an empty set has no elements.
+    // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/contains.html: membership.
     @Pure @Unique fun contains(element: @UnsafeVariance E): Boolean
     @SpecOf("contains") @Unique fun containsSpec(element: @UnsafeVariance E) {
-        postconditions<Boolean> { result -> (size == 0) implies !result }
+        postconditions<Boolean> { result -> result == (element in iterationSequence()) }
     }
 }
 
@@ -47,6 +58,21 @@ interface MutableSetModel<E> : SetModel<E> {
 
 @ExternalSpec("kotlin.collections.Map")
 interface MapModel<K, out V> {
+    @GhostObserver @Pure @Unique fun keysSequence(): IterationSequence<K> = ghostObserver()
+    @GhostObserver @Pure @Unique fun iterationSequence(): IterationSequence<EntryModel<K, V>> = ghostObserver()
+    @Law @Pure @Unique fun iterationSize(): Boolean =
+        keysSequence().size == size && iterationSequence().size == keysSequence().size
+    @Law @Pure @Unique fun iterationEntries(): Boolean = forAll<Int> { i ->
+        (i >= 0 && i < keysSequence().size && i < iterationSequence().size) implies
+            (iterationSequence()[i].key == keysSequence()[i] && iterationSequence()[i].value == get(keysSequence()[i]))
+    }
+    @Law @Pure @Unique fun distinctKeys(): Boolean = forAll<Int> { i ->
+        forAll<Int> { j ->
+            (i >= 0 && i < keysSequence().size && j >= 0 && j < keysSequence().size && i < j) implies
+                (keysSequence()[i] != keysSequence()[j])
+        }
+    }
+
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/size.html: number of key/value pairs.
     @Pure @get:Unique val size: Int
     @Law @Pure @Unique fun nonnegativeSize(): Boolean = size >= 0
@@ -60,13 +86,17 @@ interface MapModel<K, out V> {
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/contains-key.html: whether the key is present.
     @Pure @Unique fun containsKey(key: K): Boolean
     @SpecOf("containsKey") @Unique fun keySpec(key: K) {
-        postconditions<Boolean> { result -> (size == 0) implies !result }
+        postconditions<Boolean> { result ->
+            result == (key in keysSequence())
+        }
     }
 
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/contains-value.html: whether any key maps to the value.
     @Pure @Unique fun containsValue(value: @UnsafeVariance V): Boolean
     @SpecOf("containsValue") @Unique fun valueSpec(value: @UnsafeVariance V) {
-        postconditions<Boolean> { result -> (size == 0) implies !result }
+        postconditions<Boolean> { result ->
+            result == exists<Int> { i -> i >= 0 && i < keysSequence().size && get(keysSequence()[i]) == value }
+        }
     }
 
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-map/get.html: mapped value or null; null can also be a mapped value.

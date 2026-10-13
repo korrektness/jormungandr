@@ -4,10 +4,22 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
 function ListModel_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), ListModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
 
 function contains(this: Ref, element: Ref): Ref
@@ -84,10 +96,22 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
 function ListModel_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), ListModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
 
 function contains(this: Ref, element: Ref): Ref
@@ -194,6 +218,12 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function MutableListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
 function MutableListModel_c_ListModel_f_contains(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(this), c_ListModel())
   requires acc(MutableListModel_footprint(this), wildcard)
@@ -258,6 +288,18 @@ function MutableListModel_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), MutableListModel())
   requires acc(MutableListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
 
 function c_ListModel_f_contains(this: Ref, element: Ref): Ref
@@ -545,6 +587,18 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
 function c_ListModel_f_contains_args_c_ListModel_NAny_ret_Boolean(this: Ref,
   element: Ref): Ref
   requires isSubtype(typeOf(this), c_ListModel())
@@ -603,6 +657,12 @@ function c_ListModel_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), c_ListModel())
   requires acc(c_ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
+
+
+function c_MutableListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
 
 function c_MutableListModel_c_ListModel_f_contains_args_c_ListModel_NAny_ret_Boolean(this: Ref,
@@ -925,6 +985,12 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function MutableListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
 function MutableListModel_c_ListModel_f_contains(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(this), c_ListModel())
   requires acc(MutableListModel_footprint(this), wildcard)
@@ -989,6 +1055,18 @@ function MutableListModel_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), MutableListModel())
   requires acc(MutableListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
 
 function c_ListModel_f_contains(this: Ref, element: Ref): Ref
@@ -1106,6 +1184,12 @@ method wrongFirstOccurrence() returns (v_ret_0: Ref)
 }
 
 /stdlib_lists.kt: info: Generated Viper text for setBounds:
+function MutableListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
 function MutableListModel_c_ListModel_f_contains(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(this), c_ListModel())
   requires acc(MutableListModel_footprint(this), wildcard)
@@ -1170,6 +1254,18 @@ function MutableListModel_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), MutableListModel())
   requires acc(MutableListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
 
 function c_ListModel_f_contains(this: Ref, element: Ref): Ref
@@ -1284,6 +1380,12 @@ method setBounds() returns (v_ret_0: Ref)
 }
 
 /stdlib_lists.kt: info: Generated Viper text for insertBounds:
+function MutableListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
 function MutableListModel_c_ListModel_f_contains(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(this), c_ListModel())
   requires acc(MutableListModel_footprint(this), wildcard)
@@ -1348,6 +1450,18 @@ function MutableListModel_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), MutableListModel())
   requires acc(MutableListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
 
 function c_ListModel_f_contains(this: Ref, element: Ref): Ref
@@ -1471,10 +1585,22 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
 function ListModel_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), ListModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
 
 function contains(this: Ref, element: Ref): Ref
@@ -1551,9 +1677,21 @@ method wrongListElement() returns (v_ret_0: Ref)
 }
 
 /stdlib_lists.kt: info: Generated Viper text for listBounds:
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
 function contains(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(this), ListModel())
-  requires acc(footprint(this), wildcard)
+  requires acc(ListModel_footprint(this), wildcard)
   requires isSubtype(typeOf(element), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) ==
@@ -1566,7 +1704,7 @@ function contains(this: Ref, element: Ref): Ref
 
 function get(this: Ref, par_index: Ref): Ref
   requires isSubtype(typeOf(this), ListModel())
-  requires acc(footprint(this), wildcard)
+  requires acc(ListModel_footprint(this), wildcard)
   requires isSubtype(typeOf(par_index), intType())
   requires intFromRef(par_index) >= 0 &&
     intFromRef(par_index) < intFromRef(size(this))
@@ -1575,7 +1713,7 @@ function get(this: Ref, par_index: Ref): Ref
 
 function indexOf(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(this), ListModel())
-  requires acc(footprint(this), wildcard)
+  requires acc(ListModel_footprint(this), wildcard)
   requires isSubtype(typeOf(element), nullable(anyType()))
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= -1 &&
@@ -1592,14 +1730,14 @@ function indexOf(this: Ref, element: Ref): Ref
 
 function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ListModel())
-  requires acc(footprint(this), wildcard)
+  requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) == (intFromRef(size(this)) == 0)
 
 
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), ListModel())
-  requires acc(footprint(this), wildcard)
+  requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 

@@ -5,6 +5,10 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayElementAccess
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayLoop
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isCollectionLoop
+
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
 import org.jetbrains.kotlin.KtFakeSourceElementKind
@@ -141,7 +145,7 @@ class GraphUniquenessStatesAnalyzer(
 
     private val FirFunctionCall.movesArguments: Boolean
         get() = this !in readOnlyContext && !isPureCall(context.session) && !isIntArrayElementAccess() &&
-                !isIntArrayLoop(context.session) && stringBuilderIntrinsic(context.session) == null
+                !isIntArrayLoop() && !isCollectionLoop() && stringBuilderIntrinsic(context.session) == null
 
     override fun visitSubGraph(node: CFGNodeWithSubgraphs<*>, graph: ControlFlowGraph): Boolean {
         return graph.extendsLocalFlow

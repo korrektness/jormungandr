@@ -45,6 +45,9 @@ fun FirQualifiedAccessExpression.isLawValueOperation(): Boolean = toResolvedCall
         "and", "or", "xor", "inv", "shl", "shr", "ushr",
         "toByte", "toShort", "toInt", "toLong", "toFloat", "toDouble", "toChar",
     )
+    (it.packageName.asString() == "org.jetbrains.kotlin.formver.plugin" &&
+            ((it.className?.asString() == "IterationSequence" && it.callableName.asString() in setOf("size", "get", "take", "contains")) ||
+                    (it.className == null && it.callableName.asString() in setOf("forAll", "exists", "implies")))) ||
     it.packageName.asString() == "kotlin" &&
             ((this is FirFunctionCall && it.className?.asString() in classes && it.callableName.asString() in operations) ||
                     (it.className?.asString() == "String" && it.callableName.asString() == "length") ||

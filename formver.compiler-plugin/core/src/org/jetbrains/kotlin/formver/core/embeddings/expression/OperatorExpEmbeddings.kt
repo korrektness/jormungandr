@@ -339,8 +339,18 @@ object OperatorExpEmbeddings {
         }
     }
 
+    val IterationSequenceAppend = buildBinaryOperator {
+        setName("iterationSequenceAppend")
+        withSignature {
+            withParam { iterationSequence() }
+            withParam { iterationSequence() }
+            withReturnType { iterationSequence() }
+        }
+        viperImplementation { Exp.SeqAppend(args[0], args[1], pos, info) }
+    }
+
     val iterationSequenceTemplates
-        get() = listOf(IterationSequenceSize, IterationSequenceTake)
+        get() = listOf(IterationSequenceSize, IterationSequenceTake, IterationSequenceAppend)
 
     val UnionMultisets = buildBinaryOperator {
         setName("unionMultisets")

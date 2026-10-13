@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveFieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayInit
+import org.jetbrains.kotlin.formver.core.embeddings.expression.CollectionListAllocation
 import org.jetbrains.kotlin.formver.core.embeddings.expression.InlineCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.UniqueValAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
@@ -49,6 +50,7 @@ fun ExpEmbedding.ownedPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaN
     is VariableEmbedding -> OwnedPath(exp)
     is StringBuilderUpdate -> exp.builder.ownedPath()
     is IntArrayInit -> exp.array.ownedPath()
+    is CollectionListAllocation -> exp.result.ownedPath()
     is InlineCall -> if (exp.returnsUnique) OwnedPath(exp.returnVariable) else null
     is PrimitiveFieldAccess -> if (exp.field.isUnique) exp.inner.ownedPath()?.plus(exp.field) else null
     is FieldAccess -> if (exp.field.isUnique) exp.receiver.ownedPath()?.plus(exp.field) else null

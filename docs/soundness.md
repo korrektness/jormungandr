@@ -150,7 +150,9 @@ After a read, a cast, a call result or a generic adaptation, the encoding
 inhales the value's type and access invariants
 (`embeddings/expression/TypeOp.kt`). Kotlin typing justifies them, except for a
 type argument: the encoding assumes that a value has its substituted type
-argument, but the JVM checks it only where Kotlin inserts a cast. An unchecked
+argument, but the JVM checks it only where Kotlin inserts a cast. Collection
+templates apply this substituted element-type assumption to each indexed
+element of their iteration snapshot. An unchecked
 cast to `Cell<Int>`, `List<Int>` or a type parameter `T` gives a value read as
 `Any` a type it does not have, and an assertion about that type can verify with
 a false result.
@@ -178,6 +180,19 @@ Tests: `verification/classes/unique_borrowed_shared.kt::passToBorrowed,passOneOb
 A fresh object has exactly the class it was constructed as.
 
 Test: `verification/soundness/construction.kt::allocationExactType`.
+
+### Collection builder allocation
+
+`embeddings/expression/CollectionListAllocation.kt` is the shared trusted
+allocation boundary for collection builders. It allocates a fresh, unaliased
+owned List and binds its iteration observer to the computed sequence. The
+List model relates size and indexed elements to that observer; the allocator
+adds no other element facts or ownership of referenced elements. `map` and
+`filter` construct the sequence by executing their lambdas through the inline
+call path.
+
+Test: `verification/inlining/collection_hofs.kt::collectionAllocatorAbuse`
+checks consistency, rejects source identity and an unconstrained element value.
 
 ### Construction facts
 

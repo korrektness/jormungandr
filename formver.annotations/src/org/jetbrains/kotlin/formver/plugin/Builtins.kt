@@ -25,6 +25,8 @@ infix fun Boolean.implies(other: Boolean) = !this || other
 
 fun loopInvariants(@Suppress("UNUSED_PARAMETER") body: () -> Unit) = Unit
 
+fun <E> loopInvariants(@Suppress("UNUSED_PARAMETER") body: (IterationSequence<E>) -> Unit) = Unit
+
 fun preconditions(@Suppress("UNUSED_PARAMETER") body: () -> Unit) = Unit
 
 /**
@@ -155,6 +157,14 @@ class Multiset<T> private constructor() {
     val size: Int
         get() = throw FormverFunctionCalledInRuntimeException("Multiset.size")
 }
+
+/** The iteration observation of [collection]; see "Collection iteration" in SPECIFICATIONS.md. */
+fun <T> iterationSequence(@Suppress("UNUSED_PARAMETER") collection: @Borrowed Iterable<T>): IterationSequence<T> =
+    throw FormverFunctionCalledInRuntimeException("iterationSequence")
+
+/** The entry iteration observation of [map]; see "Collection iteration" in SPECIFICATIONS.md. */
+fun <K, V> iterationSequence(@Suppress("UNUSED_PARAMETER") map: @Borrowed Map<K, V>): IterationSequence<Map.Entry<K, V>> =
+    throw FormverFunctionCalledInRuntimeException("iterationSequence")
 
 /** Immutable iteration observations; see "Collection iteration" in SPECIFICATIONS.md. */
 class IterationSequence<out T> private constructor() {

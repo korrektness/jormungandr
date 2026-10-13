@@ -1,5 +1,6 @@
 // FULL_JDK
 // WITH_STDLIB
+// EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Iterable.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Collections.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/AssociativeCollections.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Strings.kt
