@@ -914,6 +914,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("law_bound_local_function.kt")
+      public void testLaw_bound_local_function() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/law_bound_local_function.kt");
+      }
+
+      @Test
+      @TestMetadata("law_function_property.kt")
+      public void testLaw_function_property() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/law_function_property.kt");
+      }
+
+      @Test
       @TestMetadata("list_reverse.kt")
       public void testList_reverse() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/list_reverse.kt");

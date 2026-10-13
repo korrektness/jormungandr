@@ -244,6 +244,7 @@ class ProgramConverter(
     /** Embeds the signature and, unless `@NeverVerify`, the body of [declaration]. */
     fun register(declaration: FirFunction) {
         registeredSymbol = declaration.symbol
+        context(checkerContext) { declaration.rejectLocalCaptures() }
         val signature = embedCompleteSignature(declaration.symbol)
         if (!declaration.symbol.neverVerify(session) &&
             (!signature.signature.isPure || convertedBodyResolver.lookupPure(signature.signature.name) == null)) {

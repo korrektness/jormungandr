@@ -1,0 +1,62 @@
+/law_function_property.kt: info: Generated Viper text for lawPlainClient:
+field hook: Ref
+
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lawPlainClient(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), LawPlainBox())
+  requires acc(LawPlainBox_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  inhale isSubtype(typeOf(anon_1), unitType())
+  unfold acc(LawPlainBox_unique(b), write)
+  anon_2 := b.n
+  assert intFromRef(anon_2) >= 0
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/law_function_property.kt: info: Generated Viper text for lawPlainCaller:
+field bf_n: Ref
+
+field hook: Ref
+
+method con(par_n: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_2), LawPlainBox())
+  ensures isSubtype(typeOf(ret_2), LawPlainBox()) && acc(ret_2.bf_n, write) &&
+    isSubtype(typeOf(ret_2.bf_n), intType()) &&
+    acc(ret_2.hook, write) &&
+    isSubtype(typeOf(ret_2.hook), functionType()) &&
+    (let this ==
+      (ret_2) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        geInts(anon_0_0, intToRef(0)))))
+
+
+method lawPlainCaller() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_2 := con(intToRef(1))
+  fold acc(LawPlainBox_unique(anon_2), write)
+  anon_1 := lawPlainClient(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method lawPlainClient(b: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(b), LawPlainBox())
+  requires acc(LawPlainBox_unique(b), write)
+  ensures isSubtype(typeOf(ret_1), unitType())

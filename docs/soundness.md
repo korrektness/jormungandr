@@ -30,7 +30,9 @@ three things part of every result:
 - **Skipped declarations.** A declaration that SnaKt does not verify reports
   `VERIFICATION_SKIPPED` with a reason. A body converted without that warning is
   verified, including the body of a local function, which is a declaration of
-  its own (`verification/soundness/local_functions.kt`).
+  its own (`verification/soundness/local_functions.kt`). A local function that
+  captures a parameter or local of its enclosing function is skipped
+  (`verification/classes/law_bound_local_function.kt`).
 
 ## The vacuity check
 
@@ -84,9 +86,12 @@ A function object has no contract. A function-type parameter can only be
 the caller keeps each owned argument's predicate and forgets the values under it.
 Its class laws are assumed again, as after any shared borrow. A function object
 cannot capture state the caller owns, because uniqueness checking rejects that
-capture.
+capture. A function object stored in an object during its construction cannot
+capture that object either: such a construction makes its objects shared
+(SPECIFICATIONS.md, "Annotations").
 
-Test: `verification/soundness/callbacks.kt`.
+Tests: `verification/soundness/callbacks.kt`,
+`verification/classes/law_function_property.kt`.
 
 ### `Int.compareTo`
 

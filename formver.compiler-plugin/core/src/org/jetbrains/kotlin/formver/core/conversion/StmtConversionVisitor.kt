@@ -414,7 +414,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val returnType = data.embedType(implicitInvokeCall.resolvedType)
         val receiverSymbol = receiver.calleeReference.toResolvedSymbol<FirBasedSymbol<*>>()!!
         val args = implicitInvokeCall.argumentList.arguments.withVarargsHandled(data, function = null)
-        return when (val exp = data.embedLocalSymbol(receiverSymbol).ignoringMetaNodes()) {
+        val isMember = receiverSymbol is FirPropertySymbol && !receiverSymbol.isLocal
+        return when (val exp = if (isMember) null else data.embedLocalSymbol(receiverSymbol).ignoringMetaNodes()) {
             is LambdaExp -> {
                 // The lambda is already the receiver, so we do not need to convert it.
                 // TODO: do this more uniformly: convert the receiver, see it is a lambda, use insertCall on it.
