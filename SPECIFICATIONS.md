@@ -109,7 +109,8 @@ values, and call `@Pure` functions and inline functions whose bodies are in the 
 with the lambdas passed to them. Inside such a lambda, a local can be declared and initialized once, and a
 `return@label` can end the lambda as its last expression. Anything that needs a statement is reported as an
 unsupported construct: loops, assignments to other variables, an `if` or `when` whose value is unused, and calls
-to other functions. The standard library's compiled inline functions, such as `let`, count as other functions.
+to other functions. Supported standard-library scope functions are inlined as described under
+Inline functions and default arguments.
 
 ### Specifications beside a member
 
@@ -621,6 +622,14 @@ fun caller(c: @Unique @Borrowed Counter) {
     verify(c.n == 5)              // verifies
 }
 ```
+
+The standard-library scope functions `let`, `also`, `apply`, `run` (with or
+without a receiver), and `with` inline a literal lambda, or an inline parameter
+bound to one. Kotlin's calls-in-place analysis supplies the lambda's ownership
+facts. The receiver is evaluated once before the lambda. `let`, `run`, and
+`with` return the lambda's result; `also` and `apply` return the receiver.
+Assertions, exceptions, and labelled returns in the lambda are verified in the
+caller's flow.
 
 A default argument may read `var` properties through a `@Unique` parameter of
 its function, as in `fun show(c: @Unique Counter, k: Int = c.n)`.

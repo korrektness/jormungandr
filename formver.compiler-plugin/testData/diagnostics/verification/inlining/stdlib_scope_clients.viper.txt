@@ -1,0 +1,151 @@
+/stdlib_scope_clients.kt: info: Generated Viper text for normalizeLabel:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method normalizeLabel(par_label: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_label), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var length: Ref
+  var anon_0: Ref
+  var v_ret_2: Ref
+  var same: Ref
+  var anon_1: Ref
+  var v_ret_4: Ref
+  anon_0 := par_label
+  v_ret_2 := stringLength(anon_0)
+  goto lbl_ret_2
+  label lbl_ret_2
+  length := v_ret_2
+  assert intFromRef(length) == |stringFromRef(par_label)|
+  anon_1 := par_label
+  assert |stringFromRef(anon_1)| >= 0
+  label lbl_ret_4
+  inhale isSubtype(typeOf(v_ret_4), unitType())
+  same := anon_1
+  assert stringFromRef(same) == stringFromRef(par_label)
+  v_ret_0 := length
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_scope_clients.kt: info: Generated Viper text for receiverScopes:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method receiverScopes(par_label: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_label), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var same: Ref
+  var anon_0: Ref
+  var v_ret_2: Ref
+  var length: Ref
+  var anon_1: Ref
+  var v_ret_4: Ref
+  var otherLength: Ref
+  var anon_2: Ref
+  var v_ret_6: Ref
+  var v_ret_8: Ref
+  anon_0 := par_label
+  assert |stringFromRef(anon_0)| >= 0
+  label lbl_ret_2
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  same := anon_0
+  assert stringFromRef(same) == stringFromRef(par_label)
+  anon_1 := par_label
+  v_ret_4 := stringLength(anon_1)
+  goto lbl_ret_4
+  label lbl_ret_4
+  length := v_ret_4
+  assert intFromRef(length) == |stringFromRef(par_label)|
+  anon_2 := par_label
+  v_ret_6 := length
+  goto lbl_ret_6
+  label lbl_ret_6
+  otherLength := v_ret_6
+  assert intFromRef(otherLength) == |stringFromRef(par_label)|
+  v_ret_8 := otherLength
+  goto lbl_ret_8
+  label lbl_ret_8
+  v_ret_0 := v_ret_8
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_scope_clients.kt: info: Generated Viper text for evaluatedReceiver:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method evaluatedReceiver() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var input: Ref
+  var saved: Ref
+  var anon: Ref
+  var v_ret_2: Ref
+  input := intToRef(7)
+  anon := input
+  input := intToRef(9)
+  label lbl_ret_2
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  saved := anon
+  assert intFromRef(saved) == 7
+  assert intFromRef(input) == 9
+  v_ret_0 := saved
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/stdlib_scope_clients.kt: info: Generated Viper text for scopeAssertionFails:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method scopeAssertionFails() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  var v_ret_2: Ref
+  anon := intToRef(7)
+  assert intFromRef(anon) == 8
+  label lbl_ret_2
+  inhale isSubtype(typeOf(v_ret_2), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/stdlib_scope_clients.kt: info: Generated Viper text for scopeLocalReturn:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method scopeLocalReturn(input: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(input), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var value: Ref
+  var anon: Ref
+  var v_ret_2: Ref
+  anon := input
+  if (intFromRef(anon) < 0) {
+    v_ret_2 := intToRef(0)
+    goto lbl_ret_2
+  }
+  v_ret_2 := anon
+  goto lbl_ret_2
+  label lbl_ret_2
+  value := v_ret_2
+  assert intFromRef(value) >= 0
+  v_ret_0 := value
+  goto lbl_ret_0
+  label lbl_ret_0
+}

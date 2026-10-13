@@ -7,3 +7,63 @@ method takesLambda(f: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/lambda_values.kt: info: Generated Viper text for runOnUnique:
+field bf_x: Ref
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+method runOnUnique() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), intType())
+
+
+/lambda_values.kt: info: Generated Viper text for applyOnUnique:
+field bf_x: Ref
+
+method applyOnUnique() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), unitType())
+
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+/lambda_values.kt: info: Generated Viper text for alsoOnUnique:
+field bf_x: Ref
+
+method alsoOnUnique() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), unitType())
+
+
+method con(par_x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_1), Counter())
+  ensures isSubtype(typeOf(ret_1), Counter()) && acc(ret_1.bf_x, write) &&
+    isSubtype(typeOf(ret_1.bf_x), intType())
+  ensures intFromRef(ret_1.bf_x) == intFromRef(par_x)
+
+
+/lambda_values.kt: info: Generated Viper text for runOnInt:
+method runOnInt() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  var v_ret_2: Ref
+  anon := intToRef(1)
+  v_ret_2 := plusInts(anon, intToRef(1))
+  goto lbl_ret_2
+  label lbl_ret_2
+  v_ret_0 := v_ret_2
+  goto lbl_ret_0
+  label lbl_ret_0
+}

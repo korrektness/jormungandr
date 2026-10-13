@@ -51,7 +51,15 @@ private enum class StdlibHof(val callableName: Name, val arity: Int) {
     NoneMatch(ElementLoop.NoneMatch),
     IndexOfFirst(ElementLoop.IndexOfFirst),
     FirstOrNull(ElementLoop.FirstOrNull),
-    Repeat(Name.identifier("repeat"), arity = 2);
+    Repeat(Name.identifier("repeat"), arity = 2),
+    Let(Name.identifier("let"), arity = 1),
+    Also(Name.identifier("also"), arity = 1),
+    Apply(Name.identifier("apply"), arity = 1),
+    Run(Name.identifier("run"), arity = 1),
+    With(Name.identifier("with"), arity = 2);
+
+    val isScope: Boolean
+        get() = this in Let..With
 
     constructor(loop: ElementLoop) : this(loop.callableName, arity = 1)
 
@@ -64,8 +72,8 @@ private fun stdlibHofKind(symbol: FirCallableSymbol<*>, arity: Int): StdlibHof? 
     val id = symbol.callableId ?: return null
     val hof = StdlibHof.entries.firstOrNull { it.callableName == id.callableName && it.arity == arity } ?: return null
     return when (id.packageName) {
-        FqName("kotlin") -> hof.takeIf { it == StdlibHof.Repeat }
-        textPackage, collectionsPackage -> hof.takeIf { it != StdlibHof.Repeat }
+        FqName("kotlin") -> hof.takeIf { it == StdlibHof.Repeat || it.isScope }
+        textPackage, collectionsPackage -> hof.takeIf { it != StdlibHof.Repeat && !it.isScope }
         else -> null
     }
 }
@@ -115,6 +123,7 @@ private data class TemplateReceiver(
  */
 fun StmtConversionContext.convertStdlibHof(call: FirFunctionCall): ExpEmbedding? {
     val (hof, lambda) = stdlibHof(call) ?: return null
+    if (hof.isScope) return convertScopeCall(call, hof, lambda)
     val intType = buildType { int() }
     val prelude = mutableListOf<ExpEmbedding>()
     // The point whose state holds at the loop head. A lambda bound to an inline parameter is analysed with the function
@@ -187,6 +196,21 @@ fun StmtConversionContext.convertStdlibHof(call: FirFunctionCall): ExpEmbedding?
         else -> searchResult(call, hof, receiver!!, found!!)
     }
     return (prelude + loop + result).toBlock()
+}
+
+/** Calls the scope lambda through the same inlining path as source inline functions. */
+private fun StmtConversionContext.convertScopeCall(
+    call: FirFunctionCall,
+    hof: StdlibHof,
+    lambda: LambdaExp,
+): ExpEmbedding {
+    val receiver = if (hof == StdlibHof.With) call.arguments.first() else call.extensionReceiver
+    val declaration = receiver?.let { declareAnonVar(embedType(it), convert(it)) }
+    val invocation = withCallSite(call) { lambda.insertCall(listOfNotNull(declaration?.variable), this) }
+    val result = if (hof == StdlibHof.Also || hof == StdlibHof.Apply) {
+        blockOf(invocation, declaration!!.variable)
+    } else invocation
+    return (listOfNotNull(declaration) + result).toBlock()
 }
 
 /**

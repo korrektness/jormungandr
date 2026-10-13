@@ -1468,6 +1468,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("stdlib_scope_clients.kt")
+      public void testStdlib_scope_clients() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/stdlib_scope_clients.kt");
+      }
+
+      @Test
       @TestMetadata("viper_casts_while_inlining.kt")
       public void testViper_casts_while_inlining() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/viper_casts_while_inlining.kt");

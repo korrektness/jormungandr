@@ -5,23 +5,22 @@ class Counter(var x: Int)
 
 fun <!VIPER_TEXT!>takesLambda<!>(f: () -> Int): Int = 0
 
-// The stdlib scope functions have no body visible to the plugin, so their lambda is a value.
-fun <!VERIFICATION_SKIPPED!>runOnUnique<!>(): Int {
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>runOnUnique<!>(): Int {
     val v: @Unique Counter = Counter(0)
-    return v.run <!UNSUPPORTED_FEATURE!>{ x }<!>
+    return <!UNSUPPORTED_OWNERSHIP!>v.run { x }<!>
 }
 
-fun <!VERIFICATION_SKIPPED!>applyOnUnique<!>() {
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>applyOnUnique<!>() {
     val v: @Unique Counter = Counter(0)
-    v.apply <!UNSUPPORTED_FEATURE!>{ x = 1 }<!>
+    <!UNSUPPORTED_OWNERSHIP!>v.apply { x = 1 }<!>
 }
 
-fun <!VERIFICATION_SKIPPED!>alsoOnUnique<!>() {
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>alsoOnUnique<!>() {
     val v: @Unique Counter = Counter(0)
-    v.also <!UNSUPPORTED_FEATURE!>{ it.x = 1 }<!>
+    <!UNSUPPORTED_OWNERSHIP!>v.also { it.x = 1 }<!>
 }
 
-fun <!VERIFICATION_SKIPPED!>runOnInt<!>(): Int = 1.run <!UNSUPPORTED_FEATURE!>{ this + 1 }<!>
+fun <!VIPER_TEXT!>runOnInt<!>(): Int = 1.run { this + 1 }
 
 fun <!VERIFICATION_SKIPPED!>passedToNonInline<!>(): Int = takesLambda <!UNSUPPORTED_FEATURE!>{ 1 }<!>
 
