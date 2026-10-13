@@ -99,15 +99,6 @@ Tests: `verification/soundness/callbacks.kt`,
 
 Test: `verification/compare_to.kt`.
 
-### Int and Char arithmetic
-
-Division and remainder truncate toward zero, as on the JVM. The other operations
-are mathematical: they do not wrap around, and `Char` arithmetic does not
-narrow. A program whose correctness depends on overflow can verify with a false
-result.
-
-Test: `verification/truncating_division.kt` covers division and remainder.
-
 ### Exceptions inside `try`
 
 A `catch` sees the state at the entry of the `try` body and at each explicit

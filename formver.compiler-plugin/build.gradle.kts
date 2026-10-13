@@ -35,7 +35,8 @@ dependencies {
     implementation(project(":formver.compiler-plugin:plugin")) { isTransitive = false }
     implementation(project(":formver.compiler-plugin:locality")) { isTransitive = false }
     implementation(project(":formver.common")) { isTransitive = false }
-    implementation(kotlin("compiler"))
+    // The compiler that loads the plugin provides these classes.
+    compileOnly(kotlin("compiler"))
 
     testFixturesApi(kotlin("test-junit5"))
     testFixturesApi(kotlin("compiler-internal-test-framework"))
@@ -195,9 +196,10 @@ fun Test.setLibraryProperty(propName: String, jarName: String) {
 
 tasks.shadowJar {
     archiveClassifier.set("")
-    // The embeddable compiler that Gradle runs relocates its own copy under this prefix and hands the plugin
-    // instances of that copy.
+    // The embeddable compiler that Gradle runs relocates these packages under this prefix and hands the plugin
+    // instances of its relocated classes.
     relocate("kotlinx.collections.immutable", "org.jetbrains.kotlin.kotlinx.collections.immutable")
+    relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
 }
 
 publishing {
