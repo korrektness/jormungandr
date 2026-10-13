@@ -26,6 +26,18 @@ object OperatorExpEmbeddings {
         viperImplementation { Exp.Add(args[0], args[1], pos, info) }
     }
 
+    val CompareIntInt = buildBinaryOperator {
+        setName("compareInts")
+        setSignature(intIntToIntType)
+        viperImplementation {
+            Exp.TernaryExp(
+                Exp.LtCmp(args[0], args[1]), (-1).toExp(),
+                Exp.TernaryExp(Exp.GtCmp(args[0], args[1]), 1.toExp(), 0.toExp()),
+                pos, info
+            )
+        }
+    }
+
     val SubIntInt = buildBinaryOperator {
         setName("minusInts")
         setSignature(intIntToIntType)
@@ -300,7 +312,7 @@ object OperatorExpEmbeddings {
 
     val allTemplates
         get() = listOf(
-            AddIntInt, SubIntInt, MulIntInt, DivIntInt, RemIntInt, NegInt,
+            AddIntInt, SubIntInt, MulIntInt, DivIntInt, RemIntInt, NegInt, CompareIntInt,
             LeIntInt, GeIntInt, LtIntInt, GtIntInt,
             Not, And, Or, Implies, Xor,
             AddCharInt, SubCharChar, SubCharInt,

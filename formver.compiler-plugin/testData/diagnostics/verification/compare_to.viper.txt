@@ -1,0 +1,68 @@
+/compare_to.kt: info: Generated Viper text for compareSign:
+method compareSign(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(a) < intFromRef(b) ==> intFromRef(v_ret_0) == -1
+  ensures intFromRef(a) == intFromRef(b) ==> intFromRef(v_ret_0) == 0
+  ensures intFromRef(a) > intFromRef(b) ==> intFromRef(v_ret_0) == 1
+{
+  v_ret_0 := compareInts(a, b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/compare_to.kt: info: Generated Viper text for compareIsNotDifference:
+method compareIsNotDifference(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) == 3
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  v_ret_0 := compareInts(a, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/compare_to.kt: info: Generated Viper text for pureCompare:
+function pureCompare(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  compareInts(a, b)
+}
+
+/compare_to.kt: info: Generated Viper text for compareExtremes:
+function pureCompare(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  compareInts(a, b)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method compareExtremes(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) == -2147483648
+  requires intFromRef(b) == 2147483647
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (intFromRef(a) < intFromRef(b) ?
+      -1 :
+      (intFromRef(a) > intFromRef(b) ? 1 : 0)) ==
+    -1
+  assert (intFromRef(b) < intFromRef(a) ?
+      -1 :
+      (intFromRef(b) > intFromRef(a) ? 1 : 0)) ==
+    1
+  assert intFromRef(pureCompare(a, b)) == -1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

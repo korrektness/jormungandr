@@ -113,7 +113,7 @@ object SpecialKotlinFunctions {
                 RemIntInt(args[0], args[1])
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "compareTo") { args, _ ->
-                SubIntInt(args[0], args[1])
+                OperatorExpEmbeddings.CompareIntInt(args[0], args[1])
             }
         }
 

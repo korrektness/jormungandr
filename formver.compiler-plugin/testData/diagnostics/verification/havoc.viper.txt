@@ -297,6 +297,14 @@ function andBools(arg_1: Ref, arg_2: Ref): Ref
   ensures boolFromRef(result) == (boolFromRef(arg_1) && boolFromRef(arg_2))
 
 
+function compareInts(arg_1: Ref, arg_2: Ref): Ref
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(arg_1) < intFromRef(arg_2) ?
+      -1 :
+      (intFromRef(arg_1) > intFromRef(arg_2) ? 1 : 0))
+
+
 function divInts(arg_1: Ref, arg_2: Ref): Ref
   requires intFromRef(arg_2) != 0
   ensures isSubtype(typeOf(result), intType())

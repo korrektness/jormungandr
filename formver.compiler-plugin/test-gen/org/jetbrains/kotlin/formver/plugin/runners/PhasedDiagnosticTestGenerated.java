@@ -565,6 +565,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("compare_to.kt")
+    public void testCompare_to() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/compare_to.kt");
+    }
+
+    @Test
     @TestMetadata("do_not_verify.kt")
     public void testDo_not_verify() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/do_not_verify.kt");
