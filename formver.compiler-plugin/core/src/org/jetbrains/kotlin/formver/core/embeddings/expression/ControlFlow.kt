@@ -159,9 +159,8 @@ data class FunctionCall(val function: NonInlineCallable, val args: List<ExpEmbed
 }
 
 /**
- * We need to generate a fresh variable here since we want to havoc the result.
- *
- * TODO: do this with an explicit havoc in `toViperMaybeStoringIn`.
+ * A call of an opaque function object. Its result is a fresh value of [type], and it may write to every owned
+ * argument, which the function type can only borrow.
  */
 data class InvokeFunctionObject(
     val receiver: ExpEmbedding,

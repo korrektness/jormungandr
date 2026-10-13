@@ -103,10 +103,7 @@ class ProgramConverter(
     override fun reportUnsupportedFeature(source: KtSourceElement?, msg: String, reason: UnsupportedReason) =
         emit(Failure(ConversionErrors.UNSUPPORTED_FEATURE, source, KotlinCondition.Translation(reason.name, msg)))
 
-    private fun reportVerificationSkipped(source: KtSourceElement?, reason: KotlinCondition.SkipReason, symbol: FirFunctionSymbol<*>?) =
-        context(checkerContext) {
-            reporter.reportFailure(Failure(ConversionErrors.VERIFICATION_SKIPPED, source, KotlinCondition.Skipped(reason, symbol)))
-        }
+    val skips = VerificationSkipReporter(session, checkerContext, reporter)
 
     private val specialFunctions: Map<SymbolicName, SpecialKotlinFunction> = buildMap {
         putAll(SpecialKotlinFunctions.byName)
@@ -321,7 +318,7 @@ class ProgramConverter(
                 entry.hasUniquenessErrors -> KotlinCondition.SkipReason.UNIQUENESS_OR_LOCALITY_ERRORS
                 else -> continue
             }
-            reportVerificationSkipped(
+            skips.report(
                 entry.declaration.source,
                 reason, entry.declaration.symbol,
             )
@@ -335,7 +332,7 @@ class ProgramConverter(
             context(checkerContext) {
                 reporter.reportFailure(unsupportedOwnershipFailure(error.source ?: signature.declarationSource, error.condition))
             }
-            reportVerificationSkipped(signature.declarationSource,
+            skips.report(signature.declarationSource,
                 KotlinCondition.SkipReason.UNSUPPORTED_OWNERSHIP, signature.symbol)
         }
     }

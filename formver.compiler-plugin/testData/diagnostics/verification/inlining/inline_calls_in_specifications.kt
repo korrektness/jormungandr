@@ -169,7 +169,7 @@ fun <!VIPER_TEXT!>safeCastInPostcondition<!>(x: Any): Int {
     return n
 }<!>
 
-fun reassignmentInPostcondition(n: Int): Int {
+fun <!VERIFICATION_SKIPPED!>reassignmentInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r ->
         r == run {
             var y = 0
@@ -180,7 +180,7 @@ fun reassignmentInPostcondition(n: Int): Int {
     return n
 }
 
-fun assignmentInLoopInvariant(n: Int) {
+fun <!VERIFICATION_SKIPPED!>assignmentInLoopInvariant<!>(n: Int) {
     var i = 0
     var seen = 0
     while (i < n) {
@@ -189,12 +189,12 @@ fun assignmentInLoopInvariant(n: Int) {
     }
 }
 
-fun earlyReturnInPostcondition(n: Int): Int {
+fun <!VERIFICATION_SKIPPED!>earlyReturnInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r -> r == n.let { <!UNSUPPORTED_FEATURE!>if (it < 0) return@let 0<!>; it } }
     return if (n < 0) 0 else n
 }
 
-fun loopInPostcondition(n: Int): Int {
+fun <!VERIFICATION_SKIPPED!>loopInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r ->
         r == run {
             var i = 0
@@ -207,7 +207,7 @@ fun loopInPostcondition(n: Int): Int {
 
 fun <!VIPER_TEXT!>opaque<!>(n: Int): Int = n
 
-fun methodCallInPostcondition(n: Int): Int {
+fun <!VERIFICATION_SKIPPED!>methodCallInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r -> r == <!UNSUPPORTED_FEATURE!>opaque(n)<!> }
     return n
 }

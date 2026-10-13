@@ -506,7 +506,9 @@ fun reset(c: Counter) {
 
 After a call that passes an owned value to a `@Borrowed` parameter, the
 caller forgets what it knew about that value's `var` properties, since the
-callee may have written them.
+callee may have written them. A function-type parameter can only be
+`@Borrowed`, so a call of a function object forgets this for every owned
+argument.
 
 ### Moves
 

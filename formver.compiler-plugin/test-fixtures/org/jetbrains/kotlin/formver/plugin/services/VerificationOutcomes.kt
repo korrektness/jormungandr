@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.visitors.FirDefaultVisitorVoid
+import org.jetbrains.kotlin.formver.common.FailureKind
 import org.jetbrains.kotlin.formver.common.services.updatingTestData
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
@@ -26,12 +27,15 @@ enum class VerificationOutcome {
     /** No verifier diagnostic and no skip: the function verified, or was not selected for verification. */
     CLEAN,
     FAILED,
+
+    /** Not verified: a skip, or a conversion that stopped with an unsupported construct or an internal error. */
     SKIPPED;
 
     companion object {
         fun ofTag(tag: String): VerificationOutcome? = when (tag) {
             in VerificationErrors.tags() -> FAILED
-            ConversionErrors.VERIFICATION_SKIPPED.name -> SKIPPED
+            ConversionErrors.VERIFICATION_SKIPPED.name, ConversionErrors.UNSUPPORTED_FEATURE.name,
+            FailureKind.INTERNAL_ERROR.name -> SKIPPED
             else -> null
         }
     }

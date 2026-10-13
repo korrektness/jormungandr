@@ -208,6 +208,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             KotlinCondition.SkipReason.CONVERSION_ERRORS -> "errors in its declaration"
             KotlinCondition.SkipReason.UNIQUENESS_OR_LOCALITY_ERRORS -> "uniqueness or locality errors"
             KotlinCondition.SkipReason.UNSUPPORTED_OWNERSHIP -> "unsupported ownership"
+            KotlinCondition.SkipReason.INTERNAL_ERROR -> "an internal error"
         }
         val name = condition.function?.let { FirDiagnosticRenderers.DECLARATION_NAME.render(it) } ?: "<anonymous>"
         return "Verification skipped [${condition.reason.name}]: Function '$name' was not verified because of $reason"

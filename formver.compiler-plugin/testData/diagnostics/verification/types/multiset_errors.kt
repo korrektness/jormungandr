@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 class Box(val value: Int)
 
 <!UNSUPPORTED_FEATURE!>@Pure
-fun boxes(b: Box): Multiset<Box> = multisetOf(b)<!>
+fun <!VERIFICATION_SKIPPED!>boxes<!>(b: Box): Multiset<Box> = multisetOf(b)<!>
 
 fun <!VERIFICATION_SKIPPED!>multisetInBody<!>(x: Int): Int {
     val m = <!UNSUPPORTED_FEATURE!>multisetOf(x)<!>

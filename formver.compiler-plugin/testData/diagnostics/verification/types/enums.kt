@@ -16,6 +16,6 @@ fun <!VIPER_TEXT!>isNorth<!>(d: Direction): Boolean = d == Direction.NORTH
 inline fun applyTo(x: Int, f: (Int) -> Int): Int = f(x)
 
 @Pure
-fun crashes(x: Int): Int = applyTo(x, fun(y: Int): Int { <!INTERNAL_ERROR!>return y<!> })
+fun <!VERIFICATION_SKIPPED!>crashes<!>(x: Int): Int = applyTo(x, fun(y: Int): Int { <!INTERNAL_ERROR!>return y<!> })
 
-<!INTERNAL_ERROR!>fun callsCrashing(x: Int): Int = crashes(x)<!>
+<!INTERNAL_ERROR!>fun <!VERIFICATION_SKIPPED!>callsCrashing<!>(x: Int): Int = crashes(x)<!>

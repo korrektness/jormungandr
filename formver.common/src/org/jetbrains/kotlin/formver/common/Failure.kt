@@ -106,7 +106,7 @@ sealed interface KotlinCondition {
     data class Ownership(val path: String, val site: OwnershipSite, val function: String? = null) : KotlinCondition
     enum class OverrideClause { PRECONDITION, POSTCONDITION }
     data class Override(val overridden: String, val clause: OverrideClause) : KotlinCondition
-    enum class SkipReason { CONVERSION_ERRORS, UNIQUENESS_OR_LOCALITY_ERRORS, UNSUPPORTED_OWNERSHIP }
+    enum class SkipReason { CONVERSION_ERRORS, UNIQUENESS_OR_LOCALITY_ERRORS, UNSUPPORTED_OWNERSHIP, INTERNAL_ERROR }
     data class Skipped(val reason: SkipReason, val function: FirBasedSymbol<*>?) : KotlinCondition
     /** Evidence retains details independently of stable machine-readable reasons. */
     data class Translation(val reason: String, val detail: String) : KotlinCondition

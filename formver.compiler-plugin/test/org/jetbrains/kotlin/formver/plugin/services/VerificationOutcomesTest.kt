@@ -88,4 +88,16 @@ class VerificationOutcomesTest {
             changes(clean, fSkipped, verified = false),
         )
     }
+
+    @Test
+    fun `a conversion that stops is not clean`() {
+        val fStopped = """
+            fun f() { <!UNSUPPORTED_FEATURE!>verify(false)<!> }
+            fun g() { <!INTERNAL_ERROR!>verify(true)<!> }
+        """.trimIndent()
+        assertEquals(
+            listOf(VerificationOutcome.SKIPPED, VerificationOutcome.SKIPPED),
+            changes(clean, fStopped, verified = false).map { it.actual },
+        )
+    }
 }

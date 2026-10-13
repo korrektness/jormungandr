@@ -59,7 +59,8 @@ Regeneration records whatever the run produced, except a change in a function's
 verification outcome.
 
 A function's outcome is failed when a verifier diagnostic lies inside it,
-skipped when it carries `VERIFICATION_SKIPPED`, and clean otherwise; clean
+skipped when it carries `VERIFICATION_SKIPPED`, `UNSUPPORTED_FEATURE` or
+`INTERNAL_ERROR`, and clean otherwise; clean
 covers both verified and not selected for verification. The expected outcome is
 read from the markers the `.kt` already has. When any function's outcome
 differs, the test writes no golden at all and fails with

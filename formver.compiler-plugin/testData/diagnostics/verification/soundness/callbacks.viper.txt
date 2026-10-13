@@ -1,0 +1,236 @@
+/callbacks.kt: info: Generated Viper text for callbackMutation:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method callbackMutation(c: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Box())
+  requires acc(Box_unique(c), write)
+  requires isSubtype(typeOf(f), functionType())
+  ensures acc(Box_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Box_unique(c), write)
+  c.n := intToRef(1)
+  fold acc(Box_unique(c), write)
+  exhale acc(Box_unique(c), write)
+  inhale acc(Box_unique(c), write)
+  inhale isSubtype(typeOf(anon_0), unitType())
+  unfold acc(Box_unique(c), write)
+  anon_1 := c.n
+  assert intFromRef(anon_1) == 1
+  label lbl_ret_0
+  fold acc(Box_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callbacks.kt: info: Generated Viper text for callbackUnique:
+field n: Ref
+
+method callbackUnique(c: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Box())
+  requires acc(Box_unique(c), write)
+  requires isSubtype(typeOf(f), functionType())
+  ensures acc(Box_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), unitType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callbacks.kt: info: Generated Viper text for callbackNested:
+field child: Ref
+
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method callbackNested(h: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(h), Holder())
+  requires acc(Holder_unique(h), write)
+  requires isSubtype(typeOf(f), functionType())
+  ensures acc(Holder_unique(h), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  unfold acc(Holder_unique(h), write)
+  anon_0 := h.child
+  unfold acc(Box_unique(h.child), write)
+  anon_0.n := intToRef(1)
+  fold acc(Box_unique(h.child), write)
+  fold acc(Holder_unique(h), write)
+  exhale acc(Holder_unique(h), write)
+  inhale acc(Holder_unique(h), write)
+  inhale isSubtype(typeOf(anon_1), unitType())
+  unfold acc(Holder_unique(h), write)
+  anon_3 := h.child
+  unfold acc(Box_unique(h.child), write)
+  anon_2 := anon_3.n
+  assert intFromRef(anon_2) == 1
+  label lbl_ret_0
+  fold acc(Box_unique(h.child), write)
+  fold acc(Holder_unique(h), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callbacks.kt: info: Generated Viper text for callbackOtherArgument:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method callbackOtherArgument(c: Ref, d: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Box())
+  requires acc(Box_unique(c), write)
+  requires isSubtype(typeOf(d), Box())
+  requires acc(Box_unique(d), write)
+  requires isSubtype(typeOf(f), functionType())
+  ensures acc(Box_unique(c), write)
+  ensures acc(Box_unique(d), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  unfold acc(Box_unique(c), write)
+  c.n := intToRef(1)
+  exhale acc(Box_unique(d), write)
+  inhale acc(Box_unique(d), write)
+  inhale isSubtype(typeOf(anon_0), unitType())
+  anon_1 := c.n
+  assert intFromRef(anon_1) == 1
+  refute false
+  label lbl_ret_0
+  fold acc(Box_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callbacks.kt: info: Generated Viper text for callbackKeepsOwnership:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method callbackKeepsOwnership(c: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Box())
+  requires acc(Box_unique(c), write)
+  requires isSubtype(typeOf(f), functionType())
+  ensures acc(Box_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  exhale acc(Box_unique(c), write)
+  inhale acc(Box_unique(c), write)
+  inhale isSubtype(typeOf(anon_0), unitType())
+  unfold acc(Box_unique(c), write)
+  c.n := intToRef(2)
+  anon_1 := c.n
+  assert intFromRef(anon_1) == 2
+  refute false
+  label lbl_ret_0
+  fold acc(Box_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/callbacks.kt: info: Generated Viper text for CountedBox:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), CountedBox())
+  ensures isSubtype(typeOf(v_ret_0), CountedBox()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        geInts(anon_0_0, intToRef(0)))))
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  var anon_1: Ref
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == CountedBox()
+  v_ret_0.bf_n := par_n
+  anon_1 := require(geInts(v_ret_0.bf_n, intToRef(0)))
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(CountedBox_unique(v_ret_0), write)
+  unfold acc(CountedBox_unique(v_ret_0), write)
+}
+
+method require(value: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_3), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+/callbacks.kt: info: Generated Viper text for lawAfterCallback:
+field n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lawAfterCallback(c: Ref, f: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), CountedBox())
+  requires acc(CountedBox_unique(c), write)
+  requires isSubtype(typeOf(f), functionType())
+  ensures acc(CountedBox_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  unfold acc(CountedBox_unique(c), write)
+  c.n := intToRef(5)
+  assert (let this ==
+      (c) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.n) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(CountedBox_unique(c), write)
+  exhale acc(CountedBox_unique(c), write)
+  inhale acc(CountedBox_unique(c), write)
+  inhale isSubtype(typeOf(anon_1), unitType())
+  unfold acc(CountedBox_unique(c), write)
+  anon_2 := c.n
+  assert intFromRef(anon_2) >= 0
+  anon_3 := c.n
+  assert intFromRef(anon_3) == 5
+  label lbl_ret_0
+  assert (let this ==
+      (c) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.n) in
+        geInts(anon_0_0, intToRef(0)))))
+  fold acc(CountedBox_unique(c), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

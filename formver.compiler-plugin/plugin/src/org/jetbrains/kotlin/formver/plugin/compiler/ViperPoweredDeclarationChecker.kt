@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.formver.core.conversion.SpecifiedLambda
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.LogLevel
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
@@ -84,14 +85,14 @@ class ViperPoweredDeclarationChecker(
         declaration.lambdaPrograms = emptyList()
         val root = ProgramConverter(session, config, context, reporter)
         val dumps = mutableListOf<String>()
-        reportConversionErrors(declaration) {
+        reportConversionErrors(declaration, root) {
             root.register(declaration)
             convert(declaration, root, 0, dumps)
         }
         root.specifiedLambdas.forEachIndexed { index, lambda ->
             if (!processedLambdas.add(lambda.function.symbol)) return@forEachIndexed
-            reportConversionErrors(declaration) {
-                val converter = ProgramConverter(session, config, context, reporter)
+            val converter = ProgramConverter(session, config, context, reporter)
+            reportConversionErrors(declaration, converter) {
                 converter.registerLambda(lambda, root.specifiedLambdas)
                 convert(declaration, converter, index + 1, dumps)
             }
@@ -110,8 +111,8 @@ class ViperPoweredDeclarationChecker(
         val dumps = mutableListOf<String>()
         lambdas.forEachIndexed { index, lambda ->
             if (!processedLambdas.add(lambda.function.symbol)) return@forEachIndexed
-            reportConversionErrors(declaration) {
-                val converter = ProgramConverter(session, config, context, reporter)
+            val converter = ProgramConverter(session, config, context, reporter)
+            reportConversionErrors(declaration, converter) {
                 converter.registerLambda(lambda, lambdas)
                 convert(declaration, converter, index + 1, dumps)
             }
@@ -176,23 +177,25 @@ class ViperPoweredDeclarationChecker(
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun reportConversionErrors(declaration: FirDeclaration, convert: () -> Unit) {
+    private fun reportConversionErrors(declaration: FirDeclaration, converter: ProgramConverter, convert: () -> Unit) {
         try {
             convert()
         } catch (e: UnsupportedFeatureException) {
             reporter.reportTranslation(reportingSource(e.source, declaration), ConversionErrors.UNSUPPORTED_FEATURE, e.message, e.reason.name)
+            converter.skips.reportConversionStopped(declaration, KotlinCondition.SkipReason.CONVERSION_ERRORS)
         } catch (e: SnaktInternalException) {
-            reportInternalError(e, declaration)
+            reportInternalError(e, declaration, converter)
         } catch (e: Exception) {
-            reportInternalError(e.asInternalErrorAt(declaration.source), declaration)
+            reportInternalError(e.asInternalErrorAt(declaration.source), declaration, converter)
         } catch (e: NotImplementedError) {
-            reportInternalError(e.asInternalErrorAt(declaration.source), declaration)
+            reportInternalError(e.asInternalErrorAt(declaration.source), declaration, converter)
         }
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun reportInternalError(e: SnaktInternalException, declaration: FirDeclaration) {
+    private fun reportInternalError(e: SnaktInternalException, declaration: FirDeclaration, converter: ProgramConverter) {
         reporter.reportInternalFailure(reportingSource(e.source, declaration), e)
+        converter.skips.reportConversionStopped(declaration, KotlinCondition.SkipReason.INTERNAL_ERROR)
         config.messageCollector.report(CompilerMessageSeverity.LOGGING, e.stackTraceToString())
     }
 

@@ -268,7 +268,17 @@ data class LinearizationVisitor(
         override fun toViper(ctx: LinearizationContext): Exp {
             val variable = ctx.freshAnonVar(e.type)
             e.receiver.linearize().toViperUnusedResult(ctx)
-            for (arg in e.args) arg.linearize().toViperUnusedResult(ctx)
+            val args = e.args.map { arg ->
+                runUpdatesOfPath(arg, ctx).also { it.linearize().toViperUnusedResult(ctx) }
+            }
+            val state = ctx.foldState
+            val heldArgs = if (state == null) emptyList() else args.mapNotNull { arg -> arg.ownedPath()?.takeIf(state::holds) }
+            for (path in heldArgs) {
+                if (state!!.isConstructionRoot(path)) state.tidy(ctx, path) else state.close(ctx, path)
+            }
+            // The function has no contract and may write to every owned argument it borrows: the caller keeps the
+            // argument's predicate with fresh values under it, as after a call with no postcondition.
+            for (path in heldArgs) state!!.refresh(ctx, path)
             return variable.withInvariants(ctx.typeResolver) {
                 proven = true
                 access = true

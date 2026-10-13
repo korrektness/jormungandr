@@ -205,6 +205,9 @@ method giveInner(h: Ref, f: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var anon: Ref
+  unfold acc(Holder_unique(h), write)
+  exhale acc(Counter_unique(h.inner), write)
+  inhale acc(Counter_unique(h.inner), write)
   inhale isSubtype(typeOf(anon), unitType())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -220,6 +223,8 @@ method give(c: Ref, f: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   var anon: Ref
+  exhale acc(Counter_unique(c), write)
+  inhale acc(Counter_unique(c), write)
   inhale isSubtype(typeOf(anon), intType())
   v_ret_0 := anon
   goto lbl_ret_0
