@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.formver.core.conversion.SubstitutedArgument
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.conversion.dispatchReceiverRoot
 import org.jetbrains.kotlin.formver.core.conversion.insertInlineFunctionCall
+import org.jetbrains.kotlin.formver.core.conversion.exceptionalExit
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.MethodCall
@@ -92,7 +93,9 @@ interface NamedCallableEmbedding : NamedFunctionSignature, CallableEmbedding
 
 interface NonInlineCallable : NamedCallableEmbedding {
 
-    override fun insertCall(args: List<ExpEmbedding>, ctx: StmtConversionContext): ExpEmbedding = insertCall(args)
+    override fun insertCall(args: List<ExpEmbedding>, ctx: StmtConversionContext): ExpEmbedding =
+        if (isPure || ctx.activeCatchLabels.isEmpty()) insertCall(args)
+        else MethodCall(this, args, ctx.exceptionalExit())
 
     // When the function does not need to be inlined, we do not need a context to call it. This is helpful, because
     // in some situations, we do not want to pass around the context (or we don't have access to it)

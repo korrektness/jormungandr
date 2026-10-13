@@ -59,7 +59,7 @@ fun <!VIPER_TEXT!>writeNegative<!>(arr: @Unique @Borrowed IntArray) {
 }
 
 fun <!VIPER_TEXT!>writeShared<!>(arr: IntArray) {
-    arr[0] = 1
+    <!POSSIBLE_INDEX_OUT_OF_BOUND!>arr[0] = 1<!>
     val first = arr[0]
 }
 

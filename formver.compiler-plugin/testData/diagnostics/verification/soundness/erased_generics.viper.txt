@@ -35,18 +35,23 @@ method castCellElement() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var any: Ref
-  var anon_0: Ref
-  var ints: Ref
-  var l0_item: Ref
   var anon_1: Ref
-  anon_0 := con(stringToRef(Seq(97)))
-  fold acc(Cell_unique(anon_0), write)
-  any := anon_0
-  inhale isSubtype(typeOf(any), Cell())
-  ints := any
-  anon_1 := g_item(ints)
-  inhale isSubtype(typeOf(anon_1), intType())
-  l0_item := anon_1
+  var ints: Ref
+  var anon_0: Ref
+  var l0_item: Ref
+  var anon_2: Ref
+  anon_1 := con(stringToRef(Seq(97)))
+  fold acc(Cell_unique(anon_1), write)
+  any := anon_1
+  anon_0 := any
+  if (isSubtype(typeOf(anon_0), Cell())) {
+    inhale isSubtype(typeOf(anon_0), Cell())
+    ints := anon_0
+  } else {
+    inhale false}
+  anon_2 := g_item(ints)
+  inhale isSubtype(typeOf(anon_2), intType())
+  l0_item := anon_2
   assert isSubtype(typeOf(l0_item), intType())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())

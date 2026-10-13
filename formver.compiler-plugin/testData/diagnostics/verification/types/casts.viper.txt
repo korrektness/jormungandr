@@ -105,8 +105,13 @@ method testAs(foo: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(foo), Foo())
   ensures isSubtype(typeOf(v_ret_0), Bar())
 {
-  inhale isSubtype(typeOf(foo), Bar())
-  v_ret_0 := foo
+  var anon: Ref
+  anon := foo
+  if (isSubtype(typeOf(anon), Bar())) {
+    inhale isSubtype(typeOf(anon), Bar())
+    v_ret_0 := anon
+  } else {
+    inhale false}
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -116,8 +121,13 @@ method testNullableAs(foo: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(foo), nullable(Foo()))
   ensures isSubtype(typeOf(v_ret_0), nullable(Bar()))
 {
-  inhale isSubtype(typeOf(foo), nullable(Bar()))
-  v_ret_0 := foo
+  var anon: Ref
+  anon := foo
+  if (isSubtype(typeOf(anon), nullable(Bar()))) {
+    inhale isSubtype(typeOf(anon), nullable(Bar()))
+    v_ret_0 := anon
+  } else {
+    inhale false}
   goto lbl_ret_0
   label lbl_ret_0
 }

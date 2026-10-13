@@ -75,6 +75,6 @@ fun <!VIPER_TEXT!>useException<!>() {
         call(0)
     }
     catch (e: Exception) {
-        <!VIPER_VERIFICATION_ERROR!>ignore(e)<!>
+        ignore(e)
     }
 }

@@ -188,6 +188,9 @@ data class LinearizationVisitor(
                 args += value
                 value.linearize().toViper(ctx)
             }
+            e.exceptionalExit?.let { exit ->
+                NonDeterministically(exit).linearize().toViperUnusedResult(ctx)
+            }
             val freshLoans = ctx.coerceFreshArguments(args, e.method.formalArgs, argsViper)
             val heldArgs = ctx.heldPaths(args, e.method.formalArgs)
             for ((path, formal) in heldArgs) {
@@ -282,6 +285,9 @@ data class LinearizationVisitor(
             e.receiver.linearize().toViperUnusedResult(ctx)
             val args = e.args.map { arg ->
                 runUpdatesOfPath(arg, ctx).also { it.linearize().toViperUnusedResult(ctx) }
+            }
+            e.exceptionalExit?.let { exit ->
+                NonDeterministically(exit).linearize().toViperUnusedResult(ctx)
             }
             val state = ctx.foldState
             val heldArgs = if (state == null) emptyList() else args.mapNotNull { arg -> arg.ownedPath()?.takeIf(state::holds) }
@@ -881,11 +887,16 @@ data class LinearizationVisitor(
     }
 
     override fun visitIntArrayGet(e: IntArrayGet): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            val value = toViper(ctx)
+            if (ctx is PureExpLinearizer) ctx.evaluateUnused(value)
+        }
+
         override fun toViper(ctx: LinearizationContext): Exp {
-            val array = e.array.linearize().toViper(ctx)
+            val array = snapshotBefore(e.array.linearize().toViper(ctx), e.array.type, listOf(e.index), ctx)
             val index = e.index.linearize().toViperBuiltinType(ctx)
             val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = false)
-            if (arrayPath != null) ctx.assertInBounds(array, index, e.arraySymbol)
+            if (ctx.logicOperatorPolicy == LogicOperatorPolicy.CONVERT_TO_IF) ctx.assertInBounds(array, index, e.arraySymbol)
             val pos = ctx.source.asPosition
             return ctx.addOwnedRead(IntArrayEmbedding.uniquePredicateAccess(array, pos), IntArrayEmbedding.element(array, index, pos), e.type, arrayPath)
         }
@@ -961,14 +972,11 @@ data class LinearizationVisitor(
     override fun visitIntArraySet(e: IntArraySet): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = true)
-            if (arrayPath == null) {
-                e.children().forEach { it.linearize().toViperUnusedResult(ctx) }
-                return
-            }
-            val array = e.array.linearize().toViper(ctx)
-            val index = atomicIndex(e.index, ctx)
+            val array = snapshotBefore(e.array.linearize().toViper(ctx), e.array.type, listOf(e.index, e.value), ctx)
+            val index = atomicIndex(e.index, ctx, e.value)
             val value = e.value.linearize().toViperBuiltinType(ctx)
             ctx.assertInBounds(array, index, e.arraySymbol)
+            if (arrayPath == null) return
             ctx.foldState?.openOwn(ctx, arrayPath)
             val contents = array.fieldAccess(contentsField, ctx.source.asPosition)
             ctx.addStatement {
@@ -983,13 +991,23 @@ data class LinearizationVisitor(
      * when that index is atomic: with `s[j + 1 := v]` it does not re-establish the contents invariant of an in-place
      * insertion sort.
      */
-    private fun atomicIndex(index: ExpEmbedding, ctx: LinearizationContext): Exp {
+    private fun atomicIndex(index: ExpEmbedding, ctx: LinearizationContext, later: ExpEmbedding): Exp {
         if (index.ignoringMetaNodes() is LiteralEmbedding) return index.linearize().toViperBuiltinType(ctx)
-        val ref = index.linearize().toViper(ctx)
+        val ref = snapshotBefore(index.linearize().toViper(ctx), index.type, listOf(later), ctx)
         if (ref is Exp.LocalVar) return RuntimeTypeDomain.intInjection.fromRef(ref)
         val variable = ctx.freshAnonVar { int() }
         ctx.addStatement { Stmt.assign(variable.toViperExp(this), ref, source.asPosition) }
         return RuntimeTypeDomain.intInjection.fromRef(variable.toViperExp(ctx))
+    }
+
+    /** Preserve an evaluated operand when a later operand assigns the local that supplied it. */
+    private fun snapshotBefore(value: Exp, type: TypeEmbedding, later: List<ExpEmbedding>, ctx: LinearizationContext): Exp {
+        if (value !is Exp.LocalVar || later.none { exp -> exp.subtree().any { it is Assign && it.lhs.name == value.name } }) {
+            return value
+        }
+        val saved = ctx.freshAnonVar(type)
+        ctx.addStatement { Stmt.assign(saved.toViperExp(this), value, source.asPosition) }
+        return saved.toViperExp(ctx)
     }
 
     override fun visitStringBuilderLength(e: StringBuilderLength): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {

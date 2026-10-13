@@ -154,34 +154,36 @@ method throwCaughtWithState() returns (v_ret_0: Ref)
   var x: Ref
   var anon_0: Ref
   var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
-  var e: Ref
   var anon_4: Ref
+  var e: Ref
+  var anon_5: Ref
   x := intToRef(0)
-  if (boolFromRef(anon_0)) {
-    goto catch
-  }
   x := intToRef(1)
-  anon_1 := con()
-  fold acc(Throwable_unique(anon_1), write)
-  fold acc(Exception_unique(anon_1), write)
-  fold acc(RuntimeException_unique(anon_1), write)
-  fold acc(IllegalArgumentException_unique(anon_1), write)
-  if (boolFromRef(anon_2)) {
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_0 := con()
+  fold acc(Throwable_unique(anon_0), write)
+  fold acc(Exception_unique(anon_0), write)
+  fold acc(RuntimeException_unique(anon_0), write)
+  fold acc(IllegalArgumentException_unique(anon_0), write)
+  if (boolFromRef(anon_4)) {
     goto catch
   }
   inhale false
-  if (boolFromRef(anon_3)) {
-    goto catch
-  }
   goto tryExit
   label catch
+  inhale isSubtype(typeOf(e), IllegalArgumentException())
   if (intFromRef(x) == 0) {
-    anon_4 := boolToRef(true)
+    anon_5 := boolToRef(true)
   } else {
-    anon_4 := boolToRef(intFromRef(x) == 1)}
-  assert boolFromRef(anon_4)
+    anon_5 := boolToRef(intFromRef(x) == 1)}
+  assert boolFromRef(anon_5)
   goto tryExit
   label tryExit
   label lbl_ret_0
@@ -218,28 +220,30 @@ method throwCaughtSkipsState() returns (v_ret_0: Ref)
   var x: Ref
   var anon_0: Ref
   var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
+  var anon_4: Ref
   var e: Ref
   x := intToRef(0)
-  if (boolFromRef(anon_0)) {
-    goto catch
-  }
   x := intToRef(1)
-  anon_1 := con()
-  fold acc(Throwable_unique(anon_1), write)
-  fold acc(Exception_unique(anon_1), write)
-  fold acc(RuntimeException_unique(anon_1), write)
-  fold acc(IllegalArgumentException_unique(anon_1), write)
-  if (boolFromRef(anon_2)) {
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_0 := con()
+  fold acc(Throwable_unique(anon_0), write)
+  fold acc(Exception_unique(anon_0), write)
+  fold acc(RuntimeException_unique(anon_0), write)
+  fold acc(IllegalArgumentException_unique(anon_0), write)
+  if (boolFromRef(anon_4)) {
     goto catch
   }
   inhale false
-  if (boolFromRef(anon_3)) {
-    goto catch
-  }
   goto tryExit
   label catch
+  inhale isSubtype(typeOf(e), IllegalArgumentException())
   assert intFromRef(x) == 0
   goto tryExit
   label tryExit
@@ -277,46 +281,45 @@ method throwReachesOuterCatch() returns (v_ret_0: Ref)
   var x: Ref
   var anon_0: Ref
   var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
-  var anon_4: Ref
   var anon_5: Ref
-  var l3_e: Ref
   var anon_6: Ref
+  var l3_e: Ref
   var l4_e: Ref
   x := intToRef(0)
-  if (boolFromRef(anon_0)) {
-    goto catch_0
-  }
-  if (boolFromRef(anon_1)) {
-    goto catch_1
-  }
   x := intToRef(1)
-  anon_2 := con()
-  fold acc(Throwable_unique(anon_2), write)
-  fold acc(Exception_unique(anon_2), write)
-  fold acc(RuntimeException_unique(anon_2), write)
-  fold acc(IllegalStateException_unique(anon_2), write)
-  if (boolFromRef(anon_3)) {
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch_0
+    }
+    if (boolFromRef(anon_4)) {
+      goto catch_1
+    }
+    inhale false
+  }
+  anon_0 := con()
+  fold acc(Throwable_unique(anon_0), write)
+  fold acc(Exception_unique(anon_0), write)
+  fold acc(RuntimeException_unique(anon_0), write)
+  fold acc(IllegalStateException_unique(anon_0), write)
+  if (boolFromRef(anon_5)) {
     goto catch_0
   }
-  if (boolFromRef(anon_4)) {
+  if (boolFromRef(anon_6)) {
     goto catch_1
   }
   inhale false
-  if (boolFromRef(anon_5)) {
-    goto catch_1
-  }
   goto tryExit_1
   label catch_1
+  inhale isSubtype(typeOf(l3_e), IllegalArgumentException())
   x := intToRef(2)
   goto tryExit_1
   label tryExit_1
-  if (boolFromRef(anon_6)) {
-    goto catch_0
-  }
   goto tryExit_0
   label catch_0
+  inhale isSubtype(typeOf(l4_e), IllegalStateException())
   assert !(intFromRef(x) == 1)
   goto tryExit_0
   label tryExit_0
@@ -339,19 +342,12 @@ method rethrowFromCatch() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 1
 {
-  var anon_0: Ref
-  var anon_1: Ref
   var e: Ref
-  if (boolFromRef(anon_0)) {
-    goto catch
-  }
   v_ret_0 := intToRef(1)
   goto lbl_ret_0
-  if (boolFromRef(anon_1)) {
-    goto catch
-  }
   goto tryExit
   label catch
+  inhale isSubtype(typeOf(e), IllegalArgumentException())
   inhale false
   goto tryExit
   label tryExit

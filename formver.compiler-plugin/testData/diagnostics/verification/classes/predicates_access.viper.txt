@@ -320,8 +320,15 @@ method accessCast(x: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var n: Ref
-  inhale isSubtype(typeOf(x), B())
-  n := b(x)
+  var anon_1: Ref
+  var anon_0: Ref
+  anon_0 := x
+  if (isSubtype(typeOf(anon_0), B())) {
+    inhale isSubtype(typeOf(anon_0), B())
+    anon_1 := anon_0
+  } else {
+    inhale false}
+  n := b(anon_1)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

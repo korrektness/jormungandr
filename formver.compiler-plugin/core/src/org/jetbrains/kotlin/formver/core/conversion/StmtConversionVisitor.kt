@@ -52,6 +52,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Not
 import org.jetbrains.kotlin.formver.core.embeddings.toLink
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
 import org.jetbrains.kotlin.formver.core.functionCallArguments
@@ -404,6 +405,31 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data: StmtConversionContext,
         symbol: FirFunctionSymbol<*>,
     ): ExpEmbedding {
+        val id = symbol.callableId
+        if (data.activeCatchLabels.isNotEmpty() && id.packageName == FqName("kotlin") && id.className == null) {
+            if (id.callableName.asString() in listOf("require", "check")) {
+                val mapping = functionCall.resolvedArgumentMapping
+                val conditionArg = mapping?.entries?.singleOrNull { it.value.name.asString() == "value" }?.key
+                    ?: functionCall.arguments.first()
+                val messageArg = mapping?.entries?.singleOrNull { it.value.name.asString() == "lazyMessage" }?.key
+                    ?: functionCall.arguments.getOrNull(1)
+                val message = messageArg?.let { data.convert(it).ignoringMetaNodes() }
+                if (message == null || message is LambdaExp) {
+                    val condition = data.convert(conditionArg)
+                    val failure = Block {
+                        if (message is LambdaExp) add(data.withCallSite(functionCall) { message.insertCall(emptyList(), this) })
+                        add(data.exceptionalExit())
+                    }
+                    return If(condition, UnitLit, failure, buildType { unit() })
+                }
+            }
+            if (id.callableName.asString() == "error") {
+                return Block {
+                    functionCall.arguments.forEach { add(data.convert(it)) }
+                    add(data.exceptionalExit())
+                }
+            }
+        }
         val callee = data.embedAnyFunction(symbol)
         val returnType = data.embedType(functionCall.resolvedType)
         val mappedParameters = functionCall.resolvedArgumentMapping?.values?.map { it.symbol }
@@ -441,7 +467,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             }
 
             else -> {
-                InvokeFunctionObject(data.convert(receiver), args, returnType)
+                InvokeFunctionObject(data.convert(receiver), args, returnType,
+                    data.exceptionalExit().takeIf { data.activeCatchLabels.isNotEmpty() })
             }
         }
     }
@@ -611,10 +638,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         return when (typeOperatorCall.operation) {
             FirOperation.IS -> Is(argument, conversionType)
             FirOperation.NOT_IS -> Not(Is(argument, conversionType))
-            FirOperation.AS -> Cast(argument, conversionType).withInvariants(data.typeResolver) {
-                proven = true
-                access = true
-            }
+            FirOperation.AS -> checkedCast(argument, conversionType, data)
 
             FirOperation.SAFE_AS -> SafeCast(argument, conversionType).withInvariants(data.typeResolver) {
                 proven = true
@@ -625,6 +649,27 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 typeOperatorCall.source, "type operator ${typeOperatorCall.operation}"
             )
         }
+    }
+
+    private fun checkedCast(argument: ExpEmbedding, targetType: TypeEmbedding, data: StmtConversionContext): ExpEmbedding {
+        val from = argument.type.pretype as? ClassTypeEmbedding
+        val to = targetType.pretype as? ClassTypeEmbedding
+        val safeType = argument.type.pretype == targetType.pretype ||
+                from != null && to != null && data.typeResolver.isSubtype(from, to)
+        if (safeType && (targetType.isNullable || !argument.type.isNullable)) {
+            return Cast(argument, targetType).withInvariants(data.typeResolver) { proven = true; access = true }
+        }
+        val saved = data.declareAnonVar(argument.type, argument)
+        val cast = Cast(saved.variable, targetType).withInvariants(data.typeResolver) {
+            proven = true
+            access = true
+        }
+        return blockOf(saved, If(Is(saved.variable, targetType), cast, data.exceptionalExit(), targetType))
+    }
+
+    override fun visitCheckNotNullCall(checkNotNullCall: FirCheckNotNullCall, data: StmtConversionContext): ExpEmbedding {
+        val argument = data.convert(checkNotNullCall.arguments.single())
+        return checkedCast(argument, data.embedType(checkNotNullCall.resolvedType), data)
     }
 
     override fun visitAnonymousFunctionExpression(
@@ -652,18 +697,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
         val (catchData, tryBody) = data.withCatches(tryExpression.catches) { catchData ->
             withNewScope {
-                val jumps =
-                    catchData.blocks.map { catchBlock -> NonDeterministically(Goto(catchBlock.entryLabel.toLink())) }
-                val body = convert(tryExpression.tryBlock)
-                GotoChainNode(
-                    null,
-                    Block {
-                        addAll(jumps)
-                        add(body)
-                        addAll(jumps)
-                    },
-                    catchData.exitLabel.toLink()
-                )
+                GotoChainNode(null, convert(tryExpression.tryBlock), catchData.exitLabel.toLink())
             }
         }
         val catches = catchData.blocks.map { catchBlock ->
@@ -675,6 +709,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                     catchBlock.entryLabel,
                     blockOf(
                         paramDecl,
+                        paramDecl.variable.withInvariants(typeResolver) { proven = true; access = true },
                         convert(catchBlock.firCatch.block)
                     ),
                     catchData.exitLabel.toLink()

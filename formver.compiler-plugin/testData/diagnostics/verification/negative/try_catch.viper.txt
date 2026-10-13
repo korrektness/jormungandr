@@ -19,21 +19,32 @@ method tryCatch() returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
-  var e: Ref
   var anon_4: Ref
-  if (boolFromRef(anon_0)) {
-    goto catch
+  var anon_5: Ref
+  var e: Ref
+  var anon_8: Ref
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
   }
-  anon_1 := call(intToRef(0))
-  anon_2 := call(intToRef(1))
-  if (boolFromRef(anon_3)) {
-    goto catch
+  anon_0 := call(intToRef(0))
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var anon_7: Ref
+    if (boolFromRef(anon_7)) {
+      goto catch
+    }
+    inhale false
   }
+  anon_4 := call(intToRef(1))
   goto tryExit
   label catch
-  anon_4 := call(intToRef(2))
+  inhale isSubtype(typeOf(e), Exception())
+  anon_8 := call(intToRef(2))
   goto tryExit
   label tryExit
   label lbl_ret_0
@@ -61,34 +72,51 @@ method nestedTryCatch() returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
   var anon_4: Ref
-  var l3_e: Ref
   var anon_5: Ref
-  var anon_6: Ref
+  var l3_e: Ref
+  var anon_9: Ref
+  var anon_10: Ref
   var l4_e: Ref
-  if (boolFromRef(anon_0)) {
-    goto catch_0
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch_0
+    }
+    inhale false
   }
-  anon_1 := call(intToRef(0))
-  if (boolFromRef(anon_2)) {
-    goto catch_1
+  anon_0 := call(intToRef(0))
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var anon_7: Ref
+    var anon_8: Ref
+    if (boolFromRef(anon_7)) {
+      goto catch_0
+    }
+    if (boolFromRef(anon_8)) {
+      goto catch_1
+    }
+    inhale false
   }
-  anon_3 := call(intToRef(1))
-  if (boolFromRef(anon_4)) {
-    goto catch_1
-  }
+  anon_4 := call(intToRef(1))
   goto tryExit_1
   label catch_1
-  anon_5 := call(intToRef(2))
+  inhale isSubtype(typeOf(l3_e), IllegalArgumentException())
+  if (boolFromRef(anon_10)) {
+    var anon_11: Ref
+    var anon_12: Ref
+    if (boolFromRef(anon_12)) {
+      goto catch_0
+    }
+    inhale false
+  }
+  anon_9 := call(intToRef(2))
   goto tryExit_1
   label tryExit_1
-  if (boolFromRef(anon_6)) {
-    goto catch_0
-  }
   goto tryExit_0
   label catch_0
+  inhale isSubtype(typeOf(l4_e), Exception())
   goto tryExit_0
   label tryExit_0
   label lbl_ret_0
@@ -118,26 +146,37 @@ method message(this: Ref) returns (ret_4: Ref)
 method tryCatchWithInline() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_0: Ref
   var v_ret_2: Ref
+  var anon_0: Ref
   var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
-  var e: Ref
   var anon_4: Ref
-  if (boolFromRef(anon_0)) {
-    goto catch
+  var anon_5: Ref
+  var e: Ref
+  var anon_8: Ref
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
   }
-  anon_1 := call(intToRef(0))
-  anon_2 := call(intToRef(1))
+  anon_0 := call(intToRef(0))
+  if (boolFromRef(anon_5)) {
+    var anon_6: Ref
+    var anon_7: Ref
+    if (boolFromRef(anon_7)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_4 := call(intToRef(1))
   label lbl_ret_2
   inhale isSubtype(typeOf(v_ret_2), unitType())
-  if (boolFromRef(anon_3)) {
-    goto catch
-  }
   goto tryExit
   label catch
-  anon_4 := call(intToRef(2))
+  inhale isSubtype(typeOf(e), Exception())
+  anon_8 := call(intToRef(2))
   goto tryExit
   label tryExit
   label lbl_ret_0
@@ -159,21 +198,14 @@ method tryCatchShadowing() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var l0_x: Ref
-  var anon_0: Ref
   var l1_x: Ref
-  var anon_1: Ref
   var e: Ref
   var l2_x: Ref
   l0_x := intToRef(0)
-  if (boolFromRef(anon_0)) {
-    goto catch
-  }
   l1_x := intToRef(1)
-  if (boolFromRef(anon_1)) {
-    goto catch
-  }
   goto tryExit
   label catch
+  inhale isSubtype(typeOf(e), Exception())
   l2_x := intToRef(2)
   goto tryExit
   label tryExit
@@ -202,34 +234,46 @@ method multipleCatches() returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
-  var anon_4: Ref
   var anon_5: Ref
-  var l2_e: Ref
   var anon_6: Ref
+  var l2_e: Ref
+  var anon_10: Ref
   var l3_e: Ref
-  var anon_7: Ref
-  if (boolFromRef(anon_0)) {
-    goto catch_0
-  }
+  var anon_11: Ref
   if (boolFromRef(anon_1)) {
-    goto catch_1
+    var anon_2: Ref
+    var anon_3: Ref
+    var anon_4: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch_0
+    }
+    if (boolFromRef(anon_4)) {
+      goto catch_1
+    }
+    inhale false
   }
-  anon_2 := call(intToRef(0))
-  anon_3 := call(intToRef(1))
-  if (boolFromRef(anon_4)) {
-    goto catch_0
+  anon_0 := call(intToRef(0))
+  if (boolFromRef(anon_6)) {
+    var anon_7: Ref
+    var anon_8: Ref
+    var anon_9: Ref
+    if (boolFromRef(anon_8)) {
+      goto catch_0
+    }
+    if (boolFromRef(anon_9)) {
+      goto catch_1
+    }
+    inhale false
   }
-  if (boolFromRef(anon_5)) {
-    goto catch_1
-  }
+  anon_5 := call(intToRef(1))
   goto tryExit
   label catch_0
-  anon_6 := call(intToRef(2))
+  inhale isSubtype(typeOf(l2_e), IllegalArgumentException())
+  anon_10 := call(intToRef(2))
   goto tryExit
   label catch_1
-  anon_7 := call(intToRef(3))
+  inhale isSubtype(typeOf(l3_e), Exception())
+  anon_11 := call(intToRef(3))
   goto tryExit
   label tryExit
   label lbl_ret_0
@@ -262,19 +306,21 @@ method useException() returns (v_ret_0: Ref)
 {
   var anon_0: Ref
   var anon_1: Ref
-  var anon_2: Ref
   var l2_e: Ref
-  var anon_3: Ref
-  if (boolFromRef(anon_0)) {
-    goto catch
+  var anon_4: Ref
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
   }
-  anon_1 := call(intToRef(0))
-  if (boolFromRef(anon_2)) {
-    goto catch
-  }
+  anon_0 := call(intToRef(0))
   goto tryExit
   label catch
-  anon_3 := ignore(l2_e)
+  inhale isSubtype(typeOf(l2_e), Exception())
+  anon_4 := ignore(l2_e)
   goto tryExit
   label tryExit
   label lbl_ret_0

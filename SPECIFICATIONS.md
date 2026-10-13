@@ -658,6 +658,28 @@ obligation, and `in` tests membership. Equality compares the elements in order.
 `take(n)` gives the prefix of length `n` clamped between zero and the sequence's
 size. Elements may be primitive values, references, or null.
 
+### Exceptions
+
+Verification establishes postconditions and Kotlin return effects on normal
+return. `throw`, failed `require` and `check`, `error`, `!!` on null, and
+failed `as` casts leave abnormally. Their operands are evaluated first.
+Runtime casts and `!!` in specifications and `@Pure` bodies are unsupported.
+
+An ordinary impure call may leave exceptionally after its arguments are
+evaluated, before its normal-return facts apply. Shared mutable reads are
+unconstrained, including on exceptional paths. A catch receives the union of
+states at possible throw sites. Catch type and source-order selection are
+overapproximated: any enclosing catch can receive an exception, and an
+exception can escape the function. The catch parameter is an arbitrary value
+of its declared type. Ownership restrictions are listed under Rejected constructs.
+`finally` blocks are unsupported.
+
+Array and string index bounds, division by zero, and integer overflow remain
+verification obligations inside `try`. The checked arithmetic fragment is
+described under Integer arithmetic. Verification does not establish freedom
+from exceptions in opaque library operations or from JVM resource, linkage,
+or asynchronous failures.
+
 ### Folding
 
 SnaKt manages permissions to the properties of unique objects automatically:
@@ -681,11 +703,11 @@ An `IntArray` holds its elements as a sequence.
 
 - `arr.size` needs no ownership and works on any array. It is never negative.
 - `arr[i]`, `arr[i] = v`, `arr.get(i)`, `arr.set(i, v)`, `arr[i] += v` and
-  `arr[i]++` read and write the elements of a unique array. The index must be
-  in bounds; otherwise verification reports a possible index out of bounds.
+  `arr[i]++` read and write the elements of a unique array.
   None of them moves the array.
 - On a shared array, an element read yields an arbitrary `Int` and an element
-  write is dropped. In a specification, an element read needs a unique array.
+  write is dropped. All element accesses check the index bounds, including
+  discarded reads. In a specification, an element read needs a unique array.
 - `IntArray(n)` creates an array of `n` zeros. As with any constructor call, a
   local holding it owns it only when declared `@Unique IntArray`.
 - `IntArray(n) { init }` runs `init` on each index from `0` to `n - 1` in
@@ -862,7 +884,7 @@ Each of these is a compile error:
 - `try` in a function that owns anything anywhere: a signature with `@Unique`
   or `@Borrowed`, or any owned local, in or outside the `try`. Passing a fresh
   object straight to a call, as in `try { consume(Node(1, null)) }`, is
-  allowed. `try` with `finally` is rejected in every function.
+  allowed.
 - Using a unique path after an accessor call on it, or after a call to a
   member that does not borrow `this`: `n.describe()` consumes `n` unless
   `describe` is `@Borrowed`, with or without `@Unique`.

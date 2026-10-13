@@ -103,9 +103,18 @@ method storeThroughConstructedArray() returns (v_ret_0: Ref)
   var x: Ref
   var anon_2: Ref
   a := con(intToRef(3))
+  assert 0 >= 0
+  assert 0 < arraySize(a)
   anon_0 := intToRef(1)
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) < arraySize(a)
   anon_1 := havoc(intType())
-  assert plusInts(anon_1, intToRef(0)) == plusInts(anon_1, intToRef(0))
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) < arraySize(a)
+  assert 2 >= 0
+  assert 2 < arraySize(a)
+  assert 0 >= 0
+  assert 0 < arraySize(a)
   anon_2 := havoc(intType())
   x := anon_2
   assert intFromRef(x) == 1
@@ -232,6 +241,10 @@ method storeThroughSharedParameter(a: Ref) returns (v_ret_0: Ref)
 {
   var x: Ref
   var anon: Ref
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  assert 0 >= 0
+  assert 0 < arraySize(a)
   anon := havoc(intType())
   x := anon
   assert intFromRef(x) == 1

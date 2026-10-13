@@ -671,6 +671,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("exception_sites.kt")
+    public void testException_sites() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/exception_sites.kt");
+    }
+
+    @Test
     @TestMetadata("extension_properties.kt")
     public void testExtension_properties() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/extension_properties.kt");

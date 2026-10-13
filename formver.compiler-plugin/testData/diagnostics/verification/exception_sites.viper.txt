@@ -1,0 +1,1455 @@
+/exception_sites.kt: info: Generated Viper text for castCrash:
+method castCrash(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var s: Ref
+  var anon: Ref
+  anon := x
+  if (isSubtype(typeOf(anon), stringType())) {
+    inhale isSubtype(typeOf(anon), stringType())
+    s := anon
+  } else {
+    inhale false}
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for requireCrash:
+method require(value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+method requireCrash() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := require(boolToRef(false))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_sites.kt: info: Generated Viper text for checkCrash:
+method check(value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+method checkCrash() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := check(boolToRef(false))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_sites.kt: info: Generated Viper text for errorCrash:
+method error(message: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(message), anyType())
+  ensures false
+  ensures isSubtype(typeOf(ret_1), nothingType())
+
+
+method errorCrash() returns (v_ret_0: Ref)
+  ensures false
+  ensures isSubtype(typeOf(v_ret_0), nothingType())
+{
+  v_ret_0 := error(stringToRef(Seq(98, 111, 111, 109)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for mayThrow:
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method mayThrow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  if (intFromRef(x) == 0) {
+    var anon: Ref
+    anon := con()
+    fold acc(Throwable_unique(anon), write)
+    fold acc(Exception_unique(anon), write)
+    fold acc(RuntimeException_unique(anon), write)
+    fold acc(IllegalArgumentException_unique(anon), write)
+    inhale false
+  }
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for midTry:
+method cause(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method mayThrow(par_x: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method message(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method midTry() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var l0_x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var e: Ref
+  l0_x := intToRef(0)
+  l0_x := intToRef(1)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_0 := mayThrow(intToRef(0))
+  l0_x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := l0_x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for nothingCatch:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method nothingCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var anon: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (boolFromRef(anon)) {
+    goto catch
+  }
+  inhale false
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for badSharedIndex:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method badSharedIndex(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  assert -1 >= 0
+  assert -1 < arraySize(a)
+  anon := havoc(intType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for requireCatch:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method requireCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (false) {
+  } else {
+    var anon: Ref
+    if (boolFromRef(anon)) {
+      goto catch
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for checkCatch:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method checkCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (false) {
+  } else {
+    var anon: Ref
+    if (boolFromRef(anon)) {
+      goto catch
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for castCatch:
+method castCatch(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), anyType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var s: Ref
+  var anon_0: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  anon_0 := a
+  if (isSubtype(typeOf(anon_0), stringType())) {
+    inhale isSubtype(typeOf(anon_0), stringType())
+    s := anon_0
+  } else {
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      goto catch
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for sharedSet:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method sharedSet(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert -1 >= 0
+  assert -1 < arraySize(a)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_sites.kt: info: Generated Viper text for sharedGetCatch:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method sharedGetCatch(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var n: Ref
+  var anon: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  assert -1 >= 0
+  assert -1 < arraySize(a)
+  anon := havoc(intType())
+  n := anon
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for longZeroCatch:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method longZeroCatch(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), longType())
+  requires isSubtype(typeOf(b), longType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var n: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  n := divLongLong(a, b)
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for longRemZeroCatch:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method longRemZeroCatch(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), longType())
+  requires isSubtype(typeOf(b), longType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var n: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  n := remLongLong(a, b)
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for shortZeroCatch:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method shortZeroCatch(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), shortType())
+  requires isSubtype(typeOf(b), shortType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var n: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  n := divShortShort(a, b)
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for byteZeroCatch:
+method byteZeroCatch(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), byteType())
+  requires isSubtype(typeOf(b), byteType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var n: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  n := remByteByte(a, b)
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for externalCatch:
+method cause(v_this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method externalCatch(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_0 := substring(s, intToRef(99))
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(v_this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method substring(v_this_extension: Ref, startIndex: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  ensures isSubtype(typeOf(ret_2), stringType())
+
+
+/exception_sites.kt: info: Generated Viper text for abort:
+method abort() returns (v_ret_0: Ref)
+  ensures false
+  ensures isSubtype(typeOf(v_ret_0), nothingType())
+{
+  var anon: Ref
+  anon := con()
+  fold acc(Throwable_unique(anon), write)
+  fold acc(Exception_unique(anon), write)
+  fold acc(RuntimeException_unique(anon), write)
+  fold acc(IllegalStateException_unique(anon), write)
+  inhale false
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalStateException())
+  ensures isSubtype(typeOf(ret_3), IllegalStateException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for abortCatch:
+method abort() returns (ret_2: Ref)
+  ensures false
+  ensures isSubtype(typeOf(ret_2), nothingType())
+
+
+method abortCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_0 := abort()
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for shortZeroRemCatch:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method shortZeroRemCatch(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), shortType())
+  requires isSubtype(typeOf(b), shortType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var n: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  n := remShortShort(a, b)
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for byteZeroDivCatch:
+method byteZeroDivCatch(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), byteType())
+  requires isSubtype(typeOf(b), byteType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var n: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  n := divByteByte(a, b)
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for requireNormal:
+method require(value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+method requireNormal(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  var anon: Ref
+  anon := require(gtInts(x, intToRef(0)))
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for checkNormal:
+method check(value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(value), boolType())
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures true ==> boolFromRef(value)
+
+
+method checkNormal(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) > 0
+{
+  var anon: Ref
+  anon := check(gtInts(x, intToRef(0)))
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for bangNormal:
+method bangNormal(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures v_ret_0 == x
+{
+  var anon: Ref
+  anon := x
+  if (isSubtype(typeOf(anon), intType())) {
+    inhale isSubtype(typeOf(anon), intType())
+    v_ret_0 := anon
+  } else {
+    inhale false}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for bangCatch:
+method bangCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var x: Ref
+  var absent: Ref
+  var anon_0: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  absent := nullValue()
+  anon_0 := absent
+  if (isSubtype(typeOf(anon_0), stringType())) {
+    inhale isSubtype(typeOf(anon_0), stringType())
+  } else {
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      goto catch
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for castFailureOnly:
+method castFailureOnly(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), anyType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var s: Ref
+  var anon_0: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  anon_0 := a
+  if (isSubtype(typeOf(anon_0), stringType())) {
+    inhale isSubtype(typeOf(anon_0), stringType())
+    s := anon_0
+  } else {
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      goto catch
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for castNull:
+method castNull() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var x: Ref
+  var a: Ref
+  var anon_0: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  a := nullValue()
+  anon_0 := a
+  if (isSubtype(typeOf(anon_0), stringType())) {
+    inhale isSubtype(typeOf(anon_0), stringType())
+  } else {
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      goto catch
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for castNullable:
+method castNullable(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(stringType()))
+{
+  var anon: Ref
+  anon := a
+  if (isSubtype(typeOf(anon), nullable(stringType()))) {
+    inhale isSubtype(typeOf(anon), nullable(stringType()))
+    v_ret_0 := anon
+  } else {
+    inhale false}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for discardedSharedIndex:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method discardedSharedIndex(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  assert -1 >= 0
+  assert -1 < arraySize(a)
+  anon := havoc(intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_sites.kt: info: Generated Viper text for sharedUpperIndex:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method sharedUpperIndex(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  assert arraySize(a) >= 0
+  assert arraySize(a) < arraySize(a)
+  anon := havoc(intType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for sharedUpperSet:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method sharedUpperSet(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := intToRef(arraySize(a))
+  assert intFromRef(anon) >= 0
+  assert intFromRef(anon) < arraySize(a)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_sites.kt: info: Generated Viper text for sharedSetRetainsIndex:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method sharedSetRetainsIndex(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires arraySize(a) > 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var i: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var v_ret_3: Ref
+  i := intToRef(-1)
+  anon_0 := i
+  i := intToRef(0)
+  v_ret_3 := intToRef(7)
+  goto lbl_ret_3
+  label lbl_ret_3
+  anon_1 := v_ret_3
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(anon_0) < arraySize(a)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_sites.kt: info: Generated Viper text for sharedGetRetainsReceiver:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method sharedGetRetainsReceiver(empty: Ref, other: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(empty), IntArray())
+  requires isSubtype(typeOf(other), IntArray())
+  requires arraySize(empty) == 0
+  requires arraySize(other) > 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var a: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var v_ret_3: Ref
+  var anon_2: Ref
+  a := empty
+  anon_0 := a
+  a := other
+  v_ret_3 := intToRef(0)
+  goto lbl_ret_3
+  label lbl_ret_3
+  anon_1 := v_ret_3
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) < arraySize(anon_0)
+  anon_2 := havoc(intType())
+  v_ret_0 := anon_2
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for validSharedAccess:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method validSharedAccess(a: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  requires intFromRef(i) < arraySize(a)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < arraySize(a)
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < arraySize(a)
+  anon := havoc(intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_sites.kt: info: Generated Viper text for zeroDivisionStaysError:
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method zeroDivisionStaysError(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var e: Ref
+  v_ret_0 := divInts(x, intToRef(0))
+  goto lbl_ret_0
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  goto tryExit
+  label tryExit
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for overflowStaysError:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method overflowStaysError(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 2147483647
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var e: Ref
+  v_ret_0 := plusInts(x, intToRef(1))
+  goto lbl_ret_0
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  goto tryExit
+  label tryExit
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for discardedPureIndex:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function discardedPureIndex(a: Ref): Ref
+  requires isSubtype(typeOf(a), IntArray())
+  requires acc(IntArray_unique(a), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(IntArray_unique(a), write) in
+    (let anon_0_0 ==
+      (intToRef(a.contents[-1])) in
+      intToRef(0)))
+}
+
+/exception_sites.kt: info: Generated Viper text for ThrowingAccess:
+method con() returns (v_ret_2: Ref)
+  ensures isSubtype(typeOf(v_ret_2), ThrowingAccess())
+{
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == ThrowingAccess()
+  fold acc(ThrowingAccess_unique(v_ret_2), write)
+  label lbl_ret_2
+  unfold acc(ThrowingAccess_unique(v_ret_2), write)
+}
+
+method g_value(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_value(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for value:
+method error(message: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(message), anyType())
+  ensures false
+  ensures isSubtype(typeOf(ret_3), nothingType())
+
+
+method g_value(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(this), ThrowingAccess())
+  anon := error(stringToRef(Seq(103, 101, 116, 116, 101, 114)))
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method s_value(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for value:
+method error(message: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(message), anyType())
+  ensures false
+  ensures isSubtype(typeOf(ret_3), nothingType())
+
+
+method g_value(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_value(this: Ref, arg_0: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var par_v: Ref
+  var anon: Ref
+  inhale isSubtype(typeOf(this), ThrowingAccess())
+  par_v := arg_0
+  inhale isSubtype(typeOf(par_v), intType())
+  anon := error(stringToRef(Seq(115, 101, 116, 116, 101, 114)))
+  label lbl_ret_1
+}
+
+/exception_sites.kt: info: Generated Viper text for getterCatch:
+method cause(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method g_value(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method getterCatch(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), ThrowingAccess())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (boolFromRef(anon_2)) {
+    var anon_3: Ref
+    var anon_4: Ref
+    if (boolFromRef(anon_4)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_1 := g_value(a)
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), intType())
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method s_value(this: Ref, arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for setterCatch:
+method cause(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method g_value(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method s_value(this: Ref, arg_0: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method setterCatch(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), ThrowingAccess())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_0 := s_value(a, intToRef(7))
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for requireMessageCatch:
+method cause(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method message(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method requireMessageCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 3
+{
+  var x: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (false) {
+  } else {
+    var v_ret_3: Ref
+    var anon: Ref
+    x := intToRef(3)
+    v_ret_3 := stringToRef(Seq(109, 101, 115, 115, 97, 103, 101))
+    goto lbl_ret_3
+    label lbl_ret_3
+    if (boolFromRef(anon)) {
+      goto catch
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_sites.kt: info: Generated Viper text for checkMessageNotEvaluated:
+method cause(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method checkMessageNotEvaluated() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var x: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (true) {
+  } else {
+    var v_ret_3: Ref
+    var anon: Ref
+    x := intToRef(3)
+    v_ret_3 := stringToRef(Seq(109, 101, 115, 115, 97, 103, 101))
+    goto lbl_ret_3
+    label lbl_ret_3
+    if (boolFromRef(anon)) {
+      goto catch
+    }
+    inhale false
+  }
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+/exception_sites.kt: info: Generated Viper text for functionObjectCatch:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method functionObjectCatch(action: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(action), functionType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_3: Ref
+    if (boolFromRef(anon_3)) {
+      goto catch
+    }
+    inhale false
+  }
+  inhale isSubtype(typeOf(anon_0), unitType())
+  x := intToRef(2)
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  goto tryExit
+  label tryExit
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))

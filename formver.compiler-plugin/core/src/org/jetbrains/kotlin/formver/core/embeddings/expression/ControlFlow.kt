@@ -142,7 +142,11 @@ data class NonDeterministically(val exp: ExpEmbedding) : ExpEmbedding {
 }
 
 // Note: this is always a *real* Viper method call.
-data class MethodCall(val method: NonInlineCallable, val args: List<ExpEmbedding>) : ExpEmbedding {
+data class MethodCall(
+    val method: NonInlineCallable,
+    val args: List<ExpEmbedding>,
+    val exceptionalExit: ExpEmbedding? = null,
+) : ExpEmbedding {
     override val type: TypeEmbedding = method.callableType.returnType
 
     override fun children(): Sequence<ExpEmbedding> = args.asSequence()
@@ -165,7 +169,8 @@ data class FunctionCall(val function: NonInlineCallable, val args: List<ExpEmbed
 data class InvokeFunctionObject(
     val receiver: ExpEmbedding,
     val args: List<ExpEmbedding>,
-    override val type: TypeEmbedding
+    override val type: TypeEmbedding,
+    val exceptionalExit: ExpEmbedding? = null,
 ) :
     ExpEmbedding {
 
