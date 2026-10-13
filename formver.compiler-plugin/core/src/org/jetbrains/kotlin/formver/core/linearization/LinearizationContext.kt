@@ -51,6 +51,9 @@ interface LinearizationContext {
 
     val typeResolver: TypeResolver
 
+    val jumpInterceptors: MutableList<JumpInterceptor>?
+        get() = null
+
     /** The unique predicates the linearized code holds; `null` where no permissions are tracked. */
     val foldState: FoldState?
         get() = null

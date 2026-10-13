@@ -65,10 +65,10 @@ fun <!VIPER_TEXT!>rethrowFromCatch<!>(): Int {
     }
 }
 
-fun <!VERIFICATION_SKIPPED!>throwInsideTryWithFinally<!>() {
-    <!UNSUPPORTED_FEATURE!>try {
+fun <!VIPER_TEXT!>throwInsideTryWithFinally<!>() {
+    try {
         throw IllegalArgumentException()
     } finally {
-        verify(false)
-    }<!>
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>)
+    }
 }

@@ -341,6 +341,7 @@ method rethrowFromCatch() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 1
 {
+  var anon: Ref
   var e: Ref
   v_ret_0 := intToRef(1)
   goto lbl_ret_0
@@ -351,4 +352,69 @@ method rethrowFromCatch() returns (v_ret_0: Ref)
   goto tryExit
   label tryExit
   label lbl_ret_0
+}
+
+/throw.kt: info: Generated Viper text for throwInsideTryWithFinally:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method throwInsideTryWithFinally() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_6: Ref
+  if (boolFromRef(anon_3)) {
+    var anon_4: Ref
+    var anon_5: Ref
+    if (boolFromRef(anon_5)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  anon_2 := con()
+  fold acc(Throwable_unique(anon_2), write)
+  fold acc(Exception_unique(anon_2), write)
+  fold acc(RuntimeException_unique(anon_2), write)
+  fold acc(IllegalArgumentException_unique(anon_2), write)
+  if (boolFromRef(anon_6)) {
+    goto tryExit_0
+  }
+  inhale false
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  assert false
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
 }

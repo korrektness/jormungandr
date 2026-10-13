@@ -1085,6 +1085,7 @@ method zeroDivisionStaysError(x: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
+  var anon: Ref
   var e: Ref
   v_ret_0 := divInts(x, intToRef(0))
   goto lbl_ret_0
@@ -1114,6 +1115,7 @@ method overflowStaysError(x: Ref) returns (v_ret_0: Ref)
   requires intFromRef(x) == 2147483647
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
+  var anon: Ref
   var e: Ref
   v_ret_0 := plusInts(x, intToRef(1))
   goto lbl_ret_0

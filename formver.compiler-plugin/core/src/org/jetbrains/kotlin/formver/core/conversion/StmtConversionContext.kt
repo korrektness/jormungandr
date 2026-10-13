@@ -92,6 +92,8 @@ interface StmtConversionContext : MethodConversionContext {
     fun <R> withCallSite(call: FirElement, action: StmtConversionContext.() -> R): R
     fun <R> withWhenSubject(subject: VariableEmbedding?, value: ExpEmbedding? = null, action: StmtConversionContext.() -> R): R
     fun <R> withCheckedSafeCallSubject(subject: ExpEmbedding?, action: StmtConversionContext.() -> R): R
+    fun <R> withActiveCatchLabels(labels: List<LabelEmbedding>, action: StmtConversionContext.() -> R): R
+
     fun <R> withCatches(
         catches: List<FirCatch>,
         action: StmtConversionContext.(catchBlockListData: CatchBlockListData) -> R,

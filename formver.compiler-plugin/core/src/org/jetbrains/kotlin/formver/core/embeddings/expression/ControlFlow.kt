@@ -38,6 +38,18 @@ sealed interface Block : ExpEmbedding {
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitBlock(this)
 }
 
+data class TryFinally(
+    val body: ExpEmbedding,
+    val finalizer: ExpEmbedding,
+    val exceptionalExit: ExpEmbedding,
+    val exceptionEntry: LabelEmbedding,
+    val finalEntry: LabelEmbedding,
+) : ExpEmbedding {
+    override val type: TypeEmbedding = body.type
+    override fun children(): Sequence<ExpEmbedding> = sequenceOf(body, finalizer, exceptionalExit)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitTryFinally(this)
+}
+
 data class If(
     val condition: ExpEmbedding,
     val thenBranch: ExpEmbedding,
@@ -92,6 +104,7 @@ fun ExpEmbedding.placedLabels(): Set<SymbolicName> = subtree().flatMap {
         is LabelExp -> sequenceOf(it.label.name)
         is GotoChainNode -> listOfNotNull(it.label?.name).asSequence()
         is FunctionExp -> sequenceOf(it.returnLabel.name)
+        is TryFinally -> sequenceOf(it.exceptionEntry.name, it.finalEntry.name)
         else -> emptySequence()
     }
 }.toSet()

@@ -672,7 +672,11 @@ states at possible throw sites. Catch type and source-order selection are
 overapproximated: any enclosing catch can receive an exception, and an
 exception can escape the function. The catch parameter is an arbitrary value
 of its declared type. Ownership restrictions are listed under Rejected constructs.
-`finally` blocks are unsupported.
+A `finally` block runs on normal completion and before a pending return,
+throw, break, or continue leaves its `try`/`catch`. It receives the union of
+states on those paths. A return value or `try` expression value is captured
+before the finalizer runs. An abrupt completion in the finalizer replaces the
+pending completion; nested finalizers run from the innermost outward.
 
 Array and string index bounds, division by zero, and integer overflow remain
 verification obligations inside `try`. The checked arithmetic fragment is

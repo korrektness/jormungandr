@@ -1404,6 +1404,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("exception_finally.kt")
+      public void testException_finally() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/control_flow/exception_finally.kt");
+      }
+
+      @Test
       @TestMetadata("exp_side_effects.kt")
       public void testExp_side_effects() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/control_flow/exp_side_effects.kt");

@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.description
+import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.LabelLink
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FullySpecialKotlinFunction
@@ -55,6 +56,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Not
 import org.jetbrains.kotlin.formver.core.embeddings.toLink
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.UnitTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
@@ -698,15 +700,24 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
 
     override fun visitTryExpression(tryExpression: FirTryExpression, data: StmtConversionContext): ExpEmbedding {
-        if (tryExpression.finallyBlock != null) {
-            throw UnsupportedFeatureException(tryExpression.source, "`finally` block")
-        }
         if (data.holdsOwnership()) {
             data.reportUnsupportedOwnership(tryExpression.source, ConversionOwnershipCondition.TryWithOwnership)
         }
+        val finallyBlock = tryExpression.finallyBlock ?: return convertTryCatch(tryExpression, data)
+        val exceptionEntry = LabelEmbedding(data.tryExitLabelNameProducer.getFresh())
+        val finalEntry = LabelEmbedding(data.tryExitLabelNameProducer.getFresh())
+        val body = data.withActiveCatchLabels(listOf(exceptionEntry)) { convertTryCatch(tryExpression, this) }
+        val finalizer = data.withNewScope { convert(finallyBlock) }
+        return TryFinally(body, finalizer, data.exceptionalExit(), exceptionEntry, finalEntry)
+    }
+
+    private fun convertTryCatch(tryExpression: FirTryExpression, data: StmtConversionContext): ExpEmbedding {
+        val resultType = data.embedType(tryExpression.resolvedType)
+        val result = if (resultType.pretype == UnitTypeEmbedding) null else data.freshAnonVar(resultType)
+        fun capture(value: ExpEmbedding): ExpEmbedding = result?.let { Assign(it, value) } ?: value
         val (catchData, tryBody) = data.withCatches(tryExpression.catches) { catchData ->
             withNewScope {
-                GotoChainNode(null, convert(tryExpression.tryBlock), catchData.exitLabel.toLink())
+                GotoChainNode(null, capture(convert(tryExpression.tryBlock)), catchData.exitLabel.toLink())
             }
         }
         val catches = catchData.blocks.map { catchBlock ->
@@ -719,16 +730,18 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                     blockOf(
                         paramDecl,
                         paramDecl.variable.withInvariants(typeResolver) { proven = true; access = true },
-                        convert(catchBlock.firCatch.block)
+                        capture(convert(catchBlock.firCatch.block))
                     ),
                     catchData.exitLabel.toLink()
                 )
             }
         }
         return Block {
+            result?.let { add(Declare(it, null)) }
             add(tryBody)
             addAll(catches)
             add(LabelExp(catchData.exitLabel))
+            add(result ?: UnitLit)
         }
     }
 

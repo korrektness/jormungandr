@@ -120,6 +120,9 @@ data class StmtConverter(
     override fun <R> withCheckedSafeCallSubject(subject: ExpEmbedding?, action: StmtConversionContext.() -> R): R =
         copy(checkedSafeCallSubject = subject).action()
 
+    override fun <R> withActiveCatchLabels(labels: List<LabelEmbedding>, action: StmtConversionContext.() -> R): R =
+        copy(activeCatchLabels = activeCatchLabels + labels).action()
+
     override fun <R> withCatches(
         catches: List<FirCatch>,
         action: StmtConversionContext.(catchBlockListData: CatchBlockListData) -> R,

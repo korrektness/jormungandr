@@ -1,0 +1,1629 @@
+/exception_finally.kt: info: Generated Viper text for finallyNormal:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyNormal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  goto tryExit_2
+  label tryExit_2
+  anon := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  assert intFromRef(x) == 1
+  x := intToRef(2)
+  if (intFromRef(anon) == 1) {
+    inhale false
+  }
+  assert intFromRef(x) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyReturnSnapshot:
+method finallyReturnSnapshot() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var x: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  x := intToRef(1)
+  v_ret_0 := x
+  anon_1 := intToRef(2)
+  goto tryExit_1
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  x := intToRef(2)
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  if (intFromRef(anon_1) == 2) {
+    goto lbl_ret_0
+  }
+  label lbl_ret_0
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyOverridesReturn:
+method finallyOverridesReturn() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  v_ret_0 := intToRef(1)
+  anon_1 := intToRef(2)
+  goto tryExit_1
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  v_ret_0 := intToRef(2)
+  goto lbl_ret_0
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  if (intFromRef(anon_1) == 2) {
+    goto lbl_ret_0
+  }
+  label lbl_ret_0
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyOverridesThrow:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method finallyOverridesThrow() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_6: Ref
+  if (boolFromRef(anon_3)) {
+    var anon_4: Ref
+    var anon_5: Ref
+    if (boolFromRef(anon_5)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  anon_2 := con()
+  fold acc(Throwable_unique(anon_2), write)
+  fold acc(Exception_unique(anon_2), write)
+  fold acc(RuntimeException_unique(anon_2), write)
+  fold acc(IllegalArgumentException_unique(anon_2), write)
+  if (boolFromRef(anon_6)) {
+    goto tryExit_0
+  }
+  inhale false
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  v_ret_0 := intToRef(2)
+  goto lbl_ret_0
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_finally.kt: info: Generated Viper text for finallyThrowOverridesReturn:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method finallyThrowOverridesReturn() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_7: Ref
+  var e: Ref
+  v_ret_0 := intToRef(1)
+  anon_2 := intToRef(2)
+  goto tryExit_2
+  goto tryExit_3
+  label tryExit_3
+  anon_0 := anon_1
+  anon_2 := intToRef(0)
+  goto tryExit_2
+  label tryExit_1
+  anon_2 := intToRef(1)
+  goto tryExit_2
+  label tryExit_2
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var anon_6: Ref
+    if (boolFromRef(anon_6)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_3 := con()
+  fold acc(Throwable_unique(anon_3), write)
+  fold acc(Exception_unique(anon_3), write)
+  fold acc(RuntimeException_unique(anon_3), write)
+  fold acc(IllegalArgumentException_unique(anon_3), write)
+  if (boolFromRef(anon_7)) {
+    goto catch
+  }
+  inhale false
+  if (intFromRef(anon_2) == 1) {
+    var anon_8: Ref
+    if (boolFromRef(anon_8)) {
+      goto catch
+    }
+    inhale false
+  }
+  if (intFromRef(anon_2) == 2) {
+    goto lbl_ret_0
+  }
+  goto tryExit_0
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  v_ret_0 := intToRef(2)
+  goto lbl_ret_0
+  goto tryExit_0
+  label tryExit_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_finally.kt: info: Generated Viper text for finallyBeforeOuterCatch:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method finallyBeforeOuterCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  var e: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (boolFromRef(anon_3)) {
+    var anon_4: Ref
+    var anon_5: Ref
+    var anon_6: Ref
+    if (boolFromRef(anon_5)) {
+      anon_1 := intToRef(2)
+      goto tryExit_2
+    }
+    if (boolFromRef(anon_6)) {
+      goto tryExit_1
+    }
+    inhale false
+  }
+  anon_2 := con()
+  fold acc(Throwable_unique(anon_2), write)
+  fold acc(Exception_unique(anon_2), write)
+  fold acc(RuntimeException_unique(anon_2), write)
+  fold acc(IllegalArgumentException_unique(anon_2), write)
+  if (boolFromRef(anon_7)) {
+    anon_1 := intToRef(2)
+    goto tryExit_2
+  }
+  if (boolFromRef(anon_8)) {
+    goto tryExit_1
+  }
+  inhale false
+  goto tryExit_3
+  label tryExit_3
+  anon_1 := intToRef(0)
+  goto tryExit_2
+  label tryExit_1
+  anon_1 := intToRef(1)
+  goto tryExit_2
+  label tryExit_2
+  x := intToRef(2)
+  if (intFromRef(anon_1) == 1) {
+    var anon_9: Ref
+    if (boolFromRef(anon_9)) {
+      goto catch
+    }
+    inhale false
+  }
+  if (intFromRef(anon_1) == 2) {
+    goto catch
+  }
+  goto tryExit_0
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  assert intFromRef(x) == 2
+  goto tryExit_0
+  label tryExit_0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/exception_finally.kt: info: Generated Viper text for finallyAfterCatchThrow:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method finallyAfterCatchThrow() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_8: Ref
+  var anon_9: Ref
+  var anon_10: Ref
+  var l3_e: Ref
+  var anon_11: Ref
+  var anon_12: Ref
+  var l5_e: Ref
+  x := intToRef(0)
+  if (boolFromRef(anon_3)) {
+    var anon_4: Ref
+    var anon_5: Ref
+    var anon_6: Ref
+    var anon_7: Ref
+    if (boolFromRef(anon_5)) {
+      anon_1 := intToRef(2)
+      goto tryExit_2
+    }
+    if (boolFromRef(anon_6)) {
+      goto tryExit_1
+    }
+    if (boolFromRef(anon_7)) {
+      goto catch_1
+    }
+    inhale false
+  }
+  anon_2 := con()
+  fold acc(Throwable_unique(anon_2), write)
+  fold acc(Exception_unique(anon_2), write)
+  fold acc(RuntimeException_unique(anon_2), write)
+  fold acc(IllegalArgumentException_unique(anon_2), write)
+  if (boolFromRef(anon_8)) {
+    anon_1 := intToRef(2)
+    goto tryExit_2
+  }
+  if (boolFromRef(anon_9)) {
+    goto tryExit_1
+  }
+  if (boolFromRef(anon_10)) {
+    goto catch_1
+  }
+  inhale false
+  goto tryExit_3
+  label catch_1
+  inhale isSubtype(typeOf(l3_e), Exception())
+  x := intToRef(1)
+  if (boolFromRef(anon_11)) {
+    anon_1 := intToRef(2)
+    goto tryExit_2
+  }
+  if (boolFromRef(anon_12)) {
+    goto tryExit_1
+  }
+  inhale false
+  goto tryExit_3
+  label tryExit_3
+  anon_1 := intToRef(0)
+  goto tryExit_2
+  label tryExit_1
+  anon_1 := intToRef(1)
+  goto tryExit_2
+  label tryExit_2
+  x := intToRef(2)
+  if (intFromRef(anon_1) == 1) {
+    var anon_13: Ref
+    if (boolFromRef(anon_13)) {
+      goto catch_0
+    }
+    inhale false
+  }
+  if (intFromRef(anon_1) == 2) {
+    goto catch_0
+  }
+  goto tryExit_0
+  label catch_0
+  inhale isSubtype(typeOf(l5_e), Exception())
+  assert intFromRef(x) == 2
+  goto tryExit_0
+  label tryExit_0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/exception_finally.kt: info: Generated Viper text for finallyCatchReturn:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method finallyCatchReturn() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  var e: Ref
+  if (boolFromRef(anon_3)) {
+    var anon_4: Ref
+    var anon_5: Ref
+    var anon_6: Ref
+    if (boolFromRef(anon_5)) {
+      goto tryExit_0
+    }
+    if (boolFromRef(anon_6)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_2 := con()
+  fold acc(Throwable_unique(anon_2), write)
+  fold acc(Exception_unique(anon_2), write)
+  fold acc(RuntimeException_unique(anon_2), write)
+  fold acc(IllegalArgumentException_unique(anon_2), write)
+  if (boolFromRef(anon_7)) {
+    goto tryExit_0
+  }
+  if (boolFromRef(anon_8)) {
+    goto catch
+  }
+  inhale false
+  goto tryExit_2
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  v_ret_0 := intToRef(1)
+  anon_1 := intToRef(2)
+  goto tryExit_1
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  v_ret_0 := intToRef(2)
+  goto lbl_ret_0
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  if (intFromRef(anon_1) == 2) {
+    goto lbl_ret_0
+  }
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_finally.kt: info: Generated Viper text for finallyNestedReturn:
+method finallyNestedReturn() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 3
+{
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_1: Ref
+  v_ret_0 := intToRef(1)
+  anon_3 := intToRef(2)
+  goto tryExit_4
+  goto tryExit_5
+  label tryExit_5
+  anon_0 := anon_1
+  anon_3 := intToRef(0)
+  goto tryExit_4
+  label tryExit_3
+  anon_3 := intToRef(1)
+  goto tryExit_4
+  label tryExit_4
+  v_ret_0 := intToRef(2)
+  anon_2 := intToRef(2)
+  goto tryExit_1
+  if (intFromRef(anon_3) == 1) {
+    var anon_4: Ref
+    if (boolFromRef(anon_4)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  if (intFromRef(anon_3) == 2) {
+    anon_2 := intToRef(2)
+    goto tryExit_1
+  }
+  goto tryExit_2
+  label tryExit_2
+  anon_2 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_2 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  v_ret_0 := intToRef(3)
+  goto lbl_ret_0
+  if (intFromRef(anon_2) == 1) {
+    inhale false
+  }
+  if (intFromRef(anon_2) == 2) {
+    goto lbl_ret_0
+  }
+  label lbl_ret_0
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyNestedPendingReturn:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyNestedPendingReturn() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var x: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_1: Ref
+  x := intToRef(0)
+  v_ret_0 := intToRef(1)
+  anon_3 := intToRef(2)
+  goto tryExit_4
+  goto tryExit_5
+  label tryExit_5
+  anon_0 := anon_1
+  anon_3 := intToRef(0)
+  goto tryExit_4
+  label tryExit_3
+  anon_3 := intToRef(1)
+  goto tryExit_4
+  label tryExit_4
+  x := intToRef(2)
+  if (intFromRef(anon_3) == 1) {
+    var anon_4: Ref
+    if (boolFromRef(anon_4)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  if (intFromRef(anon_3) == 2) {
+    anon_2 := intToRef(2)
+    goto tryExit_1
+  }
+  goto tryExit_2
+  label tryExit_2
+  anon_2 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_2 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  assert intFromRef(x) == 2
+  if (intFromRef(anon_2) == 1) {
+    inhale false
+  }
+  if (intFromRef(anon_2) == 2) {
+    goto lbl_ret_0
+  }
+  label lbl_ret_0
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyOverrideIsNotVacuous:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method finallyOverrideIsNotVacuous() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_6: Ref
+  if (boolFromRef(anon_3)) {
+    var anon_4: Ref
+    var anon_5: Ref
+    if (boolFromRef(anon_5)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  anon_2 := con()
+  fold acc(Throwable_unique(anon_2), write)
+  fold acc(Exception_unique(anon_2), write)
+  fold acc(RuntimeException_unique(anon_2), write)
+  fold acc(IllegalArgumentException_unique(anon_2), write)
+  if (boolFromRef(anon_6)) {
+    goto tryExit_0
+  }
+  inhale false
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  v_ret_0 := intToRef(2)
+  goto lbl_ret_0
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_finally.kt: info: Generated Viper text for finallyNestedOrder:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyNestedOrder() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  goto tryExit_5
+  label tryExit_5
+  anon_1 := intToRef(0)
+  goto tryExit_4
+  label tryExit_3
+  anon_1 := intToRef(1)
+  goto tryExit_4
+  label tryExit_4
+  assert intFromRef(x) == 1
+  x := intToRef(2)
+  if (intFromRef(anon_1) == 1) {
+    var anon_2: Ref
+    if (boolFromRef(anon_2)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  goto tryExit_2
+  label tryExit_2
+  anon_0 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_0 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  assert intFromRef(x) == 2
+  x := intToRef(3)
+  if (intFromRef(anon_0) == 1) {
+    inhale false
+  }
+  assert intFromRef(x) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyExpressionSnapshot:
+method finallyExpressionSnapshot() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var x: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  x := intToRef(1)
+  anon_0 := x
+  goto tryExit_2
+  label tryExit_2
+  v_ret_0 := anon_0
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  x := intToRef(2)
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_finally.kt: info: Generated Viper text for catchExpressionValue:
+method catchExpressionValue() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_5: Ref
+  var e: Ref
+  if (boolFromRef(anon_2)) {
+    var anon_3: Ref
+    var anon_4: Ref
+    if (boolFromRef(anon_4)) {
+      goto catch
+    }
+    inhale false
+  }
+  anon_1 := con()
+  fold acc(Throwable_unique(anon_1), write)
+  fold acc(Exception_unique(anon_1), write)
+  fold acc(RuntimeException_unique(anon_1), write)
+  fold acc(IllegalArgumentException_unique(anon_1), write)
+  if (boolFromRef(anon_5)) {
+    goto catch
+  }
+  inhale false
+  goto tryExit
+  label catch
+  inhale isSubtype(typeOf(e), Exception())
+  anon_0 := intToRef(2)
+  goto tryExit
+  label tryExit
+  v_ret_0 := anon_0
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_finally.kt: info: Generated Viper text for finallyBreak:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyBreak() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_1: Ref
+  x := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(x), intType())
+  anon_1 := boolToRef(true)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_0: Ref
+    anon_2 := intToRef(2)
+    goto tryExit_1
+    goto tryExit_2
+    label tryExit_2
+    anon_2 := intToRef(0)
+    goto tryExit_1
+    label tryExit_0
+    anon_2 := intToRef(1)
+    goto tryExit_1
+    label tryExit_1
+    x := intToRef(2)
+    if (intFromRef(anon_2) == 1) {
+      inhale false
+    }
+    if (intFromRef(anon_2) == 2) {
+      goto break
+    }
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(x), intType())
+  assert intFromRef(x) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyContinue:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyContinue() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_1: Ref
+  x := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(x), intType())
+    invariant intFromRef(x) == 0 || intFromRef(x) == 2
+  anon_1 := boolToRef(intFromRef(x) == 0)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_0: Ref
+    anon_2 := intToRef(2)
+    goto tryExit_1
+    goto tryExit_2
+    label tryExit_2
+    anon_2 := intToRef(0)
+    goto tryExit_1
+    label tryExit_0
+    anon_2 := intToRef(1)
+    goto tryExit_1
+    label tryExit_1
+    x := intToRef(2)
+    if (intFromRef(anon_2) == 1) {
+      inhale false
+    }
+    if (intFromRef(anon_2) == 2) {
+      goto cont
+    }
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(x), intType())
+  assert intFromRef(x) == 0 || intFromRef(x) == 2
+  assert intFromRef(x) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyOverridesBreak:
+method finallyOverridesBreak() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  var anon_1: Ref
+  label cont
+  anon_1 := boolToRef(true)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_0: Ref
+    anon_2 := intToRef(2)
+    goto tryExit_1
+    goto tryExit_2
+    label tryExit_2
+    anon_2 := intToRef(0)
+    goto tryExit_1
+    label tryExit_0
+    anon_2 := intToRef(1)
+    goto tryExit_1
+    label tryExit_1
+    v_ret_0 := intToRef(2)
+    goto lbl_ret_0
+    if (intFromRef(anon_2) == 1) {
+      inhale false
+    }
+    if (intFromRef(anon_2) == 2) {
+      goto break
+    }
+    goto cont
+  }
+  label break
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyContinueOverridesBreak:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyContinueOverridesBreak() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_1: Ref
+  x := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(x), intType())
+    invariant intFromRef(x) == 0 || intFromRef(x) == 2
+  anon_1 := boolToRef(intFromRef(x) == 0)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var anon_0: Ref
+    anon_2 := intToRef(2)
+    goto tryExit_1
+    goto tryExit_2
+    label tryExit_2
+    anon_2 := intToRef(0)
+    goto tryExit_1
+    label tryExit_0
+    anon_2 := intToRef(1)
+    goto tryExit_1
+    label tryExit_1
+    x := intToRef(2)
+    goto cont
+    if (intFromRef(anon_2) == 1) {
+      inhale false
+    }
+    if (intFromRef(anon_2) == 2) {
+      goto break
+    }
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(x), intType())
+  assert intFromRef(x) == 0 || intFromRef(x) == 2
+  assert intFromRef(x) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyInternalLoop:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyInternalLoop() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  x := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(x), intType())
+  anon_1 := boolToRef(true)
+  if (boolFromRef(anon_1)) {
+    goto break
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(x), intType())
+  assert intFromRef(x) == 0
+  goto tryExit_2
+  label tryExit_2
+  anon_0 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_0 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  x := intToRef(2)
+  if (intFromRef(anon_0) == 1) {
+    inhale false
+  }
+  assert intFromRef(x) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyInlineLocalReturn:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyInlineLocalReturn() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon: Ref
+  var v_ret_2: Ref
+  x := intToRef(0)
+  v_ret_2 := intToRef(1)
+  goto lbl_ret_2
+  label lbl_ret_2
+  assert intFromRef(x) == 0
+  goto tryExit_2
+  label tryExit_2
+  anon := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  x := intToRef(2)
+  if (intFromRef(anon) == 1) {
+    inhale false
+  }
+  assert intFromRef(x) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyInlineNonlocalReturn:
+method finallyInlineNonlocalReturn() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 2
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  var v_ret_3: Ref
+  v_ret_0 := intToRef(1)
+  anon_1 := intToRef(2)
+  goto tryExit_1
+  label lbl_ret_3
+  anon_0 := v_ret_3
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  v_ret_0 := intToRef(2)
+  goto lbl_ret_0
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  if (intFromRef(anon_1) == 2) {
+    goto lbl_ret_0
+  }
+  label lbl_ret_0
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyCallStates:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyCallStates(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), boolType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_5: Ref
+  x := intToRef(0)
+  if (boolFromRef(p)) {
+    var anon_1: Ref
+    var anon_2: Ref
+    x := intToRef(1)
+    if (boolFromRef(anon_2)) {
+      var anon_3: Ref
+      var anon_4: Ref
+      if (boolFromRef(anon_4)) {
+        goto tryExit_0
+      }
+      inhale false
+    }
+    anon_1 := unknownFinallyCall()
+  }
+  x := intToRef(2)
+  goto tryExit_2
+  label tryExit_2
+  anon_0 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_0 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  if (intFromRef(x) == 1) {
+    anon_5 := boolToRef(true)
+  } else {
+    anon_5 := boolToRef(intFromRef(x) == 2)}
+  assert boolFromRef(anon_5)
+  assert intFromRef(x) == 2
+  if (intFromRef(anon_0) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method unknownFinallyCall() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/exception_finally.kt: info: Generated Viper text for unknownFinallyCall:
+method unknownFinallyCall() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyCheckStates:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyCheckStates() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_0: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (false) {
+  } else {
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit_2
+  label tryExit_2
+  anon_0 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_0 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  assert intFromRef(x) == 1
+  assert intFromRef(x) == 2
+  if (intFromRef(anon_0) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyRequireStates:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyRequireStates() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_0: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  if (false) {
+  } else {
+    var anon_1: Ref
+    if (boolFromRef(anon_1)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit_2
+  label tryExit_2
+  anon_0 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_0 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  assert intFromRef(x) == 1
+  assert intFromRef(x) == 2
+  if (intFromRef(anon_0) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyNonNullStates:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyNonNullStates(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_3: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  anon_0 := p
+  if (isSubtype(typeOf(anon_0), intType())) {
+    inhale isSubtype(typeOf(anon_0), intType())
+  } else {
+    var anon_2: Ref
+    if (boolFromRef(anon_2)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  if (intFromRef(x) == 1) {
+    anon_3 := boolToRef(true)
+  } else {
+    anon_3 := boolToRef(intFromRef(x) == 2)}
+  assert boolFromRef(anon_3)
+  assert intFromRef(x) == 2
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyCastStates:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyCastStates(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), anyType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var x: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_3: Ref
+  x := intToRef(0)
+  x := intToRef(1)
+  anon_0 := p
+  if (isSubtype(typeOf(anon_0), stringType())) {
+    inhale isSubtype(typeOf(anon_0), stringType())
+  } else {
+    var anon_2: Ref
+    if (boolFromRef(anon_2)) {
+      goto tryExit_0
+    }
+    inhale false
+  }
+  x := intToRef(2)
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  if (intFromRef(x) == 1) {
+    anon_3 := boolToRef(true)
+  } else {
+    anon_3 := boolToRef(intFromRef(x) == 2)}
+  assert boolFromRef(anon_3)
+  assert intFromRef(x) == 2
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyNestedInCatch:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method finallyNestedInCatch() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 3
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  var l3_e: Ref
+  var anon_9: Ref
+  var anon_1: Ref
+  var anon_10: Ref
+  var anon_11: Ref
+  var l6_e: Ref
+  var anon_13: Ref
+  x := intToRef(0)
+  if (boolFromRef(anon_3)) {
+    var anon_4: Ref
+    var anon_5: Ref
+    var anon_6: Ref
+    if (boolFromRef(anon_5)) {
+      goto catch_0
+    }
+    if (boolFromRef(anon_6)) {
+      goto catch_1
+    }
+    inhale false
+  }
+  anon_2 := con()
+  fold acc(Throwable_unique(anon_2), write)
+  fold acc(Exception_unique(anon_2), write)
+  fold acc(RuntimeException_unique(anon_2), write)
+  fold acc(IllegalArgumentException_unique(anon_2), write)
+  if (boolFromRef(anon_7)) {
+    goto catch_0
+  }
+  if (boolFromRef(anon_8)) {
+    goto catch_1
+  }
+  inhale false
+  goto tryExit_1
+  label catch_1
+  inhale isSubtype(typeOf(l3_e), Exception())
+  x := intToRef(1)
+  if (boolFromRef(anon_10)) {
+    anon_9 := intToRef(2)
+    goto tryExit_3
+  }
+  if (boolFromRef(anon_11)) {
+    goto tryExit_2
+  }
+  inhale false
+  goto tryExit_4
+  label tryExit_4
+  anon_0 := anon_1
+  anon_9 := intToRef(0)
+  goto tryExit_3
+  label tryExit_2
+  anon_9 := intToRef(1)
+  goto tryExit_3
+  label tryExit_3
+  x := intToRef(2)
+  if (intFromRef(anon_9) == 1) {
+    var anon_12: Ref
+    if (boolFromRef(anon_12)) {
+      goto catch_0
+    }
+    inhale false
+  }
+  if (intFromRef(anon_9) == 2) {
+    goto catch_0
+  }
+  goto tryExit_1
+  label tryExit_1
+  goto tryExit_0
+  label catch_0
+  inhale isSubtype(typeOf(l6_e), Exception())
+  if (intFromRef(x) == 0) {
+    anon_13 := boolToRef(true)
+  } else {
+    anon_13 := boolToRef(intFromRef(x) == 2)}
+  assert boolFromRef(anon_13)
+  assert intFromRef(x) == 0
+  x := intToRef(3)
+  goto tryExit_0
+  label tryExit_0
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_finally.kt: info: Generated Viper text for finallyNestedCatchIsReachable:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method finallyNestedCatchIsReachable() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 0
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_8: Ref
+  var anon_9: Ref
+  var l3_e: Ref
+  var anon_10: Ref
+  var anon_2: Ref
+  var anon_11: Ref
+  var anon_12: Ref
+  var l6_e: Ref
+  if (boolFromRef(anon_4)) {
+    var anon_5: Ref
+    var anon_6: Ref
+    var anon_7: Ref
+    if (boolFromRef(anon_6)) {
+      goto catch_0
+    }
+    if (boolFromRef(anon_7)) {
+      goto catch_1
+    }
+    inhale false
+  }
+  anon_3 := con()
+  fold acc(Throwable_unique(anon_3), write)
+  fold acc(Exception_unique(anon_3), write)
+  fold acc(RuntimeException_unique(anon_3), write)
+  fold acc(IllegalArgumentException_unique(anon_3), write)
+  if (boolFromRef(anon_8)) {
+    goto catch_0
+  }
+  if (boolFromRef(anon_9)) {
+    goto catch_1
+  }
+  inhale false
+  goto tryExit_1
+  label catch_1
+  inhale isSubtype(typeOf(l3_e), Exception())
+  if (boolFromRef(anon_11)) {
+    anon_10 := intToRef(2)
+    goto tryExit_3
+  }
+  if (boolFromRef(anon_12)) {
+    goto tryExit_2
+  }
+  inhale false
+  goto tryExit_4
+  label tryExit_4
+  anon_1 := anon_2
+  anon_10 := intToRef(0)
+  goto tryExit_3
+  label tryExit_2
+  anon_10 := intToRef(1)
+  goto tryExit_3
+  label tryExit_3
+  assert true
+  if (intFromRef(anon_10) == 1) {
+    var anon_13: Ref
+    if (boolFromRef(anon_13)) {
+      goto catch_0
+    }
+    inhale false
+  }
+  if (intFromRef(anon_10) == 2) {
+    goto catch_0
+  }
+  goto tryExit_1
+  label tryExit_1
+  anon_0 := anon_1
+  goto tryExit_0
+  label catch_0
+  inhale isSubtype(typeOf(l6_e), Exception())
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  goto tryExit_0
+  label tryExit_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/exception_finally.kt: info: Generated Viper text for finallyBoundsAreErrors:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyBoundsAreErrors(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  assert -1 >= 0
+  assert -1 < arraySize(a)
+  anon_2 := havoc(intType())
+  anon_0 := anon_2
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  assert true
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/exception_finally.kt: info: Generated Viper text for finallyDivisionIsError:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method finallyDivisionIsError(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  anon_0 := divInts(x, intToRef(0))
+  goto tryExit_2
+  label tryExit_2
+  anon_1 := intToRef(0)
+  goto tryExit_1
+  label tryExit_0
+  anon_1 := intToRef(1)
+  goto tryExit_1
+  label tryExit_1
+  assert true
+  if (intFromRef(anon_1) == 1) {
+    inhale false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

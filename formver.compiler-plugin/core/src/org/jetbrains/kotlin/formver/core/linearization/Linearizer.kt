@@ -41,6 +41,9 @@ data class Linearizer(
     override val logicOperatorPolicy: LogicOperatorPolicy
         get() = LogicOperatorPolicy.CONVERT_TO_IF
 
+    override val jumpInterceptors: MutableList<JumpInterceptor>
+        get() = state.jumpInterceptors
+
     override fun freshAnonVar(type: TypeEmbedding): AnonymousVariableEmbedding {
         val variable = state.freshAnonVar(type)
         addDeclaration(variable.toLocalVarDecl())

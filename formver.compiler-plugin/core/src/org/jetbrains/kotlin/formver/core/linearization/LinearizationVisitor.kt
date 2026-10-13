@@ -160,6 +160,8 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitTryFinally(e: TryFinally): Linearizable = FinallyLinearizable(e, this)
+
     override fun visitGotoChainNode(e: GotoChainNode): Linearizable = object : OptionalResultLinearizable(e) {
         override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) {
             e.label?.let { ctx.addLabel(it.toViper(ctx)) }
