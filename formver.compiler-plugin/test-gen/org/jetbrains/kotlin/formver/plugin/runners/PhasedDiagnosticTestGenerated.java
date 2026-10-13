@@ -1668,6 +1668,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testCallbacks() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/callbacks.kt");
       }
+
+      @Test
+      @TestMetadata("erased_generics.kt")
+      public void testErased_generics() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/erased_generics.kt");
+      }
+
+      @Test
+      @TestMetadata("footprints.kt")
+      public void testFootprints() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/footprints.kt");
+      }
     }
 
     @Nested

@@ -1,0 +1,178 @@
+/erased_generics.kt: info: Generated Viper text for castCellElement:
+function g_item(this: Ref): Ref
+  requires isSubtype(typeOf(this), Cell())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method castCellElement() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var any: Ref
+  var anon_0: Ref
+  var ints: Ref
+  var l0_item: Ref
+  var anon_1: Ref
+  anon_0 := con(stringToRef(Seq(97)))
+  fold acc(Cell_unique(anon_0), write)
+  any := anon_0
+  inhale isSubtype(typeOf(any), Cell())
+  ints := any
+  anon_1 := g_item(ints)
+  inhale isSubtype(typeOf(anon_1), intType())
+  l0_item := anon_1
+  assert isSubtype(typeOf(l0_item), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(par_item: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_item), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), Cell())
+  ensures g_item(ret_1) == par_item
+
+
+/erased_generics.kt: info: Generated Viper text for castListElement:
+field p_size: Ref
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method castListElement() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l: Ref
+  var anon_0: Ref
+  var x: Ref
+  var anon_1: Ref
+  anon_0 := listOf(stringToRef(Seq(97)))
+  l := anon_0
+  inhale isSubtype(typeOf(l), List())
+  inhale acc(l.p_size, write)
+  inhale intFromRef(l.p_size) >= 0
+  anon_1 := get(l, intToRef(0))
+  x := anon_1
+  assert isSubtype(typeOf(x), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method get(this: Ref, index: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), List())
+  requires acc(this.p_size, write)
+  requires intFromRef(this.p_size) >= 0
+  requires isSubtype(typeOf(index), intType())
+  requires intFromRef(index) >= 0
+  requires intFromRef(this.p_size) > intFromRef(index)
+  ensures acc(this.p_size, write)
+  ensures intFromRef(this.p_size) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
+
+
+method listOf(element: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), List())
+  ensures acc(ret_1.p_size, write)
+  ensures intFromRef(ret_1.p_size) >= 0
+
+
+/erased_generics.kt: info: Generated Viper text for coerce:
+method coerce(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(x), nullable(anyType()))
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/erased_generics.kt: info: Generated Viper text for uncheckedGenericReturn:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method coerce(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method uncheckedGenericReturn() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var y: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := coerce(stringToRef(Seq(97)))
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), intType())
+  y := anon_0
+  assert isSubtype(typeOf(y), intType())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/erased_generics.kt: info: Generated Viper text for identity:
+method identity(par_t: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_t), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  v_ret_0 := par_t
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/erased_generics.kt: info: Generated Viper text for checkedGenericReturn:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method checkedGenericReturn() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var y: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_1 := identity(intToRef(3))
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), intType())
+  y := anon_0
+  assert isSubtype(typeOf(y), intType())
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method identity(par_t: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_t), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/erased_generics.kt: info: Generated Viper text for checkedCast:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method checkedCast(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (isSubtype(typeOf(x), intType())) {
+    var y: Ref
+    y := x
+    assert isSubtype(typeOf(y), intType())
+  }
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

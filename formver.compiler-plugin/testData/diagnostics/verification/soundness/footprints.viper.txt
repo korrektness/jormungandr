@@ -1,0 +1,1116 @@
+/footprints.kt: info: Generated Viper text for reading:
+function reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/footprints.kt: info: Generated Viper text for reset:
+function reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method reset(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(Gauge_unique(this), write)
+  ensures acc(Gauge_unique(this), write)
+  ensures isSubtype(typeOf(ret), unitType())
+
+
+/footprints.kt: info: Generated Viper text for reading:
+field level: Ref
+
+field spare: Ref
+
+function Dial_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.level)
+}
+
+function Gauge_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/footprints.kt: info: Generated Viper text for hidden:
+field level: Ref
+
+field spare: Ref
+
+function Dial_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.level)
+}
+
+function Gauge_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function hidden(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.spare)
+}
+
+/footprints.kt: info: Generated Viper text for reset:
+field level: Ref
+
+field spare: Ref
+
+function Dial_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.level)
+}
+
+function Gauge_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Gauge())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method reset(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  unfold acc(Dial_unique(this), write)
+  this.level := intToRef(0)
+  label lbl_ret_0
+  fold acc(Dial_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/footprints.kt: info: Generated Viper text for interfaceWriteThenRestore:
+field level: Ref
+
+field spare: Ref
+
+function Dial_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.level)
+}
+
+function c_Gauge_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Gauge())
+  requires acc(c_Gauge_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Dial_c_Gauge_restore(this: Ref)
+  requires acc(c_Gauge_unique(this), write)
+  requires isSubtype(typeOf(this), Dial())
+  ensures acc(Dial_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Gauge())) && true ==>
+    Dial_f_reading(this) ==
+    old((unfolding acc(c_Gauge_unique(this), wildcard) in
+      c_Gauge_f_reading(this)))
+
+
+method Dial_c_Gauge_upcast(this: Ref)
+  requires acc(Dial_unique(this), write)
+  ensures acc(c_Gauge_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Dial())) && true ==>
+    (unfolding acc(c_Gauge_unique(this), wildcard) in
+      c_Gauge_f_reading(this)) ==
+    old(Dial_f_reading(this))
+
+
+method interfaceWriteThenRestore(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), Dial())
+  requires acc(Dial_unique(d), write)
+  ensures acc(Dial_unique(d), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  unfold acc(Dial_unique(d), write)
+  d.level := intToRef(5)
+  inhale isSubtype(typeOf(d), c_Gauge())
+  fold acc(Dial_unique(d), write)
+  Dial_c_Gauge_upcast(d)
+  anon_1 := reset(d)
+  Dial_c_Gauge_restore(d)
+  anon_2 := Dial_f_reading(d)
+  assert intFromRef(anon_2) == 5
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method reset(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_Gauge())
+  requires acc(c_Gauge_unique(this), write)
+  ensures acc(c_Gauge_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/footprints.kt: info: Generated Viper text for calleeWriteThenRestore:
+field level: Ref
+
+field spare: Ref
+
+function Dial_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.level)
+}
+
+function c_Gauge_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Gauge())
+  requires acc(c_Gauge_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Dial_c_Gauge_restore(this: Ref)
+  requires acc(c_Gauge_unique(this), write)
+  requires isSubtype(typeOf(this), Dial())
+  ensures acc(Dial_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Gauge())) && true ==>
+    Dial_f_reading(this) ==
+    old((unfolding acc(c_Gauge_unique(this), wildcard) in
+      c_Gauge_f_reading(this)))
+
+
+method Dial_c_Gauge_upcast(this: Ref)
+  requires acc(Dial_unique(this), write)
+  ensures acc(c_Gauge_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Dial())) && true ==>
+    (unfolding acc(c_Gauge_unique(this), wildcard) in
+      c_Gauge_f_reading(this)) ==
+    old(Dial_f_reading(this))
+
+
+method calleeWriteThenRestore(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), Dial())
+  requires acc(Dial_unique(d), write)
+  ensures acc(Dial_unique(d), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_1 := Dial_f_reading(d)
+  before := anon_1
+  Dial_c_Gauge_upcast(d)
+  anon_2 := resetGauge(d)
+  Dial_c_Gauge_restore(d)
+  anon_3 := Dial_f_reading(d)
+  assert intFromRef(anon_3) == intFromRef(before)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method resetGauge(g: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(g), c_Gauge())
+  requires acc(c_Gauge_unique(g), write)
+  ensures acc(c_Gauge_unique(g), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+/footprints.kt: info: Generated Viper text for classObserverOutsideInterface:
+field level: Ref
+
+field spare: Ref
+
+function Dial_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.level)
+}
+
+function c_Gauge_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Gauge())
+  requires acc(c_Gauge_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function f_hidden(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.spare)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Dial_c_Gauge_restore(this: Ref)
+  requires acc(c_Gauge_unique(this), write)
+  requires isSubtype(typeOf(this), Dial())
+  ensures acc(Dial_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Gauge())) && true ==>
+    Dial_f_reading(this) ==
+    old((unfolding acc(c_Gauge_unique(this), wildcard) in
+      c_Gauge_f_reading(this)))
+
+
+method Dial_c_Gauge_upcast(this: Ref)
+  requires acc(Dial_unique(this), write)
+  ensures acc(c_Gauge_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Dial())) && true ==>
+    (unfolding acc(c_Gauge_unique(this), wildcard) in
+      c_Gauge_f_reading(this)) ==
+    old(Dial_f_reading(this))
+
+
+method classObserverOutsideInterface(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), Dial())
+  requires acc(Dial_unique(d), write)
+  ensures acc(Dial_unique(d), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_reading: Ref
+  var anon_2: Ref
+  var l0_hidden: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  anon_2 := Dial_f_reading(d)
+  l0_reading := anon_2
+  anon_3 := f_hidden(d)
+  l0_hidden := anon_3
+  Dial_c_Gauge_upcast(d)
+  anon_4 := keepReading(d)
+  Dial_c_Gauge_restore(d)
+  anon_5 := Dial_f_reading(d)
+  assert intFromRef(anon_5) == intFromRef(l0_reading)
+  anon_6 := f_hidden(d)
+  assert intFromRef(anon_6) == intFromRef(l0_hidden)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method keepReading(g: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(g), c_Gauge())
+  requires acc(c_Gauge_unique(g), write)
+  ensures acc(c_Gauge_unique(g), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(c_Gauge_unique(g), wildcard) in
+      intFromRef(c_Gauge_f_reading(g))) ==
+    old((unfolding acc(c_Gauge_unique(g), wildcard) in
+      intFromRef(c_Gauge_f_reading(g))))
+
+
+/footprints.kt: info: Generated Viper text for classFieldOutsideInterface:
+field level: Ref
+
+field spare: Ref
+
+function Dial_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), Dial())
+  requires acc(Dial_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Dial_unique(this), write) in this.level)
+}
+
+function c_Gauge_f_reading(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Gauge())
+  requires acc(c_Gauge_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Dial_c_Gauge_restore(this: Ref)
+  requires acc(c_Gauge_unique(this), write)
+  requires isSubtype(typeOf(this), Dial())
+  ensures acc(Dial_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Gauge())) && true ==>
+    Dial_f_reading(this) ==
+    old((unfolding acc(c_Gauge_unique(this), wildcard) in
+      c_Gauge_f_reading(this)))
+
+
+method Dial_c_Gauge_upcast(this: Ref)
+  requires acc(Dial_unique(this), write)
+  ensures acc(c_Gauge_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Dial())) && true ==>
+    (unfolding acc(c_Gauge_unique(this), wildcard) in
+      c_Gauge_f_reading(this)) ==
+    old(Dial_f_reading(this))
+
+
+method classFieldOutsideInterface(d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(d), Dial())
+  requires acc(Dial_unique(d), write)
+  ensures acc(Dial_unique(d), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_reading: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  anon_1 := Dial_f_reading(d)
+  l0_reading := anon_1
+  unfold acc(Dial_unique(d), write)
+  d.spare := intToRef(3)
+  fold acc(Dial_unique(d), write)
+  Dial_c_Gauge_upcast(d)
+  anon_2 := keepReading(d)
+  Dial_c_Gauge_restore(d)
+  unfold acc(Dial_unique(d), write)
+  anon_3 := d.level
+  assert intFromRef(anon_3) == intFromRef(l0_reading)
+  anon_4 := d.spare
+  assert intFromRef(anon_4) == 3
+  label lbl_ret_0
+  fold acc(Dial_unique(d), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method keepReading(g: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(g), c_Gauge())
+  requires acc(c_Gauge_unique(g), write)
+  ensures acc(c_Gauge_unique(g), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(c_Gauge_unique(g), wildcard) in
+      intFromRef(c_Gauge_f_reading(g))) ==
+    old((unfolding acc(c_Gauge_unique(g), wildcard) in
+      intFromRef(c_Gauge_f_reading(g))))
+
+
+/footprints.kt: info: Generated Viper text for at:
+function at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Probe())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+
+
+/footprints.kt: info: Generated Viper text for shift:
+function at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Probe())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+
+
+method shift(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), Probe())
+  requires acc(Probe_unique(this), write)
+  ensures acc(Probe_unique(this), write)
+  ensures isSubtype(typeOf(ret), unitType())
+  ensures (unfolding acc(Probe_unique(this), wildcard) in
+      intFromRef(at(this, intToRef(0)))) ==
+    old((unfolding acc(Probe_unique(this), wildcard) in
+      intFromRef(at(this, intToRef(0)))))
+
+
+/footprints.kt: info: Generated Viper text for at:
+field base: Ref
+
+field below: Ref
+
+function Line_f_at(this: Ref, j: Ref): Ref
+  requires isSubtype(typeOf(this), Line())
+  requires acc(Line_unique(this), write)
+  requires isSubtype(typeOf(j), intType())
+  requires intFromRef(j) >= -1
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Line_unique(this), write) in
+    (intFromRef(j) < 0 ? this.below : this.base))
+}
+
+function c_Probe_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Probe())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Line_c_Probe_restore(this: Ref)
+  requires acc(c_Probe_unique(this), write)
+  requires isSubtype(typeOf(this), Line())
+  ensures acc(Line_unique(this), write)
+  ensures (forall i: Ref ::
+      { Line_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), c_Probe())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(intFromRef(i) >= 0) ==>
+      Line_f_at(this, i) ==
+      old((unfolding acc(c_Probe_unique(this), wildcard) in
+        c_Probe_f_at(this, i))))
+
+
+method Line_c_Probe_upcast(this: Ref)
+  requires acc(Line_unique(this), write)
+  ensures acc(c_Probe_unique(this), write)
+  ensures (forall j: Ref ::
+      { c_Probe_f_at(this, j) }
+      true && old(isSubtype(typeOf(this), Line())) && true &&
+      old(isSubtype(typeOf(j), intType())) &&
+      old(intFromRef(j) >= -1) &&
+      old(intFromRef(j) >= 0) ==>
+      (unfolding acc(c_Probe_unique(this), wildcard) in
+        c_Probe_f_at(this, j)) ==
+      old(Line_f_at(this, j)))
+
+
+method refines_c_Probe_f_at(this: Ref, i: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_Probe())
+  requires acc(c_Probe_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  requires isSubtype(typeOf(this), Line())
+{
+  Line_c_Probe_restore(this)
+  ret := Line_f_at(this, i)
+  Line_c_Probe_upcast(this)
+  assert isSubtype(typeOf(ret), intType())
+}
+
+/footprints.kt: info: Generated Viper text for shift:
+field base: Ref
+
+field below: Ref
+
+function Line_f_at(this: Ref, j: Ref): Ref
+  requires isSubtype(typeOf(this), Line())
+  requires acc(Line_unique(this), write)
+  requires isSubtype(typeOf(j), intType())
+  requires intFromRef(j) >= -1
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Line_unique(this), write) in
+    (intFromRef(j) < 0 ? this.below : this.base))
+}
+
+function c_Probe_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Probe())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Line_c_Probe_restore(this: Ref)
+  requires acc(c_Probe_unique(this), write)
+  requires isSubtype(typeOf(this), Line())
+  ensures acc(Line_unique(this), write)
+  ensures (forall i: Ref ::
+      { Line_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), c_Probe())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(intFromRef(i) >= 0) ==>
+      Line_f_at(this, i) ==
+      old((unfolding acc(c_Probe_unique(this), wildcard) in
+        c_Probe_f_at(this, i))))
+
+
+method Line_c_Probe_upcast(this: Ref)
+  requires acc(Line_unique(this), write)
+  ensures acc(c_Probe_unique(this), write)
+  ensures (forall j: Ref ::
+      { c_Probe_f_at(this, j) }
+      true && old(isSubtype(typeOf(this), Line())) && true &&
+      old(isSubtype(typeOf(j), intType())) &&
+      old(intFromRef(j) >= -1) &&
+      old(intFromRef(j) >= 0) ==>
+      (unfolding acc(c_Probe_unique(this), wildcard) in
+        c_Probe_f_at(this, j)) ==
+      old(Line_f_at(this, j)))
+
+
+method Line_f_shift(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Line())
+  requires acc(Line_unique(this), write)
+  ensures acc(Line_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(Line_f_at(this, intToRef(0))) ==
+    old(intFromRef(Line_f_at(this, intToRef(0))))
+{
+  var anon: Ref
+  unfold acc(Line_unique(this), write)
+  anon := this.below
+  this.below := plusInts(anon, intToRef(1))
+  label lbl_ret_0
+  fold acc(Line_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method c_Probe_f_shift(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_Probe())
+  requires acc(c_Probe_unique(this), write)
+  ensures acc(c_Probe_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(c_Probe_unique(this), wildcard) in
+      intFromRef(c_Probe_f_at(this, intToRef(0)))) ==
+    old((unfolding acc(c_Probe_unique(this), wildcard) in
+      intFromRef(c_Probe_f_at(this, intToRef(0)))))
+
+
+method refines_c_Probe_f_shift(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_Probe())
+  requires acc(c_Probe_unique(this), write)
+  requires isSubtype(typeOf(this), Line())
+{
+  Line_c_Probe_restore(this)
+  ret_1 := Line_f_shift(this)
+  Line_c_Probe_upcast(this)
+  assert acc(c_Probe_unique(this), write)
+  assert isSubtype(typeOf(ret_1), unitType())
+  assert (unfolding acc(c_Probe_unique(this), wildcard) in
+      intFromRef(c_Probe_f_at(this, intToRef(0)))) ==
+    old((unfolding acc(c_Probe_unique(this), wildcard) in
+      intFromRef(c_Probe_f_at(this, intToRef(0)))))
+}
+
+/footprints.kt: info: Generated Viper text for restoreOutsideDomain:
+field base: Ref
+
+field below: Ref
+
+function Line_f_at(this: Ref, j: Ref): Ref
+  requires isSubtype(typeOf(this), Line())
+  requires acc(Line_unique(this), write)
+  requires isSubtype(typeOf(j), intType())
+  requires intFromRef(j) >= -1
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Line_unique(this), write) in
+    (intFromRef(j) < 0 ? this.below : this.base))
+}
+
+function c_Probe_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Probe())
+  requires acc(c_Probe_footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Line_c_Probe_restore(this: Ref)
+  requires acc(c_Probe_unique(this), write)
+  requires isSubtype(typeOf(this), Line())
+  ensures acc(Line_unique(this), write)
+  ensures (forall i: Ref ::
+      { Line_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), c_Probe())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(intFromRef(i) >= 0) ==>
+      Line_f_at(this, i) ==
+      old((unfolding acc(c_Probe_unique(this), wildcard) in
+        c_Probe_f_at(this, i))))
+
+
+method Line_c_Probe_upcast(this: Ref)
+  requires acc(Line_unique(this), write)
+  ensures acc(c_Probe_unique(this), write)
+  ensures (forall j: Ref ::
+      { c_Probe_f_at(this, j) }
+      true && old(isSubtype(typeOf(this), Line())) && true &&
+      old(isSubtype(typeOf(j), intType())) &&
+      old(intFromRef(j) >= -1) &&
+      old(intFromRef(j) >= 0) ==>
+      (unfolding acc(c_Probe_unique(this), wildcard) in
+        c_Probe_f_at(this, j)) ==
+      old(Line_f_at(this, j)))
+
+
+method restoreOutsideDomain(l: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), Line())
+  requires acc(Line_unique(l), write)
+  ensures acc(Line_unique(l), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_3 := Line_f_at(l, intToRef(-1))
+  before := anon_3
+  inhale isSubtype(typeOf(l), c_Probe())
+  Line_c_Probe_upcast(l)
+  anon_4 := shift(l)
+  Line_c_Probe_restore(l)
+  anon_5 := Line_f_at(l, intToRef(-1))
+  assert intFromRef(anon_5) == intFromRef(before)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method shift(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_Probe())
+  requires acc(c_Probe_unique(this), write)
+  ensures acc(c_Probe_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(c_Probe_unique(this), wildcard) in
+      intFromRef(c_Probe_f_at(this, intToRef(0)))) ==
+    old((unfolding acc(c_Probe_unique(this), wildcard) in
+      intFromRef(c_Probe_f_at(this, intToRef(0)))))
+
+
+/footprints.kt: info: Generated Viper text for restoreInsideDomain:
+field base: Ref
+
+field below: Ref
+
+function Line_f_at(this: Ref, j: Ref): Ref
+  requires isSubtype(typeOf(this), Line())
+  requires acc(Line_unique(this), write)
+  requires isSubtype(typeOf(j), intType())
+  requires intFromRef(j) >= -1
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Line_unique(this), write) in
+    (intFromRef(j) < 0 ? this.below : this.base))
+}
+
+function c_Probe_f_at(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_Probe())
+  requires acc(c_Probe_footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Line_c_Probe_restore(this: Ref)
+  requires acc(c_Probe_unique(this), write)
+  requires isSubtype(typeOf(this), Line())
+  ensures acc(Line_unique(this), write)
+  ensures (forall i: Ref ::
+      { Line_f_at(this, i) }
+      true && old(isSubtype(typeOf(this), c_Probe())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(intFromRef(i) >= 0) ==>
+      Line_f_at(this, i) ==
+      old((unfolding acc(c_Probe_unique(this), wildcard) in
+        c_Probe_f_at(this, i))))
+
+
+method Line_c_Probe_upcast(this: Ref)
+  requires acc(Line_unique(this), write)
+  ensures acc(c_Probe_unique(this), write)
+  ensures (forall j: Ref ::
+      { c_Probe_f_at(this, j) }
+      true && old(isSubtype(typeOf(this), Line())) && true &&
+      old(isSubtype(typeOf(j), intType())) &&
+      old(intFromRef(j) >= -1) &&
+      old(intFromRef(j) >= 0) ==>
+      (unfolding acc(c_Probe_unique(this), wildcard) in
+        c_Probe_f_at(this, j)) ==
+      old(Line_f_at(this, j)))
+
+
+method restoreInsideDomain(l: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), Line())
+  requires acc(Line_unique(l), write)
+  ensures acc(Line_unique(l), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_3 := Line_f_at(l, intToRef(0))
+  before := anon_3
+  inhale isSubtype(typeOf(l), c_Probe())
+  Line_c_Probe_upcast(l)
+  anon_4 := shift(l)
+  Line_c_Probe_restore(l)
+  anon_5 := Line_f_at(l, intToRef(0))
+  assert intFromRef(anon_5) == intFromRef(before)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method shift(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_Probe())
+  requires acc(c_Probe_unique(this), write)
+  ensures acc(c_Probe_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(c_Probe_unique(this), wildcard) in
+      intFromRef(c_Probe_f_at(this, intToRef(0)))) ==
+    old((unfolding acc(c_Probe_unique(this), wildcard) in
+      intFromRef(c_Probe_f_at(this, intToRef(0)))))
+
+
+/footprints.kt: info: Generated Viper text for shown:
+function shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), Shown())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/footprints.kt: info: Generated Viper text for shown:
+field raw: Ref
+
+function Shown_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), Shown())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_Meter() ==>
+    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+
+
+function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_Meter_unique(this), write) in this.raw)
+}
+
+/footprints.kt: info: Generated Viper text for shown:
+field raw: Ref
+
+function DoubledMeter_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), DoubledMeter())
+  requires acc(DoubledMeter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DoubledMeter_unique(this), write) in
+    (unfolding acc(c_Meter_unique(this), write) in
+      (let anon_0_0 ==
+        (this.raw) in
+        timesInts(anon_0_0, intToRef(2)))))
+}
+
+function Shown_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), Shown())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_Meter() ==>
+    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+
+
+function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_Meter_unique(this), write) in this.raw)
+}
+
+/footprints.kt: info: Generated Viper text for openObserverView:
+field raw: Ref
+
+function Shown_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), Shown())
+  requires acc(Shown_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_Meter() ==>
+    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+
+
+function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_Meter_unique(this), write) in this.raw)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method openObserverView(m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), c_Meter())
+  requires acc(c_Meter_unique(m), write)
+  ensures acc(c_Meter_unique(m), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_1 := c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(m)
+  unfold acc(c_Meter_unique(m), write)
+  anon_2 := m.raw
+  assert intFromRef(anon_1) == intFromRef(anon_2)
+  label lbl_ret_0
+  fold acc(c_Meter_unique(m), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/footprints.kt: info: Generated Viper text for exactMeter:
+field bf_raw: Ref
+
+function Shown_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), Shown())
+  requires acc(Shown_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_Meter() ==>
+    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+
+
+function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_Meter_unique(this), write) in this.bf_raw)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_raw: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_raw), intType())
+  ensures isSubtype(typeOf(ret_1), c_Meter())
+  ensures isSubtype(typeOf(ret_1), c_Meter()) && acc(ret_1.bf_raw, write) &&
+    isSubtype(typeOf(ret_1.bf_raw), intType())
+  ensures intFromRef(ret_1.bf_raw) == intFromRef(par_raw)
+
+
+method exactMeter() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var m: Ref
+  var anon: Ref
+  m := con(intToRef(3))
+  fold acc(c_Meter_unique(m), write)
+  anon := c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(m)
+  assert intFromRef(anon) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/footprints.kt: info: Generated Viper text for subclassAsMeter:
+field bf_raw: Ref
+
+function DoubledMeter_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), DoubledMeter())
+  requires acc(DoubledMeter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DoubledMeter_unique(this), write) in
+    (unfolding acc(c_Meter_unique(this), write) in
+      (let anon_1_0 ==
+        (this.bf_raw) in
+        timesInts(anon_1_0, intToRef(2)))))
+}
+
+function Shown_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), Shown())
+  requires acc(Shown_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_Meter() ==>
+    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+
+
+function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_Meter_unique(this), write) in this.bf_raw)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method DoubledMeter_c_Meter_upcast(this: Ref)
+  requires acc(DoubledMeter_unique(this), write)
+  ensures acc(c_Meter_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), DoubledMeter())) && true ==>
+    c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this) ==
+    old(DoubledMeter_f_shown(this))
+
+
+method con(par_raw: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_raw), intType())
+  ensures isSubtype(typeOf(ret_1), DoubledMeter())
+  ensures isSubtype(typeOf(ret_1), DoubledMeter()) &&
+    (isSubtype(typeOf(ret_1), c_Meter()) && acc(ret_1.bf_raw, write) &&
+    isSubtype(typeOf(ret_1.bf_raw), intType()))
+  ensures intFromRef(ret_1.bf_raw) == intFromRef(par_raw)
+
+
+method subclassAsMeter() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var m: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_2 := con(intToRef(3))
+  fold acc(c_Meter_unique(anon_2), write)
+  fold acc(DoubledMeter_unique(anon_2), write)
+  m := anon_2
+  DoubledMeter_c_Meter_upcast(m)
+  anon_3 := c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(m)
+  assert intFromRef(anon_3) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/footprints.kt: info: Generated Viper text for subclassThroughInterface:
+field bf_raw: Ref
+
+function DoubledMeter_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), DoubledMeter())
+  requires acc(DoubledMeter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(DoubledMeter_unique(this), write) in
+    (unfolding acc(c_Meter_unique(this), write) in
+      (let anon_0_0 ==
+        (this.bf_raw) in
+        timesInts(anon_0_0, intToRef(2)))))
+}
+
+function c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures typeOf(this) == c_Meter() ==>
+    result == c_Meter_f_shown_args_c_Meter_ret_Int(this)
+
+
+function c_Meter_f_shown_args_c_Meter_ret_Int(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Meter())
+  requires acc(c_Meter_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(c_Meter_unique(this), write) in this.bf_raw)
+}
+
+function c_Shown_f_shown(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_Shown())
+  requires acc(c_Shown_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method DoubledMeter_c_Meter_upcast(this: Ref)
+  requires acc(DoubledMeter_unique(this), write)
+  ensures acc(c_Meter_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), DoubledMeter())) && true ==>
+    c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this) ==
+    old(DoubledMeter_f_shown(this))
+
+
+method c_Meter_c_Shown_upcast(this: Ref)
+  requires acc(c_Meter_unique(this), write)
+  ensures acc(c_Shown_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_Meter())) && true ==>
+    (unfolding acc(c_Shown_unique(this), wildcard) in
+      c_Shown_f_shown(this)) ==
+    old(c_Meter_c_Meter_f_shown_args_c_Meter_ret_Int(this))
+
+
+method con(par_raw: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_raw), intType())
+  ensures isSubtype(typeOf(ret_1), DoubledMeter())
+  ensures isSubtype(typeOf(ret_1), DoubledMeter()) &&
+    (isSubtype(typeOf(ret_1), c_Meter()) && acc(ret_1.bf_raw, write) &&
+    isSubtype(typeOf(ret_1.bf_raw), intType()))
+  ensures intFromRef(ret_1.bf_raw) == intFromRef(par_raw)
+
+
+method subclassThroughInterface() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var m: Ref
+  var anon_2: Ref
+  var s: Ref
+  var anon_3: Ref
+  anon_2 := con(intToRef(3))
+  fold acc(c_Meter_unique(anon_2), write)
+  fold acc(DoubledMeter_unique(anon_2), write)
+  m := anon_2
+  DoubledMeter_c_Meter_upcast(m)
+  s := m
+  c_Meter_c_Shown_upcast(s)
+  anon_3 := (unfolding acc(c_Shown_unique(s), wildcard) in
+      c_Shown_f_shown(s))
+  assert intFromRef(anon_3) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
