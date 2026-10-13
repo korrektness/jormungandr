@@ -17,6 +17,7 @@ object PluginErrors : KtDiagnosticsContainer() {
     val UNIQUENESS_CFG by info1<PsiElement, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
     val INVALID_EXPOSES get() = FailureKind.INVALID_EXPOSES
     val INVALID_SPEC_OF get() = FailureKind.INVALID_SPEC_OF
+    val INVALID_EXTERNAL_SPEC get() = FailureKind.INVALID_EXTERNAL_SPEC
     val INVALID_OBSERVER get() = FailureKind.INVALID_OBSERVER
     val INVALID_LAW get() = FailureKind.INVALID_LAW
     override fun getRendererFactory() = FormalVerificationPluginErrorMessages
@@ -29,6 +30,7 @@ object PluginErrors : KtDiagnosticsContainer() {
         UNIQUENESS_CFG.name,
         INVALID_EXPOSES.name,
         INVALID_SPEC_OF.name,
+        INVALID_EXTERNAL_SPEC.name,
         INVALID_OBSERVER.name,
         INVALID_LAW.name,
     )

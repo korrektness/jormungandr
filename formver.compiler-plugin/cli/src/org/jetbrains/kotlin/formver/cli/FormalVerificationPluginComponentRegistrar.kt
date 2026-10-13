@@ -5,6 +5,9 @@
 
 package org.jetbrains.kotlin.formver.cli
 
+import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
+import org.jetbrains.kotlin.cli.common.config.addKotlinSourceRoot
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
@@ -40,12 +43,25 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
         // The dump needs the uniqueness extension, which is registered only when converting.
         val dumpUniquenessCFG = configuration.get(FormalVerificationConfigurationKeys.DUMP_UNIQUENESS_CFG, false)
                 && conversionSelection != TargetsSelection.NO_TARGETS
+        val externalSpecs = ExternalSpecSources(
+            configuration.getList(FormalVerificationConfigurationKeys.EXTERNAL_SPEC_FILES) +
+                    ExternalSpecSources.extractBundled(this@FormalVerificationPluginComponentRegistrar.javaClass.classLoader)
+        )
+        for (file in externalSpecs.files) {
+            configuration.addKotlinSourceRoot(file.path)
+            configuration.messageCollector.report(CompilerMessageSeverity.LOGGING, "Loading external specification $file")
+        }
         val config = PluginConfiguration(
             logLevel, errorStyle, conversionSelection, verificationSelection,
             dumpUniquenessCFG, configuration.messageCollector,
-            configuration.get(FormalVerificationConfigurationKeys.VERIFICATION_CACHE_DIRECTORY),
+            verificationCacheDirectory = configuration.get(FormalVerificationConfigurationKeys.VERIFICATION_CACHE_DIRECTORY),
+            externalSpecs = externalSpecs,
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
+        if (!externalSpecs.isEmpty()) {
+            FirExtensionRegistrarAdapter.registerExtension(ExternalSpecExtensionRegistrar(externalSpecs))
+            IrGenerationExtension.registerExtension(ExternalSpecIrStripper(externalSpecs))
+        }
 
         if (config.conversionSelection != TargetsSelection.NO_TARGETS) {
             // Locality must run before uniqueness.

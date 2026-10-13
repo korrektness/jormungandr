@@ -15,7 +15,9 @@ them.
   `--rerun` re-executes tests Gradle considers current.
 - `check-gradle-consumer.sh` — publishes the plugin to a private Maven repository and
   compiles a tiny Gradle project with it, so a defect that only the shadow jar has
-  (an unrelocated dependency) fails. Needs network access.
+  (an unrelocated dependency) fails. The project also verifies calls through an
+  external spec and the bundled specs, and fails if a spec reaches the compiled
+  output. Needs network access and Z3; exits 2 without Z3.
 - `check-testdata.sh` — golden files with no source, and empty golden files.
 
 `test.sh` and `check-all.sh` take `--help`, and need `python3` on PATH because

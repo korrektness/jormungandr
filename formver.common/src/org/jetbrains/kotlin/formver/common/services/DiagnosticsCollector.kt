@@ -27,6 +27,8 @@ val updatingTestData: Boolean
 abstract class DiagnosticsCollector(val testServices: TestServices) : TestService {
     abstract val fileExtension: String
 
+    protected open val includeAdditionalFiles: Boolean = false
+
     /**
      * Whether this collector's golden file holds [diagnostic].
      */
@@ -67,7 +69,7 @@ abstract class DiagnosticsCollector(val testServices: TestServices) : TestServic
         for (part in info.partsForDependsOnModules) {
             val currentModule = part.module
             for (file in currentModule.files) {
-                val firFile = info.mainFirFiles[file] ?: continue
+                val firFile = (if (includeAdditionalFiles) info.allFirFiles[file] else info.mainFirFiles[file]) ?: continue
                 diagnostics.addAll(frontendDiagnosticsPerFile[firFile].map { it.diagnostic }.filter(::records))
             }
         }

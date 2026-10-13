@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.locality.plugin
 
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isStringBuilderClearReceiver
+import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.utils.isInline
@@ -35,7 +36,7 @@ context(context: CheckerContext)
 fun FirReceiverParameterSymbol.resolveLocality(): Locality =
     if (isReadOnlyBorrowed(context.session) || isStringBuilderClearReceiver ||
         isInlinedIntoSpecification(containingDeclarationSymbol)
-    ) Locality.Local else resolvedType.locality
+    ) Locality.Local else externalSpecificationSymbol(context.session).resolvedType.locality
 
 object ReceiverLocalityResolver :
     SymbolTypeFactResolver<Locality, FirReceiverParameterSymbol> {
@@ -61,7 +62,7 @@ fun FirVariableSymbol<*>.resolveLocality(): Locality {
     ) return Locality.Local
 
     if (resolvedReturnTypeRef.source?.kind !is KtFakeSourceElementKind.ImplicitTypeRef) {
-        return resolvedReturnType.locality
+        return externalSpecificationSymbol(context.session).resolvedReturnType.locality
     }
 
     return resolvedInitializer?.resolveLocality() ?: resolvedReturnType.locality

@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.readonly.plugin
 
+import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -57,7 +58,7 @@ fun FirFunctionCall.isUniquePredConstruction(): Boolean =
     (toResolvedCallableSymbol() as? FirFunctionSymbol<*>)?.isUniquePredConstructor == true
 
 fun FirBasedSymbol<*>.isPure(session: FirSession): Boolean =
-    hasAnnotation(pureAnnotationId, session) ||
+    externalSpecificationSymbol(session).hasAnnotation(pureAnnotationId, session) ||
             (this is FirPropertyAccessorSymbol && isGetter && propertySymbol.isPure(session))
 
 fun FirFunctionCall.isPureCall(session: FirSession): Boolean =
@@ -73,7 +74,7 @@ private fun FirFunctionSymbol<*>.borrowsParameterOfType(type: ConeKotlinType, se
  */
 fun FirValueParameterSymbol.isReadOnlyBorrowed(session: FirSession): Boolean {
     val function = containingDeclarationSymbol as? FirFunctionSymbol<*> ?: return false
-    return function.borrowsParameterOfType(resolvedReturnType, session)
+    return function.borrowsParameterOfType(externalSpecificationSymbol(session).resolvedReturnType, session)
 }
 
 /**
@@ -81,7 +82,7 @@ fun FirValueParameterSymbol.isReadOnlyBorrowed(session: FirSession): Boolean {
  */
 fun FirReceiverParameterSymbol.isReadOnlyBorrowed(session: FirSession): Boolean {
     val function = containingDeclarationSymbol as? FirFunctionSymbol<*> ?: return false
-    return function.borrowsParameterOfType(resolvedType, session)
+    return function.borrowsParameterOfType(externalSpecificationSymbol(session).resolvedType, session)
 }
 
 fun FirElement.isSpecificationCall(): Boolean =

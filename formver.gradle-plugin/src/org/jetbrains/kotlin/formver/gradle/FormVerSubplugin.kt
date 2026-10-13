@@ -11,6 +11,8 @@ import org.gradle.tooling.provider.model.ToolingModelBuilderRegistry
 import org.jetbrains.kotlin.formver.BuildConfig
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames
 import org.jetbrains.kotlin.formver.gradle.model.builder.FormVerModelBuilder
+import org.jetbrains.kotlin.gradle.plugin.FilesOptionKind
+import org.jetbrains.kotlin.gradle.plugin.FilesSubpluginOption
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
@@ -36,6 +38,7 @@ class FormVerGradleSubplugin
         }
 
         val formVerExtension = project.extensions.getByType(FormVerExtension::class.java)
+        val externalSpecs = project.files(formVerExtension.myExternalSpecs)
 
         return project.provider {
             val options = mutableListOf<SubpluginOption>()
@@ -62,6 +65,14 @@ class FormVerGradleSubplugin
 
             formVerExtension.myDumpUniquenessCFG?.let {
                 options += SubpluginOption(FormalVerificationPluginNames.DUMP_UNIQUENESS_CFG_OPTION_NAME, it.toString())
+            }
+
+            // One option per file: a files option joins its files into a single value, and each file is also a
+            // task input.
+            for (spec in externalSpecs.files.sorted()) {
+                options += FilesSubpluginOption(
+                    FormalVerificationPluginNames.EXTERNAL_SPEC_OPTION_NAME, listOf(spec), FilesOptionKind.INTERNAL
+                )
             }
 
             options

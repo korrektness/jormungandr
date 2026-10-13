@@ -37,6 +37,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is KotlinCondition.Law -> lawMessage(condition)
             is KotlinCondition.Observer -> observerMessage(condition)
             is KotlinCondition.Exposes -> exposesMessage(condition)
+            is KotlinCondition.ExternalSpec -> externalSpecMessage(condition)
             else -> obligationMessage(failure)
         }
         val backend = failure.backend
@@ -121,6 +122,28 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 ExposesRule.DUPLICATE_BINDING -> "Duplicate observer binding."
             }
 
+    private fun externalSpecMessage(condition: KotlinCondition.ExternalSpec): String {
+        val target = condition.target
+        return when (condition.rule) {
+            ExternalSpecRule.MISSING_TARGET_ARGUMENT -> "Unresolved external target argument: $target"
+            ExternalSpecRule.INVALID_TARGET_NAME -> "Invalid external target name: $target"
+            ExternalSpecRule.OUTSIDE_SPECIFICATION_INPUTS -> "External model outside loaded specification inputs: $target"
+            ExternalSpecRule.FUNCTION_NOT_TOP_LEVEL -> "An external function model must be top-level."
+            ExternalSpecRule.MEMBER_OUTSIDE_CLASS_MODEL -> "@ExternalMember outside an external class model."
+            ExternalSpecRule.CLASS_MODEL_NOT_INTERFACE -> "An external class model must be an interface."
+            ExternalSpecRule.AMBIGUOUS_CLASS -> "Ambiguous external class: $target"
+            ExternalSpecRule.UNRESOLVED_CLASS -> "Unresolved external class: $target"
+            ExternalSpecRule.SOURCE_TARGET -> "External targets must come from a dependency: $target"
+            ExternalSpecRule.DUPLICATE_CLASS -> "Duplicate external class binding: $target"
+            ExternalSpecRule.TYPE_PARAMETERS -> "Incompatible external class type parameters: $target"
+            ExternalSpecRule.TYPE_PARAMETER_BOUNDS -> "Incompatible external class type parameter bounds: $target"
+            ExternalSpecRule.UNSUPPORTED_MEMBER -> "Unsupported external member kind."
+            ExternalSpecRule.NO_COMPATIBLE_TARGET -> "External binding requires one compatible target: $target"
+            ExternalSpecRule.DUPLICATE_MEMBER -> "Duplicate external member binding: $target"
+            ExternalSpecRule.SOURCE_SUBTYPE -> "Source subtype of externally modeled class: $target"
+        }
+    }
+
     private fun obligationMessage(failure: Failure): String = when (val condition = failure.condition) {
             is KotlinCondition.Proof -> proofMessage(condition)
             is PurityCondition -> when (condition.rule) {
@@ -167,7 +190,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 val evidence = requireNotNull(failure.backend)
                 "Could not establish a generated Kotlin obligation [${evidence.errorId}/${evidence.reasonId}]: ${evidence.detail}"
             }
-            is KotlinCondition.SpecOf, is KotlinCondition.Law, is KotlinCondition.Observer, is KotlinCondition.Exposes ->
+            is KotlinCondition.SpecOf, is KotlinCondition.Law, is KotlinCondition.Observer, is KotlinCondition.Exposes,
+            is KotlinCondition.ExternalSpec ->
                 error("Specification conditions must use their specification renderer")
     }
 

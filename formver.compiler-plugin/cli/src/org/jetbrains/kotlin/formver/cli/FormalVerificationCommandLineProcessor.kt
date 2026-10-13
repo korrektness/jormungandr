@@ -11,15 +11,18 @@ import org.jetbrains.kotlin.config.CompilerConfigurationKey
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.CONVERSION_TARGETS_SELECTION
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.DUMP_UNIQUENESS_CFG
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.ERROR_STYLE
+import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.EXTERNAL_SPEC_FILES
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.LOG_LEVEL
 import org.jetbrains.kotlin.formver.cli.FormalVerificationConfigurationKeys.VERIFICATION_TARGETS_SELECTION
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.CONVERSION_TARGETS_SELECTION_OPTION_NAME
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.DUMP_UNIQUENESS_CFG_OPTION_NAME
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.ERROR_STYLE_NAME
+import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.EXTERNAL_SPEC_OPTION_NAME
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.LOG_LEVEL_OPTION_NAME
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames.VERIFICATION_TARGETS_SELECTION_OPTION_NAME
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
+import java.io.File
 
 object FormalVerificationConfigurationKeys {
     val VERIFICATION_CACHE_DIRECTORY: CompilerConfigurationKey<String> = CompilerConfigurationKey.create("verification cache directory")
@@ -31,6 +34,8 @@ object FormalVerificationConfigurationKeys {
         CompilerConfigurationKey.create("verification targets selection")
     val DUMP_UNIQUENESS_CFG: CompilerConfigurationKey<Boolean> =
         CompilerConfigurationKey.create("dump uniqueness CFG")
+    val EXTERNAL_SPEC_FILES: CompilerConfigurationKey<List<File>> =
+        CompilerConfigurationKey.create("external specification sources")
 }
 
 @OptIn(ExperimentalCompilerApi::class)
@@ -69,6 +74,13 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
             required = false,
             allowMultipleOccurrences = false
         )
+        val EXTERNAL_SPEC_OPTION = CliOption(
+            EXTERNAL_SPEC_OPTION_NAME,
+            "<path>",
+            "Kotlin source file specifying external code; analysed but not compiled",
+            required = false,
+            allowMultipleOccurrences = true
+        )
     }
 
     override val pluginId: String = FormalVerificationPluginNames.PLUGIN_ID
@@ -79,6 +91,7 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
         CONVERSION_TARGETS_SELECTION_OPTION,
         VERIFICATION_TARGETS_SELECTION_OPTION,
         DUMP_UNIQUENESS_CFG_OPTION,
+        EXTERNAL_SPEC_OPTION,
     )
 
     override fun processOption(option: AbstractCliOption, value: String, configuration: CompilerConfiguration) =
@@ -106,6 +119,12 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
 
                 DUMP_UNIQUENESS_CFG_OPTION ->
                     configuration.put(DUMP_UNIQUENESS_CFG, value.toBooleanStrict())
+
+                EXTERNAL_SPEC_OPTION -> {
+                    val file = File(value)
+                    require(file.isFile && file.extension == "kt") { "$value is not a Kotlin source file." }
+                    configuration.add(EXTERNAL_SPEC_FILES, file)
+                }
 
                 else -> throw CliOptionProcessingException("Unknown option: ${option.optionName}")
             }

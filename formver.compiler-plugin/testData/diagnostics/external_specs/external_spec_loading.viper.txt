@@ -1,0 +1,55 @@
+/external_spec_loading.kt: info: Generated Viper text for useLibrary:
+field count: Ref
+
+method increment(counter: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(ret_1), unitType())
+
+
+method useLibrary(counter: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := increment(counter)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/external_spec_loading.kt: info: Generated Viper text for callSpec:
+field bf_count: Ref
+
+function g_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method callSpec(counter: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := incrementModel(counter)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method incrementModel(counter: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(ret_1), CounterModel())
+
+
+/external_spec_loading.kt: info: Generated Viper text for typeSpec:
+function count(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method typeSpec(model: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(model), CounterModel())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := count(model)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

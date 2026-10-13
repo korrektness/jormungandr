@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.plugin.services
 import org.jetbrains.kotlin.cli.common.messages.MessageRenderer
 import org.jetbrains.kotlin.cli.common.messages.PrintingMessageCollector
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar.ExtensionStorage
+import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoot
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 import org.jetbrains.kotlin.formver.common.*
@@ -15,6 +16,8 @@ import org.jetbrains.kotlin.formver.locality.plugin.LocalityExtensionRegistrar
 import org.jetbrains.kotlin.formver.plugin.compiler.FormalVerificationPluginExtensionRegistrar
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.ALWAYS_VALIDATE
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.DUMP_UNIQUENESS_CFG
+import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.EXTERNAL_SPEC
+import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.EXTERNAL_TEST_LIBRARY
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.FULL_VIPER_DUMP
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.LOCALITY_CHECK_ONLY
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.NEVER_VALIDATE
@@ -31,11 +34,19 @@ import org.jetbrains.kotlin.test.services.AdditionalSourceProvider
 import org.jetbrains.kotlin.test.services.EnvironmentConfigurator
 import org.jetbrains.kotlin.test.services.TestModuleStructure
 import org.jetbrains.kotlin.test.services.TestServices
+import org.jetbrains.kotlin.test.services.moduleStructure
+import org.jetbrains.kotlin.test.services.sourceFileProvider
 import java.io.File
 
 class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentConfigurator(testServices) {
     override val directiveContainers: List<DirectivesContainer>
         get() = listOf(FormVerDirectives)
+
+    override fun configureCompilerConfiguration(configuration: CompilerConfiguration, module: TestModule) {
+        for (path in module.directives[EXTERNAL_TEST_LIBRARY]) {
+            configuration.addJvmClasspathRoot(ExternalTestLibraries.compiled(File(path)))
+        }
+    }
 
     override fun ExtensionStorage.registerCompilerExtensions(module: TestModule, configuration: CompilerConfiguration) {
         require(!(FULL_VIPER_DUMP in module.directives && RENDER_PREDICATES in module.directives)) {
@@ -72,14 +83,28 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
             dumpUniquenessCFG = dumpUniquenessCFG,
             // Stack traces go to the test's stderr, outside the goldens.
             messageCollector = PrintingMessageCollector(System.err, MessageRenderer.PLAIN_RELATIVE_PATHS, true),
+            externalSpecs = externalSpecs(module),
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
+        if (!config.externalSpecs.isEmpty()) {
+            FirExtensionRegistrarAdapter.registerExtension(ExternalSpecExtensionRegistrar(config.externalSpecs))
+        }
         // Locality must run before uniqueness.
         // LOCALITY_CHECK_ONLY runs locality alone; every other mode runs both.
         FirExtensionRegistrarAdapter.registerExtension(LocalityExtensionRegistrar())
         if (!localityOnly) {
             FirExtensionRegistrarAdapter.registerExtension(UniquenessExtensionRegistrar())
         }
+    }
+
+    /** The spec files that [ExternalSpecProvider] added to [module], at the paths the compiler reads them from. */
+    private fun externalSpecs(module: TestModule): ExternalSpecSources {
+        val requested = (testServices.moduleStructure.allDirectives[EXTERNAL_SPEC] + module.directives[EXTERNAL_SPEC])
+            .mapTo(HashSet()) { File(it).canonicalFile }
+        val added = module.files.filter { it.isAdditional && it.originalFile.canonicalFile in requested }
+        val missing = requested - added.mapTo(HashSet()) { it.originalFile.canonicalFile }
+        check(missing.isEmpty()) { "External specs $missing were not added to module ${module.name}." }
+        return ExternalSpecSources(added.map { testServices.sourceFileProvider.getOrCreateRealFileForSourceFile(it) })
     }
 }
 
@@ -119,6 +144,14 @@ object FormVerDirectives : SimpleDirectivesContainer() {
     val NEVER_VALIDATE by directive(
         description = "Run in conversion-only mode: skip verification, keep consistency checking"
     )
+
+    val EXTERNAL_SPEC by stringDirective(
+        description = "Analyse the Kotlin file at this path, relative to the repository root, as an external specification"
+    )
+
+    val EXTERNAL_TEST_LIBRARY by stringDirective(
+        description = "Compile the Kotlin file at this path, relative to the repository root, without the plugin and put it on the classpath"
+    )
 }
 
 class StdlibReplacementsProvider(testServices: TestServices, baseDir: String = ".") :
@@ -134,4 +167,13 @@ class StdlibReplacementsProvider(testServices: TestServices, baseDir: String = "
             listOf(File(libraryPath).toTestFile())
         else emptyList()
 
+}
+
+class ExternalSpecProvider(testServices: TestServices) : AdditionalSourceProvider(testServices) {
+    override fun produceAdditionalFiles(
+        globalDirectives: RegisteredDirectives,
+        module: TestModule,
+        testModuleStructure: TestModuleStructure,
+    ): List<TestFile> =
+        (globalDirectives[EXTERNAL_SPEC] + module.directives[EXTERNAL_SPEC]).distinct().map { File(it).toTestFile() }
 }

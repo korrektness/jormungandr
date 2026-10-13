@@ -55,4 +55,11 @@ interface FormVer {
      * @return the configured value, or null if unset
      */
     val dumpUniquenessCFG: Boolean?
+
+    /**
+     * The Kotlin source files analysed as specifications of code outside the module.
+     *
+     * @return the absolute paths of the configured files
+     */
+    val externalSpecs: List<String>
 }

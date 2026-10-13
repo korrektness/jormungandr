@@ -30,6 +30,7 @@ import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.LogLevel
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
+import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.asInternalErrorAt
@@ -72,8 +73,14 @@ class ViperPoweredDeclarationChecker(
 ) : FirFunctionChecker(MppCheckerKind.Common) {
     private val processedLambdas = mutableSetOf<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol>()
 
+    context(context: CheckerContext)
+    private fun shouldSkip(): Boolean =
+        session.externalSpecifications?.errors?.isNotEmpty() == true ||
+            config.externalSpecs.isExternalSpec(context.containingFilePath)
+
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
+        if (shouldSkip()) return
         when (declaration) {
             is FirSimpleFunction -> {}
             is FirPropertyAccessor -> {
@@ -104,6 +111,7 @@ class ViperPoweredDeclarationChecker(
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     fun checkStandaloneLambdas(declaration: FirDeclaration, scopeName: ScopedName) {
+        if (shouldSkip()) return
         if (config.conversionSelection != TargetsSelection.ALL_TARGETS || declaration.hasAnnotation(neverConvertId, session)) return
         val collector = ProgramConverter(session, config, context, reporter)
         val lambdas = with(collector) { SpecifiedLambda.collect(declaration, scopeName) }

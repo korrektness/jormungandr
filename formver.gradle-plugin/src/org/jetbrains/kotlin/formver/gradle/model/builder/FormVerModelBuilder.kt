@@ -25,6 +25,7 @@ class FormVerModelBuilder : ToolingModelBuilder {
             extension.myConversionTargetsSelection,
             extension.myVerificationTargetsSelection,
             extension.myDumpUniquenessCFG,
+            project.files(extension.myExternalSpecs).files.map { it.absolutePath }.sorted(),
         )
     }
 

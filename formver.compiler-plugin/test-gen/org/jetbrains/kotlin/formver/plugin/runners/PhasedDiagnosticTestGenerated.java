@@ -21,6 +21,36 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics"), Pattern.compile("^(.+)\\.kt$"), null, true);
   }
 
+  @Test
+  @TestMetadata("external_spec_binding.kt")
+  public void testExternal_spec_binding() {
+    runTest("formver.compiler-plugin/testData/diagnostics/external_spec_binding.kt");
+  }
+
+  @Test
+  @TestMetadata("external_spec_invalid.kt")
+  public void testExternal_spec_invalid() {
+    runTest("formver.compiler-plugin/testData/diagnostics/external_spec_invalid.kt");
+  }
+
+  @Test
+  @TestMetadata("external_spec_ownership.kt")
+  public void testExternal_spec_ownership() {
+    runTest("formver.compiler-plugin/testData/diagnostics/external_spec_ownership.kt");
+  }
+
+  @Test
+  @TestMetadata("external_spec_references.kt")
+  public void testExternal_spec_references() {
+    runTest("formver.compiler-plugin/testData/diagnostics/external_spec_references.kt");
+  }
+
+  @Test
+  @TestMetadata("external_spec_use.kt")
+  public void testExternal_spec_use() {
+    runTest("formver.compiler-plugin/testData/diagnostics/external_spec_use.kt");
+  }
+
   @Nested
   @TestMetadata("formver.compiler-plugin/testData/diagnostics/expensive_verification")
   @TestDataPath("$PROJECT_ROOT")
@@ -116,6 +146,22 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testZ_function() {
         runTest("formver.compiler-plugin/testData/diagnostics/expensive_verification/algorithms/z_function.kt");
       }
+    }
+  }
+
+  @Nested
+  @TestMetadata("formver.compiler-plugin/testData/diagnostics/external_specs")
+  @TestDataPath("$PROJECT_ROOT")
+  public class External_specs {
+    @Test
+    public void testAllFilesPresentInExternal_specs() {
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics/external_specs"), Pattern.compile("^(.+)\\.kt$"), null, true);
+    }
+
+    @Test
+    @TestMetadata("external_spec_loading.kt")
+    public void testExternal_spec_loading() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/external_spec_loading.kt");
     }
   }
 

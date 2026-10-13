@@ -30,7 +30,14 @@ gradle_result=passed
 
 consumer_result=passed
 # The published shadow jar run by a Gradle build, which no unit test exercises.
-./agent-scripts/check-gradle-consumer.sh || consumer_result=failed
+# Exit 2 means it found no Z3 and did not run.
+consumer_status=0
+./agent-scripts/check-gradle-consumer.sh || consumer_status=$?
+case "$consumer_status" in
+    0) ;;
+    2) consumer_result=skipped ;;
+    *) consumer_result=failed ;;
+esac
 
 testdata_result=passed
 # Called directly as well as through pre-commit, so it runs even when

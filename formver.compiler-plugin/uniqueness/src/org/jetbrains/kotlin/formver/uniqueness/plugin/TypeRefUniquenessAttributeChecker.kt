@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.common.isExternalSpecificationFile
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -20,6 +21,7 @@ import org.jetbrains.kotlin.formver.uniqueness.attribute.UniquenessAttribute
 private object UniquenessAttributeTargetJudgment : AttributeTargetJudgment {
     context(context: CheckerContext)
     override fun accepts(parents: List<FirElement>): Boolean {
+        if (context.session.isExternalSpecificationFile(context.containingFilePath)) return true
         val targetElement = parents.getOrNull(1) ?: return false
 
         return when (targetElement) {

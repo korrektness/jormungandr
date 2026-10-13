@@ -21,7 +21,7 @@ internal fun ProgramConversionContext.createContractConversionContext(
         this,
         signature,
         symbol.valueParameterSymbols,
-        signature.labelName,
+        symbol.name.asString(),
         returnTarget,
     )
     val wrappedResolver = firSpec.returnVar?.let { ReturnVarSubstitutor(it, signature.returns) }

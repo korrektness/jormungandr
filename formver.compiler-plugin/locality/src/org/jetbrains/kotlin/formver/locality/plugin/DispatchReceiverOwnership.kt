@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.locality.plugin
 
+import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.formver.common.FailureKind
 import org.jetbrains.kotlin.formver.common.reportAttributeFailure
@@ -41,14 +42,14 @@ private val FirBasedSymbol<*>.declared: FirBasedSymbol<*>
  * Whether [this] member function owns its dispatch receiver: it is annotated `@Unique`.
  */
 fun FirBasedSymbol<*>.ownsDispatchReceiver(session: FirSession): Boolean =
-    declared.hasAnnotation(defaultUniquenessAnnotationId, session)
+    declared.externalSpecificationSymbol(session).hasAnnotation(defaultUniquenessAnnotationId, session)
 
 /**
  * Whether [this] member function borrows its dispatch receiver: it is annotated `@Borrowed`, or it is a `@Pure`
  * function that owns it.
  */
 fun FirBasedSymbol<*>.borrowsDispatchReceiver(session: FirSession): Boolean =
-    declared.hasAnnotation(defaultLocalityAnnotationId, session) ||
+    declared.externalSpecificationSymbol(session).hasAnnotation(defaultLocalityAnnotationId, session) ||
             ownsDispatchReceiver(session) && declared.isPure(session)
 
 /**

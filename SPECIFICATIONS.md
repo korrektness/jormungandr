@@ -4,7 +4,8 @@ SnaKt translates Kotlin code with formal specifications to [Viper](https://www.p
 
 ## Verification Control
 
-SnaKt converts and verifies every function in the sources being compiled. A function's specification comes from its
+SnaKt converts and verifies application functions in the sources being compiled. External specification sources are
+analysis-only; see [External specifications](#external-specifications). A function's specification comes from its
 `preconditions` and `postconditions` blocks, its Kotlin `contract { }`, its ownership annotations, `@Pure`, and its
 types:
 
@@ -30,6 +31,7 @@ A function that uses a construct SnaKt does not translate gets an `UNSUPPORTED_F
 formver {
     verificationTargetsSelection("no_targets")  // Convert, but verify nothing
     // or "all_targets" (default) — verify every function
+    externalSpec("specs/Library.kt")  // Analyse as a specification of external code, but do not compile it
 }
 ```
 
@@ -54,7 +56,8 @@ The registry groups user-visible problems as follows:
 - Proof conditions: assertions, refutations, laws, preconditions, postconditions and loop invariants;
   Kotlin returns effects and conditional effects; collection bounds and sub-list ranges;
   ownership obligations and override refinement. Unclassified backend obligations retain their Silver identifiers.
-- Specification declarations: invalid specification functions, observer bindings, observers and laws.
+- Specification declarations: invalid specification functions, external specification bindings, observer bindings,
+  observers and laws.
 - Locality and uniqueness: incompatible attributes, captures, construction, escape and exit states;
   duplicate or overlapping unique arguments, moved accesses, annotation placement, override and expect/actual
   compatibility, pure results and unique predicates.
@@ -102,13 +105,58 @@ interface Measure {
 }
 ```
 
-The `@SpecOf` function is declared in the same class or interface as the member and has the member's value
-parameter types, ownership annotations included, and type parameters; this picks the overload it specifies. It
-returns `Unit`, has no extension receiver, and its body holds only a `preconditions` block followed by a
-`postconditions` block, whose type is the member's return type. Its parameters stand for the member's parameters
+The `@SpecOf` function is declared beside its target in the same class or interface, or in the same package for a
+top-level `@ExternalFunction` model. Its value parameter types, ownership annotations included, and positional
+type parameters match the target; this picks the overload it specifies. It returns `Unit`. An extension receiver
+is allowed for an external function model and matches the target's receiver type. Its body holds only a
+`preconditions` block followed by a `postconditions` block, whose type is the target's return type. Its parameters stand for the member's parameters
 by position. It is never converted, verified or called. A member has at most one `@SpecOf` function, none if its
 body has a specification. Each violation, and a call to a `@SpecOf` function, is
 reported as `INVALID_SPEC_OF`.
+
+### External specifications
+
+Use external specifications to describe declarations whose implementations are in compiled dependencies. Supply
+ordinary Kotlin files as external specification inputs. `@ExternalSpec("package.Type")` on a model interface binds
+its members to that dependency type. `@ExternalMember("name")` selects a different target member name.
+`@ExternalFunction("package.function")` binds a top-level model function, including an extension function.
+
+```kotlin
+package models
+
+import org.jetbrains.kotlin.formver.plugin.*
+
+@ExternalSpec("external.library.Counter")
+interface CounterModel {
+    @Pure @Unique fun value(): Int
+    @Law @Pure @Unique fun nonnegative(): Boolean = value() >= 0
+
+    @Unique @Borrowed fun advance(step: Int): Int
+    @SpecOf("advance") @Unique @Borrowed fun advanceSpec(step: Int) {
+        preconditions { step >= 0; value() <= 2147483647 - step }
+        postconditions<Int> { result -> result == old(value()) + step; value() == result }
+    }
+}
+```
+
+The model supplies the existing observer, law, ownership and contract machinery. Dependency types in client
+signatures use the model's verification representation. Function-model bodies are placeholders; contracts come
+from their leading specification blocks or a sibling `@SpecOf` holder. Model declarations are available during
+analysis and removed before code generation. Application code references dependency declarations; references to
+model declarations are compilation errors.
+
+Bindings match callable kind, parameter and result types, generic parameters and bounds, extension receivers,
+varargs, property mutability and suspend status. Model-interface types stand for their bound dependency types.
+A model interface declares only functions and properties, and `@ExternalMember` appears only inside one.
+Unresolved, incompatible, ambiguous and duplicate bindings are errors, each reported as `INVALID_EXTERNAL_SPEC` on
+the model declaration; a module with any of them is not verified. Bundled and user specifications share this check. Source subtypes of externally modeled dependency types are rejected because this boundary has no
+source-implementation conformance proof.
+
+External contracts, purity, ownership and laws are trusted assumptions about the dependency. SnaKt verifies
+callers against them without proving the dependency's implementation. Audit each model against the exact
+library version in the compilation classpath; a matching signature alone establishes no behavioral compatibility.
+The compiler reports loaded specification inputs and resolved trusted bindings. The bundled assumptions are the
+sources indexed by `formver.compiler-plugin/plugin/resources/META-INF/formver/external-specs.list`.
 
 ### Overrides
 

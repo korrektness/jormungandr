@@ -1,0 +1,329 @@
+/external_spec_use.kt: info: Generated Viper text for readLibraryValue:
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function readLibraryValue(counter: Ref): Ref
+  requires isSubtype(typeOf(counter), CounterModel())
+  requires acc(CounterModel_unique(counter), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(CounterModel_unique(counter), wildcard) in value(counter))
+}
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/external_spec_use.kt: info: Generated Viper text for lawOnLibraryReceiver:
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lawOnLibraryReceiver(counter: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), CounterModel())
+  requires acc(CounterModel_unique(counter), write)
+  ensures acc(CounterModel_unique(counter), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := (unfolding acc(CounterModel_unique(counter), wildcard) in
+      value(counter))
+  assert intFromRef(anon) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/external_spec_use.kt: info: Generated Viper text for factoryAndMutation:
+function g_label(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CounterModel())
+  requires acc(CounterModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CounterModel())
+  requires acc(CounterModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method advance(v_this: Ref, step: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this), CounterModel())
+  requires acc(CounterModel_unique(v_this), write)
+  requires isSubtype(typeOf(step), intType())
+  requires intFromRef(step) >= 0
+  requires (unfolding acc(CounterModel_unique(v_this), wildcard) in
+      intFromRef(value(v_this)) <= 2147483647 - intFromRef(step))
+  ensures acc(CounterModel_unique(v_this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) ==
+    old((unfolding acc(CounterModel_unique(v_this), wildcard) in
+      intFromRef(value(v_this)))) +
+    intFromRef(step)
+  ensures (unfolding acc(CounterModel_unique(v_this), wildcard) in
+      intFromRef(value(v_this)) == intFromRef(ret_2))
+
+
+method createModel(initial: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(initial), intType())
+  requires intFromRef(initial) >= 0
+  ensures isSubtype(typeOf(ret_1), CounterModel())
+  ensures acc(CounterModel_unique(ret_1), write)
+  ensures (unfolding acc(CounterModel_unique(ret_1), wildcard) in
+      intFromRef(value(ret_1)) == intFromRef(initial))
+
+
+method factoryAndMutation() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var counter: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_result: Ref
+  var anon_2: Ref
+  var shifted: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  counter := createModel(intToRef(2))
+  anon_0 := (unfolding acc(CounterModel_unique(counter), wildcard) in
+      value(counter))
+  assert intFromRef(anon_0) == 2
+  anon_1 := (unfolding acc(CounterModel_unique(counter), wildcard) in
+      g_label(counter))
+  assert intFromRef(anon_1) == 2
+  l0_result := advance(counter, intToRef(3))
+  assert intFromRef(l0_result) == 5
+  anon_2 := (unfolding acc(CounterModel_unique(counter), wildcard) in
+      value(counter))
+  assert intFromRef(anon_2) == 5
+  shifted := shiftModel(counter, intToRef(4))
+  assert intFromRef(shifted) == 9
+  anon_3 := (unfolding acc(CounterModel_unique(counter), wildcard) in
+      value(counter))
+  assert intFromRef(anon_3) == 9
+  anon_4 := (unfolding acc(CounterModel_unique(counter), wildcard) in
+      g_label(counter))
+  assert intFromRef(anon_4) == 9
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method shiftModel(v_this_extension: Ref, amount: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(v_this_extension), CounterModel())
+  requires acc(CounterModel_unique(v_this_extension), write)
+  requires isSubtype(typeOf(amount), intType())
+  requires intFromRef(amount) >= 0
+  requires (unfolding acc(CounterModel_unique(v_this_extension), wildcard) in
+      intFromRef(value(v_this_extension)) <=
+      2147483647 - intFromRef(amount))
+  ensures acc(CounterModel_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) ==
+    old((unfolding acc(CounterModel_unique(v_this_extension), wildcard) in
+      intFromRef(value(v_this_extension)))) +
+    intFromRef(amount)
+  ensures (unfolding acc(CounterModel_unique(v_this_extension), wildcard) in
+      intFromRef(value(v_this_extension)) == intFromRef(ret_3))
+
+
+/external_spec_use.kt: info: Generated Viper text for renamedOverload:
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cap(this: Ref, limit: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_unique(this), write)
+  requires isSubtype(typeOf(limit), intType())
+  ensures acc(CounterModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) <= intFromRef(limit)
+
+
+method renamedOverload(counter: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), CounterModel())
+  requires acc(CounterModel_unique(counter), write)
+  ensures acc(CounterModel_unique(counter), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var capped: Ref
+  capped := cap(counter, intToRef(7))
+  assert intFromRef(capped) <= 7
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/external_spec_use.kt: info: Generated Viper text for topLevelAndGeneric:
+function identityModel(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(anyType()))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+  ensures result == x
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function twiceModel(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(x) * 2
+
+
+method topLevelAndGeneric() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  assert intFromRef(twiceModel(intToRef(4))) == 8
+  anon := identityModel(intToRef(13))
+  inhale isSubtype(typeOf(anon), intType())
+  assert intFromRef(anon) == 13
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/external_spec_use.kt: info: Generated Viper text for genericMember:
+function get(this: Ref): Ref
+  requires isSubtype(typeOf(this), CellModel())
+  requires acc(CellModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method genericMember(cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cell), CellModel())
+  requires acc(CellModel_unique(cell), write)
+  ensures acc(CellModel_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := set(cell, intToRef(13))
+  anon_2 := (unfolding acc(CellModel_unique(cell), wildcard) in get(cell))
+  anon_1 := anon_2
+  inhale isSubtype(typeOf(anon_1), intType())
+  assert intFromRef(anon_1) == 13
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method set(this: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CellModel())
+  requires acc(CellModel_unique(this), write)
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures acc(CellModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(CellModel_unique(this), wildcard) in
+      get(this) == value)
+
+
+/external_spec_use.kt: info: Generated Viper text for incorrectClaim:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function twiceModel(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(x) * 2
+
+
+method incorrectClaim() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(twiceModel(intToRef(4))) == 9
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/external_spec_use.kt: info: Generated Viper text for unmetPrecondition:
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method advance(this: Ref, step: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_unique(this), write)
+  requires isSubtype(typeOf(step), intType())
+  requires intFromRef(step) >= 0
+  requires (unfolding acc(CounterModel_unique(this), wildcard) in
+      intFromRef(value(this)) <= 2147483647 - intFromRef(step))
+  ensures acc(CounterModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) ==
+    old((unfolding acc(CounterModel_unique(this), wildcard) in
+      intFromRef(value(this)))) +
+    intFromRef(step)
+  ensures (unfolding acc(CounterModel_unique(this), wildcard) in
+      intFromRef(value(this)) == intFromRef(ret_2))
+
+
+method createModel(initial: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(initial), intType())
+  requires intFromRef(initial) >= 0
+  ensures isSubtype(typeOf(ret_1), CounterModel())
+  ensures acc(CounterModel_unique(ret_1), write)
+  ensures (unfolding acc(CounterModel_unique(ret_1), wildcard) in
+      intFromRef(value(ret_1)) == intFromRef(initial))
+
+
+method unmetPrecondition() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var counter: Ref
+  var anon: Ref
+  counter := createModel(intToRef(2))
+  anon := advance(counter, intToRef(-1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

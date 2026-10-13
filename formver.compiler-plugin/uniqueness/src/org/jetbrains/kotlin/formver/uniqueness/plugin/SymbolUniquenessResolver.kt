@@ -5,6 +5,9 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.common.SnaktInternalException
+import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
+import org.jetbrains.kotlin.fir.references.toResolvedFunctionSymbol
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -49,7 +52,8 @@ fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =
  */
 context(context: CheckerContext)
 fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
-    if (this is FirConstructorSymbol) resolveConstructorResultUniqueness() else resolvedReturnType.scopeUniqueness
+    if (this is FirConstructorSymbol) resolveConstructorResultUniqueness()
+    else externalSpecificationSymbol(context.session).resolvedReturnType.scopeUniqueness
 
 context(context: CheckerContext)
 fun FirConstructorSymbol.resolveConstructorResultUniqueness(): Uniqueness =
@@ -80,7 +84,7 @@ private fun FirExpression.resolveInitializerUniqueness(): Uniqueness {
     val pathUniqueness = sequenceOf(this)
         .filter { it.resolveAccessState() != EmptyAccessState }
         .map { it.resolveAccessUniqueness() }
-    val callUniquenesses = collectCallTails().map { it.resolvedType.scopeUniqueness }
+    val callUniquenesses = collectCallTails().map { it.resolveCallResultUniqueness() }
     return (pathUniqueness + callUniquenesses).reduceOrNull(Uniqueness::join) ?: Uniqueness.Shared
 }
 
@@ -128,7 +132,7 @@ private fun FirFunction.collectPostconditionLambdas(): Set<FirAnonymousFunctionS
 object ParameterUniquenessResolver: SymbolTypeFactResolver<Uniqueness, FirValueParameterSymbol> {
     context(context: CheckerContext)
     override fun resolveTypeFactOf(symbol: FirValueParameterSymbol): Uniqueness =
-        symbol.resolvedReturnType.parameterUniqueness
+        symbol.externalSpecificationSymbol(context.session).resolvedReturnType.parameterUniqueness
 }
 
 object VariableUniquenessResolver : SymbolTypeFactResolver<Uniqueness, FirVariableSymbol<*>> {
@@ -162,8 +166,22 @@ fun FirClassSymbol<*>.resolveReceiverUniqueness(): Uniqueness {
 context(context: CheckerContext)
 fun FirBasedSymbol<*>.resolveDeclaredUniqueness(): Uniqueness =
     when (this) {
-        is FirVariableSymbol<*> -> resolveUniqueness()
-        is FirReceiverParameterSymbol -> resolveUniqueness()
+        is FirVariableSymbol<*> -> externalSpecificationSymbol(context.session).resolveUniqueness()
+        is FirReceiverParameterSymbol -> externalSpecificationSymbol(context.session).resolveUniqueness()
         is FirClassSymbol<*> -> resolveReceiverUniqueness()
-        else -> Uniqueness.Shared
+        // A callable reference captures a function as a value, which nothing owns.
+        is FirFunctionSymbol<*> -> Uniqueness.Shared
+        else -> throw SnaktInternalException(null, "No declared uniqueness for $this.")
     }
+
+/**
+ * Resolves the uniqueness of [this] call's result: as the bound model declares it for a dependency function, else
+ * from the call's type.
+ */
+context(context: CheckerContext)
+fun FirFunctionCall.resolveCallResultUniqueness(): Uniqueness {
+    // An unresolved callee is already a compiler error.
+    val target = calleeReference.toResolvedFunctionSymbol() ?: return resolvedType.scopeUniqueness
+    val model = target.externalSpecificationSymbol(context.session)
+    return if (model != target) model.resolvedReturnType.scopeUniqueness else resolvedType.scopeUniqueness
+}

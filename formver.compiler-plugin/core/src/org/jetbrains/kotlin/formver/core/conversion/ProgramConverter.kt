@@ -40,6 +40,8 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
+import org.jetbrains.kotlin.formver.common.externalSpecifications
+import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.*
@@ -429,6 +431,7 @@ class ProgramConverter(
         symbol: FirFunctionSymbol<*>, signature: SignatureWithTarget<CompleteFunctionSignature>
     ) {
         val declaration = symbol.fir
+        if (session.externalSpecifications?.isModel(symbol) == true) return
 
         val abstractObserverOverride = context(checkerContext) { symbol.isAbstract && symbol.isObserverOrOverride() }
         val observerDeclaration = context(checkerContext) { symbol.isObserver() }
@@ -463,7 +466,7 @@ class ProgramConverter(
         }
         val callable = with(this) {
             val namedSignature = symbol.toFunctionSignature().toNamedSignature(symbol)
-            if (symbol.shouldBeInlined) {
+            if (symbol.shouldBeInlined && session.externalSpecifications?.isModel(symbol) != true) {
                 namedSignature.toInlineSignature(symbol).also {
                     callable.putIfAbsent(it.signature.name, it)
                 }
@@ -500,6 +503,8 @@ class ProgramConverter(
      * It will return the callable embedding, if the function was seen the first time, it will embed the full function signature and body (if needed).
      */
     override fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding {
+        val model = symbol.externalSpecificationSymbol(session)
+        if (model != symbol) return embedAnyFunction(model)
         context(checkerContext) { symbol.observerDeclaration() }?.let { return embedAnyFunction(it) }
         // NOTE: The order of the embedSpecialFunction and the callable lookup does matter.
 
@@ -592,6 +597,8 @@ class ProgramConverter(
      * * Extension properties are handled like open properties.
      */
     override fun embedProperty(symbol: FirPropertySymbol): PropertyEmbedding {
+        val model = symbol.externalSpecificationSymbol(session)
+        if (model != symbol) return embedProperty(model)
         if (symbol.receiverParameterSymbol != null) {
             return embedExtensionProperty(symbol)
         } else {
@@ -783,6 +790,7 @@ class ProgramConverter(
 
     /** Returns an embedding of the class type, with details set. */
     internal fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
+        session.externalSpecifications?.modelClass(symbol)?.let { return embedClass(it) }
         observerBindingRegistry.registerClass(this, symbol)
         if (symbol.classId == IntArrayEmbedding.classId) {
             registerBuiltinHierarchy(symbol, IntArrayEmbedding.classType)
@@ -819,23 +827,6 @@ class ProgramConverter(
             embedProperty(it)
         }
         return embedding
-    }
-
-    /** Record built-in subtyping without embedding its library representation fields. */
-    private fun registerBuiltinHierarchy(symbol: FirRegularClassSymbol, embedding: ClassTypeEmbedding) {
-        if (typeResolver.lookupClassTypeEmbedding(embedding.name) != null) return
-        typeResolver.register(embedding, isInterface = false)
-        val visited = mutableSetOf<SymbolicName>()
-        fun visit(current: FirRegularClassSymbol, name: SymbolicName) {
-            if (!visited.add(name)) return
-            for (type in current.resolvedSuperTypes) {
-                val parent = type.toClassSymbol(session) as? FirRegularClassSymbol ?: continue
-                val parentName = parent.classId.embedName()
-                typeResolver.addSubtypeRelation(name, parentName)
-                visit(parent, parentName)
-            }
-        }
-        visit(symbol, embedding.name)
     }
 
     // Note: keep in mind that this function is necessary to resolve the name of the function!

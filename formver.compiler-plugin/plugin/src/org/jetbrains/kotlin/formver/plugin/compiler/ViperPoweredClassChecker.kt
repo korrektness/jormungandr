@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 import org.jetbrains.kotlin.fir.symbols.impl.FirConstructorSymbol
+import org.jetbrains.kotlin.formver.core.conversion.InheritedImplementationObligation
 import org.jetbrains.kotlin.formver.core.conversion.inheritedImplementationObligations
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.core.conversion.classLawConstructionFailures
@@ -49,6 +50,12 @@ class ViperPoweredClassChecker(
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
     private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors)
 
+    context(context: CheckerContext)
+    private fun shouldSkip(declaration: FirRegularClass): Boolean =
+        session.externalSpecifications?.errors?.isNotEmpty() == true ||
+            config.externalSpecs.isExternalSpec(context.containingFilePath) ||
+            declaration.origin != FirDeclarationOrigin.Source
+
     context(context: CheckerContext, reporter: DiagnosticReporter)
     private fun reportFailure(declaration: FirRegularClass, error: org.jetbrains.kotlin.formver.viper.errors.VerifierError) {
         val source = error.reportingPosition(declaration.source).unwrapOr { declaration.source }
@@ -56,72 +63,100 @@ class ViperPoweredClassChecker(
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    @OptIn(DirectDeclarationsAccess::class)
     override fun check(declaration: FirRegularClass) {
-        if (declaration.origin != FirDeclarationOrigin.Source) return
+        if (shouldSkip(declaration)) return
         lambdaChecker.checkStandaloneLambdas(declaration, declaration.symbol.classId.embedName())
-        if (declaration.classKind.isInterface || declaration.isAbstract) return
-        if (config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE)) return
-        val inherited = declaration.symbol.inheritedImplementationObligations()
-        val primary = declaration.symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>()
-            .singleOrNull { it.isPrimary }?.takeIf {
-                declaration.symbol.ownClassLaws(session).isNotEmpty() || declaration.symbol.hasSuperclassLaws(session)
-            }
-        val hasLawHarness = declaration.symbol.interfaceLaws().isNotEmpty() ||
-            declaration.symbol.declarationSymbols.any { it.isLaw(session) }
-        if (primary == null && inherited.isEmpty() && !hasLawHarness) return
-        if ((declaration.symbol.ownClassLaws(session).isNotEmpty() || declaration.symbol.hasSuperclassLaws(session)) &&
-            classLawConstructionFailures(declaration.symbol, session).isNotEmpty()) return
+        val obligations = implementationObligations(declaration) ?: return
         try {
-            val converter = ProgramConverter(session, config, context, reporter)
-            converter.registerClassLaws(declaration.symbol)
-            primary?.let { converter.registerPrimaryConstructor(it) }
-            for (obligation in inherited) {
-                converter.registerInheritedImplementation(declaration.symbol, obligation.implementation, obligation.contracts)
-            }
-            converter.validateAll()
-            if (converter.hadConversionError) return
-            converter.linearizeAll()
-            val program = converter.buildProgram()
-            with(converter.nameResolver) { program.registerAllNames() }
-            converter.nameResolver.resolve()
-            val dump = when (config.logLevel) {
-                LogLevel.ONLY_WARNINGS -> null
-                LogLevel.SHORT_VIPER_DUMP -> program.toShort().withoutPredicates()
-                LogLevel.SHORT_VIPER_DUMP_WITH_PREDICATES -> program.toShort()
-                LogLevel.FULL_VIPER_DUMP -> program
-            }
-            dump?.let {
-                reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.name.asString(),
-                    with(converter.nameResolver) { it.toDebugOutput() })
-            }
-            val viperProgram = with(converter.nameResolver) { program.toSilver() }
-            SiliconFrontend.checkConsistency(viperProgram)
-            val verify = config.verificationSelection !in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) &&
-                !converter.skipsVerification
+            val (program, verify) = convert(declaration, obligations) ?: return
             if (System.getProperty("formver.testRun").toBoolean()) {
-                declaration.viperProgram = viperProgram
+                declaration.viperProgram = program
                 declaration.shouldVerify = verify
             } else if (verify) {
-                val z3 = verifierLocator.z3Exe { reason ->
-                    reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
-                } ?: return
-                SiliconFrontend(
-                    z3, cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
-                    pluginOptions = config.verificationCacheOptions,
-                ).use { verifier ->
-                    verifier.verify(viperProgram) { error -> reportFailure(declaration, error) }
-                }
+                verify(declaration, program)
             }
         } catch (error: UnsupportedFeatureException) {
             reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
         } catch (error: Exception) {
-            reporter.reportInternalFailure(declaration.source,
-                (error as? org.jetbrains.kotlin.formver.common.SnaktInternalException) ?: error.asInternalErrorAt(declaration.source))
-            config.messageCollector.report(org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.LOGGING, error.stackTraceToString())
+            reportInternalError(declaration, error)
         } catch (error: NotImplementedError) {
-            reporter.reportInternalFailure(declaration.source, error.asInternalErrorAt(declaration.source))
-            config.messageCollector.report(org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.LOGGING, error.stackTraceToString())
+            reportInternalError(declaration, error)
         }
+    }
+
+    private data class Obligations(
+        val primary: FirConstructorSymbol?,
+        val inherited: List<InheritedImplementationObligation>,
+    )
+
+    /** What a concrete class must prove, or null when it has nothing to prove or its laws cannot be constructed. */
+    context(context: CheckerContext)
+    @OptIn(DirectDeclarationsAccess::class)
+    private fun implementationObligations(declaration: FirRegularClass): Obligations? {
+        if (declaration.classKind.isInterface || declaration.isAbstract) return null
+        if (config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE)) return null
+        val symbol = declaration.symbol
+        val hasClassLaws = symbol.ownClassLaws(session).isNotEmpty() || symbol.hasSuperclassLaws(session)
+        val inherited = symbol.inheritedImplementationObligations()
+        val primary = symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>()
+            .singleOrNull { it.isPrimary }?.takeIf { hasClassLaws }
+        val hasLawHarness = symbol.interfaceLaws().isNotEmpty() || symbol.declarationSymbols.any { it.isLaw(session) }
+        return when {
+            primary == null && inherited.isEmpty() && !hasLawHarness -> null
+            hasClassLaws && classLawConstructionFailures(symbol, session).isNotEmpty() -> null
+            else -> Obligations(primary, inherited)
+        }
+    }
+
+    /** The checked Viper program for [obligations] and whether to verify it, or null after a conversion error. */
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun convert(declaration: FirRegularClass, obligations: Obligations): Pair<viper.silver.ast.Program, Boolean>? {
+        val converter = ProgramConverter(session, config, context, reporter)
+        converter.registerClassLaws(declaration.symbol)
+        obligations.primary?.let { converter.registerPrimaryConstructor(it) }
+        for (obligation in obligations.inherited) {
+            converter.registerInheritedImplementation(declaration.symbol, obligation.implementation, obligation.contracts)
+        }
+        converter.validateAll()
+        if (converter.hadConversionError) return null
+        converter.linearizeAll()
+        val program = converter.buildProgram()
+        with(converter.nameResolver) { program.registerAllNames() }
+        converter.nameResolver.resolve()
+        val dump = when (config.logLevel) {
+            LogLevel.ONLY_WARNINGS -> null
+            LogLevel.SHORT_VIPER_DUMP -> program.toShort().withoutPredicates()
+            LogLevel.SHORT_VIPER_DUMP_WITH_PREDICATES -> program.toShort()
+            LogLevel.FULL_VIPER_DUMP -> program
+        }
+        dump?.let {
+            reporter.reportOn(declaration.source, PluginErrors.VIPER_TEXT, declaration.name.asString(),
+                with(converter.nameResolver) { it.toDebugOutput() })
+        }
+        val viperProgram = with(converter.nameResolver) { program.toSilver() }
+        SiliconFrontend.checkConsistency(viperProgram)
+        val verify = config.verificationSelection !in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) &&
+            !converter.skipsVerification
+        return viperProgram to verify
+    }
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun verify(declaration: FirRegularClass, program: viper.silver.ast.Program) {
+        val z3 = verifierLocator.z3Exe { reason ->
+            reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
+        } ?: return
+        SiliconFrontend(
+            z3, cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
+            pluginOptions = config.verificationCacheOptions,
+        ).use { verifier ->
+            verifier.verify(program) { error -> reportFailure(declaration, error) }
+        }
+    }
+
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun reportInternalError(declaration: FirRegularClass, error: Throwable) {
+        reporter.reportInternalFailure(declaration.source,
+            (error as? org.jetbrains.kotlin.formver.common.SnaktInternalException) ?: error.asInternalErrorAt(declaration.source))
+        config.messageCollector.report(org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity.LOGGING, error.stackTraceToString())
     }
 }

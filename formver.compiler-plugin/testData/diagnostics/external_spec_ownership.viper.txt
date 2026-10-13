@@ -1,0 +1,15 @@
+/external_spec_ownership.kt: info: Generated Viper text for read:
+function GaugeModel_f_read(this: Ref): Ref
+  requires isSubtype(typeOf(this), GaugeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method SourceGauge_f_read(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), SourceGauge())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

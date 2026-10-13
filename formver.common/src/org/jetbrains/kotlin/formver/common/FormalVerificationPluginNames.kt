@@ -13,4 +13,5 @@ object FormalVerificationPluginNames {
     const val VERIFICATION_TARGETS_SELECTION_OPTION_NAME = "verification_targets_selection"
     const val VERIFICATION_CACHE_DIRECTORY_OPTION_NAME = "verification_cache_directory"
     const val DUMP_UNIQUENESS_CFG_OPTION_NAME = "dump_uniqueness_cfg"
+    const val EXTERNAL_SPEC_OPTION_NAME = "external_spec"
 }

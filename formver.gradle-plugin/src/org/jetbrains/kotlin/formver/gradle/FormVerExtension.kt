@@ -19,6 +19,7 @@ open class FormVerExtension {
     internal var myConversionTargetsSelection: String? = null
     internal var myVerificationTargetsSelection: String? = null
     internal var myDumpUniquenessCFG: Boolean? = null
+    internal val myExternalSpecs = mutableListOf<Any>()
 
     open fun logLevel(logLevel: String) {
         myLogLevel = logLevel
@@ -38,5 +39,13 @@ open class FormVerExtension {
 
     open fun dumpUniquenessCFG(enabled: Boolean) {
         myDumpUniquenessCFG = enabled
+    }
+
+    /**
+     * Adds Kotlin source files that specify code outside the module. The compiler analyses them but does not compile
+     * them. Paths resolve as in `Project.files`.
+     */
+    open fun externalSpec(vararg paths: Any) {
+        myExternalSpecs.addAll(paths)
     }
 }

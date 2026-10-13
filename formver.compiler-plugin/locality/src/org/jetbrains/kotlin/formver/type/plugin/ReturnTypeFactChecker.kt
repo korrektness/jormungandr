@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.type.plugin
 
+import org.jetbrains.kotlin.formver.common.isExternalSpecificationFile
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.formver.common.FactPosition
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -32,6 +33,7 @@ class ReturnTypeFactChecker<TypeFact>(
 ) : FirReturnExpressionChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirReturnExpression) {
+        if (context.session.isExternalSpecificationFile(context.containingFilePath)) return
         val requiredTypeFact = returnResultTypeFactResolver.resolveResultTypeFactOf(expression)
         val actualTypeFact = expressionTypeFactResolver.resolveTypeFactOf(expression.result)
 

@@ -13,6 +13,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirRegularClassChe
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirPropertyChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFileChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirBasicDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirBasicExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
@@ -29,6 +31,8 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
     }
 
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
+        override val fileCheckers: Set<FirFileChecker> = setOf(ExternalSpecificationAssumptionsChecker(config))
+        override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> = setOf(ExternalSpecificationBindingChecker)
         override val functionCheckers: Set<FirFunctionChecker> = setOf(
             ViperPoweredDeclarationChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
         )
@@ -44,6 +48,7 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> = setOf(ObserverDeclarationChecker)
         override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(
             ObserverImplementationChecker,
+            ExternalSpecificationImplementationChecker,
             LawImplementationChecker,
             ViperPoweredClassChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
         )

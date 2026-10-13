@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.type.plugin
 
+import org.jetbrains.kotlin.formver.common.isExternalSpecificationFile
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
@@ -43,6 +44,7 @@ class QualifiedAccessTypeFactChecker<TypeFact>(
 ) : FirQualifiedAccessExpressionChecker(kind) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirQualifiedAccessExpression) {
+        if (context.session.isExternalSpecificationFile(context.containingFilePath)) return
         if (expression !is FirFunctionCall && expression !is FirPropertyAccessExpression) return
 
         for ((argument, requiredTypeFact) in qualifiedAccessArgumentTypeFactMapper.mapArgumentTypeFactsOf(expression)) {

@@ -16,10 +16,13 @@ data class PluginConfiguration(
     /** Receives the stack traces of internal errors, which diagnostics do not carry. */
     val messageCollector: MessageCollector,
     val verificationCacheDirectory: String? = null,
+    val externalSpecs: ExternalSpecSources = ExternalSpecSources.NONE,
 ) {
     /** Includes selection and diagnostic settings conservatively in the verification identity. */
     val verificationCacheOptions: List<String>
         get() = listOf(logLevel.name, errorStyle.name, conversionSelection.name, verificationSelection.name, dumpUniquenessCFG.toString())
+
+    val externalSpecificationReporting = ExternalSpecificationReporting(messageCollector)
 
     init {
         require(conversionSelection >= verificationSelection) {

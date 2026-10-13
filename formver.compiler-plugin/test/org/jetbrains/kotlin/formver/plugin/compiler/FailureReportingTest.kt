@@ -270,6 +270,7 @@ class FailureReportingTest {
         val source = diagnosticSource(10)
         val problems = listOf(
             Failure(FailureKind.INVALID_SPEC_OF, source, KotlinCondition.SpecOf(SpecOfRule.BODY_SHAPE)),
+            Failure(FailureKind.INVALID_EXTERNAL_SPEC, source, KotlinCondition.ExternalSpec(ExternalSpecRule.SOURCE_SUBTYPE, "a.B")),
             Failure(FailureKind.INVALID_EXPOSES, source, KotlinCondition.Exposes(ExposesRule.BINDING_SHAPE)),
             Failure(FailureKind.INVALID_OBSERVER, source, KotlinCondition.Observer(ObserverRule.GHOST_OWNER)),
             Failure(FailureKind.INVALID_LAW, source, KotlinCondition.Law(LawRule.BODY)),

@@ -18,10 +18,11 @@ data class FormVerImpl(
     override val conversionTargetsSelection: String?,
     override val verificationTargetsSelection: String?,
     override val dumpUniquenessCFG: Boolean?,
+    override val externalSpecs: List<String>,
 ) : FormVer, Serializable {
     override val modelVersion = serialVersionUID
 
     companion object {
-        private const val serialVersionUID = 4L
+        private const val serialVersionUID = 5L
     }
 }

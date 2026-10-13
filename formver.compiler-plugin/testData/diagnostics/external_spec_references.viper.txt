@@ -1,0 +1,36 @@
+/external_spec_references.kt: info: Generated Viper text for forbiddenCall:
+function twiceModel(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(x) * 2
+
+
+method forbiddenCall() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := twiceModel(intToRef(3))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/external_spec_references.kt: info: Generated Viper text for forbiddenType:
+function f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method forbiddenType(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), CounterModel())
+  ensures isSubtype(typeOf(v_ret_0), CounterModel())
+{
+  v_ret_0 := par_value
+  goto lbl_ret_0
+  label lbl_ret_0
+}

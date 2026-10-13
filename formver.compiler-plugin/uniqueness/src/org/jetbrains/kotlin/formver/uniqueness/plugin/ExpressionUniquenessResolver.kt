@@ -58,7 +58,7 @@ fun FirExpression.resolveTerminalUniqueness(): Uniqueness {
             } else if (calleeReference.symbol is FirConstructorSymbol) {
                 (calleeReference.symbol as FirConstructorSymbol).resolveConstructorResultUniqueness()
             } else {
-                resolvedType.scopeUniqueness
+                resolveCallResultUniqueness()
             }
         }
 

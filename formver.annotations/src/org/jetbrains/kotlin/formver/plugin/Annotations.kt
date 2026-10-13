@@ -55,3 +55,15 @@ annotation class Manual
 /** Gives the member [name] the specification in this function; see "Specifications beside a member" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 annotation class SpecOf(val name: String)
+
+/** Binds an interface model to a dependency class; see "External specifications" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.CLASS)
+annotation class ExternalSpec(val target: String)
+
+/** Binds a top-level model function to a dependency function, including extensions. */
+@Target(AnnotationTarget.FUNCTION)
+annotation class ExternalFunction(val target: String)
+
+/** Selects the dependency member name for a mirrored model member. */
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
+annotation class ExternalMember(val target: String)

@@ -17,6 +17,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
+import org.jetbrains.kotlin.formver.common.externalFunctionId
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -27,7 +29,7 @@ import org.jetbrains.kotlin.formver.core.conversion.extractFormverFirBlock
 import org.jetbrains.kotlin.formver.core.conversion.functionsDeclaredBeside
 import org.jetbrains.kotlin.formver.core.conversion.ownSpecification
 import org.jetbrains.kotlin.formver.core.conversion.postconditionsResultType
-import org.jetbrains.kotlin.formver.core.conversion.sameUpToAttributes
+import org.jetbrains.kotlin.formver.core.conversion.specificationResultMatches
 import org.jetbrains.kotlin.formver.core.conversion.specOfSiblings
 import org.jetbrains.kotlin.formver.core.conversion.specOfTargetName
 import org.jetbrains.kotlin.formver.core.conversion.specOfTargets
@@ -49,9 +51,12 @@ class SpecOfDeclarationChecker(private val session: FirSession) : FirSimpleFunct
     context(context: CheckerContext)
     private fun violation(declaration: FirSimpleFunction, name: String): KotlinCondition.SpecOf? {
         val symbol = declaration.symbol
-        if (symbol.receiverParameterSymbol != null) return KotlinCondition.SpecOf(SpecOfRule.EXTENSION_RECEIVER)
+        if (symbol.receiverParameterSymbol != null &&
+            symbol.specOfTargets(session).none { it.getAnnotationByClassId(externalFunctionId, session) != null }) {
+            return KotlinCondition.SpecOf(SpecOfRule.EXTENSION_RECEIVER)
+        }
         if (!declaration.returnTypeRef.coneType.isUnit) return KotlinCondition.SpecOf(SpecOfRule.RETURN_TYPE)
-        if (symbol.functionsDeclaredBeside().none { it.name.asString() == name }) {
+        if (symbol.functionsDeclaredBeside(session).none { it.name.asString() == name }) {
             return KotlinCondition.SpecOf(SpecOfRule.MISSING_MEMBER, name)
         }
         val target = symbol.specOfTargets(session).singleOrNull()
@@ -82,7 +87,7 @@ class SpecOfDeclarationChecker(private val session: FirSession) : FirSimpleFunct
             return KotlinCondition.SpecOf(SpecOfRule.BODY_SHAPE)
         }
         val resultType = declaration.body?.postconditionsResultType() ?: return null
-        if (!resultType.sameUpToAttributes(target.resolvedReturnType)) {
+        if (!declaration.symbol.specificationResultMatches(resultType, target, session)) {
             return KotlinCondition.SpecOf(SpecOfRule.POSTCONDITIONS_TYPE)
         }
         return null

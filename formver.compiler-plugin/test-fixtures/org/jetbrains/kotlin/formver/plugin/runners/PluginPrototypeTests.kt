@@ -40,7 +40,10 @@ fun getTestMode(): TestMode {
     }
 }
 
+private fun TestServices.hasExternalSpecs() = moduleStructure.modules.any { it.directives[FormVerDirectives.EXTERNAL_SPEC].isNotEmpty() }
+
 abstract class KindOrMessageDiagnosticsCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
+    override val includeAdditionalFiles: Boolean get() = testServices.hasExternalSpecs()
     override fun renderMessage(diagnostic: KtDiagnostic): String =
         if (testServices.moduleStructure.modules.any { FormVerDirectives.DIAGNOSTIC_KINDS in it.directives }) {
             diagnostic.factory.name
@@ -58,6 +61,7 @@ class ConversionDiagnosticsCollector(testServices: TestServices) : KindOrMessage
  * The generated Viper text, kept apart from [ConversionDiagnosticsCollector] so that the diagnostics stay readable.
  */
 class ViperTextCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
+    override val includeAdditionalFiles: Boolean get() = testServices.hasExternalSpecs()
     override val fileExtension: String = ".viper.txt"
     override fun records(diagnostic: KtDiagnostic): Boolean = diagnostic.factory == PluginErrors.VIPER_TEXT
 }
@@ -130,7 +134,7 @@ abstract class AbstractPhasedDiagnosticTest : AbstractKotlinCompilerWithTargetBa
 
         configureFirParser(FirParser.LightTree)
 
-        useAdditionalSourceProviders(::StdlibReplacementsProvider)
+        useAdditionalSourceProviders(::StdlibReplacementsProvider, ::ExternalSpecProvider)
 
         useConfigurators(
             ::PluginAnnotationsProvider, ::ExtensionRegistrarConfigurator

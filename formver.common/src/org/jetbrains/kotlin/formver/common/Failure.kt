@@ -54,6 +54,7 @@ enum class FailureKind(
     OVERRIDE_NOT_REFINING(declarationName = true),
     TERMINATION_NOT_ESTABLISHED,
     INVALID_SPEC_OF(category = FailureCategory.SPECIFICATION),
+    INVALID_EXTERNAL_SPEC(category = FailureCategory.SPECIFICATION),
     INVALID_EXPOSES(category = FailureCategory.SPECIFICATION),
     INVALID_OBSERVER(category = FailureCategory.SPECIFICATION),
     INVALID_LAW(category = FailureCategory.SPECIFICATION),
@@ -90,6 +91,7 @@ sealed interface KotlinPredicate {
 sealed interface KotlinCondition {
     data class SpecOf(val rule: SpecOfRule, val targetName: String? = null) : KotlinCondition
     data class Exposes(val rule: ExposesRule) : KotlinCondition
+    data class ExternalSpec(val rule: ExternalSpecRule, val target: String? = null) : KotlinCondition
     data class Law(val rule: LawRule, val subject: FirBasedSymbol<*>? = null) : KotlinCondition
     data class Observer(
         val rule: ObserverRule,

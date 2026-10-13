@@ -12,6 +12,10 @@ import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
 import org.jetbrains.kotlin.fir.declarations.getStringArgument
 import org.jetbrains.kotlin.fir.resolve.getContainingClassSymbol
+import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
+import org.jetbrains.kotlin.fir.resolve.providers.firProvider
+import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.formver.common.externalFunctionId
 import org.jetbrains.kotlin.fir.resolve.substitution.substitutorByMap
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
@@ -36,20 +40,29 @@ fun FirNamedFunctionSymbol.specOfTargetName(session: FirSession): String? =
 /** The [functionsDeclaredBeside] this one that have the name its `@SpecOf` gives and [hasParameterTypesOf] it. */
 fun FirNamedFunctionSymbol.specOfTargets(session: FirSession): List<FirNamedFunctionSymbol> {
     val name = specOfTargetName(session) ?: return emptyList()
-    return functionsDeclaredBeside().filter { it.name.asString() == name && hasParameterTypesOf(it, session) }
+    return functionsDeclaredBeside(session).filter { it.name.asString() == name && hasParameterTypesOf(it, session) }
 }
 
 /** The `@SpecOf` functions declared next to this function that name it. */
 fun FirNamedFunctionSymbol.specOfSiblings(session: FirSession): List<FirNamedFunctionSymbol> {
-    return functionsDeclaredBeside()
+    return functionsDeclaredBeside(session)
         .filter { it.specOfTargetName(session) == name.asString() && this in it.specOfTargets(session) }
 }
 
-/** The other member functions declared in the class that declares this function. */
+/** Sibling members, or top-level declarations beside an external function model. */
 @OptIn(DirectDeclarationsAccess::class)
-fun FirNamedFunctionSymbol.functionsDeclaredBeside(): List<FirNamedFunctionSymbol> {
-    val owner = getContainingClassSymbol() as? FirClassSymbol<*> ?: return emptyList()
-    return owner.declarationSymbols.filterIsInstance<FirNamedFunctionSymbol>().filter { it != this }
+fun FirNamedFunctionSymbol.functionsDeclaredBeside(session: FirSession): List<FirNamedFunctionSymbol> {
+    val owner = getContainingClassSymbol() as? FirClassSymbol<*>
+    if (owner != null) return owner.declarationSymbols.filterIsInstance<FirNamedFunctionSymbol>().filter { it != this }
+    val targetName = specOfTargetName(session)
+    if (targetName != null) return session.symbolProvider
+        .getTopLevelFunctionSymbols(callableId.packageName, Name.identifier(targetName))
+        .filter { it != this && it.getAnnotationByClassId(externalFunctionId, session) != null }
+    if (getAnnotationByClassId(externalFunctionId, session) == null) return emptyList()
+    val file = checkNotNull(session.firProvider.getFirCallableContainerFile(this)) {
+        "A source external function model must have a containing file."
+    }
+    return file.declarations.filterIsInstance<FirSimpleFunction>().map { it.symbol }.filter { it != this }
 }
 
 /**
@@ -65,9 +78,23 @@ private fun FirNamedFunctionSymbol.hasParameterTypesOf(target: FirNamedFunctionS
         }.toMap(),
         session,
     )
+    val receiver = resolvedReceiverTypeRef?.coneType
+    val targetReceiver = target.resolvedReceiverTypeRef?.coneType
+    if ((receiver == null) != (targetReceiver == null)) return false
+    if (receiver != null && !substitutor.substituteOrSelf(receiver).sameUpToAttributes(targetReceiver!!)) return false
     return valueParameterSymbols.zip(target.valueParameterSymbols).all { (own, theirs) ->
         substitutor.substituteOrSelf(own.resolvedReturnType).sameUpToAttributes(theirs.resolvedReturnType)
     }
+}
+
+/** Compares a holder's type with the target's return type under positional type-parameter substitution. */
+fun FirNamedFunctionSymbol.specificationResultMatches(type: ConeKotlinType, target: FirNamedFunctionSymbol, session: FirSession): Boolean {
+    val substitutor = substitutorByMap(
+        typeParameterSymbols.zip(target.typeParameterSymbols) { own, theirs ->
+            own to ConeTypeParameterTypeImpl(theirs.toLookupTag(), isMarkedNullable = false)
+        }.toMap(), session,
+    )
+    return substitutor.substituteOrSelf(type).sameUpToAttributes(target.resolvedReturnType)
 }
 
 /** The specification written as the leading statements of this function's body, or `null` when it has none. */
@@ -87,6 +114,6 @@ fun FirSimpleFunction.userSpecification(session: FirSession): UserSpecification?
     val sibling = symbol.specOfSiblings(session).singleOrNull()?.fir ?: return null
     // A sibling whose postconditions name another result type is reported by the `@SpecOf` checker.
     val resultType = sibling.body?.postconditionsResultType()
-    if (resultType != null && !resultType.sameUpToAttributes(symbol.resolvedReturnType)) return null
-    return sibling.ownSpecification(symbol.resolvedReturnType)?.let { UserSpecification(sibling, it) }
+    if (resultType != null && !sibling.symbol.specificationResultMatches(resultType, symbol, session)) return null
+    return sibling.ownSpecification(resultType ?: symbol.resolvedReturnType)?.let { UserSpecification(sibling, it) }
 }
