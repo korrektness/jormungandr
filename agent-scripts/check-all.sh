@@ -25,7 +25,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 gradle_result=passed
-# detekt, apiCheck and every module's test task.
+# detekt, apiCheck, every module's test task and conversion-mode tests.
 ./gradlew check --no-daemon "${args[@]}" || gradle_result=failed
 
 consumer_result=passed

@@ -146,6 +146,9 @@ tasks.register<Test>("untilConversion") {
     systemProperty("formver.testMode", "CHECK_CONVERSION")
 }
 
+// Conversion mode compares the re-rendered expected markers, which full mode does not.
+tasks.check { dependsOn("untilConversion") }
+
 tasks.register<Test>("update") {
     description = "Runs conversion and verification iff conversion changed"
     group = "verification"

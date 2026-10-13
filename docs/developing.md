@@ -93,7 +93,7 @@ versions whose bodies the plugin can see.
 
 ## Checks
 
-`./gradlew check` runs detekt, `apiCheck` and every module's tests.
+`./gradlew check` runs detekt, `apiCheck`, every module's tests and `untilConversion`.
 
 A separate CI workflow runs `pre-commit`; install the hook locally with
 `pre-commit install`. Besides the formatting hooks it runs two checks that need
