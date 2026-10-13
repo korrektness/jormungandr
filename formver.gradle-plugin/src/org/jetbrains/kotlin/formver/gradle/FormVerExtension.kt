@@ -7,6 +7,12 @@ package org.jetbrains.kotlin.formver.gradle
 
 
 open class FormVerExtension {
+    internal var myCounterexamples: Boolean? = null
+
+    open fun counterexamples(enabled: Boolean) {
+        myCounterexamples = enabled
+    }
+
     internal var myVerificationCacheDirectory: String? = null
 
     open fun verificationCacheDirectory(directory: String) {

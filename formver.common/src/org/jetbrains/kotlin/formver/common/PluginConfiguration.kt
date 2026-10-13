@@ -17,6 +17,7 @@ data class PluginConfiguration(
     val messageCollector: MessageCollector,
     val verificationCacheDirectory: String? = null,
     val externalSpecs: ExternalSpecSources = ExternalSpecSources.NONE,
+    val counterexamples: Boolean = false,
 ) {
     /** Includes selection and diagnostic settings conservatively in the verification identity. */
     val verificationCacheOptions: List<String>

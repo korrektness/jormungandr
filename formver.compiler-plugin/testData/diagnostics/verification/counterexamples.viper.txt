@@ -1,0 +1,142 @@
+/counterexamples.kt: info: Generated Viper text for integer:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method integer(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 7
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var local: Ref
+  local := plusInts(x, intToRef(1))
+  assert !(intFromRef(local) == 8)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/counterexamples.kt: info: Generated Viper text for boolean:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method boolean(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), boolType())
+  requires !boolFromRef(x)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert boolFromRef(x)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/counterexamples.kt: info: Generated Viper text for character:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method character(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), charType())
+  requires charFromRef(x) == 10
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert !(charFromRef(x) == 10)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/counterexamples.kt: info: Generated Viper text for nullable:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method f_nullable(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), rt_nullable(intType()))
+  requires x == nullValue()
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert !(x == nullValue())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/counterexamples.kt: info: Generated Viper text for enumLike:
+function ONLY(): Ref
+  ensures isSubtype(typeOf(result), Choice())
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method enumLike(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), Choice())
+  requires x == ONLY()
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert !(x == ONLY())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/counterexamples.kt: info: Generated Viper text for fields:
+field value: Ref
+
+method fields(box: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(box), CounterexampleBox())
+  requires acc(CounterexampleBox_unique(box), write)
+  requires (unfolding acc(CounterexampleBox_unique(box), write) in
+      intFromRef(box.value) == 3)
+  ensures acc(CounterexampleBox_unique(box), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(CounterexampleBox_unique(box), write) in
+      intFromRef(box.value) ==
+      old((unfolding acc(CounterexampleBox_unique(box), write) in
+        intFromRef(box.value))))
+{
+  unfold acc(CounterexampleBox_unique(box), write)
+  box.value := intToRef(4)
+  label lbl_ret_0
+  fold acc(CounterexampleBox_unique(box), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/counterexamples.kt: info: Generated Viper text for receiver:
+field value: Ref
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method receiver(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), CounterexampleBox())
+  requires acc(CounterexampleBox_unique(v_this_extension), write)
+  requires (unfolding acc(CounterexampleBox_unique(v_this_extension), write) in
+      intFromRef(v_this_extension.value) == 3)
+  ensures acc(CounterexampleBox_unique(v_this_extension), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  unfold acc(CounterexampleBox_unique(v_this_extension), write)
+  anon := v_this_extension.value
+  assert !(intFromRef(anon) == 3)
+  label lbl_ret_0
+  fold acc(CounterexampleBox_unique(v_this_extension), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

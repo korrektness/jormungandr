@@ -128,6 +128,24 @@ sealed interface KotlinCondition {
 data class RelatedLocation(val role: String, val source: KtSourceElement)
 data class BackendEvidence(val errorId: String, val reasonId: String, val detail: String)
 
+sealed interface CounterexampleValue {
+    data class Integer(val value: java.math.BigInteger) : CounterexampleValue
+    data class BooleanValue(val value: Boolean) : CounterexampleValue
+    data class Character(val value: Char) : CounterexampleValue
+    data object Null : CounterexampleValue
+    data class EnumLike(val names: List<String>) : CounterexampleValue
+}
+
+data class CounterexampleBinding(
+    val path: String,
+    val value: CounterexampleValue,
+    val source: KtSourceElement? = null,
+    /** Null denotes the failing state; a label identifies a captured heap. */
+    val oldState: String? = null,
+)
+
+data class Counterexample(val bindings: List<CounterexampleBinding>)
+
 /** Kotlin origins identify cloned obligations; unattributed obligations retain backend node identity. */
 @Suppress("UseDataClass")
 class ObligationIdentity private constructor(private val location: Any, private val proposition: Any, private val origin: Any?) {
@@ -151,7 +169,7 @@ data class Failure(
     val condition: KotlinCondition,
     val obligation: ObligationIdentity = ObligationIdentity(condition, condition),
     val related: List<RelatedLocation> = emptyList(),
-    val counterexample: Nothing? = null,
+    val counterexample: Counterexample? = null,
     val backend: BackendEvidence? = null,
     val errorStyle: ErrorStyle = ErrorStyle.USER_FRIENDLY,
 )

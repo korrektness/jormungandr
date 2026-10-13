@@ -25,6 +25,8 @@ import org.jetbrains.kotlin.formver.viper.InvalidViperProgramException
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.OrderedVerificationExecutor
 import java.nio.file.Path
+import java.io.Closeable
+import scala.jdk.javaapi.CollectionConverters
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
@@ -114,7 +116,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                 }
                 val cacheDirectory = System.getProperty("formver.verificationCacheDirectory")?.let { Path.of(it) }
                 val attempts = OrderedVerificationExecutor.shared.mapWithResource(
-                    programs, { SiliconFrontend(z3, cacheDirectory = cacheDirectory) },
+                    programs, { TestVerifier(z3, cacheDirectory, FormVerDirectives.COUNTEREXAMPLES in module.directives) },
                 ) { verifier, group ->
                     val errors = mutableListOf<VerifierError>()
                     var invalid: InvalidViperProgramException? = null
@@ -137,6 +139,31 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         }
 
         return inputArtifact
+    }
+
+    /** Opt-in fixtures also exercise frontend reuse across Silicon's global configuration changes. */
+    private class TestVerifier(z3: String, cache: Path?, private val counterexamples: Boolean) : Closeable {
+        private val verifier = SiliconFrontend(z3, cacheDirectory = cache, counterexamples = counterexamples)
+        private val ordinary = if (counterexamples) SiliconFrontend(z3, counterexamples = false) else null
+
+        fun verify(program: viper.silver.ast.Program, onFailure: (VerifierError) -> Unit) {
+            fun hasModel(error: VerifierError): Boolean = error is VerificationError &&
+                CollectionConverters.asJava(error.result.failureContexts()).any { it.counterExample().isDefined }
+            ordinary?.verify(program) { check(!hasModel(it)) }
+            verifier.verify(program) {
+                if (counterexamples) check(hasModel(it))
+                onFailure(it)
+            }
+            ordinary?.verify(program) { check(!hasModel(it)) }
+        }
+
+        override fun close() {
+            try {
+                verifier.close()
+            } finally {
+                ordinary?.close()
+            }
+        }
     }
 
     private data class VerificationAttempt(val errors: List<VerifierError>, val invalid: InvalidViperProgramException?)

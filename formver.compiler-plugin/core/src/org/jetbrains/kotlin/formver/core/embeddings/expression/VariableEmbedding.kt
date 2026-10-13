@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.formver.core.embeddings.expression
 
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.asPosition
-import org.jetbrains.kotlin.formver.core.asSourceRole
+import org.jetbrains.kotlin.formver.core.embeddings.modelOrigin
 import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.domains.Injection
@@ -40,10 +40,12 @@ sealed interface VariableEmbedding : ExpEmbedding, PropertyAccessEmbedding {
         get() = false
     val isBorrowed: Boolean
         get() = false
+    val modelInfo: Info
+        get() = sourceRole.asInfo
 
     fun toLocalVarDecl(
         pos: Position = Position.NoPosition,
-        info: Info = Info.NoInfo,
+        info: Info = modelInfo,
     ): Declaration.LocalVarDecl = Declaration.LocalVarDecl(name, Type.Ref, pos, info)
 
     fun toLocalVarUse(
@@ -81,7 +83,16 @@ data class PlaceholderVariableEmbedding(
     override val type: TypeEmbedding,
     override val isUnique: Boolean = false,
     override val isBorrowed: Boolean = false,
-) : VariableEmbedding
+) : VariableEmbedding {
+    override val modelInfo: Info
+        get() = when (name) {
+            org.jetbrains.kotlin.formver.core.names.DispatchReceiverName,
+            org.jetbrains.kotlin.formver.core.names.ExtensionReceiverName -> Info.Wrapped(
+                type.modelOrigin("this", null, isUnique || isBorrowed, parameter = true),
+            )
+            else -> Info.NoInfo
+        }
+}
 
 /**
  * Embedding of an anonymous variable.
@@ -119,7 +130,11 @@ data class FirVariableEmbedding(
     override val isBorrowed: Boolean = false,
 ) : VariableEmbedding {
     override val sourceRole: SourceRole
-        get() = symbol.asSourceRole
+        get() = SourceRole.FirSymbolHolder(symbol, type.modelOrigin(
+            (symbol as org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol<*>).name.asString(),
+            symbol.source, isUnique || isBorrowed,
+            parameter = symbol is org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol,
+        ))
 }
 
 /**

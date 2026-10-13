@@ -109,6 +109,10 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
 }
 
 object FormVerDirectives : SimpleDirectivesContainer() {
+    val COUNTEREXAMPLES by directive(
+        description = "Include counterexamples in verification diagnostics for uniquely constrained models.",
+    )
+
     val DIAGNOSTIC_KINDS by directive(
         description = "Record diagnostic kinds instead of rendered messages"
     )

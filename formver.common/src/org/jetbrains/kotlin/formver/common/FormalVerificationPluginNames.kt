@@ -11,6 +11,7 @@ object FormalVerificationPluginNames {
     const val ERROR_STYLE_NAME = "error_style"
     const val CONVERSION_TARGETS_SELECTION_OPTION_NAME = "conversion_targets_selection"
     const val VERIFICATION_TARGETS_SELECTION_OPTION_NAME = "verification_targets_selection"
+    const val COUNTEREXAMPLES_OPTION_NAME = "counterexamples"
     const val VERIFICATION_CACHE_DIRECTORY_OPTION_NAME = "verification_cache_directory"
     const val DUMP_UNIQUENESS_CFG_OPTION_NAME = "dump_uniqueness_cfg"
     const val EXTERNAL_SPEC_OPTION_NAME = "external_spec"

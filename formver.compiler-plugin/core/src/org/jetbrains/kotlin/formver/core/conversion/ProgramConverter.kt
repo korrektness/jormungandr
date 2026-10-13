@@ -800,7 +800,12 @@ class ProgramConverter(
                 }
             }
         fullSignatures.putIfAbsent(signature.signature.name, signature.signature)
-        return signature.signature.insertCall(emptyList())
+        val call = signature.signature.insertCall(emptyList())
+        return symbol.source?.let {
+            org.jetbrains.kotlin.formver.core.embeddings.expression.WithPosition(
+                call, it, org.jetbrains.kotlin.formver.core.embeddings.SourceRole.FirSymbolHolder(symbol),
+            )
+        } ?: call
     }
 
     private fun embedExtensionProperty(symbol: FirPropertySymbol): PropertyEmbedding {

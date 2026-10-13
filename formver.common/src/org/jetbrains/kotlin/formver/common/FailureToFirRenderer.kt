@@ -42,12 +42,50 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             else -> obligationMessage(failure)
         }
         val backend = failure.backend
-        return when (style) {
+        val message = when (style) {
             ErrorStyle.USER_FRIENDLY -> friendly
             ErrorStyle.ORIGINAL_VIPER -> backend?.let { "Viper verification error [${it.errorId}/${it.reasonId}]: ${it.detail}" } ?: friendly
             ErrorStyle.BOTH -> if (backend == null || failure.condition == KotlinCondition.Unclassified) friendly
                 else "$friendly\nBackend [${backend.errorId}/${backend.reasonId}]: ${backend.detail}"
         }
+        val bindings = failure.counterexample?.bindings.orEmpty()
+        return if (bindings.isEmpty()) message else message + "\nCounterexample:\n" + bindings.joinToString("\n") {
+            val path = when (val label = it.oldState) {
+                null -> it.path
+                "old" -> "old(${it.path})"
+                else -> "old[$label](${it.path})"
+            }
+            val location = it.source?.let(::counterexampleLocation)?.let { location -> " ($location)" }.orEmpty()
+            "  $path = ${counterexampleValue(it.value)}$location"
+        }
+    }
+
+    private fun counterexampleLocation(source: org.jetbrains.kotlin.KtSourceElement): String? {
+        val text = when (source) {
+            is org.jetbrains.kotlin.KtPsiSourceElement -> source.psi.containingFile.text
+            is org.jetbrains.kotlin.KtLightSourceElement -> source.treeStructure.toString(source.treeStructure.root).toString()
+            else -> return null
+        }
+        val before = text.take(source.startOffset)
+        val line = before.count { it == '\n' } + 1
+        val column = before.length - before.lastIndexOf('\n')
+        val file = (source as? org.jetbrains.kotlin.KtPsiSourceElement)?.psi?.containingFile?.name
+        return "${file?.let { "$it:" }.orEmpty()}$line:$column"
+    }
+
+    private fun counterexampleValue(value: CounterexampleValue): String = when (value) {
+        is CounterexampleValue.Integer -> value.value.toString()
+        is CounterexampleValue.BooleanValue -> value.value.toString()
+        is CounterexampleValue.Character -> "'" + when (value.value) {
+            '\n' -> "\\n"
+            '\r' -> "\\r"
+            '\t' -> "\\t"
+            '\'' -> "\\'"
+            '\\' -> "\\\\"
+            else -> if (value.value.isISOControl()) "\\u%04x".format(value.value.code) else value.value.toString()
+        } + "'"
+        CounterexampleValue.Null -> "null"
+        is CounterexampleValue.EnumLike -> value.names.joinToString(" / ")
     }
 
     private fun specOfMessage(condition: KotlinCondition.SpecOf): String = "Invalid @SpecOf: " + when (condition.rule) {

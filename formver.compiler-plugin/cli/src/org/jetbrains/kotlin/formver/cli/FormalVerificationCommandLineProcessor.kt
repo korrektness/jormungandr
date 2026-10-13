@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.util.capitalizeDecapitalize.toUpperCaseAsciiOnly
 import java.io.File
 
 object FormalVerificationConfigurationKeys {
+    val COUNTEREXAMPLES: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey.create("counterexamples")
     val VERIFICATION_CACHE_DIRECTORY: CompilerConfigurationKey<String> = CompilerConfigurationKey.create("verification cache directory")
     val LOG_LEVEL: CompilerConfigurationKey<LogLevel> = CompilerConfigurationKey.create("viper log level")
     val ERROR_STYLE: CompilerConfigurationKey<ErrorStyle> = CompilerConfigurationKey.create("error style")
@@ -41,6 +42,10 @@ object FormalVerificationConfigurationKeys {
 @OptIn(ExperimentalCompilerApi::class)
 class FormalVerificationCommandLineProcessor : CommandLineProcessor {
     companion object {
+        val COUNTEREXAMPLES_OPTION = CliOption(
+            FormalVerificationPluginNames.COUNTEREXAMPLES_OPTION_NAME, "<true|false>",
+            "Generate mapped counterexamples", required = false, allowMultipleOccurrences = false,
+        )
         val VERIFICATION_CACHE_DIRECTORY_OPTION = CliOption(
             FormalVerificationPluginNames.VERIFICATION_CACHE_DIRECTORY_OPTION_NAME, "<directory>",
             "Directory for successful verification results", required = false, allowMultipleOccurrences = false
@@ -85,6 +90,7 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
 
     override val pluginId: String = FormalVerificationPluginNames.PLUGIN_ID
     override val pluginOptions: Collection<AbstractCliOption> = listOf(
+        COUNTEREXAMPLES_OPTION,
         VERIFICATION_CACHE_DIRECTORY_OPTION,
         LOG_LEVEL_OPTION,
         ERROR_STYLE_OPTION,
@@ -97,6 +103,7 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
     override fun processOption(option: AbstractCliOption, value: String, configuration: CompilerConfiguration) =
         try {
             when (option) {
+                COUNTEREXAMPLES_OPTION -> configuration.put(FormalVerificationConfigurationKeys.COUNTEREXAMPLES, value.toBooleanStrict())
                 VERIFICATION_CACHE_DIRECTORY_OPTION -> {
                     require(value.isNotBlank())
                     configuration.put(FormalVerificationConfigurationKeys.VERIFICATION_CACHE_DIRECTORY, value)

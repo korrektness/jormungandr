@@ -79,7 +79,11 @@ sealed interface SourceRole {
     data class ObserverAccess(val position: Position) : SourceRole
 
     data class ConditionalEffect(val effect: ReturnsEffect, val condition: Condition) : SourceRole
-    data class FirSymbolHolder(val firSymbol: FirBasedSymbol<*>) : SourceRole, Condition
+    data class FirSymbolHolder(val firSymbol: FirBasedSymbol<*>, val modelOrigin: ModelOrigin? = null) :
+        SourceRole, Condition, org.jetbrains.kotlin.formver.viper.ast.ResolvableInfo {
+        context(resolver: org.jetbrains.kotlin.formver.viper.NameResolver)
+        override fun resolveInfo(): Any = copy(modelOrigin = modelOrigin?.resolved())
+    }
 
     sealed interface SubListCreation : SourceRole {
         data object CheckInSize : SubListCreation

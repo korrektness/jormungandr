@@ -147,7 +147,7 @@ class ViperPoweredClassChecker(
         } ?: return
         SiliconFrontend(
             z3, cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
-            pluginOptions = config.verificationCacheOptions,
+            pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
         ).use { verifier ->
             verifier.verify(program) { error -> reportFailure(declaration, error) }
         }

@@ -43,6 +43,10 @@ class FormVerGradleSubplugin
         return project.provider {
             val options = mutableListOf<SubpluginOption>()
 
+            formVerExtension.myCounterexamples?.let {
+                options += SubpluginOption(FormalVerificationPluginNames.COUNTEREXAMPLES_OPTION_NAME, it.toString())
+            }
+
             formVerExtension.myVerificationCacheDirectory?.let {
                 options += SubpluginOption(FormalVerificationPluginNames.VERIFICATION_CACHE_DIRECTORY_OPTION_NAME, project.file(it).absolutePath)
             }

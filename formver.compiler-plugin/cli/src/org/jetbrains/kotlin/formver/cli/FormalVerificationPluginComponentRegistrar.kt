@@ -56,6 +56,7 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             dumpUniquenessCFG, configuration.messageCollector,
             verificationCacheDirectory = configuration.get(FormalVerificationConfigurationKeys.VERIFICATION_CACHE_DIRECTORY),
             externalSpecs = externalSpecs,
+            counterexamples = configuration.get(FormalVerificationConfigurationKeys.COUNTEREXAMPLES, false),
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
         if (!externalSpecs.isEmpty()) {

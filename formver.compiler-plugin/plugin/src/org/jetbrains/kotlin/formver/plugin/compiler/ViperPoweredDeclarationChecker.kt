@@ -179,7 +179,7 @@ class ViperPoweredDeclarationChecker(
             }
             SiliconFrontend(
                 z3Exe, cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
-                pluginOptions = config.verificationCacheOptions,
+                pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
             ).use { it.verify(viperProgram, onFailure) }
         }
     }

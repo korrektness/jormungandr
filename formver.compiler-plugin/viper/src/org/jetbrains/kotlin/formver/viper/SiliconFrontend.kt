@@ -25,9 +25,16 @@ class SiliconFrontend(
     commandLineArgs: List<String> = emptyList(),
     cacheDirectory: Path? = null,
     pluginOptions: List<String> = emptyList(),
+    counterexamples: Boolean = false,
 ) : Closeable {
     private val args = buildList {
         addAll(commandLineArgs)
+        if (counterexamples) {
+            add("--counterexample")
+            add("mapped")
+            add("--exhaleMode")
+            add("1")
+        }
         add("--z3Exe")
         add(z3Exe)
         add("--numberOfParallelVerifiers")
@@ -55,7 +62,11 @@ class SiliconFrontend(
         try {
             api.initialize(args.toScalaSeq())
         } catch (error: Throwable) {
-            api.stop()
+            try {
+                api.stop()
+            } catch (cleanup: Throwable) {
+                error.addSuppressed(cleanup)
+            }
             throw error
         }
         siliconApi = api
@@ -63,6 +74,7 @@ class SiliconFrontend(
     }
 
     companion object {
+        private val configurationGate = SiliconConfigurationGate()
         private val cacheableOptions = setOf(
             "--timeout", "--assertTimeout", "--proverSaturationTimeout", "--randomizeSeeds",
         )
@@ -134,7 +146,11 @@ class SiliconFrontend(
         // SilFrontend.verification invokes the default plugins' beforeVerify and mapVerificationResult hooks,
         // including RefutePlugin. Its isolated assertion branch leaves the continuation available for further checks.
         val verify = {
-            val result = backend().verify(viperProgram)
+            val result = configurationGate.withConfiguration(args) {
+                val api = backend()
+                restoreConfiguration(api)
+                api.verify(viperProgram)
+            }
             when (result) {
                 is viper.silver.verifier.Failure -> {
                     val errors = CollectionConverters.asJava(result.errors())
@@ -151,8 +167,17 @@ class SiliconFrontend(
         else cache.verify(viperProgram.toString(), cacheVersion!!, cacheOptions, verify)
     }
 
+    private fun restoreConfiguration(api: viper.silicon.SiliconFrontendAPI) {
+        viper.silicon.verifier.`Verifier$`.`MODULE$`.`config_$eq`((api.verifier() as viper.silicon.Silicon).config())
+    }
+
     override fun close() {
-        siliconApi?.stop()
-        siliconApi = null
+        configurationGate.withConfiguration(args) {
+            siliconApi?.let { api ->
+                restoreConfiguration(api)
+                api.stop()
+            }
+            siliconApi = null
+        }
     }
 }

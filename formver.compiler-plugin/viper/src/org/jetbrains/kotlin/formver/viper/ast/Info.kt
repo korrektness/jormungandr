@@ -11,6 +11,11 @@ import scala.collection.JavaConverters
 import scala.collection.immutable.Seq
 import viper.silver.ast.`NoInfo$`
 
+interface ResolvableInfo {
+    context(nameResolver: NameResolver)
+    fun resolveInfo(): Any
+}
+
 sealed class Info : IntoSilver<viper.silver.ast.Info> {
     internal class Wrapper(val wrappedValue: Any) : viper.silver.ast.Info {
         override fun toString(): String = "<wrapped info value>"
@@ -36,7 +41,7 @@ sealed class Info : IntoSilver<viper.silver.ast.Info> {
 
     class Wrapped(val info: Any) : Info() {
         context(nameResolver: NameResolver)
-        override fun toSilver(): viper.silver.ast.Info = Wrapper(info)
+        override fun toSilver(): viper.silver.ast.Info = Wrapper((info as? ResolvableInfo)?.resolveInfo() ?: info)
     }
 }
 

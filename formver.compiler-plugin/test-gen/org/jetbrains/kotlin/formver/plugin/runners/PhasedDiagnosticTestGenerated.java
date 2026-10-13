@@ -617,6 +617,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("counterexamples.kt")
+    public void testCounterexamples() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/counterexamples.kt");
+    }
+
+    @Test
     @TestMetadata("do_not_verify.kt")
     public void testDo_not_verify() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/do_not_verify.kt");

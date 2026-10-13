@@ -14,6 +14,7 @@ import viper.silver.verifier.reasons
 /** Converts backend evidence into a Kotlin obligation without constructing diagnostic text. */
 fun VerificationError.toFailure(source: KtSourceElement?): Failure {
     val role = lookupSourceRole()
+    val counterexample = kotlinCounterexample()
     val condition = when (role) {
         is SourceRole.Proof -> KotlinCondition.Proof(role.clause, role.declaration)
         is SourceRole.ReturnsEffect -> KotlinCondition.Returns(role.toReturnValue())
@@ -60,11 +61,14 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
         if (source == null) ObligationIdentity(result.offendingNode(), result.reason().offendingNode())
         else ObligationIdentity.atOrigin(listOf(source, condition,
             obligationShape(result.offendingNode()), obligationShape(result.reason().offendingNode()))),
-        related = if (role is SourceRole.Proof) listOfNotNull(
+        related = (if (role is SourceRole.Proof) listOfNotNull(
             role.declaration?.source?.takeUnless { it == source }?.let { RelatedLocation("Kotlin clause declaration", it) },
             position.unwrapOr<KtSourceElement> { null }?.takeUnless { it == source }
                 ?.let { RelatedLocation("Kotlin clause", it) },
-        ).distinctBy { it.source } else emptyList(),
+        ) else emptyList()) + counterexample?.bindings.orEmpty().mapNotNull { binding ->
+            binding.source?.takeUnless { it == source }?.let { RelatedLocation("Counterexample: ${binding.path}", it) }
+        }.distinctBy { it.source },
+        counterexample = counterexample,
         backend = BackendEvidence(id, result.reason().id(), msg),
     )
 }

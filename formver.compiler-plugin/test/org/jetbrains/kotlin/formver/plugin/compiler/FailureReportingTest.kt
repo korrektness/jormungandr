@@ -324,5 +324,8 @@ class FailureReportingTest {
         val reports = ReportedVerifierErrors()
         assertTrue(reports.add(problem))
         assertFalse(reports.add(problem.copy(backend = problem.backend!!.copy(detail = "different backend detail"))))
+        assertFalse(reports.add(problem.copy(counterexample = Counterexample(listOf(
+            CounterexampleBinding("x", CounterexampleValue.Integer(7.toBigInteger())),
+        )))))
     }
 }

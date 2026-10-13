@@ -52,7 +52,7 @@ Internal failures, unavailable verifiers and invalid generated programs carry ma
 
 The authoritative diagnostic names, severities and source-positioning policies are in
 [`FailureKind`](formver.common/src/org/jetbrains/kotlin/formver/common/Failure.kt).
-The structured payload and its counterexample slot are defined by `Failure` in that file;
+The structured payload, counterexample bindings and typed values are defined in that file;
 [`FailureToFirRenderer`](formver.common/src/org/jetbrains/kotlin/formver/common/FailureToFirRenderer.kt)
 is the Kotlin diagnostic rendering boundary.
 
@@ -68,8 +68,27 @@ The registry groups user-visible problems as follows:
 - Conversion: impure expressions, unsupported ownership flows or constructs, untracked writes and skipped units.
 - Tool failures: internal invariants or unexpected exceptions, verifier availability and invalid generated Viper programs.
 
-Primary locations identify the failing use or implementation. Related locations retain available clause declarations
-and ownership-loss origins. Counterexample slots are empty.
+Primary locations identify the failing use or implementation. Related locations retain available clause declarations,
+ownership-loss origins and counterexample binding declarations.
+
+### Counterexamples
+
+Silicon's mapped model supplies optional Kotlin counterexample bindings for parameters, locals and fields of unique
+receivers. `this` identifies a receiver; `old(path)` identifies a value in the function-entry state. A binding retains
+its declaration source, displayed as a line and column. Values render as Kotlin integers, booleans, escaped characters,
+`null`, or enum entry names. Several enum names separated by `/` identify indistinguishable model values.
+
+Bindings expose only source-attributed values supported by the presentation. Missing models, ambiguous declaration
+names, unsupported values, and conditional or quantified predicate snapshots contribute no binding. A model describes
+the translated obligation; it can reflect abstraction or missing specifications rather than an executable Kotlin input.
+
+Enable model generation with `formver { counterexamples(true) }` in Gradle, or the compiler-plugin option
+`counterexamples=true`. Generation is opt-in because measured model extraction adds substantial verification cost.
+[`SiliconFrontend`](formver.compiler-plugin/viper/src/org/jetbrains/kotlin/formver/viper/SiliconFrontend.kt) controls
+the backend configuration. Golden-file tests opt in with the test-only `COUNTEREXAMPLES` directive; ordinary goldens record
+proof diagnostics independently of solver-selected values. The dedicated
+[`counterexamples.kt`](formver.compiler-plugin/testData/diagnostics/verification/counterexamples.kt) fixture constrains
+its failing values uniquely.
 
 ## Preconditions and Postconditions
 
