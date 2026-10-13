@@ -117,7 +117,12 @@ method Halving_f_size(this: Ref, limit: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(limit), intType())
   requires intFromRef(limit) > 0
   ensures isSubtype(typeOf(v_ret_0), intType())
-  ensures intFromRef(v_ret_0) == intFromRef(limit) \ 2
+  ensures intFromRef(v_ret_0) ==
+    (intFromRef(limit) < 0 != 2 < 0 ?
+      -((intFromRef(limit) < 0 ? -intFromRef(limit) : intFromRef(limit)) \
+      (2 < 0 ? -2 : 2)) :
+      (intFromRef(limit) < 0 ? -intFromRef(limit) : intFromRef(limit)) \
+      (2 < 0 ? -2 : 2))
 {
   v_ret_0 := divInts(limit, intToRef(2))
   goto lbl_ret_0

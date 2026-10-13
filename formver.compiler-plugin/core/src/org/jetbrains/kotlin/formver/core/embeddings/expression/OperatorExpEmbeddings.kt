@@ -50,10 +50,20 @@ object OperatorExpEmbeddings {
         viperImplementation { Exp.Mul(args[0], args[1], pos, info) }
     }
 
+    private fun truncatingQuotient(a: Exp, b: Exp, pos: Position = Position.NoPosition, info: Info = Info.NoInfo): Exp {
+        val aNegative = Exp.LtCmp(a, 0.toExp())
+        val bNegative = Exp.LtCmp(b, 0.toExp())
+        val magnitude = Exp.Div(
+            Exp.TernaryExp(aNegative, Exp.Minus(a), a),
+            Exp.TernaryExp(bNegative, Exp.Minus(b), b),
+        )
+        return Exp.TernaryExp(Exp.NeCmp(aNegative, bNegative), Exp.Minus(magnitude), magnitude, pos, info)
+    }
+
     val DivIntInt = buildBinaryOperator {
         setName("divInts")
         setSignature(intIntToIntType)
-        viperImplementation { Exp.Div(args[0], args[1], pos, info) }
+        viperImplementation { truncatingQuotient(args[0], args[1], pos, info) }
         additionalConditions {
             precondition {
                 intInjection.fromRef(args[1]) ne 0.toExp()
@@ -64,7 +74,7 @@ object OperatorExpEmbeddings {
     val RemIntInt = buildBinaryOperator {
         setName("remInts")
         setSignature(intIntToIntType)
-        viperImplementation { Exp.Mod(args[0], args[1], pos, info) }
+        viperImplementation { Exp.Sub(args[0], Exp.Mul(truncatingQuotient(args[0], args[1]), args[1]), pos, info) }
         additionalConditions {
             precondition {
                 intInjection.fromRef(args[1]) ne 0.toExp()

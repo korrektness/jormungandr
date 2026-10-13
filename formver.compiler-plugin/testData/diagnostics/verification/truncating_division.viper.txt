@@ -1,0 +1,238 @@
+/truncating_division.kt: info: Generated Viper text for negativeDividend:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method negativeDividend(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) == -3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (intFromRef(a) < 0 != 2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) ==
+    -1
+  assert intFromRef(a) -
+    (intFromRef(a) < 0 != 2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) *
+    2 ==
+    -1
+  assert (intFromRef(a) < 0 != -2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-2 < 0 ? --2 : -2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-2 < 0 ? --2 : -2)) ==
+    1
+  assert intFromRef(a) -
+    (intFromRef(a) < 0 != -2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-2 < 0 ? --2 : -2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-2 < 0 ? --2 : -2)) *
+    -2 ==
+    -1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/truncating_division.kt: info: Generated Viper text for negativeDivisor:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method negativeDivisor(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) == 3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (intFromRef(a) < 0 != -2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-2 < 0 ? --2 : -2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-2 < 0 ? --2 : -2)) ==
+    -1
+  assert intFromRef(a) -
+    (intFromRef(a) < 0 != -2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-2 < 0 ? --2 : -2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-2 < 0 ? --2 : -2)) *
+    -2 ==
+    1
+  assert (intFromRef(a) < 0 != 2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) ==
+    1
+  assert intFromRef(a) -
+    (intFromRef(a) < 0 != 2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) *
+    2 ==
+    1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/truncating_division.kt: info: Generated Viper text for zeroDividend:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method zeroDividend(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) == 0
+  requires !(intFromRef(b) == 0)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) ==
+    0
+  assert intFromRef(a) -
+    (intFromRef(a) < 0 != intFromRef(b) < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (intFromRef(b) < 0 ? -intFromRef(b) : intFromRef(b))) *
+    intFromRef(b) ==
+    0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/truncating_division.kt: info: Generated Viper text for minimumRemainder:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method minimumRemainder(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) == -2147483648
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(a) -
+    (intFromRef(a) < 0 != -1 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-1 < 0 ? --1 : -1)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (-1 < 0 ? --1 : -1)) *
+    -1 ==
+    0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/truncating_division.kt: info: Generated Viper text for rejectsEuclideanQuotient:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method rejectsEuclideanQuotient(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) == -3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (intFromRef(a) < 0 != 2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) ==
+    -2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/truncating_division.kt: info: Generated Viper text for rejectsEuclideanRemainder:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method rejectsEuclideanRemainder(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) == -3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(a) -
+    (intFromRef(a) < 0 != 2 < 0 ?
+      -((intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) :
+      (intFromRef(a) < 0 ? -intFromRef(a) : intFromRef(a)) \
+      (2 < 0 ? -2 : 2)) *
+    2 ==
+    1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/truncating_division.kt: info: Generated Viper text for quotient:
+function quotient(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires !(intFromRef(b) == 0)
+  ensures isSubtype(typeOf(result), intType())
+{
+  divInts(a, b)
+}
+
+/truncating_division.kt: info: Generated Viper text for remainder:
+function remainder(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires !(intFromRef(b) == 0)
+  ensures isSubtype(typeOf(result), intType())
+{
+  remInts(a, b)
+}
+
+/truncating_division.kt: info: Generated Viper text for pureSignedArithmetic:
+function quotient(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires !(intFromRef(b) == 0)
+  ensures isSubtype(typeOf(result), intType())
+{
+  divInts(a, b)
+}
+
+function remainder(a: Ref, b: Ref): Ref
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires !(intFromRef(b) == 0)
+  ensures isSubtype(typeOf(result), intType())
+{
+  remInts(a, b)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method pureSignedArithmetic(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires intFromRef(a) == -3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(quotient(a, intToRef(2))) == -1
+  assert intFromRef(remainder(a, intToRef(2))) == -1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

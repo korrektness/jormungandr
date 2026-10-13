@@ -685,6 +685,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("truncating_division.kt")
+    public void testTruncating_division() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/truncating_division.kt");
+    }
+
+    @Test
     @TestMetadata("uniqueness_errors.kt")
     public void testUniqueness_errors() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/uniqueness_errors.kt");
