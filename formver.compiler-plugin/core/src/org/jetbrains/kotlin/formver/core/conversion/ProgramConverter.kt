@@ -62,7 +62,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.*
 import org.jetbrains.kotlin.formver.core.names.*
 import org.jetbrains.kotlin.formver.core.purity.checkReadOnlyVarReads
 import org.jetbrains.kotlin.formver.core.purity.checkSpecificationVarReads
-import org.jetbrains.kotlin.formver.core.purity.checkNoMultisetValues
+import org.jetbrains.kotlin.formver.core.purity.checkNoSpecificationValues
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isGuaranteedDefault
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -195,6 +195,7 @@ class ProgramConverter(
                 listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder }),
         functions = TerminationMeasures.withTerminationSpecifications(
             SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
+                    SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
                 linearizedBodyResolver.functions + typeResolver.observerViewFunctions() +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray })
         ),
@@ -289,7 +290,7 @@ class ProgramConverter(
         )
         val body = context.convertImpureBody(declaration, header, returnTarget, entry)
         checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
-        declaration.source?.let { source -> body?.bodyExp?.checkNoMultisetValues(source, this) }
+        declaration.source?.let { source -> body?.bodyExp?.checkNoSpecificationValues(source, this) }
         body?.let { convertedBodyResolver.storeImpure(header.name, it) }
         registered += RegisteredFunction(declaration, header, returnTarget, uniquenessOutcomeOf(declaration).hasErrors)
     }
@@ -497,7 +498,7 @@ class ProgramConverter(
         } else {
             val body = context.convertImpureBody(declaration as FirSimpleFunction, signature.signature, signature.returnTarget)
             checkVarReads(declaration) { body?.bodyExp?.checkSpecificationVarReads(it, this) }
-            declaration.source?.let { source -> body?.bodyExp?.checkNoMultisetValues(source, this) }
+            declaration.source?.let { source -> body?.bodyExp?.checkNoSpecificationValues(source, this) }
             body?.let { convertedBodyResolver.storeImpure(signature.signature.name, it) }
         }
     }

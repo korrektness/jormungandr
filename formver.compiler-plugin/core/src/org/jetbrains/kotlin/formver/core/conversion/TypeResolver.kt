@@ -55,6 +55,13 @@ class TypeResolver {
      * Whether the program embeds `Multiset`. The multiset type and its operations are declared only then, so that
      * Silicon sets up its multiset theory only for programs that use it.
      */
+    var usesIterationSequence: Boolean = false
+        private set
+
+    fun markIterationSequenceUsed() {
+        usesIterationSequence = true
+    }
+
     var usesMultiset: Boolean = false
         private set
 

@@ -7,7 +7,7 @@ abstract class SnaktException(val source: KtSourceElement?, override val message
     Exception(message, cause)
 
 enum class InternalReason { INVARIANT_BROKEN, UNEXPECTED_EXCEPTION }
-enum class UnsupportedReason { KOTLIN_CONSTRUCT, MULTISET_OUTSIDE_SPECIFICATION }
+enum class UnsupportedReason { KOTLIN_CONSTRUCT, MULTISET_OUTSIDE_SPECIFICATION, ITERATION_SEQUENCE_OUTSIDE_SPECIFICATION }
 
 /** An invariant of SnaKt broke: a bug in the plugin. */
 class SnaktInternalException(

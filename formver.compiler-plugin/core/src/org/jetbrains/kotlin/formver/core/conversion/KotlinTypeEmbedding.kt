@@ -49,6 +49,11 @@ internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuil
     }
 
     type.isAny -> any()
+    type is ConeClassLikeType && type.lookupTag.classId.asSingleFqName().asString() ==
+            "org.jetbrains.kotlin.formver.plugin.IterationSequence" -> {
+        converter.typeResolver.markIterationSequenceUsed()
+        iterationSequence()
+    }
     type is ConeClassLikeType && type.lookupTag.classId == multisetClassId -> {
         val element = type.typeArguments.single().type
         if (element !is ConeTypeParameterType && element?.isInt != true) {

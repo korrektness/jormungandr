@@ -1450,6 +1450,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("iteration_sequence.kt")
+      public void testIteration_sequence() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/iteration_sequence.kt");
+      }
+
+      @Test
       @TestMetadata("lambdas.kt")
       public void testLambdas() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/lambdas.kt");

@@ -712,6 +712,18 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         override val type = left.type
     }
 
+    data class SeqContains(
+        override val left: Exp,
+        override val right: Exp,
+        override val pos: Position = Position.NoPosition,
+        override val info: Info = Info.NoInfo,
+    ) : BinaryExp {
+        context(nameResolver: NameResolver)
+        override fun toSilver(): viper.silver.ast.SeqContains = toSilverVia(viper.silver.ast.SeqContains::apply)
+
+        override val type = Type.Bool
+    }
+
     /** The number of occurrences of [left] in the multiset [right]: `left in right`. */
     data class MultisetCount(
         override val left: Exp,

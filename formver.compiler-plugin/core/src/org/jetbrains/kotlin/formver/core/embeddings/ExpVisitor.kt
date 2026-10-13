@@ -80,6 +80,9 @@ interface ExpVisitor<R> {
     fun visitIntArraySize(e: IntArraySize): R
     fun visitIntArrayAllZero(e: IntArrayAllZero): R
     fun visitIntArrayContents(e: IntArrayContents): R
+    fun visitIterationSequenceContains(e: IterationSequenceContains): R
+    fun visitIterationSequenceGet(e: IterationSequenceGet): R
+    fun visitIterationSequenceOf(e: IterationSequenceOf): R
     fun visitMultisetOf(e: MultisetOf): R
     fun visitIntArrayGet(e: IntArrayGet): R
     fun visitIntArraySet(e: IntArraySet): R
@@ -161,6 +164,9 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitIntArraySize(e: IntArraySize): R = visitDefault(e)
     override fun visitIntArrayAllZero(e: IntArrayAllZero): R = visitDefault(e)
     override fun visitIntArrayContents(e: IntArrayContents): R = visitDefault(e)
+    override fun visitIterationSequenceContains(e: IterationSequenceContains): R = visitDefault(e)
+    override fun visitIterationSequenceGet(e: IterationSequenceGet): R = visitDefault(e)
+    override fun visitIterationSequenceOf(e: IterationSequenceOf): R = visitDefault(e)
     override fun visitMultisetOf(e: MultisetOf): R = visitDefault(e)
     override fun visitIntArrayGet(e: IntArrayGet): R = visitDefault(e)
     override fun visitIntArraySet(e: IntArraySet): R = visitDefault(e)

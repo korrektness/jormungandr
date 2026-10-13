@@ -76,4 +76,9 @@ data object MultisetTypeEmbedding : PretypeEmbedding {
     override val name = PretypeName("Multiset")
 }
 
+data object IterationSequenceTypeEmbedding : PretypeEmbedding {
+    override val runtimeType = RuntimeTypeDomain.iterationSequenceType()
+    override val name = PretypeName("IterationSequence")
+}
+
 fun PretypeEmbedding.asTypeEmbedding() = TypeEmbedding(this, TypeEmbeddingFlags(nullable = false))

@@ -25,6 +25,7 @@ private val valueTypeClassIds = setOf(
     StandardClassIds.String,
     StandardClassIds.Unit,
     multisetClassId,
+    ClassId(FqName("org.jetbrains.kotlin.formver.plugin"), Name.identifier("IterationSequence")),
 )
 
 /**

@@ -93,6 +93,7 @@ val TypeEmbedding.injectionOrNull: Injection?
         else when (this.pretype) {
             StringTypeEmbedding -> RuntimeTypeDomain.stringInjection
             MultisetTypeEmbedding -> RuntimeTypeDomain.multisetInjection
+            IterationSequenceTypeEmbedding -> RuntimeTypeDomain.iterationSequenceInjection
             CharTypeEmbedding -> RuntimeTypeDomain.charInjection
             IntTypeEmbedding -> RuntimeTypeDomain.intInjection
             BooleanTypeEmbedding -> RuntimeTypeDomain.boolInjection

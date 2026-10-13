@@ -632,6 +632,15 @@ caller's flow.
 A default argument may read `var` properties through a `@Unique` parameter of
 its function, as in `fun show(c: @Unique Counter, k: Int = c.n)`.
 
+### Collection iteration
+
+`IterationSequence<T>` is an immutable, specification-only sequence. It is
+available in specifications and `@Pure` functions. `iterationSequenceOf(...)`
+constructs one; `size` gives its length, `[i]` reads an element with an in-bounds
+obligation, and `in` tests membership. Equality compares the elements in order.
+`take(n)` gives the prefix of length `n` clamped between zero and the sequence's
+size. Elements may be primitive values, references, or null.
+
 ### Folding
 
 SnaKt manages permissions to the properties of unique objects automatically:

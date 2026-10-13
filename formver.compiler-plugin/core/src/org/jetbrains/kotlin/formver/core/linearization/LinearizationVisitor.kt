@@ -36,6 +36,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
+import org.jetbrains.kotlin.formver.core.embeddings.types.injectionOrNull
 import org.jetbrains.kotlin.formver.core.names.sourceSpelling
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
@@ -861,6 +862,41 @@ data class LinearizationVisitor(
             return ctx.addOwnedRead(IntArrayEmbedding.uniquePredicateAccess(array, pos), contents, e.type, arrayPath)
         }
     }
+
+    override fun visitIterationSequenceContains(e: IterationSequenceContains): Linearizable =
+        object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            override fun toViper(ctx: LinearizationContext): Exp =
+                RuntimeTypeDomain.boolInjection.toRef(toViperBuiltinType(ctx), pos = ctx.source.asPosition)
+
+            override fun toViperBuiltinType(ctx: LinearizationContext): Exp {
+                val reference = e.element.linearize().toViper(ctx)
+                val injection = e.element.type.injectionOrNull
+                // Expose the inverse term when comparing boxed primitive values in a Ref sequence.
+                val element = injection?.let { it.toRef(it.fromRef(reference)) } ?: reference
+                return Exp.SeqContains(element, e.sequence.linearize().toViperBuiltinType(ctx), ctx.source.asPosition)
+            }
+        }
+
+    override fun visitIterationSequenceGet(e: IterationSequenceGet): Linearizable =
+        object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            override fun toViper(ctx: LinearizationContext): Exp =
+                org.jetbrains.kotlin.formver.core.domains.IterationSequenceElementFunction.toFuncApp(
+                    listOf(e.sequence.linearize().toViper(ctx), e.index.linearize().toViper(ctx)),
+                    ctx.source.asPosition,
+                )
+        }
+
+    override fun visitIterationSequenceOf(e: IterationSequenceOf): Linearizable =
+        object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            override fun toViper(ctx: LinearizationContext): Exp =
+                RuntimeTypeDomain.iterationSequenceInjection.toRef(toViperBuiltinType(ctx), pos = ctx.source.asPosition)
+
+            override fun toViperBuiltinType(ctx: LinearizationContext): Exp {
+                val pos = ctx.source.asPosition
+                val elements = e.elements.map { it.linearize().toViper(ctx) }
+                return if (elements.isEmpty()) Exp.EmptySeq(Type.Ref, pos) else Exp.ExplicitSeq(elements, pos)
+            }
+        }
 
     override fun visitMultisetOf(e: MultisetOf): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp =

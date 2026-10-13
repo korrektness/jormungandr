@@ -13,20 +13,22 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.WithPosition
 import org.jetbrains.kotlin.formver.core.embeddings.types.MultisetTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.IterationSequenceTypeEmbedding
 
 /**
- * Reports each outermost `Multiset` value computed in [this] impure body outside its verification probe conditions; a variable
- * is reported where its value is computed. A
- * `Multiset` exists only in specifications: it has no runtime representation. Loop invariants are not children of
- * their loop, so they are not visited.
+ * Reports specification-only values computed in an impure body outside its verification probes. Variables are
+ * reported where their values are computed. Loop invariants are not children of their loop.
  */
-fun ExpEmbedding.checkNoMultisetValues(source: KtSourceElement, errors: ErrorCollectionContext) {
+fun ExpEmbedding.checkNoSpecificationValues(source: KtSourceElement, errors: ErrorCollectionContext) {
     val nextSource = (this as? WithPosition)?.source ?: source
     when {
         this is Assert || this is Refute || this is VariableEmbedding -> {}
         type.pretype == MultisetTypeEmbedding ->
             errors.reportUnsupportedFeature(nextSource, "a `Multiset` outside a specification",
                 org.jetbrains.kotlin.formver.common.UnsupportedReason.MULTISET_OUTSIDE_SPECIFICATION)
-        else -> children().forEach { it.checkNoMultisetValues(nextSource, errors) }
+        type.pretype == IterationSequenceTypeEmbedding ->
+            errors.reportUnsupportedFeature(nextSource, "an `IterationSequence` outside a specification",
+                org.jetbrains.kotlin.formver.common.UnsupportedReason.ITERATION_SEQUENCE_OUTSIDE_SPECIFICATION)
+        else -> children().forEach { it.checkNoSpecificationValues(nextSource, errors) }
     }
 }

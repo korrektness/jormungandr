@@ -156,6 +156,24 @@ class Multiset<T> private constructor() {
         get() = throw FormverFunctionCalledInRuntimeException("Multiset.size")
 }
 
+/** Immutable iteration observations; see "Collection iteration" in SPECIFICATIONS.md. */
+class IterationSequence<out T> private constructor() {
+    val size: Int
+        get() = throw FormverFunctionCalledInRuntimeException("IterationSequence.size")
+
+    operator fun get(@Suppress("UNUSED_PARAMETER") index: Int): T =
+        throw FormverFunctionCalledInRuntimeException("IterationSequence.get")
+
+    operator fun contains(@Suppress("UNUSED_PARAMETER") element: @UnsafeVariance T): Boolean =
+        throw FormverFunctionCalledInRuntimeException("IterationSequence.contains")
+
+    fun take(@Suppress("UNUSED_PARAMETER") size: Int): IterationSequence<T> =
+        throw FormverFunctionCalledInRuntimeException("IterationSequence.take")
+}
+
+fun <T> iterationSequenceOf(@Suppress("UNUSED_PARAMETER") vararg elements: T): IterationSequence<T> =
+    throw FormverFunctionCalledInRuntimeException("iterationSequenceOf")
+
 fun <T> multisetOf(@Suppress("UNUSED_PARAMETER") vararg elements: T): Multiset<T> =
     throw FormverFunctionCalledInRuntimeException("multisetOf")
 

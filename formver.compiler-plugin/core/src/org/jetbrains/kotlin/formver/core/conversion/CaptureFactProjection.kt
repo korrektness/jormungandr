@@ -80,6 +80,7 @@ private fun BinaryExp.rewriteOperands(rewrite: (Exp) -> Exp): Exp = when (this) 
     is Exp.MultisetUnion -> copy(left = rewrite(left), right = rewrite(right))
     is Exp.MultisetMinus -> copy(left = rewrite(left), right = rewrite(right))
     is Exp.MultisetCount -> copy(left = rewrite(left), right = rewrite(right))
+    is Exp.SeqContains -> copy(left = rewrite(left), right = rewrite(right))
 }
 
 /** Rewrite free captured values, including substituted inline arguments and enclosing closure reads. */

@@ -31,6 +31,7 @@ class TypeBuilder {
     fun char() = CharPretypeBuilder
     fun string() = StringPretypeBuilder
     fun multiset() = MultisetPretypeBuilder
+    fun iterationSequence() = ExistingPretypeBuilder(IterationSequenceTypeEmbedding)
 
     fun function(init: FunctionPretypeBuilder.() -> Unit) = FunctionPretypeBuilder().also { it.init() }
     fun klass(init: ClassPretypeBuilder.() -> Unit) = ClassPretypeBuilder().also { it.init() }

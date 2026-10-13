@@ -12,6 +12,10 @@ object SpecialFunctions {
     val all
         get() = OperatorExpEmbeddings.allTemplates.map { it.refsOperation }
 
+    val iterationSequence
+        get() = OperatorExpEmbeddings.iterationSequenceTemplates.map { it.refsOperation } +
+                org.jetbrains.kotlin.formver.core.domains.IterationSequenceElementFunction
+
     val multiset
         get() = OperatorExpEmbeddings.multisetTemplates.map { it.refsOperation }
 }

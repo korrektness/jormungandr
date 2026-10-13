@@ -1,0 +1,139 @@
+/iteration_sequence.kt: info: Generated Viper text for integerSequence:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method integerSequence() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert |Seq(intToRef(3), intToRef(7))| == 2
+  assert intFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3),
+    intToRef(7))), intToRef(0))) ==
+    3
+  assert intFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3),
+    intToRef(7))), intToRef(1))) ==
+    7
+  assert (intToRef(intFromRef(intToRef(7))) in
+    Seq(intToRef(3), intToRef(7)))
+  assert !((intToRef(intFromRef(intToRef(9))) in
+    Seq(intToRef(3), intToRef(7))))
+  assert Seq(intToRef(3), intToRef(7))[..(1 < 0 ?
+      0 :
+      (1 > |Seq(intToRef(3), intToRef(7))| ?
+        |Seq(intToRef(3), intToRef(7))| :
+        1))] ==
+    Seq(intToRef(3))
+  assert |Seq[Ref]()| == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/iteration_sequence.kt: info: Generated Viper text for referenceSequence:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method referenceSequence(first: Ref, second: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(first), stringType())
+  requires isSubtype(typeOf(second), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert stringFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(first,
+    second)), intToRef(0))) ==
+    stringFromRef(first)
+  assert Seq(first, second)[..(0 < 0 ?
+      0 :
+      (0 > |Seq(first, second)| ? |Seq(first, second)| : 0))] ==
+    Seq[Ref]()
+  assert iterationSequenceGet(iterationSequenceToRef(Seq(nullValue(), first)),
+    intToRef(0)) ==
+    nullValue()
+  assert (stringToRef(stringFromRef(first)) in Seq(first, second))
+  assert !((stringToRef(stringFromRef(stringToRef(Seq(97, 98, 115, 101, 110,
+    116)))) in
+    Seq(stringToRef(Seq(112, 114, 101, 115, 101, 110, 116)))))
+  assert (nullValue() in Seq(nullValue(), first))
+  assert (stringToRef(stringFromRef(first)) in Seq(nullValue(), first))
+  assert !((stringToRef(stringFromRef(stringToRef(Seq(97, 98, 115, 101, 110,
+    116)))) in
+    Seq(nullValue(), stringToRef(Seq(112, 114, 101, 115, 101, 110, 116)))))
+  assert !((nullValue() in
+    Seq(stringToRef(Seq(112, 114, 101, 115, 101, 110, 116)))))
+  assert (intToRef(intFromRef(intToRef(7))) in
+    Seq(nullValue(), intToRef(7)))
+  assert !((intToRef(intFromRef(intToRef(9))) in
+    Seq(nullValue(), intToRef(7))))
+  assert !((nullValue() in Seq(intToRef(7))))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/iteration_sequence.kt: info: Generated Viper text for wrongReferenceMembership:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongReferenceMembership() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (stringToRef(stringFromRef(stringToRef(Seq(97, 98, 115, 101, 110, 116)))) in
+    Seq(stringToRef(Seq(112, 114, 101, 115, 101, 110, 116))))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/iteration_sequence.kt: info: Generated Viper text for sequenceBounds:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method sequenceBounds() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3))),
+    intToRef(1))) ==
+    3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/iteration_sequence.kt: info: Generated Viper text for sequencePrefixBounds:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method sequencePrefixBounds() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert Seq(intToRef(3))[..(2 < 0 ?
+      0 :
+      (2 > |Seq(intToRef(3))| ? |Seq(intToRef(3))| : 2))] ==
+    Seq(intToRef(3))
+  assert Seq(intToRef(3))[..(-1 < 0 ?
+      0 :
+      (-1 > |Seq(intToRef(3))| ? |Seq(intToRef(3))| : -1))] ==
+    Seq[Ref]()
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/iteration_sequence.kt: info: Generated Viper text for wrongSequenceElement:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongSequenceElement() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(iterationSequenceGet(iterationSequenceToRef(Seq(intToRef(3),
+    intToRef(7))), intToRef(0))) ==
+    7
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

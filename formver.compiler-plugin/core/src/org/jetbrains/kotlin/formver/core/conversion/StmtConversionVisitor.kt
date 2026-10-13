@@ -207,6 +207,11 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data: StmtConversionContext,
     ): ExpEmbedding {
         propertyAccessExpression.calleeReference.symbol?.let(::receiverTemporaryAlias)?.let { return data.convert(it) }
+        val propertyId = propertyAccessExpression.toResolvedCallableSymbol()?.callableId
+        if (propertyId?.packageName?.asString() == "org.jetbrains.kotlin.formver.plugin" &&
+            propertyId.className?.asString() == "IterationSequence" && propertyId.callableName.asString() == "size") {
+            return OperatorExpEmbeddings.IterationSequenceSize(data.convert(propertyAccessExpression.dispatchReceiver!!))
+        }
         propertyAccessExpression.stringBuilderIntrinsic(data.session)?.let {
             return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)
         }
@@ -369,11 +374,11 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
         if (functionCall.isIntArrayElementAccess()) return data.convertIntArrayElementAccess(functionCall)
         if (functionCall.isIntArrayInit()) return data.convertIntArrayInit(functionCall)
-        data.convertStdlibHof(functionCall)?.let { return it }
-        data.convertMultisetIntrinsic(functionCall)?.let { return it }
-        functionCall.stringBuilderIntrinsic(data.session)?.let { return data.convertStringBuilderIntrinsic(functionCall, it) }
-
-        return convertOrdinaryFunctionCall(functionCall, data, symbol)
+        return data.convertStdlibHof(functionCall)
+            ?: data.convertMultisetIntrinsic(functionCall)
+            ?: data.convertIterationSequenceIntrinsic(functionCall)
+            ?: functionCall.stringBuilderIntrinsic(data.session)?.let { data.convertStringBuilderIntrinsic(functionCall, it) }
+            ?: convertOrdinaryFunctionCall(functionCall, data, symbol)
     }
 
     private fun convertOrdinaryFunctionCall(
