@@ -24,7 +24,6 @@ class A(
 
 fun <!VIPER_TEXT!>havoc<!>(a: A): Unit {
     var localUnit = a.unit
-    var localNothing = a.nothing
     var localAny = a.any
     var localInt = a.int
     var localBoolean = a.boolean
@@ -39,4 +38,9 @@ fun <!VIPER_TEXT!>havoc<!>(a: A): Unit {
     var localCharNull = a.charNull
     var localStringNull = a.stringNull
     var localClassTypeNull = a.classTypeNull
+}
+
+// No value has type Nothing, so the read ends every path through this function.
+fun <!VIPER_TEXT!>havocNothing<!>(a: A): Unit {
+    var localNothing = a.nothing
 }

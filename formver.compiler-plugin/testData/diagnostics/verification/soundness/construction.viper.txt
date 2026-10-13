@@ -1,0 +1,126 @@
+/construction.kt: info: Generated Viper text for allocationExactType:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method allocationExactType() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var a: Ref
+  a := con()
+  fold acc(Animal_unique(a), write)
+  assert isSubtype(typeOf(a), Dog())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Animal())
+
+
+/construction.kt: info: Generated Viper text for overriddenValInit:
+function GetterSub_g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), GetterSub())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), GetterSub())
+  ensures isSubtype(typeOf(ret_2), GetterSub()) &&
+    isSubtype(typeOf(ret_2), GetterBase())
+
+
+method overriddenValInit() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var s: Ref
+  s := con()
+  fold acc(GetterBase_unique(s), write)
+  fold acc(GetterSub_unique(s), write)
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method public_g_x(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/construction.kt: info: Generated Viper text for Impossible:
+field bf_n: Ref
+
+method con(par_n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(v_ret_0), Impossible())
+  ensures isSubtype(typeOf(v_ret_0), Impossible()) &&
+    acc(v_ret_0.bf_n, write) &&
+    isSubtype(typeOf(v_ret_0.bf_n), intType()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        (let anon_1_0 ==
+          (this.bf_n) in
+          gtInts(anon_0_0, anon_1_0)))))
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+  ensures intFromRef(v_ret_0.bf_n) == intFromRef(par_n)
+{
+  v_ret_0 := new(bf_n)
+  inhale typeOf(v_ret_0) == Impossible()
+  v_ret_0.bf_n := par_n
+  label lbl_ret_0
+  assert (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        (let anon_1_0 ==
+          (this.bf_n) in
+          gtInts(anon_0_0, anon_1_0)))))
+  fold acc(Impossible_unique(v_ret_0), write)
+  unfold acc(Impossible_unique(v_ret_0), write)
+}
+
+/construction.kt: info: Generated Viper text for constructImpossible:
+field bf_n: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), Impossible())
+  ensures isSubtype(typeOf(ret_1), Impossible()) && acc(ret_1.bf_n, write) &&
+    isSubtype(typeOf(ret_1.bf_n), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.bf_n) in
+        (let anon_1_0 ==
+          (this.bf_n) in
+          gtInts(anon_0_0, anon_1_0)))))
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+  ensures intFromRef(ret_1.bf_n) == intFromRef(par_n)
+
+
+method constructImpossible() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var s: Ref
+  s := con(intToRef(0))
+  fold acc(Impossible_unique(s), write)
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

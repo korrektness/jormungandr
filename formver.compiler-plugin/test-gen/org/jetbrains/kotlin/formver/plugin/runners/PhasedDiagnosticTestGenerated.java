@@ -1734,6 +1734,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("construction.kt")
+      public void testConstruction() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/construction.kt");
+      }
+
+      @Test
       @TestMetadata("erased_generics.kt")
       public void testErased_generics() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/erased_generics.kt");
@@ -1743,6 +1749,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("footprints.kt")
       public void testFootprints() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/footprints.kt");
+      }
+
+      @Test
+      @TestMetadata("local_functions.kt")
+      public void testLocal_functions() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/local_functions.kt");
+      }
+
+      @Test
+      @TestMetadata("property_reads.kt")
+      public void testProperty_reads() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/property_reads.kt");
       }
     }
 

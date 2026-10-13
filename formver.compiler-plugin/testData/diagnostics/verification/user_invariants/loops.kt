@@ -62,6 +62,7 @@ fun <!VIPER_TEXT!>withBreak<!>() {
             i <= 10
         }
         if (i >= 10) break
+        i++
     }
     verify(i == 10)
 }

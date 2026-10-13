@@ -31,7 +31,7 @@ fun <!VIPER_TEXT!>shadowNested<!>(x: Int): Unit {
         foo = x
         val x = 1
         foo = x
-        while (true) {
+        while (foo != x) {
             foo = x
             val x = 2
             foo = x

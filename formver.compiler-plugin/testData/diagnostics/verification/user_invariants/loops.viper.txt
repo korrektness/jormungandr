@@ -128,16 +128,19 @@ method withBreak() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var i: Ref
-  var anon: Ref
+  var anon_1: Ref
   i := intToRef(0)
   label cont
     invariant isSubtype(typeOf(i), intType())
     invariant intFromRef(i) <= 10
-  anon := boolToRef(true)
-  if (boolFromRef(anon)) {
+  anon_1 := boolToRef(true)
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
     if (intFromRef(i) >= 10) {
       goto break
     }
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
     goto cont
   }
   label break

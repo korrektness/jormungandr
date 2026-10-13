@@ -11,6 +11,7 @@ verifies, fails or is skipped: that fails the test and writes nothing. Read what
     ./agent-scripts/test.sh --update-goldens [pattern] # regenerate goldens, then report what changed
     ./agent-scripts/test.sh --update-goldens --record-outcomes <pattern>
                                                        # also record verification outcome changes
+    ./agent-scripts/test.sh --vacuity [pattern]        # list verified methods whose context is contradictory
 
 A pattern is the testData file's name, the path to it, or the generated method
 name. A failing run prints the expected/actual diff.

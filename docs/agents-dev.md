@@ -10,7 +10,8 @@ them.
   plus the locality tests, which have no verification stage), `--verify` for the
   full pipeline, `--verify-changed` for `./gradlew update` (convert everything,
   verify only where conversion output changed), `--update-goldens` to regenerate
-  goldens and report what they now say.
+  goldens and report what they now say, `--vacuity` for the vacuity check of
+  `docs/soundness.md`.
 - `check-all.sh` — `check`, the Gradle consumer check, `pre-commit` and the testData checks together.
   `--rerun` re-executes tests Gradle considers current.
 - `check-gradle-consumer.sh` — publishes the plugin to a private Maven repository and

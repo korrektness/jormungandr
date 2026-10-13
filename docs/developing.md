@@ -56,8 +56,12 @@ file and over the same classes:
   the specification blocks when there is a precondition, at the end of every
   loop body, and after the last loop. An unreachable point or inconsistent
   assumptions make the probe fail; success is a reachability check in the
-  verifier's state, not a proof of concrete execution. The builtin's public
-  contract is in `formver.annotations/src/org/jetbrains/kotlin/formver/plugin/Builtins.kt`.
+  verifier's state, not a proof of concrete execution. A probe after an `if`
+  or `when` covers only the paths that reach it, so a dead branch needs a probe
+  of its own. The builtin's public contract is in
+  `formver.annotations/src/org/jetbrains/kotlin/formver/plugin/Builtins.kt`.
+  `./agent-scripts/test.sh --vacuity` adds the entry and exit probes of every
+  method itself; `docs/soundness.md` describes the check.
 
 ### Directives
 

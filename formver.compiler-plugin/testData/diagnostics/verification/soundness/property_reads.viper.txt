@@ -1,0 +1,65 @@
+/property_reads.kt: info: Generated Viper text for poke:
+field n: Ref
+
+method poke(v_this_extension: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(v_this_extension), Box())
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/property_reads.kt: info: Generated Viper text for extensionGetterEffect:
+field n: Ref
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method extensionGetterEffect(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), Box())
+  requires acc(Box_unique(c), write)
+  ensures acc(Box_unique(c), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var ignored: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := poke(c)
+  ignored := anon_0
+  inhale isSubtype(typeOf(ignored), intType())
+  anon_1 := havoc(intType())
+  assert intFromRef(anon_1) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method poke(v_this_extension: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/property_reads.kt: info: Generated Viper text for topLevelReadsDiffer:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method topLevelReadsDiffer() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var a: Ref
+  var anon_0: Ref
+  var b: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_0), intType())
+  a := anon_0
+  inhale isSubtype(typeOf(anon_1), intType())
+  b := anon_1
+  assert intFromRef(a) == intFromRef(b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

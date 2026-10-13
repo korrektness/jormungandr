@@ -16,5 +16,5 @@ fun <!VIPER_TEXT!>test<!>() {
     val expr1 = n.data == 5
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>expr1<!>)
     val expr2 = n.left?.data == 4
-    verify(expr2)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>expr2<!>)
 }

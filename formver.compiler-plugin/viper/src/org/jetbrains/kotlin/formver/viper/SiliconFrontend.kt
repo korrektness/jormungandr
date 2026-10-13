@@ -39,6 +39,11 @@ class SiliconFrontend(
         add(z3Exe)
         add("--numberOfParallelVerifiers")
         add(System.getenv("SILICON_PARALLEL_VERIFIERS") ?: "2")
+        // Silicon stops checking a method once it has this many errors, and it counts failures it does not report,
+        // such as a trigger's precondition. RefutePlugin discards the failure that a refute expects, so with any limit
+        // the statements after a refute may go unchecked without an error.
+        add("--numberOfErrorsToReport")
+        add("0")
     }
     private val cache = cacheDirectory?.let { VerificationResultCache(it) }
     private val cacheOptions = args + pluginOptions + listOf(

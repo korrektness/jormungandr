@@ -102,6 +102,9 @@ fun Test.configureFormverTest() {
     project.findProperty("kotlin.test.update.test.data")?.let {
         systemProperty("kotlin.test.update.test.data", it)
     }
+    project.findProperty("formver.vacuityReport")?.let {
+        systemProperty("formver.vacuityReport", it)
+    }
     project.findProperty("formver.recordOutcomes")?.let {
         systemProperty("formver.recordOutcomes", it)
     }

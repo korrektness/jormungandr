@@ -105,14 +105,17 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                             !shouldSkipByTestMode(testServices) && simpleFunction.lambdaPrograms.orEmpty().any { it.shouldVerify }) {
                             toVerify.add(Pair(testFile, simpleFunction))
                         }
+                        simpleFunction.acceptChildren(this)
                     }
                 })
             }
             if (toVerify.isNotEmpty()) {
                 val z3 = SiliconFrontend.locateZ3()
+                val vacuityReport = VacuityProbe.report
                 val programs = toVerify.map { (_, decl) ->
-                    listOfNotNull(decl.viperProgram.takeIf { decl.shouldVerify == true }) +
+                    val group = listOfNotNull(decl.viperProgram.takeIf { decl.shouldVerify == true }) +
                         decl.lambdaPrograms.orEmpty().filter { it.shouldVerify }.map { it.program }
+                    if (vacuityReport == null) group else group.map(VacuityProbe::probe)
                 }
                 val cacheDirectory = System.getProperty("formver.verificationCacheDirectory")?.let { Path.of(it) }
                 val attempts = OrderedVerificationExecutor.shared.mapWithResource(
@@ -127,8 +130,15 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                     }
                     VerificationAttempt(errors, invalid)
                 }
-                toVerify.zip(attempts).forEach { (owner, attempt) ->
+                toVerify.zip(attempts).zip(programs).forEach { (verified, group) ->
+                    val (owner, probedAttempt) = verified
                     val (testFile, decl) = owner
+                    val hits = probedAttempt.errors.mapNotNull(VacuityProbe::hitOf)
+                    val attempt = probedAttempt.copy(errors = probedAttempt.errors.filter { VacuityProbe.hitOf(it) == null })
+                    val verifiedOtherwise = attempt.errors.isEmpty() && attempt.invalid == null
+                    if (vacuityReport != null && hits.isNotEmpty() && verifiedOtherwise) {
+                        VacuityProbe.record(vacuityReport, testFile.originalFile.path, decl.symbol.toString(), hits, group)
+                    }
                     val diagnostics = verifyFunction(attempt, decl, module)
                     testServices.verificationDiagnosticsCollector.addDiagnostics(diagnostics)
                     testServices.allTagCollector.reportDiagnostics(testFile, diagnostics)

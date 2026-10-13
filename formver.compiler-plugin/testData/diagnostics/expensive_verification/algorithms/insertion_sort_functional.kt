@@ -17,7 +17,7 @@ fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>isSorted<!>
 fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>contents<!>(n: Node?): Multiset<Int> =
     if (n == null) multisetOf() else multisetOf(n.value) + contents(n.next)
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>insert<!>(x: Int, l: Node?): Node {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>insert<!>(x: Int, l: Node?): Node {
     preconditions { isSorted(l) }
     postconditions<Node> { r ->
         isSorted(r) && (r.value == x || (l != null && r.value == l.value))
@@ -27,10 +27,10 @@ fun <!MISSING_TERMINATION_MEASURE, VERIFICATION_SKIPPED, VIPER_TEXT!>contents<!>
     if (l == null || x <= l.value) {
         return Node(x, l)
     }
-    return Node(l.value, insert(x, l.next))
+    return Node(l.value, <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>insert(x, l.next)<!>)
 }<!>
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>insertionSort<!>(l: Node?): Node? {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>insertionSort<!>(l: Node?): Node? {
     postconditions<Node?> { r -> isSorted(r) && contents(r) == contents(l) }
     if (l == null) {
         return null

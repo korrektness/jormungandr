@@ -44,7 +44,7 @@ fun <!VIPER_TEXT!>unsafe_binary_search<!>(arr: List<Int>, target: Int, left: Int
     val mid = left + (right - left) / 2
 
     return when {
-        <!POSSIBLE_INDEX_OUT_OF_BOUND!>arr[mid]<!> == target -> true
+        <!POSSIBLE_INDEX_OUT_OF_BOUND, POSSIBLE_INDEX_OUT_OF_BOUND!>arr[mid]<!> == target -> true
         arr[mid] < target -> unsafe_binary_search(arr, target, mid + 1, right)
         else -> unsafe_binary_search(arr, target, left, mid - 1)
     }

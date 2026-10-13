@@ -117,3 +117,43 @@ method specificationPredicate() returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/refute.kt: info: Generated Viper text for branchHidden:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method branchHidden(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  if (intFromRef(x) > 0) {
+    anon := ltInts(x, intToRef(0))
+  } else {
+    anon := boolToRef(false)}
+  if (boolFromRef(anon)) {
+    assert false
+  }
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/refute.kt: info: Generated Viper text for branchProbed:
+method branchProbed(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  if (intFromRef(x) > 0) {
+    anon := ltInts(x, intToRef(0))
+  } else {
+    anon := boolToRef(false)}
+  if (boolFromRef(anon)) {
+    refute false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

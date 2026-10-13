@@ -50,3 +50,17 @@ fun <!VIPER_TEXT!>assertionAfterRefutation<!>() {
 fun <!VIPER_TEXT!>specificationPredicate<!>() {
     refute(multisetOf(1).count(1) == 0)
 }
+
+// A probe after a join is reachable through the live branch, so it does not show that the dead branch is vacuous.
+fun <!VIPER_TEXT!>branchHidden<!>(x: Int) {
+    if (x > 0 && x < 0) {
+        verify(false)
+    }
+    refute(false)
+}
+
+fun <!VIPER_TEXT!>branchProbed<!>(x: Int) {
+    if (x > 0 && x < 0) {
+        refute(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>)
+    }
+}

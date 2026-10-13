@@ -17,6 +17,11 @@ Usage:
   ./agent-scripts/test.sh --update-goldens [pattern] # regenerate goldens, then report what changed
   ./agent-scripts/test.sh --update-goldens --record-outcomes <pattern>
                                                      # also let verification outcomes change
+  ./agent-scripts/test.sh --vacuity [pattern]        # full pipeline, probing each verified method
+                                                     # with refute(false) at entry and exit
+
+--vacuity lists every probe that failed in a declaration that otherwise
+verifies: the verifier's facts there are contradictory.
 
 A pattern can be given as the testData file is named (assign_local), as the
 path to it, or as the generated test method (testAssign_local).
@@ -27,7 +32,7 @@ MODE=conversion
 RECORD_OUTCOMES=0
 set_mode() {
     if [[ "$MODE" != conversion && "$MODE" != "$1" ]]; then
-        echo "--verify, --verify-changed and --update-goldens select different runs; pass one." >&2
+        echo "--verify, --verify-changed, --update-goldens and --vacuity select different runs; pass one." >&2
         exit 1
     fi
     MODE="$1"
@@ -38,6 +43,7 @@ while [[ "${1:-}" == -* ]]; do
         --verify) set_mode verify ;;
         --verify-changed) set_mode verify-changed ;;
         --update-goldens) set_mode update ;;
+        --vacuity) set_mode vacuity ;;
         --record-outcomes) RECORD_OUTCOMES=1 ;;
         -h|--help) usage; exit 0 ;;
         *) echo "Unknown flag: $1" >&2; echo >&2; usage >&2; exit 1 ;;
@@ -70,6 +76,11 @@ if [[ "$MODE" == update ]]; then
 fi
 if [[ "$RECORD_OUTCOMES" -eq 1 ]]; then
     args+=(-Pformver.recordOutcomes=true)
+fi
+VACUITY_DIR="$PWD/formver.compiler-plugin/build/vacuity-probes"
+if [[ "$MODE" == vacuity ]]; then
+    rm -rf "$VACUITY_DIR"
+    args+=(-Pformver.vacuityReport="$VACUITY_DIR")
 fi
 if [[ -n "$PATTERN" ]]; then
     args+=(--tests "*$(gradle_filter "$PATTERN")*")
@@ -178,7 +189,9 @@ run_module() {
 }
 
 run_module compiler "$COMPILER_TASK" "$COMPILER_RESULTS_DIR" report_compiler_failure
-run_module locality "$LOCALITY_TASK" "$LOCALITY_RESULTS_DIR" report_locality_failure
+if [[ "$MODE" != vacuity ]]; then
+    run_module locality "$LOCALITY_TASK" "$LOCALITY_RESULTS_DIR" report_locality_failure
+fi
 # In update mode these are the tests that wrote nothing, such as those refusing
 # to change a verification outcome.
 UNWRITTEN=""
@@ -226,6 +239,18 @@ summary() {
 
 echo
 summary
+
+if [[ "$MODE" == vacuity ]]; then
+    if compgen -G "$VACUITY_DIR/*.tsv" >/dev/null; then
+        echo
+        echo "=== vacuous contexts (test file, declaration, method, probe) ==="
+        sort "$VACUITY_DIR"/*.tsv
+        exit 1
+    fi
+    if [[ "$overall_status" -eq 0 ]]; then
+        echo "No probe found a contradictory context."
+    fi
+fi
 
 if [[ "$MODE" != update || "$overall_status" -ne 0 ]]; then
     exit "$overall_status"
