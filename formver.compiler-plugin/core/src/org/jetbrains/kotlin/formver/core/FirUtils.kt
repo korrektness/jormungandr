@@ -17,6 +17,11 @@ import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.declarations.utils.isInline
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
+import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
+import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
@@ -44,7 +49,19 @@ import org.jetbrains.kotlin.text
 // val FirElement.calleeCallableSymbol: FirCallableSymbol<*>
 //     get() = calleeReference?.toResolvedCallableSymbol()!!
 val FirFunctionCall.functionCallArguments: List<FirExpression>
-    get() = listOfNotNull(dispatchReceiver, extensionReceiver) + argumentList.arguments
+    get() = listOfNotNull(boundDispatchReceiver, extensionReceiver) + argumentList.arguments
+
+/**
+ * The receiver passed for the callee's dispatch receiver parameter. A static member has no such parameter, but FIR
+ * still records the class qualifier it is called through as the dispatch receiver.
+ */
+val FirQualifiedAccessExpression.boundDispatchReceiver: FirExpression?
+    get() = dispatchReceiver?.takeIf { toResolvedCallableSymbol()?.containingDeclarationReceiverType() != null }
+
+private fun FirCallableSymbol<*>.containingDeclarationReceiverType(): ConeKotlinType? = when (this) {
+    is FirPropertyAccessorSymbol -> propertySymbol.dispatchReceiverType
+    else -> dispatchReceiverType
+}
 
 val FirFunctionSymbol<*>.effects: List<FirEffectDeclaration>
     get() = this.resolvedContractDescription?.effects ?: emptyList()

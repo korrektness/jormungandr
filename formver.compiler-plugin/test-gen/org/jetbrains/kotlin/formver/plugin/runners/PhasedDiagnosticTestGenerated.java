@@ -713,6 +713,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("java_static_calls.kt")
+    public void testJava_static_calls() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/java_static_calls.kt");
+    }
+
+    @Test
     @TestMetadata("lambda_values.kt")
     public void testLambda_values() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/lambda_values.kt");
@@ -857,6 +863,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("class_observer_views.kt")
       public void testClass_observer_views() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/class_observer_views.kt");
+      }
+
+      @Test
+      @TestMetadata("companion_objects.kt")
+      public void testCompanion_objects() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/companion_objects.kt");
       }
 
       @Test

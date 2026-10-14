@@ -1,0 +1,125 @@
+/java_static_calls.kt: info: Generated Viper text for Holder:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Holder())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Holder()
+  fold acc(Holder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_unique(v_ret_0), write)
+}
+
+/java_static_calls.kt: info: Generated Viper text for Companion:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Holder_Companion())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Holder_Companion()
+  fold acc(Holder_Companion_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Holder_Companion_unique(v_ret_0), write)
+}
+
+/java_static_calls.kt: info: Generated Viper text for id:
+method id(this: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Holder_Companion())
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(n)
+{
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/java_static_calls.kt: info: Generated Viper text for valid:
+method isValidCodePoint(p0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(p0), intType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+
+
+method valid(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), intType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := isValidCodePoint(c)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/java_static_calls.kt: info: Generated Viper text for staticCallIsOpaque:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method isValidCodePoint(p0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(p0), intType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+
+
+method staticCallIsOpaque() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_v: Ref
+  l0_v := isValidCodePoint(intToRef(65))
+  assert boolFromRef(l0_v)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/java_static_calls.kt: info: Generated Viper text for staticField:
+method staticField() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), intType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/java_static_calls.kt: info: Generated Viper text for staticFieldIsOpaque:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method staticFieldIsOpaque() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), intType())
+  anon_1 := anon_0
+  assert intFromRef(anon_1) == 2147483647
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/java_static_calls.kt: info: Generated Viper text for viaJvmStatic:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method id(this: Ref, par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Holder_Companion())
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(par_n)
+
+
+method viaJvmStatic() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_n: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), Holder_Companion())
+  anon_1 := anon_0
+  l0_n := id(anon_1, intToRef(3))
+  assert intFromRef(l0_n) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
+import org.jetbrains.kotlin.formver.core.boundDispatchReceiver
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Block
@@ -36,7 +37,7 @@ fun StmtConversionContext.insertCallWithMappedArguments(
     returnType: TypeEmbedding,
 ): ExpEmbedding {
     val receivers = listOfNotNull(
-        call.dispatchReceiver?.let { SubstitutedArgument.DispatchThis to it },
+        call.boundDispatchReceiver?.let { SubstitutedArgument.DispatchThis to it },
         call.extensionReceiver?.let { SubstitutedArgument.ExtensionThis to it },
     )
     val parameters = receivers.map { it.first } + symbol.valueParameterSymbols.map { SubstitutedArgument.ValueParameter(it) }

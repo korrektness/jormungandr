@@ -1,0 +1,381 @@
+/companion_objects.kt: info: Generated Viper text for Config:
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+method con(par_a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_a), boolType())
+  ensures isSubtype(typeOf(v_ret_0), Config())
+  ensures boolFromRef(g_a(v_ret_0)) == boolFromRef(par_a)
+  ensures boolFromRef(g_a(v_ret_0)) == boolFromRef(par_a)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Config()
+  anon := par_a
+  inhale boolFromRef(g_a(v_ret_0)) == boolFromRef(anon)
+  fold acc(Config_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Config_unique(v_ret_0), write)
+}
+
+/companion_objects.kt: info: Generated Viper text for Companion:
+function DEFAULT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function LIMIT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Config_Companion())
+  ensures intFromRef(LIMIT(v_ret_0)) == 4
+  ensures boolFromRef(DEFAULT(v_ret_0)) == true
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Config_Companion()
+  anon_0 := intToRef(4)
+  inhale intFromRef(LIMIT(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := boolToRef(true)
+  inhale boolFromRef(DEFAULT(v_ret_0)) == boolFromRef(anon_1)
+  fold acc(Config_Companion_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Config_Companion_unique(v_ret_0), write)
+}
+
+/companion_objects.kt: info: Generated Viper text for make:
+function DEFAULT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function LIMIT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+method con(par_a: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_a), boolType())
+  ensures isSubtype(typeOf(ret_2), Config())
+  ensures boolFromRef(g_a(ret_2)) == boolFromRef(par_a)
+  ensures boolFromRef(g_a(ret_2)) == boolFromRef(par_a)
+
+
+method make(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(v_ret_0), Config())
+  ensures boolFromRef(g_a(v_ret_0))
+{
+  v_ret_0 := con(boolToRef(true))
+  fold acc(Config_unique(v_ret_0), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/companion_objects.kt: info: Generated Viper text for again:
+function DEFAULT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function LIMIT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+method again(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Config())
+  ensures isSubtype(typeOf(v_ret_0), Config())
+  ensures boolFromRef(a(v_ret_0))
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), Config_Companion())
+  anon_1 := anon_0
+  v_ret_0 := make(anon_1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method make(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(ret_2), Config())
+  ensures boolFromRef(a(ret_2))
+
+
+/companion_objects.kt: info: Generated Viper text for Registry:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Registry())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Registry())
+  ensures intFromRef(size(v_ret_0)) == 3
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Registry()
+  anon := intToRef(3)
+  inhale intFromRef(size(v_ret_0)) == intFromRef(anon)
+  fold acc(Registry_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Registry_unique(v_ret_0), write)
+}
+
+/companion_objects.kt: info: Generated Viper text for same:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Registry())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method same(this: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Registry())
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(n)
+{
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/companion_objects.kt: info: Generated Viper text for ownSize:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Registry())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method ownSize(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Registry())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := size(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/companion_objects.kt: info: Generated Viper text for Outer:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Outer())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Outer()
+  fold acc(Outer_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Outer_unique(v_ret_0), write)
+}
+
+/companion_objects.kt: info: Generated Viper text for Inner:
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_Inner())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), Outer_Inner())
+  ensures intFromRef(g_v(v_ret_0)) == intFromRef(par_v)
+  ensures intFromRef(g_v(v_ret_0)) == intFromRef(par_v)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Outer_Inner()
+  anon := par_v
+  inhale intFromRef(g_v(v_ret_0)) == intFromRef(anon)
+  fold acc(Outer_Inner_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Outer_Inner_unique(v_ret_0), write)
+}
+
+/companion_objects.kt: info: Generated Viper text for useCompanion:
+function DEFAULT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function LIMIT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function a(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method make(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(ret_1), Config())
+  ensures boolFromRef(a(ret_1))
+
+
+method useCompanion() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var c: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), Config_Companion())
+  anon_1 := anon_0
+  c := make(anon_1)
+  assert boolFromRef(a(c))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/companion_objects.kt: info: Generated Viper text for readConst:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method readConst() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 4 == 4
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/companion_objects.kt: info: Generated Viper text for readCompanionProperty:
+function DEFAULT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function LIMIT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method readCompanionProperty() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), Config_Companion())
+  anon_1 := anon_0
+  v_ret_0 := DEFAULT(anon_1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/companion_objects.kt: info: Generated Viper text for companionPropertyIsOpaque:
+function DEFAULT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), boolType())
+
+
+function LIMIT(this: Ref): Ref
+  requires isSubtype(typeOf(this), Config_Companion())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method companionPropertyIsOpaque() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), Config_Companion())
+  anon_1 := anon_0
+  assert boolFromRef(DEFAULT(anon_1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/companion_objects.kt: info: Generated Viper text for useObject:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Registry_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Registry())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method same(this: Ref, par_n: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Registry())
+  requires isSubtype(typeOf(par_n), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(par_n)
+
+
+method useObject() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_n: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), Registry())
+  anon_1 := anon_0
+  l0_n := same(anon_1, intToRef(2))
+  assert intFromRef(l0_n) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/companion_objects.kt: info: Generated Viper text for objectPropertyIsOpaque:
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Registry_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Registry())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method objectPropertyIsOpaque() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_0: Ref
+  inhale isSubtype(typeOf(anon_0), Registry())
+  anon_1 := anon_0
+  assert intFromRef(Registry_g_size(anon_1)) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/companion_objects.kt: info: Generated Viper text for nested:
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Outer_Inner())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method nested(i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(i), Outer_Inner())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := g_v(i)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

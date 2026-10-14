@@ -93,14 +93,15 @@ data class ClassKotlinName(val name: FqName) : KotlinName {
 
     constructor(classSegments: List<String>) : this(FqName.fromSegments(classSegments))
 
+    // Nested classes, companion objects included, take one part per segment: a dotted name is not a Viper identifier.
     override val candidates: List<CandidateName> = buildCandidates {
-        val className = name.asString()
+        val segments = name.pathSegments().map { it.asString() }
         candidate {
-            +className
+            +segments
         }
         candidate {
             +nameType
-            +className
+            +segments
         }
     }
 

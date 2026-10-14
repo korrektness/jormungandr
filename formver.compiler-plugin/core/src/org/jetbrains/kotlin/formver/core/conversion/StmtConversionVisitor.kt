@@ -11,6 +11,9 @@ import org.jetbrains.kotlin.formver.core.isPure
 
 
 import org.jetbrains.kotlin.contracts.description.LogicOperationKind
+import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.fir.declarations.utils.isStatic
+import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.utils.isFun
@@ -55,6 +58,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
+import org.jetbrains.kotlin.formver.core.boundDispatchReceiver
 import org.jetbrains.kotlin.formver.core.functionCallArguments
 import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isIntArrayElementAccess
@@ -106,6 +110,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         resolvedQualifier: FirResolvedQualifier, data: StmtConversionContext
     ): ExpEmbedding {
         if (resolvedQualifier.resolvedType.isUnit) return UnitLit
+        resolvedQualifier.resolvedType.toRegularClassSymbol(data.session)?.takeIf { it.classKind == ClassKind.OBJECT }
+            ?.let { return data.objectInstance(it) }
         throw UnsupportedFeatureException(resolvedQualifier.source, resolvedQualifier.description)
     }
 
@@ -234,7 +240,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         propertyAccessExpression.stringBuilderIntrinsic(data.session)?.let {
             return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)
         }
-        propertyAccessExpression.topLevelPropertySymbol()?.let { return data.convertTopLevelPropertyRead(it) }
+        data.convertReceiverlessRead(propertyAccessExpression)?.let { return it }
         data.typeResolver.classLawExpansion?.let { expansion ->
             val symbol = propertyAccessExpression.toResolvedCallableSymbol() as? FirPropertySymbol
             if (symbol != null && expansion.isOwnAccess(propertyAccessExpression)) {
@@ -247,27 +253,28 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         return propertyAccess.getValue(data)
     }
 
+    /** Reads a property whose value does not depend on a receiver, or returns null for any other access. */
+    private fun StmtConversionContext.convertReceiverlessRead(access: FirPropertyAccessExpression): ExpEmbedding? {
+        val symbol = access.calleeReference.symbol
+        // A `const val`, top-level or in an object, reads as the literal of its initializer.
+        if (symbol is FirPropertySymbol && symbol.resolvedStatus.isConst) return convert(symbol.resolvedInitializer!!)
+        access.topLevelPropertySymbol()?.let { return convertTopLevelPropertyRead(it) }
+        if (symbol is FirFieldSymbol && symbol.isStatic) return unconstrainedValue(embedType(symbol.resolvedReturnType))
+        return null
+    }
+
     private fun FirPropertyAccessExpression.topLevelPropertySymbol(): FirPropertySymbol? =
         (calleeReference.symbol as? FirPropertySymbol)?.takeIf {
-            !it.isLocal && dispatchReceiver == null && extensionReceiver == null
+            !it.isLocal && boundDispatchReceiver == null && extensionReceiver == null
         }
 
-    /**
-     * A `const val` reads as the literal of its initializer. Any other property without a receiver is read as an
-     * unconstrained value of its type.
-     */
+    /** A property without a receiver is read as an unconstrained value of its type. */
     @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
     private fun StmtConversionContext.convertTopLevelPropertyRead(symbol: FirPropertySymbol): ExpEmbedding {
         if (symbol.isPure(session) && symbol.getterSymbol?.fir?.body != null) {
             return embedAnyFunction(symbol.getterSymbol!!).insertCall(emptyList(), this)
         }
-        if (symbol.resolvedStatus.isConst) return convert(symbol.resolvedInitializer!!)
-        val declaration = declareAnonVar(embedType(symbol.resolvedReturnType), null)
-        val value = declaration.variable.withInvariants(typeResolver) {
-            proven = true
-            access = true
-        }
-        return blockOf(declaration, value)
+        return unconstrainedValue(embedType(symbol.resolvedReturnType))
     }
 
     override fun visitEqualityOperatorCall(
@@ -602,7 +609,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         // as we have only one candidate to resolve it
         fun tryResolve(symbol: FirBasedSymbol<*>): ExpEmbedding? {
             val resolved = when (symbol) {
-                is FirClassSymbol<*> -> data.resolveDispatchReceiver()
+                is FirClassSymbol<*> -> data.resolveDispatchReceiver()?.takeIf { receiver ->
+                    symbol.classKind != ClassKind.OBJECT || receiver.type == data.embedType(symbol.defaultType())
+                } ?: if (symbol.classKind == ClassKind.OBJECT) data.objectInstance(symbol) else null
                 is FirAnonymousFunctionSymbol -> data.resolveExtensionReceiver(symbol.label!!.name)
                 is FirFunctionSymbol<*> -> data.resolveExtensionReceiver(symbol.name.asString())
                 is FirPropertySymbol -> data.resolveExtensionReceiver(symbol.name.asString())

@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.fir.expressions.FirOperation
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.fir.references.symbol
+import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.isBoolean
@@ -108,6 +109,23 @@ fun StmtConversionContext.declareLocalVariable(symbol: FirVariableSymbol<*>, ini
     val variable = embedLocalVariable(symbol)
     return Declare(variable, initializer?.withType(variable.type))
 }
+
+/** A value of [type] known only through its type invariants, with shared access to it. */
+fun StmtConversionContext.unconstrainedValue(type: TypeEmbedding): ExpEmbedding {
+    val declaration = declareAnonVar(type, null)
+    val value = declaration.variable.withInvariants(typeResolver) {
+        proven = true
+        access = true
+    }
+    return blockOf(declaration, value)
+}
+
+/**
+ * A reference to the object declaration [symbol]. Each reference is a separate unconstrained value, so the
+ * conversion does not know that two references denote the same instance.
+ */
+fun StmtConversionContext.objectInstance(symbol: FirClassSymbol<*>): ExpEmbedding =
+    unconstrainedValue(embedType(symbol.defaultType()))
 
 fun StmtConversionContext.declareAnonVar(type: TypeEmbedding, initializer: ExpEmbedding?): Declare {
     val variable = freshAnonVar(type)
@@ -208,6 +226,9 @@ fun StmtConversionContext.embedPropertyAccess(
 
         is FirDelegateFieldSymbol ->
             throw UnsupportedFeatureException(accessExpression.source, "Delegated properties are not supported.")
+
+        is FirFieldSymbol ->
+            throw UnsupportedFeatureException(accessExpression.source, "Java field access other than a static read")
 
         else ->
             error("Property access symbol $calleeSymbol has unsupported type.")
