@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.locality.plugin.LocalityExtensionRegistrar
 import org.jetbrains.kotlin.formver.plugin.compiler.FormalVerificationPluginExtensionRegistrar
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessExtensionRegistrar
+import java.io.File
 
 @OptIn(ExperimentalCompilerApi::class)
 class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
@@ -48,7 +49,7 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
                 && conversionSelection != TargetsSelection.NO_TARGETS
         val externalSpecs = ExternalSpecSources(
             configuration.getList(FormalVerificationConfigurationKeys.EXTERNAL_SPEC_FILES) +
-                    ExternalSpecSources.extractBundled(this@FormalVerificationPluginComponentRegistrar.javaClass.classLoader)
+                    ExternalSpecSources.extractBundled(File(FormalVerificationPluginComponentRegistrar::class.java.protectionDomain.codeSource.location.toURI()))
         )
         val specFragment = configuration.addToRootFragment(externalSpecs.files.map { it.path })
         for (file in externalSpecs.files) {

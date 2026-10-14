@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.tooling.provider.model.ToolingModelBuilderRegistry
 import org.jetbrains.kotlin.formver.BuildConfig
 import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames
@@ -39,6 +40,13 @@ class FormVerGradleSubplugin
 
         val formVerExtension = project.extensions.getByType(FormVerExtension::class.java)
         val externalSpecs = project.files(formVerExtension.myExternalSpecs)
+        // KGP does not track files options as task inputs; without this, an edited spec leaves the compilation
+        // up to date and lets the build cache restore output verified against the old spec.
+        kotlinCompilation.compileTaskProvider.configure { task ->
+            task.inputs.files(externalSpecs)
+                .withPropertyName("formverExternalSpecs")
+                .withPathSensitivity(PathSensitivity.RELATIVE)
+        }
 
         return project.provider {
             val options = mutableListOf<SubpluginOption>()
@@ -75,8 +83,7 @@ class FormVerGradleSubplugin
                 options += SubpluginOption(FormalVerificationPluginNames.DUMP_UNIQUENESS_CFG_OPTION_NAME, it.toString())
             }
 
-            // One option per file: a files option joins its files into a single value, and each file is also a
-            // task input.
+            // One option per file: a files option joins its files into a single value.
             for (spec in externalSpecs.files.sorted()) {
                 options += FilesSubpluginOption(
                     FormalVerificationPluginNames.EXTERNAL_SPEC_OPTION_NAME, listOf(spec), FilesOptionKind.INTERNAL

@@ -8,10 +8,14 @@ package org.jetbrains.kotlin.formver.common
 import org.jetbrains.kotlin.KtSourceFile
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import java.io.File
+import java.nio.file.FileSystems
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.nio.file.attribute.PosixFilePermissions
 import java.security.MessageDigest
 import java.util.concurrent.ConcurrentHashMap
+import java.util.zip.ZipFile
 
 /**
  * Kotlin source files that the compiler analyses as specifications of code outside the module.
@@ -44,29 +48,20 @@ class ExternalSpecSources(files: Collection<File>) {
     companion object {
         val NONE = ExternalSpecSources(emptyList())
 
-        /**
-         * Lists the resource paths of bundled spec sources, one per line. Every copy of this resource on the class
-         * path contributes, so a jar can carry specs by shipping its own index next to them.
-         */
+        /** Lists the resource paths of bundled spec sources, one per line. */
         const val BUNDLED_INDEX_RESOURCE = "META-INF/formver/external-specs.list"
 
         /**
-         * The spec sources bundled as resources of [classLoader], written out under [cacheRoot] so that the
-         * compiler can read them as ordinary files.
+         * The spec sources bundled in [location], a jar or class-path directory that carries
+         * [BUNDLED_INDEX_RESOURCE], written out under [cacheRoot] so that the compiler can read them as ordinary files.
+         * Only [location] is read, so other entries of the class path cannot add or replace bundled specs.
          *
          * The files go into a directory named after a digest of their names and contents, so concurrent and repeated
-         * compilations share one copy and a changed resource never reuses a stale one.
+         * compilations share one copy and a changed resource never reuses a stale one. An existing copy whose
+         * contents differ from the resource is overwritten.
          */
-        fun extractBundled(classLoader: ClassLoader, cacheRoot: File = defaultCacheRoot()): List<File> {
-            val resources = classLoader.getResources(BUNDLED_INDEX_RESOURCE).toList()
-                .flatMap { index -> index.readText().lineSequence().map(String::trim).filter(::isEntry).toList() }
-                .distinct()
-                .map { name ->
-                    require(name.endsWith(".kt")) { "Bundled external spec $name is not a Kotlin source." }
-                    val stream = classLoader.getResourceAsStream(name)
-                        ?: error("Bundled external spec $name is listed in $BUNDLED_INDEX_RESOURCE but missing.")
-                    name to stream.use { it.readBytes() }
-                }
+        fun extractBundled(location: File, cacheRoot: File = defaultCacheRoot()): List<File> {
+            val resources = readBundled(location)
             if (resources.isEmpty()) return emptyList()
 
             val digest = MessageDigest.getInstance("SHA-256")
@@ -77,20 +72,60 @@ class ExternalSpecSources(files: Collection<File>) {
                 digest.update(0)
             }
             val dir = cacheRoot.resolve(digest.digest().joinToString("") { "%02x".format(it) })
-            return resources.map { (name, bytes) -> writeOnce(dir.resolve(name), bytes) }
+            return resources.map { (name, bytes) -> writeChecked(dir.resolve(name), bytes) }
+        }
+
+        private fun readBundled(location: File): List<Pair<String, ByteArray>> {
+            if (location.isDirectory) {
+                return readIndexed(location) { name -> location.resolve(name).takeIf { it.isFile }?.readBytes() }
+            }
+            return ZipFile(location).use { zip ->
+                readIndexed(location) { name -> zip.getEntry(name)?.let { entry -> zip.getInputStream(entry).use { it.readBytes() } } }
+            }
+        }
+
+        private fun readIndexed(location: File, read: (String) -> ByteArray?): List<Pair<String, ByteArray>> {
+            val index = read(BUNDLED_INDEX_RESOURCE) ?: error("$location carries no $BUNDLED_INDEX_RESOURCE.")
+            return index.decodeToString().lineSequence().map(String::trim).filter(::isEntry).distinct()
+                .map { name ->
+                    require(name.endsWith(".kt")) { "Bundled external spec $name is not a Kotlin source." }
+                    require(name.split('/').none { it.isEmpty() || it == "." || it == ".." }) {
+                        "Bundled external spec $name is not a plain relative path."
+                    }
+                    name to (read(name) ?: error("Bundled external spec $name is listed in $BUNDLED_INDEX_RESOURCE but missing."))
+                }
+                .toList()
         }
 
         private fun isEntry(line: String): Boolean = line.isNotEmpty() && !line.startsWith("#")
 
-        private fun defaultCacheRoot(): File = File(System.getProperty("java.io.tmpdir"), "formver-external-specs")
+        /** A directory in the user's own cache: a shared temporary directory would let other users plant specs. */
+        private fun defaultCacheRoot(): File {
+            val cache = System.getenv("XDG_CACHE_HOME")?.takeIf { it.isNotEmpty() }?.let(::File)
+                ?: File(System.getProperty("user.home"), ".cache")
+            return cache.resolve("snakt/external-specs")
+        }
 
-        private fun writeOnce(target: File, bytes: ByteArray): File {
-            if (target.isFile) return target
-            target.parentFile.mkdirs()
+        private fun writeChecked(target: File, bytes: ByteArray): File {
+            if (target.isFile && target.readBytes().contentEquals(bytes)) return target
+            createPrivateDirectories(target.parentFile.toPath())
             val partial = Files.createTempFile(target.parentFile.toPath(), target.name, ".partial")
             Files.write(partial, bytes)
             Files.move(partial, target.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
             return target
+        }
+
+        private fun createPrivateDirectories(dir: Path) {
+            if ("posix" in FileSystems.getDefault().supportedFileAttributeViews()) {
+                val privatePermissions = PosixFilePermissions.fromString("rwx------")
+                Files.createDirectories(dir, PosixFilePermissions.asFileAttribute(privatePermissions))
+                Files.setPosixFilePermissions(dir, privatePermissions)
+                check(Files.getPosixFilePermissions(dir) == privatePermissions) {
+                    "External spec cache directory permissions are not private: $dir"
+                }
+            } else {
+                Files.createDirectories(dir)
+            }
         }
     }
 }

@@ -8,8 +8,9 @@
 # of it, and calls through the bundled standard-library specs. The check fails
 # if a spec declaration reaches the compiled output, if a reference to one from
 # compiled code is accepted, if a spec binding to a missing library declaration
-# is accepted, if a false claim about a specified call verifies, or if a
-# multiplatform consumer's common code does not verify through the bundled specs.
+# is accepted, if a false claim about a specified call verifies, if a
+# multiplatform consumer's common code does not verify through the bundled specs,
+# or if a caller stays verified after the spec it relies on changes.
 #
 # Needs network access for the consumer's own dependencies, and Z3: Z3_EXE, z3
 # on PATH, or the copy that the test tasks provision under the Gradle user
@@ -390,6 +391,30 @@ fi
 if grep -q "^w: .*\(common\|jvm\).kt" "$kmp_log"; then
     grep "^w: " "$kmp_log" >&2
     echo "check-gradle-consumer.sh: the multiplatform consumer's claims did not verify" >&2
+    exit 1
+fi
+
+# Editing a spec re-verifies its callers: the consumer builds clean, then the
+# spec of twice changes so that Main.kt's claim about it no longer holds.
+rebuild_log="$work/consumer-rebuild.log"
+if ! build_consumer >"$rebuild_log" 2>&1; then
+    cat "$rebuild_log" >&2
+    echo "check-gradle-consumer.sh: the consumer did not build again" >&2
+    exit 1
+fi
+sed -i 's/result -> result == x \* 2 }/result -> result == x * 2 + 1 }/' "$consumer/specs/CounterSpecs.kt"
+if ! grep -q 'result == x \* 2 + 1' "$consumer/specs/CounterSpecs.kt"; then
+    echo "check-gradle-consumer.sh: the spec edit did not apply" >&2
+    exit 1
+fi
+edited_log="$work/consumer-edited-spec.log"
+if build_consumer >"$edited_log" 2>&1; then
+    echo "check-gradle-consumer.sh: the consumer stayed verified after its spec changed" >&2
+    exit 1
+fi
+if ! grep -q "^e: .*Main.kt:29:" "$edited_log"; then
+    cat "$edited_log" >&2
+    echo "check-gradle-consumer.sh: the consumer with an edited spec failed for another reason" >&2
     exit 1
 fi
 
