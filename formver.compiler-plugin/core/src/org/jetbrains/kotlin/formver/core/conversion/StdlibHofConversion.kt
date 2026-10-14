@@ -111,6 +111,10 @@ private fun stdlibHofKind(symbol: FirCallableSymbol<*>, arity: Int): StdlibHof? 
     }
 }
 
+/** Whether the declared receiver of [this] is a `Map`, which selects entry-valued Map iteration. */
+private fun FirFunctionCall.hasMapReceiver(): Boolean =
+    toResolvedCallableSymbol()?.resolvedReceiverTypeRef?.coneType?.classId == ClassId.topLevel(FqName("kotlin.collections.Map"))
+
 /** Whether a callable belongs to the higher-order conversion path, including its opaque function-value calls. */
 internal fun hasStdlibHofTemplate(symbol: FirFunctionSymbol<*>): Boolean =
     stdlibHofKind(symbol, symbol.valueParameterSymbols.size) != null
@@ -124,6 +128,9 @@ private fun StmtConversionContext.stdlibHof(call: FirFunctionCall): Pair<StdlibH
     // The arity tells overloads without a lambda, such as `CharSequence.count()`, apart.
     val hof = stdlibHofKind(symbol, call.arguments.size) ?: return null
     if (call.isCollectionLoop() && !ownsCollectionReceiver(call)) return null
+    // Without the trusted collection view, as in a common source set the bundled specifications do not reach, the
+    // call stays an opaque library call.
+    if (call.isCollectionLoop() && !hasCollectionIterationModels(call.hasMapReceiver())) return null
     val lambda = when (val argument = call.arguments.last()) {
         is FirAnonymousFunctionExpression -> convert(argument)
         is FirPropertyAccessExpression ->
@@ -366,7 +373,7 @@ private fun StmtConversionContext.templateInvariants(
 internal fun StmtConversionContext.allocateCollectionList(call: FirFunctionCall, sequence: ExpEmbedding): ExpEmbedding {
     val result = freshAnonVar(embedType(call))
     return CollectionListAllocation(result, WithPosition(
-        EqCmp(collectionIterationSequence(result), sequence), checkNotNull(call.source), specificationSnapshot = true,
+        EqCmp(collectionIterationSequence(result, call.source), sequence), checkNotNull(call.source), specificationSnapshot = true,
     ))
 }
 
@@ -445,12 +452,10 @@ private fun StmtConversionContext.templateReceiver(
                 freshAnonVar(embedType(receiverExp)).also { prelude.add(Declare(it, value, targetOwned = true)) }
             }
             val collection = owner ?: value
-            // The declared receiver selects the observer, including entry-valued Map iteration.
-            val map = call.toResolvedCallableSymbol()?.resolvedReceiverTypeRef?.coneType?.classId ==
-                    ClassId.topLevel(FqName("kotlin.collections.Map"))
+            val map = call.hasMapReceiver()
             val sequence = declareAnonVar(
                 buildType { iterationSequence() },
-                WithPosition(collectionIterationSequence(collection, map), checkNotNull(call.source), specificationSnapshot = true),
+                WithPosition(collectionIterationSequence(collection, call.source, map), checkNotNull(call.source), specificationSnapshot = true),
             ).also(prelude::add).variable
             val elementType = embedType(lambda.function.valueParameters.last().symbol.resolvedReturnType)
             val j = freshAnonBuiltinVar(buildType { int() })
@@ -464,7 +469,7 @@ private fun StmtConversionContext.templateReceiver(
                 IterationSequenceSize(sequence),
                 { IterationSequenceGet(sequence, it, elementType).withInvariants(typeResolver) { proven = true } },
                 factsReadable = true,
-                snapshotInvariant = EqCmp(sequence, collectionIterationSequence(collection, map)),
+                snapshotInvariant = EqCmp(sequence, collectionIterationSequence(collection, call.source, map)),
                 owner = owner,
             )
         }

@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirSpreadArgumentExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
@@ -26,12 +27,30 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 
 private val annotationPackage = FqName("org.jetbrains.kotlin.formver.plugin")
 
-/** Reads the abstract observer from the trusted collection view. */
-@OptIn(DirectDeclarationsAccess::class)
-fun StmtConversionContext.collectionIterationSequence(receiver: ExpEmbedding, map: Boolean = false): ExpEmbedding {
+/**
+ * The external-specification model of `Map` when [map] holds, else of `Iterable`, or null when no loaded specification
+ * binds one.
+ */
+private fun StmtConversionContext.collectionIterationModel(map: Boolean): FirRegularClassSymbol? {
     val id = ClassId.topLevel(FqName(if (map) "kotlin.collections.Map" else "kotlin.collections.Iterable"))
-    val target = session.symbolProvider.getClassLikeSymbolByClassId(id) as FirRegularClassSymbol
-    val model = checkNotNull(session.externalSpecifications?.modelClass(target)) { "Missing collection iteration model for $id: ${session.externalSpecifications?.errors}" }
+    val target = session.symbolProvider.getClassLikeSymbolByClassId(id) as? FirRegularClassSymbol ?: return null
+    return session.externalSpecifications?.modelClass(target)
+}
+
+/**
+ * Whether the trusted collection view that a collection template needs is available: that of `Iterable`, which builder
+ * results use, and that of `Map` too when [map] holds.
+ */
+fun StmtConversionContext.hasCollectionIterationModels(map: Boolean): Boolean =
+    collectionIterationModel(map = false) != null && (!map || collectionIterationModel(map = true) != null)
+
+/** Reads the abstract observer from the trusted collection view; the call at [source] needs that view. */
+@OptIn(DirectDeclarationsAccess::class)
+fun StmtConversionContext.collectionIterationSequence(
+    receiver: ExpEmbedding, source: KtSourceElement?, map: Boolean = false,
+): ExpEmbedding {
+    val model = collectionIterationModel(map)
+        ?: throw UnsupportedFeatureException(source, "collection iteration without the bundled collection specifications")
     val observer = model.declarationSymbols.filterIsInstance<FirNamedFunctionSymbol>().single { it.name.asString() == "iterationSequence" }
     typeResolver.markIterationSequenceUsed()
     return embedAnyFunction(observer).insertCall(listOf(receiver), this).withType(buildType { iterationSequence() })
@@ -52,7 +71,7 @@ fun StmtConversionContext.convertIterationSequenceIntrinsic(call: FirFunctionCal
         embedType(call)
         val map = (call.toResolvedCallableSymbol() as FirFunctionSymbol<*>)
             .valueParameterSymbols.single().resolvedReturnType.classId == ClassId.topLevel(FqName("kotlin.collections.Map"))
-        return collectionIterationSequence(convert(call.arguments.single()), map)
+        return collectionIterationSequence(convert(call.arguments.single()), call.source, map)
     }
     if (id.className?.asString() != "IterationSequence") return null
     val receiver = convert(call.dispatchReceiver!!)

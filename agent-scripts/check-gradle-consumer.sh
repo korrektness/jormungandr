@@ -8,7 +8,8 @@
 # of it, and calls through the bundled standard-library specs. The check fails
 # if a spec declaration reaches the compiled output, if a reference to one from
 # compiled code is accepted, if a spec binding to a missing library declaration
-# is accepted, or if a false claim about a specified call verifies.
+# is accepted, if a false claim about a specified call verifies, or if a
+# multiplatform consumer's common code does not verify through the bundled specs.
 #
 # Needs network access for the consumer's own dependencies, and Z3: Z3_EXE, z3
 # on PATH, or the copy that the test tasks provision under the Gradle user
@@ -335,4 +336,61 @@ for line in 6 9 11; do
         exit 1
     fi
 done
+# A multiplatform consumer: the bundled specs must reach code in the common
+# fragment as well as the platform one, so both functions verify only through
+# the collection templates.
+kmp="$work/kmp"
+mkdir -p "$kmp/src/commonMain/kotlin" "$kmp/src/jvmMain/kotlin" "$kmp/gradle"
+cp gradle/gradle-daemon-jvm.properties "$kmp/gradle/"
+cp "$consumer/gradle.properties" "$kmp/"
+cat >"$kmp/settings.gradle" <<SETTINGS
+pluginManagement {
+    repositories {
+        mavenCentral()
+        maven { url "file://$repo" }
+        gradlePluginPortal()
+    }
+}
+plugins {
+    id "org.gradle.toolchains.foojay-resolver-convention" version "1.0.0"
+}
+rootProject.name = "kmp"
+SETTINGS
+cat >"$kmp/build.gradle" <<'BUILD'
+plugins {
+    id "org.jetbrains.kotlin.multiplatform" version "2.3.0"
+    id "org.jetbrains.kotlin.formver" version "0.1.0-SNAPSHOT"
+}
+
+repositories {
+    mavenCentral()
+    maven { url System.getProperty("formver.repo") }
+}
+
+kotlin {
+    jvm()
+}
+BUILD
+for fragment in common jvm; do
+    cat >"$kmp/src/${fragment}Main/kotlin/${fragment}.kt" <<SRC
+import org.jetbrains.kotlin.formver.plugin.*
+
+fun ${fragment}Positive(values: @Unique @Borrowed List<Int>) {
+    preconditions { forAll<Int> { i -> (0 <= i && i < values.size) implies (values[i] > 0) } }
+    values.forEach { verify(it > 0) }
+}
+SRC
+done
+kmp_log="$work/kmp.log"
+if ! "$ROOT/gradlew" --no-daemon -p "$kmp" -Dformver.repo="file://$repo" compileKotlinJvm >"$kmp_log" 2>&1; then
+    cat "$kmp_log" >&2
+    echo "check-gradle-consumer.sh: multiplatform consumer build failed" >&2
+    exit 1
+fi
+if grep -q "^w: .*\(common\|jvm\).kt" "$kmp_log"; then
+    grep "^w: " "$kmp_log" >&2
+    echo "check-gradle-consumer.sh: the multiplatform consumer's claims did not verify" >&2
+    exit 1
+fi
+
 echo "check-gradle-consumer.sh: consumer build passed"

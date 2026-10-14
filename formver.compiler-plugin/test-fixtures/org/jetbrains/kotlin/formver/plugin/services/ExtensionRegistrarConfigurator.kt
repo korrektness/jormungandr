@@ -97,14 +97,24 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
         }
     }
 
-    /** The spec files that [ExternalSpecProvider] added to [module], at the paths the compiler reads them from. */
+    /**
+     * The spec files that [ExternalSpecProvider] added to [module] and to the common modules it depends on, which a
+     * multiplatform compilation analyses with it, at the paths the compiler reads them from.
+     */
     private fun externalSpecs(module: TestModule): ExternalSpecSources {
-        val requested = (testServices.moduleStructure.allDirectives[EXTERNAL_SPEC] + module.directives[EXTERNAL_SPEC])
+        val modules = generateSequence(listOf(module)) { level ->
+            level.flatMap { m -> m.dependsOnDependencies.map { it.dependencyModule } }.ifEmpty { null }
+        }.flatten().distinct()
+        return ExternalSpecSources(modules.flatMap { addedExternalSpecs(it) }.toList())
+    }
+
+    private fun addedExternalSpecs(module: TestModule): List<File> {
+        val requested = module.directives[EXTERNAL_SPEC]
             .mapTo(HashSet()) { File(it).canonicalFile }
         val added = module.files.filter { it.isAdditional && it.originalFile.canonicalFile in requested }
         val missing = requested - added.mapTo(HashSet()) { it.originalFile.canonicalFile }
         check(missing.isEmpty()) { "External specs $missing were not added to module ${module.name}." }
-        return ExternalSpecSources(added.map { testServices.sourceFileProvider.getOrCreateRealFileForSourceFile(it) })
+        return added.map { testServices.sourceFileProvider.getOrCreateRealFileForSourceFile(it) }
     }
 }
 

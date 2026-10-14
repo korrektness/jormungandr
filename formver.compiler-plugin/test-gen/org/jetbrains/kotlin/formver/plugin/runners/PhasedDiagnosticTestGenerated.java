@@ -1516,6 +1516,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("collection_hofs_common.kt")
+      public void testCollection_hofs_common() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/collection_hofs_common.kt");
+      }
+
+      @Test
+      @TestMetadata("collection_hofs_platform_specs.kt")
+      public void testCollection_hofs_platform_specs() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/collection_hofs_platform_specs.kt");
+      }
+
+      @Test
       @TestMetadata("collection_iteration.kt")
       public void testCollection_iteration() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/collection_iteration.kt");

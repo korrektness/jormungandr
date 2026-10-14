@@ -11,6 +11,9 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.config.HmppCliModule
+import org.jetbrains.kotlin.config.HmppCliModuleStructure
+import org.jetbrains.kotlin.config.hmppModuleStructure
 import org.jetbrains.kotlin.config.messageCollector
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter
 import org.jetbrains.kotlin.formver.common.*
@@ -47,8 +50,9 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             configuration.getList(FormalVerificationConfigurationKeys.EXTERNAL_SPEC_FILES) +
                     ExternalSpecSources.extractBundled(this@FormalVerificationPluginComponentRegistrar.javaClass.classLoader)
         )
+        val specFragment = configuration.addToRootFragment(externalSpecs.files.map { it.path })
         for (file in externalSpecs.files) {
-            configuration.addKotlinSourceRoot(file.path)
+            configuration.addKotlinSourceRoot(file.path, isCommon = specFragment != null, hmppModuleName = specFragment)
             configuration.messageCollector.report(CompilerMessageSeverity.LOGGING, "Loading external specification $file")
         }
         val config = PluginConfiguration(
@@ -73,4 +77,24 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             FirExtensionRegistrarAdapter.registerExtension(UniquenessExtensionRegistrar())
         }
     }
+}
+
+/**
+ * Adds [paths] to the sources of the fragment that every other fragment of a multiplatform compilation depends on, so
+ * that the specifications they hold reach code in every fragment. Returns that fragment's name, or null when the
+ * compilation has no fragment structure or no single root fragment; the compiler then puts [paths] in the platform
+ * fragment, where common code does not see them.
+ */
+private fun CompilerConfiguration.addToRootFragment(paths: List<String>): String? {
+    val structure = hmppModuleStructure ?: return null
+    val root = structure.modules.filter { structure.sourceDependencies[it].isNullOrEmpty() }.singleOrNull() ?: return null
+    val extended = HmppCliModule(root.name, root.sources + paths)
+    fun HmppCliModule.updated() = if (this == root) extended else this
+    hmppModuleStructure = HmppCliModuleStructure(
+        structure.modules.map { it.updated() },
+        structure.sourceDependencies.entries.associate { (module, dependencies) -> module.updated() to dependencies.map { it.updated() } },
+        structure.moduleDependencies.mapKeys { it.key.updated() },
+        structure.friendDependencies.mapKeys { it.key.updated() },
+    )
+    return root.name
 }

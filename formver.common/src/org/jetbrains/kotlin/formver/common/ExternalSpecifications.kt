@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.common
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.getAnnotationByClassId
@@ -141,8 +142,8 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
     }
 
     private fun containerFile(symbol: FirBasedSymbol<*>): FirFile? = when (symbol) {
-        is FirClassLikeSymbol<*> -> session.firProvider.getFirClassifierContainerFileIfAny(symbol)
-        is FirCallableSymbol<*> -> session.firProvider.getFirCallableContainerFile(symbol)
+        is FirClassLikeSymbol<*> -> symbol.moduleData.session.firProvider.getFirClassifierContainerFileIfAny(symbol)
+        is FirCallableSymbol<*> -> symbol.moduleData.session.firProvider.getFirCallableContainerFile(symbol)
         else -> null
     }
 
@@ -158,7 +159,9 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
     private fun initialize() {
         if (initialized) return
         initialized = true
-        val declarations = session.predicateBasedProvider.getSymbolsByPredicate(predicate).filter { symbol ->
+        // In a multiplatform compilation the specifications sit in the common fragment that the others depend on.
+        val sessions = listOf(session) + session.moduleData.allDependsOnDependencies.map { it.session }
+        val declarations = sessions.flatMap { it.predicateBasedProvider.getSymbolsByPredicate(predicate) }.filter { symbol ->
             val file = containerFile(symbol)
             if (file != null && sources.isExternalSpec(file)) true
             else { fail(symbol, ExternalSpecRule.OUTSIDE_SPECIFICATION_INPUTS, symbol.toString()); false }
