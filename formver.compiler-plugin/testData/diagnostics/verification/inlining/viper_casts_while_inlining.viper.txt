@@ -141,43 +141,61 @@ method checkGenericMemberAccess(box: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), boolType())
   ensures boolFromRef(v_ret_0) == true
 {
-  var v_ret_4: Ref
-  var v_ret_6: Ref
-  var anon_0: Ref
   var anon_2: Ref
   var anon_3: Ref
+  var v_ret_4: Ref
   var anon_4: Ref
-  var v_ret_11: Ref
-  var anon_1: Ref
+  var v_ret_6: Ref
+  var anon_0: Ref
   var anon_5: Ref
   var anon_6: Ref
+  var anon_7: Ref
+  var v_ret_11: Ref
+  var anon_1: Ref
+  var anon_8: Ref
+  var anon_9: Ref
+  var anon_10: Ref
   var v_ret_12: Ref
+  var anon_11: Ref
+  var anon_12: Ref
   inhale isSubtype(typeOf(box), nullable(anyType()))
-  anon_2 := idFun(box)
-  anon_0 := anon_2
+  anon_5 := idFun(box)
+  anon_0 := anon_5
   inhale isSubtype(typeOf(anon_0), Box())
   v_ret_6 := g_wrapped(anon_0)
+  inhale isSubtype(typeOf(v_ret_6), anyType())
   goto lbl_ret_6
   label lbl_ret_6
-  v_ret_4 := v_ret_6
+  anon_4 := v_ret_6
+  v_ret_4 := anon_4
+  inhale isSubtype(typeOf(v_ret_4), nullable(anyType()))
   goto lbl_ret_4
   label lbl_ret_4
-  anon_5 := con(g_wrapped(box))
-  fold acc(Box_unique(anon_5), write)
-  anon_1 := anon_5
+  anon_3 := v_ret_4
+  anon_2 := anon_3
+  inhale isSubtype(typeOf(anon_2), anyType())
+  anon_9 := g_wrapped(box)
+  inhale isSubtype(typeOf(anon_9), anyType())
+  anon_8 := con(anon_9)
+  fold acc(Box_unique(anon_8), write)
+  anon_1 := anon_8
   inhale isSubtype(typeOf(anon_1), nullable(anyType()))
   inhale isSubtype(typeOf(anon_1), Box())
-  v_ret_0 := boolToRef(g_wrapped(anon_1) == g_wrapped(box))
+  anon_11 := g_wrapped(anon_1)
+  inhale isSubtype(typeOf(anon_11), anyType())
+  anon_12 := g_wrapped(box)
+  inhale isSubtype(typeOf(anon_12), anyType())
+  v_ret_0 := boolToRef(anon_11 == anon_12)
   goto lbl_ret_0
   label lbl_ret_12
-  anon_6 := v_ret_12
-  v_ret_11 := anon_6
+  anon_10 := v_ret_12
+  v_ret_11 := anon_10
   inhale isSubtype(typeOf(v_ret_11), nullable(anyType()))
   goto lbl_ret_11
   label lbl_ret_11
-  anon_4 := v_ret_11
-  anon_3 := anon_4
-  inhale isSubtype(typeOf(anon_3), nothingType())
+  anon_7 := v_ret_11
+  anon_6 := anon_7
+  inhale isSubtype(typeOf(anon_6), nothingType())
   label lbl_ret_0
 }
 

@@ -58,14 +58,14 @@ function GenericCell_f_value(this: Ref): Ref
 
 function GenericView_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericView())
-  requires acc(footprint(this), wildcard)
+  requires acc(GenericView_footprint(this), wildcard)
   requires isSubtype(typeOf(candidate), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
 
 
 function GenericView_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericView())
-  requires acc(footprint(this), wildcard)
+  requires acc(GenericView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
@@ -74,15 +74,48 @@ function g_contents(this: Ref): Ref
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Comparable_footprint(this: Ref)
+
+predicate Comparable_unique(this: Ref) {
+  acc(Comparable_footprint(this), write) &&
+  isSubtype(typeOf(this), Comparable())
+}
+
+predicate Enum_unique(this: Ref) {
+  isSubtype(typeOf(this), Enum())
+}
+
+predicate Flag_unique(this: Ref) {
+  isSubtype(typeOf(this), Flag()) && acc(Enum_unique(this), write)
+}
+
 predicate GenericCell_unique(this: Ref) {
   isSubtype(typeOf(this), GenericCell())
 }
 
+predicate GenericView_footprint(this: Ref)
+
 predicate GenericView_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), GenericView())
+  acc(GenericView_footprint(this), write) &&
+  isSubtype(typeOf(this), GenericView())
 }
 
-predicate footprint(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method con(par_contents: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_contents), nullable(anyType()))
@@ -120,14 +153,14 @@ function GenericCell_f_value(this: Ref): Ref
 
 function GenericView_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericView())
-  requires acc(footprint(this), wildcard)
+  requires acc(GenericView_footprint(this), wildcard)
   requires isSubtype(typeOf(candidate), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
 
 
 function GenericView_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericView())
-  requires acc(footprint(this), wildcard)
+  requires acc(GenericView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
@@ -136,15 +169,48 @@ function contents(this: Ref): Ref
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Comparable_footprint(this: Ref)
+
+predicate Comparable_unique(this: Ref) {
+  acc(Comparable_footprint(this), write) &&
+  isSubtype(typeOf(this), Comparable())
+}
+
+predicate Enum_unique(this: Ref) {
+  isSubtype(typeOf(this), Enum())
+}
+
+predicate Flag_unique(this: Ref) {
+  isSubtype(typeOf(this), Flag()) && acc(Enum_unique(this), write)
+}
+
 predicate GenericCell_unique(this: Ref) {
   isSubtype(typeOf(this), GenericCell())
 }
 
+predicate GenericView_footprint(this: Ref)
+
 predicate GenericView_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), GenericView())
+  acc(GenericView_footprint(this), write) &&
+  isSubtype(typeOf(this), GenericView())
 }
 
-predicate footprint(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 /interface_generic_view.kt: info: Generated Viper text for same:
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
@@ -166,14 +232,14 @@ function GenericCell_f_value(this: Ref): Ref
 
 function GenericView_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericView())
-  requires acc(footprint(this), wildcard)
+  requires acc(GenericView_footprint(this), wildcard)
   requires isSubtype(typeOf(candidate), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
 
 
 function GenericView_f_value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericView())
-  requires acc(footprint(this), wildcard)
+  requires acc(GenericView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
@@ -182,17 +248,50 @@ function contents(this: Ref): Ref
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate Comparable_footprint(this: Ref)
+
+predicate Comparable_unique(this: Ref) {
+  acc(Comparable_footprint(this), write) &&
+  isSubtype(typeOf(this), Comparable())
+}
+
+predicate Enum_unique(this: Ref) {
+  isSubtype(typeOf(this), Enum())
+}
+
+predicate Flag_unique(this: Ref) {
+  isSubtype(typeOf(this), Flag()) && acc(Enum_unique(this), write)
+}
+
 predicate GenericCell_unique(this: Ref) {
   isSubtype(typeOf(this), GenericCell())
 }
 
+predicate GenericView_footprint(this: Ref)
+
 predicate GenericView_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), GenericView())
+  acc(GenericView_footprint(this), write) &&
+  isSubtype(typeOf(this), GenericView())
 }
 
-predicate footprint(this: Ref)
+predicate Serializable_footprint(this: Ref)
 
-/interface_generic_view.kt: info: Generated Viper text for genericBooleanView:
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+/interface_generic_view.kt: info: Generated Viper text for genericEnumView:
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericCell())
   requires acc(GenericCell_unique(this), write)
@@ -209,6 +308,10 @@ function GenericCell_f_value(this: Ref): Ref
 {
   g_contents(this)
 }
+
+function ON(): Ref
+  ensures isSubtype(typeOf(result), Flag())
+
 
 function c_GenericView_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), c_GenericView())
@@ -228,6 +331,16 @@ function g_contents(this: Ref): Ref
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
@@ -242,6 +355,21 @@ predicate Cloneable_footprint(this: Ref)
 predicate Cloneable_unique(this: Ref) {
   acc(Cloneable_footprint(this), write) &&
   isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Comparable_footprint(this: Ref)
+
+predicate Comparable_unique(this: Ref) {
+  acc(Comparable_footprint(this), write) &&
+  isSubtype(typeOf(this), Comparable())
+}
+
+predicate Enum_unique(this: Ref) {
+  isSubtype(typeOf(this), Enum())
+}
+
+predicate Flag_unique(this: Ref) {
+  isSubtype(typeOf(this), Flag()) && acc(Enum_unique(this), write)
 }
 
 predicate GenericCell_unique(this: Ref) {
@@ -285,7 +413,8 @@ method con(par_contents: Ref) returns (ret_1: Ref)
   ensures g_contents(ret_1) == par_contents
 
 
-method genericBooleanView() returns (v_ret_0: Ref)
+method genericEnumView(other: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(other), Flag())
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var cell: Ref
@@ -294,21 +423,21 @@ method genericBooleanView() returns (v_ret_0: Ref)
   var anon_1: Ref
   var anon_2: Ref
   var anon_3: Ref
-  cell := con(boolToRef(true))
+  cell := con(ON())
   fold acc(GenericCell_unique(cell), write)
   view := cell
   GenericCell_c_GenericView_upcast(view)
   anon_1 := (unfolding acc(c_GenericView_unique(view), wildcard) in
       c_GenericView_f_value(view))
   anon_0 := anon_1
-  inhale isSubtype(typeOf(anon_0), boolType())
-  assert boolFromRef(anon_0)
+  inhale isSubtype(typeOf(anon_0), Flag())
+  assert anon_0 == ON()
   anon_2 := (unfolding acc(c_GenericView_unique(view), wildcard) in
-      c_GenericView_f_same(view, boolToRef(true)))
+      c_GenericView_f_same(view, ON()))
   assert boolFromRef(anon_2)
   anon_3 := (unfolding acc(c_GenericView_unique(view), wildcard) in
-      c_GenericView_f_same(view, boolToRef(false)))
-  assert !boolFromRef(anon_3)
+      c_GenericView_f_same(view, other))
+  assert boolFromRef(anon_3) == (other == ON())
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -592,53 +721,85 @@ method specializedImplementation() returns (v_ret_0: Ref)
 }
 
 /interface_generic_view.kt: info: Generated Viper text for lendGeneric:
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
 function same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), GenericView())
-  requires acc(footprint(this), wildcard)
+  requires acc(GenericView_footprint(this), wildcard)
   requires isSubtype(typeOf(candidate), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
 
 
 function value(this: Ref): Ref
   requires isSubtype(typeOf(this), GenericView())
-  requires acc(footprint(this), wildcard)
+  requires acc(GenericView_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
+predicate Comparable_footprint(this: Ref)
+
+predicate Comparable_unique(this: Ref) {
+  acc(Comparable_footprint(this), write) &&
+  isSubtype(typeOf(this), Comparable())
+}
+
+predicate Enum_unique(this: Ref) {
+  isSubtype(typeOf(this), Enum())
+}
+
+predicate Flag_unique(this: Ref) {
+  isSubtype(typeOf(this), Flag()) && acc(Enum_unique(this), write)
+}
+
+predicate GenericView_footprint(this: Ref)
+
 predicate GenericView_unique(this: Ref) {
-  acc(footprint(this), write) && isSubtype(typeOf(this), GenericView())
+  acc(GenericView_footprint(this), write) &&
+  isSubtype(typeOf(this), GenericView())
 }
 
 predicate InvariantBuilder_unique(this: Ref) {
   isSubtype(typeOf(this), InvariantBuilder())
 }
 
-predicate footprint(this: Ref)
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
 
 method lendGeneric(view: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(view), GenericView())
   requires acc(GenericView_unique(view), write)
   ensures acc(GenericView_unique(view), write)
-  ensures isSubtype(typeOf(v_ret_0), boolType())
-  ensures boolFromRef(v_ret_0) ==
-    old((unfolding acc(GenericView_unique(view), wildcard) in
-      boolFromRef(value(view))))
+  ensures isSubtype(typeOf(v_ret_0), Flag())
+  ensures v_ret_0 ==
+    old((unfolding acc(GenericView_unique(view), wildcard) in value(view)))
   ensures (unfolding acc(GenericView_unique(view), wildcard) in
-      boolFromRef(value(view))) ==
-    old((unfolding acc(GenericView_unique(view), wildcard) in
-      boolFromRef(value(view))))
+      value(view)) ==
+    old((unfolding acc(GenericView_unique(view), wildcard) in value(view)))
   ensures (unfolding acc(GenericView_unique(view), wildcard) in
-      (forall anon_builtin: Bool ::
-        { same(view, boolToRef(anon_builtin)) }
-        boolFromRef(same(view, boolToRef(anon_builtin))) ==
+      (forall anon_builtin: Ref ::
+        { same(view, anon_builtin) }
+        isSubtype(typeOf(anon_builtin), Flag()) ==>
+        boolFromRef(same(view, anon_builtin)) ==
         old((unfolding acc(GenericView_unique(view), wildcard) in
-          boolFromRef(same(view, boolToRef(anon_builtin)))))))
+          boolFromRef(same(view, anon_builtin))))))
 {
   var anon_0: Ref
   anon_0 := (unfolding acc(GenericView_unique(view), wildcard) in
       value(view))
   v_ret_0 := anon_0
-  inhale isSubtype(typeOf(v_ret_0), boolType())
+  inhale isSubtype(typeOf(v_ret_0), Flag())
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -661,6 +822,10 @@ function GenericCell_f_value(this: Ref): Ref
   g_contents(this)
 }
 
+function ON(): Ref
+  ensures isSubtype(typeOf(result), Flag())
+
+
 function c_GenericView_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), c_GenericView())
   requires acc(c_GenericView_footprint(this), wildcard)
@@ -679,6 +844,16 @@ function g_contents(this: Ref): Ref
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
@@ -693,6 +868,21 @@ predicate Cloneable_footprint(this: Ref)
 predicate Cloneable_unique(this: Ref) {
   acc(Cloneable_footprint(this), write) &&
   isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Comparable_footprint(this: Ref)
+
+predicate Comparable_unique(this: Ref) {
+  acc(Comparable_footprint(this), write) &&
+  isSubtype(typeOf(this), Comparable())
+}
+
+predicate Enum_unique(this: Ref) {
+  isSubtype(typeOf(this), Enum())
+}
+
+predicate Flag_unique(this: Ref) {
+  isSubtype(typeOf(this), Flag()) && acc(Enum_unique(this), write)
 }
 
 predicate GenericCell_unique(this: Ref) {
@@ -757,16 +947,16 @@ method borrowGenericBinding() returns (v_ret_0: Ref)
   var l0_value: Ref
   var anon_0: Ref
   var anon_1: Ref
-  cell := con(boolToRef(true))
+  cell := con(ON())
   fold acc(GenericCell_unique(cell), write)
   GenericCell_c_GenericView_upcast(cell)
   l0_value := lendGeneric(cell)
   GenericCell_c_GenericView_restore(cell)
-  assert boolFromRef(l0_value)
+  assert l0_value == ON()
   anon_1 := GenericCell_f_value(cell)
   anon_0 := anon_1
-  inhale isSubtype(typeOf(anon_0), boolType())
-  assert boolFromRef(anon_0)
+  inhale isSubtype(typeOf(anon_0), Flag())
+  assert anon_0 == ON()
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -783,36 +973,22 @@ method lendGeneric(view: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(view), c_GenericView())
   requires acc(c_GenericView_unique(view), write)
   ensures acc(c_GenericView_unique(view), write)
-  ensures isSubtype(typeOf(ret_3), boolType())
-  ensures boolFromRef(ret_3) ==
+  ensures isSubtype(typeOf(ret_3), Flag())
+  ensures ret_3 ==
     old((unfolding acc(c_GenericView_unique(view), wildcard) in
-      boolFromRef(c_GenericView_f_value(view))))
+      c_GenericView_f_value(view)))
   ensures (unfolding acc(c_GenericView_unique(view), wildcard) in
-      boolFromRef(c_GenericView_f_value(view))) ==
+      c_GenericView_f_value(view)) ==
     old((unfolding acc(c_GenericView_unique(view), wildcard) in
-      boolFromRef(c_GenericView_f_value(view))))
+      c_GenericView_f_value(view)))
   ensures (unfolding acc(c_GenericView_unique(view), wildcard) in
-      (forall anon_builtin: Bool ::
-        { c_GenericView_f_same(view, boolToRef(anon_builtin)) }
-        boolFromRef(c_GenericView_f_same(view, boolToRef(anon_builtin))) ==
+      (forall anon_builtin: Ref ::
+        { c_GenericView_f_same(view, anon_builtin) }
+        isSubtype(typeOf(anon_builtin), Flag()) ==>
+        boolFromRef(c_GenericView_f_same(view, anon_builtin)) ==
         old((unfolding acc(c_GenericView_unique(view), wildcard) in
-          boolFromRef(c_GenericView_f_same(view, boolToRef(anon_builtin)))))))
+          boolFromRef(c_GenericView_f_same(view, anon_builtin))))))
 
-
-/interface_generic_view.kt: info: Generated Viper text for GenericToken:
-predicate GenericToken_unique(this: Ref) {
-  isSubtype(typeOf(this), GenericToken())
-}
-
-method con() returns (v_ret_0: Ref)
-  ensures isSubtype(typeOf(v_ret_0), GenericToken())
-{
-  v_ret_0 := new()
-  inhale typeOf(v_ret_0) == GenericToken()
-  fold acc(GenericToken_unique(v_ret_0), write)
-  label lbl_ret_0
-  unfold acc(GenericToken_unique(v_ret_0), write)
-}
 
 /interface_generic_view.kt: info: Generated Viper text for genericNullableView:
 function GenericCell_f_same(this: Ref, candidate: Ref): Ref
@@ -850,6 +1026,16 @@ function g_contents(this: Ref): Ref
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
@@ -866,12 +1052,23 @@ predicate Cloneable_unique(this: Ref) {
   isSubtype(typeOf(this), Cloneable())
 }
 
-predicate GenericCell_unique(this: Ref) {
-  isSubtype(typeOf(this), GenericCell())
+predicate Comparable_footprint(this: Ref)
+
+predicate Comparable_unique(this: Ref) {
+  acc(Comparable_footprint(this), write) &&
+  isSubtype(typeOf(this), Comparable())
 }
 
-predicate GenericToken_unique(this: Ref) {
-  isSubtype(typeOf(this), GenericToken())
+predicate Enum_unique(this: Ref) {
+  isSubtype(typeOf(this), Enum())
+}
+
+predicate Flag_unique(this: Ref) {
+  isSubtype(typeOf(this), Flag()) && acc(Enum_unique(this), write)
+}
+
+predicate GenericCell_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericCell())
 }
 
 predicate Serializable_footprint(this: Ref)
@@ -912,7 +1109,7 @@ method con(par_contents: Ref) returns (ret_1: Ref)
 
 
 method genericNullableView(token: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(token), nullable(GenericToken()))
+  requires isSubtype(typeOf(token), nullable(Flag()))
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var cell: Ref
@@ -927,7 +1124,7 @@ method genericNullableView(token: Ref) returns (v_ret_0: Ref)
   anon_1 := (unfolding acc(c_GenericView_unique(view), wildcard) in
       c_GenericView_f_value(view))
   anon_0 := anon_1
-  inhale isSubtype(typeOf(anon_0), nullable(GenericToken()))
+  inhale isSubtype(typeOf(anon_0), nullable(Flag()))
   assert anon_0 == token
   anon_2 := (unfolding acc(c_GenericView_unique(view), wildcard) in
       c_GenericView_f_same(view, token))
@@ -955,6 +1152,10 @@ function GenericCell_f_value(this: Ref): Ref
   g_contents(this)
 }
 
+function ON(): Ref
+  ensures isSubtype(typeOf(result), Flag())
+
+
 function c_GenericView_f_same(this: Ref, candidate: Ref): Ref
   requires isSubtype(typeOf(this), c_GenericView())
   requires acc(c_GenericView_footprint(this), wildcard)
@@ -973,6 +1174,16 @@ function g_contents(this: Ref): Ref
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
@@ -987,6 +1198,21 @@ predicate Cloneable_footprint(this: Ref)
 predicate Cloneable_unique(this: Ref) {
   acc(Cloneable_footprint(this), write) &&
   isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Comparable_footprint(this: Ref)
+
+predicate Comparable_unique(this: Ref) {
+  acc(Comparable_footprint(this), write) &&
+  isSubtype(typeOf(this), Comparable())
+}
+
+predicate Enum_unique(this: Ref) {
+  isSubtype(typeOf(this), Enum())
+}
+
+predicate Flag_unique(this: Ref) {
+  isSubtype(typeOf(this), Flag()) && acc(Enum_unique(this), write)
 }
 
 predicate GenericCell_unique(this: Ref) {
@@ -1036,13 +1262,13 @@ method genericFalseClaim() returns (v_ret_0: Ref)
   var cell: Ref
   var view: Ref
   var anon: Ref
-  cell := con(boolToRef(true))
+  cell := con(ON())
   fold acc(GenericCell_unique(cell), write)
   view := cell
   GenericCell_c_GenericView_upcast(view)
   anon := (unfolding acc(c_GenericView_unique(view), wildcard) in
-      c_GenericView_f_same(view, boolToRef(false)))
-  assert boolFromRef(anon)
+      c_GenericView_f_same(view, ON()))
+  assert !boolFromRef(anon)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

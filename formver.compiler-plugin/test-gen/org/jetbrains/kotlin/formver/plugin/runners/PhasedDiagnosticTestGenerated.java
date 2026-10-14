@@ -1956,6 +1956,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("equality.kt")
+      public void testEquality() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/equality.kt");
+      }
+
+      @Test
       @TestMetadata("erased_generics.kt")
       public void testErased_generics() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/erased_generics.kt");

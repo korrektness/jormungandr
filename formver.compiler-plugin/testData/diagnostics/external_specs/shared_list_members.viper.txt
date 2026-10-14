@@ -21,7 +21,13 @@ function contains(this: Ref, element: Ref): Ref
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -42,12 +48,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -97,7 +104,13 @@ function contains(this: Ref, element: Ref): Ref
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -118,12 +131,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -173,7 +187,13 @@ function contains(this: Ref, element: Ref): Ref
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -194,12 +214,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -250,7 +271,13 @@ function contains(this: Ref, element: Ref): Ref
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -271,12 +298,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -327,7 +355,13 @@ function contains(this: Ref, element: Ref): Ref
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -348,12 +382,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -374,11 +409,11 @@ method sharedNullableSize(xs: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), nullable(intType()))
 {
   if (xs != nullValue()) {
-    var anon_1: Ref
+    var anon_10: Ref
     var anon_0: Ref
     inhale isSubtype(typeOf(anon_0), intType())
-    anon_1 := anon_0
-    v_ret_0 := anon_1
+    anon_10 := anon_0
+    v_ret_0 := anon_10
   } else {
     v_ret_0 := nullValue()}
   goto lbl_ret_0
@@ -404,8 +439,16 @@ function MutableListModel_c_ListModel_f_contains(this: Ref, element: Ref): Ref
       (anon_builtin_0 >= 0 &&
       anon_builtin_0 <
       intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
-      MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_0)) ==
-      element))
+      equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 <
+      intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
+      MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_1)) ==
+      element ==>
+      boolFromRef(result))
 
 
 function MutableListModel_c_ListModel_f_get(this: Ref, par_index: Ref): Ref
@@ -429,13 +472,12 @@ function MutableListModel_c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(MutableListModel_c_ListModel_f_contains(this, element))
   ensures intFromRef(result) >= 0 ==>
-    MutableListModel_c_ListModel_f_get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_1)) ==
-      element))
+    equalsRelation(element, MutableListModel_c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_2))))
 
 
 function MutableListModel_c_ListModel_f_isEmpty(this: Ref): Ref
@@ -481,7 +523,14 @@ function c_ListModel_f_contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 &&
       anon_builtin_0 < intFromRef(c_ListModel_g_size(this)) &&
-      c_ListModel_f_get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(c_ListModel_g_size(this)) &&
+      c_ListModel_f_get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function c_ListModel_f_get(this: Ref, par_index: Ref): Ref
@@ -503,12 +552,12 @@ function c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(c_ListModel_f_contains(this, element))
   ensures intFromRef(result) >= 0 ==>
-    c_ListModel_f_get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(c_ListModel_f_get(this, intToRef(anon_builtin_1)) == element))
+    equalsRelation(element, c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_2))))
 
 
 function c_ListModel_f_isEmpty(this: Ref): Ref
@@ -558,7 +607,13 @@ function contains(this: Ref, element: Ref): Ref
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -579,12 +634,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -616,14 +672,14 @@ method sharedGetCaught(xs: Ref, i: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
   var l0_result: Ref
-  var anon_1: Ref
+  var anon_10: Ref
   var anon_0: Ref
   var e: Ref
   l0_result := intToRef(0)
-  if (boolFromRef(anon_1)) {
-    var anon_2: Ref
-    var anon_3: Ref
-    if (boolFromRef(anon_3)) {
+  if (boolFromRef(anon_10)) {
+    var anon_11: Ref
+    var anon_12: Ref
+    if (boolFromRef(anon_12)) {
       goto catch
     }
     inhale false
@@ -676,7 +732,14 @@ function contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 &&
       anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -697,12 +760,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -716,11 +780,11 @@ method sharedSizeUnknown(xs: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(xs), ListModel())
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_1: Ref
+  var anon_10: Ref
   var anon_0: Ref
   inhale isSubtype(typeOf(anon_0), intType())
-  anon_1 := anon_0
-  assert intFromRef(anon_1) >= 0
+  anon_10 := anon_0
+  assert intFromRef(anon_10) >= 0
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -760,7 +824,14 @@ function contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 &&
       anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -781,12 +852,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -804,26 +876,26 @@ method uniqueMembers(xs: Ref) returns (v_ret_0: Ref)
   ensures acc(ListModel_unique(xs), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_0: Ref
-  var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
-  var anon_4: Ref
-  var anon_5: Ref
-  anon_0 := (unfolding acc(ListModel_unique(xs), wildcard) in
+  var anon_9: Ref
+  var anon_10: Ref
+  var anon_11: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_14: Ref
+  anon_9 := (unfolding acc(ListModel_unique(xs), wildcard) in
       ListModel_g_size(xs))
-  assert intFromRef(anon_0) >= 0
-  anon_1 := (unfolding acc(ListModel_unique(xs), wildcard) in isEmpty(xs))
-  assert !boolFromRef(anon_1)
-  anon_3 := (unfolding acc(ListModel_unique(xs), wildcard) in
+  assert intFromRef(anon_9) >= 0
+  anon_10 := (unfolding acc(ListModel_unique(xs), wildcard) in isEmpty(xs))
+  assert !boolFromRef(anon_10)
+  anon_12 := (unfolding acc(ListModel_unique(xs), wildcard) in
       get(xs, intToRef(1)))
-  anon_2 := anon_3
-  inhale isSubtype(typeOf(anon_2), intType())
-  anon_5 := (unfolding acc(ListModel_unique(xs), wildcard) in
+  anon_11 := anon_12
+  inhale isSubtype(typeOf(anon_11), intType())
+  anon_14 := (unfolding acc(ListModel_unique(xs), wildcard) in
       get(xs, intToRef(1)))
-  anon_4 := anon_5
-  inhale isSubtype(typeOf(anon_4), intType())
-  assert intFromRef(anon_2) == intFromRef(anon_4)
+  anon_13 := anon_14
+  inhale isSubtype(typeOf(anon_13), intType())
+  assert intFromRef(anon_11) == intFromRef(anon_13)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

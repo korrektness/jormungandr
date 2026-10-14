@@ -95,6 +95,10 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
 
     fun isSpecificationFile(path: String?): Boolean = sources.isExternalSpec(path)
 
+    /** Whether [symbol] is declared in an external specification file. */
+    fun isSpecificationDeclaration(symbol: FirBasedSymbol<*>): Boolean =
+        containerFile(symbol)?.let { sources.isExternalSpec(it) } == true
+
     fun isModel(symbol: FirBasedSymbol<*>): Boolean {
         initialize()
         return symbol in models

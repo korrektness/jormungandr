@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.formver.core.domains.InjectionImageFunction
 import org.jetbrains.kotlin.formver.core.domains.IntegerBounds
 import org.jetbrains.kotlin.formver.core.embeddings.types.StringTypeEmbedding
 import org.jetbrains.kotlin.formver.core.domains.SeqMultisetDomain
+import org.jetbrains.kotlin.formver.core.domains.EqualsRelationDomain
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.isOf
 import org.jetbrains.kotlin.formver.core.embeddings.*
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
@@ -493,14 +494,14 @@ data class LinearizationVisitor(
 
     override fun visitAssert(e: Assert): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            ctx.addStatement { Stmt.Assert(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition,
+            ctx.addStatement { Stmt.Assert(e.exp.linearize().toViperBuiltinType(ctx.forSpecification()), ctx.source.asPosition,
                 SourceRole.Proof(org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.ASSERTION).asInfo) }
         }
     }
 
     override fun visitRefute(e: Refute): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            ctx.addStatement { Stmt.Refute(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition,
+            ctx.addStatement { Stmt.Refute(e.exp.linearize().toViperBuiltinType(ctx.forSpecification()), ctx.source.asPosition,
                 SourceRole.Proof(org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.REFUTATION).asInfo) }
         }
     }
@@ -536,7 +537,7 @@ data class LinearizationVisitor(
 
     override fun visitInhaleDirect(e: InhaleDirect): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
-            ctx.addStatement { Stmt.Inhale(e.exp.linearize().toViperBuiltinType(ctx), ctx.source.asPosition) }
+            ctx.addStatement { Stmt.Inhale(e.exp.linearize().toViperBuiltinType(ctx.forSpecification()), ctx.source.asPosition) }
         }
     }
 
@@ -751,6 +752,48 @@ data class LinearizationVisitor(
 
     override fun visitIdentityCmp(e: IdentityCmp): Linearizable = comparisonLinearizable(e)
 
+    override fun visitObjectEquality(e: ObjectEquality): Linearizable {
+        fun LinearizationContext.chosen(): Linearizable = when (equalityEvaluation) {
+            EqualityEvaluation.EXECUTED ->
+                (e.executed ?: throw UnsupportedFeatureException(source, e.unsupportedExecution ?: "this `==`")).linearize()
+            EqualityEvaluation.SPECIFIED, EqualityEvaluation.PURE_FUNCTION -> e.specified.linearize()
+        }
+        return object : Linearizable {
+            override fun toViper(ctx: LinearizationContext): Exp = ctx.chosen().toViper(ctx)
+
+            override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) =
+                ctx.chosen().toViperStoringIn(result, ctx)
+
+            override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) =
+                ctx.chosen().toViperMaybeStoringIn(result, ctx)
+
+            override fun toViperBuiltinType(ctx: LinearizationContext): Exp = ctx.chosen().toViperBuiltinType(ctx)
+
+            override fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext): Exp =
+                ctx.chosen().toViperBuiltinTypeAs(type, ctx)
+
+            override fun toViperUnusedResult(ctx: LinearizationContext) = ctx.chosen().toViperUnusedResult(ctx)
+        }
+    }
+
+    override fun visitEqualsRelation(e: EqualsRelation): Linearizable =
+        object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            override fun toViper(ctx: LinearizationContext): Exp =
+                RuntimeTypeDomain.boolInjection.toRef(toViperBuiltinType(ctx), pos = ctx.source.asPosition)
+
+            override fun toViperBuiltinType(ctx: LinearizationContext): Exp {
+                if (ctx.equalityEvaluation == EqualityEvaluation.PURE_FUNCTION) {
+                    throw UnsupportedFeatureException(
+                        ctx.source, "`==` in a `@Pure` function on a type whose `equals` is neither `@Pure` nor identity",
+                    )
+                }
+                ctx.typeResolver.markEqualsRelationUsed()
+                return EqualsRelationDomain.relation(
+                    e.left.linearize().toViper(ctx), e.right.linearize().toViper(ctx), pos = ctx.source.asPosition,
+                )
+            }
+        }
+
     private fun comparisonLinearizable(e: AnyComparisonExpression): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp =
             RuntimeTypeDomain.boolInjection.toRef(
@@ -777,10 +820,10 @@ data class LinearizationVisitor(
 
     override fun visitOld(e: Old): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp =
-            Exp.Old(e.inner.linearize().toViper(ctx), ctx.source.asPosition)
+            Exp.Old(e.inner.linearize().toViper(ctx.forSpecification()), ctx.source.asPosition)
 
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
-            Exp.Old(e.inner.linearize().toViperBuiltinType(ctx), ctx.source.asPosition)
+            Exp.Old(e.inner.linearize().toViperBuiltinType(ctx.forSpecification()), ctx.source.asPosition)
     }
 
     // endregion

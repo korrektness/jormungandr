@@ -106,6 +106,35 @@ its failing values uniquely.
 
 Division truncates toward zero; remainder has the dividend's sign. A zero divisor reports `DIVISION_BY_ZERO`. `MIN_VALUE / -1` overflows; `MIN_VALUE % -1` is zero. Widening conversions are exact, and narrowing conversions must prove the target range. Char arithmetic and conversions must stay within 0 through 65535. Arithmetic failures are proof obligations, not catchable exits.
 
+## Equality
+
+Kotlin `a == b` is `a.equals(b)`, or `b === null` when `a` is null; `a != b` is its negation, and a `when` branch
+compares its subject with `==`. SnaKt picks the meaning of `equals` from the static type of `a`:
+
+- `Int`, `Long`, `Short`, `Byte`, `Char`, `Boolean`, `String` and `Unit` compare by value.
+- A class whose `equals` is `Any.equals` or `Enum.equals` for every value of the type compares by identity: a final
+  class, an enum class, an `object`, and a sealed class whose inheritors all qualify.
+- A source data class that does not override `equals` compares as its generated `equals`: `a === b`, or `b` is of
+  the class and each primary-constructor property compares with `==`.
+- A source class that declares `equals` calls it through its specification. The call may throw like any other.
+- A type parameter compares by value or identity when one of its bounds does.
+- Any other type, such as an interface, an open class, an unbounded type parameter or a library class, gives an
+  arbitrary result. The call may throw.
+
+In a specification, an `equals` that is not a `@Pure` function, a data class with a `var` component and a data class
+that contains itself compare through a relation that only says what a null `a`, a value type or an identity class
+gives. `==` on an owned value whose `equals` is not value or identity equality is unsupported in executed code.
+
+`a === b` is rejected when both operands may hold a value of the same type among `Int`, `Long`, `Short`, `Byte`,
+`Char`, `Boolean` and `String`, such as `x: Any` and `y: Int`. The JVM boxes these values and shares boxes of small
+integers, so whether two boxes of one value are the same object depends on the value and on where each box came from.
+
+The collection specifications compare elements with `==`: `list.contains(x)` holds when `x == list[i]` for some
+index, and `Set.contains`, `MutableSet.add` and `Map.containsKey` look for an element equal to the argument. An
+element held by the collection itself is contained. These specifications assume that element `equals` is an
+equivalence relation consistent with `hashCode` that does not change while the element is in the collection
+(docs/soundness.md, "Element equality in collections").
+
 ## Preconditions and Postconditions
 
 ```kotlin
@@ -681,9 +710,10 @@ size. Elements may be primitive values, references, or null.
 owned `Collection`; for a `List`, its length and elements agree with `size` and
 indexed access. An `Iterable` that is not a `Collection` may have more than
 `Int.MAX_VALUE` elements, more than an `Int` size can count, so SnaKt rejects
-its observer and the templates below on it. For a `Set`, the sequence is duplicate-free and its membership
-agrees with `contains`. `iterationSequence(map)` gives entries aligned with a
-duplicate-free keys sequence whose membership agrees with `containsKey`;
+its observer and the templates below on it. For a `Set`, the sequence is
+duplicate-free and `contains` holds for each of its elements.
+`iterationSequence(map)` gives entries aligned with a duplicate-free keys
+sequence each of whose keys satisfies `containsKey`;
 entry values agree with lookup at those keys. Set and Map iteration order has
 no guarantee. `Map.Entry.key` and `value` are immutable observations that
 require no ownership of the entry.

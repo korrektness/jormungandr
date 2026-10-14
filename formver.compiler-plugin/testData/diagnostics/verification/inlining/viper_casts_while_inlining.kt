@@ -33,10 +33,12 @@ fun <!VIPER_TEXT!>checkMemberAccess<!>(): Boolean {
     }
 }
 
+interface Wrappable
+
 <!VIPER_TEXT!>class Box<!><T>(val wrapped: T)
 
 @OptIn(ExperimentalContracts::class)
-fun <T> <!VIPER_TEXT!>checkGenericMemberAccess<!>(box: Box<T>): Boolean {
+fun <T : Wrappable> <!VIPER_TEXT!>checkGenericMemberAccess<!>(box: Box<T>): Boolean {
     contract {
         returns(true)
     }
@@ -46,7 +48,7 @@ fun <T> <!VIPER_TEXT!>checkGenericMemberAccess<!>(box: Box<T>): Boolean {
     }
 
     Box(box.wrapped).copiedRun {
-        return wrapped == box.wrapped
+        return wrapped === box.wrapped
     }
 }
 

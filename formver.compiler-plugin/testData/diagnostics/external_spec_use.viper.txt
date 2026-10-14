@@ -203,7 +203,7 @@ method renamedOverload(counter: Ref) returns (v_ret_0: Ref)
 function identityModel(x: Ref): Ref
   requires isSubtype(typeOf(x), nullable(anyType()))
   ensures isSubtype(typeOf(result), nullable(anyType()))
-  ensures result == x
+  ensures equalsRelation(result, x)
 
 
 function size(this: Ref): Ref
@@ -225,11 +225,11 @@ function twiceModel(x: Ref): Ref
 method topLevelAndGeneric() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_0: Ref
+  var anon_3: Ref
   assert intFromRef(twiceModel(intToRef(4))) == 8
-  anon_0 := identityModel(intToRef(13))
-  inhale isSubtype(typeOf(anon_0), intType())
-  assert intFromRef(anon_0) == 13
+  anon_3 := identityModel(intToRef(13))
+  inhale isSubtype(typeOf(anon_3), intType())
+  assert intFromRef(anon_3) == 13
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -252,14 +252,14 @@ method genericMember(cell: Ref) returns (v_ret_0: Ref)
   ensures acc(CellModel_unique(cell), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_0: Ref
-  var anon_1: Ref
-  var anon_2: Ref
-  anon_0 := set(cell, intToRef(13))
-  anon_2 := (unfolding acc(CellModel_unique(cell), wildcard) in get(cell))
-  anon_1 := anon_2
-  inhale isSubtype(typeOf(anon_1), intType())
-  assert intFromRef(anon_1) == 13
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_3 := set(cell, intToRef(13))
+  anon_5 := (unfolding acc(CellModel_unique(cell), wildcard) in get(cell))
+  anon_4 := anon_5
+  inhale isSubtype(typeOf(anon_4), intType())
+  assert intFromRef(anon_4) == 13
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -271,7 +271,7 @@ method set(this: Ref, value: Ref) returns (ret_1: Ref)
   ensures acc(CellModel_unique(this), write)
   ensures isSubtype(typeOf(ret_1), unitType())
   ensures (unfolding acc(CellModel_unique(this), wildcard) in
-      get(this) == value)
+      equalsRelation(get(this), value))
 
 
 /external_spec_use.kt: info: Generated Viper text for incorrectClaim:

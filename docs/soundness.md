@@ -201,6 +201,24 @@ call path.
 Test: `verification/inlining/collection_hofs.kt::collectionAllocatorAbuse`
 checks consistency, rejects source identity and an unconstrained element value.
 
+### Element equality in collections
+
+The collection specifications state membership with element `equals` and
+assume it is reflexive, symmetric and transitive, consistent with `hashCode`,
+and unchanged while the element is in a collection. A source `equals` is not
+checked against this. SPECIFICATIONS.md, "Equality", has the rules.
+
+Test: `verification/soundness/equality.kt::setAddById,listContainsById`.
+
+### Boxed identity
+
+`===` is rejected where both operands may hold a boxed value of one type. Inside
+external specifications, `===` on operands typed by the specification's own type
+parameters is allowed: there it states that the collection holds the same
+reference. The specifications' storage facts rely on this.
+
+Test: `verification/soundness/equality.kt::boxedInts,boxedGeneric`.
+
 ### Construction facts
 
 A constructor fixes each default `val` getter once per receiver, and its header

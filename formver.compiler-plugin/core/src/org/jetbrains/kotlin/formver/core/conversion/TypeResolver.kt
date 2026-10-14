@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FamilyTransfer
 import org.jetbrains.kotlin.formver.core.embeddings.types.ObserverBinding
 import org.jetbrains.kotlin.formver.core.embeddings.types.PretypeEmbedding
+import org.jetbrains.kotlin.formver.core.domains.EqualsRelationDomain
 import org.jetbrains.kotlin.formver.core.domains.stringLiteralFunction
 import org.jetbrains.kotlin.formver.core.domains.unmatchedWhenFunction
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
@@ -68,6 +69,21 @@ class TypeResolver {
     fun markIterationSequenceUsed() {
         usesIterationSequence = true
     }
+
+    /** Whether a specification states the relation of an `==` whose `equals` is neither identity nor value equality. */
+    var usesEqualsRelation: Boolean = false
+        private set
+
+    fun markEqualsRelationUsed() {
+        usesEqualsRelation = true
+    }
+
+    /** The classes whose instances use identity for `equals`: those whose exact class does not override it. */
+    val identityEqualityClasses = linkedSetOf<ClassTypeEmbedding>()
+
+    /** The domain of the `==` relation, if a specification states it. */
+    fun equalsRelationDomain(): EqualsRelationDomain? =
+        EqualsRelationDomain(identityEqualityClasses.map { it.runtimeType }).takeIf { usesEqualsRelation }
 
     private val unmatchedWhens = linkedMapOf<TypeEmbedding, Function>()
 

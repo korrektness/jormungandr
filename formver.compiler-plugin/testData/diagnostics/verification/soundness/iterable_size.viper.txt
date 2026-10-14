@@ -21,7 +21,13 @@ function contains(this: Ref, element: Ref): Ref
       anon_builtin_1 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
       (anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
-      get(this, intToRef(anon_builtin_1)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_1)))))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(size(this)) &&
+      get(this, intToRef(anon_builtin_2)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -42,12 +48,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
-      anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
-      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_2)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_3))))
 
 
 function isEmpty(this: Ref): Ref
@@ -72,13 +79,13 @@ method countVisitedList(values: Ref) returns (v_ret_0: Ref)
 {
   var visited: Ref
   var anon_0: Ref
-  var anon_4: Ref
+  var anon_13: Ref
   var anon_1: Ref
-  var anon_5: Ref
+  var anon_14: Ref
   visited := intToRef(0)
-  anon_4 := (unfolding acc(ListModel_unique(values), wildcard) in
+  anon_13 := (unfolding acc(ListModel_unique(values), wildcard) in
       ListModel_c_IterableModel_f_iterationSequence(values))
-  anon_0 := anon_4
+  anon_0 := anon_13
   inhale (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
@@ -103,8 +110,8 @@ method countVisitedList(values: Ref) returns (v_ret_0: Ref)
         (intFromRef(anon_1) > |iterationSequenceFromRef(anon_0)| ?
           |iterationSequenceFromRef(anon_0)| :
           intFromRef(anon_1)))]|
-  anon_5 := ltInts(anon_1, iterationSequenceSize(anon_0))
-  if (boolFromRef(anon_5)) {
+  anon_14 := ltInts(anon_1, iterationSequenceSize(anon_0))
+  if (boolFromRef(anon_14)) {
     var v_ret_3: Ref
     var anon_2: Ref
     var anon_3: Ref
@@ -157,8 +164,17 @@ function contains(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(element), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) ==
-    (element in
-    iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this)))
+    (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 <
+      |iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this))| &&
+      equalsRelation(element, iterationSequenceGet(SetModel_c_IterableModel_f_iterationSequence(this),
+      intToRef(anon_builtin_1)))))
+  ensures (element in
+    iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this))) ==>
+    boolFromRef(result)
 
 
 function isEmpty(this: Ref): Ref
@@ -184,13 +200,13 @@ method countVisitedSet(values: Ref) returns (v_ret_0: Ref)
 {
   var visited: Ref
   var anon_0: Ref
-  var anon_4: Ref
+  var anon_10: Ref
   var anon_1: Ref
-  var anon_5: Ref
+  var anon_11: Ref
   visited := intToRef(0)
-  anon_4 := (unfolding acc(SetModel_unique(values), wildcard) in
+  anon_10 := (unfolding acc(SetModel_unique(values), wildcard) in
       SetModel_c_IterableModel_f_iterationSequence(values))
-  anon_0 := anon_4
+  anon_0 := anon_10
   inhale (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
@@ -215,8 +231,8 @@ method countVisitedSet(values: Ref) returns (v_ret_0: Ref)
         (intFromRef(anon_1) > |iterationSequenceFromRef(anon_0)| ?
           |iterationSequenceFromRef(anon_0)| :
           intFromRef(anon_1)))]|
-  anon_5 := ltInts(anon_1, iterationSequenceSize(anon_0))
-  if (boolFromRef(anon_5)) {
+  anon_11 := ltInts(anon_1, iterationSequenceSize(anon_0))
+  if (boolFromRef(anon_11)) {
     var v_ret_3: Ref
     var anon_2: Ref
     var anon_3: Ref

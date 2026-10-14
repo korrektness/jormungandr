@@ -7,17 +7,19 @@ interface GenericView<T> {
     @Pure @Unique fun <!VIPER_TEXT!>same<!>(candidate: T): Boolean
 }
 
-<!VIPER_TEXT!>class GenericCell<!><T>(val contents: T) : GenericView<T> {
+enum class Flag { ON, OFF }
+
+<!VIPER_TEXT!>class GenericCell<!><T : Flag?>(val contents: T) : GenericView<T> {
     @Pure @Unique override fun <!VIPER_TEXT!>value<!>(): T = contents
     @Pure @Unique override fun <!VIPER_TEXT!>same<!>(candidate: T): Boolean = candidate == contents
 }
 
-fun <!VIPER_TEXT!>genericBooleanView<!>() {
-    val cell: @Unique GenericCell<Boolean> = GenericCell(true)
-    val view: @Unique GenericView<Boolean> = cell
-    verify(view.value())
-    verify(view.same(true))
-    verify(!view.same(false))
+fun <!VIPER_TEXT!>genericEnumView<!>(other: Flag) {
+    val cell: @Unique GenericCell<Flag> = GenericCell(Flag.ON)
+    val view: @Unique GenericView<Flag> = cell
+    verify(view.value() == Flag.ON)
+    verify(view.same(Flag.ON))
+    verify(view.same(other) == (other === Flag.ON))
     refute(false)
 }
 
@@ -35,35 +37,33 @@ fun <!VIPER_TEXT!>specializedImplementation<!>() {
     refute(false)
 }
 
-fun <!VIPER_TEXT!>lendGeneric<!>(view: @Unique @Borrowed GenericView<Boolean>): Boolean {
-    postconditions<Boolean> { result ->
+fun <!VIPER_TEXT!>lendGeneric<!>(view: @Unique @Borrowed GenericView<Flag>): Flag {
+    postconditions<Flag> { result ->
         result == old(view.value())
         view.value() == old(view.value())
-        forAll<Boolean> { b -> view.same(b) == old(view.same(b)) }
+        forAll<Flag> { f -> view.same(f) == old(view.same(f)) }
     }
     return view.value()
 }
 
 fun <!VIPER_TEXT!>borrowGenericBinding<!>() {
-    val cell: @Unique GenericCell<Boolean> = GenericCell(true)
+    val cell: @Unique GenericCell<Flag> = GenericCell(Flag.ON)
     val value = lendGeneric(cell)
-    verify(value)
-    verify(cell.value())
+    verify(value == Flag.ON)
+    verify(cell.value() == Flag.ON)
     refute(false)
 }
 
-<!VIPER_TEXT!>class GenericToken<!>
-
-fun <!VIPER_TEXT!>genericNullableView<!>(token: GenericToken?) {
-    val cell: @Unique GenericCell<GenericToken?> = GenericCell(token)
-    val view: @Unique GenericView<GenericToken?> = cell
+fun <!VIPER_TEXT!>genericNullableView<!>(token: Flag?) {
+    val cell: @Unique GenericCell<Flag?> = GenericCell(token)
+    val view: @Unique GenericView<Flag?> = cell
     verify(view.value() == token)
     verify(view.same(token))
     refute(false)
 }
 
 fun <!VIPER_TEXT!>genericFalseClaim<!>() {
-    val cell: @Unique GenericCell<Boolean> = GenericCell(true)
-    val view: @Unique GenericView<Boolean> = cell
-    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>view.same(false)<!>)
+    val cell: @Unique GenericCell<Flag> = GenericCell(Flag.ON)
+    val view: @Unique GenericView<Flag> = cell
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>!view.same(Flag.ON)<!>)
 }

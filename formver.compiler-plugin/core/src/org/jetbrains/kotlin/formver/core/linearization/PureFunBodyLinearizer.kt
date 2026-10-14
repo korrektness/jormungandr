@@ -46,6 +46,10 @@ data class PureFunBodyLinearizer(
     override val logicOperatorPolicy: LogicOperatorPolicy
         get() = LogicOperatorPolicy.CONVERT_TO_EXPRESSION
 
+    /** A law is a specification; any other body is a `@Pure` function that runs. */
+    override val equalityEvaluation: EqualityEvaluation
+        get() = if (lawView != null || representationLaw) EqualityEvaluation.SPECIFIED else EqualityEvaluation.PURE_FUNCTION
+
     override fun <R> withPosition(newSource: KtSourceElement, action: LinearizationContext.() -> R): R =
         copy(source = if (lawView == null) newSource else source).action()
 

@@ -304,19 +304,17 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val right = data.convert(equalityOperatorCall.arguments[1])
 
         return when (equalityOperatorCall.operation) {
-            FirOperation.EQ -> convertEqCmp(left, right)
-            FirOperation.NOT_EQ -> Not(convertEqCmp(left, right))
-            FirOperation.IDENTITY -> IdentityCmp(left, right)
-            FirOperation.NOT_IDENTITY -> Not(IdentityCmp(left, right))
+            FirOperation.EQ -> data.convertEquality(equalityOperatorCall, left, right)
+            FirOperation.NOT_EQ -> Not(data.convertEquality(equalityOperatorCall, left, right))
+            FirOperation.IDENTITY, FirOperation.NOT_IDENTITY -> {
+                data.checkIdentityComparable(equalityOperatorCall)
+                val identity = IdentityCmp(left, right)
+                if (equalityOperatorCall.operation == FirOperation.IDENTITY) identity else Not(identity)
+            }
             else -> throw UnsupportedFeatureException(
                 equalityOperatorCall.source, "equality operation ${equalityOperatorCall.operation}"
             )
         }
-    }
-
-    private fun convertEqCmp(left: ExpEmbedding, right: ExpEmbedding): ExpEmbedding {
-        //TODO: replace with call to left.equals()
-        return EqCmp(left, right)
     }
 
     override fun visitComparisonExpression(

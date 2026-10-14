@@ -58,4 +58,33 @@ data class IdentityCmp(
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitIdentityCmp(this)
 }
 
+/**
+ * Kotlin `left == right` where `left`'s `equals` is neither identity nor value equality. Executed code evaluates
+ * [executed], or rejects the comparison with the reason [unsupportedExecution] when [executed] is null. A
+ * specification evaluates [specified].
+ */
+data class ObjectEquality(
+    val left: ExpEmbedding,
+    val right: ExpEmbedding,
+    val executed: ExpEmbedding?,
+    val specified: ExpEmbedding,
+    val unsupportedExecution: String? = null,
+    override val sourceRole: SourceRole? = null,
+) : ExpEmbedding {
+    override val type = buildType { boolean() }
+    override fun children(): Sequence<ExpEmbedding> = sequenceOf(left, right)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitObjectEquality(this)
+}
+
+/**
+ * The relation a specification states with Kotlin `left == right` when no `@Pure` function computes it. It is fixed
+ * per pair of references and known only where `left` is null or of a type whose `equals` is identity or value
+ * equality.
+ */
+data class EqualsRelation(val left: ExpEmbedding, val right: ExpEmbedding) : ExpEmbedding {
+    override val type = buildType { boolean() }
+    override fun children(): Sequence<ExpEmbedding> = sequenceOf(left, right)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitEqualsRelation(this)
+}
+
 fun ExpEmbedding.notNullCmp(): ExpEmbedding = NeCmp(this, NullLit)

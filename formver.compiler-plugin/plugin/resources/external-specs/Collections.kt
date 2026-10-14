@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 internal interface ListModel<out E> : IterableModel<E> {
     @Law @Pure @Unique fun iterationElements(): Boolean =
         iterationSequence().size == size && forAll<Int> { i ->
-            (i >= 0 && i < iterationSequence().size && i < size) implies (iterationSequence()[i] == get(i))
+            (i >= 0 && i < iterationSequence().size && i < size) implies (iterationSequence()[i] === get(i))
         }
 
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-collection/size.html: number of elements.
@@ -23,7 +23,8 @@ internal interface ListModel<out E> : IterableModel<E> {
     @Pure @Unique fun contains(element: @UnsafeVariance E): Boolean
     @SpecOf("contains") @Unique fun containsSpec(element: @UnsafeVariance E) {
         postconditions<Boolean> { result ->
-            result == exists<Int> { i -> i >= 0 && i < size && get(i) == element }
+            result == exists<Int> { i -> i >= 0 && i < size && element == get(i) }
+            forAll<Int> { i -> (i >= 0 && i < size && get(i) === element) implies result }
         }
     }
 
@@ -39,8 +40,8 @@ internal interface ListModel<out E> : IterableModel<E> {
         postconditions<Int> { result ->
             result >= -1 && result < size
             (result == -1) == !contains(element)
-            (result >= 0) implies (get(result) == element)
-            forAll<Int> { i -> (i >= 0 && i < result) implies (get(i) != element) }
+            (result >= 0) implies (element == get(result))
+            forAll<Int> { i -> (i >= 0 && i < result) implies (element != get(i)) }
         }
     }
 }
@@ -60,8 +61,8 @@ internal interface MutableListModel<E> : ListModel<E> {
         postconditions<Boolean> { result ->
             result == true
             size == old(size) + 1
-            get(old(size)) == element
-            forAll<Int> { i -> (i >= 0 && i < old(size)) implies (get(i) == old(get(i))) }
+            get(old(size)) === element
+            forAll<Int> { i -> (i >= 0 && i < old(size)) implies (get(i) === old(get(i))) }
         }
     }
 
@@ -71,10 +72,10 @@ internal interface MutableListModel<E> : ListModel<E> {
         preconditions { index >= 0 && index <= size; size < 2147483647 }
         postconditions<Unit> {
             size == old(size) + 1
-            get(index) == element
+            get(index) === element
             forAll<Int> { i ->
                 (i >= 0 && i < size && i != index) implies
-                    (get(i) == if (i < index) old(get(i)) else old(get(i - 1)))
+                    (get(i) === if (i < index) old(get(i)) else old(get(i - 1)))
             }
         }
     }
@@ -84,10 +85,10 @@ internal interface MutableListModel<E> : ListModel<E> {
     @SpecOf("set") @Unique @Borrowed fun setSpec(index: Int, element: E) {
         preconditions { index >= 0 && index < size }
         postconditions<E> { result ->
-            result == old(get(index))
+            result === old(get(index))
             size == old(size)
-            get(index) == element
-            forAll<Int> { i -> (i >= 0 && i < size && i != index) implies (get(i) == old(get(i))) }
+            get(index) === element
+            forAll<Int> { i -> (i >= 0 && i < size && i != index) implies (get(i) === old(get(i))) }
         }
     }
 
@@ -99,7 +100,7 @@ internal interface MutableListModel<E> : ListModel<E> {
             size == old(size) - if (result) 1 else 0
             forAll<Int> { i ->
                 (i >= 0 && i < size) implies
-                    (get(i) == if (result && i >= old(indexOf(element))) old(get(i + 1)) else old(get(i)))
+                    (get(i) === if (result && i >= old(indexOf(element))) old(get(i + 1)) else old(get(i)))
             }
         }
     }
@@ -116,7 +117,7 @@ internal fun <T> emptyListModel(): @Unique ListModel<T> = TODO()
 @ExternalFunction("kotlin.collections.listOf")
 internal fun <T> singletonListModel(element: T): @Unique ListModel<T> = TODO()
 @SpecOf("singletonListModel") internal fun <T> singletonListSpec(element: T) {
-    postconditions<@Unique ListModel<T>> { result -> result.size == 1; result[0] == element }
+    postconditions<@Unique ListModel<T>> { result -> result.size == 1; result[0] === element }
 }
 
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/mutable-list-of.html: new empty mutable list.

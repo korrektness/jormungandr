@@ -25,6 +25,15 @@ import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Label
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
 
+/**
+ * How a Kotlin `==` whose `equals` is not identity or value equality is linearized: as the call that executed code
+ * makes, as the relation a specification states, or, in the body of a `@Pure` function, as a call of a `@Pure`
+ * `equals` only.
+ */
+enum class EqualityEvaluation {
+    EXECUTED, SPECIFIED, PURE_FUNCTION;
+}
+
 /** How `&&` and `||` are linearized: as an `if`, or as Viper's short-circuiting operators. */
 enum class LogicOperatorPolicy {
     CONVERT_TO_IF, CONVERT_TO_EXPRESSION;
@@ -50,6 +59,12 @@ interface LinearizationContext {
         get() = true
 
     val typeResolver: TypeResolver
+
+    val equalityEvaluation: EqualityEvaluation
+        get() = EqualityEvaluation.SPECIFIED
+
+    /** This context, for a specification that executed code checks or assumes, such as `verify`. */
+    fun forSpecification(): LinearizationContext = this
 
     val jumpInterceptors: MutableList<JumpInterceptor>?
         get() = null

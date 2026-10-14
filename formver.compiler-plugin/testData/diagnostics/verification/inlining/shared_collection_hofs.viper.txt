@@ -21,7 +21,13 @@ function contains(this: Ref, element: Ref): Ref
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function g_values(this: Ref): Ref
@@ -47,12 +53,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -107,7 +114,13 @@ function contains(this: Ref, element: Ref): Ref
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -128,12 +141,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -198,7 +212,14 @@ function contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) &&
       (anon_builtin_2 >= 0 &&
       anon_builtin_2 < intFromRef(ListModel_g_size(this)) &&
-      get(this, intToRef(anon_builtin_2)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_2)))))
+  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_3 >= 0 &&
+      anon_builtin_3 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_3)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -219,12 +240,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
-      anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
-      anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_3)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+      anon_builtin_4 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
 
 
 function isEmpty(this: Ref): Ref
@@ -244,13 +266,13 @@ method uniqueAny(xs: Ref) returns (v_ret_0: Ref)
 {
   var found: Ref
   var anon_0: Ref
-  var anon_4: Ref
+  var anon_13: Ref
   var anon_1: Ref
   var anon_2: Ref
-  var anon_5: Ref
-  anon_4 := (unfolding acc(ListModel_unique(xs), wildcard) in
+  var anon_14: Ref
+  anon_13 := (unfolding acc(ListModel_unique(xs), wildcard) in
       ListModel_c_IterableModel_f_iterationSequence(xs))
-  anon_0 := anon_4
+  anon_0 := anon_13
   inhale (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
@@ -275,10 +297,10 @@ method uniqueAny(xs: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(anon_2) >= 0 ==> true
     invariant intFromRef(anon_1) >= 1 ==>
       intFromRef(anon_2) == intFromRef((true ? intToRef(0) : intToRef(-1)))
-  anon_5 := andBools(ltInts(anon_1, iterationSequenceSize(anon_0)), ltInts(anon_2,
+  anon_14 := andBools(ltInts(anon_1, iterationSequenceSize(anon_0)), ltInts(anon_2,
     intToRef(0)))
-  if (boolFromRef(anon_5)) {
-    var anon_6: Ref
+  if (boolFromRef(anon_14)) {
+    var anon_15: Ref
     var v_ret_3: Ref
     var anon_3: Ref
     anon_3 := iterationSequenceGet(anon_0, anon_1)
@@ -286,8 +308,8 @@ method uniqueAny(xs: Ref) returns (v_ret_0: Ref)
     v_ret_3 := boolToRef(true)
     goto lbl_ret_3
     label lbl_ret_3
-    anon_6 := v_ret_3
-    if (boolFromRef(anon_6)) {
+    anon_15 := v_ret_3
+    if (boolFromRef(anon_15)) {
       anon_2 := anon_1
     }
     anon_1 := plusInts(anon_1, intToRef(1))
@@ -349,7 +371,14 @@ function contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) &&
       (anon_builtin_2 >= 0 &&
       anon_builtin_2 < intFromRef(ListModel_g_size(this)) &&
-      get(this, intToRef(anon_builtin_2)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_2)))))
+  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_3 >= 0 &&
+      anon_builtin_3 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_3)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -370,12 +399,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
-      anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
-      anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_3)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+      anon_builtin_4 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
 
 
 function isEmpty(this: Ref): Ref
@@ -392,19 +422,19 @@ method uniqueMap(xs: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var ys: Ref
-  var anon_6: Ref
+  var anon_15: Ref
   var anon_0: Ref
-  var anon_7: Ref
+  var anon_16: Ref
   var anon_1: Ref
   var anon_2: Ref
-  var anon_8: Ref
+  var anon_17: Ref
   var anon_5: Ref
-  var anon_9: Ref
-  var anon_10: Ref
-  var anon_11: Ref
-  anon_7 := (unfolding acc(ListModel_unique(xs), wildcard) in
+  var anon_18: Ref
+  var anon_19: Ref
+  var anon_20: Ref
+  anon_16 := (unfolding acc(ListModel_unique(xs), wildcard) in
       ListModel_c_IterableModel_f_iterationSequence(xs))
-  anon_0 := anon_7
+  anon_0 := anon_16
   inhale (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
@@ -434,8 +464,8 @@ method uniqueMap(xs: Ref) returns (v_ret_0: Ref)
         intType()) ==>
         iterationSequenceGet(anon_2, intToRef(anon_builtin_1)) ==
         intToRef(1))
-  anon_8 := ltInts(anon_1, iterationSequenceSize(anon_0))
-  if (boolFromRef(anon_8)) {
+  anon_17 := ltInts(anon_1, iterationSequenceSize(anon_0))
+  if (boolFromRef(anon_17)) {
     var anon_4: Ref
     var v_ret_2: Ref
     var anon_3: Ref
@@ -470,17 +500,17 @@ method uniqueMap(xs: Ref) returns (v_ret_0: Ref)
       iterationSequenceGet(anon_2, intToRef(anon_builtin_1)) == intToRef(1))
   anon_5 := new()
   inhale acc(ListModel_unique(anon_5), write)
-  anon_9 := (unfolding acc(ListModel_unique(anon_5), wildcard) in
+  anon_18 := (unfolding acc(ListModel_unique(anon_5), wildcard) in
       ListModel_c_IterableModel_f_iterationSequence(anon_5))
-  inhale iterationSequenceFromRef(anon_9) ==
+  inhale iterationSequenceFromRef(anon_18) ==
     iterationSequenceFromRef(anon_2)
-  anon_6 := anon_5
-  ys := anon_6
-  anon_10 := (unfolding acc(ListModel_unique(ys), wildcard) in
+  anon_15 := anon_5
+  ys := anon_15
+  anon_19 := (unfolding acc(ListModel_unique(ys), wildcard) in
       ListModel_g_size(ys))
-  anon_11 := (unfolding acc(ListModel_unique(xs), wildcard) in
+  anon_20 := (unfolding acc(ListModel_unique(xs), wildcard) in
       ListModel_g_size(xs))
-  assert intFromRef(anon_10) == intFromRef(anon_11)
+  assert intFromRef(anon_19) == intFromRef(anon_20)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -520,7 +550,14 @@ function contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) &&
       (anon_builtin_4 >= 0 &&
       anon_builtin_4 < intFromRef(ListModel_g_size(this)) &&
-      get(this, intToRef(anon_builtin_4)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_4)))))
+  ensures (forall anon_builtin_5: Int ::anon_builtin_5 >= -2147483648 &&
+      anon_builtin_5 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+      anon_builtin_5 >= 0 &&
+      anon_builtin_5 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_5)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -541,12 +578,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_5: Int ::anon_builtin_5 >= -2147483648 &&
-      anon_builtin_5 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
-      anon_builtin_5 >= 0 && anon_builtin_5 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_5)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_6: Int ::anon_builtin_6 >= -2147483648 &&
+      anon_builtin_6 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+      anon_builtin_6 >= 0 && anon_builtin_6 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_6))))
 
 
 function isEmpty(this: Ref): Ref
@@ -563,28 +601,28 @@ method uniqueCallResultFilter(xs: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var ys: Ref
-  var anon_12: Ref
+  var anon_21: Ref
   var anon_6: Ref
-  var anon_13: Ref
+  var anon_22: Ref
   var anon_0: Ref
-  var anon_14: Ref
+  var anon_23: Ref
   var anon_1: Ref
   var anon_2: Ref
-  var anon_15: Ref
+  var anon_24: Ref
   var anon_5: Ref
-  var anon_16: Ref
+  var anon_25: Ref
   var anon_7: Ref
-  var anon_17: Ref
+  var anon_26: Ref
   var anon_8: Ref
   var anon_9: Ref
-  var anon_18: Ref
+  var anon_27: Ref
   var anon_11: Ref
-  var anon_21: Ref
-  var anon_22: Ref
-  var anon_23: Ref
-  anon_14 := (unfolding acc(ListModel_unique(xs), wildcard) in
+  var anon_30: Ref
+  var anon_31: Ref
+  var anon_32: Ref
+  anon_23 := (unfolding acc(ListModel_unique(xs), wildcard) in
       ListModel_c_IterableModel_f_iterationSequence(xs))
-  anon_0 := anon_14
+  anon_0 := anon_23
   inhale (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
       anon_builtin_0 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
@@ -614,8 +652,8 @@ method uniqueCallResultFilter(xs: Ref) returns (v_ret_0: Ref)
         intType()) ==>
         iterationSequenceGet(anon_2, intToRef(anon_builtin_1)) ==
         iterationSequenceGet(anon_0, intToRef(anon_builtin_1)))
-  anon_15 := ltInts(anon_1, iterationSequenceSize(anon_0))
-  if (boolFromRef(anon_15)) {
+  anon_24 := ltInts(anon_1, iterationSequenceSize(anon_0))
+  if (boolFromRef(anon_24)) {
     var anon_4: Ref
     var v_ret_3: Ref
     var anon_3: Ref
@@ -651,15 +689,15 @@ method uniqueCallResultFilter(xs: Ref) returns (v_ret_0: Ref)
       iterationSequenceGet(anon_0, intToRef(anon_builtin_1)))
   anon_5 := new()
   inhale acc(ListModel_unique(anon_5), write)
-  anon_16 := (unfolding acc(ListModel_unique(anon_5), wildcard) in
+  anon_25 := (unfolding acc(ListModel_unique(anon_5), wildcard) in
       ListModel_c_IterableModel_f_iterationSequence(anon_5))
-  inhale iterationSequenceFromRef(anon_16) ==
+  inhale iterationSequenceFromRef(anon_25) ==
     iterationSequenceFromRef(anon_2)
-  anon_13 := anon_5
-  anon_6 := anon_13
-  anon_17 := (unfolding acc(ListModel_unique(anon_6), wildcard) in
+  anon_22 := anon_5
+  anon_6 := anon_22
+  anon_26 := (unfolding acc(ListModel_unique(anon_6), wildcard) in
       ListModel_c_IterableModel_f_iterationSequence(anon_6))
-  anon_7 := anon_17
+  anon_7 := anon_26
   inhale (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
       anon_builtin_2 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
@@ -684,9 +722,9 @@ method uniqueCallResultFilter(xs: Ref) returns (v_ret_0: Ref)
     invariant |iterationSequenceFromRef(anon_9)| <= intFromRef(anon_8)
     invariant |iterationSequenceFromRef(anon_9)| ==
       intFromRef((true ? anon_8 : intToRef(0)))
-  anon_18 := ltInts(anon_8, iterationSequenceSize(anon_7))
-  if (boolFromRef(anon_18)) {
-    var anon_19: Ref
+  anon_27 := ltInts(anon_8, iterationSequenceSize(anon_7))
+  if (boolFromRef(anon_27)) {
+    var anon_28: Ref
     var v_ret_4: Ref
     var anon_10: Ref
     anon_10 := iterationSequenceGet(anon_7, anon_8)
@@ -694,12 +732,12 @@ method uniqueCallResultFilter(xs: Ref) returns (v_ret_0: Ref)
     v_ret_4 := boolToRef(true)
     goto lbl_ret_4
     label lbl_ret_4
-    anon_19 := v_ret_4
-    if (boolFromRef(anon_19)) {
-      var anon_20: Ref
-      anon_20 := iterationSequenceGet(anon_7, anon_8)
-      inhale isSubtype(typeOf(anon_20), intType())
-      anon_9 := iterationSequenceAppend(anon_9, iterationSequenceToRef(Seq(anon_20)))
+    anon_28 := v_ret_4
+    if (boolFromRef(anon_28)) {
+      var anon_29: Ref
+      anon_29 := iterationSequenceGet(anon_7, anon_8)
+      inhale isSubtype(typeOf(anon_29), intType())
+      anon_9 := iterationSequenceAppend(anon_9, iterationSequenceToRef(Seq(anon_29)))
     }
     anon_8 := plusInts(anon_8, intToRef(1))
     goto cont_1
@@ -721,17 +759,17 @@ method uniqueCallResultFilter(xs: Ref) returns (v_ret_0: Ref)
     intFromRef((true ? anon_8 : intToRef(0)))
   anon_11 := new()
   inhale acc(ListModel_unique(anon_11), write)
-  anon_21 := (unfolding acc(ListModel_unique(anon_11), wildcard) in
+  anon_30 := (unfolding acc(ListModel_unique(anon_11), wildcard) in
       ListModel_c_IterableModel_f_iterationSequence(anon_11))
-  inhale iterationSequenceFromRef(anon_21) ==
+  inhale iterationSequenceFromRef(anon_30) ==
     iterationSequenceFromRef(anon_9)
-  anon_12 := anon_11
-  ys := anon_12
-  anon_22 := (unfolding acc(ListModel_unique(ys), wildcard) in
+  anon_21 := anon_11
+  ys := anon_21
+  anon_31 := (unfolding acc(ListModel_unique(ys), wildcard) in
       ListModel_g_size(ys))
-  anon_23 := (unfolding acc(ListModel_unique(xs), wildcard) in
+  anon_32 := (unfolding acc(ListModel_unique(xs), wildcard) in
       ListModel_g_size(xs))
-  assert intFromRef(anon_22) == intFromRef(anon_23)
+  assert intFromRef(anon_31) == intFromRef(anon_32)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

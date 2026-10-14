@@ -28,7 +28,10 @@ internal interface SetModel<out E> : IterableModel<E> {
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/contains.html: membership.
     @Pure @Unique fun contains(element: @UnsafeVariance E): Boolean
     @SpecOf("contains") @Unique fun containsSpec(element: @UnsafeVariance E) {
-        postconditions<Boolean> { result -> result == (element in iterationSequence()) }
+        postconditions<Boolean> { result ->
+            result == exists<Int> { i -> i >= 0 && i < iterationSequence().size && element == iterationSequence()[i] }
+            (element in iterationSequence()) implies result
+        }
     }
 }
 
@@ -64,7 +67,7 @@ internal interface MapModel<K, out V> {
         keysSequence().size == size && iterationSequence().size == keysSequence().size
     @Law @Pure @Unique fun iterationEntries(): Boolean = forAll<Int> { i ->
         (i >= 0 && i < keysSequence().size && i < iterationSequence().size) implies
-            (iterationSequence()[i].key == keysSequence()[i] && iterationSequence()[i].value == get(keysSequence()[i]))
+            (iterationSequence()[i].key === keysSequence()[i] && iterationSequence()[i].value === get(keysSequence()[i]))
     }
     @Law @Pure @Unique fun distinctKeys(): Boolean = forAll<Int> { i ->
         forAll<Int> { j ->
@@ -87,7 +90,8 @@ internal interface MapModel<K, out V> {
     @Pure @Unique fun containsKey(key: K): Boolean
     @SpecOf("containsKey") @Unique fun keySpec(key: K) {
         postconditions<Boolean> { result ->
-            result == (key in keysSequence())
+            result == exists<Int> { i -> i >= 0 && i < keysSequence().size && key == keysSequence()[i] }
+            (key in keysSequence()) implies result
         }
     }
 
@@ -95,7 +99,7 @@ internal interface MapModel<K, out V> {
     @Pure @Unique fun containsValue(value: @UnsafeVariance V): Boolean
     @SpecOf("containsValue") @Unique fun valueSpec(value: @UnsafeVariance V) {
         postconditions<Boolean> { result ->
-            result == exists<Int> { i -> i >= 0 && i < keysSequence().size && get(keysSequence()[i]) == value }
+            result == exists<Int> { i -> i >= 0 && i < keysSequence().size && value == get(keysSequence()[i]) }
         }
     }
 
@@ -115,9 +119,9 @@ internal interface MutableMapModel<K, V> : MapModel<K, V> {
     @SpecOf("put") @Unique @Borrowed fun putSpec(key: K, value: V) {
         preconditions { size < 2147483647 }
         postconditions<V?> { result ->
-            result == old(get(key))
+            result === old(get(key))
             containsKey(key)
-            get(key) == value
+            get(key) === value
             containsValue(value)
             size == old(size) + if (old(containsKey(key))) 0 else 1
         }
@@ -127,7 +131,7 @@ internal interface MutableMapModel<K, V> : MapModel<K, V> {
     @Unique @Borrowed fun remove(key: K): V?
     @SpecOf("remove") @Unique @Borrowed fun removeSpec(key: K) {
         postconditions<V?> { result ->
-            result == old(get(key))
+            result === old(get(key))
             !containsKey(key)
             size == old(size) - if (old(containsKey(key))) 1 else 0
         }

@@ -33,7 +33,14 @@ function contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) &&
       (anon_builtin_2 >= 0 &&
       anon_builtin_2 < intFromRef(ListModel_g_size(this)) &&
-      get(this, intToRef(anon_builtin_2)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_2)))))
+  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_3 >= 0 &&
+      anon_builtin_3 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_3)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -54,12 +61,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
-      anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
-      anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_3)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+      anon_builtin_4 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
 
 
 function isEmpty(this: Ref): Ref
@@ -84,12 +92,12 @@ method jvmForEach(values: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var anon_0: Ref
-  var anon_3: Ref
+  var anon_12: Ref
   var anon_1: Ref
-  var anon_4: Ref
-  anon_3 := (unfolding acc(ListModel_unique(values), wildcard) in
+  var anon_13: Ref
+  anon_12 := (unfolding acc(ListModel_unique(values), wildcard) in
       ListModel_c_IterableModel_f_iterationSequence(values))
-  anon_0 := anon_3
+  anon_0 := anon_12
   inhale (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
       anon_builtin_1 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
@@ -107,8 +115,8 @@ method jvmForEach(values: Ref) returns (v_ret_0: Ref)
     invariant (unfolding acc(ListModel_unique(values), wildcard) in
         iterationSequenceFromRef(anon_0) ==
         iterationSequenceFromRef(ListModel_c_IterableModel_f_iterationSequence(values)))
-  anon_4 := ltInts(anon_1, iterationSequenceSize(anon_0))
-  if (boolFromRef(anon_4)) {
+  anon_13 := ltInts(anon_1, iterationSequenceSize(anon_0))
+  if (boolFromRef(anon_13)) {
     var v_ret_4: Ref
     var anon_2: Ref
     anon_2 := iterationSequenceGet(anon_0, anon_1)

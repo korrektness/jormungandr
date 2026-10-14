@@ -49,6 +49,8 @@ internal class ExprPurityVisitor(
     override fun visitEqCmp(e: EqCmp) = e.allChildrenPure(this)
     override fun visitNeCmp(e: NeCmp) = e.allChildrenPure(this)
     override fun visitIdentityCmp(e: IdentityCmp) = e.allChildrenPure(this)
+    override fun visitObjectEquality(e: ObjectEquality) = e.specified.accept(this)
+    override fun visitEqualsRelation(e: EqualsRelation) = e.allChildrenPure(this)
     override fun visitUnaryOperatorExpEmbedding(e: UnaryOperatorExpEmbedding) = e.allChildrenPure(this)
     override fun visitWithPosition(e: WithPosition) = e.allChildrenPure(this)
     override fun visitInjectionBasedExpEmbedding(e: InjectionBasedExpEmbedding) = e.allChildrenPure(this)

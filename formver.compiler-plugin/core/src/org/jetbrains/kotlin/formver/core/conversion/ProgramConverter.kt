@@ -190,14 +190,9 @@ class ProgramConverter(
     private val usesStringBuilder: Boolean
         get() = typeResolver.lookupClassTypeEmbedding(StringBuilderEmbedding.classType.name) != null
 
+    // Arguments are evaluated in the order written, and the domains go last: converting the other members
+    // may find that a specification states the relation of an `==`, which needs its domain.
     fun buildProgram(): Program = Program(
-        domains = listOf(RuntimeTypeDomain(typeResolver)) +
-                listOfNotNull(SeqMultisetDomain.takeIf { usesIntArray && typeResolver.usesMultiset }) +
-                TerminationMeasures.domains(linearizedBodyResolver.functions),
-        // Public fields with the same name are represented differently at `FieldEmbedding` level
-        // but map to the same Viper field, so we deduplicate before emitting.
-        fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
-                listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder }),
         functions = TerminationMeasures.withTerminationSpecifications(
             SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
                     SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
@@ -207,7 +202,15 @@ class ProgramConverter(
         ),
         methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods,
         predicates = typeResolver.predicates(),
+        // Public fields with the same name are represented differently at `FieldEmbedding` level
+        // but map to the same Viper field, so we deduplicate before emitting.
+        fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
+                listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder }),
         adts = emptyList(),
+        domains = listOf(RuntimeTypeDomain(typeResolver)) +
+                listOfNotNull(SeqMultisetDomain.takeIf { usesIntArray && typeResolver.usesMultiset }) +
+                listOfNotNull(typeResolver.equalsRelationDomain()) +
+                TerminationMeasures.domains(linearizedBodyResolver.functions),
     ).withoutUncalledFunctions(SpecialFunctions.allNames)
 
 

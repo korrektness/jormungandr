@@ -1,0 +1,100 @@
+// FULL_JDK
+// WITH_STDLIB
+// EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Iterable.kt
+// EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Collections.kt
+// EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/AssociativeCollections.kt
+
+import org.jetbrains.kotlin.formver.plugin.*
+
+// Kotlin `==` calls `equals` (SPECIFICATIONS.md, equality section).
+
+<!VIPER_TEXT!>class AlwaysEq<!>(val v: Int) {
+    override fun <!VIPER_TEXT!>equals<!>(other: Any?) = true
+    override fun <!VIPER_TEXT!>hashCode<!>() = 0
+}
+
+fun <!VIPER_TEXT!>alwaysEq<!>(a: AlwaysEq, b: AlwaysEq) {
+    val r = a == b
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>r == (a === b)<!>)
+}
+
+fun <!VIPER_TEXT!>alwaysNotEq<!>(a: AlwaysEq, b: AlwaysEq) {
+    val r = a != b
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>r == (a !== b)<!>)
+}
+
+fun <!VIPER_TEXT!>alwaysEqWhen<!>(a: AlwaysEq, b: AlwaysEq) {
+    val r = when (a) {
+        b -> 1
+        else -> 0
+    }
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>r == if (a === b) 1 else 0<!>)
+}
+
+data <!VIPER_TEXT!>class D<!>(val v: Int)
+
+fun <!VIPER_TEXT!>dataEq<!>(a: D, b: D) {
+    val r = a == b
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>r == (a === b)<!>)
+}
+
+fun <!VIPER_TEXT!>dataEqStructural<!>(a: D, b: D) {
+    val r = a == b
+    verify(r == (a.v == b.v))
+}
+
+<!VIPER_TEXT!>class Plain<!>(val v: Int)
+
+fun <!VIPER_TEXT!>plainEqIsIdentity<!>(a: Plain, b: Plain) {
+    val r = a == b
+    verify(r == (a === b))
+}
+
+fun <!VERIFICATION_SKIPPED!>listEq<!>() {
+    val a = listOf(1)
+    val b = listOf(1)
+    val r = <!UNSUPPORTED_FEATURE!>a == b<!>
+    verify(!r)
+}
+
+fun <!VIPER_TEXT!>listEqShared<!>(a: List<Int>, b: List<Int>) {
+    val r = a == b
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>r == (a === b)<!>)
+}
+
+<!VIPER_TEXT!>class Entity<!>(val id: Int, val name: Int) {
+    override fun <!VIPER_TEXT!>equals<!>(other: Any?) = other is Entity && other.id == id
+    override fun <!VIPER_TEXT!>hashCode<!>() = id
+}
+
+fun <!VIPER_TEXT!>setAddById<!>() {
+    val s = mutableSetOf<Entity>()
+    s.add(Entity(1, 0))
+    val added = s.add(Entity(1, 1))
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>added && s.size == 2<!>)
+}
+
+fun <!VIPER_TEXT!>listContainsById<!>() {
+    val l = mutableListOf<Entity>()
+    l.add(Entity(1, 0))
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>!l.contains(Entity(1, 1))<!>)
+}
+
+<!VIPER_TEXT!>class Eq<!>(val v: Int) {
+    override fun <!VIPER_TEXT!>equals<!>(other: Any?): Boolean { error("eq") }
+    override fun <!VIPER_TEXT!>hashCode<!>() = 0
+}
+
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>equalsCatch<!>(a: Eq, b: Eq): Int {
+    postconditions<Int> { it == 0 || it == 2 }
+    var x = 0
+    try { x = 1; val r = a == b; x = 2 } catch (e: Exception) { }
+    return x
+}<!>
+
+// The JVM shares boxes of small values and makes fresh boxes of large ones, so `===` on boxes has no sound model.
+fun <!VERIFICATION_SKIPPED!>boxedInts<!>(a: Int) {
+    if (a == 1000) { val x: Any = a; val y: Any = a; verify(<!UNSUPPORTED_FEATURE!>x === y<!>) }
+}
+
+fun <!VERIFICATION_SKIPPED!>boxedGeneric<!>(a: Any, b: Int) = <!IMPLICIT_BOXING_IN_IDENTITY_EQUALS, UNSUPPORTED_FEATURE!>a === b<!>

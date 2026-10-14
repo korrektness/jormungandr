@@ -36,8 +36,11 @@ data class Linearizer(
     override val source: KtSourceElement?,
     override val typeResolver: TypeResolver,
     override val foldState: FoldState? = null,
-    val stmtModifierTracker: StmtModifierTracker? = null
+    val stmtModifierTracker: StmtModifierTracker? = null,
+    override val equalityEvaluation: EqualityEvaluation = EqualityEvaluation.EXECUTED,
 ) : LinearizationContext {
+    override fun forSpecification(): LinearizationContext = copy(equalityEvaluation = EqualityEvaluation.SPECIFIED)
+
     override val logicOperatorPolicy: LogicOperatorPolicy
         get() = LogicOperatorPolicy.CONVERT_TO_IF
 

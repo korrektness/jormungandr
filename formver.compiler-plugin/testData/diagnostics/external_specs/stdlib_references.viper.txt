@@ -44,8 +44,16 @@ function MutableListModel_c_ListModel_f_contains(this: Ref, element: Ref): Ref
       (anon_builtin_2 >= 0 &&
       anon_builtin_2 <
       intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
-      MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_2)) ==
-      element))
+      equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_2)))))
+  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_3 >= 0 &&
+      anon_builtin_3 <
+      intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
+      MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_3)) ==
+      element ==>
+      boolFromRef(result))
 
 
 function MutableListModel_c_ListModel_f_get(this: Ref, par_index: Ref): Ref
@@ -69,13 +77,12 @@ function MutableListModel_c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(MutableListModel_c_ListModel_f_contains(this, element))
   ensures intFromRef(result) >= 0 ==>
-    MutableListModel_c_ListModel_f_get(this, result) == element
-  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
-      anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
-      anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
-      !(MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_3)) ==
-      element))
+    equalsRelation(element, MutableListModel_c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+      anon_builtin_4 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
+      !equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_4))))
 
 
 function MutableListModel_c_ListModel_f_isEmpty(this: Ref): Ref
@@ -121,7 +128,14 @@ function c_ListModel_f_contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) &&
       (anon_builtin_2 >= 0 &&
       anon_builtin_2 < intFromRef(c_ListModel_g_size(this)) &&
-      c_ListModel_f_get(this, intToRef(anon_builtin_2)) == element))
+      equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_2)))))
+  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_3 >= 0 &&
+      anon_builtin_3 < intFromRef(c_ListModel_g_size(this)) &&
+      c_ListModel_f_get(this, intToRef(anon_builtin_3)) == element ==>
+      boolFromRef(result))
 
 
 function c_ListModel_f_get(this: Ref, par_index: Ref): Ref
@@ -143,12 +157,12 @@ function c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(c_ListModel_f_contains(this, element))
   ensures intFromRef(result) >= 0 ==>
-    c_ListModel_f_get(this, result) == element
-  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
-      anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
-      anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
-      !(c_ListModel_f_get(this, intToRef(anon_builtin_3)) == element))
+    equalsRelation(element, c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_4: Int ::anon_builtin_4 >= -2147483648 &&
+      anon_builtin_4 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
+      !equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_4))))
 
 
 function c_ListModel_f_isEmpty(this: Ref): Ref
@@ -218,105 +232,105 @@ method listSharedReferences(first: Ref, second: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var list: Ref
-  var anon_0: Ref
-  var anon_1: Ref
-  var anon_2: Ref
-  var alias: Ref
-  var anon_3: Ref
-  var previous: Ref
-  var anon_4: Ref
-  var anon_5: Ref
-  var anon_8: Ref
   var anon_9: Ref
-  var removed: Ref
+  var anon_10: Ref
   var anon_11: Ref
+  var alias: Ref
+  var anon_12: Ref
+  var previous: Ref
+  var anon_13: Ref
+  var anon_14: Ref
+  var anon_17: Ref
+  var anon_18: Ref
+  var removed: Ref
+  var anon_20: Ref
   list := emptyMutableListModel()
-  anon_0 := add(list, first)
-  anon_2 := (unfolding acc(MutableListModel_unique(list), wildcard) in
+  anon_9 := add(list, first)
+  anon_11 := (unfolding acc(MutableListModel_unique(list), wildcard) in
       MutableListModel_c_ListModel_f_get(list, intToRef(0)))
-  anon_1 := anon_2
-  inhale isSubtype(typeOf(anon_1), Element())
-  assert anon_1 == first
-  anon_3 := (unfolding acc(MutableListModel_unique(list), wildcard) in
+  anon_10 := anon_11
+  inhale isSubtype(typeOf(anon_10), Element())
+  assert anon_10 == first
+  anon_12 := (unfolding acc(MutableListModel_unique(list), wildcard) in
       MutableListModel_c_ListModel_f_get(list, intToRef(0)))
-  alias := anon_3
+  alias := anon_12
   inhale isSubtype(typeOf(alias), Element())
   assert intFromRef(number(alias)) == intFromRef(number(first))
-  anon_4 := set(list, intToRef(0), second)
-  previous := anon_4
+  anon_13 := set(list, intToRef(0), second)
+  previous := anon_13
   inhale isSubtype(typeOf(previous), Element())
   if (previous == first) {
-    var anon_6: Ref
-    var anon_7: Ref
-    anon_7 := (unfolding acc(MutableListModel_unique(list), wildcard) in
+    var anon_15: Ref
+    var anon_16: Ref
+    anon_16 := (unfolding acc(MutableListModel_unique(list), wildcard) in
         MutableListModel_c_ListModel_f_get(list, intToRef(0)))
-    anon_6 := anon_7
-    inhale isSubtype(typeOf(anon_6), Element())
-    anon_5 := boolToRef(anon_6 == second)
+    anon_15 := anon_16
+    inhale isSubtype(typeOf(anon_15), Element())
+    anon_14 := boolToRef(anon_15 == second)
   } else {
-    anon_5 := boolToRef(false)}
-  assert boolFromRef(anon_5)
-  anon_9 := (unfolding acc(MutableListModel_unique(list), wildcard) in
+    anon_14 := boolToRef(false)}
+  assert boolFromRef(anon_14)
+  anon_18 := (unfolding acc(MutableListModel_unique(list), wildcard) in
       MutableListModel_c_ListModel_f_contains(list, second))
-  if (boolFromRef(anon_9)) {
-    var anon_10: Ref
-    anon_10 := (unfolding acc(MutableListModel_unique(list), wildcard) in
+  if (boolFromRef(anon_18)) {
+    var anon_19: Ref
+    anon_19 := (unfolding acc(MutableListModel_unique(list), wildcard) in
         MutableListModel_c_ListModel_f_indexOf(list, second))
-    anon_8 := boolToRef(intFromRef(anon_10) == 0)
+    anon_17 := boolToRef(intFromRef(anon_19) == 0)
   } else {
-    anon_8 := boolToRef(false)}
-  assert boolFromRef(anon_8)
+    anon_17 := boolToRef(false)}
+  assert boolFromRef(anon_17)
   removed := remove(list, second)
   if (boolFromRef(removed)) {
-    var anon_12: Ref
-    anon_12 := (unfolding acc(MutableListModel_unique(list), wildcard) in
+    var anon_21: Ref
+    anon_21 := (unfolding acc(MutableListModel_unique(list), wildcard) in
         MutableListModel_c_ListModel_f_isEmpty(list))
-    anon_11 := anon_12
+    anon_20 := anon_21
   } else {
-    anon_11 := boolToRef(false)}
-  assert boolFromRef(anon_11)
+    anon_20 := boolToRef(false)}
+  assert boolFromRef(anon_20)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method remove(this: Ref, element: Ref) returns (ret_8: Ref)
+method remove(this: Ref, element: Ref) returns (ret_9: Ref)
   requires isSubtype(typeOf(this), MutableListModel())
   requires acc(MutableListModel_unique(this), write)
   requires isSubtype(typeOf(element), nullable(anyType()))
   ensures acc(MutableListModel_unique(this), write)
-  ensures isSubtype(typeOf(ret_8), boolType())
-  ensures boolFromRef(ret_8) ==
+  ensures isSubtype(typeOf(ret_9), boolType())
+  ensures boolFromRef(ret_9) ==
     old((unfolding acc(MutableListModel_unique(this), wildcard) in
       boolFromRef(MutableListModel_c_ListModel_f_contains(this, element))))
   ensures (unfolding acc(MutableListModel_unique(this), wildcard) in
       intFromRef(MutableListModel_c_ListModel_g_size(this))) ==
     (let anon_builtin_neg1 ==
       (minusInts(old((unfolding acc(MutableListModel_unique(this), wildcard) in
-        MutableListModel_c_ListModel_g_size(this))), (boolFromRef(ret_8) ?
+        MutableListModel_c_ListModel_g_size(this))), (boolFromRef(ret_9) ?
         intToRef(1) :
         intToRef(0)))) in
       intFromRef(old((unfolding acc(MutableListModel_unique(this), wildcard) in
         MutableListModel_c_ListModel_g_size(this)))) -
-      intFromRef((boolFromRef(ret_8) ? intToRef(1) : intToRef(0))))
-  ensures (forall anon_builtin_4: Int ::
-      { MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_4)) }
-      anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
-      anon_builtin_4 >= 0 &&
+      intFromRef((boolFromRef(ret_9) ? intToRef(1) : intToRef(0))))
+  ensures (forall anon_builtin_5: Int ::
+      { MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_5)) }
+      anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+      anon_builtin_5 >= 0 &&
       (unfolding acc(MutableListModel_unique(this), wildcard) in
-        anon_builtin_4 <
+        anon_builtin_5 <
         intFromRef(MutableListModel_c_ListModel_g_size(this))) ==>
       (unfolding acc(MutableListModel_unique(this), wildcard) in
-        MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_4)) ==
-        (boolFromRef(ret_8) &&
-        anon_builtin_4 >=
+        MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_5)) ==
+        (boolFromRef(ret_9) &&
+        anon_builtin_5 >=
         old((unfolding acc(MutableListModel_unique(this), wildcard) in
           intFromRef(MutableListModel_c_ListModel_f_indexOf(this, element)))) ?
           old((unfolding acc(MutableListModel_unique(this), wildcard) in
-            MutableListModel_c_ListModel_f_get(this, plusInts(intToRef(anon_builtin_4),
+            MutableListModel_c_ListModel_f_get(this, plusInts(intToRef(anon_builtin_5),
             intToRef(1))))) :
           old((unfolding acc(MutableListModel_unique(this), wildcard) in
-            MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_4)))))))
+            MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_5)))))))
 
 
 method set(this: Ref, par_index: Ref, element: Ref) returns (ret_4: Ref)
@@ -389,7 +403,14 @@ function contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 &&
       anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -410,12 +431,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -445,21 +467,21 @@ method singletonSharedReference(element: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var list: Ref
-  var anon_0: Ref
-  var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
+  var anon_9: Ref
+  var anon_10: Ref
+  var anon_11: Ref
+  var anon_12: Ref
   list := singletonListModel(element)
-  anon_1 := (unfolding acc(ListModel_unique(list), wildcard) in
+  anon_10 := (unfolding acc(ListModel_unique(list), wildcard) in
       get(list, intToRef(0)))
-  anon_0 := anon_1
-  inhale isSubtype(typeOf(anon_0), Element())
-  assert anon_0 == element
-  anon_3 := (unfolding acc(ListModel_unique(list), wildcard) in
+  anon_9 := anon_10
+  inhale isSubtype(typeOf(anon_9), Element())
+  assert anon_9 == element
+  anon_12 := (unfolding acc(ListModel_unique(list), wildcard) in
       get(list, intToRef(0)))
-  anon_2 := anon_3
-  inhale isSubtype(typeOf(anon_2), Element())
-  assert intFromRef(number(anon_2)) == intFromRef(number(element))
+  anon_11 := anon_12
+  inhale isSubtype(typeOf(anon_11), Element())
+  assert intFromRef(number(anon_11)) == intFromRef(number(element))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -476,8 +498,17 @@ function MutableMapModel_c_MapModel_f_containsKey(this: Ref, par_key: Ref): Ref
   requires isSubtype(typeOf(par_key), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) ==
-    (par_key in
-    iterationSequenceFromRef(MutableMapModel_c_MapModel_f_keysSequence(this)))
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      |iterationSequenceFromRef(MutableMapModel_c_MapModel_f_keysSequence(this))| &&
+      equalsRelation(par_key, iterationSequenceGet(MutableMapModel_c_MapModel_f_keysSequence(this),
+      intToRef(anon_builtin_0)))))
+  ensures (par_key in
+    iterationSequenceFromRef(MutableMapModel_c_MapModel_f_keysSequence(this))) ==>
+    boolFromRef(result)
 
 
 function MutableMapModel_c_MapModel_f_containsValue(this: Ref, par_value: Ref): Ref
@@ -486,15 +517,14 @@ function MutableMapModel_c_MapModel_f_containsValue(this: Ref, par_value: Ref): 
   requires isSubtype(typeOf(par_value), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) ==
-    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
-      anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
-      (anon_builtin_0 >= 0 &&
-      anon_builtin_0 <
+    (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 <
       |iterationSequenceFromRef(MutableMapModel_c_MapModel_f_keysSequence(this))| &&
-      MutableMapModel_c_MapModel_f_get(this, iterationSequenceGet(MutableMapModel_c_MapModel_f_keysSequence(this),
-      intToRef(anon_builtin_0))) ==
-      par_value))
+      equalsRelation(par_value, MutableMapModel_c_MapModel_f_get(this, iterationSequenceGet(MutableMapModel_c_MapModel_f_keysSequence(this),
+      intToRef(anon_builtin_1))))))
 
 
 function MutableMapModel_c_MapModel_f_get(this: Ref, par_key: Ref): Ref
@@ -544,7 +574,17 @@ function c_MapModel_f_containsKey(this: Ref, par_key: Ref): Ref
   requires isSubtype(typeOf(par_key), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) ==
-    (par_key in iterationSequenceFromRef(c_MapModel_f_keysSequence(this)))
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      |iterationSequenceFromRef(c_MapModel_f_keysSequence(this))| &&
+      equalsRelation(par_key, iterationSequenceGet(c_MapModel_f_keysSequence(this),
+      intToRef(anon_builtin_0)))))
+  ensures (par_key in
+    iterationSequenceFromRef(c_MapModel_f_keysSequence(this))) ==>
+    boolFromRef(result)
 
 
 function c_MapModel_f_containsValue(this: Ref, par_value: Ref): Ref
@@ -553,15 +593,14 @@ function c_MapModel_f_containsValue(this: Ref, par_value: Ref): Ref
   requires isSubtype(typeOf(par_value), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) ==
-    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
-      anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
-      (anon_builtin_0 >= 0 &&
-      anon_builtin_0 <
+    (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 <
       |iterationSequenceFromRef(c_MapModel_f_keysSequence(this))| &&
-      c_MapModel_f_get(this, iterationSequenceGet(c_MapModel_f_keysSequence(this),
-      intToRef(anon_builtin_0))) ==
-      par_value))
+      equalsRelation(par_value, c_MapModel_f_get(this, iterationSequenceGet(c_MapModel_f_keysSequence(this),
+      intToRef(anon_builtin_1))))))
 
 
 function c_MapModel_f_get(this: Ref, par_key: Ref): Ref
@@ -627,49 +666,49 @@ method mapSharedReferences(par_key: Ref, par_value: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var map: Ref
-  var anon_0: Ref
-  var anon_1: Ref
-  var anon_2: Ref
-  var anon_3: Ref
-  var anon_4: Ref
-  var anon_5: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_14: Ref
+  var anon_15: Ref
+  var anon_16: Ref
+  var anon_17: Ref
   var removed: Ref
-  var anon_8: Ref
-  var anon_9: Ref
+  var anon_20: Ref
+  var anon_21: Ref
   map := emptyMutableMapModel()
-  anon_1 := put(map, par_key, par_value)
-  anon_0 := anon_1
-  inhale isSubtype(typeOf(anon_0), nullable(Element()))
-  anon_5 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+  anon_13 := put(map, par_key, par_value)
+  anon_12 := anon_13
+  inhale isSubtype(typeOf(anon_12), nullable(Element()))
+  anon_17 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
       MutableMapModel_c_MapModel_f_get(map, par_key))
-  anon_4 := anon_5
-  inhale isSubtype(typeOf(anon_4), nullable(Element()))
-  if (anon_4 == par_value) {
-    var anon_6: Ref
-    anon_6 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+  anon_16 := anon_17
+  inhale isSubtype(typeOf(anon_16), nullable(Element()))
+  if (anon_16 == par_value) {
+    var anon_18: Ref
+    anon_18 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
         MutableMapModel_c_MapModel_f_containsKey(map, par_key))
-    anon_3 := anon_6
+    anon_15 := anon_18
   } else {
-    anon_3 := boolToRef(false)}
-  if (boolFromRef(anon_3)) {
-    var anon_7: Ref
-    anon_7 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+    anon_15 := boolToRef(false)}
+  if (boolFromRef(anon_15)) {
+    var anon_19: Ref
+    anon_19 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
         MutableMapModel_c_MapModel_f_containsValue(map, par_value))
-    anon_2 := anon_7
+    anon_14 := anon_19
   } else {
-    anon_2 := boolToRef(false)}
-  assert boolFromRef(anon_2)
-  anon_8 := remove(map, par_key)
-  removed := anon_8
+    anon_14 := boolToRef(false)}
+  assert boolFromRef(anon_14)
+  anon_20 := remove(map, par_key)
+  removed := anon_20
   inhale isSubtype(typeOf(removed), nullable(Element()))
   if (removed == par_value) {
-    var anon_10: Ref
-    anon_10 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
+    var anon_22: Ref
+    anon_22 := (unfolding acc(MutableMapModel_unique(map), wildcard) in
         MutableMapModel_c_MapModel_f_isEmpty(map))
-    anon_9 := anon_10
+    anon_21 := anon_22
   } else {
-    anon_9 := boolToRef(false)}
-  assert boolFromRef(anon_9)
+    anon_21 := boolToRef(false)}
+  assert boolFromRef(anon_21)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -708,13 +747,13 @@ method put(this: Ref, par_key: Ref, par_value: Ref) returns (ret_2: Ref)
         intToRef(1))))
 
 
-method remove(this: Ref, par_key: Ref) returns (ret_4: Ref)
+method remove(this: Ref, par_key: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(this), MutableMapModel())
   requires acc(MutableMapModel_unique(this), write)
   requires isSubtype(typeOf(par_key), nullable(anyType()))
   ensures acc(MutableMapModel_unique(this), write)
-  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
-  ensures ret_4 ==
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+  ensures ret_5 ==
     old((unfolding acc(MutableMapModel_unique(this), wildcard) in
       MutableMapModel_c_MapModel_f_get(this, par_key)))
   ensures (unfolding acc(MutableMapModel_unique(this), wildcard) in
@@ -753,8 +792,17 @@ function MutableSetModel_c_SetModel_f_contains(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(element), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) ==
-    (element in
-    iterationSequenceFromRef(MutableSetModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this)))
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      |iterationSequenceFromRef(MutableSetModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this))| &&
+      equalsRelation(element, iterationSequenceGet(MutableSetModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this),
+      intToRef(anon_builtin_0)))))
+  ensures (element in
+    iterationSequenceFromRef(MutableSetModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this))) ==>
+    boolFromRef(result)
 
 
 function MutableSetModel_c_SetModel_f_isEmpty(this: Ref): Ref
@@ -795,8 +843,17 @@ function c_SetModel_f_contains(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(element), nullable(anyType()))
   ensures isSubtype(typeOf(result), boolType())
   ensures boolFromRef(result) ==
-    (element in
-    iterationSequenceFromRef(c_SetModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this)))
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      |iterationSequenceFromRef(c_SetModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this))| &&
+      equalsRelation(element, iterationSequenceGet(c_SetModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this),
+      intToRef(anon_builtin_0)))))
+  ensures (element in
+    iterationSequenceFromRef(c_SetModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this))) ==>
+    boolFromRef(result)
 
 
 function c_SetModel_f_isEmpty(this: Ref): Ref
@@ -854,28 +911,28 @@ method setSharedReferences(element: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var set: Ref
-  var anon_0: Ref
+  var anon_9: Ref
   var duplicate: Ref
-  var anon_1: Ref
-  var anon_2: Ref
+  var anon_10: Ref
+  var anon_11: Ref
   set := emptyMutableSetModel()
-  anon_0 := add(set, element)
+  anon_9 := add(set, element)
   duplicate := add(set, element)
   if (!boolFromRef(duplicate)) {
-    var anon_3: Ref
-    anon_3 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
+    var anon_12: Ref
+    anon_12 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
         MutableSetModel_c_SetModel_g_size(set))
-    anon_2 := boolToRef(intFromRef(anon_3) == 1)
+    anon_11 := boolToRef(intFromRef(anon_12) == 1)
   } else {
-    anon_2 := boolToRef(false)}
-  if (boolFromRef(anon_2)) {
-    var anon_4: Ref
-    anon_4 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
+    anon_11 := boolToRef(false)}
+  if (boolFromRef(anon_11)) {
+    var anon_13: Ref
+    anon_13 := (unfolding acc(MutableSetModel_unique(set), wildcard) in
         MutableSetModel_c_SetModel_f_contains(set, element))
-    anon_1 := anon_4
+    anon_10 := anon_13
   } else {
-    anon_1 := boolToRef(false)}
-  assert boolFromRef(anon_1)
+    anon_10 := boolToRef(false)}
+  assert boolFromRef(anon_10)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -915,7 +972,14 @@ function contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 &&
       anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
-      get(this, intToRef(anon_builtin_0)) == element))
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
 
 
 function get(this: Ref, par_index: Ref): Ref
@@ -936,12 +1000,13 @@ function indexOf(this: Ref, element: Ref): Ref
     intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
-  ensures intFromRef(result) >= 0 ==> get(this, result) == element
-  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
-      anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
-      anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(result) ==>
-      !(get(this, intToRef(anon_builtin_1)) == element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 function isEmpty(this: Ref): Ref
@@ -973,14 +1038,14 @@ method wrongSharedReference(first: Ref, second: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var list: Ref
-  var anon_0: Ref
-  var anon_1: Ref
+  var anon_9: Ref
+  var anon_10: Ref
   list := singletonListModel(first)
-  anon_1 := (unfolding acc(ListModel_unique(list), wildcard) in
+  anon_10 := (unfolding acc(ListModel_unique(list), wildcard) in
       get(list, intToRef(0)))
-  anon_0 := anon_1
-  inhale isSubtype(typeOf(anon_0), Element())
-  assert anon_0 == second
+  anon_9 := anon_10
+  inhale isSubtype(typeOf(anon_9), Element())
+  assert anon_9 == second
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
