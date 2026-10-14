@@ -34,13 +34,17 @@ import org.jetbrains.kotlin.formver.core.conversion.interfaceLaws
 import org.jetbrains.kotlin.formver.core.conversion.ownClassLaws
 import org.jetbrains.kotlin.formver.core.conversion.registerClassLaws
 import org.jetbrains.kotlin.formver.core.isLaw
+import org.jetbrains.kotlin.formver.core.neverVerify
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.registerAllNames
 
 /** What a concrete class must prove. */
 data class ClassObligations(
+    /** The constructors whose bodies the class program verifies. */
     val constructors: List<FirConstructorSymbol>,
     val inherited: List<InheritedImplementationObligation>,
+    /** Whether a constructor is `@NeverVerify`, so the class program does not verify the whole construction. */
+    val skipsConstructor: Boolean,
 )
 
 /** A converted class program. */
@@ -60,24 +64,29 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
             config.externalSpecs.isExternalSpec(path) ||
             declaration.origin != FirDeclarationOrigin.Source
 
-    /** What a concrete class must prove, or null when it has nothing to prove or its laws cannot be constructed. */
+    /**
+     * What a concrete class must prove, or null when it has nothing to prove, its laws cannot be constructed, or it is
+     * `@NeverVerify` or `@NeverConvert`.
+     */
     context(context: CheckerContext)
     @OptIn(DirectDeclarationsAccess::class)
     fun implementationObligations(declaration: FirRegularClass): ClassObligations? {
         if (declaration.classKind.isInterface || declaration.isAbstract) return null
         if (config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE)) return null
         val symbol = declaration.symbol
+        if (symbol.neverVerify(session)) return null
         val hasClassLaws = symbol.ownClassLaws(session).isNotEmpty() || symbol.hasSuperclassLaws(session)
         val inherited = symbol.inheritedImplementationObligations()
         val constructionFailed = constructionFailures(symbol, session).isNotEmpty()
         // Enum constructors run only for the entries, during class initialization.
-        val constructors = if (constructionFailed || declaration.classKind == ClassKind.ENUM_CLASS) emptyList()
+        val allConstructors = if (constructionFailed || declaration.classKind == ClassKind.ENUM_CLASS) emptyList()
             else symbol.declarationSymbols.filterIsInstance<FirConstructorSymbol>()
+        val constructors = allConstructors.filterNot { it.neverVerify(session) }
         val hasLawHarness = symbol.interfaceLaws().isNotEmpty() || symbol.declarationSymbols.any { it.isLaw(session) }
         return when {
             constructors.isEmpty() && inherited.isEmpty() && !hasLawHarness -> null
             hasClassLaws && constructionFailed -> null
-            else -> ClassObligations(constructors, inherited)
+            else -> ClassObligations(constructors, inherited, skipsConstructor = constructors.size < allConstructors.size)
         }
     }
 
@@ -85,7 +94,8 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
     context(context: CheckerContext, reporter: DiagnosticReporter)
     fun convert(declaration: FirRegularClass, obligations: ClassObligations, dumps: MutableList<String>): ClassProgram? {
         val converter = ProgramConverter(session, config, context, reporter)
-        if (obligations.constructors.isNotEmpty()) converter.provenConstruction = declaration.symbol
+        val provesConstruction = obligations.constructors.isNotEmpty() && !obligations.skipsConstructor
+        if (provesConstruction) converter.provenConstruction = declaration.symbol
         converter.registerClassLaws(declaration.symbol)
         obligations.constructors.forEach { converter.registerConstructor(it) }
         for (obligation in obligations.inherited) {
@@ -108,8 +118,7 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
         SiliconFrontend.checkConsistency(viperProgram)
         val verify = config.verificationSelection !in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) &&
             !converter.skipsVerification
-        return ClassProgram(viperProgram, verify,
-            obligations.constructors.isNotEmpty() && !converter.skipsVerification)
+        return ClassProgram(viperProgram, verify, provesConstruction && !converter.skipsVerification)
     }
 
     /**

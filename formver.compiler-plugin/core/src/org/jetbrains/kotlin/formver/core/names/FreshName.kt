@@ -153,6 +153,16 @@ data class StringLiteralName(override val n: Int) : NumberedName {
     override val children: List<AnyName> = listOf(nameType)
 }
 
+/** The function standing for the unmatched path of an exhaustive `when` of the [n]th distinct type of a program. */
+data class UnmatchedWhenName(override val n: Int) : NumberedName {
+    override val nameType: NameType = NameType.Base.Function
+    override val inViper: Boolean = true
+
+    override val candidates: List<CandidateName> = nameWithPrefixAndSuffixCandidates("unmatchedWhen", nameType, n.toString())
+
+    override val children: List<AnyName> = listOf(nameType)
+}
+
 data class PlaceholderArgumentName(override val n: Int) : NumberedName, NameTypeIsVariable {
     override val inViper: Boolean = true
 

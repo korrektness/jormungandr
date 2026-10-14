@@ -186,8 +186,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         whenBranches: Iterator<FirWhenBranch>,
         type: TypeEmbedding,
         data: StmtConversionContext,
+        fallThrough: () -> ExpEmbedding,
     ): ExpEmbedding {
-        if (!whenBranches.hasNext()) return UnitLit
+        if (!whenBranches.hasNext()) return fallThrough()
 
         val branch = whenBranches.next()
 
@@ -198,7 +199,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             val cond = data.convert(branch.condition).withType { boolean() }
             val thenExp = data.withCreationPathFact(cond) { withNewScope { convert(branch.result) } }
             val elseExp = data.withCreationPathFact(OperatorExpEmbeddings.Not(cond)) {
-                convertWhenBranches(whenBranches, type, this)
+                convertWhenBranches(whenBranches, type, this, fallThrough)
             }
             If(cond, thenExp.withType(type), elseExp.withType(type), type)
         }
@@ -216,7 +217,10 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             }
             val body = withWhenSubject(subj?.variable,
                 subj?.initializer?.takeIf { whenExpression.subjectVariable?.name?.isSpecial == true }) {
-                convertWhenBranches(whenExpression.branches.iterator(), type, this)
+                convertWhenBranches(whenExpression.branches.iterator(), type, this) {
+                    if (whenExpression.isProperlyExhaustive) unmatchedExhaustiveWhen(whenExpression, subj?.variable)
+                    else UnitLit
+                }
             }
             subj?.let { blockOf(it, body) } ?: body
         }

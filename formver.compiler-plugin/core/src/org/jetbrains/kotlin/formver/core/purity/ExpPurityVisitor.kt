@@ -69,6 +69,7 @@ internal class ExprPurityVisitor(
     override fun visitIntArrayContents(e: IntArrayContents) = e.allChildrenPure(this)
     override fun visitIterationSequenceContains(e: IterationSequenceContains) = e.allChildrenPure(this)
     override fun visitIterationSequenceGet(e: IterationSequenceGet) = e.allChildrenPure(this)
+    override fun visitUnmatchedWhen(e: UnmatchedWhen) = e.allChildrenPure(this)
     override fun visitIterationSequenceOf(e: IterationSequenceOf) = e.allChildrenPure(this)
     override fun visitMultisetOf(e: MultisetOf) = e.allChildrenPure(this)
     override fun visitIntArrayGet(e: IntArrayGet) = e.allChildrenPure(this)

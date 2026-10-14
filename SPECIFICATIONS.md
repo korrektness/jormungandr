@@ -23,13 +23,17 @@ fun divide(numerator: Int, denominator: Int): Int {
   converted for its callers, and problems in them are reported.
 - `@NeverConvert` — skip Viper conversion entirely
 
+An annotation on a class applies to every declaration in the class: its construction, its members and its nested
+classes.
+
 The body of a custom property getter or setter is verified too, against the contract its callers use, which states
 nothing beyond the Kotlin types of its receivers, parameters and result. A `@Pure` getter is a pure function instead.
 A custom accessor of a top-level property is an unsupported construct.
 
 The constructors, property initializers and `init` blocks of every class are verified as one construction against
-the constructor's header. A construction that SnaKt cannot convert, or that breaks the construction discipline
-(Class laws), is not verified, and its constructor header gives callers no field values. A delegated property makes
+the constructor's header. A construction that SnaKt cannot convert, that breaks the construction discipline
+(Class laws), or that has a `@NeverVerify` constructor is not verified, and its constructor header gives callers no
+field values. The class's other constructors are still verified. A delegated property makes
 the construction unconvertible, and a `lateinit` property that construction leaves unassigned breaks the discipline.
 
 A function that uses a construct SnaKt does not translate gets an `UNSUPPORTED_FEATURE` warning at the construct and a
@@ -62,7 +66,8 @@ The structured payload, counterexample bindings and typed values are defined in 
 is the Kotlin diagnostic rendering boundary.
 
 The registry groups user-visible problems as follows:
-- Proof conditions: assertions, refutations, laws, preconditions, postconditions and loop invariants;
+- Proof conditions: assertions, refutations, laws, preconditions, postconditions, loop invariants and exhaustive
+  `when` expressions;
   Kotlin returns effects and conditional effects; collection bounds and sub-list ranges;
   ownership obligations and override refinement. Unclassified backend obligations retain their Silver identifiers.
 - Specification declarations: invalid specification functions, external specification bindings, observer bindings,
@@ -664,6 +669,12 @@ Verification establishes postconditions and Kotlin return effects on normal
 return. `throw`, failed `require` and `check`, `error`, `!!` on null, and
 failed `as` casts leave abnormally. Their operands are evaluated first.
 Runtime casts and `!!` in specifications and `@Pure` bodies are unsupported.
+
+A `when` that Kotlin accepts as exhaustive without an `else` branch throws when no branch matches. SnaKt proves
+instead that a branch matches, from the branch conditions and the subject's type: a value of an enum class is one of
+its entries, a value of a sealed class or interface is a value of one of its direct inheritors, and a `Boolean` is
+`true` or `false`. Comparing the subject with an `object` does not establish a match, since SnaKt does not identify
+the values of an object type.
 
 An ordinary impure call may leave exceptionally after its arguments are
 evaluated, before its normal-return facts apply. Shared mutable reads are

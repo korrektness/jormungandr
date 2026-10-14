@@ -102,3 +102,7 @@ class UnaryOperatorExpEmbeddingTemplate(
 fun List<ExpEmbedding>.toConjunction(): ExpEmbedding =
     if (isEmpty()) BooleanLit(true)
     else reduce { l, r -> OperatorExpEmbeddings.And(l, r) }
+
+fun List<ExpEmbedding>.toDisjunction(): ExpEmbedding =
+    if (isEmpty()) BooleanLit(false)
+    else reduce { l, r -> OperatorExpEmbeddings.Or(l, r) }

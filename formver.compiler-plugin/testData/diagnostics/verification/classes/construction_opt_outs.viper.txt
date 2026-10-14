@@ -1,0 +1,118 @@
+/construction_opt_outs.kt: info: Generated Viper text for member:
+field size: Ref
+
+function items(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassAnnotated())
+  ensures isSubtype(typeOf(result), MutableList())
+
+
+method member(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), ClassAnnotated())
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) == 1
+
+
+/construction_opt_outs.kt: info: Generated Viper text for nestedMember:
+method nestedMember(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), ClassAnnotated_Nested())
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) == 1
+
+
+/construction_opt_outs.kt: info: Generated Viper text for SecondaryAnnotated:
+function g_count(this: Ref): Ref
+  requires isSubtype(typeOf(this), SecondaryAnnotated())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), SecondaryAnnotated())
+  ensures intFromRef(g_count(v_ret_0)) == intFromRef(par_count)
+  ensures intFromRef(g_count(v_ret_0)) == intFromRef(par_count)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == SecondaryAnnotated()
+  anon := par_count
+  inhale intFromRef(g_count(v_ret_0)) == intFromRef(anon)
+  assert intFromRef(g_count(v_ret_0)) == intFromRef(g_count(v_ret_0))
+  fold acc(SecondaryAnnotated_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(SecondaryAnnotated_unique(v_ret_0), write)
+}
+
+/construction_opt_outs.kt: info: Generated Viper text for readStored:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Stored())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(ret_2), Stored())
+
+
+method readStored() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var anon: Ref
+  anon := con(intToRef(1))
+  fold acc(Stored_unique(anon), write)
+  v_ret_0 := g_value(anon)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/construction_opt_outs.kt: info: Generated Viper text for Unannotated:
+field size: Ref
+
+function items(this: Ref): Ref
+  requires isSubtype(typeOf(this), Unannotated())
+  ensures isSubtype(typeOf(result), MutableList())
+
+
+method add(this: Ref, element: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), MutableList())
+  requires acc(this.size, write)
+  requires isSubtype(typeOf(this.size), intType())
+  requires intFromRef(this.size) >= 0
+  requires isSubtype(typeOf(element), stringType())
+  requires intFromRef(this.size) < 2147483647
+  ensures acc(this.size, write)
+  ensures isSubtype(typeOf(this.size), intType())
+  ensures intFromRef(this.size) >= 0
+  ensures isSubtype(typeOf(ret_3), boolType())
+  ensures intFromRef(this.size) ==
+    (let anon_builtin ==
+      (plusInts(old(this.size), intToRef(1))) in
+      intFromRef(old(this.size)) + intFromRef(intToRef(1)))
+
+
+method con(first: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(first), stringType())
+  ensures isSubtype(typeOf(v_ret_0), Unannotated())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Unannotated()
+  anon_0 := mutableListOf()
+  inhale items(v_ret_0) == anon_0
+  anon_1 := add(items(v_ret_0), first)
+  fold acc(Unannotated_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Unannotated_unique(v_ret_0), write)
+}
+
+method mutableListOf() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), MutableList())
+  ensures acc(ret_2.size, write)
+  ensures isSubtype(typeOf(ret_2.size), intType())
+  ensures intFromRef(ret_2.size) >= 0

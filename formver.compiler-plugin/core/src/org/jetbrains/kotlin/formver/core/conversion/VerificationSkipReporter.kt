@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.formver.common.Failure
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.reportFailure
@@ -35,7 +34,7 @@ class VerificationSkipReporter(
 
     /** Reports that [declaration] is not verified because its conversion stopped with an exception. */
     fun reportConversionStopped(declaration: FirDeclaration, reason: KotlinCondition.SkipReason) {
-        if ((declaration.symbol as? FirFunctionSymbol<*>)?.neverVerify(session) == true) return
+        if (declaration.symbol.neverVerify(session)) return
         report(declaration.source, reason, declaration.symbol)
     }
 }

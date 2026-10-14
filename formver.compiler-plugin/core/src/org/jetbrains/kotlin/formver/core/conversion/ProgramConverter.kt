@@ -199,6 +199,7 @@ class ProgramConverter(
             SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
                     SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
                 linearizedBodyResolver.functions + typeResolver.observerViewFunctions() + typeResolver.stringLiteralFunctions +
+                typeResolver.unmatchedWhenFunctions +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray })
         ),
         methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods,

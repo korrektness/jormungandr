@@ -1,0 +1,559 @@
+/exhaustive_when.kt: info: Generated Viper text for Base:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for A:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), A())
+  ensures isSubtype(typeOf(v_ret_0), A()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == A()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(A_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(A_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for B:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), B())
+  ensures isSubtype(typeOf(v_ret_0), B()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == B()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(B_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(B_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for Shape:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Shape())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Shape()
+  fold acc(Shape_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Shape_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for Circle:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Circle())
+  ensures isSubtype(typeOf(v_ret_0), Circle()) &&
+    isSubtype(typeOf(v_ret_0), Shape())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Circle()
+  fold acc(Shape_unique(v_ret_0), write)
+  fold acc(Circle_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Circle_unique(v_ret_0), write)
+  unfold acc(Shape_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for Polygon:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Polygon())
+  ensures isSubtype(typeOf(v_ret_0), Polygon()) &&
+    isSubtype(typeOf(v_ret_0), Shape())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Polygon()
+  fold acc(Shape_unique(v_ret_0), write)
+  fold acc(Polygon_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Polygon_unique(v_ret_0), write)
+  unfold acc(Shape_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for Square:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Square())
+  ensures isSubtype(typeOf(v_ret_0), Square()) &&
+    (isSubtype(typeOf(v_ret_0), Polygon()) &&
+    isSubtype(typeOf(v_ret_0), Shape()))
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Square()
+  fold acc(Shape_unique(v_ret_0), write)
+  fold acc(Polygon_unique(v_ret_0), write)
+  fold acc(Square_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Square_unique(v_ret_0), write)
+  unfold acc(Polygon_unique(v_ret_0), write)
+  unfold acc(Shape_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for Triangle:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Triangle())
+  ensures isSubtype(typeOf(v_ret_0), Triangle()) &&
+    (isSubtype(typeOf(v_ret_0), Polygon()) &&
+    isSubtype(typeOf(v_ret_0), Shape()))
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Triangle()
+  fold acc(Shape_unique(v_ret_0), write)
+  fold acc(Polygon_unique(v_ret_0), write)
+  fold acc(Triangle_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Triangle_unique(v_ret_0), write)
+  unfold acc(Polygon_unique(v_ret_0), write)
+  unfold acc(Shape_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for exhaustiveEnumWhen:
+function FIRST(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function SECOND(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_A() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), A())
+  ensures isSubtype(typeOf(ret_1), A()) && isSubtype(typeOf(ret_1), Base())
+
+
+method con_B() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), B())
+  ensures isSubtype(typeOf(ret_4), B()) && isSubtype(typeOf(ret_4), Base())
+
+
+method exhaustiveEnumWhen(k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(k), Kind())
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  var anon_0: Ref
+  anon_0 := k
+  if (anon_0 == FIRST()) {
+    var anon_1: Ref
+    anon_1 := con_A()
+    fold acc(Base_unique(anon_1), write)
+    fold acc(A_unique(anon_1), write)
+    v_ret_0 := anon_1
+  } elseif (anon_0 == SECOND()) {
+    var anon_2: Ref
+    anon_2 := con_B()
+    fold acc(Base_unique(anon_2), write)
+    fold acc(B_unique(anon_2), write)
+    v_ret_0 := anon_2
+  } else {
+    inhale isSubtype(typeOf(anon_0), Kind()) ==>
+      anon_0 == FIRST() || anon_0 == SECOND()
+    assert false
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exhaustive_when.kt: info: Generated Viper text for exhaustiveNullableEnumWhen:
+function FIRST(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function SECOND(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_A() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), A())
+  ensures isSubtype(typeOf(ret_1), A()) && isSubtype(typeOf(ret_1), Base())
+
+
+method con_B() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), B())
+  ensures isSubtype(typeOf(ret_4), B()) && isSubtype(typeOf(ret_4), Base())
+
+
+method con_Base() returns (ret_7: Ref)
+  ensures isSubtype(typeOf(ret_7), Base())
+
+
+method exhaustiveNullableEnumWhen(k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(k), nullable(Kind()))
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  var anon_0: Ref
+  anon_0 := k
+  if (anon_0 == FIRST()) {
+    var anon_1: Ref
+    anon_1 := con_A()
+    fold acc(Base_unique(anon_1), write)
+    fold acc(A_unique(anon_1), write)
+    v_ret_0 := anon_1
+  } elseif (anon_0 == SECOND()) {
+    var anon_2: Ref
+    anon_2 := con_B()
+    fold acc(Base_unique(anon_2), write)
+    fold acc(B_unique(anon_2), write)
+    v_ret_0 := anon_2
+  } elseif (anon_0 == nullValue()) {
+    v_ret_0 := con_Base()
+    fold acc(Base_unique(v_ret_0), write)
+  } else {
+    inhale isSubtype(typeOf(anon_0), Kind()) ==>
+      anon_0 == FIRST() || anon_0 == SECOND()
+    assert false
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exhaustive_when.kt: info: Generated Viper text for exhaustiveSealedWhen:
+method con_A() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), A())
+  ensures isSubtype(typeOf(ret_1), A()) && isSubtype(typeOf(ret_1), Base())
+
+
+method con_B() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), B())
+  ensures isSubtype(typeOf(ret_4), B()) && isSubtype(typeOf(ret_4), Base())
+
+
+method exhaustiveSealedWhen(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), Shape())
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  var anon_0: Ref
+  anon_0 := s
+  if (isSubtype(typeOf(anon_0), Circle())) {
+    var anon_1: Ref
+    anon_1 := con_A()
+    fold acc(Base_unique(anon_1), write)
+    fold acc(A_unique(anon_1), write)
+    v_ret_0 := anon_1
+  } elseif (isSubtype(typeOf(anon_0), Polygon())) {
+    var anon_2: Ref
+    anon_2 := con_B()
+    fold acc(Base_unique(anon_2), write)
+    fold acc(B_unique(anon_2), write)
+    v_ret_0 := anon_2
+  } else {
+    inhale (isSubtype(typeOf(anon_0), Shape()) ==>
+      isSubtype(typeOf(anon_0), Circle()) ||
+      isSubtype(typeOf(anon_0), Polygon())) &&
+      (isSubtype(typeOf(anon_0), Polygon()) ==>
+      isSubtype(typeOf(anon_0), Square()) ||
+      isSubtype(typeOf(anon_0), Triangle()))
+    assert false
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exhaustive_when.kt: info: Generated Viper text for exhaustiveNestedSealedWhen:
+method con_A() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), A())
+  ensures isSubtype(typeOf(ret_1), A()) && isSubtype(typeOf(ret_1), Base())
+
+
+method con_B() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), B())
+  ensures isSubtype(typeOf(ret_4), B()) && isSubtype(typeOf(ret_4), Base())
+
+
+method con_Base() returns (ret_7: Ref)
+  ensures isSubtype(typeOf(ret_7), Base())
+
+
+method exhaustiveNestedSealedWhen(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), Shape())
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  var anon_0: Ref
+  anon_0 := s
+  if (isSubtype(typeOf(anon_0), Circle())) {
+    var anon_1: Ref
+    anon_1 := con_A()
+    fold acc(Base_unique(anon_1), write)
+    fold acc(A_unique(anon_1), write)
+    v_ret_0 := anon_1
+  } elseif (isSubtype(typeOf(anon_0), Square())) {
+    var anon_2: Ref
+    anon_2 := con_B()
+    fold acc(Base_unique(anon_2), write)
+    fold acc(B_unique(anon_2), write)
+    v_ret_0 := anon_2
+  } elseif (isSubtype(typeOf(anon_0), Triangle())) {
+    v_ret_0 := con_Base()
+    fold acc(Base_unique(v_ret_0), write)
+  } else {
+    inhale (isSubtype(typeOf(anon_0), Shape()) ==>
+      isSubtype(typeOf(anon_0), Circle()) ||
+      isSubtype(typeOf(anon_0), Polygon())) &&
+      (isSubtype(typeOf(anon_0), Polygon()) ==>
+      isSubtype(typeOf(anon_0), Square()) ||
+      isSubtype(typeOf(anon_0), Triangle()))
+    assert false
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exhaustive_when.kt: info: Generated Viper text for exhaustiveBooleanWhen:
+method con_A() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), A())
+  ensures isSubtype(typeOf(ret_1), A()) && isSubtype(typeOf(ret_1), Base())
+
+
+method con_B() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), B())
+  ensures isSubtype(typeOf(ret_4), B()) && isSubtype(typeOf(ret_4), Base())
+
+
+method exhaustiveBooleanWhen(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), boolType())
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  var anon_0: Ref
+  anon_0 := b
+  if (boolFromRef(anon_0) == true) {
+    var anon_1: Ref
+    anon_1 := con_A()
+    fold acc(Base_unique(anon_1), write)
+    fold acc(A_unique(anon_1), write)
+    v_ret_0 := anon_1
+  } elseif (boolFromRef(anon_0) == false) {
+    var anon_2: Ref
+    anon_2 := con_B()
+    fold acc(Base_unique(anon_2), write)
+    fold acc(B_unique(anon_2), write)
+    v_ret_0 := anon_2
+  } else {
+    inhale true
+    assert false
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exhaustive_when.kt: info: Generated Viper text for exhaustiveStatementWhen:
+function FIRST(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function SECOND(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method exhaustiveStatementWhen(k: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(k), Kind())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l0_result: Ref
+  var anon: Ref
+  l0_result := intToRef(0)
+  anon := k
+  if (anon == FIRST()) {
+    l0_result := intToRef(1)
+  } elseif (anon == SECOND()) {
+    l0_result := intToRef(2)
+  } else {
+    inhale isSubtype(typeOf(anon), Kind()) ==>
+      anon == FIRST() || anon == SECOND()
+    assert false
+  }
+  assert !(intFromRef(l0_result) == 0)
+  v_ret_0 := l0_result
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exhaustive_when.kt: info: Generated Viper text for pureEnumWhen:
+function FIRST(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function SECOND(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function pureEnumWhen(k: Ref): Ref
+  requires isSubtype(typeOf(k), Kind())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (k == FIRST() ?
+    intToRef(1) :
+    (k == SECOND() ?
+      intToRef(2) :
+      unmatchedWhen(isSubtype(typeOf(k), Kind()) ==>
+      k == FIRST() || k == SECOND())))
+}
+
+/exhaustive_when.kt: info: Generated Viper text for callPureEnumWhen:
+function FIRST(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function SECOND(): Ref
+  ensures isSubtype(typeOf(result), Kind())
+
+
+function name(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), stringType())
+
+
+function ordinal(this: Ref): Ref
+  requires isSubtype(typeOf(this), Enum())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function pureEnumWhen(k: Ref): Ref
+  requires isSubtype(typeOf(k), Kind())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (k == FIRST() ?
+    intToRef(1) :
+    (k == SECOND() ?
+      intToRef(2) :
+      unmatchedWhen(isSubtype(typeOf(k), Kind()) ==>
+      k == FIRST() || k == SECOND())))
+}
+
+method callPureEnumWhen() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  v_ret_0 := pureEnumWhen(FIRST())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exhaustive_when.kt: info: Generated Viper text for nonExhaustiveWhen:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method nonExhaustiveWhen(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var l0_result: Ref
+  var anon: Ref
+  l0_result := intToRef(0)
+  anon := x
+  if (intFromRef(anon) == 1) {
+    l0_result := intToRef(1)
+  } elseif (intFromRef(anon) == 2) {
+    l0_result := intToRef(2)
+  }
+  assert !(intFromRef(l0_result) == 0)
+  v_ret_0 := l0_result
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/exhaustive_when.kt: info: Generated Viper text for On:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), On())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == On()
+  fold acc(On_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(On_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for Off:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Off())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Off()
+  fold acc(Off_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Off_unique(v_ret_0), write)
+}
+
+/exhaustive_when.kt: info: Generated Viper text for objectWhen:
+method objectWhen(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), Signal())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_1: Ref
+  anon_0 := s
+  inhale isSubtype(typeOf(anon_1), On())
+  anon_3 := anon_1
+  if (anon_0 == anon_3) {
+    v_ret_0 := intToRef(1)
+  } else {
+    var anon_4: Ref
+    var anon_2: Ref
+    inhale isSubtype(typeOf(anon_2), Off())
+    anon_4 := anon_2
+    if (anon_0 == anon_4) {
+      v_ret_0 := intToRef(0)
+    } else {
+      inhale isSubtype(typeOf(anon_0), Signal()) ==>
+        isSubtype(typeOf(anon_0), Off()) || isSubtype(typeOf(anon_0), On())
+      assert false
+    }
+  }
+  goto lbl_ret_0
+  label lbl_ret_0
+}

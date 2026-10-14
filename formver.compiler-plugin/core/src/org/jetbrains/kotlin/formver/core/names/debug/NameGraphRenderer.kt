@@ -222,7 +222,7 @@ class NameGraphRenderer(val shortNameResolver: ShortNameResolver) {
             is ReturnVariableName, is BreakLabelName, is CatchLabelName,
             is ContinueLabelName, is LoopHeadLabelName, is TryExitLabelName, is ReturnLabelName,
             is DomainAssociatedFuncName, is DomainFuncParameterName, is PredicateName, is SpecialFieldName,
-            is StringLiteralName -> {
+            is StringLiteralName, is UnmatchedWhenName -> {
             }
         }
     }

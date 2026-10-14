@@ -12,11 +12,15 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.FamilyTransfer
 import org.jetbrains.kotlin.formver.core.embeddings.types.ObserverBinding
 import org.jetbrains.kotlin.formver.core.embeddings.types.PretypeEmbedding
 import org.jetbrains.kotlin.formver.core.domains.stringLiteralFunction
+import org.jetbrains.kotlin.formver.core.domains.unmatchedWhenFunction
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.core.names.NameMatcher
 import org.jetbrains.kotlin.formver.core.names.NameScope
 import org.jetbrains.kotlin.formver.core.names.ScopedName
 import org.jetbrains.kotlin.formver.core.names.StringLiteralName
+import org.jetbrains.kotlin.formver.core.names.UnmatchedWhenName
+import org.jetbrains.kotlin.formver.core.embeddings.types.NothingTypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Declaration
 import org.jetbrains.kotlin.formver.viper.ast.Type
@@ -64,6 +68,18 @@ class TypeResolver {
     fun markIterationSequenceUsed() {
         usesIterationSequence = true
     }
+
+    private val unmatchedWhens = linkedMapOf<TypeEmbedding, Function>()
+
+    /** The value of an exhaustive `when` of [type] where no branch matches; `when`s of one type share it. */
+    fun unmatchedWhen(type: TypeEmbedding): Function =
+        unmatchedWhens.getOrPut(type) {
+            val inhabited = type.pretype != NothingTypeEmbedding || type.flags.nullable
+            unmatchedWhenFunction(UnmatchedWhenName(unmatchedWhens.size), type.runtimeType.takeIf { inhabited })
+        }
+
+    val unmatchedWhenFunctions: Collection<Function>
+        get() = unmatchedWhens.values
 
     private val stringLiterals = linkedMapOf<String, Function>()
 

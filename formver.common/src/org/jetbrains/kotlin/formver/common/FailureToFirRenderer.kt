@@ -249,6 +249,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
         KotlinCondition.ProofClause.PRECONDITION -> "Could not establish the Kotlin precondition at this call."
         KotlinCondition.ProofClause.POSTCONDITION -> "Could not establish the Kotlin postcondition on return."
         KotlinCondition.ProofClause.LOOP_INVARIANT -> "Could not establish the Kotlin loop invariant."
+        KotlinCondition.ProofClause.EXHAUSTIVE_WHEN -> "Could not establish that a branch of this exhaustive 'when' matches."
     }
 
     private fun translationMessage(kind: FailureKind, condition: KotlinCondition.Translation): String = when (kind) {

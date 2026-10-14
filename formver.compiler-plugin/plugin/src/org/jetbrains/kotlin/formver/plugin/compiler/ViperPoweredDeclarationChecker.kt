@@ -45,6 +45,8 @@ import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.print
 import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
 import org.jetbrains.kotlin.formver.core.isLaw
+import org.jetbrains.kotlin.formver.core.neverConvert
+import org.jetbrains.kotlin.formver.core.neverVerify
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.core.lambdaPrograms
@@ -115,7 +117,7 @@ class ViperPoweredDeclarationChecker(
     context(context: CheckerContext, reporter: DiagnosticReporter)
     fun standaloneLambdaDumps(declaration: FirDeclaration, scopeName: ScopedName): List<String> {
         if (shouldSkip()) return emptyList()
-        if (config.conversionSelection != TargetsSelection.ALL_TARGETS || declaration.hasAnnotation(neverConvertId, session)) return emptyList()
+        if (config.conversionSelection != TargetsSelection.ALL_TARGETS || declaration.symbol.neverConvert(session)) return emptyList()
         val collector = ProgramConverter(session, config, context, reporter)
         val lambdas = with(collector) { SpecifiedLambda.collect(declaration, scopeName) }
         declaration.lambdaPrograms = emptyList()
@@ -249,8 +251,6 @@ class ViperPoweredDeclarationChecker(
     private fun getAnnotationId(name: String): ClassId =
         ClassId(FqName.fromSegments(listOf("org", "jetbrains", "kotlin", "formver", "plugin")), Name.identifier(name))
 
-    private val neverConvertId: ClassId = getAnnotationId("NeverConvert")
-    private val neverVerifyId: ClassId = getAnnotationId("NeverVerify")
     private val dumpExpEmbeddingsId: ClassId = getAnnotationId("DumpExpEmbeddings")
 
     private fun PluginConfiguration.shouldConvert(declaration: FirFunction): Boolean = when {
@@ -258,15 +258,14 @@ class ViperPoweredDeclarationChecker(
         declaration.origin != FirDeclarationOrigin.Source -> false
         // An enum's `values` and `valueOf` have no body to convert.
         declaration.source?.kind == KtFakeSourceElementKind.EnumGeneratedDeclaration -> false
-        declaration.hasAnnotation(neverConvertId, session) -> false
+        declaration.symbol.neverConvert(session) -> false
         declaration.hasAnnotation(specOfId, session) -> false
         declaration.symbol.isLaw(session) -> false
         else -> conversionSelection == TargetsSelection.ALL_TARGETS
     }
 
     private fun PluginConfiguration.shouldVerify(declaration: FirDeclaration): Boolean = when {
-        declaration.hasAnnotation(neverConvertId, session) -> false
-        declaration.hasAnnotation(neverVerifyId, session) -> false
+        declaration.symbol.neverVerify(session) -> false
         else -> verificationSelection == TargetsSelection.ALL_TARGETS
     }
 

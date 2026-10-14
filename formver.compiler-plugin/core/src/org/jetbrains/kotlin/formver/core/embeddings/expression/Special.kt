@@ -105,6 +105,15 @@ data class Assert(val exp: ExpEmbedding) : ExpEmbedding {
     }
 }
 
+/**
+ * The value of an exhaustive `when` on the path where no branch matches. [guaranteed] holds for every value of the
+ * subject's type; together with the failed branch conditions it must make the path unreachable.
+ */
+data class UnmatchedWhen(val guaranteed: ExpEmbedding, override val type: TypeEmbedding) : ExpEmbedding {
+    override fun children(): Sequence<ExpEmbedding> = sequenceOf(guaranteed)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitUnmatchedWhen(this)
+}
+
 data class Refute(val exp: ExpEmbedding) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 

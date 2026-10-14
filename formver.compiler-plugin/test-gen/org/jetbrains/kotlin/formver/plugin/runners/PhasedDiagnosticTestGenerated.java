@@ -890,6 +890,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("construction_opt_outs.kt")
+      public void testConstruction_opt_outs() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/construction_opt_outs.kt");
+      }
+
+      @Test
       @TestMetadata("construction_writes.kt")
       public void testConstruction_writes() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/construction_writes.kt");
@@ -1419,6 +1425,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("exception_finally.kt")
       public void testException_finally() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/control_flow/exception_finally.kt");
+      }
+
+      @Test
+      @TestMetadata("exhaustive_when.kt")
+      public void testExhaustive_when() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/control_flow/exhaustive_when.kt");
       }
 
       @Test

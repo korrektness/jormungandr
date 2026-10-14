@@ -101,7 +101,7 @@ sealed interface KotlinCondition {
         val member: org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol<*>? = null,
         val implementation: org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol<*>? = null,
     ) : KotlinCondition
-    enum class ProofClause { ASSERTION, REFUTATION, LAW, PRECONDITION, POSTCONDITION, LOOP_INVARIANT }
+    enum class ProofClause { ASSERTION, REFUTATION, LAW, PRECONDITION, POSTCONDITION, LOOP_INVARIANT, EXHAUSTIVE_WHEN }
     data class Proof(val clause: ProofClause, val declaration: FirBasedSymbol<*>? = null) : KotlinCondition
     data class IntegerOverflow(val operation: String, val resultType: String, val lower: String, val upper: String) : KotlinCondition
     data class DivisionByZero(val operation: String) : KotlinCondition

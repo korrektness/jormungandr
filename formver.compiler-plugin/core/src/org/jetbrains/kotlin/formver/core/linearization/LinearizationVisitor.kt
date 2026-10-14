@@ -950,6 +950,29 @@ data class LinearizationVisitor(
                 )
         }
 
+    /**
+     * In an expression, the unmatched path is a call whose precondition proves it unreachable. In a method body it is
+     * closed by statements instead: assuming the guaranteed facts and asserting `false` also cuts the path off, so
+     * that later code does not see it.
+     */
+    override fun visitUnmatchedWhen(e: UnmatchedWhen): Linearizable =
+        object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            private val proof = SourceRole.Proof(org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.EXHAUSTIVE_WHEN).asInfo
+
+            override fun toViper(ctx: LinearizationContext): Exp =
+                ctx.typeResolver.unmatchedWhen(e.type).toFuncApp(
+                    listOf(e.guaranteed.linearize().toViperBuiltinType(ctx)), ctx.source.asPosition, proof,
+                )
+
+            override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) = toViperUnusedResult(ctx)
+
+            override fun toViperUnusedResult(ctx: LinearizationContext) {
+                val guaranteed = e.guaranteed.linearize().toViperBuiltinType(ctx)
+                ctx.addStatement { Stmt.Inhale(guaranteed, ctx.source.asPosition) }
+                ctx.addStatement { Stmt.Assert(Exp.BoolLit(false, ctx.source.asPosition), ctx.source.asPosition, proof) }
+            }
+        }
+
     override fun visitIterationSequenceOf(e: IterationSequenceOf): Linearizable =
         object : DirectResultLinearizable(e, this@LinearizationVisitor) {
             override fun toViper(ctx: LinearizationContext): Exp =

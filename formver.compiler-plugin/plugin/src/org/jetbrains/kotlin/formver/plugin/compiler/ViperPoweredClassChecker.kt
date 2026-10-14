@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.formver.common.reportTranslation
 import org.jetbrains.kotlin.formver.common.reportTool
 import org.jetbrains.kotlin.formver.common.reportInternalFailure
 import org.jetbrains.kotlin.formver.core.names.embedName
+import org.jetbrains.kotlin.formver.core.neverVerify
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
@@ -56,6 +57,7 @@ class ViperPoweredClassChecker(
         if (declaration.classKind.isInterface ||
             config.conversionSelection in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE)) return
         if (declaration.symbol.ownClassLaws(session).isNotEmpty() || declaration.symbol.hasSuperclassLaws(session)) return
+        if (declaration.symbol.neverVerify(session)) return
         constructionFailures(declaration.symbol, session).forEach {
             reporter.reportFailure(Failure(FailureKind.VERIFICATION_SKIPPED, declaration.source, it))
         }
