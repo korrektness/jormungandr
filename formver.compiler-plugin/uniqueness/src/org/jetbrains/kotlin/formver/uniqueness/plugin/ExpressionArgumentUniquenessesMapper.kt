@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.formver.locality.plugin.specifiesOwnedReceiver
 import org.jetbrains.kotlin.formver.type.plugin.CallArgumentTypeFactsMapper
 import org.jetbrains.kotlin.formver.type.plugin.QualifiedAccessArgumentTypeFactMapper
 
@@ -19,6 +21,9 @@ val QualifiedAccessArgumentUniquenessMapper = QualifiedAccessArgumentTypeFactMap
     { access, callee ->
         when {
             callee.resolveDispatchReceiverUniqueness() != Uniqueness.Unique -> Uniqueness.Shared
+            // A spec'd member accepts any receiver; see `specifiesOwnedReceiver`.
+            callee.specifiesOwnedReceiver(contextOf<CheckerContext>().session) &&
+                    access.dispatchReceiver?.resolveUniqueness() != Uniqueness.Unique -> Uniqueness.Shared
             access.dispatchReceiver?.isLendableConstructionReceiver(callee, access) == true -> Uniqueness.Shared
             else -> Uniqueness.Unique
         }

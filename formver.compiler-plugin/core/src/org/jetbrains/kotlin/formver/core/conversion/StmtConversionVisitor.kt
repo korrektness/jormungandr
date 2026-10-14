@@ -252,7 +252,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         propertyAccessExpression.stringBuilderIntrinsic(data.session)?.let {
             return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)
         }
-        data.convertReceiverlessRead(propertyAccessExpression)?.let { return it }
+        (data.convertReceiverlessRead(propertyAccessExpression)
+            ?: data.convertUnownedSpecifiedMember(propertyAccessExpression))?.let { return it }
         data.typeResolver.classLawExpansion?.let { expansion ->
             val symbol = propertyAccessExpression.toResolvedCallableSymbol() as? FirPropertySymbol
             if (symbol != null && expansion.isOwnAccess(propertyAccessExpression)) {
@@ -413,6 +414,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 return expansion.call(symbol, listOf(data.convert(functionCall.dispatchReceiver!!)) + arguments)
             }
         }
+        data.convertUnownedSpecifiedMember(functionCall)?.let { return it }
         if (functionCall.isIntArrayElementAccess()) return data.convertIntArrayElementAccess(functionCall)
         if (functionCall.isIntArrayInit()) return data.convertIntArrayInit(functionCall)
         return data.convertStdlibHof(functionCall)

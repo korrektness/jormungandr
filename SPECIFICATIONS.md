@@ -186,6 +186,11 @@ from their leading specification blocks or a sibling `@SpecOf` holder. Model dec
 analysis and removed before code generation. Application code references dependency declarations; references to
 model declarations are compilation errors.
 
+A member whose model owns its dispatch receiver (`@Unique`, or `@get:Unique` for a property) accepts any receiver. A
+call whose receiver is unique just before it gets the model's contract, observers and laws. A call on any other
+receiver is the opaque library call: it may throw, and its result is known only through its type. A member declared in
+source that owns its receiver accepts only a unique one.
+
 Bindings match callable kind, parameter and result types, generic parameters and bounds, extension receivers,
 varargs, property mutability and suspend status. Model-interface types stand for their bound dependency types.
 A model interface declares only functions and properties, and `@ExternalMember` appears only inside one.
@@ -515,7 +520,8 @@ is read and written for real only through a unique path.
 `@Unique` and `@Borrowed` annotate types, so they are written on the type:
 `n: @Unique Node`, `fun f(): @Unique Node`, `var next: @Unique Node?`,
 `fun @Unique Node.e()`. On a member function they describe the dispatch
-receiver `this`: `@Unique @Borrowed fun track(line: String)`.
+receiver `this`: `@Unique @Borrowed fun track(line: String)`. A member bound by an external
+specification accepts any receiver; see [External specifications](#external-specifications).
 
 | Site | Annotation | Meaning |
 |:-----|:-----------|:--------|

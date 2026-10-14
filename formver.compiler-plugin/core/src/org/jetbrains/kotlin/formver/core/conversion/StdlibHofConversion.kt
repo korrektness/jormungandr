@@ -8,7 +8,6 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
 import org.jetbrains.kotlin.fir.expressions.FirBlock
-import org.jetbrains.kotlin.fir.expressions.FirCheckedSafeCallSubject
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.arguments
@@ -39,8 +38,6 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 import org.jetbrains.kotlin.formver.intrinsics.plugin.ElementLoop
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayLoop
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isCollectionLoop
-import org.jetbrains.kotlin.formver.uniqueness.plugin.Uniqueness
-import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveUniqueness
 import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.name.ClassId
@@ -127,7 +124,9 @@ private fun StmtConversionContext.stdlibHof(call: FirFunctionCall): Pair<StdlibH
     val symbol = call.toResolvedCallableSymbol() ?: return null
     // The arity tells overloads without a lambda, such as `CharSequence.count()`, apart.
     val hof = stdlibHofKind(symbol, call.arguments.size) ?: return null
-    if (call.isCollectionLoop() && !ownsCollectionReceiver(call)) return null
+    // The collection template reads the receiver's iteration observer, which needs it owned; any other receiver is
+    // iterated by the opaque library call.
+    if (call.isCollectionLoop() && call.extensionReceiver?.let { ownsReceiverBefore(call, it) } != true) return null
     // Without the trusted collection view, as in a common source set the bundled specifications do not reach, the
     // call stays an opaque library call.
     if (call.isCollectionLoop() && !hasCollectionIterationModels(call.hasMapReceiver())) return null
@@ -138,18 +137,6 @@ private fun StmtConversionContext.stdlibHof(call: FirFunctionCall): Pair<StdlibH
         else -> null
     }?.ignoringMetaNodes() as? LambdaExp ?: return null
     return hof to lambda
-}
-
-/**
- * Whether the receiver of the collection loop [call] is `Unique` on entry to [call]: the uniqueness checker finds the
- * path it denotes `Unique` there, or, when it denotes no path, declares it `Unique`. The collection template reads the
- * receiver's iteration observer, which needs it owned; any other receiver is iterated by the opaque library call.
- */
-private fun StmtConversionContext.ownsCollectionReceiver(call: FirFunctionCall): Boolean {
-    val receiver = call.extensionReceiver ?: return false
-    val denoted = (receiver as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: receiver
-    if (ownershipFrame.pathOf(denoted) != null) return ownsBefore(call, receiver)
-    return context(checkerContext) { denoted.resolveUniqueness() } == Uniqueness.Unique
 }
 
 /**

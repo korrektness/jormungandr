@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.classLikeLookupTagIfAny
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure
@@ -43,6 +44,18 @@ private val FirBasedSymbol<*>.declared: FirBasedSymbol<*>
  */
 fun FirBasedSymbol<*>.ownsDispatchReceiver(session: FirSession): Boolean =
     declared.externalSpecificationSymbol(session).hasAnnotation(defaultUniquenessAnnotationId, session)
+
+/**
+ * Whether [this] library member owns its dispatch receiver only in its external specification: the specification, or
+ * for a property its getter, is annotated `@Unique`. SPECIFICATIONS.md, under External specifications, says how such
+ * a member is called.
+ */
+fun FirBasedSymbol<*>.specifiesOwnedReceiver(session: FirSession): Boolean {
+    val model = declared.externalSpecificationSymbol(session)
+    if (model == declared) return false
+    val owner = (model as? FirPropertySymbol)?.getterSymbol ?: model
+    return owner.hasAnnotation(defaultUniquenessAnnotationId, session)
+}
 
 /**
  * Whether [this] member function borrows its dispatch receiver: it is annotated `@Borrowed`, or it is a `@Pure`

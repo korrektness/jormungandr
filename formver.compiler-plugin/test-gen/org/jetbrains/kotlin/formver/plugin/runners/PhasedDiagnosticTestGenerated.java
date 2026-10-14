@@ -165,6 +165,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("shared_list_members.kt")
+    public void testShared_list_members() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/shared_list_members.kt");
+    }
+
+    @Test
     @TestMetadata("stdlib_associative.kt")
     public void testStdlib_associative() {
       runTest("formver.compiler-plugin/testData/diagnostics/external_specs/stdlib_associative.kt");

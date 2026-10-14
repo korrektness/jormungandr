@@ -37,7 +37,10 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.asPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
+import org.jetbrains.kotlin.formver.locality.plugin.specifiesOwnedReceiver
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
+import org.jetbrains.kotlin.formver.uniqueness.plugin.Uniqueness
+import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveUniqueness
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessState
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isCustom
 import org.jetbrains.kotlin.formver.core.isInvariantBuilderFunctionNamed
@@ -260,6 +263,33 @@ fun StmtConversionContext.ownsBefore(element: FirElement, expression: FirExpress
     }
     val path = ownershipFrame.pathOf(denoted) ?: return false
     return ownershipFrame.ownsBefore(element, path)
+}
+
+/**
+ * Whether [receiver] is `Unique` on entry to [element]: the uniqueness checker finds the path it denotes `Unique` there,
+ * or, when it denotes no path, declares it `Unique`.
+ */
+fun StmtConversionContext.ownsReceiverBefore(element: FirElement, receiver: FirExpression): Boolean {
+    val denoted = (receiver as? FirCheckedSafeCallSubject)?.originalReceiverRef?.value ?: receiver
+    if (ownershipFrame.pathOf(denoted) != null) return ownsBefore(element, receiver)
+    return context(checkerContext) { denoted.resolveUniqueness() } == Uniqueness.Unique
+}
+
+/**
+ * Converts [access] as the opaque library call when it calls a member whose specification owns the dispatch receiver
+ * and the receiver is not `Unique` on entry (see `specifiesOwnedReceiver`); `null` for any other access.
+ */
+fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAccessExpression): ExpEmbedding? {
+    val receiver = access.dispatchReceiver ?: return null
+    val callee = access.toResolvedCallableSymbol() ?: return null
+    if (!callee.specifiesOwnedReceiver(session) || ownsReceiverBefore(access, receiver)) return null
+    val arguments = (access as? FirFunctionCall)?.arguments.orEmpty()
+    return Block {
+        add(convert(receiver))
+        arguments.forEach { add(convert(it)) }
+        if (activeCatchLabels.isNotEmpty()) add(NonDeterministically(exceptionalExit()))
+        add(unconstrainedValue(embedType(access.resolvedType)))
+    }
 }
 
 /**
