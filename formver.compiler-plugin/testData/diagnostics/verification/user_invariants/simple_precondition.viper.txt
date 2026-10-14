@@ -14,8 +14,8 @@ method test(idx: Ref) returns (v_ret_0: Ref)
   assert intFromRef(idx) < 3
   assert !(intFromRef(idx) == 100)
   assert (let anon ==
-      (stringGet(stringToRef(Seq(97, 97, 97)), idx)) in
-      stringFromRef(stringToRef(Seq(97, 97, 97)))[intFromRef(idx)]) ==
+      (stringGet(stringLit(), idx)) in
+      stringFromRef(stringLit())[intFromRef(idx)]) ==
     97
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())

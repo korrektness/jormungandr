@@ -595,7 +595,7 @@ method singleClient() returns (v_ret_0: Ref)
   var anon_0: Ref
   var anon_1: Ref
   var anon_2: Ref
-  c := con(stringToRef(Seq(97)))
+  c := con(stringLit())
   fold acc(Single_unique(c), write)
   s := c
   Single_c_Seq_upcast(s)
@@ -605,7 +605,7 @@ method singleClient() returns (v_ret_0: Ref)
       c_Seq_f_at(s, intToRef(0)))
   anon_1 := anon_2
   inhale isSubtype(typeOf(anon_1), stringType())
-  assert stringFromRef(anon_1) == Seq(97)
+  assert stringFromRef(anon_1) == stringFromRef(stringLit())
   refute false
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())

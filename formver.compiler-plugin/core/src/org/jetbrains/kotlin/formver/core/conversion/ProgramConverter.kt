@@ -198,7 +198,7 @@ class ProgramConverter(
         functions = TerminationMeasures.withTerminationSpecifications(
             SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
                     SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
-                linearizedBodyResolver.functions + typeResolver.observerViewFunctions() +
+                linearizedBodyResolver.functions + typeResolver.observerViewFunctions() + typeResolver.stringLiteralFunctions +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray })
         ),
         methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods,

@@ -14,7 +14,7 @@ method con() returns (ret_3: Ref)
   ensures isSubtype(typeOf(ret_3), StringBuilder())
   ensures acc(StringBuilder_unique(ret_3), write)
   ensures (unfolding acc(StringBuilder_unique(ret_3), write) in
-      ret_3.contents == Seq[Int]())
+      ret_3.contents == stringFromRef(stringLit()))
 
 
 method repeatChar(c: Ref, n: Ref) returns (v_ret_0: Ref)
@@ -84,12 +84,12 @@ method con() returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), StringBuilder())
   ensures acc(StringBuilder_unique(ret_2), write)
   ensures (unfolding acc(StringBuilder_unique(ret_2), write) in
-      ret_2.contents == Seq[Int]())
+      ret_2.contents == stringFromRef(stringLit_2()))
 
 
 method literal() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), stringType())
-  ensures stringFromRef(v_ret_0) == Seq(97, 98, 99)
+  ensures stringFromRef(v_ret_0) == stringFromRef(stringLit_1())
 {
   var sb: Ref
   var anon: Ref
@@ -99,10 +99,10 @@ method literal() returns (v_ret_0: Ref)
     inhale false
   }
   sb.contents := sb.contents ++ Seq(97)
-  if (!(|sb.contents ++ Seq(98, 99)| <= 2147483647)) {
+  if (!(|sb.contents ++ stringFromRef(stringLit_0())| <= 2147483647)) {
     inhale false
   }
-  sb.contents := sb.contents ++ Seq(98, 99)
+  sb.contents := sb.contents ++ stringFromRef(stringLit_0())
   anon := stringToRef(sb.contents)
   v_ret_0 := anon
   fold acc(StringBuilder_unique(sb), write)
@@ -200,7 +200,7 @@ method clearThenAppend(sb: Ref) returns (v_ret_0: Ref)
   ensures acc(StringBuilder_unique(sb), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(StringBuilder_unique(sb), write) in
-      sb.contents == Seq(120))
+      sb.contents == stringFromRef(stringLit()))
 {
   unfold acc(StringBuilder_unique(sb), write)
   sb.contents := Seq[Int]()
@@ -285,7 +285,7 @@ method con() returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), StringBuilder())
   ensures acc(StringBuilder_unique(ret_2), write)
   ensures (unfolding acc(StringBuilder_unique(ret_2), write) in
-      ret_2.contents == Seq[Int]())
+      ret_2.contents == stringFromRef(stringLit()))
 
 
 /string_builder.kt: info: Generated Viper text for wrongLength:
@@ -327,7 +327,7 @@ method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), StringBuilder())
   ensures acc(StringBuilder_unique(ret_1), write)
   ensures (unfolding acc(StringBuilder_unique(ret_1), write) in
-      ret_1.contents == Seq[Int]())
+      ret_1.contents == stringFromRef(stringLit()))
 
 
 method wrongLength() returns (v_ret_0: Ref)

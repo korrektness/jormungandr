@@ -33,18 +33,15 @@ method templateInThrow(x: Ref, c: Ref) returns (v_ret_0: Ref)
   if (intFromRef(x) < 0) {
     var anon_0: Ref
     var anon_1: Ref
-    anon_1 := plus(stringToRef(Seq(98, 97, 100, 32)), x)
-    if (!(|stringFromRef(anon_1)| +
-    |stringFromRef(stringToRef(Seq(32, 97, 116, 32)))| <=
+    anon_1 := plus(stringLit_0(), x)
+    if (!(|stringFromRef(anon_1)| + |stringFromRef(stringLit_1())| <=
     2147483647)) {
       inhale false
     }
-    if (!(|stringFromRef(addStrings(anon_1, stringToRef(Seq(32, 97, 116, 32))))| <
-    2147483647)) {
+    if (!(|stringFromRef(addStrings(anon_1, stringLit_1()))| < 2147483647)) {
       inhale false
     }
-    anon_0 := con(addStringChar(addStrings(anon_1, stringToRef(Seq(32, 97, 116,
-      32))), c))
+    anon_0 := con(addStringChar(addStrings(anon_1, stringLit_1()), c))
     fold acc(Throwable_unique(anon_0), write)
     fold acc(Exception_unique(anon_0), write)
     fold acc(RuntimeException_unique(anon_0), write)
@@ -74,67 +71,59 @@ method templateOfStringsAndChars(s: Ref, c: Ref) returns (v_ret_0: Ref)
   requires |stringFromRef(s)| <= 2147483645
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  if (!(|stringFromRef(stringToRef(Seq(60)))| + |stringFromRef(s)| <=
+  if (!(|stringFromRef(stringLit_0())| + |stringFromRef(s)| <= 2147483647)) {
+    inhale false
+  }
+  if (!(|stringFromRef(addStrings(stringLit_0(), s))| +
+  |stringFromRef(stringLit_1())| <=
   2147483647)) {
     inhale false
   }
-  if (!(|stringFromRef(addStrings(stringToRef(Seq(60)), s))| +
-  |stringFromRef(stringToRef(Seq(62)))| <=
+  if (!(|stringFromRef(stringLit_0())| + |stringFromRef(s)| <= 2147483647)) {
+    inhale false
+  }
+  if (!(|stringFromRef(addStrings(stringLit_0(), s))| +
+  |stringFromRef(stringLit_1())| <=
   2147483647)) {
     inhale false
   }
-  if (!(|stringFromRef(stringToRef(Seq(60)))| + |stringFromRef(s)| <=
+  assert stringFromRef(addStrings(addStrings(stringLit_0(), s), stringLit_1())) ==
+    stringFromRef(addStrings(addStrings(stringLit_0(), s), stringLit_1()))
+  if (!(|stringFromRef(stringLit_2())| < 2147483647)) {
+    inhale false
+  }
+  if (!(|stringFromRef(addStringChar(stringLit_2(), c))| < 2147483647)) {
+    inhale false
+  }
+  if (!(|stringFromRef(stringLit_2())| < 2147483647)) {
+    inhale false
+  }
+  if (!(|stringFromRef(addStringChar(stringLit_2(), c))| < 2147483647)) {
+    inhale false
+  }
+  assert stringFromRef(addStringChar(addStringChar(stringLit_2(), c), c)) ==
+    stringFromRef(addStringChar(addStringChar(stringLit_2(), c), c))
+  if (!(|stringFromRef(stringLit_2())| + |stringFromRef(s)| <= 2147483647)) {
+    inhale false
+  }
+  if (!(|stringFromRef(addStrings(stringLit_2(), s))| +
+  |stringFromRef(stringLit_3())| <=
   2147483647)) {
     inhale false
   }
-  if (!(|stringFromRef(addStrings(stringToRef(Seq(60)), s))| +
-  |stringFromRef(stringToRef(Seq(62)))| <=
-  2147483647)) {
-    inhale false
-  }
-  assert stringFromRef(addStrings(addStrings(stringToRef(Seq(60)), s), stringToRef(Seq(62)))) ==
-    stringFromRef(addStrings(addStrings(stringToRef(Seq(60)), s), stringToRef(Seq(62))))
-  if (!(|stringFromRef(stringToRef(Seq[Int]()))| < 2147483647)) {
-    inhale false
-  }
-  if (!(|stringFromRef(addStringChar(stringToRef(Seq[Int]()), c))| <
-  2147483647)) {
-    inhale false
-  }
-  if (!(|stringFromRef(stringToRef(Seq[Int]()))| < 2147483647)) {
-    inhale false
-  }
-  if (!(|stringFromRef(addStringChar(stringToRef(Seq[Int]()), c))| <
-  2147483647)) {
-    inhale false
-  }
-  assert stringFromRef(addStringChar(addStringChar(stringToRef(Seq[Int]()),
-    c), c)) ==
-    stringFromRef(addStringChar(addStringChar(stringToRef(Seq[Int]()), c), c))
-  if (!(|stringFromRef(stringToRef(Seq[Int]()))| + |stringFromRef(s)| <=
-  2147483647)) {
-    inhale false
-  }
-  if (!(|stringFromRef(addStrings(stringToRef(Seq[Int]()), s))| +
-  |stringFromRef(stringToRef(Seq(120)))| <=
-  2147483647)) {
-    inhale false
-  }
-  assert |stringFromRef(addStrings(addStrings(stringToRef(Seq[Int]()), s), stringToRef(Seq(120))))| ==
+  assert |stringFromRef(addStrings(addStrings(stringLit_2(), s), stringLit_3()))| ==
     (let anon ==
       (plusInts(stringLength(s), intToRef(1))) in
       intFromRef(stringLength(s)) + intFromRef(intToRef(1)))
-  if (!(|stringFromRef(stringToRef(Seq[Int]()))| + |stringFromRef(s)| <=
-  2147483647)) {
+  if (!(|stringFromRef(stringLit_2())| + |stringFromRef(s)| <= 2147483647)) {
     inhale false
   }
-  if (!(|stringFromRef(addStrings(stringToRef(Seq[Int]()), s))| <
-  2147483647)) {
+  if (!(|stringFromRef(addStrings(stringLit_2(), s))| < 2147483647)) {
     inhale false
   }
   assert (let anon ==
-      (stringGet(addStringChar(addStrings(stringToRef(Seq[Int]()), s), c), stringLength(s))) in
-      stringFromRef(addStringChar(addStrings(stringToRef(Seq[Int]()), s), c))[intFromRef(stringLength(s))]) ==
+      (stringGet(addStringChar(addStrings(stringLit_2(), s), c), stringLength(s))) in
+      stringFromRef(addStringChar(addStrings(stringLit_2(), s), c))[intFromRef(stringLength(s))]) ==
     charFromRef(c)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
@@ -155,7 +144,7 @@ method plus(this: Ref, other: Ref) returns (ret_1: Ref)
 method templateOfLiterals() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert Seq(97, 98, 49) == Seq(97, 98, 49)
+  assert stringFromRef(stringLit()) == stringFromRef(stringLit())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

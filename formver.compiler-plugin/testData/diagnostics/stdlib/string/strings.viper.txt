@@ -75,9 +75,10 @@ method testType(s: Ref) returns (v_ret_0: Ref)
   anon_0 := con(s)
   fold acc(StringBox_unique(anon_0), write)
   cond1 := boolToRef(stringFromRef(g_str(anon_0)) == stringFromRef(s))
-  anon_1 := con(stringToRef(Seq(115, 116, 114)))
+  anon_1 := con(stringLit())
   fold acc(StringBox_unique(anon_1), write)
-  cond2 := boolToRef(stringFromRef(g_str(anon_1)) == Seq(115, 116, 114))
+  cond2 := boolToRef(stringFromRef(g_str(anon_1)) ==
+    stringFromRef(stringLit()))
   assert boolFromRef(cond1)
   assert boolFromRef(cond2)
   label lbl_ret_0
@@ -132,7 +133,7 @@ method testLengthField(s: Ref) returns (v_ret_0: Ref)
   var cond1: Ref
   var anon: Ref
   len := stringLength(s)
-  anon := con(stringToRef(Seq(115, 116, 114)))
+  anon := con(stringLit())
   fold acc(StringBox_unique(anon), write)
   cond1 := boolToRef(|stringFromRef(g_str(anon))| == 3)
   assert boolFromRef(cond1)
@@ -188,7 +189,7 @@ method testOps(s: Ref) returns (v_ret_0: Ref)
   } else {
     anon_0 := gtInts(stringLength(s), intToRef(0))}
   assert boolFromRef(anon_0)
-  str := stringToRef(Seq(97, 98, 97))
+  str := stringLit_0()
   assert (let anon_builtin ==
       (stringGet(str, intToRef(0))) in
       stringFromRef(str)[intFromRef(intToRef(0))]) ==
@@ -205,18 +206,13 @@ method testOps(s: Ref) returns (v_ret_0: Ref)
       (stringGet(str, intToRef(1))) in
       stringFromRef(str)[intFromRef(intToRef(1))]) ==
     98
-  assert Seq(75, 111, 116, 108, 105, 110, 46, 83, 116, 114, 105, 110, 103) ==
-    Seq(75, 111, 116, 108, 105, 110, 46, 83, 116, 114, 105, 110, 103)
-  if (!(|stringFromRef(stringToRef(Seq(72, 101, 108, 108, 111, 32, 87, 111,
-  114, 108, 100)))| <
-  2147483647)) {
+  assert stringFromRef(stringLit_1()) == stringFromRef(stringLit_1())
+  if (!(|stringFromRef(stringLit_2())| < 2147483647)) {
     inhale false
   }
-  helloWorld := addStringChar(stringToRef(Seq(72, 101, 108, 108, 111, 32, 87,
-    111, 114, 108, 100)), charToRef(33))
-  assert stringFromRef(helloWorld) ==
-    Seq(72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33)
-  stringPlusInteger := plus(stringToRef(Seq(52, 50)), intToRef(42))
+  helloWorld := addStringChar(stringLit_2(), charToRef(33))
+  assert stringFromRef(helloWorld) == stringFromRef(stringLit_3())
+  stringPlusInteger := plus(stringLit_4(), intToRef(42))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

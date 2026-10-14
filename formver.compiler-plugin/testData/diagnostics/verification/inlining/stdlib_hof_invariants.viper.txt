@@ -478,7 +478,7 @@ method con() returns (ret_2: Ref)
   ensures isSubtype(typeOf(ret_2), StringBuilder())
   ensures acc(StringBuilder_unique(ret_2), write)
   ensures (unfolding acc(StringBuilder_unique(ret_2), write) in
-      ret_2.contents == Seq[Int]())
+      ret_2.contents == stringFromRef(stringLit()))
 
 
 method fillOwnedBuilder(s: Ref) returns (v_ret_0: Ref)
@@ -577,7 +577,7 @@ method con() returns (ret_1: Ref)
   ensures isSubtype(typeOf(ret_1), StringBuilder())
   ensures acc(StringBuilder_unique(ret_1), write)
   ensures (unfolding acc(StringBuilder_unique(ret_1), write) in
-      ret_1.contents == Seq[Int]())
+      ret_1.contents == stringFromRef(stringLit()))
 
 
 method myEach(s: Ref, f: Ref) returns (ret_2: Ref)

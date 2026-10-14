@@ -46,7 +46,7 @@ function annotatedCharLitReturn(): Ref
 function annotatedStringLitReturn(): Ref
   ensures isSubtype(typeOf(result), stringType())
 {
-  stringToRef(Seq(72, 101, 108, 108, 111, 32, 83, 110, 97, 75, 116))
+  stringLit()
 }
 
 /literal_returns.kt: info: Generated Viper text for X:
@@ -126,8 +126,7 @@ function verifiedAnnotatedBoolLitReturn(par_arg: Ref): Ref
 /literal_returns.kt: info: Generated Viper text for verifiedAnnotatedCharLitReturn:
 function verifiedAnnotatedCharLitReturn(par_arg: Ref): Ref
   requires isSubtype(typeOf(par_arg), stringType())
-  requires stringFromRef(par_arg) ==
-    Seq(72, 101, 108, 108, 111, 32, 83, 110, 97, 75, 116)
+  requires stringFromRef(par_arg) == stringFromRef(stringLit())
   ensures isSubtype(typeOf(result), charType())
   ensures charFromRef(result) == 65
 {
@@ -139,8 +138,7 @@ function verifiedAnnotatedStringLitReturn(par_arg: Ref): Ref
   requires isSubtype(typeOf(par_arg), boolType())
   requires boolFromRef(par_arg)
   ensures isSubtype(typeOf(result), stringType())
-  ensures stringFromRef(result) ==
-    Seq(72, 101, 108, 108, 111, 32, 83, 110, 97, 75, 116)
+  ensures stringFromRef(result) == stringFromRef(stringLit())
 {
-  stringToRef(Seq(72, 101, 108, 108, 111, 32, 83, 110, 97, 75, 116))
+  stringLit()
 }

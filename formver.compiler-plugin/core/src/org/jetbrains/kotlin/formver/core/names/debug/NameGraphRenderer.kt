@@ -221,7 +221,8 @@ class NameGraphRenderer(val shortNameResolver: ShortNameResolver) {
             is AnonymousBuiltinName, is AnonymousName, is PlaceholderArgumentName,
             is ReturnVariableName, is BreakLabelName, is CatchLabelName,
             is ContinueLabelName, is LoopHeadLabelName, is TryExitLabelName, is ReturnLabelName,
-            is DomainAssociatedFuncName, is DomainFuncParameterName, is PredicateName, is SpecialFieldName -> {
+            is DomainAssociatedFuncName, is DomainFuncParameterName, is PredicateName, is SpecialFieldName,
+            is StringLiteralName -> {
             }
         }
     }

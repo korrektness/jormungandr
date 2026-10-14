@@ -51,16 +51,13 @@ method referenceSequence(first: Ref, second: Ref) returns (v_ret_0: Ref)
     intToRef(0)) ==
     nullValue()
   assert (stringToRef(stringFromRef(first)) in Seq(first, second))
-  assert !((stringToRef(stringFromRef(stringToRef(Seq(97, 98, 115, 101, 110,
-    116)))) in
-    Seq(stringToRef(Seq(112, 114, 101, 115, 101, 110, 116)))))
+  assert !((stringToRef(stringFromRef(stringLit_0())) in
+    Seq(stringLit_1())))
   assert (nullValue() in Seq(nullValue(), first))
   assert (stringToRef(stringFromRef(first)) in Seq(nullValue(), first))
-  assert !((stringToRef(stringFromRef(stringToRef(Seq(97, 98, 115, 101, 110,
-    116)))) in
-    Seq(nullValue(), stringToRef(Seq(112, 114, 101, 115, 101, 110, 116)))))
-  assert !((nullValue() in
-    Seq(stringToRef(Seq(112, 114, 101, 115, 101, 110, 116)))))
+  assert !((stringToRef(stringFromRef(stringLit_0())) in
+    Seq(nullValue(), stringLit_1())))
+  assert !((nullValue() in Seq(stringLit_1())))
   assert (intToRef(intFromRef(intToRef(7))) in
     Seq(nullValue(), intToRef(7)))
   assert !((intToRef(intFromRef(intToRef(9))) in
@@ -79,8 +76,7 @@ function size(this: Ref): Ref
 method wrongReferenceMembership() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert (stringToRef(stringFromRef(stringToRef(Seq(97, 98, 115, 101, 110, 116)))) in
-    Seq(stringToRef(Seq(112, 114, 101, 115, 101, 110, 116))))
+  assert (stringToRef(stringFromRef(stringLit_0())) in Seq(stringLit_1()))
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

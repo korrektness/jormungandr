@@ -143,6 +143,16 @@ data class DomainAssociatedFuncName(val name: String) : FreshName {
     override val children: List<AnyName> = listOf(nameType)
 }
 
+/** The function standing for the [n]th distinct string literal of a program. */
+data class StringLiteralName(override val n: Int) : NumberedName {
+    override val nameType: NameType = NameType.Base.Function
+    override val inViper: Boolean = true
+
+    override val candidates: List<CandidateName> = nameWithPrefixAndSuffixCandidates("stringLit", nameType, n.toString())
+
+    override val children: List<AnyName> = listOf(nameType)
+}
+
 data class PlaceholderArgumentName(override val n: Int) : NumberedName, NameTypeIsVariable {
     override val inViper: Boolean = true
 

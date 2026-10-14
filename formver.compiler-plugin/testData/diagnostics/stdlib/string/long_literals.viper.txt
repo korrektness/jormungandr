@@ -1,0 +1,107 @@
+/long_literals.kt: info: Generated Viper text for longMessage:
+method longMessage() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  v_ret_0 := stringLit()
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method plus(this: Ref, other: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+/long_literals.kt: info: Generated Viper text for throwsLongMessage:
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con(p0: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method throwsLongMessage(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= 0
+{
+  if (intFromRef(x) < 0) {
+    var anon: Ref
+    anon := con(stringLit())
+    fold acc(Throwable_unique(anon), write)
+    fold acc(Exception_unique(anon), write)
+    fold acc(RuntimeException_unique(anon), write)
+    fold acc(IllegalArgumentException_unique(anon), write)
+    inhale false
+  }
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/long_literals.kt: info: Generated Viper text for inspectsLongLiteral:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method inspectsLongLiteral() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var message: Ref
+  var first: Ref
+  var second: Ref
+  message := stringLit_0()
+  first := stringLit_1()
+  second := stringLit_2()
+  assert |stringFromRef(message)| == 394
+  assert (let anon ==
+      (stringGet(message, intToRef(3))) in
+      stringFromRef(message)[intFromRef(intToRef(3))]) ==
+    111
+  assert (let anon ==
+      (stringGet(message, intToRef(393))) in
+      stringFromRef(message)[intFromRef(intToRef(393))]) ==
+    46
+  if (!(|stringFromRef(first)| + |stringFromRef(second)| <= 2147483647)) {
+    inhale false
+  }
+  assert stringFromRef(addStrings(first, second)) == stringFromRef(message)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plus(this: Ref, other: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), stringType())
+
+
+/long_literals.kt: info: Generated Viper text for wrongLengthOfLongLiteral:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongLengthOfLongLiteral() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var message: Ref
+  message := stringLit()
+  assert |stringFromRef(message)| == 395
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

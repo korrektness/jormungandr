@@ -304,6 +304,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("long_literals.kt")
+      public void testLong_literals() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string/long_literals.kt");
+      }
+
+      @Test
       @TestMetadata("strings.kt")
       public void testStrings() {
         runTest("formver.compiler-plugin/testData/diagnostics/stdlib/string/strings.kt");

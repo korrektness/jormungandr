@@ -59,7 +59,7 @@ method errorCrash() returns (v_ret_0: Ref)
   ensures false
   ensures isSubtype(typeOf(v_ret_0), nothingType())
 {
-  v_ret_0 := error(stringToRef(Seq(98, 111, 111, 109)))
+  v_ret_0 := error(stringLit())
   goto lbl_ret_0
   label lbl_ret_0
 }
@@ -1181,7 +1181,7 @@ method g_value(this: Ref) returns (v_ret_0: Ref)
 {
   var anon: Ref
   inhale isSubtype(typeOf(this), ThrowingAccess())
-  anon := error(stringToRef(Seq(103, 101, 116, 116, 101, 114)))
+  anon := error(stringLit())
   v_ret_0 := anon
   goto lbl_ret_0
   label lbl_ret_0
@@ -1215,7 +1215,7 @@ method s_value(this: Ref, arg_0: Ref) returns (v_ret_1: Ref)
   inhale isSubtype(typeOf(this), ThrowingAccess())
   par_v := arg_0
   inhale isSubtype(typeOf(par_v), intType())
-  anon := error(stringToRef(Seq(115, 101, 116, 116, 101, 114)))
+  anon := error(stringLit())
   label lbl_ret_1
 }
 
@@ -1352,7 +1352,7 @@ method requireMessageCatch() returns (v_ret_0: Ref)
     var v_ret_3: Ref
     var anon: Ref
     x := intToRef(3)
-    v_ret_3 := stringToRef(Seq(109, 101, 115, 115, 97, 103, 101))
+    v_ret_3 := stringLit()
     goto lbl_ret_3
     label lbl_ret_3
     if (boolFromRef(anon)) {
@@ -1390,7 +1390,7 @@ method checkMessageNotEvaluated() returns (v_ret_0: Ref)
     var v_ret_3: Ref
     var anon: Ref
     x := intToRef(3)
-    v_ret_3 := stringToRef(Seq(109, 101, 115, 115, 97, 103, 101))
+    v_ret_3 := stringLit()
     goto lbl_ret_3
     label lbl_ret_3
     if (boolFromRef(anon)) {

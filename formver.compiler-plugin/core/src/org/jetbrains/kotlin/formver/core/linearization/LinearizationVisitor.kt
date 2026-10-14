@@ -434,6 +434,8 @@ data class LinearizationVisitor(
     override fun visitLiteralEmbedding(e: LiteralEmbedding): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp =
             if (e is NullLit) RuntimeTypeDomain.nullValue(pos = ctx.source.asPosition)
+            else if (e is StringLit) ctx.typeResolver.stringLiteral(e.value)
+                .toFuncApp(emptyList(), pos = ctx.source.asPosition, info = e.sourceRole.asInfo)
             else e.type.injection.toRef(
                 e.value.viperLiteral(ctx.source.asPosition, e.sourceRole.asInfo),
                 pos = ctx.source.asPosition,

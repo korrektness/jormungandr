@@ -11,15 +11,18 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FamilyTransfer
 import org.jetbrains.kotlin.formver.core.embeddings.types.ObserverBinding
 import org.jetbrains.kotlin.formver.core.embeddings.types.PretypeEmbedding
+import org.jetbrains.kotlin.formver.core.domains.stringLiteralFunction
 import org.jetbrains.kotlin.formver.core.names.DispatchReceiverName
 import org.jetbrains.kotlin.formver.core.names.NameMatcher
 import org.jetbrains.kotlin.formver.core.names.NameScope
 import org.jetbrains.kotlin.formver.core.names.ScopedName
+import org.jetbrains.kotlin.formver.core.names.StringLiteralName
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Declaration
 import org.jetbrains.kotlin.formver.viper.ast.Type
 import org.jetbrains.kotlin.formver.viper.ast.Method
 import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.viper.ast.Function
 import org.jetbrains.kotlin.name.Name
 
 /**
@@ -61,6 +64,15 @@ class TypeResolver {
     fun markIterationSequenceUsed() {
         usesIterationSequence = true
     }
+
+    private val stringLiterals = linkedMapOf<String, Function>()
+
+    /** The function standing for the string literal [value]; equal literals share one. */
+    fun stringLiteral(value: String): Function =
+        stringLiterals.getOrPut(value) { stringLiteralFunction(StringLiteralName(stringLiterals.size), value) }
+
+    val stringLiteralFunctions: Collection<Function>
+        get() = stringLiterals.values
 
     var usesMultiset: Boolean = false
         private set
