@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure
 import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
+import org.jetbrains.kotlin.formver.common.isExternalSpecificationFile
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_PURE_REFERENCE_RESULT
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_PURE_UNIQUE_RESULT
 
@@ -30,6 +31,8 @@ object PureFunctionResultChecker : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirFunction) {
         if (!declaration.symbol.isPure(context.session)) return
+        // A library model describes a result the library computes, which may alias the receiver's elements.
+        if (context.session.isExternalSpecificationFile(context.containingFilePath)) return
 
         val returnTypeRef = declaration.returnTypeRef
         val source = returnTypeRef.source ?: declaration.source

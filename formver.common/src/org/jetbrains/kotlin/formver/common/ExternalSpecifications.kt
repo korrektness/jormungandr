@@ -36,6 +36,7 @@ import org.jetbrains.kotlin.name.Name
 private fun annotationId(name: String) = ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.$name"))
 val externalSpecId = annotationId("ExternalSpec")
 val externalFunctionId = annotationId("ExternalFunction")
+val externalPropertyId = annotationId("ExternalProperty")
 val externalMemberId = annotationId("ExternalMember")
 
 /**
@@ -51,7 +52,7 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
 
     private val predicate = LookupPredicate.create {
         annotated(externalSpecId.asSingleFqName()) or annotated(externalFunctionId.asSingleFqName()) or
-            annotated(externalMemberId.asSingleFqName())
+            annotated(externalPropertyId.asSingleFqName()) or annotated(externalMemberId.asSingleFqName())
     }
 
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
@@ -174,11 +175,22 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
         for (model in declarations.filterIsInstance<FirNamedFunctionSymbol>()) {
             val name = model.bindingName(externalFunctionId) ?: continue
             if (model.dispatchReceiverType != null) {
-                fail(model, ExternalSpecRule.FUNCTION_NOT_TOP_LEVEL)
+                fail(model, ExternalSpecRule.MODEL_NOT_TOP_LEVEL)
                 continue
             }
             val fqName = FqName(name)
             val candidates = session.symbolProvider.getTopLevelFunctionSymbols(fqName.parent(), fqName.shortName())
+                .filter { matches(model, it) }
+            bind(model, candidates, name)
+        }
+        for (model in declarations.filterIsInstance<FirPropertySymbol>()) {
+            val name = model.bindingName(externalPropertyId) ?: continue
+            if (model.dispatchReceiverType != null) {
+                fail(model, ExternalSpecRule.MODEL_NOT_TOP_LEVEL)
+                continue
+            }
+            val fqName = FqName(name)
+            val candidates = session.symbolProvider.getTopLevelPropertySymbols(fqName.parent(), fqName.shortName())
                 .filter { matches(model, it) }
             bind(model, candidates, name)
         }

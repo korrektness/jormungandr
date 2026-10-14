@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 internal fun <K, V, R> (@Unique @Borrowed MapModel<out K, V>).mapEntriesModel(transform: (EntryModel<K, V>) -> R): @Unique ListModel<R> = TODO()
 
 @ExternalSpec("kotlin.collections.Set")
-internal interface SetModel<out E> : IterableModel<E> {
+internal interface SetModel<out E> : CollectionModel<E> {
     @Law @Pure @Unique fun iterationSize(): Boolean = iterationSequence().size == size
     @Law @Pure @Unique fun distinctElements(): Boolean = forAll<Int> { i ->
         forAll<Int> { j ->
@@ -16,11 +16,10 @@ internal interface SetModel<out E> : IterableModel<E> {
     }
 
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/size.html: number of elements.
-    @Pure @get:Unique val size: Int
-    @Law @Pure @Unique fun nonnegativeSize(): Boolean = size >= 0
+    @Pure @get:Unique override val size: Int
 
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-set/is-empty.html: true iff empty.
-    @Pure @Unique fun isEmpty(): Boolean
+    @Pure @Unique override fun isEmpty(): Boolean
     @SpecOf("isEmpty") @Unique fun emptySpec() {
         postconditions<Boolean> { result -> result == (size == 0) }
     }

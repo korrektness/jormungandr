@@ -596,12 +596,14 @@ class ProgramConverter(
     ): Pair<List<ExpEmbedding>, List<ExpEmbedding>> {
         @OptIn(SymbolInternals::class) val declaration = symbol.fir
 
-        // Specifications are only allowed on simple functions.
-        if (declaration !is FirSimpleFunction) return Pair(emptyList(), emptyList())
-
-        val owner = context(checkerContext) { declaration.symbol.specificationOwner() } ?: return Pair(emptyList(), emptyList())
-        @OptIn(SymbolInternals::class) val ownerDeclaration = owner.fir
-        val (holder, firSpec) = ownerDeclaration.userSpecification(session) ?: return Pair(emptyList(), emptyList())
+        // Specifications are allowed on simple functions and on the getters of external property models.
+        val specification = when {
+            declaration is FirSimpleFunction -> context(checkerContext) { declaration.symbol.specificationOwner() }
+                ?.let { @OptIn(SymbolInternals::class) it.fir.userSpecification(session) }
+            declaration is FirPropertyAccessor && declaration.isGetter -> declaration.propertySymbol.userSpecification(session)
+            else -> null
+        }
+        val (holder, firSpec) = specification ?: return Pair(emptyList(), emptyList())
         val holderAnalysis = uniquenessOutcomeOf(holder).analysis
 
         // The holder's parameters resolve to this function's parameters by position.

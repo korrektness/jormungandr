@@ -22,7 +22,9 @@ import org.jetbrains.kotlin.formver.common.externalFunctionId
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.formver.core.conversion.extractFormverFirBlock
@@ -32,6 +34,7 @@ import org.jetbrains.kotlin.formver.core.conversion.postconditionsResultType
 import org.jetbrains.kotlin.formver.core.conversion.specificationResultMatches
 import org.jetbrains.kotlin.formver.core.conversion.specOfSiblings
 import org.jetbrains.kotlin.formver.core.conversion.specOfTargetName
+import org.jetbrains.kotlin.formver.core.conversion.specOfPropertyTargets
 import org.jetbrains.kotlin.formver.core.conversion.specOfTargets
 import org.jetbrains.kotlin.formver.core.isBorrowed
 import org.jetbrains.kotlin.formver.core.isFormverFunctionNamed
@@ -51,6 +54,7 @@ class SpecOfDeclarationChecker(private val session: FirSession) : FirSimpleFunct
     context(context: CheckerContext)
     private fun violation(declaration: FirSimpleFunction, name: String): KotlinCondition.SpecOf? {
         val symbol = declaration.symbol
+        symbol.specOfPropertyTargets(session).singleOrNull()?.let { return propertyTargetViolation(declaration, it) }
         if (symbol.receiverParameterSymbol != null &&
             symbol.specOfTargets(session).none { it.getAnnotationByClassId(externalFunctionId, session) != null }) {
             return KotlinCondition.SpecOf(SpecOfRule.EXTENSION_RECEIVER)
@@ -78,7 +82,14 @@ class SpecOfDeclarationChecker(private val session: FirSession) : FirSimpleFunct
         return bodyViolation(declaration, target)
     }
 
-    private fun bodyViolation(declaration: FirSimpleFunction, target: FirNamedFunctionSymbol): KotlinCondition.SpecOf? {
+    private fun propertyTargetViolation(declaration: FirSimpleFunction, target: FirPropertySymbol): KotlinCondition.SpecOf? {
+        if (!declaration.returnTypeRef.coneType.isUnit) return KotlinCondition.SpecOf(SpecOfRule.RETURN_TYPE)
+        val name = target.name.asString()
+        if (target.specOfSiblings(session).size > 1) return KotlinCondition.SpecOf(SpecOfRule.MULTIPLE_SPECIFICATIONS, name)
+        return bodyViolation(declaration, target)
+    }
+
+    private fun bodyViolation(declaration: FirSimpleFunction, target: FirCallableSymbol<*>): KotlinCondition.SpecOf? {
         val statements = declaration.body?.statements.orEmpty()
         val pre = statements.getOrNull(0)?.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }
         val post = statements.getOrNull(if (pre != null) 1 else 0)

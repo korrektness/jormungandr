@@ -44,3 +44,10 @@ fun emptyTarget(): Int = 0
 
 @ExternalSpec("LocalTarget")
 interface SourceTargetModel
+
+@ExternalProperty("external.library.missingProperty")
+val missingProperty: Int get() = 0
+
+interface PropertyHolder {
+    @ExternalProperty("external.library.missingProperty") val nested: Int
+}

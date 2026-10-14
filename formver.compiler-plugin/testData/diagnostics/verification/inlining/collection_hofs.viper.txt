@@ -4,10 +4,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -68,13 +95,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
       anon_builtin_8 >= 0 && anon_builtin_8 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_8))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method positiveList(values: Ref) returns (v_ret_0: Ref)
@@ -308,10 +328,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function SetModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(SetModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function SetModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(SetModel_g_size(this)) == 0)
 
 
 function SetModel_g_size(this: Ref): Ref
@@ -343,13 +390,6 @@ function contains(this: Ref, element: Ref): Ref
   ensures (element in
     iterationSequenceFromRef(SetModel_c_IterableModel_f_iterationSequence(this))) ==>
     boolFromRef(result)
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), SetModel())
-  requires acc(SetModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(SetModel_g_size(this)) == 0)
 
 
 method setSearch(values: Ref) returns (v_ret_0: Ref)
@@ -488,10 +528,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -552,13 +619,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_10)), intType()) ==>
       anon_builtin_10 >= 0 && anon_builtin_10 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_10))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method constantSearch(values: Ref) returns (v_ret_0: Ref)
@@ -868,10 +928,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -932,13 +1019,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_10)), intType()) ==>
       anon_builtin_10 >= 0 && anon_builtin_10 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_10))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method emptySearch(values: Ref) returns (v_ret_0: Ref)
@@ -1371,10 +1451,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -1435,13 +1542,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_14)), intType()) ==>
       anon_builtin_14 >= 0 && anon_builtin_14 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_14))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method listSearchResults(values: Ref) returns (v_ret_0: Ref)
@@ -1994,10 +2094,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -2058,13 +2185,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
       anon_builtin_8 >= 0 && anon_builtin_8 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_8))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method emptyListSearchResults(values: Ref) returns (v_ret_0: Ref)
@@ -2338,10 +2458,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -2402,13 +2549,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method firstMissNegative(values: Ref) returns (v_ret_0: Ref)
@@ -2518,10 +2658,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -2582,13 +2749,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method allNegative(values: Ref) returns (v_ret_0: Ref)
@@ -2692,10 +2852,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -2756,13 +2943,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method noneNegative(values: Ref) returns (v_ret_0: Ref)
@@ -2866,10 +3046,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -2930,13 +3137,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method anyNegative(values: Ref) returns (v_ret_0: Ref)
@@ -3040,10 +3240,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -3104,13 +3331,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method indexMissNegative(values: Ref) returns (v_ret_0: Ref)
@@ -3510,10 +3730,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -3574,13 +3821,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
       anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_3))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method foldArgumentOrder(values: Ref) returns (v_ret_0: Ref)
@@ -3688,10 +3928,43 @@ method foldArgumentOrder(values: Ref) returns (v_ret_0: Ref)
 }
 
 /collection_hofs.kt: info: Generated Viper text for foldNonnegative:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
 
 
 function c_IterableModel_f_iterationSequence(this: Ref): Ref
@@ -3709,12 +3982,14 @@ function contains(this: Ref, element: Ref): Ref
     (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
       anon_builtin_1 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
-      (anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
       equalsRelation(element, get(this, intToRef(anon_builtin_1)))))
   ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
       anon_builtin_2 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
-      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(size(this)) &&
+      anon_builtin_2 >= 0 &&
+      anon_builtin_2 < intFromRef(ListModel_g_size(this)) &&
       get(this, intToRef(anon_builtin_2)) == element ==>
       boolFromRef(result))
 
@@ -3724,7 +3999,7 @@ function get(this: Ref, par_index: Ref): Ref
   requires acc(ListModel_footprint(this), wildcard)
   requires isSubtype(typeOf(par_index), intType())
   requires intFromRef(par_index) >= 0 &&
-    intFromRef(par_index) < intFromRef(size(this))
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
@@ -3734,7 +4009,7 @@ function indexOf(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(element), nullable(anyType()))
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= -1 &&
-    intFromRef(result) < intFromRef(size(this))
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
   ensures intFromRef(result) >= 0 ==>
@@ -3744,19 +4019,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
       anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_3))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(size(this)) == 0)
-
-
-function size(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
 
 
 method foldNonnegative(values: Ref) returns (v_ret_0: Ref)
@@ -3842,10 +4104,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -3906,13 +4195,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
       anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_3))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method visitPrefix(values: Ref) returns (v_ret_0: Ref)
@@ -3999,10 +4281,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -4063,13 +4372,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
       anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_3))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method foldPrefix(values: Ref) returns (v_ret_0: Ref)
@@ -4154,6 +4456,26 @@ method foldPrefix(values: Ref) returns (v_ret_0: Ref)
 /collection_hofs.kt: info: Generated Viper text for mapKeys:
 function BooleanArray_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -4436,10 +4758,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -4500,13 +4849,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
       anon_builtin_5 >= 0 && anon_builtin_5 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_5))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method mappedList(values: Ref, k: Ref) returns (v_ret_0: Ref)
@@ -4647,10 +4989,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -4711,13 +5080,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method filteredList(values: Ref, k: Ref) returns (v_ret_0: Ref)
@@ -4849,10 +5211,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -4913,13 +5302,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method filterObserverLimits(values: Ref) returns (v_ret_0: Ref)
@@ -5052,6 +5434,26 @@ method filterObserverLimits(values: Ref) returns (v_ret_0: Ref)
 /collection_hofs.kt: info: Generated Viper text for filterAll:
 function BooleanArray_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -5266,10 +5668,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -5330,13 +5759,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method filterNone(values: Ref) returns (v_ret_0: Ref)
@@ -5436,10 +5858,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -5500,13 +5949,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method collectionAllocatorAbuse(values: Ref) returns (v_ret_0: Ref)
@@ -5633,10 +6075,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -5697,13 +6166,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
       anon_builtin_7 >= 0 && anon_builtin_7 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_7))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method cleanMeasurements(values: Ref, k: Ref) returns (v_ret_0: Ref)
@@ -5991,10 +6453,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -6055,13 +6544,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
       anon_builtin_4 >= 0 && anon_builtin_4 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_4))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method singletonListModel(element: Ref) returns (ret_2: Ref)
@@ -6184,10 +6666,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -6248,13 +6757,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
       anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_3))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 method countBounds(values: Ref) returns (v_ret_0: Ref)

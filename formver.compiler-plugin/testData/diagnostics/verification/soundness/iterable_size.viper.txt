@@ -1,8 +1,41 @@
 /iterable_size.kt: info: Generated Viper text for countVisitedList:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
 
 
 function c_IterableModel_f_iterationSequence(this: Ref): Ref
@@ -20,12 +53,14 @@ function contains(this: Ref, element: Ref): Ref
     (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
       anon_builtin_1 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
-      (anon_builtin_1 >= 0 && anon_builtin_1 < intFromRef(size(this)) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
       equalsRelation(element, get(this, intToRef(anon_builtin_1)))))
   ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
       anon_builtin_2 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
-      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(size(this)) &&
+      anon_builtin_2 >= 0 &&
+      anon_builtin_2 < intFromRef(ListModel_g_size(this)) &&
       get(this, intToRef(anon_builtin_2)) == element ==>
       boolFromRef(result))
 
@@ -35,7 +70,7 @@ function get(this: Ref, par_index: Ref): Ref
   requires acc(ListModel_footprint(this), wildcard)
   requires isSubtype(typeOf(par_index), intType())
   requires intFromRef(par_index) >= 0 &&
-    intFromRef(par_index) < intFromRef(size(this))
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
   ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
@@ -45,7 +80,7 @@ function indexOf(this: Ref, element: Ref): Ref
   requires isSubtype(typeOf(element), nullable(anyType()))
   ensures isSubtype(typeOf(result), intType())
   ensures intFromRef(result) >= -1 &&
-    intFromRef(result) < intFromRef(size(this))
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
   ensures intFromRef(result) >= 0 ==>
@@ -55,19 +90,6 @@ function indexOf(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
       anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
       !equalsRelation(element, get(this, intToRef(anon_builtin_3))))
-
-
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(size(this)) == 0)
-
-
-function size(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
 
 
 method countVisitedList(values: Ref) returns (v_ret_0: Ref)
@@ -146,10 +168,43 @@ method countVisitedList(values: Ref) returns (v_ret_0: Ref)
 }
 
 /iterable_size.kt: info: Generated Viper text for countVisitedSet:
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function SetModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(SetModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function SetModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(SetModel_g_size(this)) == 0)
+
+
+function SetModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
 
 
 function c_IterableModel_f_iterationSequence(this: Ref): Ref
@@ -177,26 +232,13 @@ function contains(this: Ref, element: Ref): Ref
     boolFromRef(result)
 
 
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), SetModel())
-  requires acc(SetModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(size(this)) == 0)
-
-
-function size(this: Ref): Ref
-  requires isSubtype(typeOf(this), SetModel())
-  requires acc(SetModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
 method countVisitedSet(values: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(values), SetModel())
   requires acc(SetModel_unique(values), write)
   ensures acc(SetModel_unique(values), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures (unfolding acc(SetModel_unique(values), wildcard) in
-      intFromRef(v_ret_0) == intFromRef(size(values)))
+      intFromRef(v_ret_0) == intFromRef(SetModel_g_size(values)))
 {
   var visited: Ref
   var anon_0: Ref

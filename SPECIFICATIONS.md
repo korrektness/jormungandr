@@ -176,9 +176,10 @@ interface Measure {
 ```
 
 The `@SpecOf` function is declared beside its target in the same class or interface, or in the same package for a
-top-level `@ExternalFunction` model. Its value parameter types, ownership annotations included, and positional
-type parameters match the target; this picks the overload it specifies. It returns `Unit`. An extension receiver
-is allowed for an external function model and matches the target's receiver type. Its body holds only a
+top-level `@ExternalFunction` or `@ExternalProperty` model. Its value parameter types, ownership annotations included, and positional
+type parameters match the target; this picks the overload it specifies. For a property model it specifies the getter
+and has no value parameters. It returns `Unit`. An extension receiver
+is allowed for an external function or property model and matches the target's receiver type. Its body holds only a
 `preconditions` block followed by a `postconditions` block, whose type is the target's return type. Its parameters stand for the member's parameters
 by position. It is never converted, verified or called. A member has at most one `@SpecOf` function, none if its
 body has a specification. Each violation, and a call to a `@SpecOf` function, is
@@ -190,6 +191,7 @@ Use external specifications to describe declarations whose implementations are i
 ordinary Kotlin files as external specification inputs. `@ExternalSpec("package.Type")` on a model interface binds
 its members to that dependency type. `@ExternalMember("name")` selects a different target member name.
 `@ExternalFunction("package.function")` binds a top-level model function, including an extension function.
+`@ExternalProperty("package.property")` binds a top-level model property, including an extension property.
 
 ```kotlin
 package models
@@ -211,11 +213,13 @@ interface CounterModel {
 
 The model supplies the existing observer, law, ownership and contract machinery. Dependency types in client
 signatures use the model's verification representation. Function-model bodies are placeholders; contracts come
-from their leading specification blocks or a sibling `@SpecOf` holder. Model declarations are available during
+from their leading specification blocks or a sibling `@SpecOf` holder. Property-model getter bodies are placeholders
+too; a getter's contract comes from a `@SpecOf` holder. Model declarations are available during
 analysis and removed before code generation. Application code references dependency declarations; references to
 model declarations are compilation errors.
 
-A member whose model owns its dispatch receiver (`@Unique`, or `@get:Unique` for a property) accepts any receiver. A
+A member whose model owns its dispatch receiver (`@Unique`, or `@get:Unique` for a property) accepts any receiver,
+and so does an extension whose model's extension receiver is `@Unique`. A
 call whose receiver is unique just before it gets the model's contract, observers and laws. A call on any other
 receiver is the opaque library call: it may throw, and its result is known only through its type. A member declared in
 source that owns its receiver accepts only a unique one.

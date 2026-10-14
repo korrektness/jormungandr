@@ -16,9 +16,13 @@ import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.formver.common.externalFunctionId
+import org.jetbrains.kotlin.formver.common.externalPropertyId
 import org.jetbrains.kotlin.fir.resolve.substitution.substitutorByMap
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
+import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.impl.ConeTypeParameterTypeImpl
@@ -41,6 +45,26 @@ fun FirNamedFunctionSymbol.specOfTargetName(session: FirSession): String? =
 fun FirNamedFunctionSymbol.specOfTargets(session: FirSession): List<FirNamedFunctionSymbol> {
     val name = specOfTargetName(session) ?: return emptyList()
     return functionsDeclaredBeside(session).filter { it.name.asString() == name && hasParameterTypesOf(it, session) }
+}
+
+/**
+ * The top-level `@ExternalProperty` models in this function's package that have the name its `@SpecOf` gives and that
+ * this function [hasParameterTypesOf]. A function with value parameters names no property.
+ */
+fun FirNamedFunctionSymbol.specOfPropertyTargets(session: FirSession): List<FirPropertySymbol> {
+    val name = specOfTargetName(session) ?: return emptyList()
+    if (getContainingClassSymbol() != null || valueParameterSymbols.isNotEmpty()) return emptyList()
+    return session.symbolProvider.getTopLevelPropertySymbols(callableId.packageName, Name.identifier(name))
+        .filter { it.getAnnotationByClassId(externalPropertyId, session) != null && hasParameterTypesOf(it, session) }
+}
+
+/** The `@SpecOf` functions declared in the file of this `@ExternalProperty` model that name it. */
+@OptIn(DirectDeclarationsAccess::class)
+fun FirPropertySymbol.specOfSiblings(session: FirSession): List<FirNamedFunctionSymbol> {
+    if (getAnnotationByClassId(externalPropertyId, session) == null) return emptyList()
+    val file = session.firProvider.getFirCallableContainerFile(this) ?: return emptyList()
+    return file.declarations.filterIsInstance<FirSimpleFunction>().map { it.symbol }
+        .filter { it.specOfTargetName(session) == name.asString() && this in it.specOfPropertyTargets(session) }
 }
 
 /** The `@SpecOf` functions declared next to this function that name it. */
@@ -67,11 +91,12 @@ fun FirNamedFunctionSymbol.functionsDeclaredBeside(session: FirSession): List<Fi
 
 /**
  * Whether this function has the type parameters of [target] and, with its type parameters read as those of
- * [target], the same value parameter types. Ownership annotations are not compared.
+ * [target], the same extension receiver and value parameter types. Ownership annotations are not compared.
  */
-private fun FirNamedFunctionSymbol.hasParameterTypesOf(target: FirNamedFunctionSymbol, session: FirSession): Boolean {
+private fun FirNamedFunctionSymbol.hasParameterTypesOf(target: FirCallableSymbol<*>, session: FirSession): Boolean {
+    val targetParameters = (target as? FirFunctionSymbol<*>)?.valueParameterSymbols.orEmpty()
     if (typeParameterSymbols.size != target.typeParameterSymbols.size) return false
-    if (valueParameterSymbols.size != target.valueParameterSymbols.size) return false
+    if (valueParameterSymbols.size != targetParameters.size) return false
     val substitutor = substitutorByMap(
         typeParameterSymbols.zip(target.typeParameterSymbols) { own, theirs ->
             own to ConeTypeParameterTypeImpl(theirs.toLookupTag(), isMarkedNullable = false)
@@ -82,13 +107,13 @@ private fun FirNamedFunctionSymbol.hasParameterTypesOf(target: FirNamedFunctionS
     val targetReceiver = target.resolvedReceiverTypeRef?.coneType
     if ((receiver == null) != (targetReceiver == null)) return false
     if (receiver != null && !substitutor.substituteOrSelf(receiver).sameUpToAttributes(targetReceiver!!)) return false
-    return valueParameterSymbols.zip(target.valueParameterSymbols).all { (own, theirs) ->
+    return valueParameterSymbols.zip(targetParameters).all { (own, theirs) ->
         substitutor.substituteOrSelf(own.resolvedReturnType).sameUpToAttributes(theirs.resolvedReturnType)
     }
 }
 
 /** Compares a holder's type with the target's return type under positional type-parameter substitution. */
-fun FirNamedFunctionSymbol.specificationResultMatches(type: ConeKotlinType, target: FirNamedFunctionSymbol, session: FirSession): Boolean {
+fun FirNamedFunctionSymbol.specificationResultMatches(type: ConeKotlinType, target: FirCallableSymbol<*>, session: FirSession): Boolean {
     val substitutor = substitutorByMap(
         typeParameterSymbols.zip(target.typeParameterSymbols) { own, theirs ->
             own to ConeTypeParameterTypeImpl(theirs.toLookupTag(), isMarkedNullable = false)
@@ -111,9 +136,18 @@ fun FirSimpleFunction.ownSpecification(returnType: ConeKotlinType = symbol.resol
 fun FirSimpleFunction.userSpecification(session: FirSession): UserSpecification? {
     ownSpecification()?.let { return UserSpecification(this, it) }
     if (origin != FirDeclarationOrigin.Source) return null
-    val sibling = symbol.specOfSiblings(session).singleOrNull()?.fir ?: return null
-    // A sibling whose postconditions name another result type is reported by the `@SpecOf` checker.
-    val resultType = sibling.body?.postconditionsResultType()
-    if (resultType != null && !sibling.symbol.specificationResultMatches(resultType, symbol, session)) return null
-    return sibling.ownSpecification(resultType ?: symbol.resolvedReturnType)?.let { UserSpecification(sibling, it) }
+    return symbol.specOfSiblings(session).singleOrNull()?.fir?.specificationOf(symbol, session)
+}
+
+/** The specification of this `@ExternalProperty` model's getter: the one of the `@SpecOf` function that names it. */
+@OptIn(SymbolInternals::class)
+fun FirPropertySymbol.userSpecification(session: FirSession): UserSpecification? =
+    specOfSiblings(session).singleOrNull()?.fir?.specificationOf(this, session)
+
+/** The specification this `@SpecOf` function gives [target]. */
+private fun FirSimpleFunction.specificationOf(target: FirCallableSymbol<*>, session: FirSession): UserSpecification? {
+    // A holder whose postconditions name another result type is reported by the `@SpecOf` checker.
+    val resultType = body?.postconditionsResultType()
+    if (resultType != null && !symbol.specificationResultMatches(resultType, target, session)) return null
+    return ownSpecification(resultType ?: target.resolvedReturnType)?.let { UserSpecification(this, it) }
 }

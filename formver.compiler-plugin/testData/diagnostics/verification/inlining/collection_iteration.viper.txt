@@ -4,10 +4,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
 
 
 function ListModel_g_size(this: Ref): Ref
@@ -70,13 +97,6 @@ function indexOf(this: Ref, element: Ref): Ref
       !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
-
-
 predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
@@ -86,6 +106,14 @@ predicate Cloneable_footprint(this: Ref)
 predicate Cloneable_unique(this: Ref) {
   acc(Cloneable_footprint(this), write) &&
   isSubtype(typeOf(this), Cloneable())
+}
+
+predicate CollectionModel_footprint(this: Ref)
+
+predicate CollectionModel_unique(this: Ref) {
+  acc(CollectionModel_footprint(this), write) &&
+  isSubtype(typeOf(this), CollectionModel()) &&
+  boolFromRef(geInts(CollectionModel_g_size(this), intToRef(0)))
 }
 
 predicate InvariantBuilder_unique(this: Ref) {
@@ -167,10 +195,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function SetModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(SetModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function SetModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(SetModel_g_size(this)) == 0)
 
 
 function SetModel_g_size(this: Ref): Ref
@@ -204,13 +259,6 @@ function contains(this: Ref, element: Ref): Ref
     boolFromRef(result)
 
 
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), SetModel())
-  requires acc(SetModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(SetModel_g_size(this)) == 0)
-
-
 predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
@@ -220,6 +268,14 @@ predicate Cloneable_footprint(this: Ref)
 predicate Cloneable_unique(this: Ref) {
   acc(Cloneable_footprint(this), write) &&
   isSubtype(typeOf(this), Cloneable())
+}
+
+predicate CollectionModel_footprint(this: Ref)
+
+predicate CollectionModel_unique(this: Ref) {
+  acc(CollectionModel_footprint(this), write) &&
+  isSubtype(typeOf(this), CollectionModel()) &&
+  boolFromRef(geInts(CollectionModel_g_size(this), intToRef(0)))
 }
 
 predicate InvariantBuilder_unique(this: Ref) {
@@ -300,10 +356,37 @@ function BooleanArray_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function SetModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(SetModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function SetModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), SetModel())
+  requires acc(SetModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(SetModel_g_size(this)) == 0)
 
 
 function SetModel_g_size(this: Ref): Ref
@@ -337,13 +420,6 @@ function contains(this: Ref, element: Ref): Ref
     boolFromRef(result)
 
 
-function isEmpty(this: Ref): Ref
-  requires isSubtype(typeOf(this), SetModel())
-  requires acc(SetModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), boolType())
-  ensures boolFromRef(result) == (intFromRef(SetModel_g_size(this)) == 0)
-
-
 predicate BooleanArray_unique(this: Ref) {
   isSubtype(typeOf(this), BooleanArray())
 }
@@ -353,6 +429,14 @@ predicate Cloneable_footprint(this: Ref)
 predicate Cloneable_unique(this: Ref) {
   acc(Cloneable_footprint(this), write) &&
   isSubtype(typeOf(this), Cloneable())
+}
+
+predicate CollectionModel_footprint(this: Ref)
+
+predicate CollectionModel_unique(this: Ref) {
+  acc(CollectionModel_footprint(this), write) &&
+  isSubtype(typeOf(this), CollectionModel()) &&
+  boolFromRef(geInts(CollectionModel_g_size(this), intToRef(0)))
 }
 
 predicate InvariantBuilder_unique(this: Ref) {

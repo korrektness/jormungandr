@@ -64,6 +64,10 @@ annotation class ExternalSpec(val target: String)
 @Target(AnnotationTarget.FUNCTION)
 annotation class ExternalFunction(val target: String)
 
+/** Binds a top-level model property to a dependency property, including extensions. */
+@Target(AnnotationTarget.PROPERTY)
+annotation class ExternalProperty(val target: String)
+
 /** Selects the dependency member name for a mirrored model member. */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 annotation class ExternalMember(val target: String)

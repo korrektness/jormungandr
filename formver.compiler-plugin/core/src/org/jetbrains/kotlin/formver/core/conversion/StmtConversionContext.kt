@@ -38,6 +38,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.asPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.locality.plugin.specifiesOwnedReceiver
+import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
+import org.jetbrains.kotlin.formver.core.isUnique
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.Uniqueness
 import org.jetbrains.kotlin.formver.uniqueness.plugin.resolveUniqueness
@@ -276,13 +278,30 @@ fun StmtConversionContext.ownsReceiverBefore(element: FirElement, receiver: FirE
 }
 
 /**
+ * Whether [this] library extension takes its receiver `@Unique` only in its external specification. The uniqueness
+ * checker reads the receiver requirement from the library declaration, so it accepts any receiver.
+ */
+private fun StmtConversionContext.specifiesOwnedExtensionReceiver(callee: FirCallableSymbol<*>): Boolean {
+    val model = callee.externalSpecificationSymbol(session)
+    if (model == callee) return false
+    return model.receiverParameterSymbol?.let { context(checkerContext) { it.isUnique() } } == true
+}
+
+/**
  * Converts [access] as the opaque library call when it calls a member whose specification owns the dispatch receiver
- * and the receiver is not `Unique` on entry (see `specifiesOwnedReceiver`); `null` for any other access.
+ * (see `specifiesOwnedReceiver`), or an extension whose specification owns the extension receiver, and that receiver
+ * is not `Unique` on entry; `null` for any other access.
  */
 fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAccessExpression): ExpEmbedding? {
-    val receiver = access.dispatchReceiver ?: return null
     val callee = access.toResolvedCallableSymbol() ?: return null
-    if (!callee.specifiesOwnedReceiver(session) || ownsReceiverBefore(access, receiver)) return null
+    val dispatchReceiver = access.dispatchReceiver
+    val extensionReceiver = access.extensionReceiver
+    val receiver = when {
+        dispatchReceiver != null && callee.specifiesOwnedReceiver(session) -> dispatchReceiver
+        extensionReceiver != null && specifiesOwnedExtensionReceiver(callee) -> extensionReceiver
+        else -> return null
+    }
+    if (ownsReceiverBefore(access, receiver)) return null
     val arguments = (access as? FirFunctionCall)?.arguments.orEmpty()
     return Block {
         add(convert(receiver))

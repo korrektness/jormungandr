@@ -63,6 +63,10 @@ val FirFunctionSymbol<*>.receiverType: ConeKotlinType?
 val FirFunctionSymbol<*>.extensionReceiverType: ConeKotlinType?
     get() = containingPropertyOrSelf.resolvedReceiverTypeRef?.coneType
 
+/** The extension receiver of this function, or of the property this accessor belongs to. */
+val FirFunctionSymbol<*>.extensionReceiverSymbol: FirReceiverParameterSymbol?
+    get() = containingPropertyOrSelf.receiverParameterSymbol
+
 /** The symbol at which the uniqueness analysis of this function roots paths through `this`. */
 context(converter: ProgramConversionContext)
 val FirFunctionSymbol<*>.dispatchReceiverRoot: FirClassSymbol<*>?
@@ -73,7 +77,7 @@ context(converter: ProgramConversionContext)
 fun FirFunctionSymbol<*>.receiverRoots(signature: FunctionSignature): List<Pair<VariableEmbedding, FirBasedSymbol<*>>> =
     listOfNotNull(
         signature.dispatchReceiver?.let { variable -> dispatchReceiverRoot?.let { variable to it } },
-        signature.extensionReceiver?.let { variable -> receiverParameterSymbol?.let { variable to it } },
+        signature.extensionReceiver?.let { variable -> extensionReceiverSymbol?.let { variable to it } },
     )
 
 context(converter: ProgramConversionContext)
@@ -100,8 +104,8 @@ fun FirFunctionSymbol<*>.toFunctionSignature(): SignatureWithTarget<FunctionSign
         PlaceholderVariableEmbedding(
             ExtensionReceiverName,
             converter.embedType(it),
-            context(converter.checkerContext) { receiverParameterSymbol?.isUnique() ?: false },
-            context(converter.checkerContext) { receiverParameterSymbol?.isBorrowed() ?: false },
+            context(converter.checkerContext) { extensionReceiverSymbol?.isUnique() ?: false },
+            context(converter.checkerContext) { extensionReceiverSymbol?.isBorrowed() ?: false },
         )
     }
 
