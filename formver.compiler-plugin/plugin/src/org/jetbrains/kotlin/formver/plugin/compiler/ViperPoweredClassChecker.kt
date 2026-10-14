@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.formver.plugin.compiler
 
 import org.jetbrains.kotlin.descriptors.isInterface
-import org.jetbrains.kotlin.formver.core.trustedAssumptions
+import org.jetbrains.kotlin.formver.core.trust
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -82,7 +82,7 @@ class ViperPoweredClassChecker(
                 if (System.getProperty("formver.testRun").toBoolean()) {
                     declaration.viperProgram = program.program
                     declaration.shouldVerify = program.verify
-                    declaration.trustedAssumptions = program.trustedAssumptions
+                    declaration.trust = program.trust
                 } else if (program.verify) {
                     verify(declaration, program)
                 }
@@ -122,7 +122,7 @@ class ViperPoweredClassChecker(
             return
         }
         if (!failed) {
-            config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, program.trustedAssumptions)
+            config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel) { program.trust.assumptions }
             config.verifiedDeclarations?.record(declaration.symbol)
         }
     }

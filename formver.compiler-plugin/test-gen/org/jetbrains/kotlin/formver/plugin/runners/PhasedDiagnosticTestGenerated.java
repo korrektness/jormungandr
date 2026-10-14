@@ -189,6 +189,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("spec_partial_vacuity.kt")
+    public void testSpec_partial_vacuity() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/spec_partial_vacuity.kt");
+    }
+
+    @Test
     @TestMetadata("spec_vacuity.kt")
     public void testSpec_vacuity() {
       runTest("formver.compiler-plugin/testData/diagnostics/external_specs/spec_vacuity.kt");

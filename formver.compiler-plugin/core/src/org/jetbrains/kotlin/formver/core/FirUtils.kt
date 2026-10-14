@@ -143,12 +143,13 @@ val FirFunctionSymbol<*>.shouldBeInlined
 private object ViperProgram : FirDeclarationDataKey()
 private object ShouldVerify : FirDeclarationDataKey()
 private object LambdaPrograms : FirDeclarationDataKey()
-private object TrustedAssumptions : FirDeclarationDataKey()
+private object Trust : FirDeclarationDataKey()
+private object VerificationSkipped : FirDeclarationDataKey()
 
 data class LambdaVerificationProgram(
     val program: viper.silver.ast.Program,
     val shouldVerify: Boolean,
-    val trustedAssumptions: Set<org.jetbrains.kotlin.formver.common.TrustedAssumption>,
+    val trust: org.jetbrains.kotlin.formver.core.conversion.TrustedAssumptionCollector,
     /** The name that progress messages and the trust report give the lambda's verification. */
     val label: String,
 )
@@ -159,5 +160,8 @@ var FirDeclaration.viperProgram: viper.silver.ast.Program? by FirDeclarationData
 var FirDeclaration.shouldVerify: Boolean? by FirDeclarationDataRegistry.data(ShouldVerify)
 
 /** The trusted assumptions of [viperProgram]. */
-var FirDeclaration.trustedAssumptions: Set<org.jetbrains.kotlin.formver.common.TrustedAssumption>? by
-    FirDeclarationDataRegistry.data(TrustedAssumptions)
+var FirDeclaration.trust: org.jetbrains.kotlin.formver.core.conversion.TrustedAssumptionCollector? by
+    FirDeclarationDataRegistry.data(Trust)
+
+/** Whether SnaKt reported `VERIFICATION_SKIPPED` on this declaration. */
+var FirDeclaration.verificationSkipped: Boolean? by FirDeclarationDataRegistry.data(VerificationSkipped)

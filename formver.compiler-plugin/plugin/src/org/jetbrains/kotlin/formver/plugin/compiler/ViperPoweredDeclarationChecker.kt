@@ -50,7 +50,7 @@ import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.core.lambdaPrograms
-import org.jetbrains.kotlin.formver.core.trustedAssumptions
+import org.jetbrains.kotlin.formver.core.trust
 import org.jetbrains.kotlin.formver.core.LambdaVerificationProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
@@ -176,11 +176,11 @@ class ViperPoweredDeclarationChecker(
         val name = declaration.verificationLabel + if (index == 0) "" else ".lambda${index - 1}"
         if (System.getProperty("formver.testRun").toBoolean()) {
             // The test facade verifies the program later.
-            val trusted = programConversionContext.trust.assumptions
+            val trusted = programConversionContext.trust
             if (index == 0) {
                 declaration.viperProgram = viperProgram
                 declaration.shouldVerify = shouldVerify
-                declaration.trustedAssumptions = trusted
+                declaration.trust = trusted
             } else {
                 declaration.lambdaPrograms = declaration.lambdaPrograms.orEmpty() +
                     LambdaVerificationProgram(viperProgram, shouldVerify, trusted, name)
@@ -206,7 +206,7 @@ class ViperPoweredDeclarationChecker(
                 return
             }
             if (!failed) {
-                config.trustLedger?.record(context.containingFilePath!!, name, programConversionContext.trust.assumptions)
+                config.trustLedger?.record(context.containingFilePath!!, name) { programConversionContext.trust.assumptions }
                 if (index == 0) config.verifiedDeclarations?.record(declaration.symbol)
             }
         }

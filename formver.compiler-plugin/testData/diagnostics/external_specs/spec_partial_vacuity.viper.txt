@@ -1,0 +1,24 @@
+/spec_partial_vacuity.kt: info: Generated Viper text for partiallyVacuous:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function twiceModel(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= 0 && intFromRef(x) <= 1000
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (let anon ==
+      (timesInts(intToRef(2), x)) in
+      intFromRef(intToRef(2)) * intFromRef(x))
+  ensures !(intFromRef(x) == 3) || !(intFromRef(result) == 6)
+
+
+method partiallyVacuous() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(twiceModel(intToRef(3))) == 7
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

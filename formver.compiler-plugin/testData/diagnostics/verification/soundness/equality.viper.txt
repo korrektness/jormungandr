@@ -1,3 +1,91 @@
+/equality.kt: info: Generated Viper text for Key:
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), Key())
+  ensures intFromRef(g_v(v_ret_0)) == intFromRef(par_v)
+  ensures intFromRef(g_v(v_ret_0)) == intFromRef(par_v)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Key()
+  anon := par_v
+  inhale intFromRef(g_v(v_ret_0)) == intFromRef(anon)
+  fold acc(Key_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Key_unique(v_ret_0), write)
+}
+
+/equality.kt: info: Generated Viper text for equals:
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method equals(this: Ref, other: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Key())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  if (isSubtype(typeOf(other), Key())) {
+    v_ret_0 := boolToRef(intFromRef(g_v(other)) == intFromRef(g_v(this)))
+  } else {
+    v_ret_0 := boolToRef(false)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/equality.kt: info: Generated Viper text for hashCode:
+function g_v(this: Ref): Ref
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method hashCode(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Key())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := g_v(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/equality.kt: info: Generated Viper text for Single:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Single())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Single()
+  fold acc(Single_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Single_unique(v_ret_0), write)
+}
+
+/equality.kt: info: Generated Viper text for equals:
+method equals(this: Ref, other: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Single())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := boolToRef(true)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/equality.kt: info: Generated Viper text for hashCode:
+method hashCode(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Single())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
 /equality.kt: info: Generated Viper text for AlwaysEq:
 function g_v(this: Ref): Ref
   requires isSubtype(typeOf(this), AlwaysEq())
@@ -1061,3 +1149,64 @@ method equalsCatch(a: Ref, b: Ref) returns (v_ret_0: Ref)
 method message(this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(this), anyType())
   ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+/equality.kt: info: Generated Viper text for Key:
+method con(par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures isSubtype(typeOf(v_ret_0), Key())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Key()
+  fold acc(Key_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Key_unique(v_ret_0), write)
+}
+
+/equality.kt: info: Generated Viper text for expectEq:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method expectEq(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Key())
+  requires isSubtype(typeOf(b), Key())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := a
+  anon_1 := b
+  inhale isSubtype(typeOf(anon_2), boolType())
+  l0_r := anon_2
+  assert boolFromRef(l0_r) == (a == b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/equality.kt: info: Generated Viper text for expectObjectEq:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method expectObjectEq(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Single())
+  requires isSubtype(typeOf(b), anyType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_r: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := a
+  anon_1 := b
+  inhale isSubtype(typeOf(anon_2), boolType())
+  l0_r := anon_2
+  assert boolFromRef(l0_r) == (a == b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

@@ -57,3 +57,17 @@ fun <!VIPER_TEXT!>usesSeveral<!>(counter: @Unique @Borrowed Counter, list: @Uniq
     verify(next > 1)
     verify(counter.value() >= 0)
 }
+
+// The caller uses the postcondition of a callee that SnaKt skips.
+fun <!VERIFICATION_SKIPPED!>skippedCallee<!>(): Int {
+    postconditions<Int> { it == 5 }
+    val a = listOf(1)
+    val b = listOf(1)
+    val r = <!UNSUPPORTED_FEATURE!>a == b<!>
+    return 4
+}
+
+fun <!VIPER_TEXT!>usesSkipped<!>() {
+    val x = skippedCallee()
+    verify(x == 5)
+}

@@ -17,6 +17,7 @@ data class TrustedAssumption(val kind: Kind, val name: String) : Comparable<Trus
         REBINDS_VERIFIED("rebinds verified"),
         NEVER_VERIFY("@NeverVerify"),
         NEVER_CONVERT("@NeverConvert"),
+        SKIPPED("skipped"),
         LIBRARY_CONTRACT("library contract"),
     }
 
@@ -127,17 +128,20 @@ class TrustReport(entries: Map<String, Map<String, Set<TrustedAssumption>>>) {
     }
 }
 
-/** Collects the verified declarations of one compilation; checkers on several threads may record into it. */
+/**
+ * Collects the verified declarations of one compilation; checkers on several threads may record into it. [snapshot]
+ * evaluates the recorded assumptions, so it must run after every checker.
+ */
 class TrustLedger {
-    private val entries = mutableMapOf<String, MutableMap<String, Set<TrustedAssumption>>>()
+    private val entries = mutableMapOf<String, MutableMap<String, () -> Set<TrustedAssumption>>>()
 
     @Synchronized
-    fun record(file: String, label: String, assumptions: Set<TrustedAssumption>) {
+    fun record(file: String, label: String, assumptions: () -> Set<TrustedAssumption>) {
         entries.getOrPut(file) { mutableMapOf() }[label] = assumptions
     }
 
     @Synchronized
-    fun snapshot(): TrustReport = TrustReport(entries.mapValues { it.value.toMap() })
+    fun snapshot(): TrustReport = TrustReport(entries.mapValues { (_, labels) -> labels.mapValues { it.value() } })
 }
 
 /**

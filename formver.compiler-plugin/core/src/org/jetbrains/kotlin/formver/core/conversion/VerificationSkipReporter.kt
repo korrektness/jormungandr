@@ -11,10 +11,12 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.formver.common.Failure
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
+import org.jetbrains.kotlin.formver.core.verificationSkipped
 import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 
 /** Reports [ConversionErrors.VERIFICATION_SKIPPED] at most once per declaration source. */
@@ -26,6 +28,8 @@ class VerificationSkipReporter(
     private val skippedSources: MutableSet<KtSourceElement?> = mutableSetOf()
 
     fun report(source: KtSourceElement?, reason: KotlinCondition.SkipReason, symbol: FirBasedSymbol<*>?) {
+        @OptIn(SymbolInternals::class)
+        symbol?.fir?.verificationSkipped = true
         if (!skippedSources.add(source)) return
         context(checkerContext) {
             reporter.reportFailure(Failure(ConversionErrors.VERIFICATION_SKIPPED, source, KotlinCondition.Skipped(reason, symbol)))

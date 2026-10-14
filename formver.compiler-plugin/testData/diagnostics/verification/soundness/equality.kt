@@ -1,8 +1,12 @@
 // FULL_JDK
 // WITH_STDLIB
+// LANGUAGE: +MultiPlatformProjects
+
+// MODULE: common
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Iterable.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/Collections.kt
 // EXTERNAL_SPEC: formver.compiler-plugin/plugin/resources/external-specs/AssociativeCollections.kt
+// FILE: equality.kt
 
 import org.jetbrains.kotlin.formver.plugin.*
 
@@ -98,3 +102,31 @@ fun <!VERIFICATION_SKIPPED!>boxedInts<!>(a: Int) {
 }
 
 fun <!VERIFICATION_SKIPPED!>boxedGeneric<!>(a: Any, b: Int) = <!IMPLICIT_BOXING_IN_IDENTITY_EQUALS, UNSUPPORTED_FEATURE!>a === b<!>
+
+// The `actual` class may override `equals`, so `==` on an `expect` class is not identity.
+expect <!VIPER_TEXT!>class Key<!>(v: Int)
+
+fun <!VIPER_TEXT!>expectEq<!>(a: Key, b: Key) {
+    val r = a == b
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>r == (a === b)<!>)
+}
+
+expect object Single
+
+fun <!VIPER_TEXT!>expectObjectEq<!>(a: Single, b: Any) {
+    val r = a == b
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>r == (a === b)<!>)
+}
+
+// MODULE: jvm()()(common)
+// FILE: equality_actual.kt
+
+actual <!VIPER_TEXT!>class Key<!> actual constructor(val v: Int) {
+    override fun <!VIPER_TEXT!>equals<!>(other: Any?): Boolean = other is Key && other.v == v
+    override fun <!VIPER_TEXT!>hashCode<!>(): Int = v
+}
+
+actual <!VIPER_TEXT!>object Single<!> {
+    override fun <!VIPER_TEXT!>equals<!>(other: Any?): Boolean = true
+    override fun <!VIPER_TEXT!>hashCode<!>(): Int = 0
+}

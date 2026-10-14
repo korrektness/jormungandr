@@ -56,14 +56,18 @@ SnaKt lists the trusted pieces that each verified declaration's program uses:
   which dependencies SnaKt recognises as verified.
 - `@NeverVerify` and `@NeverConvert`: a callee or custom accessor that SnaKt
   does not verify, through its own annotation or a containing class's.
+- `skipped`: a callee or custom accessor of the module that SnaKt skipped with
+  `VERIFICATION_SKIPPED`. The program uses its contract, which nothing proves.
 - `library contract`: a contract that `conversion/StdLibConverter.kt` gives a
   library function by name.
 
 The report's first line counts the verified declarations, those that rely on a
 trusted piece, and the distinct trusted pieces they rely on, in total and by kind.
 
-A call to another declaration of the module is not listed: SnaKt verifies that
-declaration on its own. A declaration is listed once its verification succeeds,
+A call to another declaration of the module that SnaKt does not skip is not
+listed: SnaKt verifies that declaration on its own. `verification_targets_selection`
+applies to the whole module, so a declaration it leaves out has no verified
+caller. A declaration is listed once its verification succeeds,
 whether the verifier ran or the verification cache held the result. README.md,
 under `trust_report`, says where the report goes
 (`verification/trust_report.kt`).
@@ -391,6 +395,12 @@ ownership, observers and laws that SnaKt does not prove against the library's
 code. A source subtype of a modelled class is rejected. SPECIFICATIONS.md,
 "External specifications", has the binding rules and the contradiction check.
 
+The contradiction check assumes the precondition for arbitrary arguments and
+refutes `false`, so it finds only a specification that contradicts itself for
+every input. A postcondition that contradicts itself for some arguments passes
+the check, and a call with those arguments proves anything. The specifications
+stay trusted.
+
 The bundled specifications are read from the plugin jar's own index and
 extracted to a per-user directory. Each compilation compares the extracted
 files with the jar's and restores any that differ
@@ -399,7 +409,7 @@ specification files as inputs of the compile task, so editing one recompiles
 its callers.
 
 Tests: `external_spec_ownership.kt::SourceGauge`,
-`external_specs/spec_vacuity.kt`, `external_specs/bundled_spec_vacuity.kt`,
+`external_specs/spec_vacuity.kt`, `external_specs/spec_partial_vacuity.kt`, `external_specs/bundled_spec_vacuity.kt`,
 `formver.compiler-plugin/test/org/jetbrains/kotlin/formver/common/ExternalSpecSourcesTest.kt`, and
 `agent-scripts/check-gradle-consumer.sh`, which edits a specification and
 rebinds a verified declaration.

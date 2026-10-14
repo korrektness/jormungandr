@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.formver.plugin.services
 
 import org.jetbrains.kotlin.formver.common.TrustLedger
-import org.jetbrains.kotlin.formver.common.TrustedAssumption
+import org.jetbrains.kotlin.formver.core.conversion.TrustedAssumptionCollector
 import org.jetbrains.kotlin.formver.common.services.updatingTestData
 import org.jetbrains.kotlin.test.services.TestService
 import org.jetbrains.kotlin.test.services.TestServices
@@ -23,8 +23,8 @@ class TrustReportCollector(private val testServices: TestServices) : TestService
     private val enabled: Boolean
         get() = testServices.moduleStructure.modules.any { FormVerDirectives.TRUST_REPORT in it.directives }
 
-    fun record(file: String, label: String, assumptions: Set<TrustedAssumption>) {
-        if (enabled) ledger.record(file, label, assumptions)
+    fun record(file: String, label: String, trust: TrustedAssumptionCollector) {
+        if (enabled) ledger.record(file, label) { trust.assumptions }
     }
 
     fun assertEquality() {

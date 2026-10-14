@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.getSealedClassInheritors
 import org.jetbrains.kotlin.fir.declarations.utils.isData
+import org.jetbrains.kotlin.fir.declarations.utils.isExpect
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.declarations.utils.isInlineOrValue
 import org.jetbrains.kotlin.fir.declarations.utils.correspondingValueParameterFromPrimaryConstructor
@@ -158,6 +159,8 @@ private fun StmtConversionContext.equalsImplementation(cls: FirRegularClassSymbo
 }
 
 private fun StmtConversionContext.classEqualityKind(cls: FirRegularClassSymbol): EqualityKind {
+    // The `actual` class may override `equals`.
+    if (cls.isExpect) return EqualityKind.Dynamic
     val implementation = equalsImplementation(cls)
     val declaringClass = implementation.callableId.classId
     val isSource = cls.origin == FirDeclarationOrigin.Source
@@ -183,7 +186,7 @@ private fun StmtConversionContext.hasIdentityEquality(
     cls: FirRegularClassSymbol, visited: MutableSet<FirRegularClassSymbol>,
 ): Boolean {
     if (!visited.add(cls)) return true
-    if (cls.isInlineOrValue || cls.isData) return false
+    if (cls.isInlineOrValue || cls.isData || cls.isExpect) return false
     val declaringClass = equalsImplementation(cls).callableId.classId
     if (declaringClass != StandardClassIds.Any && declaringClass != StandardClassIds.Enum) return false
     return when {

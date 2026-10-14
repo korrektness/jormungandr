@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.formver.common.TrustedAssumption
 import org.jetbrains.kotlin.formver.common.trustName
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.common.externalSpecifications
+import org.jetbrains.kotlin.formver.core.verificationSkipped
 import org.jetbrains.kotlin.formver.locality.plugin.neverConvert
 import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 
@@ -30,7 +31,17 @@ class TrustedAssumptionCollector(
 ) {
     private val trusted = sortedSetOf<TrustedAssumption>()
 
-    val assumptions: Set<TrustedAssumption> get() = trusted
+    /** The source callees whose contracts the program uses, each with a name the report gives it. */
+    private val sourceCallees = mutableSetOf<Pair<FirCallableSymbol<*>, FirCallableSymbol<*>>>()
+
+    /**
+     * The recorded assumptions, with each source callee that SnaKt skipped. Whether a callee is skipped is known once
+     * its own check has run, so the set is complete only after every checker has run.
+     */
+    val assumptions: Set<TrustedAssumption>
+        @OptIn(SymbolInternals::class)
+        get() = trusted + sourceCallees.filter { (callee, _) -> callee.fir.verificationSkipped == true }
+            .map { (_, name) -> TrustedAssumption(TrustedAssumption.Kind.SKIPPED, name.trustName) }
 
     /** Records the external binding of [target]. */
     fun recordBinding(target: FirBasedSymbol<*>) {
@@ -39,7 +50,11 @@ class TrustedAssumptionCollector(
 
     /** Records [symbol], a callee or accessor that the program calls, when SnaKt does not verify it. */
     fun recordOptOut(symbol: FirCallableSymbol<*>, name: FirCallableSymbol<*> = symbol) {
-        if (verifiedHere(symbol) || !symbol.neverVerify(session)) return
+        if (verifiedHere(symbol)) return
+        if (!symbol.neverVerify(session)) {
+            if (symbol.origin == FirDeclarationOrigin.Source) sourceCallees += symbol to name
+            return
+        }
         val kind = if (symbol.neverConvert(session)) TrustedAssumption.Kind.NEVER_CONVERT else TrustedAssumption.Kind.NEVER_VERIFY
         trusted += TrustedAssumption(kind, name.trustName)
     }

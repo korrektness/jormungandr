@@ -135,8 +135,8 @@ compares its subject with `==`. SnaKt picks the meaning of `equals` from the sta
   the class and each primary-constructor property compares with `==`.
 - A source class that declares `equals` calls it through its specification. The call may throw like any other.
 - A type parameter compares by value or identity when one of its bounds does.
-- Any other type, such as an interface, an open class, an unbounded type parameter or a library class, gives an
-  arbitrary result. The call may throw.
+- Any other type, such as an interface, an open class, an `expect` class, an unbounded type parameter or a library
+  class, gives an arbitrary result. The call may throw.
 
 In a specification, an `equals` that is not a `@Pure` function, a data class with a `var` component and a data class
 that contains itself compare through a relation that only says what a null `a`, a value type or an identity class
@@ -260,8 +260,8 @@ dependencies, whose class files keep the mark, are tested; a dependency that doe
 A contradictory specification would let every proof that assumes it succeed, so each compilation checks the
 specifications it loads from `externalSpec` files for contradictions: the precondition of each model with a
 specification, its postcondition given the precondition, and the laws each model interface declares together with
-those it inherits. Each contradiction is the error `EXTERNAL_SPEC_VACUOUS` on its model. The check goes through the
-verification cache. The bundled specifications are checked by the repository's tests instead of in each compilation.
+those it inherits. Each contradiction is the error `EXTERNAL_SPEC_VACUOUS` on its model. docs/soundness.md, "External
+specifications", says which contradictions the check misses. The check goes through the verification cache. The bundled specifications are checked by the repository's tests instead of in each compilation.
 The trust report lists the bindings each verified declaration relies on (docs/soundness.md, "The trust report"). The bundled assumptions are the
 sources indexed by `formver.compiler-plugin/plugin/resources/META-INF/formver/external-specs.list`.
 They compile as part of the user's module, so they declare nothing public and raise no warnings: they compile under
