@@ -3,10 +3,10 @@ package org.jetbrains.kotlin.formver.external.collections
 import org.jetbrains.kotlin.formver.plugin.*
 
 @ExternalFunction("kotlin.collections.map")
-fun <K, V, R> (@Unique @Borrowed MapModel<out K, V>).mapEntriesModel(transform: (EntryModel<K, V>) -> R): @Unique ListModel<R> = TODO()
+internal fun <K, V, R> (@Unique @Borrowed MapModel<out K, V>).mapEntriesModel(transform: (EntryModel<K, V>) -> R): @Unique ListModel<R> = TODO()
 
 @ExternalSpec("kotlin.collections.Set")
-interface SetModel<out E> : IterableModel<E> {
+internal interface SetModel<out E> : IterableModel<E> {
     @Law @Pure @Unique fun iterationSize(): Boolean = iterationSequence().size == size
     @Law @Pure @Unique fun distinctElements(): Boolean = forAll<Int> { i ->
         forAll<Int> { j ->
@@ -33,7 +33,7 @@ interface SetModel<out E> : IterableModel<E> {
 }
 
 @ExternalSpec("kotlin.collections.MutableSet")
-interface MutableSetModel<E> : SetModel<E> {
+internal interface MutableSetModel<E> : SetModel<E> {
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-mutable-set/add.html: insert if absent, returning whether inserted.
     @Unique @Borrowed fun add(element: E): Boolean
     @SpecOf("add") @Unique @Borrowed fun addSpec(element: E) {
@@ -57,7 +57,7 @@ interface MutableSetModel<E> : SetModel<E> {
 }
 
 @ExternalSpec("kotlin.collections.Map")
-interface MapModel<K, out V> {
+internal interface MapModel<K, out V> {
     @GhostObserver @Pure @Unique fun keysSequence(): IterationSequence<K> = ghostObserver()
     @GhostObserver @Pure @Unique fun iterationSequence(): IterationSequence<EntryModel<K, V>> = ghostObserver()
     @Law @Pure @Unique fun iterationSize(): Boolean =
@@ -109,7 +109,7 @@ interface MapModel<K, out V> {
 }
 
 @ExternalSpec("kotlin.collections.MutableMap")
-interface MutableMapModel<K, V> : MapModel<K, V> {
+internal interface MutableMapModel<K, V> : MapModel<K, V> {
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-mutable-map/put.html: associate the key, returning its previous value or null.
     @Unique @Borrowed fun put(key: K, value: V): V?
     @SpecOf("put") @Unique @Borrowed fun putSpec(key: K, value: V) {
@@ -136,35 +136,35 @@ interface MutableMapModel<K, V> : MapModel<K, V> {
 
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/set-of.html: empty read-only set.
 @ExternalFunction("kotlin.collections.setOf")
-fun <T> emptySetModel(): @Unique SetModel<T> = TODO()
-@SpecOf("emptySetModel") fun <T> emptySetSpec() {
+internal fun <T> emptySetModel(): @Unique SetModel<T> = TODO()
+@SpecOf("emptySetModel") internal fun <T> emptySetSpec() {
     postconditions<@Unique SetModel<T>> { result -> result.size == 0 }
 }
 
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/set-of.html: singleton read-only set.
 @ExternalFunction("kotlin.collections.setOf")
-fun <T> singletonSetModel(element: T): @Unique SetModel<T> = TODO()
-@SpecOf("singletonSetModel") fun <T> singletonSetSpec(element: T) {
+internal fun <T> singletonSetModel(element: T): @Unique SetModel<T> = TODO()
+@SpecOf("singletonSetModel") internal fun <T> singletonSetSpec(element: T) {
     postconditions<@Unique SetModel<T>> { result -> result.size == 1; result.contains(element) }
 }
 
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/mutable-set-of.html: new empty mutable set.
 @ExternalFunction("kotlin.collections.mutableSetOf")
-fun <T> emptyMutableSetModel(): @Unique MutableSetModel<T> = TODO()
-@SpecOf("emptyMutableSetModel") fun <T> emptyMutableSetSpec() {
+internal fun <T> emptyMutableSetModel(): @Unique MutableSetModel<T> = TODO()
+@SpecOf("emptyMutableSetModel") internal fun <T> emptyMutableSetSpec() {
     postconditions<@Unique MutableSetModel<T>> { result -> result.size == 0 }
 }
 
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/map-of.html: empty read-only map.
 @ExternalFunction("kotlin.collections.mapOf")
-fun <K, V> emptyMapModel(): @Unique MapModel<K, V> = TODO()
-@SpecOf("emptyMapModel") fun <K, V> emptyMapSpec() {
+internal fun <K, V> emptyMapModel(): @Unique MapModel<K, V> = TODO()
+@SpecOf("emptyMapModel") internal fun <K, V> emptyMapSpec() {
     postconditions<@Unique MapModel<K, V>> { result -> result.size == 0 }
 }
 
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/mutable-map-of.html: new empty mutable map.
 @ExternalFunction("kotlin.collections.mutableMapOf")
-fun <K, V> emptyMutableMapModel(): @Unique MutableMapModel<K, V> = TODO()
-@SpecOf("emptyMutableMapModel") fun <K, V> emptyMutableMapSpec() {
+internal fun <K, V> emptyMutableMapModel(): @Unique MutableMapModel<K, V> = TODO()
+@SpecOf("emptyMutableMapModel") internal fun <K, V> emptyMutableMapSpec() {
     postconditions<@Unique MutableMapModel<K, V>> { result -> result.size == 0 }
 }

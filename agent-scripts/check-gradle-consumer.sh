@@ -10,7 +10,9 @@
 # compiled code is accepted, if a spec binding to a missing library declaration
 # is accepted, if a false claim about a specified call verifies, if a
 # multiplatform consumer's common code does not verify through the bundled specs,
-# or if a caller stays verified after the spec it relies on changes.
+# or if a caller stays verified after the spec it relies on changes. The
+# multiplatform consumer uses explicit API mode, extra warnings and warnings as
+# errors, which the bundled specs must compile under.
 #
 # Needs network access for the consumer's own dependencies, and Z3: Z3_EXE, z3
 # on PATH, or the copy that the test tasks provision under the Gradle user
@@ -370,13 +372,18 @@ repositories {
 
 kotlin {
     jvm()
+    explicitApi()
+    compilerOptions {
+        allWarningsAsErrors = true
+        extraWarnings = true
+    }
 }
 BUILD
 for fragment in common jvm; do
     cat >"$kmp/src/${fragment}Main/kotlin/${fragment}.kt" <<SRC
 import org.jetbrains.kotlin.formver.plugin.*
 
-fun ${fragment}Positive(values: @Unique @Borrowed List<Int>) {
+public fun ${fragment}Positive(values: @Unique @Borrowed List<Int>) {
     preconditions { forAll<Int> { i -> (0 <= i && i < values.size) implies (values[i] > 0) } }
     values.forEach { verify(it > 0) }
 }
@@ -391,6 +398,12 @@ fi
 if grep -q "^w: .*\(common\|jvm\).kt" "$kmp_log"; then
     grep "^w: " "$kmp_log" >&2
     echo "check-gradle-consumer.sh: the multiplatform consumer's claims did not verify" >&2
+    exit 1
+fi
+kmp_leaked="$(find "$kmp/build/classes" -type f -exec grep -l "${spec_names[@]}" {} + || true)"
+if [[ -n "$kmp_leaked" ]]; then
+    echo "check-gradle-consumer.sh: a bundled spec reached the multiplatform compiled output:" >&2
+    echo "$kmp_leaked" >&2
     exit 1
 fi
 

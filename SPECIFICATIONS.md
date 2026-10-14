@@ -198,6 +198,8 @@ callers against them without proving the dependency's implementation. Audit each
 library version in the compilation classpath; a matching signature alone establishes no behavioral compatibility.
 The compiler reports loaded specification inputs and resolved trusted bindings. The bundled assumptions are the
 sources indexed by `formver.compiler-plugin/plugin/resources/META-INF/formver/external-specs.list`.
+They compile as part of the user's module, so they declare nothing public and raise no warnings: they compile under
+explicit API mode and warnings as errors.
 In a multiplatform compilation, specification sources belong to the common fragment that every other fragment depends
 on, so their models apply in common and platform code alike. When the compilation has no single such fragment they
 belong to the platform fragment, and a collection call in common code that needs the collection models is an opaque

@@ -3,7 +3,7 @@ package org.jetbrains.kotlin.formver.external.collections
 import org.jetbrains.kotlin.formver.plugin.*
 
 @ExternalSpec("kotlin.collections.List")
-interface ListModel<out E> : IterableModel<E> {
+internal interface ListModel<out E> : IterableModel<E> {
     @Law @Pure @Unique fun iterationElements(): Boolean =
         iterationSequence().size == size && forAll<Int> { i ->
             (i >= 0 && i < iterationSequence().size && i < size) implies (iterationSequence()[i] == get(i))
@@ -46,19 +46,19 @@ interface ListModel<out E> : IterableModel<E> {
 }
 
 @ExternalFunction("kotlin.collections.map")
-fun <T, R> (@Unique @Borrowed IterableModel<T>).mapModel(transform: (T) -> R): @Unique ListModel<R> = TODO()
+internal fun <T, R> (@Unique @Borrowed IterableModel<T>).mapModel(transform: (T) -> R): @Unique ListModel<R> = TODO()
 
 @ExternalFunction("kotlin.collections.filter")
-fun <T> (@Unique @Borrowed IterableModel<T>).filterModel(predicate: (T) -> Boolean): @Unique ListModel<T> = TODO()
+internal fun <T> (@Unique @Borrowed IterableModel<T>).filterModel(predicate: (T) -> Boolean): @Unique ListModel<T> = TODO()
 
 @ExternalSpec("kotlin.collections.MutableList")
-interface MutableListModel<E> : ListModel<E> {
+internal interface MutableListModel<E> : ListModel<E> {
     // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-mutable-list/add.html: append and return true.
     @Unique @Borrowed fun add(element: E): Boolean
     @SpecOf("add") @Unique @Borrowed fun addSpec(element: E) {
         preconditions { size < 2147483647 }
         postconditions<Boolean> { result ->
-            result
+            result == true
             size == old(size) + 1
             get(old(size)) == element
             forAll<Int> { i -> (i >= 0 && i < old(size)) implies (get(i) == old(get(i))) }
@@ -107,21 +107,21 @@ interface MutableListModel<E> : ListModel<E> {
 
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/list-of.html: empty read-only list.
 @ExternalFunction("kotlin.collections.listOf")
-fun <T> emptyListModel(): @Unique ListModel<T> = TODO()
-@SpecOf("emptyListModel") fun <T> emptyListSpec() {
+internal fun <T> emptyListModel(): @Unique ListModel<T> = TODO()
+@SpecOf("emptyListModel") internal fun <T> emptyListSpec() {
     postconditions<@Unique ListModel<T>> { result -> result.size == 0 }
 }
 
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/list-of.html: read-only singleton.
 @ExternalFunction("kotlin.collections.listOf")
-fun <T> singletonListModel(element: T): @Unique ListModel<T> = TODO()
-@SpecOf("singletonListModel") fun <T> singletonListSpec(element: T) {
+internal fun <T> singletonListModel(element: T): @Unique ListModel<T> = TODO()
+@SpecOf("singletonListModel") internal fun <T> singletonListSpec(element: T) {
     postconditions<@Unique ListModel<T>> { result -> result.size == 1; result[0] == element }
 }
 
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/mutable-list-of.html: new empty mutable list.
 @ExternalFunction("kotlin.collections.mutableListOf")
-fun <T> emptyMutableListModel(): @Unique MutableListModel<T> = TODO()
-@SpecOf("emptyMutableListModel") fun <T> emptyMutableListSpec() {
+internal fun <T> emptyMutableListModel(): @Unique MutableListModel<T> = TODO()
+@SpecOf("emptyMutableListModel") internal fun <T> emptyMutableListSpec() {
     postconditions<@Unique MutableListModel<T>> { result -> result.size == 0 }
 }
