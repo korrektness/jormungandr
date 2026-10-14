@@ -1588,6 +1588,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("shared_collection_hofs.kt")
+      public void testShared_collection_hofs() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/shared_collection_hofs.kt");
+      }
+
+      @Test
       @TestMetadata("stdlib_hof_invariants.kt")
       public void testStdlib_hof_invariants() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/stdlib_hof_invariants.kt");
