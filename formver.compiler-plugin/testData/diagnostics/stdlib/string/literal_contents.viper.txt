@@ -1,0 +1,120 @@
+/literal_contents.kt: info: Generated Viper text for endsWithChars:
+method endsWithChars(s: Ref, suffix: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(suffix), stringType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0) ==
+    (|stringFromRef(suffix)| <= |stringFromRef(s)| &&
+    (forall anon_builtin_0: Int ::
+      { stringFromRef(suffix)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(suffix)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(s, plusInts(minusInts(stringLength(s), stringLength(suffix)),
+        intToRef(anon_builtin_0)))) in
+        stringFromRef(s)[intFromRef(plusInts(minusInts(stringLength(s), stringLength(suffix)),
+        intToRef(anon_builtin_0)))]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(suffix, intToRef(anon_builtin_0))) in
+        stringFromRef(suffix)[anon_builtin_0])))
+{
+  var offset: Ref
+  var i: Ref
+  var anon_0: Ref
+  if (|stringFromRef(suffix)| > |stringFromRef(s)|) {
+    v_ret_0 := boolToRef(false)
+    goto lbl_ret_0
+  }
+  offset := minusInts(stringLength(s), stringLength(suffix))
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(offset), intType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant isSubtype(typeOf(suffix), stringType())
+    invariant 0 <= intFromRef(i) &&
+      intFromRef(i) <= |stringFromRef(suffix)|
+    invariant (forall anon_builtin_1: Int ::
+        { stringFromRef(suffix)[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
+        (let anon_builtin_neg1 ==
+          (stringGet(s, plusInts(offset, intToRef(anon_builtin_1)))) in
+          stringFromRef(s)[intFromRef(plusInts(offset, intToRef(anon_builtin_1)))]) ==
+        (let anon_builtin_neg1 ==
+          (stringGet(suffix, intToRef(anon_builtin_1))) in
+          stringFromRef(suffix)[anon_builtin_1]))
+  anon_0 := ltInts(i, stringLength(suffix))
+  if (boolFromRef(anon_0)) {
+    if (!((let anon_builtin_neg1 ==
+      (stringGet(s, plusInts(offset, i))) in
+      stringFromRef(s)[intFromRef(plusInts(offset, i))]) ==
+    (let anon_builtin_neg1 ==
+      (stringGet(suffix, i)) in
+      stringFromRef(suffix)[intFromRef(i)]))) {
+      v_ret_0 := boolToRef(false)
+      goto lbl_ret_0
+    }
+    i := plusInts(i, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(offset), intType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(s), stringType())
+  assert isSubtype(typeOf(suffix), stringType())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= |stringFromRef(suffix)|
+  assert (forall anon_builtin_1: Int ::
+      { stringFromRef(suffix)[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(s, plusInts(offset, intToRef(anon_builtin_1)))) in
+        stringFromRef(s)[intFromRef(plusInts(offset, intToRef(anon_builtin_1)))]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(suffix, intToRef(anon_builtin_1))) in
+        stringFromRef(suffix)[anon_builtin_1]))
+  v_ret_0 := boolToRef(true)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/literal_contents.kt: info: Generated Viper text for literalArgument:
+method endsWithChars(s: Ref, suffix: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires isSubtype(typeOf(suffix), stringType())
+  ensures isSubtype(typeOf(ret_3), boolType())
+  ensures boolFromRef(ret_3) ==
+    (|stringFromRef(suffix)| <= |stringFromRef(s)| &&
+    (forall anon_builtin_0: Int ::
+      { stringFromRef(suffix)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(suffix)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(s, plusInts(minusInts(stringLength(s), stringLength(suffix)),
+        intToRef(anon_builtin_0)))) in
+        stringFromRef(s)[intFromRef(plusInts(minusInts(stringLength(s), stringLength(suffix)),
+        intToRef(anon_builtin_0)))]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(suffix, intToRef(anon_builtin_0))) in
+        stringFromRef(suffix)[anon_builtin_0])))
+
+
+method literalArgument(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires |stringFromRef(s)| == 1 &&
+    (let anon_builtin_neg1 ==
+      (stringGet(s, intToRef(0))) in
+      stringFromRef(s)[intFromRef(intToRef(0))]) ==
+    123
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0) == false
+{
+  v_ret_0 := endsWithChars(s, stringLit())
+  goto lbl_ret_0
+  label lbl_ret_0
+}

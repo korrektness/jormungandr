@@ -17,10 +17,14 @@ import org.jetbrains.kotlin.formver.viper.ast.Function
  *
  * `stringToRef(Seq(...))` is a string only once the verifier proves the range guard of the `stringToRef` typing
  * axiom, which quantifies over every index, and that proof grows steeply with the length of the literal. Here the
- * type and length are stated outright. The characters are given only for an index the proof already reads, as a
- * balanced conditional over the index rather than a `Seq` value: Silicon encodes `Seq(c1, ..., cn)` as a chain of
- * appends that its sequence axioms keep expanding, and on a long literal that alone exhausts a failing proof's time.
- * A use that does not read the characters therefore costs the same for any literal.
+ * type and length are stated outright. The characters are stated without a `Seq` value: Silicon encodes
+ * `Seq(c1, ..., cn)` as a chain of appends that its sequence axioms keep expanding, and on a long literal that alone
+ * exhausts a failing proof's time.
+ *
+ * Each character is stated twice. A ground equation per index supplies the term `literal[i]` that a quantifier
+ * triggered on indexing a string needs before it can be instantiated at `i`, as a precondition on the characters of
+ * a string parameter would. A quantified balanced conditional over the index gives the character at an index that
+ * the proof knows only symbolically.
  *
  * The postconditions are assumed rather than checked; they hold because a Kotlin string has at most `Int.MAX_VALUE`
  * characters, each in the `Char` range.
@@ -30,6 +34,7 @@ fun stringLiteralFunction(name: SymbolicName, value: String): Function = Functio
     val chars = stringInjection.fromRef(result)
     postcondition { result isOf RuntimeTypeDomain.stringType() }
     postcondition { Exp.SeqLength(chars) eq value.length.toExp() }
+    value.forEachIndexed { i, char -> postcondition { Exp.SeqIndex(chars, i.toExp()) eq char.code.toExp() } }
     if (value.isNotEmpty()) postcondition {
         Exp.forall(domainVar("index", Type.Int)) { index ->
             assumption { index ge 0.toExp() }
