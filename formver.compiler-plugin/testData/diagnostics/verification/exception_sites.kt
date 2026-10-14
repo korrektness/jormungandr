@@ -59,6 +59,13 @@ fun <!VIPER_TEXT!>sharedGetCatch<!>(a: IntArray): Int {
     try { x = 1; val n = <!POSSIBLE_INDEX_OUT_OF_BOUND!>a[-1]<!>; x = 2 } catch (e: Exception) { }
     return x
 }
+// Other arrays have no bounds model: an element access is an ordinary call, which may throw.
+fun <!VIPER_TEXT!>charArrayCatch<!>(a: CharArray): Int {
+    postconditions<Int> { it == 0 || it == 2 }
+    var x = 0
+    try { x = 1; a[5]; x = 2 } catch (e: Exception) { }
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 fun <!VIPER_TEXT!>longZeroCatch<!>(a: Long, b: Long): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0

@@ -2016,6 +2016,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("erased_iteration.kt")
+      public void testErased_iteration() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/erased_iteration.kt");
+      }
+
+      @Test
       @TestMetadata("footprints.kt")
       public void testFootprints() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/footprints.kt");

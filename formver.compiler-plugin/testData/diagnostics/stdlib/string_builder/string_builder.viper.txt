@@ -370,3 +370,55 @@ method appendShared(sb: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/string_builder.kt: info: Generated Viper text for appendSharedForgets:
+field contents: Seq[Int]
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate StringBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), StringBuilder()) && acc(this.contents, write) &&
+  (|this.contents| <= 2147483647 &&
+  (forall index: Int ::
+    { this.contents[index] }
+    index >= 0 && index < |this.contents| ==>
+    this.contents[index] >= 0 && this.contents[index] <= 65535))
+}
+
+method appendSharedForgets(sb: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(sb), StringBuilder())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_0: Ref
+  var after: Ref
+  var anon_1: Ref
+  anon_0 := havoc(intType())
+  before := anon_0
+  anon_1 := havoc(intType())
+  after := anon_1
+  assert intFromRef(after) > intFromRef(before)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

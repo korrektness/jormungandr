@@ -32,8 +32,10 @@ three things part of every result:
   verifies, because it relies on the constructor's promise
   (`verification/soundness/construction.kt::constructImpossible`).
 - **Library contracts.** `conversion/StdLibConverter.kt` gives Kotlin library
-  functions contracts by name. They are trusted, and an override of a library
-  member is trusted to comply with them.
+  functions contracts by name, and external specifications give library
+  declarations contracts, observers and laws (see "External specifications"
+  below). They are trusted, and an override of a library member is trusted to
+  comply with them.
 - **Skipped declarations.** A declaration that SnaKt does not verify reports
   `VERIFICATION_SKIPPED` with a reason. A body converted without that warning is
   verified, including the body of a local function, which is a declaration of
@@ -96,7 +98,7 @@ by design:
 
 ## Register
 
-### Recursive `@Pure` functions
+### Termination of `@Pure` functions
 
 A `@Pure` function becomes a Viper function, whose definition is an axiom. The
 axiom is sound only if a total function satisfies it, so a recursive `@Pure`
@@ -104,7 +106,14 @@ function, direct or mutual, needs a termination measure, which Viper checks.
 Without one it is rejected. SPECIFICATIONS.md, "Pure functions and
 specifications", has the rules.
 
-Test: `verification/pure_functions/termination.kt`.
+The measures are ordered by axioms in `domains/TerminationDomains.kt`: an `Int`
+decreases to a smaller `Int` and is bounded below by 0, `false` is below `true`,
+and an object is below the objects whose predicates contain its predicate. These
+are the orders of Viper's `decreases` library. Once a program has a measure,
+every function without one is declared terminating, which holds because a
+recursive `@Pure` function without a measure is rejected.
+
+Test: `verification/pure_functions/termination.kt::growing,loopyFalse`.
 
 ### Shared writes to law-bound fields
 
@@ -138,20 +147,65 @@ Test: `verification/compare_to.kt`.
 ### Exceptions inside `try`
 
 A `catch` sees the state at each site that can throw in the `try` body, as
-SPECIFICATIONS.md, "Exceptions", lists them. `==` has no edge: it is encoded
-without the call of `equals` that Kotlin makes.
+SPECIFICATIONS.md, "Exceptions", lists them, including an `==` that calls an
+`equals` other than value or identity equality. The site's exceptional exit
+jumps to each enclosing `catch` before the site's effects apply; a call's
+`catch` sees the state before the call. That is sound because a `try` body
+holds no owned state (SPECIFICATIONS.md, "Rejected constructs") and shared
+state is read as an arbitrary value. A failing arithmetic operation, and an
+`IntArray` or String index out of bounds, is a proof obligation instead, so a
+`catch` never needs to see it. An unmatched
+exhaustive `when` has no edge: see "Closed hierarchies".
 
-Tests: `verification/exception_sites.kt`,
-`verification/soundness/implicit_throws.kt`.
+Tests: `verification/exception_sites.kt::midTry,castCatch,sharedGetCatch,charArrayCatch`,
+`verification/soundness/implicit_throws.kt`,
+`verification/soundness/equality.kt::equalsCatch`.
 
-### Shared array reads
+### Arrays
 
-A read of an `IntArray` reached through a shared path checks no bounds and gives a
-fresh value. Without a `catch` this is partial correctness: the read throws, and
-the function does not return. Inside a `try`, the `catch` can observe it.
+An `IntArray`'s predicate holds its elements as a sequence whose length is
+`arraySize`, a function that gives a value from 0 to `Int.MAX_VALUE` and
+needs no permission, since a JVM array's length never changes. Each element is
+an `Int`. `IntArray(n)` gives `n` zeros, as the JVM fills a new array with them.
+Every element access checks its index. A read through a shared path gives an
+arbitrary `Int`, and a write through one is dropped
+(`linearization/LinearizationVisitor.kt`).
 
-Test: `stdlib/array/int_array_elements.kt::readPastEnd,writeNegative` covers
-owned paths only.
+Other array types have no model: an element access is an ordinary library call
+with no contract, which may throw.
+
+Tests: `stdlib/array/int_array_elements.kt::readPastEnd,writeShared`,
+`verification/exception_sites.kt::sharedGetCatch,charArrayCatch`.
+
+### `StringBuilder`
+
+A `StringBuilder`'s predicate holds its contents as a String: at most
+`Int.MAX_VALUE` characters, each a `Char`. A new builder is empty. On a shared
+builder, `length` and `toString` give arbitrary values and an append is dropped
+(`embeddings/types/StringBuilderEmbedding.kt`).
+
+Tests: `stdlib/string_builder/string_builder.kt::wrongLength,appendSharedForgets`,
+`verification/string_domain.kt::overlongBuilderAppend`.
+
+### Value ranges
+
+`domains/IntegerBounds.kt` and the injections of `domains/Injection.kt` give
+each `Int`, `Long`, `Short`, `Byte` and `Char` its JVM range, and each String at
+most `Int.MAX_VALUE` characters, each a `Char`. A quantified variable of these
+types ranges over the same values. The injection into `Ref` is one-to-one, so
+equal values are equal references; "Boxed identity" says why `===` cannot
+observe that.
+
+Tests: `verification/checked_integer.kt::addOverflow,constantOverflow`,
+`verification/string_domain.kt::overlongPureResult`.
+
+### String literals
+
+A String literal is a bodiless function (`domains/StringLiteralFunction.kt`)
+whose postconditions give the literal's length and its character at each index.
+They are computed from the literal's value.
+
+Test: `stdlib/string/long_literals.kt::wrongLengthOfLongLiteral`.
 
 ### Unconverted bodies
 
@@ -184,17 +238,21 @@ Tests: `verification/soundness/footprints.kt`,
 
 After a read, a cast, a call result or a generic adaptation, the encoding
 inhales the value's type and access invariants
-(`embeddings/expression/TypeOp.kt`). Kotlin typing justifies them, except for a
-type argument: the encoding assumes that a value has its substituted type
-argument, but the JVM checks it only where Kotlin inserts a cast. Collection
-templates apply this substituted element-type assumption to each indexed
-element of their iteration snapshot. An unchecked
+(`embeddings/expression/TypeOp.kt`). The same holds for the parameters at the
+entry of a function or a custom accessor (`ProgramConverter.registerAccessor`).
+Kotlin typing justifies
+them, except for a type argument: the encoding assumes that a value has its
+substituted type argument, but the JVM checks it only where Kotlin inserts a
+cast. `IterationSequence.get` and the collection templates apply this
+substituted element-type assumption to each indexed element of their
+iteration snapshot. An unchecked
 cast to `Cell<Int>`, `List<Int>` or a type parameter `T` gives a value read as
 `Any` a type it does not have, and an assertion about that type can verify with
 a false result.
 
-Tests: `verification/soundness/erased_generics.kt`, whose `UNSOUND` cases
-verify, `verification/classes/interface_family_downcast.kt::downcast`.
+Tests: `verification/soundness/erased_generics.kt` and
+`verification/soundness/erased_iteration.kt`, whose `UNSOUND` cases verify,
+`verification/classes/interface_family_downcast.kt::downcast`.
 
 ### Havocked shared fields
 
@@ -280,32 +338,77 @@ Tests: `verification/classes/override_contracts_negative.kt`,
 
 ### Unreachable points
 
-`throw` and a call that returns `Nothing` have no normal successor; the encoding
-adds `inhale false` after the edges to the enclosing `catch`.
+A site's exceptional exit ends in `inhale false` after its edges to the
+enclosing `catch` blocks (`StmtConversionContext.exceptionalExit`). Outside a
+`try`, a call has no exceptional exit: the exception leaves the function, where
+no postcondition is claimed. `throw` and a call that returns `Nothing` have no
+normal successor, so `inhale false` follows them too.
 
 Tests: `verification/control_flow/throw.kt::throwCaughtSkipsState`,
-`negative/try_catch.kt::useException`.
+`verification/negative/try_catch.kt::useException`.
 
 ### Property reads
 
-A read of a top-level property, or of a property that is not a backing field,
-gives an arbitrary value of its type. A getter cannot write to state the caller
-owns, because locality rejects passing it an owned receiver.
+A read of a top-level property, of a property that is not a backing field, or
+of a Java static field gives an arbitrary value of its type; a platform type is
+nullable. A reference to an `object` gives an arbitrary value of the object's
+type at each read. A getter cannot write to state the caller owns, because
+locality rejects passing it an owned receiver.
 
-Test: `verification/soundness/property_reads.kt`.
+Tests: `verification/soundness/property_reads.kt`,
+`verification/java_static_calls.kt::staticFieldIsOpaque`,
+`verification/classes/companion_objects.kt::objectPropertyIsOpaque`.
 
 ### Iteration sizes
 
-An `IterationSequence` has at most `Int.MAX_VALUE` elements, since its `size`
-is an `Int`. Iteration observers exist only for Collections and Maps, whose
-size is an `Int`, and for the sequences built from them; an `Iterable` that is
-not a `Collection` is rejected (`conversion/IterationSequenceConversion.kt`).
+Iteration observers exist only for Collections and Maps and for the sequences
+built from them; an `Iterable` that is not a `Collection` is rejected
+(`conversion/IterationSequenceConversion.kt`). The List, Set and Map
+specifications state that the observed sequence has `size` elements. That
+assumes a collection has at most `Int.MAX_VALUE` elements: the JVM's `size`
+gives `Int.MAX_VALUE` for a larger one.
 
-Test: `verification/soundness/iterable_size.kt`.
+Test: `verification/soundness/iterable_size.kt::countVisited,iterableObserver`.
+
+### Closed hierarchies
+
+An exhaustive `when` proves that a branch matches from the enum entries or
+sealed inheritors that SnaKt compiles against (`conversion/ExhaustiveWhen.kt`),
+and `==` compares by identity on a class whose `equals` is `Any.equals` or
+`Enum.equals` for every value (SPECIFICATIONS.md, "Equality"). For a source
+class these facts are exact. For a library class they assume that the class at
+run time is the version SnaKt compiled against. A newer version can add an
+entry or an inheritor, so that the `when` throws, and no `catch` sees that
+exception.
+
+Tests: `verification/control_flow/exhaustive_when.kt::nonExhaustiveWhen,objectWhen`
+check the source side; no test in one compilation can swap a library version.
+
+### External specifications
+
+An external specification gives a library declaration a contract, purity,
+ownership, observers and laws that SnaKt does not prove against the library's
+code. A source subtype of a modelled class is rejected. SPECIFICATIONS.md,
+"External specifications", has the binding rules and the contradiction check.
+
+The bundled specifications are read from the plugin jar's own index and
+extracted to a per-user directory. Each compilation compares the extracted
+files with the jar's and restores any that differ
+(`formver.common/src/org/jetbrains/kotlin/formver/common/ExternalSpecSources.kt`). The Gradle plugin declares the
+specification files as inputs of the compile task, so editing one recompiles
+its callers.
+
+Tests: `external_spec_ownership.kt::SourceGauge`,
+`external_specs/spec_vacuity.kt`, `external_specs/bundled_spec_vacuity.kt`,
+`formver.compiler-plugin/test/org/jetbrains/kotlin/formver/common/ExternalSpecSourcesTest.kt`, and
+`agent-scripts/check-gradle-consumer.sh`, which edits a specification and
+rebinds a verified declaration.
 
 ### Domain axioms
 
-The runtime-type and multiset domains, `havoc`, `arraySize` and the operator
-functions are axiomatised. They have a consistent model.
+The runtime-type, multiset, equality-relation and termination domains, `havoc`,
+`arraySize` and the operator functions are axiomatised. They have a consistent
+model.
 
-Test: none; the vacuity check would report a contradiction they caused.
+Test: the vacuity check (`./agent-scripts/test.sh --vacuity`), which reports a
+contradiction they cause in any verified test.

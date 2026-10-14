@@ -34,3 +34,20 @@ fun <!VIPER_TEXT!>sumOfIntegersUpToN<!>(n: Int): Int {
     }
     return sum
 }
+
+// The example under "Loop Invariants" in SPECIFICATIONS.md.
+fun <!VIPER_TEXT!>sumUpTo<!>(n: Int): Int {
+    preconditions { 0 <= n && n <= 1000 }
+    var sum = 0
+    var i = 0
+    while (i <= n) {
+        loopInvariants {
+            0 <= i && i <= n + 1
+            0 <= sum && sum <= i * 1000
+            sum + sum == i * (i - 1)
+        }
+        sum += i
+        i++
+    }
+    return sum
+}

@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-// Calls of function objects, which have no contract (docs/soundness.md, H3).
+// A function object has no contract (docs/soundness.md, "Calls of function objects").
 
 <!VIPER_TEXT!>class Box<!>(var n: Int)
 

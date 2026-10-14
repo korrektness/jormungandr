@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-// Facts assumed when an object is created (docs/soundness.md, L2, L3 and M3).
+// Facts assumed when an object is created (docs/soundness.md, "Allocation" and "Construction facts").
 
 open <!VIPER_TEXT!>class Animal<!>
 <!VIPER_TEXT!>class Dog<!> : Animal()

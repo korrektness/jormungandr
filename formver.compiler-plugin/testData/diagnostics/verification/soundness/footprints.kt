@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-// Family transfers and observer views hand one object between a class and an interface presentation (docs/soundness.md, M5).
+// One object handed between its class and an interface presentation (docs/soundness.md, "Family transfers and observer views").
 
 interface Gauge {
     @Pure @Unique fun <!VIPER_TEXT!>reading<!>(): Int

@@ -76,6 +76,14 @@ fun <!VIPER_TEXT!>appendShared<!>(sb: StringBuilder) {
     val n = sb.length
 }
 
+// A shared builder's length is arbitrary at each read, so the append is not observed.
+fun <!VIPER_TEXT!>appendSharedForgets<!>(sb: StringBuilder) {
+    val before = sb.length
+    sb.append('a')
+    val after = sb.length
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>after > before<!>)
+}
+
 fun <!VERIFICATION_SKIPPED!>readSharedInSpec<!>(sb: StringBuilder): Int {
     postconditions<Int> { r -> r == <!UNSUPPORTED_OWNERSHIP!>sb.length<!> }
     return 0

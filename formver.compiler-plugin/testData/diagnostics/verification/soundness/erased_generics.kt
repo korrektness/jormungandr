@@ -3,7 +3,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-// Invariants inhaled after an unchecked cast or an erased generic substitution (docs/soundness.md, M7).
+// Invariants inhaled after an unchecked cast or an erased generic substitution (docs/soundness.md, "Type invariants").
 // The values are read as `Any`, where the JVM inserts no checkcast, so they really are `String`s at runtime.
 // UNSOUND marks an assertion that is false at runtime but verifies: a sound verifier reports
 // VERIFICATION_CONDITION_NOT_ESTABLISHED on it.

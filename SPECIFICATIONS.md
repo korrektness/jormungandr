@@ -468,13 +468,14 @@ an additional observer axiom.
 
 ```kotlin
 fun sumUpTo(n: Int): Int {
-    preconditions { n >= 0 }
+    preconditions { 0 <= n && n <= 1000 }
     var sum = 0
     var i = 0
     while (i <= n) {
         loopInvariants {
-            i >= 0
-            sum == i * (i - 1) / 2
+            0 <= i && i <= n + 1
+            0 <= sum && sum <= i * 1000
+            sum + sum == i * (i - 1)
         }
         sum += i
         i++
@@ -482,6 +483,9 @@ fun sumUpTo(n: Int): Int {
     return sum
 }
 ```
+
+Arithmetic in invariants is checked like any other (see Integer arithmetic), so the invariants bound `i` and `sum`
+to show that `sum += i`, `i++` and `i * (i - 1)` stay within `Int`.
 
 The rules are as follows:
 - Loop invariant must hold when the loop is entered.
@@ -816,9 +820,10 @@ states on those paths. A return value or `try` expression value is captured
 before the finalizer runs. An abrupt completion in the finalizer replaces the
 pending completion; nested finalizers run from the innermost outward.
 
-Array and string index bounds, division by zero, and integer overflow remain
-verification obligations inside `try`. The checked arithmetic fragment is
-described under Integer arithmetic. Verification does not establish freedom
+`IntArray` and String index bounds, division by zero, and integer overflow
+remain verification obligations inside `try`. An element access of any other
+array type is an ordinary library call, which may throw. The checked arithmetic
+fragment is described under Integer arithmetic. Verification does not establish freedom
 from exceptions in opaque library operations or from JVM resource, linkage,
 or asynchronous failures.
 

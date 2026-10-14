@@ -122,3 +122,67 @@ method sumOfIntegersUpToN(n: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/sum_of_1_to_n.kt: info: Generated Viper text for sumUpTo:
+method sumUpTo(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires 0 <= intFromRef(n) && intFromRef(n) <= 1000
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var sum: Ref
+  var i: Ref
+  var anon_1: Ref
+  sum := intToRef(0)
+  i := intToRef(0)
+  label cont
+    invariant isSubtype(typeOf(sum), intType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant 0 <= intFromRef(i) &&
+      intFromRef(i) <=
+      (let anon_builtin ==
+        (plusInts(n, intToRef(1))) in
+        intFromRef(n) + intFromRef(intToRef(1)))
+    invariant 0 <= intFromRef(sum) &&
+      intFromRef(sum) <=
+      (let anon_builtin ==
+        (timesInts(i, intToRef(1000))) in
+        intFromRef(i) * intFromRef(intToRef(1000)))
+    invariant (let anon_builtin ==
+        (plusInts(sum, sum)) in
+        intFromRef(sum) + intFromRef(sum)) ==
+      (let anon_builtin ==
+        (timesInts(i, minusInts(i, intToRef(1)))) in
+        intFromRef(i) * intFromRef(minusInts(i, intToRef(1))))
+  anon_1 := leInts(i, n)
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    sum := plusInts(sum, i)
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(sum), intType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(n), intType())
+  assert 0 <= intFromRef(i) &&
+    intFromRef(i) <=
+    (let anon_builtin ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
+  assert 0 <= intFromRef(sum) &&
+    intFromRef(sum) <=
+    (let anon_builtin ==
+      (timesInts(i, intToRef(1000))) in
+      intFromRef(i) * intFromRef(intToRef(1000)))
+  assert (let anon_builtin ==
+      (plusInts(sum, sum)) in
+      intFromRef(sum) + intFromRef(sum)) ==
+    (let anon_builtin ==
+      (timesInts(i, minusInts(i, intToRef(1)))) in
+      intFromRef(i) * intFromRef(minusInts(i, intToRef(1))))
+  v_ret_0 := sum
+  goto lbl_ret_0
+  label lbl_ret_0
+}

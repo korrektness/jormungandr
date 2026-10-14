@@ -2,7 +2,7 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-// A read of a property that is not a field gives a fresh value of its type (docs/soundness.md, L9).
+// A read of a property that is not a field gives a fresh value of its type (docs/soundness.md, "Property reads").
 
 <!VIPER_TEXT!>class Box<!>(var n: Int)
 
