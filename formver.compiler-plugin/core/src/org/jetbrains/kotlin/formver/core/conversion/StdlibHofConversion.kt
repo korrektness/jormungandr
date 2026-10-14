@@ -447,6 +447,7 @@ private fun StmtConversionContext.templateReceiver(
             "`${hof.callableName}` on a receiver that is not a `String`",
         )
         call.isCollectionLoop() -> {
+            requireIntSizedIteration(receiverExp)
             val value = convert(receiverExp)
             val owner = if (value.ignoringCastsAndMetaNodes() is VariableEmbedding) null else {
                 freshAnonVar(embedType(receiverExp)).also { prelude.add(Declare(it, value, targetOwned = true)) }

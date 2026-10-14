@@ -607,7 +607,7 @@ fun StmtConversionContext.exceptionalExit(): ExpEmbedding = Block {
  * A loop whose head carries the proven invariants of the variables in scope, including those of the calls that run an
  * inlined body, then [boundInvariants], then the user's [userInvariants], then the invariants of the paths retained
  * by inlined calls in progress, as [loopOverUsedRoots] builds it. The body is converted in the loop's own context;
- * [headLabelName] names the head there.
+ * [headLabelName] names the head there. [exitGuard] is the [While]'s.
  */
 fun StmtConversionContext.convertLoop(
     loop: FirWhileLoop,
@@ -615,6 +615,7 @@ fun StmtConversionContext.convertLoop(
     userInvariants: FirBlock?,
     boundInvariants: List<ExpEmbedding> = emptyList(),
     headLabelName: StmtConversionContext.() -> SymbolicName = { continueLabelName() },
+    exitGuard: ExpEmbedding? = null,
     body: StmtConversionContext.() -> ExpEmbedding,
 ): ExpEmbedding {
     val inScope = ownershipFrame.scopeWith(retrievePropertiesAndParameters().toList())
@@ -628,7 +629,7 @@ fun StmtConversionContext.convertLoop(
     val headShapes = ownedShapes({ it.stateAtLoopHead(loop) }, inScope)
     val exitShapes = ownedShapes({ it.stateAfter(loop) }, inScope)
     return withFreshWhile(loop.label) {
-        loopOverUsedRoots(condition, body(), headLabelName(), typeInvariants, invariants, headShapes, exitShapes)
+        loopOverUsedRoots(condition, body(), headLabelName(), typeInvariants, invariants, headShapes, exitShapes, exitGuard)
     }
 }
 
@@ -638,7 +639,7 @@ fun StmtConversionContext.convertLoop(
  * roots the loop does not use are left out of its invariant, so Viper keeps their permissions and the values below
  * them across the loop. [typeInvariants] are facts about the types of variables; they need no permission and are not
  * uses. For each path retained by an inlined call in progress whose root the loop uses, an invariant says that the
- * path still reads its temporary.
+ * path still reads its temporary. [exitGuard] is the [While]'s.
  */
 fun StmtConversionContext.loopOverUsedRoots(
     condition: ExpEmbedding,
@@ -648,6 +649,7 @@ fun StmtConversionContext.loopOverUsedRoots(
     invariants: List<ExpEmbedding>,
     headShapes: List<OwnedShape>,
     exitShapes: List<OwnedShape>,
+    exitGuard: ExpEmbedding? = null,
 ): While {
     val used = (listOf(condition, body) + invariants).flatMapTo(mutableSetOf()) { it.usedVariableNames() }
     val (held, framed) = headShapes.partition { it.root.name in used }
@@ -660,6 +662,7 @@ fun StmtConversionContext.loopOverUsedRoots(
         held,
         framed,
         exitShapes.filter { it.root.name in used },
+        exitGuard,
     )
 }
 

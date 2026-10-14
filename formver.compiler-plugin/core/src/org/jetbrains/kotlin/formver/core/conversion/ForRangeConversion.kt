@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.types.isInt
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.LabelLink
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.AddIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.And
@@ -128,22 +129,33 @@ fun StmtConversionContext.convertForRangeLoop(forLoop: ForRangeLoop): ExpEmbeddi
         IntProgressionKind.RangeTo -> LeIntInt(variable, bound)
         IntProgressionKind.DownTo -> GeIntInt(variable, bound)
     }
-    // How far the last step may take the variable past the bound.
+    // Whether one step from [value] leaves `Int`.
+    fun stepLeavesInt(value: ExpEmbedding) =
+        if (descending) LtIntInt(value, AddIntInt(IntLit(Int.MIN_VALUE), stepAmount))
+        else GtIntInt(value, SubIntInt(IntLit(Int.MAX_VALUE), stepAmount))
+    // How far the last step may take the variable past the bound; any `Int` is in reach when a step from the bound
+    // leaves `Int`.
     val reach = when (progression.kind) {
         IntProgressionKind.Until ->
-            if (step == null) LeIntInt(variable, bound) else LtIntInt(variable, AddIntInt(bound, stepAmount))
-        IntProgressionKind.RangeTo -> LeIntInt(variable, AddIntInt(bound, stepAmount))
-        IntProgressionKind.DownTo -> GeIntInt(variable, SubIntInt(bound, stepAmount))
+            if (step == null) LeIntInt(variable, bound)
+            else Or(stepLeavesInt(bound), LtIntInt(variable, AddIntInt(bound, stepAmount)))
+        IntProgressionKind.RangeTo -> Or(stepLeavesInt(bound), LeIntInt(variable, AddIntInt(bound, stepAmount)))
+        IntProgressionKind.DownTo -> Or(stepLeavesInt(bound), GeIntInt(variable, SubIntInt(bound, stepAmount)))
     }
     val started = if (descending) LeIntInt(variable, first) else LeIntInt(first, variable)
     // A loop that runs no iteration leaves the variable at `first`, which may lie beyond the bound.
     val bounds = And(started, Or(reach, EqCmp(variable, first)))
-    val advance = Assign(variable, if (descending) SubIntInt(variable, stepAmount) else AddIntInt(variable, stepAmount))
+    // An element from which a step leaves `Int` is the last, and the loop leaves after it without stepping. The
+    // invariants are not asserted after that exit, since the value one step past is no `Int`.
+    val lastElement = stepLeavesInt(variable)
+    val stepped = Assign(variable, if (descending) SubIntInt(variable, stepAmount) else AddIntInt(variable, stepAmount))
+    val exitGuard = Not(And(condition, lastElement))
 
     val loop = convertLoop(
-        forLoop.loop, condition, extractLoopInvariants(forLoop.body), listOf(bounds), { loopHeadLabelName() },
+        forLoop.loop, condition, extractLoopInvariants(forLoop.body), listOf(bounds), { loopHeadLabelName() }, exitGuard,
     ) {
         val body = forLoop.body.map { convertReportingUnsupported(it) }.toBlock()
+        val advance = If(lastElement, Goto(LabelLink(breakLabelName())), stepped, buildType { unit() })
         blockOf(body, LabelExp(LabelEmbedding(continueLabelName())), advance)
     }
     (prelude + declaration + loop).toBlock()

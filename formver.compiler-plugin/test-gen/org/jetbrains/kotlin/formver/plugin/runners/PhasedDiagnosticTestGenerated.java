@@ -1962,6 +1962,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("implicit_throws.kt")
+      public void testImplicit_throws() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/implicit_throws.kt");
+      }
+
+      @Test
+      @TestMetadata("iterable_size.kt")
+      public void testIterable_size() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/iterable_size.kt");
+      }
+
+      @Test
       @TestMetadata("law_free_constructors.kt")
       public void testLaw_free_constructors() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/law_free_constructors.kt");

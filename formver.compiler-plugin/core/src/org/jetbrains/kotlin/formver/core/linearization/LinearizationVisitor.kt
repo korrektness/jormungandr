@@ -149,8 +149,9 @@ data class LinearizationVisitor(
             ctx.addLabel(e.breakLabel.toViper(ctx, e.invariants))
 
             e.invariants.forEach {
+                val invariant = e.exitGuard?.let { guard -> OperatorExpEmbeddings.Implies(guard, it) } ?: it
                 ctx.addStatement {
-                    Stmt.Assert(it.pureToViper(toBuiltin = true, ctx.typeResolver),
+                    Stmt.Assert(invariant.pureToViper(toBuiltin = true, ctx.typeResolver),
                         info = SourceRole.Proof(KotlinCondition.ProofClause.LOOP_INVARIANT).asInfo)
                 }
             }

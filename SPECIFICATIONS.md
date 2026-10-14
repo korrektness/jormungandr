@@ -444,7 +444,9 @@ fun fill(arr: @Unique @Borrowed IntArray, v: Int) {
 
 The ends and the step are evaluated once, before the loop. In the invariants, the loop variable holds the value of
 the coming iteration, and after the last iteration the value one step past it; it stays at the start when the
-range is empty. The body may assume the variable lies within the range. A step that is not positive throws.
+range is empty. When the value one step past the last element is not an `Int`, as in `for (i in 0..Int.MAX_VALUE)`,
+the loop leaves after the last iteration without stepping, as Kotlin does, and the invariants are not checked after
+it. The body may assume the variable lies within the range. A step that is not positive throws.
 
 ## Universal Quantification
 
@@ -668,8 +670,10 @@ obligation, and `in` tests membership. Equality compares the elements in order.
 size. Elements may be primitive values, references, or null.
 
 `iterationSequence(collection)` reads the abstract iteration observer of an
-owned `Iterable`; for a `List`, its length and elements agree with `size` and
-indexed access. For a `Set`, the sequence is duplicate-free and its membership
+owned `Collection`; for a `List`, its length and elements agree with `size` and
+indexed access. An `Iterable` that is not a `Collection` may have more than
+`Int.MAX_VALUE` elements, more than an `Int` size can count, so SnaKt rejects
+its observer and the templates below on it. For a `Set`, the sequence is duplicate-free and its membership
 agrees with `contains`. `iterationSequence(map)` gives entries aligned with a
 duplicate-free keys sequence whose membership agrees with `containsKey`;
 entry values agree with lookup at those keys. Set and Map iteration order has
@@ -678,7 +682,7 @@ require no ownership of the entry.
 
 The inline collection templates `forEach`, `forEachIndexed`, `map`, `filter`,
 `any`, `all`, `none`, `count`, `indexOfFirst`, `firstOrNull`, and `fold` use this observer
-for `Iterable` receivers. The supported Map overloads are `Map.forEach` and
+for `Collection` receivers. The supported Map overloads are `Map.forEach` and
 `Map.map` with a single immutable-entry lambda parameter. A literal
 lambda, or an inline parameter bound to one, is verified through the inline
 call path with Kotlin's calls-in-place ownership analysis. A search whose
@@ -717,8 +721,10 @@ verify(visited == values.size)
 ### Exceptions
 
 Verification establishes postconditions and Kotlin return effects on normal
-return. `throw`, failed `require` and `check`, `error`, `!!` on null, and
-failed `as` casts leave abnormally. Their operands are evaluated first.
+return. `throw`, failed `require` and `check`, `error`, `!!` on null,
+failed `as` casts, a read of an unassigned `lateinit` property, and a null
+platform-typed value assigned to a declared non-null type leave abnormally.
+Their operands are evaluated first.
 Runtime casts and `!!` in specifications and `@Pure` bodies are unsupported.
 
 A `when` that Kotlin accepts as exhaustive without an `else` branch throws when no branch matches. SnaKt proves

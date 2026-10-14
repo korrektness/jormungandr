@@ -65,7 +65,8 @@ data class If(
 /**
  * [headShapes] are the shapes of the variables in scope that the uniqueness checker finds `Unique` at the loop head and
  * that the loop uses, [framedShapes] those of the ones it does not use, which are kept outside the loop, and
- * [exitShapes] the shapes after the loop of the ones it uses.
+ * [exitShapes] the shapes after the loop of the ones it uses. After the loop, [invariants] are asserted where
+ * [exitGuard] holds, or everywhere when it is null.
  */
 data class While(
     val condition: ExpEmbedding,
@@ -76,6 +77,7 @@ data class While(
     val headShapes: List<OwnedShape> = emptyList(),
     val framedShapes: List<OwnedShape> = emptyList(),
     val exitShapes: List<OwnedShape> = emptyList(),
+    val exitGuard: ExpEmbedding? = null,
 ) : ExpEmbedding {
     override val type: TypeEmbedding = buildType { unit() }
 

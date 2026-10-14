@@ -57,7 +57,6 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 import org.jetbrains.kotlin.formver.core.embeddings.toLink
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.UnitTypeEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.equalToType
 import org.jetbrains.kotlin.formver.core.boundDispatchReceiver
@@ -226,6 +225,12 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
 
     override fun visitPropertyAccessExpression(
+        propertyAccessExpression: FirPropertyAccessExpression,
+        data: StmtConversionContext,
+    ): ExpEmbedding =
+        data.lateinitReadMayThrow(propertyAccessExpression, convertPropertyRead(propertyAccessExpression, data))
+
+    private fun convertPropertyRead(
         propertyAccessExpression: FirPropertyAccessExpression,
         data: StmtConversionContext,
     ): ExpEmbedding {
@@ -501,8 +506,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
 
         // The declaration stands even when its initializer is unsupported, so later statements can use the name.
-        val declaration =
-            data.declareLocalProperty(symbol, property.initializer?.let { data.convertReportingUnsupported(it) })
+        val declaration = data.declareLocalProperty(symbol, property.initializer?.let {
+            data.platformNullCheck(it, data.convertReportingUnsupported(it), symbol.resolvedReturnType)
+        })
         val frame = data.ownershipFrame
         if (frame.analysis == null) return declaration
         return declaration.copy(targetOwned = frame.ownsAfter(property, listOf(symbol)))
@@ -552,7 +558,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             )
         }
         val embedding = data.embedPropertyAccess(lValue, variableAssignment)
-        val convertedRValue = data.convert(variableAssignment.rValue)
+        val convertedRValue = data.platformNullCheck(
+            variableAssignment.rValue, data.convert(variableAssignment.rValue), lValue.resolvedType,
+        )
         val assignment = embedding.setValue(convertedRValue, data)
         val sharedSetterCall = embedding is ClassPropertyAccess && embedding.property.setter is CustomSetter &&
             !embedding.receiverOwned
@@ -657,7 +665,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         return when (typeOperatorCall.operation) {
             FirOperation.IS -> Is(argument, conversionType)
             FirOperation.NOT_IS -> Not(Is(argument, conversionType))
-            FirOperation.AS -> checkedCast(argument, conversionType, data)
+            FirOperation.AS -> data.checkedCast(argument, conversionType)
 
             FirOperation.SAFE_AS -> SafeCast(argument, conversionType).withInvariants(data.typeResolver) {
                 proven = true
@@ -670,25 +678,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
     }
 
-    private fun checkedCast(argument: ExpEmbedding, targetType: TypeEmbedding, data: StmtConversionContext): ExpEmbedding {
-        val from = argument.type.pretype as? ClassTypeEmbedding
-        val to = targetType.pretype as? ClassTypeEmbedding
-        val safeType = argument.type.pretype == targetType.pretype ||
-                from != null && to != null && data.typeResolver.isSubtype(from, to)
-        if (safeType && (targetType.isNullable || !argument.type.isNullable)) {
-            return Cast(argument, targetType).withInvariants(data.typeResolver) { proven = true; access = true }
-        }
-        val saved = data.declareAnonVar(argument.type, argument)
-        val cast = Cast(saved.variable, targetType).withInvariants(data.typeResolver) {
-            proven = true
-            access = true
-        }
-        return blockOf(saved, If(Is(saved.variable, targetType), cast, data.exceptionalExit(), targetType))
-    }
-
     override fun visitCheckNotNullCall(checkNotNullCall: FirCheckNotNullCall, data: StmtConversionContext): ExpEmbedding {
         val argument = data.convert(checkNotNullCall.arguments.single())
-        return checkedCast(argument, data.embedType(checkNotNullCall.resolvedType), data)
+        return data.checkedCast(argument, data.embedType(checkNotNullCall.resolvedType))
     }
 
     override fun visitAnonymousFunctionExpression(

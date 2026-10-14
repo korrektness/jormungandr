@@ -6,7 +6,12 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.types.ConeStarProjection
+import org.jetbrains.kotlin.fir.types.constructClassLikeType
+import org.jetbrains.kotlin.fir.types.isSubtypeOf
+import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.expressions.FirSpreadArgumentExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.expressions.arguments
@@ -26,6 +31,21 @@ import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 
 private val annotationPackage = FqName("org.jetbrains.kotlin.formver.plugin")
+
+/** The classes whose size is an `Int`, with their numbers of type parameters. */
+private val intSizedIterables = listOf("kotlin.collections.Collection" to 1, "kotlin.collections.Map" to 2)
+
+/**
+ * Rejects iterating [receiver] unless it is a Collection or a Map. An observer's size is an `Int`, which the element
+ * count of another Iterable need not be.
+ */
+fun StmtConversionContext.requireIntSizedIteration(receiver: FirExpression) {
+    val sized = intSizedIterables.any { (name, arity) ->
+        val type = ClassId.topLevel(FqName(name)).constructClassLikeType(Array(arity) { ConeStarProjection })
+        receiver.resolvedType.isSubtypeOf(type, session)
+    }
+    if (!sized) throw UnsupportedFeatureException(receiver.source, "iteration over an Iterable that is not a Collection")
+}
 
 /**
  * The external-specification model of `Map` when [map] holds, else of `Iterable`, or null when no loaded specification
@@ -71,6 +91,7 @@ fun StmtConversionContext.convertIterationSequenceIntrinsic(call: FirFunctionCal
         embedType(call)
         val map = (call.toResolvedCallableSymbol() as FirFunctionSymbol<*>)
             .valueParameterSymbols.single().resolvedReturnType.classId == ClassId.topLevel(FqName("kotlin.collections.Map"))
+        requireIntSizedIteration(call.arguments.single())
         return collectionIterationSequence(convert(call.arguments.single()), call.source, map)
     }
     if (id.className?.asString() != "IterationSequence") return null

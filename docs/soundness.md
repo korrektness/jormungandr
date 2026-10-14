@@ -108,12 +108,12 @@ Test: `verification/compare_to.kt`.
 
 ### Exceptions inside `try`
 
-A `catch` sees the state at the entry of the `try` body and at each explicit
-`throw`. It does not see the state at a cast, a `require`, a `check` or a call
-that throws part-way through the body.
+A `catch` sees the state at each site that can throw in the `try` body, as
+SPECIFICATIONS.md, "Exceptions", lists them. `==` has no edge: it is encoded
+without the call of `equals` that Kotlin makes.
 
-Test: `verification/control_flow/throw.kt::throwCaughtSkipsState` covers explicit
-`throw` only.
+Tests: `verification/exception_sites.kt`,
+`verification/soundness/implicit_throws.kt`.
 
 ### Shared array reads
 
@@ -246,6 +246,15 @@ gives an arbitrary value of its type. A getter cannot write to state the caller
 owns, because locality rejects passing it an owned receiver.
 
 Test: `verification/soundness/property_reads.kt`.
+
+### Iteration sizes
+
+An `IterationSequence` has at most `Int.MAX_VALUE` elements, since its `size`
+is an `Int`. Iteration observers exist only for Collections and Maps, whose
+size is an `Int`, and for the sequences built from them; an `Iterable` that is
+not a `Collection` is rejected (`conversion/IterationSequenceConversion.kt`).
+
+Test: `verification/soundness/iterable_size.kt`.
 
 ### Domain axioms
 

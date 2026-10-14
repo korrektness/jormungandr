@@ -100,3 +100,54 @@ fun <!VIPER_TEXT!>writePastEnd<!>(arr: @Unique @Borrowed IntArray) {
         <!POSSIBLE_INDEX_OUT_OF_BOUND!>arr[i] = 0<!>
     }
 }
+
+// Kotlin stops at the last element without stepping, so a range ending at `Int.MAX_VALUE` does not overflow.
+fun <!VIPER_TEXT!>rangeToMax<!>(): Int {
+    postconditions<Int> { it == 3 }
+    var count = 0
+    for (i in Int.MAX_VALUE - 2..Int.MAX_VALUE) {
+        loopInvariants { count == i - (Int.MAX_VALUE - 2) }
+        count++
+    }
+    return count
+}
+
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>rangeToMaxMiscounted<!>(): Int {
+    postconditions<Int> { it == 2 }
+    var count = 0
+    for (i in Int.MAX_VALUE - 2..Int.MAX_VALUE) {
+        loopInvariants { count == i - (Int.MAX_VALUE - 2) }
+        count++
+    }
+    return count
+}<!>
+
+fun <!VIPER_TEXT!>downToMin<!>(): Int {
+    postconditions<Int> { it == 3 }
+    var count = 0
+    for (i in Int.MIN_VALUE + 2 downTo Int.MIN_VALUE) {
+        loopInvariants { count == (Int.MIN_VALUE + 2) - i }
+        count++
+    }
+    return count
+}
+
+fun <!VIPER_TEXT!>stepPastMax<!>(): Int {
+    postconditions<Int> { it == 2 }
+    var count = 0
+    for (i in Int.MAX_VALUE - 3 until Int.MAX_VALUE step 2) {
+        loopInvariants { 0 <= count && count <= 1 && i == Int.MAX_VALUE - 3 + 2 * count }
+        count++
+    }
+    return count
+}
+
+// The last element is still visited.
+fun <!VIPER_TEXT!>lastElementVisited<!>(): Int {
+    postconditions<Int> { it == Int.MAX_VALUE }
+    var last = 0
+    for (i in Int.MAX_VALUE - 2..Int.MAX_VALUE) {
+        last = i
+    }
+    return last
+}
