@@ -115,6 +115,13 @@ The plugin accepts a number of command line options which can be passed via
   error that names it, and verification goes on with the next declaration. The limit covers a single SMT
   query: Silicon stops waiting, and the plugin then stops Silicon, which kills its Z3 processes.
 
+- Option `trust_report`: a file that lists each verified declaration with the trusted assumptions it relies on;
+  docs/soundness.md, "The trust report", says what it lists. Its first line summarises the module, and the
+  compiler reports that line at INFO. A compilation replaces the entries of the files it compiles and keeps the
+  others, so the report stays complete under incremental compilation. The Gradle plugin writes it for each
+  platform compile task, not for metadata compilations, to `build/formver/<task>/trust-report.txt` and prints its summary line, which a default build
+  shows. Without the option the compiler reports the summary of the declarations it verified at INFO.
+
 The plugin logs the start and the duration of each declaration's verification at the compiler's INFO
 level, which Gradle shows with `--info`. The compiler holds these messages back until it reports its
 diagnostics, so they show which declarations were slow but not which one is running.

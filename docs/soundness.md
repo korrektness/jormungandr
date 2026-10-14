@@ -41,6 +41,27 @@ three things part of every result:
   captures a parameter or local of its enclosing function is skipped
   (`verification/classes/law_bound_local_function.kt`).
 
+## The trust report
+
+SnaKt lists the trusted pieces that each verified declaration's program uses:
+
+- `bundled spec` and `user spec`: the external binding of a class or callable
+  that the program calls or reads, from a spec that SnaKt bundles or one the
+  user supplies (SPECIFICATIONS.md, "External specifications").
+- `@NeverVerify` and `@NeverConvert`: a callee or custom accessor that SnaKt
+  does not verify, through its own annotation or a containing class's.
+- `library contract`: a contract that `conversion/StdLibConverter.kt` gives a
+  library function by name.
+
+The report's first line counts the verified declarations, those that rely on a
+trusted piece, and the distinct trusted pieces they rely on, in total and by kind.
+
+A call to another declaration of the module is not listed: SnaKt verifies that
+declaration on its own. A declaration is listed once its verification succeeds,
+whether the verifier ran or the verification cache held the result. README.md,
+under `trust_report`, says where the report goes
+(`verification/trust_report.kt`).
+
 ## The vacuity check
 
 An assertion verifies vacuously when the verifier's facts at that point

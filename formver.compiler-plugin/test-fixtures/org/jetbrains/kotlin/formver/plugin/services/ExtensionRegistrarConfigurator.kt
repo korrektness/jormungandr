@@ -105,16 +105,22 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
         val modules = generateSequence(listOf(module)) { level ->
             level.flatMap { m -> m.dependsOnDependencies.map { it.dependencyModule } }.ifEmpty { null }
         }.flatten().distinct()
-        return ExternalSpecSources(modules.flatMap { addedExternalSpecs(it) }.toList())
+        val bundledDirectory = File("formver.compiler-plugin/plugin/resources/external-specs").canonicalFile
+        val (bundled, user) = modules.flatMap { addedExternalSpecs(it) }.toList()
+            .partition { it.originalFile.canonicalFile.parentFile == bundledDirectory }
+        return ExternalSpecSources(user.map { it.file }, bundled = bundled.map { it.file })
     }
 
-    private fun addedExternalSpecs(module: TestModule): List<File> {
+    /** A spec file as the compiler reads it, and the test data file it was copied from. */
+    private data class AddedSpec(val file: File, val originalFile: File)
+
+    private fun addedExternalSpecs(module: TestModule): List<AddedSpec> {
         val requested = module.directives[EXTERNAL_SPEC]
             .mapTo(HashSet()) { File(it).canonicalFile }
         val added = module.files.filter { it.isAdditional && it.originalFile.canonicalFile in requested }
         val missing = requested - added.mapTo(HashSet()) { it.originalFile.canonicalFile }
         check(missing.isEmpty()) { "External specs $missing were not added to module ${module.name}." }
-        return added.map { testServices.sourceFileProvider.getOrCreateRealFileForSourceFile(it) }
+        return added.map { AddedSpec(testServices.sourceFileProvider.getOrCreateRealFileForSourceFile(it), it.originalFile) }
     }
 }
 
@@ -157,6 +163,10 @@ object FormVerDirectives : SimpleDirectivesContainer() {
 
     val NEVER_VALIDATE by directive(
         description = "Run in conversion-only mode: skip verification, keep consistency checking"
+    )
+
+    val TRUST_REPORT by directive(
+        description = "Compare the trust report of the verified declarations with the .trust.txt golden file"
     )
 
     val EXTERNAL_SPEC by stringDirective(

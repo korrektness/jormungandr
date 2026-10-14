@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.formver.common.services.runChecks
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.core.lambdaPrograms
+import org.jetbrains.kotlin.formver.core.trustedAssumptions
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationProgress
 import org.jetbrains.kotlin.formver.plugin.compiler.verificationLabel
@@ -148,6 +149,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                     if (vacuityReport != null && hits.isNotEmpty() && verifiedOtherwise) {
                         VacuityProbe.record(vacuityReport, testFile.originalFile.path, decl.symbol.toString(), hits, group)
                     }
+                    if (verifiedOtherwise && attempt.timeout == null) recordTrust(testFile, decl)
                     val diagnostics = verifyFunction(attempt, decl, module)
                     testServices.verificationDiagnosticsCollector.addDiagnostics(diagnostics)
                     testServices.allTagCollector.reportDiagnostics(testFile, diagnostics)
@@ -158,6 +160,15 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         }
 
         return inputArtifact
+    }
+
+    /** Records the verified programs of [decl], whose verification succeeded, in the trust report. */
+    private fun recordTrust(testFile: TestFile, decl: FirDeclaration) {
+        val collector = testServices.trustReportCollector
+        if (decl.shouldVerify == true) collector.record(testFile.name, decl.verificationLabel, decl.trustedAssumptions!!)
+        for (lambda in decl.lambdaPrograms.orEmpty().filter { it.shouldVerify }) {
+            collector.record(testFile.name, lambda.label, lambda.trustedAssumptions)
+        }
     }
 
     /** Opt-in fixtures also exercise frontend reuse across Silicon's global configuration changes. */
@@ -255,6 +266,7 @@ class ViperResultHandler(testServices: TestServices) :
             { testServices.viperTextCollector.assertEquality() },
             { testServices.verificationDiagnosticsCollector.assertEquality() },
             { testServices.allTagCollector.assertEqual() },
+            { testServices.trustReportCollector.assertEquality() },
         )
     }
 

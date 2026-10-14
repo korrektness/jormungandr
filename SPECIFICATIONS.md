@@ -249,7 +249,7 @@ source-implementation conformance proof.
 External contracts, purity, ownership and laws are trusted assumptions about the dependency. SnaKt verifies
 callers against them without proving the dependency's implementation. Audit each model against the exact
 library version in the compilation classpath; a matching signature alone establishes no behavioral compatibility.
-The compiler reports loaded specification inputs and resolved trusted bindings. The bundled assumptions are the
+The trust report lists the bindings each verified declaration relies on (docs/soundness.md, "The trust report"). The bundled assumptions are the
 sources indexed by `formver.compiler-plugin/plugin/resources/META-INF/formver/external-specs.list`.
 They compile as part of the user's module, so they declare nothing public and raise no warnings: they compile under
 explicit API mode and warnings as errors.

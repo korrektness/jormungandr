@@ -48,8 +48,8 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
         val dumpUniquenessCFG = configuration.get(FormalVerificationConfigurationKeys.DUMP_UNIQUENESS_CFG, false)
                 && conversionSelection != TargetsSelection.NO_TARGETS
         val externalSpecs = ExternalSpecSources(
-            configuration.getList(FormalVerificationConfigurationKeys.EXTERNAL_SPEC_FILES) +
-                    ExternalSpecSources.extractBundled(File(FormalVerificationPluginComponentRegistrar::class.java.protectionDomain.codeSource.location.toURI()))
+            configuration.getList(FormalVerificationConfigurationKeys.EXTERNAL_SPEC_FILES),
+            bundled = ExternalSpecSources.extractBundled(File(FormalVerificationPluginComponentRegistrar::class.java.protectionDomain.codeSource.location.toURI())),
         )
         val specFragment = configuration.addToRootFragment(externalSpecs.files.map { it.path })
         for (file in externalSpecs.files) {
@@ -65,8 +65,12 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             verificationTimeoutSeconds = configuration.get(
                 FormalVerificationConfigurationKeys.VERIFICATION_TIMEOUT, PluginConfiguration.DEFAULT_VERIFICATION_TIMEOUT_SECONDS,
             ),
+            trustLedger = TrustLedger(),
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
+        IrGenerationExtension.registerExtension(
+            TrustReportWriter(config.trustLedger!!, configuration.get(FormalVerificationConfigurationKeys.TRUST_REPORT), configuration.messageCollector)
+        )
         if (!externalSpecs.isEmpty()) {
             FirExtensionRegistrarAdapter.registerExtension(ExternalSpecExtensionRegistrar(externalSpecs))
             IrGenerationExtension.registerExtension(ExternalSpecIrStripper(externalSpecs))

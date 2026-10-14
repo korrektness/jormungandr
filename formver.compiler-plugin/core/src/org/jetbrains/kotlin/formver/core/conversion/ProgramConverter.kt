@@ -162,6 +162,8 @@ class ProgramConverter(
 
     override val typeResolver: TypeResolver = TypeResolver()
 
+    override val trust = TrustedAssumptionCollector(session, typeResolver) { it == registeredSymbol }
+
     private val terminationMeasures = TerminationMeasures(typeResolver)
 
     val debugExpEmbeddings: Map<SymbolicName, ExpEmbedding>
@@ -531,6 +533,7 @@ class ProgramConverter(
                     callable.putIfAbsent(it.signature.name, it)
                 }
             } else {
+                trust.recordLibraryContract(symbol, namedSignature.signature)
                 namedSignature.toNonInlineSignature(symbol).also {
                     callable.putIfAbsent(it.signature.name, it)
                 }.toCompleteSignature(symbol)
@@ -564,8 +567,9 @@ class ProgramConverter(
      */
     override fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding {
         val model = symbol.externalSpecificationSymbol(session)
-        if (model != symbol) return embedAnyFunction(model)
+        if (model != symbol) return embedAnyFunction(model).also { trust.recordBinding(symbol) }
         context(checkerContext) { symbol.observerDeclaration() }?.let { return embedAnyFunction(it) }
+        trust.recordOptOut(symbol)
         // NOTE: The order of the embedSpecialFunction and the callable lookup does matter.
 
         // check if it must be handled specially
@@ -661,7 +665,8 @@ class ProgramConverter(
      */
     override fun embedProperty(symbol: FirPropertySymbol): PropertyEmbedding {
         val model = symbol.externalSpecificationSymbol(session)
-        if (model != symbol) return embedProperty(model)
+        if (model != symbol) return embedProperty(model).also { trust.recordBinding(symbol) }
+        trust.recordAccessorOptOuts(symbol)
         if (symbol.receiverParameterSymbol != null) {
             rejectUnsupportedStdlibMember(symbol, session)
             return embedExtensionProperty(symbol)
@@ -719,24 +724,10 @@ class ProgramConverter(
                     else -> {
                         // The property could be overridden by anything, or has a custom getter/setter.
                         // use impure function
-                        val getterType = buildFunctionPretype {
-                            withDispatchReceiver { any() }
-                            withReturnType { nullableAny() }
-                        }
-                        val setterType = buildFunctionPretype {
-                            withDispatchReceiver { any() }
-                            withParam { nullableAny() }
-                            withReturnType { nullableAny() }
-                        }
-
                         Pair(
-                            CustomGetter(embedAccessorFunction(symbol, getterType, defaultBehaviour = false)),
+                            CustomGetter(embedAccessorFunction(symbol, memberGetterType(), defaultBehaviour = false)),
                             symbol.isVar.ifTrue {
-                                CustomSetter(
-                                    embedAccessorFunction(
-                                        symbol, setterType, defaultBehaviour = false
-                                    )
-                                )
+                                CustomSetter(embedAccessorFunction(symbol, memberSetterType(), defaultBehaviour = false))
                             })
                     }
                 }
@@ -784,6 +775,7 @@ class ProgramConverter(
     ): NonInlineFunctionSignature = with(this) {
         val name = if (functionType.paramTypes.isEmpty()) symbol.embedGetterName(this) else symbol.embedSetterName(this)
         functionType.toGenericAccessorSignature(defaultBehaviour).toNamedSignature(name)
+            .also { trust.recordLibraryContract(symbol, it.signature) }
             .toNonInlineSignature(symbol = null).toCompleteSignature(symbol.source) {
                 preconditions {
                     args {
@@ -833,19 +825,8 @@ class ProgramConverter(
                 isVal = symbol.isVal, type = embedType(symbol.resolvedReturnType),
             )
         }
-        val getterType = buildFunctionPretype {
-            withExtensionReceiver { nullableAny() }
-            withReturnType { nullableAny() }
-        }
-
-        val setterType = buildFunctionPretype {
-            withExtensionReceiver { nullableAny() }
-            withParam { nullableAny() }
-            withReturnType { nullableAny() }
-        }
-
-        val getter = embedAccessorFunction(symbol, getterType, defaultBehaviour = false)
-        val setter = symbol.isVar.ifTrue { embedAccessorFunction(symbol, setterType, defaultBehaviour = false) }
+        val getter = embedAccessorFunction(symbol, extensionGetterType(), defaultBehaviour = false)
+        val setter = symbol.isVar.ifTrue { embedAccessorFunction(symbol, extensionSetterType(), defaultBehaviour = false) }
 
         return PropertyEmbedding(
             CustomGetter(getter),
@@ -868,7 +849,7 @@ class ProgramConverter(
 
     /** Returns an embedding of the class type, with details set. */
     internal fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
-        session.externalSpecifications?.modelClass(symbol)?.let { return embedClass(it) }
+        session.externalSpecifications?.modelClass(symbol)?.let { return embedClass(it).also { trust.recordBinding(symbol) } }
         observerBindingRegistry.registerClass(this, symbol)
         if (symbol.classId == IntArrayEmbedding.classId) {
             registerBuiltinHierarchy(symbol, IntArrayEmbedding.classType)

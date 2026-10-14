@@ -31,7 +31,6 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
     }
 
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
-        override val fileCheckers: Set<FirFileChecker> = setOf(ExternalSpecificationAssumptionsChecker(config))
         override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> = setOf(ExternalSpecificationBindingChecker)
         override val functionCheckers: Set<FirFunctionChecker> = setOf(
             ViperPoweredDeclarationChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),

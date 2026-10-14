@@ -18,9 +18,9 @@ them.
   compiles a tiny Gradle project with it, so a defect that only the shadow jar has
   (an unrelocated dependency) fails. The project also verifies calls through an
   external spec and the bundled specs, and fails if a spec reaches the compiled
-  output or if a caller stays verified after its spec is edited. A multiplatform
-  project builds the bundled specs under explicit API mode and warnings as
-  errors. Needs network access and Z3; exits 2 without Z3.
+  output, if a default build does not show the trust summary, or if a caller
+  stays verified after its spec is edited. A multiplatform project builds the
+  bundled specs under explicit API mode and warnings as errors. Needs network access and Z3; exits 2 without Z3.
 - `check-testdata.sh` — golden files with no source, and empty golden files.
 
 `test.sh` and `check-all.sh` take `--help`, and need `python3` on PATH because

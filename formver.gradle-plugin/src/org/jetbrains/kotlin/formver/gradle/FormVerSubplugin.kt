@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.gradle.plugin.FilesOptionKind
 import org.jetbrains.kotlin.gradle.plugin.FilesSubpluginOption
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 import javax.inject.Inject
@@ -48,8 +49,29 @@ class FormVerGradleSubplugin
                 .withPathSensitivity(PathSensitivity.RELATIVE)
         }
 
+        // A metadata compilation generates no code, so it never writes the report.
+        val trustReport = if (kotlinCompilation.platformType == KotlinPlatformType.common) null else
+            project.layout.buildDirectory.file("formver/${kotlinCompilation.compileKotlinTaskName}/trust-report.txt")
+        if (trustReport != null) {
+            kotlinCompilation.compileTaskProvider.configure { task ->
+                task.outputs.file(trustReport).withPropertyName("formverTrustReport")
+                task.doLast { action ->
+                    val report = trustReport.get().asFile
+                    check(report.isFile) { "SnaKt wrote no trust report at $report." }
+                    // The compiler puts the report's summary on its first line.
+                    action.logger.lifecycle("${report.readText().substringBefore('\n')} Details: $report")
+                }
+            }
+        }
+
         return project.provider {
             val options = mutableListOf<SubpluginOption>()
+
+            trustReport?.let {
+                options += FilesSubpluginOption(
+                    FormalVerificationPluginNames.TRUST_REPORT_OPTION_NAME, listOf(it.get().asFile), FilesOptionKind.INTERNAL
+                )
+            }
 
             formVerExtension.myCounterexamples?.let {
                 options += SubpluginOption(FormalVerificationPluginNames.COUNTEREXAMPLES_OPTION_NAME, it.toString())

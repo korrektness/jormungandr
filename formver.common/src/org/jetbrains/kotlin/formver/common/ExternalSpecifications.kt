@@ -72,15 +72,20 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
 
     fun errorsOf(symbol: FirBasedSymbol<*>): List<ExternalSpecificationError> = errorsBySymbol[symbol].orEmpty()
 
-    val assumptions: List<String>
-        get() {
-            initialize()
-            return (classes.keys.map { it.classId.asSingleFqName().asString() } + callables.keys.map { symbol ->
-                val parameters = (symbol as? FirFunctionSymbol<*>)?.valueParameterSymbols.orEmpty()
-                    .joinToString(",") { it.resolvedReturnType.toString() }
-                "${symbol.callableId}($parameters):${symbol.resolvedReturnType}"
-            }).sorted()
+    /** The trusted assumption that the binding of [target], a bound dependency class or callable, makes. */
+    fun bindingAssumption(target: FirBasedSymbol<*>): TrustedAssumption {
+        initialize()
+        val (model, name) = when (target) {
+            is FirRegularClassSymbol -> classes[target] to target.classId.asSingleFqName().asString()
+            is FirCallableSymbol<*> -> modelCallable(target) to target.unwrapUseSiteSubstitutionOverrides().unwrapFakeOverrides().let {
+                (if (it is FirPropertyAccessorSymbol) it.propertySymbol else it).trustName
+            }
+            else -> null to null
         }
+        checkNotNull(model) { "$target has no external binding." }
+        val bundled = containerFile(model)?.sourceFile?.path?.let(sources::isBundled) == true
+        return TrustedAssumption(if (bundled) TrustedAssumption.Kind.BUNDLED_SPEC else TrustedAssumption.Kind.USER_SPEC, name!!)
+    }
 
     fun modelClass(symbol: FirRegularClassSymbol): FirRegularClassSymbol? {
         initialize()
@@ -381,3 +386,12 @@ fun <S : FirBasedSymbol<*>> S.externalSpecificationSymbol(session: FirSession): 
     check(model::class == this::class) { "External model $model bound to $this is a different kind of declaration." }
     return this::class.java.cast(model)
 }
+
+/** How the trust report names a callable: its id, parameter types and result type, with an extension receiver as `this`. */
+val FirCallableSymbol<*>.trustName: String
+    get() {
+        val receiver = listOfNotNull(resolvedReceiverTypeRef?.coneType?.let { "this: ${it.renderReadable()}" })
+        val parameters = receiver + (this as? FirFunctionSymbol<*>)?.valueParameterSymbols.orEmpty()
+            .map { it.resolvedReturnType.renderReadable() }
+        return "${callableId?.asSingleFqName() ?: name}(${parameters.joinToString(", ")}): ${resolvedReturnType.renderReadable()}"
+    }

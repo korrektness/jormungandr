@@ -25,15 +25,6 @@ import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 
-/** Lists the trusted bindings of the session's registry when it has no errors. */
-class ExternalSpecificationAssumptionsChecker(private val config: PluginConfiguration) : FirFileChecker(MppCheckerKind.Common) {
-    context(context: CheckerContext, reporter: DiagnosticReporter)
-    override fun check(declaration: FirFile) {
-        val registry = context.session.externalSpecifications ?: return
-        config.externalSpecificationReporting.reportAssumptions(registry)
-    }
-}
-
 /**
  * Reports binding errors on the model declarations they concern; the registry attaches every error to a source
  * declaration of the session, so each one is reported exactly once.

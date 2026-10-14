@@ -1,0 +1,323 @@
+/trust_report.kt: info: Generated Viper text for trustedSuccessor:
+method trustedSuccessor(x: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) < 2147483647
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) > intFromRef(x)
+
+
+/trust_report.kt: info: Generated Viper text for selfContained:
+method selfContained(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(x)
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/trust_report.kt: info: Generated Viper text for usesSelfContained:
+method selfContained(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == intFromRef(x)
+
+
+method usesSelfContained() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := selfContained(intToRef(3))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/trust_report.kt: info: Generated Viper text for usesNeverVerify:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method trustedSuccessor(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) < 2147483647
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) > intFromRef(x)
+
+
+method usesNeverVerify() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var next: Ref
+  next := trustedSuccessor(intToRef(1))
+  assert intFromRef(next) > 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/trust_report.kt: info: Generated Viper text for usesNeverConvert:
+method answer(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Opaque())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method usesNeverConvert(opaque: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(opaque), Opaque())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := answer(opaque)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/trust_report.kt: info: Generated Viper text for usesUserSpec:
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function twiceModel(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) >= -1073741824
+  requires intFromRef(x) <= 1073741823
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (let anon_builtin ==
+      (timesInts(x, intToRef(2))) in
+      intFromRef(x) * intFromRef(intToRef(2)))
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method usesUserSpec(counter: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), CounterModel())
+  requires acc(CounterModel_unique(counter), write)
+  ensures acc(CounterModel_unique(counter), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  anon_0 := (unfolding acc(CounterModel_unique(counter), wildcard) in
+      value(counter))
+  assert intFromRef(anon_0) >= 0
+  assert intFromRef(twiceModel(intToRef(4))) == 8
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/trust_report.kt: info: Generated Viper text for usesBundledSpec:
+function absModel(value: Ref): Ref
+  requires isSubtype(typeOf(value), intType())
+  requires !(intFromRef(value) == -2147483648)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef((intFromRef(value) < 0 ? negInt(value) : value))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method usesBundledSpec() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(absModel(intToRef(-3))) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/trust_report.kt: info: Generated Viper text for usesLibraryContract:
+field size: Ref
+
+method get(this: Ref, par_index: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), List())
+  requires acc(this.size, write)
+  requires isSubtype(typeOf(this.size), intType())
+  requires intFromRef(this.size) >= 0
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0
+  requires intFromRef(this.size) > intFromRef(par_index)
+  ensures acc(this.size, write)
+  ensures isSubtype(typeOf(this.size), intType())
+  ensures intFromRef(this.size) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(this.size) == old(intFromRef(this.size))
+
+
+method isEmpty(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), List())
+  requires acc(this.size, write)
+  requires isSubtype(typeOf(this.size), intType())
+  requires intFromRef(this.size) >= 0
+  ensures acc(this.size, write)
+  ensures isSubtype(typeOf(this.size), intType())
+  ensures intFromRef(this.size) >= 0
+  ensures isSubtype(typeOf(ret_1), boolType())
+  ensures intFromRef(this.size) == old(intFromRef(this.size))
+  ensures boolFromRef(ret_1) ==> intFromRef(this.size) == 0
+  ensures !boolFromRef(ret_1) ==> intFromRef(this.size) > 0
+
+
+method usesLibraryContract(list: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(list), List())
+  requires acc(list.size, write)
+  requires isSubtype(typeOf(list.size), intType())
+  requires intFromRef(list.size) >= 0
+  ensures acc(list.size, write)
+  ensures isSubtype(typeOf(list.size), intType())
+  ensures intFromRef(list.size) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  anon := isEmpty(list)
+  if (boolFromRef(anon)) {
+    v_ret_0 := intToRef(0)
+  } else {
+    v_ret_0 := get(list, intToRef(0))}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/trust_report.kt: info: Generated Viper text for usesLibraryPropertyContract:
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method lastIndex(v_this_extension: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures isSubtype(typeOf(v_this_extension), stringType()) ==>
+    isSubtype(typeOf(ret_2), intType()) &&
+    intFromRef(ret_2) ==
+    (let anon_builtin ==
+      (minusInts(stringLength(v_this_extension), intToRef(1))) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(intToRef(1)))
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method usesLibraryPropertyContract(text: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(text), stringType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var last: Ref
+  var anon_0: Ref
+  anon_0 := lastIndex(text)
+  last := anon_0
+  inhale isSubtype(typeOf(last), intType())
+  assert intFromRef(last) ==
+    (let anon_builtin ==
+      (minusInts(stringLength(text), intToRef(1))) in
+      intFromRef(stringLength(text)) - intFromRef(intToRef(1)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/trust_report.kt: info: Generated Viper text for usesSeveral:
+field p_size: Ref
+
+function absModel(par_value: Ref): Ref
+  requires isSubtype(typeOf(par_value), intType())
+  requires !(intFromRef(par_value) == -2147483648)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef((intFromRef(par_value) < 0 ? negInt(par_value) : par_value))
+
+
+function f_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method get(this: Ref, par_index: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), List())
+  requires acc(this.p_size, write)
+  requires isSubtype(typeOf(this.p_size), intType())
+  requires intFromRef(this.p_size) >= 0
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0
+  requires intFromRef(this.p_size) > intFromRef(par_index)
+  ensures acc(this.p_size, write)
+  ensures isSubtype(typeOf(this.p_size), intType())
+  ensures intFromRef(this.p_size) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
+
+
+method isEmpty(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), List())
+  requires acc(this.p_size, write)
+  requires isSubtype(typeOf(this.p_size), intType())
+  requires intFromRef(this.p_size) >= 0
+  ensures acc(this.p_size, write)
+  ensures isSubtype(typeOf(this.p_size), intType())
+  ensures intFromRef(this.p_size) >= 0
+  ensures isSubtype(typeOf(ret_1), boolType())
+  ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
+  ensures boolFromRef(ret_1) ==> intFromRef(this.p_size) == 0
+  ensures !boolFromRef(ret_1) ==> intFromRef(this.p_size) > 0
+
+
+method trustedSuccessor(x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) < 2147483647
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) > intFromRef(x)
+
+
+method usesSeveral(counter: Ref, list: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), CounterModel())
+  requires acc(CounterModel_unique(counter), write)
+  requires isSubtype(typeOf(list), List())
+  requires acc(list.p_size, write)
+  requires isSubtype(typeOf(list.p_size), intType())
+  requires intFromRef(list.p_size) >= 0
+  ensures acc(CounterModel_unique(counter), write)
+  ensures acc(list.p_size, write)
+  ensures isSubtype(typeOf(list.p_size), intType())
+  ensures intFromRef(list.p_size) >= 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var first: Ref
+  var anon_0: Ref
+  var next: Ref
+  var anon_1: Ref
+  anon_0 := isEmpty(list)
+  if (boolFromRef(anon_0)) {
+    first := intToRef(0)
+  } else {
+    first := get(list, intToRef(0))}
+  next := trustedSuccessor(absModel(intToRef(1)))
+  assert intFromRef(next) > 1
+  anon_1 := (unfolding acc(CounterModel_unique(counter), wildcard) in
+      f_value(counter))
+  assert intFromRef(anon_1) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

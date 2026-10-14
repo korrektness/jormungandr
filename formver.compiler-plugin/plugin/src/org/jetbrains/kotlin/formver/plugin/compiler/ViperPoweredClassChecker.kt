@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.plugin.compiler
 
 import org.jetbrains.kotlin.descriptors.isInterface
+import org.jetbrains.kotlin.formver.core.trustedAssumptions
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -81,8 +82,9 @@ class ViperPoweredClassChecker(
                 if (System.getProperty("formver.testRun").toBoolean()) {
                     declaration.viperProgram = program.program
                     declaration.shouldVerify = program.verify
+                    declaration.trustedAssumptions = program.trustedAssumptions
                 } else if (program.verify) {
-                    verify(declaration, program.program)
+                    verify(declaration, program)
                 }
                 program.verifiesConstruction
             } catch (error: UnsupportedFeatureException) {
@@ -99,19 +101,27 @@ class ViperPoweredClassChecker(
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
-    private fun verify(declaration: FirRegularClass, program: viper.silver.ast.Program) {
+    private fun verify(declaration: FirRegularClass, program: ClassProgram) {
         val z3 = verifierLocator.z3Exe { reason ->
             reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
         } ?: return
+        var failed = false
         progress.run(declaration.verificationLabel, declaration.source) {
             SiliconFrontend(
                 z3, timeoutSeconds = config.verificationTimeoutSeconds,
                 cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
                 pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
             ).use { verifier ->
-                verifier.verify(program) { error -> reportFailure(declaration, error) }
+                verifier.verify(program.program) { error ->
+                    failed = true
+                    reportFailure(declaration, error)
+                }
             }
-        }?.let { reporter.reportFailure(it) }
+        }?.let {
+            reporter.reportFailure(it)
+            return
+        }
+        if (!failed) config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, program.trustedAssumptions)
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)

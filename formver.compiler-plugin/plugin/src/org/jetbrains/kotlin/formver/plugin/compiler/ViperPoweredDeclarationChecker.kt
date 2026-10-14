@@ -50,6 +50,7 @@ import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.core.lambdaPrograms
+import org.jetbrains.kotlin.formver.core.trustedAssumptions
 import org.jetbrains.kotlin.formver.core.LambdaVerificationProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
@@ -172,30 +173,39 @@ class ViperPoweredDeclarationChecker(
         val viperProgram = with(programConversionContext.nameResolver) { program.toSilver() }
         SiliconFrontend.checkConsistency(viperProgram)
         val shouldVerify = config.shouldVerify(declaration) && !programConversionContext.skipsVerification
+        val name = declaration.verificationLabel + if (index == 0) "" else ".lambda${index - 1}"
         if (System.getProperty("formver.testRun").toBoolean()) {
             // The test facade verifies the program later.
+            val trusted = programConversionContext.trust.assumptions
             if (index == 0) {
                 declaration.viperProgram = viperProgram
                 declaration.shouldVerify = shouldVerify
+                declaration.trustedAssumptions = trusted
             } else {
-                declaration.lambdaPrograms = declaration.lambdaPrograms.orEmpty() + LambdaVerificationProgram(viperProgram, shouldVerify)
+                declaration.lambdaPrograms = declaration.lambdaPrograms.orEmpty() +
+                    LambdaVerificationProgram(viperProgram, shouldVerify, trusted, name)
             }
         } else if (shouldVerify) {
             val z3Exe = verifierLocator.z3Exe { reason ->
                 reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
             } ?: return
+            var failed = false
             val onFailure = { err: VerifierError ->
+                failed = true
                 val source = err.reportingPosition(declaration.source).unwrapOr { declaration.source }
                 if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
             }
-            val name = declaration.verificationLabel + if (index == 0) "" else ".lambda${index - 1}"
             progress.run(name, declaration.source) {
                 SiliconFrontend(
                     z3Exe, timeoutSeconds = config.verificationTimeoutSeconds,
                     cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
                     pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
                 ).use { it.verify(viperProgram, onFailure) }
-            }?.let { reporter.reportFailure(it) }
+            }?.let {
+                reporter.reportFailure(it)
+                return
+            }
+            if (!failed) config.trustLedger?.record(context.containingFilePath!!, name, programConversionContext.trust.assumptions)
         }
     }
 

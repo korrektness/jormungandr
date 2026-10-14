@@ -82,6 +82,7 @@ val TestServices.viperTextCollector: ViperTextCollector by TestServices.testServ
 val TestServices.verificationDiagnosticsCollector: VerificationDiagnosticsCollector by TestServices.testServiceAccessor()
 val TestServices.conversionTagCollector: ConversionTagCollector by TestServices.testServiceAccessor()
 val TestServices.allTagCollector: AllTagCollector by TestServices.testServiceAccessor()
+val TestServices.trustReportCollector: TrustReportCollector by TestServices.testServiceAccessor()
 
 /**
  * Runs tests with different modes based on the formver.testMode system property.
@@ -123,6 +124,7 @@ abstract class AbstractPhasedDiagnosticTest : AbstractKotlinCompilerWithTargetBa
         useAdditionalService(::ConversionTagCollector)
         useAdditionalService(::AllTagCollector)
         useAdditionalService(::VerificationOutcomes)
+        useAdditionalService(::TrustReportCollector)
 
         // This facade might verify the programs. This depends on the testMode and the result of the conversion check.
         facadeStep(::ViperProgramVerificationFacade)

@@ -857,6 +857,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("trust_report.kt")
+    public void testTrust_report() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/trust_report.kt");
+    }
+
+    @Test
+    @TestMetadata("trust_report_spec_bound_library.kt")
+    public void testTrust_report_spec_bound_library() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/trust_report_spec_bound_library.kt");
+    }
+
+    @Test
     @TestMetadata("uniqueness_errors.kt")
     public void testUniqueness_errors() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/uniqueness_errors.kt");

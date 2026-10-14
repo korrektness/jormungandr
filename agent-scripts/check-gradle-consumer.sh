@@ -10,7 +10,9 @@
 # compiled code is accepted, if a spec binding to a missing library declaration
 # is accepted, if a false claim about a specified call verifies, if a
 # multiplatform consumer's common, platform or platform test code does not
-# verify through the bundled specs, or if a caller stays verified after the spec it relies on changes. The
+# verify through the bundled specs, if a default build does not show the trust
+# summary of the verified declarations, or if a caller stays verified after the
+# spec it relies on changes. The
 # multiplatform consumer uses explicit API mode, extra warnings and warnings as
 # errors, which the bundled specs must compile under.
 #
@@ -296,6 +298,22 @@ if [[ -n "$leaked" ]]; then
     echo "$leaked" >&2
     exit 1
 fi
+
+# A default build shows the trust summary, and the report it points to lists
+# what each declaration trusted.
+report="$consumer/build/formver/compileKotlin/trust-report.txt"
+if ! grep -q "^SnaKt verified .* Details: $report$" "$log"; then
+    cat "$log" >&2
+    echo "check-gradle-consumer.sh: the build did not show the trust summary" >&2
+    exit 1
+fi
+for entry in "user spec: stand.lib.twice(Int): Int" "bundled spec: kotlin.math.abs(Int): Int"; do
+    if ! grep -qF "    $entry" "$report"; then
+        cat "$report" >&2
+        echo "check-gradle-consumer.sh: the trust report does not list $entry" >&2
+        exit 1
+    fi
+done
 
 # The spec was analysed: the reference resolves and is then rejected, rather
 # than failing to resolve.

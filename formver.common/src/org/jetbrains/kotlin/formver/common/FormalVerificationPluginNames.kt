@@ -16,4 +16,5 @@ object FormalVerificationPluginNames {
     const val VERIFICATION_TIMEOUT_OPTION_NAME = "verification_timeout"
     const val DUMP_UNIQUENESS_CFG_OPTION_NAME = "dump_uniqueness_cfg"
     const val EXTERNAL_SPEC_OPTION_NAME = "external_spec"
+    const val TRUST_REPORT_OPTION_NAME = "trust_report"
 }

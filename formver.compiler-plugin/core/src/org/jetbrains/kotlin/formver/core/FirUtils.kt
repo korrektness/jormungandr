@@ -143,10 +143,21 @@ val FirFunctionSymbol<*>.shouldBeInlined
 private object ViperProgram : FirDeclarationDataKey()
 private object ShouldVerify : FirDeclarationDataKey()
 private object LambdaPrograms : FirDeclarationDataKey()
+private object TrustedAssumptions : FirDeclarationDataKey()
 
-data class LambdaVerificationProgram(val program: viper.silver.ast.Program, val shouldVerify: Boolean)
+data class LambdaVerificationProgram(
+    val program: viper.silver.ast.Program,
+    val shouldVerify: Boolean,
+    val trustedAssumptions: Set<org.jetbrains.kotlin.formver.common.TrustedAssumption>,
+    /** The name that progress messages and the trust report give the lambda's verification. */
+    val label: String,
+)
 
 var FirDeclaration.lambdaPrograms: List<LambdaVerificationProgram>? by FirDeclarationDataRegistry.data(LambdaPrograms)
 
 var FirDeclaration.viperProgram: viper.silver.ast.Program? by FirDeclarationDataRegistry.data(ViperProgram)
 var FirDeclaration.shouldVerify: Boolean? by FirDeclarationDataRegistry.data(ShouldVerify)
+
+/** The trusted assumptions of [viperProgram]. */
+var FirDeclaration.trustedAssumptions: Set<org.jetbrains.kotlin.formver.common.TrustedAssumption>? by
+    FirDeclarationDataRegistry.data(TrustedAssumptions)

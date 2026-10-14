@@ -23,11 +23,12 @@ import java.util.zip.ZipFile
  * Their declarations take part in resolution and conversion, but the compiled output contains none of them, so
  * ordinary module code may not refer to them.
  */
-class ExternalSpecSources(files: Collection<File>) {
+class ExternalSpecSources(files: Collection<File>, bundled: Collection<File> = emptyList()) {
     /** The spec files, canonical and without duplicates, in the order given. */
-    val files: List<File> = files.map { it.canonicalFile }.distinct()
+    val files: List<File> = (files + bundled).map { it.canonicalFile }.distinct()
 
     private val canonicalPaths: Set<String> = this.files.mapTo(HashSet()) { it.path }
+    private val bundledPaths: Set<String> = bundled.mapTo(HashSet()) { it.canonicalPath }
     private val pathMembership = ConcurrentHashMap<String, Boolean>()
 
     fun isEmpty(): Boolean = files.isEmpty()
@@ -42,6 +43,9 @@ class ExternalSpecSources(files: Collection<File>) {
     }
 
     fun isExternalSpec(file: KtSourceFile?): Boolean = isExternalSpec(file?.path)
+
+    /** Whether [path], a spec file's path, names one that SnaKt bundles rather than one the user supplied. */
+    fun isBundled(path: String): Boolean = bundledPaths.isNotEmpty() && File(path).canonicalPath in bundledPaths
 
     fun isExternalSpec(file: FirFile): Boolean = isExternalSpec(file.sourceFile)
 

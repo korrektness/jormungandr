@@ -65,6 +65,10 @@ interface ProgramConversionContext : ErrorCollectionContext {
     fun lookupFunctionSignature(name: SymbolicName): CompleteFunctionSignature?
 
     fun embedAnyFunction(symbol: FirFunctionSymbol<*>): CallableEmbedding
+
+    /** The trusted assumptions that the program relies on, beyond the declarations it verifies. */
+    val trust: TrustedAssumptionCollector
+
     fun embedType(type: ConeKotlinType): TypeEmbedding
     fun embedFunctionPretype(symbol: FirFunctionSymbol<*>): FunctionTypeEmbedding
     fun embedType(exp: FirExpression): TypeEmbedding = embedType(exp.resolvedType)

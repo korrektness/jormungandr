@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.plugin.compiler
 
 import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.formver.common.TrustedAssumption
 import org.jetbrains.kotlin.descriptors.isInterface
 import org.jetbrains.kotlin.diagnostics.DiagnosticContext
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
@@ -54,6 +55,7 @@ data class ClassProgram(
     val verify: Boolean,
     /** Whether [program] proves the class's constructors and nothing skips its verification. */
     val verifiesConstruction: Boolean,
+    val trustedAssumptions: Set<TrustedAssumption>,
 )
 
 /** Converts the Viper program that checks a concrete class. */
@@ -118,7 +120,7 @@ class ClassPrograms(private val session: FirSession, private val config: PluginC
         SiliconFrontend.checkConsistency(viperProgram)
         val verify = config.verificationSelection !in setOf(TargetsSelection.NO_TARGETS, TargetsSelection.FORCE_DISABLE) &&
             !converter.skipsVerification
-        return ClassProgram(viperProgram, verify, provesConstruction && !converter.skipsVerification)
+        return ClassProgram(viperProgram, verify, provesConstruction && !converter.skipsVerification, converter.trust.assumptions)
     }
 
     /**

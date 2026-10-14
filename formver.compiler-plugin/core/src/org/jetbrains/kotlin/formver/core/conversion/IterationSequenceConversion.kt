@@ -51,10 +51,12 @@ fun StmtConversionContext.requireIntSizedIteration(receiver: FirExpression) {
  * The external-specification model of `Map` when [map] holds, else of `Iterable`, or null when no loaded specification
  * binds one.
  */
-private fun StmtConversionContext.collectionIterationModel(map: Boolean): FirRegularClassSymbol? {
+private fun StmtConversionContext.collectionIterationModel(map: Boolean): FirRegularClassSymbol? =
+    collectionIterationTarget(map)?.let { session.externalSpecifications?.modelClass(it) }
+
+private fun StmtConversionContext.collectionIterationTarget(map: Boolean): FirRegularClassSymbol? {
     val id = ClassId.topLevel(FqName(if (map) "kotlin.collections.Map" else "kotlin.collections.Iterable"))
-    val target = session.symbolProvider.getClassLikeSymbolByClassId(id) as? FirRegularClassSymbol ?: return null
-    return session.externalSpecifications?.modelClass(target)
+    return session.symbolProvider.getClassLikeSymbolByClassId(id) as? FirRegularClassSymbol
 }
 
 /**
@@ -71,6 +73,7 @@ fun StmtConversionContext.collectionIterationSequence(
 ): ExpEmbedding {
     val model = collectionIterationModel(map)
         ?: throw UnsupportedFeatureException(source, "collection iteration without the bundled collection specifications")
+    trust.recordBinding(collectionIterationTarget(map)!!)
     val observer = model.declarationSymbols.filterIsInstance<FirNamedFunctionSymbol>().single { it.name.asString() == "iterationSequence" }
     typeResolver.markIterationSequenceUsed()
     return embedAnyFunction(observer).insertCall(listOf(receiver), this).withType(buildType { iterationSequence() })
