@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -83,7 +84,8 @@ fun FirNamedFunctionSymbol.functionsDeclaredBeside(session: FirSession): List<Fi
         .getTopLevelFunctionSymbols(callableId.packageName, Name.identifier(targetName))
         .filter { it != this && it.getAnnotationByClassId(externalFunctionId, session) != null }
     if (getAnnotationByClassId(externalFunctionId, session) == null) return emptyList()
-    val file = checkNotNull(session.firProvider.getFirCallableContainerFile(this)) {
+    // In a multiplatform compilation the model can sit in a fragment this session depends on.
+    val file = checkNotNull(moduleData.session.firProvider.getFirCallableContainerFile(this)) {
         "A source external function model must have a containing file."
     }
     return file.declarations.filterIsInstance<FirSimpleFunction>().map { it.symbol }.filter { it != this }

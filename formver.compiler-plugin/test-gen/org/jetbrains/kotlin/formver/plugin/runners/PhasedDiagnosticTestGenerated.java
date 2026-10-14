@@ -46,6 +46,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
   }
 
   @Test
+  @TestMetadata("external_spec_references_dependent_fragment.kt")
+  public void testExternal_spec_references_dependent_fragment() {
+    runTest("formver.compiler-plugin/testData/diagnostics/external_spec_references_dependent_fragment.kt");
+  }
+
+  @Test
   @TestMetadata("external_spec_use.kt")
   public void testExternal_spec_use() {
     runTest("formver.compiler-plugin/testData/diagnostics/external_spec_use.kt");
@@ -1537,6 +1543,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @TestMetadata("collection_hofs_common.kt")
       public void testCollection_hofs_common() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/collection_hofs_common.kt");
+      }
+
+      @Test
+      @TestMetadata("collection_hofs_dependent_fragment.kt")
+      public void testCollection_hofs_dependent_fragment() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/inlining/collection_hofs_dependent_fragment.kt");
       }
 
       @Test

@@ -9,8 +9,8 @@
 # if a spec declaration reaches the compiled output, if a reference to one from
 # compiled code is accepted, if a spec binding to a missing library declaration
 # is accepted, if a false claim about a specified call verifies, if a
-# multiplatform consumer's common code does not verify through the bundled specs,
-# or if a caller stays verified after the spec it relies on changes. The
+# multiplatform consumer's common, platform or platform test code does not
+# verify through the bundled specs, or if a caller stays verified after the spec it relies on changes. The
 # multiplatform consumer uses explicit API mode, extra warnings and warnings as
 # errors, which the bundled specs must compile under.
 #
@@ -340,10 +340,10 @@ for line in 6 9 11; do
     fi
 done
 # A multiplatform consumer: the bundled specs must reach code in the common
-# fragment as well as the platform one, so both functions verify only through
-# the collection templates.
+# fragment, the platform one and the platform test compilation, so each
+# function verifies only through the collection templates.
 kmp="$work/kmp"
-mkdir -p "$kmp/src/commonMain/kotlin" "$kmp/src/jvmMain/kotlin" "$kmp/gradle"
+mkdir -p "$kmp/src/commonMain/kotlin" "$kmp/src/jvmMain/kotlin" "$kmp/src/jvmTest/kotlin" "$kmp/gradle"
 cp gradle/gradle-daemon-jvm.properties "$kmp/gradle/"
 cp "$consumer/gradle.properties" "$kmp/"
 cat >"$kmp/settings.gradle" <<SETTINGS
@@ -389,13 +389,27 @@ public fun ${fragment}Positive(values: @Unique @Borrowed List<Int>) {
 }
 SRC
 done
+cat >"$kmp/src/jvmTest/kotlin/jvmTest.kt" <<'SRC'
+import org.jetbrains.kotlin.formver.plugin.*
+
+fun jvmTestPositive(values: @Unique @Borrowed List<Int>) {
+    preconditions { forAll<Int> { i -> (0 <= i && i < values.size) implies (values[i] > 0) } }
+    values.forEach { verify(it > 0) }
+}
+
+fun jvmTestFiltered(values: @Unique @Borrowed List<Int>) {
+    val positive = values.filter { it > 0 }
+    positive.forEach { verify(it > 0) }
+}
+SRC
 kmp_log="$work/kmp.log"
-if ! "$ROOT/gradlew" --no-daemon -p "$kmp" -Dformver.repo="file://$repo" compileKotlinJvm >"$kmp_log" 2>&1; then
+if ! "$ROOT/gradlew" --no-daemon -p "$kmp" -Dformver.repo="file://$repo" \
+    compileKotlinJvm compileTestKotlinJvm >"$kmp_log" 2>&1; then
     cat "$kmp_log" >&2
     echo "check-gradle-consumer.sh: multiplatform consumer build failed" >&2
     exit 1
 fi
-if grep -q "^w: .*\(common\|jvm\).kt" "$kmp_log"; then
+if grep -q "^w: .*\(common\|jvm\|jvmTest\).kt" "$kmp_log"; then
     grep "^w: " "$kmp_log" >&2
     echo "check-gradle-consumer.sh: the multiplatform consumer's claims did not verify" >&2
     exit 1

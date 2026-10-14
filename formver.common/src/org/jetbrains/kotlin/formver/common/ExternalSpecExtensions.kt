@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
@@ -87,7 +88,7 @@ private class ReferenceChecker(private val specs: ExternalSpecSources) : FirBasi
             else -> null
         // Unresolved references are already compiler errors.
         } ?: return
-        if (specs.declares(symbol, context.session)) {
+        if (specs.declares(symbol)) {
             val name = when (symbol) {
                 is FirCallableSymbol<*> -> symbol.callableId?.asSingleFqName()?.asString() ?: symbol.toString()
                 is FirClassLikeSymbol<*> -> symbol.classId.asSingleFqName().asString()
@@ -110,19 +111,19 @@ private class TypeChecker(private val specs: ExternalSpecSources) :
         typeRef.coneType.contains { type ->
             // An unresolved type is already a compiler error.
             val symbol = (type as? ConeClassLikeType)?.lookupTag?.toSymbol()
-            if (symbol != null && specs.declares(symbol, session)) found = symbol
+            if (symbol != null && specs.declares(symbol)) found = symbol
             found != null
         }
         found?.let { reporter.reportOn(typeRef.source, ExternalSpecErrors.EXTERNAL_SPEC_REFERENCE, it.classId.asSingleFqName().asString()) }
     }
 }
 
-private fun ExternalSpecSources.declares(symbol: FirBasedSymbol<*>, session: FirSession): Boolean {
+private fun ExternalSpecSources.declares(symbol: FirBasedSymbol<*>): Boolean {
     val declaration = (symbol as? FirCallableSymbol<*>)?.unwrapFakeOverrides() ?: symbol
     if (declaration.origin != FirDeclarationOrigin.Source) return false
     val file = when (declaration) {
-        is FirClassLikeSymbol<*> -> session.firProvider.getFirClassifierContainerFileIfAny(declaration)
-        is FirCallableSymbol<*> -> session.firProvider.getFirCallableContainerFile(declaration)
+        is FirClassLikeSymbol<*> -> declaration.moduleData.session.firProvider.getFirClassifierContainerFileIfAny(declaration)
+        is FirCallableSymbol<*> -> declaration.moduleData.session.firProvider.getFirCallableContainerFile(declaration)
         else -> null
     // Local declarations have no container file, and are never visible outside their own file.
     } ?: return false
