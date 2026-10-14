@@ -69,6 +69,7 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.uniqueness.plugin.isGuaranteedDefault
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Program
+import org.jetbrains.kotlin.formver.viper.ast.withoutUncalledFunctions
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 
 
@@ -207,7 +208,7 @@ class ProgramConverter(
         methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods,
         predicates = typeResolver.predicates(),
         adts = emptyList(),
-    )
+    ).withoutUncalledFunctions(SpecialFunctions.allNames)
 
 
     // region Callable Conversion

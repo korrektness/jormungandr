@@ -5,7 +5,10 @@ import java.nio.file.Files
 import java.nio.file.NoSuchFileException
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.nio.file.attribute.BasicFileAttributes
+import java.nio.file.attribute.FileTime
 import java.security.MessageDigest
+import java.util.concurrent.ConcurrentHashMap
 
 class CorruptVerificationCacheException(path: Path) :
     Exception("Corrupt verification cache entry: $path")
@@ -48,6 +51,19 @@ class VerificationResultCache(private val directory: Path) {
                 digest.update(bytes)
             }
             return digest.digest().joinToString("") { "%02x".format(it) }
+        }
+
+        private data class FileVersion(val path: Path, val size: Long, val modified: FileTime)
+
+        private val currentDigests = ConcurrentHashMap<FileVersion, String>()
+
+        /**
+         * The [fileDigest] of [path], computed once for each size and modification time the file has had in this JVM.
+         */
+        fun currentFileDigest(path: Path): String {
+            val attributes = Files.readAttributes(path, BasicFileAttributes::class.java)
+            val version = FileVersion(path.toAbsolutePath(), attributes.size(), attributes.lastModifiedTime())
+            return currentDigests.computeIfAbsent(version) { fileDigest(path) }
         }
 
         fun fileDigest(path: Path): String {

@@ -288,6 +288,7 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         context(nameResolver: NameResolver)
         override fun registerNames() {
             variables.forEach { nameResolver.register(it.name) }
+            triggers.forEach { trigger -> trigger.exps.forEach { it.registerNames() } }
             exp.registerNames()
         }
     }
@@ -314,6 +315,7 @@ sealed interface Exp : WithSilverMetadata, IntoSilver<viper.silver.ast.Exp> {
         context(nameResolver: NameResolver)
         override fun registerNames() {
             variables.forEach { nameResolver.register(it.name) }
+            triggers.forEach { trigger -> trigger.exps.forEach { it.registerNames() } }
             exp.registerNames()
         }
     }

@@ -66,13 +66,7 @@ fun Program.registerAllNames() {
     }
     fields.forEach { nameResolver.register(it.name) }
 
-    functions.forEach { function ->
-        nameResolver.register(function.name)
-        function.formalArgs.forEach { arg -> nameResolver.register(arg.name) }
-        function.pres.forEach { it.registerNames() }
-        function.posts.forEach { it.registerNames() }
-        function.body?.registerNames()
-    }
+    functions.forEach { it.registerNames() }
 
     predicates.forEach { predicate ->
         nameResolver.register(predicate.name)
@@ -96,4 +90,38 @@ fun Program.registerAllNames() {
             constructor.formalArgs.forEach { nameResolver.register(it.name) }
         }
     }
+}
+
+context(nameResolver: NameResolver)
+private fun Function.registerNames() {
+    nameResolver.register(name)
+    formalArgs.forEach { arg -> nameResolver.register(arg.name) }
+    pres.forEach { it.registerNames() }
+    posts.forEach { it.registerNames() }
+    body?.registerNames()
+}
+
+/**
+ * Drops each function named in [removable] that no domain, method, predicate or kept function calls.
+ * Silicon checks every function's definition, so an uncalled function costs time and adds no fact the rest of the
+ * program can use.
+ */
+fun Program.withoutUncalledFunctions(removable: Set<SymbolicName>): Program {
+    val candidates = functions.filter { it.name in removable }.associateBy { it.name }
+    val called = mutableSetOf<SymbolicName>()
+    val pending = ArrayDeque<Function>()
+    // Every name the emitted program uses is registered, so registration sees every call.
+    val collector = object : NameResolver {
+        override fun lookup(name: SymbolicName): String = error("Names are only collected here.")
+        override fun resolve() {}
+        override fun register(name: AnyName) {
+            val function = candidates[name] ?: return
+            if (called.add(function.name)) pending.add(function)
+        }
+    }
+    with(collector) {
+        copy(functions = functions.filter { it.name !in candidates }).registerAllNames()
+        while (pending.isNotEmpty()) pending.removeFirst().registerNames()
+    }
+    return copy(functions = functions.filter { it.name !in candidates || it.name in called })
 }

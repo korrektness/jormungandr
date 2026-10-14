@@ -64,11 +64,7 @@ class SiliconFrontend(
         require(commandLineArgs.chunked(2).all { pair ->
             pair.size == 2 && pair[0] in cacheableOptions && pair[1].toLongOrNull() != null
         }) { "Verification caching requires supported numeric Silicon options." }
-        VerificationResultCache.fingerprint(listOf(
-            artifactDigest(viper.silicon.SiliconFrontendAPI::class.java),
-            artifactDigest(viper.silver.ast.Program::class.java),
-            VerificationResultCache.fileDigest(Path.of(z3Exe)),
-        ))
+        VerificationResultCache.fingerprint(backendDigests + VerificationResultCache.currentFileDigest(Path.of(z3Exe)))
     }
     private var siliconApi: viper.silicon.SiliconFrontendAPI? = null
 
@@ -93,6 +89,14 @@ class SiliconFrontend(
         private val cacheableOptions = setOf(
             "--timeout", "--assertTimeout", "--proverSaturationTimeout", "--randomizeSeeds",
         )
+
+        /** The loaded Silicon and Silver classes cannot change within a JVM, so their artifacts are hashed once. */
+        private val backendDigests: List<String> by lazy {
+            listOf(
+                artifactDigest(viper.silicon.SiliconFrontendAPI::class.java),
+                artifactDigest(viper.silver.ast.Program::class.java),
+            )
+        }
 
         private fun artifactDigest(type: Class<*>): String {
             val path = Path.of(type.protectionDomain.codeSource.location.toURI())

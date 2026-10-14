@@ -19,4 +19,8 @@ object SpecialFunctions {
 
     val multiset
         get() = OperatorExpEmbeddings.multisetTemplates.map { it.refsOperation }
+
+    /** The names of every built-in function, whether or not a program uses it. */
+    val allNames
+        get() = (all + iterationSequence + multiset).map { it.name }.toSet()
 }

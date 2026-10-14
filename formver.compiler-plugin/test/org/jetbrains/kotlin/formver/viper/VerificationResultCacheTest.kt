@@ -7,6 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class VerificationResultCacheTest {
@@ -78,5 +79,16 @@ class VerificationResultCacheTest {
         }
         assertTrue(VerificationResultCache(directory).verify("program", "version", emptyList()) { error("Expected hit") })
         Files.list(directory).use { assertEquals(1L, it.count()) }
+    }
+
+    @Test
+    fun `a rewritten file gets the digest of its new content`() {
+        val file = directory.resolve("z3")
+        Files.write(file, byteArrayOf(1))
+        val first = VerificationResultCache.currentFileDigest(file)
+        assertEquals(first, VerificationResultCache.currentFileDigest(file))
+        Files.write(file, byteArrayOf(1, 2))
+        assertEquals(VerificationResultCache.fileDigest(file), VerificationResultCache.currentFileDigest(file))
+        assertNotEquals(first, VerificationResultCache.currentFileDigest(file))
     }
 }
