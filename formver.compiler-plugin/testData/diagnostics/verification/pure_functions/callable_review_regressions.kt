@@ -49,10 +49,10 @@ fun <!VIPER_TEXT!>wrapClient<!>(g: @Unique ReviewAcc) {
 }
 
 <!VIPER_TEXT!>class ReviewHolder<!> {
-    val action: @Unique ReviewAcc = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
+    val action: @Unique ReviewAcc = ReviewAcc { amount ->
         exposes(ReviewAcc::class) { total() == 0 }
-        -5
-    }<!>
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>-5<!>
+    }
 }
 
 fun <!VIPER_TEXT!>holderClient<!>(h: @Unique ReviewHolder) {
@@ -61,28 +61,28 @@ fun <!VIPER_TEXT!>holderClient<!>(h: @Unique ReviewHolder) {
     verify(r == 1)
 }
 
-<!VIPER_TEXT!>class ReviewCtorHolder<!>(val action: @Unique ReviewAcc = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
+<!VIPER_TEXT!>class ReviewCtorHolder<!>(val action: @Unique ReviewAcc = ReviewAcc { amount ->
     exposes(ReviewAcc::class) { total() == 0 }
-    -5
-}<!>)
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>-5<!>
+})
 
 <!VIPER_TEXT!>class ReviewInitHolder<!> {
     val action: @Unique ReviewAcc
     init {
-        action = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
+        action = ReviewAcc { amount ->
             exposes(ReviewAcc::class) { total() == 0 }
-            -5
-        }<!>
+            <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>-5<!>
+        }
     }
 }
 
 <!VIPER_TEXT!>class ReviewSecondaryHolder<!> {
     val action: @Unique ReviewAcc
     constructor() {
-        action = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
+        action = ReviewAcc { amount ->
             exposes(ReviewAcc::class) { total() == 0 }
-            -5
-        }<!>
+            <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>-5<!>
+        }
     }
 }
 
@@ -105,7 +105,7 @@ fun interface NamedCounterSpec {
 
 <!VIPER_TEXT!>class BrokenNamedReviewAcc<!>(var n: Int) : NamedCounterSpec {
     @Pure @Unique override fun <!VIPER_TEXT!>total<!>(): Int = n
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed override fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int = -7<!>
+    @Unique @Borrowed override fun <!VIPER_TEXT!>invoke<!>(amount: Int): Int = <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>-7<!>
 }
 
 fun <!VIPER_TEXT!>callTwice<!>(f: @Unique @Borrowed NamedCounterSpec): Int {
@@ -149,10 +149,10 @@ fun <!VIPER_TEXT!>ghostSharedClient<!>(f: GhostSharedAcc) {
     verify(r2 == r1)
 }
 
-val <!VIPER_TEXT!>topLevelBadAction<!>: @Unique ReviewAcc = ReviewAcc <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
+val <!VIPER_TEXT!>topLevelBadAction<!>: @Unique ReviewAcc = ReviewAcc { amount ->
     exposes(ReviewAcc::class) { total() == 0 }
-    -5
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>-5<!>
+}
 
 <!VIPER_TEXT!>class ReviewRefinementHolder<!> {
     val action: @Unique ReviewAcc = ReviewAcc <!OVERRIDE_NOT_REFINING, OVERRIDE_NOT_REFINING!>{ amount ->

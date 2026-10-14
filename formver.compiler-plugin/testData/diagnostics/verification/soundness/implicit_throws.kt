@@ -6,12 +6,12 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 <!VERIFICATION_SKIPPED!>class Late<!> { lateinit var s: String }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>lateinitCatch<!>(l: Late): Int {
+fun <!VIPER_TEXT!>lateinitCatch<!>(l: Late): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; l.s; x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 
 fun <!VIPER_TEXT!>lateinitCatchSeen<!>(l: Late): Int {
     postconditions<Int> { it == 1 || it == 2 }
@@ -20,13 +20,13 @@ fun <!VIPER_TEXT!>lateinitCatchSeen<!>(l: Late): Int {
     return x
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>localLateinitCatch<!>(): Int {
+fun <!VIPER_TEXT!>localLateinitCatch<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     lateinit var s: String
     var x = 0
     try { x = 1; val n = s.length; x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 
 fun <!VIPER_TEXT!>localLateinitCatchSeen<!>(): Int {
     postconditions<Int> { it == 1 || it == 2 }
@@ -37,22 +37,22 @@ fun <!VIPER_TEXT!>localLateinitCatchSeen<!>(): Int {
 }
 
 // `System.getProperty` returns a platform-typed `String!`, which is null for an absent property.
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>platformAssignCatch<!>(): Int {
+fun <!VIPER_TEXT!>platformAssignCatch<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     val p = System.getProperty("snakt.absent")
     try { x = 1; val q: String = p; x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>platformReassignCatch<!>(): Int {
+fun <!VIPER_TEXT!>platformReassignCatch<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     var q: String = ""
     val p = System.getProperty("snakt.absent")
     try { x = 1; q = p; x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 
 fun <!VIPER_TEXT!>platformCheckedAssign<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
@@ -82,19 +82,19 @@ fun <!VIPER_TEXT!>platformAssignSeen<!>(): Int {
 }
 
 // A message that is not a lambda takes the call path of `require` and `check`.
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>requireMessageCatch<!>(message: () -> Any): Int {
+fun <!VIPER_TEXT!>requireMessageCatch<!>(message: () -> Any): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; require(false, message); x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>checkMessageCatch<!>(message: () -> Any): Int {
+fun <!VIPER_TEXT!>checkMessageCatch<!>(message: () -> Any): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; check(false, message); x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 
 fun <!VIPER_TEXT!>requireMessagePasses<!>(a: Int, message: () -> Any): Int {
     postconditions<Int> { it == 1 || it == 2 }

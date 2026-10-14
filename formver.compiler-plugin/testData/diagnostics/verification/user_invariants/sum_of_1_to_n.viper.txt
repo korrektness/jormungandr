@@ -5,26 +5,55 @@ method recursiveSumOfIntegersUpToN(n: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures 0 <= intFromRef(v_ret_0) &&
     intFromRef(v_ret_0) <=
-    (let anon_builtin ==
+    (let anon_builtin_neg1 ==
       (timesInts(n, intToRef(32767))) in
       intFromRef(n) * intFromRef(intToRef(32767)))
-  ensures (let anon_builtin ==
+  ensures (let anon_builtin_neg1 ==
       (plusInts(v_ret_0, v_ret_0)) in
       intFromRef(v_ret_0) + intFromRef(v_ret_0)) ==
-    (let anon_builtin ==
+    (let anon_builtin_neg1 ==
       (timesInts(n, plusInts(n, intToRef(1)))) in
       intFromRef(n) * intFromRef(plusInts(n, intToRef(1))))
 {
+  var anon_builtin_0: Int
   if (intFromRef(n) == 0) {
     v_ret_0 := intToRef(0)
+    anon_builtin_0 := 0
     goto lbl_ret_0
   } else {
     var anon_0: Ref
     anon_0 := recursiveSumOfIntegersUpToN(minusInts(n, intToRef(1)))
     v_ret_0 := plusInts(n, anon_0)
+    anon_builtin_0 := 1
     goto lbl_ret_0
   }
   label lbl_ret_0
+  assert anon_builtin_0 == 0 ==>
+    0 <= intFromRef(v_ret_0) &&
+    intFromRef(v_ret_0) <=
+    (let anon_builtin_neg1 ==
+      (timesInts(n, intToRef(32767))) in
+      intFromRef(n) * intFromRef(intToRef(32767)))
+  assert anon_builtin_0 == 1 ==>
+    0 <= intFromRef(v_ret_0) &&
+    intFromRef(v_ret_0) <=
+    (let anon_builtin_neg1 ==
+      (timesInts(n, intToRef(32767))) in
+      intFromRef(n) * intFromRef(intToRef(32767)))
+  assert anon_builtin_0 == 0 ==>
+    (let anon_builtin_neg1 ==
+      (plusInts(v_ret_0, v_ret_0)) in
+      intFromRef(v_ret_0) + intFromRef(v_ret_0)) ==
+    (let anon_builtin_neg1 ==
+      (timesInts(n, plusInts(n, intToRef(1)))) in
+      intFromRef(n) * intFromRef(plusInts(n, intToRef(1))))
+  assert anon_builtin_0 == 1 ==>
+    (let anon_builtin_neg1 ==
+      (plusInts(v_ret_0, v_ret_0)) in
+      intFromRef(v_ret_0) + intFromRef(v_ret_0)) ==
+    (let anon_builtin_neg1 ==
+      (timesInts(n, plusInts(n, intToRef(1)))) in
+      intFromRef(n) * intFromRef(plusInts(n, intToRef(1))))
 }
 
 /sum_of_1_to_n.kt: info: Generated Viper text for sumOfIntegersUpToN:

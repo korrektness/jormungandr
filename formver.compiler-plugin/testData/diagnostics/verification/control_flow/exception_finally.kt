@@ -69,10 +69,10 @@ fun <!VIPER_TEXT!>finallyNestedPendingReturn<!>(): Int {
     } finally { verify(x == 2) }
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>finallyOverrideIsNotVacuous<!>(): Int {
+fun <!VIPER_TEXT!>finallyOverrideIsNotVacuous<!>(): Int {
     postconditions<Int> { it == 1 }
-    try { throw IllegalArgumentException() } finally { return 2 }
-}<!>
+    try { throw IllegalArgumentException() } finally { <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return 2<!> }
+}
 
 fun <!VIPER_TEXT!>finallyNestedOrder<!>() {
     var x = 0
@@ -215,15 +215,15 @@ fun <!VIPER_TEXT!>finallyNestedInCatch<!>(): Int {
     return x
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>finallyNestedCatchIsReachable<!>(): Int {
+fun <!VIPER_TEXT!>finallyNestedCatchIsReachable<!>(): Int {
     postconditions<Int> { it == 0 }
     try {
         try { throw IllegalArgumentException() }
         catch (e: Exception) {
             try { throw e } finally { verify(true) }
         }
-    } catch (e: Exception) { return 1 }
-}<!>
+    } catch (e: Exception) { <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return 1<!> }
+}
 
 fun <!VIPER_TEXT!>finallyBoundsAreErrors<!>(a: IntArray) {
     try { <!POSSIBLE_INDEX_OUT_OF_BOUND!>a[-1]<!> } finally { verify(true) }

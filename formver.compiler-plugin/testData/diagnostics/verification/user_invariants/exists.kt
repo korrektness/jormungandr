@@ -41,7 +41,7 @@ fun <!VIPER_TEXT!>symbolExists<!>(s: String): Int {
 
 // Without `val c = s[0]`, `s[0]` is never read before the loop so there is no ground
 // term for the `s[it]` trigger to match — the solver cannot construct the witness.
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>symbolExistsWithoutGroundTerm<!>(s: String): Int {
+fun <!VIPER_TEXT!>symbolExistsWithoutGroundTerm<!>(s: String): Int {
     preconditions {
         s.length > 0
     }
@@ -49,8 +49,8 @@ fun <!VIPER_TEXT!>symbolExists<!>(s: String): Int {
         0 <= res && res < s.length &&
         exists<Int> { 0 <= it && it < s.length && s[it] == s[res] }
     }
-    return 0
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return 0<!>
+}
 
 fun <!VIPER_TEXT!>existsPostcondWithoutTrigger<!>(): Int {
     postconditions<Int> {

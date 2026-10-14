@@ -47,10 +47,10 @@ class ClassNotConverted(first: String) {
 class Stored @NeverVerify constructor(val value: Int)
 
 // An unverified construction gives callers no field values.
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>readStored<!>(): Int {
+fun <!VIPER_TEXT!>readStored<!>(): Int {
     postconditions<Int> { it == 1 }
-    return Stored(1).value
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return Stored(1).value<!>
+}
 
 // Without an opt-out, the same construction fails.
 <!VIPER_TEXT!>class Unannotated<!>(first: String) {

@@ -29,10 +29,10 @@ fun <!VIPER_TEXT!>withCaptures<!>(start: Int): @Unique LiftedSpec {
     }
 }
 
-fun <!VIPER_TEXT!>incorrectBody<!>(): @Unique LiftedSpec = LiftedSpec <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ x ->
+fun <!VIPER_TEXT!>incorrectBody<!>(): @Unique LiftedSpec = LiftedSpec { x ->
     exposes(LiftedSpec::class) { state() == 0 }
-    x - 1
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>x - 1<!>
+}
 
 <!VIPER_TEXT!>class LiftedCell<!>(var n: Int) {
     @Unique
@@ -105,10 +105,10 @@ fun <!VIPER_TEXT!>countFrom<!>(start: Int) {
 
 fun <!VIPER_TEXT!>stuckCounter<!>(start: Int): @Unique Counter {
     var n = start
-    return Counter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    return Counter {
         exposes(Counter::class) { state() == n }
-        n
-    }<!>
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+    }
 }
 
 @NeverConvert

@@ -17,7 +17,10 @@ data class JumpInterceptor(
     val redirect: (LabelLink, LinearizationContext) -> LabelLink,
 )
 
-class SharedLinearizationState(private val producer: FreshEntityProducer<AnonymousVariableEmbedding, TypeEmbedding>) {
+class SharedLinearizationState(
+    private val producer: FreshEntityProducer<AnonymousVariableEmbedding, TypeEmbedding>,
+    val returnSites: ReturnSites? = null,
+) {
     val jumpInterceptors = mutableListOf<JumpInterceptor>()
     fun freshAnonVar(type: TypeEmbedding) = producer.getFresh(type)
 }

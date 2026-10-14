@@ -197,22 +197,33 @@ method wrongReturnThroughBorrowedPath(h: Ref) returns (v_ret_0: Ref)
       (unfolding acc(Counter_unique(h.inner), write) in
         intFromRef(h.inner.x) == 0))
 {
+  var anon_builtin: Int
   var v_ret_4: Ref
-  var anon: Ref
+  var anon_0: Ref
   var v_ret_5: Ref
   unfold acc(Holder_unique(h), write)
-  anon := h.inner
-  unfold acc(Counter_unique(anon), write)
-  anon.x := intToRef(1)
-  fold acc(Counter_unique(anon), write)
+  anon_0 := h.inner
+  unfold acc(Counter_unique(anon_0), write)
+  anon_0.x := intToRef(1)
+  anon_builtin := 0
+  fold acc(Counter_unique(anon_0), write)
   fold acc(Holder_unique(h), write)
   goto lbl_ret_0
   label lbl_ret_5
   inhale isSubtype(typeOf(v_ret_5), unitType())
   label lbl_ret_4
   inhale isSubtype(typeOf(v_ret_4), unitType())
+  anon_builtin := 1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+  assert anon_builtin == 0 ==>
+    (unfolding acc(Holder_unique(h), write) in
+      (unfolding acc(Counter_unique(h.inner), write) in
+        intFromRef(h.inner.x) == 0))
+  assert anon_builtin == 1 ==>
+    (unfolding acc(Holder_unique(h), write) in
+      (unfolding acc(Counter_unique(h.inner), write) in
+        intFromRef(h.inner.x) == 0))
 }
 
 /inline_unique_jumps.kt: info: Generated Viper text for returnThroughBorrowedPathKeepsSibling:
@@ -236,16 +247,18 @@ method returnThroughBorrowedPathKeepsSibling(h: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 2
 {
+  var anon_builtin: Int
   var v_ret_4: Ref
-  var anon: Ref
+  var anon_0: Ref
   var v_ret_5: Ref
   unfold acc(Holder_unique(h), write)
   h.count := intToRef(2)
-  anon := h.inner
-  unfold acc(Counter_unique(anon), write)
-  anon.x := intToRef(1)
+  anon_0 := h.inner
+  unfold acc(Counter_unique(anon_0), write)
+  anon_0.x := intToRef(1)
   v_ret_0 := h.count
-  fold acc(Counter_unique(anon), write)
+  anon_builtin := 0
+  fold acc(Counter_unique(anon_0), write)
   fold acc(Holder_unique(h), write)
   goto lbl_ret_0
   label lbl_ret_5
@@ -253,8 +266,11 @@ method returnThroughBorrowedPathKeepsSibling(h: Ref) returns (v_ret_0: Ref)
   label lbl_ret_4
   inhale isSubtype(typeOf(v_ret_4), unitType())
   v_ret_0 := intToRef(0)
+  anon_builtin := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==> intFromRef(v_ret_0) == 2
+  assert anon_builtin == 1 ==> intFromRef(v_ret_0) == 2
 }
 
 /inline_unique_jumps.kt: info: Generated Viper text for returnThroughNestedBorrows:

@@ -424,6 +424,7 @@ method earlyExit(n: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 7
 {
+  var anon_builtin: Int
   var a: Ref
   var anon_0: Ref
   var anon_1: Ref
@@ -445,6 +446,7 @@ method earlyExit(n: Ref) returns (v_ret_0: Ref)
     var anon_4: Ref
     var v_ret_4: Ref
     v_ret_0 := intToRef(7)
+    anon_builtin := 0
     goto lbl_ret_0
     label lbl_ret_4
     anon_4 := v_ret_4
@@ -467,7 +469,10 @@ method earlyExit(n: Ref) returns (v_ret_0: Ref)
   unfold acc(IntArray_unique(a), write)
   anon_5 := intToRef(a.contents[0])
   v_ret_0 := anon_5
+  anon_builtin := 1
   fold acc(IntArray_unique(a), write)
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==> intFromRef(v_ret_0) == 7
+  assert anon_builtin == 1 ==> intFromRef(v_ret_0) == 7
 }

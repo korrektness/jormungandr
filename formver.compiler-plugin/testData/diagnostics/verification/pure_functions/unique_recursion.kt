@@ -79,10 +79,10 @@ fun <!VIPER_TEXT!>nextLength<!>(n: @Unique Node?): Int {
     return <!OWNERSHIP_NOT_ESTABLISHED!>length(m)<!>
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>tail<!>(l: @Unique Node): @Unique Node? {
+fun <!VIPER_TEXT!>tail<!>(l: @Unique Node): @Unique Node? {
     postconditions<Node?> { r -> length(r) == old(nextLength(l)) }
-    return l.next
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return l.next<!>
+}
 
 <!VIPER_TEXT!>class VNode<!>(val value: Int, val next: @Unique VNode?)
 

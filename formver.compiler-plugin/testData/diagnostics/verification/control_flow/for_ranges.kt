@@ -112,15 +112,15 @@ fun <!VIPER_TEXT!>rangeToMax<!>(): Int {
     return count
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>rangeToMaxMiscounted<!>(): Int {
+fun <!VIPER_TEXT!>rangeToMaxMiscounted<!>(): Int {
     postconditions<Int> { it == 2 }
     var count = 0
     for (i in Int.MAX_VALUE - 2..Int.MAX_VALUE) {
         loopInvariants { count == i - (Int.MAX_VALUE - 2) }
         count++
     }
-    return count
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return count<!>
+}
 
 fun <!VIPER_TEXT!>downToMin<!>(): Int {
     postconditions<Int> { it == 3 }

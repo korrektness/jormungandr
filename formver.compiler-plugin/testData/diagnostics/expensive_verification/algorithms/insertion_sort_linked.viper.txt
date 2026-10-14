@@ -98,6 +98,7 @@ method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
     !(sorted == nullValue()) &&
     intFromRef(value(v_ret_0)) == intFromRef(value(sorted)))
 {
+  var anon_builtin: Int
   var anon_3: Ref
   var anon_4: Ref
   var anon_5: Ref
@@ -111,6 +112,7 @@ method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
     node.next := sorted
     fold acc(Node_unique(node), write)
     v_ret_0 := node
+    anon_builtin := 0
     goto lbl_ret_0
   }
   if (sorted != nullValue()) {
@@ -123,8 +125,19 @@ method insertSorted(sorted: Ref, node: Ref) returns (v_ret_0: Ref)
     fold acc(Node_unique(sorted), write)
   }
   v_ret_0 := sorted
+  anon_builtin := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==>
+    boolFromRef(isSorted(v_ret_0)) &&
+    (intFromRef(value(v_ret_0)) == intFromRef(value(node)) ||
+    !(sorted == nullValue()) &&
+    intFromRef(value(v_ret_0)) == intFromRef(value(sorted)))
+  assert anon_builtin == 1 ==>
+    boolFromRef(isSorted(v_ret_0)) &&
+    (intFromRef(value(v_ret_0)) == intFromRef(value(node)) ||
+    !(sorted == nullValue()) &&
+    intFromRef(value(v_ret_0)) == intFromRef(value(sorted)))
 }
 
 /insertion_sort_linked.kt: info: Generated Viper text for insertionSort:

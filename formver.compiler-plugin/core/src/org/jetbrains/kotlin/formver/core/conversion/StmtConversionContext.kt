@@ -36,6 +36,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.asPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.locality.plugin.specifiesOwnedReceiver
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
@@ -524,7 +525,7 @@ fun StmtConversionContext.convertImpureBody(
         declaration.source, "Return target label not found for method ${declaration.symbol}"
     )
     val bodyExp = FunctionExp(signature, body, returnLabel)
-    return ConvertedMethodBody(bodyExp, returnTarget)
+    return ConvertedMethodBody(bodyExp, returnTarget, firBody.source)
 }
 
 fun StmtConversionContext.convertPureBody(declaration: FirFunction): ExpEmbedding {
@@ -542,13 +543,19 @@ fun ProgramConversionContext.linearizeImpureBody(
 ): FunctionBodyEmbedding {
     val seqnBuilder = SeqnBuilder(source)
     val foldState = if (tracksOwnership) FoldState(typeResolver) else null
-    val linearizer = Linearizer(SharedLinearizationState(anonVarProducer), seqnBuilder, source, typeResolver, foldState)
-    converted.bodyExp.toLinearizable(source).toViperUnusedResult(linearizer)
+    val bodyExp = converted.bodyExp
+    val postconditions = bodyExp.signature?.postconditions.orEmpty().filter { it.userPostconditionRole != null }
+    val returnSites = if (postconditions.isEmpty()) null else ReturnSites.of(bodyExp.body, bodyExp.returnLabel,
+        converted.bodySource ?: source) { freshAnonBuiltinVar(buildType { int() }).name }
+    val linearizer = Linearizer(SharedLinearizationState(anonVarProducer, returnSites), seqnBuilder, source, typeResolver, foldState)
+    returnSites?.declare(linearizer)
+    bodyExp.toLinearizable(source).toViperUnusedResult(linearizer)
     // note: we must guarantee somewhere that returned value is Unit
     // as we may not encounter any `return` statement in the body
     converted.returnTarget.variable.withIsUnitInvariantIfUnit(typeResolver)
         .toLinearizable(source).toViperUnusedResult(linearizer)
-    return FunctionBodyEmbedding(seqnBuilder.block)
+    returnSites?.assertPostconditions(postconditions, typeResolver, linearizer)
+    return FunctionBodyEmbedding(seqnBuilder.block, returnSites)
 }
 
 fun ProgramConversionContext.linearizePureBody(

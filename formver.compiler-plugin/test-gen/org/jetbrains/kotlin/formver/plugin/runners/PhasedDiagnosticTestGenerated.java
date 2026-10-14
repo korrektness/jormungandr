@@ -803,6 +803,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("postcondition_return_sites.kt")
+    public void testPostcondition_return_sites() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/postcondition_return_sites.kt");
+    }
+
+    @Test
     @TestMetadata("refute.kt")
     public void testRefute() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/refute.kt");

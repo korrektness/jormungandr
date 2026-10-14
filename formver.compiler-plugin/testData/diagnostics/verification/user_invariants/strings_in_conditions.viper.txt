@@ -20,8 +20,10 @@ method firstNotSortedIndex(s: Ref) returns (v_ret_0: Ref)
         (stringGet(s, plusInts(intToRef(anon_builtin_0), intToRef(1)))) in
         stringFromRef(s)[intFromRef(plusInts(intToRef(anon_builtin_0), intToRef(1)))]))
 {
+  var anon_builtin_2: Int
   if (|stringFromRef(s)| == 0) {
     v_ret_0 := intToRef(0)
+    anon_builtin_2 := 0
     goto lbl_ret_0
   } else {
     var i: Ref
@@ -75,9 +77,46 @@ method firstNotSortedIndex(s: Ref) returns (v_ret_0: Ref)
           (stringGet(s, plusInts(intToRef(anon_builtin_1), intToRef(1)))) in
           stringFromRef(s)[intFromRef(plusInts(intToRef(anon_builtin_1), intToRef(1)))]))
     v_ret_0 := i
+    anon_builtin_2 := 1
     goto lbl_ret_0
   }
   label lbl_ret_0
+  assert anon_builtin_2 == 0 ==>
+    0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) <= |stringFromRef(s)|
+  assert anon_builtin_2 == 1 ==>
+    0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) <= |stringFromRef(s)|
+  assert anon_builtin_2 == 0 ==>
+    (forall anon_builtin_0: Int ::
+      { stringFromRef(s)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
+      (let anon_builtin_neg1 ==
+        (minusInts(v_ret_0, intToRef(1))) in
+        intFromRef(v_ret_0) - intFromRef(intToRef(1))) ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(s, intToRef(anon_builtin_0))) in
+        stringFromRef(s)[anon_builtin_0]) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(s, plusInts(intToRef(anon_builtin_0), intToRef(1)))) in
+        stringFromRef(s)[intFromRef(plusInts(intToRef(anon_builtin_0), intToRef(1)))]))
+  assert anon_builtin_2 == 1 ==>
+    (forall anon_builtin_0: Int ::
+      { stringFromRef(s)[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
+      (let anon_builtin_neg1 ==
+        (minusInts(v_ret_0, intToRef(1))) in
+        intFromRef(v_ret_0) - intFromRef(intToRef(1))) ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(s, intToRef(anon_builtin_0))) in
+        stringFromRef(s)[anon_builtin_0]) <=
+      (let anon_builtin_neg1 ==
+        (stringGet(s, plusInts(intToRef(anon_builtin_0), intToRef(1)))) in
+        stringFromRef(s)[intFromRef(plusInts(intToRef(anon_builtin_0), intToRef(1)))]))
 }
 
 /strings_in_conditions.kt: info: Generated Viper text for returnNewString:

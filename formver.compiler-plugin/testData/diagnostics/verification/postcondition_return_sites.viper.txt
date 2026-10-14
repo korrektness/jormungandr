@@ -1,0 +1,57 @@
+/postcondition_return_sites.kt: info: Generated Viper text for secondReturnFails:
+method secondReturnFails(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= 0
+{
+  var anon: Int
+  if (intFromRef(x) > 0) {
+    v_ret_0 := x
+    anon := 0
+    goto lbl_ret_0
+  }
+  v_ret_0 := intToRef(-1)
+  anon := 1
+  goto lbl_ret_0
+  label lbl_ret_0
+  assert anon == 0 ==> intFromRef(v_ret_0) >= 0
+  assert anon == 1 ==> intFromRef(v_ret_0) >= 0
+}
+
+/postcondition_return_sites.kt: info: Generated Viper text for endOfBodyFails:
+method endOfBodyFails(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(x) > 0
+{
+  var anon: Int
+  if (intFromRef(x) > 1) {
+    anon := 0
+    goto lbl_ret_0
+  }
+  anon := 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+  assert anon == 0 ==> intFromRef(x) > 0
+  assert anon == 1 ==> intFromRef(x) > 0
+}
+
+/postcondition_return_sites.kt: info: Generated Viper text for allReturnsHold:
+method allReturnsHold(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= 0
+{
+  var anon: Int
+  if (intFromRef(x) > 0) {
+    v_ret_0 := x
+    anon := 0
+    goto lbl_ret_0
+  }
+  v_ret_0 := intToRef(0)
+  anon := 1
+  goto lbl_ret_0
+  label lbl_ret_0
+  assert anon == 0 ==> intFromRef(v_ret_0) >= 0
+  assert anon == 1 ==> intFromRef(v_ret_0) >= 0
+}

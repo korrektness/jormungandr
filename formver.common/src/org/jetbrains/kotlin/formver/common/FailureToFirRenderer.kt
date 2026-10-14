@@ -248,6 +248,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
         KotlinCondition.ProofClause.LAW -> "Could not establish law '${FirDiagnosticRenderers.DECLARATION_NAME.render(requireNotNull(condition.declaration))}' for this implementation."
         KotlinCondition.ProofClause.PRECONDITION -> "Could not establish the Kotlin precondition at this call."
         KotlinCondition.ProofClause.POSTCONDITION -> "Could not establish the Kotlin postcondition on return."
+        KotlinCondition.ProofClause.POSTCONDITION_AT_RETURN -> "Could not establish the postcondition on this return."
+        KotlinCondition.ProofClause.POSTCONDITION_AT_END -> "Could not establish the postcondition at the end of this body."
         KotlinCondition.ProofClause.LOOP_INVARIANT -> "Could not establish the Kotlin loop invariant."
         KotlinCondition.ProofClause.EXHAUSTIVE_WHEN -> "Could not establish that a branch of this exhaustive 'when' matches."
     }

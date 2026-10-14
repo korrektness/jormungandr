@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.PlaceholderVariab
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FunctionTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
+import org.jetbrains.kotlin.formver.core.linearization.ReturnSites
 import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.*
@@ -148,7 +149,7 @@ fun CompleteFunctionSignature.argumentTypeGuards(actual: CompleteFunctionSignatu
         }
     }
 
-fun CompleteFunctionSignature.toViperMethod(ctx: TypeResolver, body: Stmt.Seqn?): Method {
+fun CompleteFunctionSignature.toViperMethod(ctx: TypeResolver, body: Stmt.Seqn?, returnSites: ReturnSites? = null): Method {
     require(!isPure) {
         "Pure functions should not be converted to methods"
     }
@@ -157,7 +158,7 @@ fun CompleteFunctionSignature.toViperMethod(ctx: TypeResolver, body: Stmt.Seqn?)
         formalArgs.map { it.toLocalVarDecl() },
         returns.toLocalVarDecl(),
         preconditions.pureToViper(toBuiltin = true, ctx),
-        postconditions.pureToViper(toBuiltin = true, ctx),
+        postconditions.map { post -> post.pureToViper(toBuiltin = true, ctx).let { returnSites?.tagged(post, it) ?: it } },
         body,
         declarationSource.asPosition
     )

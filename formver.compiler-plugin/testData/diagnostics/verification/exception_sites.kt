@@ -13,7 +13,7 @@ fun <!VIPER_TEXT!>mayThrow<!>(x: Int): Int {
     if (x == 0) throw IllegalArgumentException()
     return 1
 }
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>midTry<!>(): Int {
+fun <!VIPER_TEXT!>midTry<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try {
@@ -21,9 +21,9 @@ fun <!VIPER_TEXT!>mayThrow<!>(x: Int): Int {
         mayThrow(0)
         x = 2
     } catch (e: Exception) { }
-    return x
-}<!>
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>nothingCatch<!>(): Int {
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
+fun <!VIPER_TEXT!>nothingCatch<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try {
@@ -31,27 +31,27 @@ fun <!VIPER_TEXT!>mayThrow<!>(x: Int): Int {
         error("boom")
         x = 2
     } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 fun <!VIPER_TEXT!>badSharedIndex<!>(a: IntArray): Int = <!POSSIBLE_INDEX_OUT_OF_BOUND!>a[-1]<!>
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>requireCatch<!>(): Int {
+fun <!VIPER_TEXT!>requireCatch<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; require(false); x = 2 } catch (e: Exception) { }
-    return x
-}<!>
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>checkCatch<!>(): Int {
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
+fun <!VIPER_TEXT!>checkCatch<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; check(false); x = 2 } catch (e: Exception) { }
-    return x
-}<!>
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>castCatch<!>(a: Any): Int {
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
+fun <!VIPER_TEXT!>castCatch<!>(a: Any): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; val s = a as String; x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 fun <!VIPER_TEXT!>sharedSet<!>(a: IntArray) { <!POSSIBLE_INDEX_OUT_OF_BOUND!>a[-1] = 7<!> }
 fun <!VIPER_TEXT!>sharedGetCatch<!>(a: IntArray): Int {
     postconditions<Int> { it == 0 || it == 2 }
@@ -83,19 +83,19 @@ fun <!VIPER_TEXT!>byteZeroCatch<!>(a: Byte, b: Byte): Int {
     try { x = 1; val n = <!DIVISION_BY_ZERO!>a % b<!>; x = 2 } catch (e: Exception) { }
     return x
 }
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>externalCatch<!>(s: String): Int {
+fun <!VIPER_TEXT!>externalCatch<!>(s: String): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; s.substring(99); x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 fun <!VIPER_TEXT!>abort<!>(): Nothing { throw IllegalStateException() }
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>abortCatch<!>(): Int {
+fun <!VIPER_TEXT!>abortCatch<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; abort(); x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 fun <!VIPER_TEXT!>shortZeroRemCatch<!>(a: Short, b: Short): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
@@ -200,19 +200,19 @@ fun <!VIPER_TEXT!>overflowStaysError<!>(x: Int): Int {
         <!VIPER_TEXT!>set<!>(v) { error("setter") }
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>getterCatch<!>(a: ThrowingAccess): Int {
+fun <!VIPER_TEXT!>getterCatch<!>(a: ThrowingAccess): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; a.value; x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>setterCatch<!>(a: ThrowingAccess): Int {
+fun <!VIPER_TEXT!>setterCatch<!>(a: ThrowingAccess): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; a.value = 7; x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 
 fun <!VIPER_TEXT!>requireMessageCatch<!>(): Int {
     postconditions<Int> { it == 3 }
@@ -235,9 +235,9 @@ fun <!VIPER_TEXT!>checkMessageNotEvaluated<!>(): Int {
     return x
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>functionObjectCatch<!>(action: () -> Unit): Int {
+fun <!VIPER_TEXT!>functionObjectCatch<!>(action: () -> Unit): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; action(); x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}

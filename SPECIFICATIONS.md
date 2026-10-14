@@ -78,7 +78,9 @@ The registry groups user-visible problems as follows:
 - Conversion: impure expressions, unsupported ownership flows or constructs, untracked writes and skipped units.
 - Tool failures: internal invariants or unexpected exceptions, verifier availability and invalid generated Viper programs.
 
-Primary locations identify the failing use or implementation. Related locations retain available clause declarations,
+Primary locations identify the failing use or implementation. A postcondition of an impure function that does not
+hold is reported at the `return` it fails on, or at the function body when the body ends without one. Related
+locations retain available clause declarations,
 ownership-loss origins and counterexample binding declarations.
 
 ### Counterexamples

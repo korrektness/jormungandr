@@ -49,11 +49,11 @@ fun <!VIPER_TEXT!>inlineCallWithDefaultInSpecification<!>(n: Int): Int {
     return n * 2 + 1
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongInlineCallWithDefault<!>(n: Int): Int {
+fun <!VIPER_TEXT!>wrongInlineCallWithDefault<!>(n: Int): Int {
     preconditions { -1000 <= n && n <= 1000 }
     postconditions<Int> { r -> r == n * 3 + 1 }
-    return scaled(n) { it + 1 }
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return scaled(n) { it + 1 }<!>
+}
 
 fun <!VIPER_TEXT!>span<!>(lo: Int, hi: Int = lo * 2): Int {
     preconditions { -1000 <= lo && lo <= 1000 && -2000 <= hi && hi <= 2000 }

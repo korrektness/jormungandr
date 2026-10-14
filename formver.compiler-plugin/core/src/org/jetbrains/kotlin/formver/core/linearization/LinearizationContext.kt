@@ -69,6 +69,10 @@ interface LinearizationContext {
     val jumpInterceptors: MutableList<JumpInterceptor>?
         get() = null
 
+    /** The return sites of the method being linearized, when it checks its postconditions per site. */
+    val returnSites: ReturnSites?
+        get() = null
+
     /** The unique predicates the linearized code holds; `null` where no permissions are tracked. */
     val foldState: FoldState?
         get() = null

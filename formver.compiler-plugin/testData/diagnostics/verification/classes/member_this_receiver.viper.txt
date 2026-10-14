@@ -47,20 +47,20 @@ function isNextThreeQuotes(this: Ref, line: Ref, par_index: Ref, quote: Ref): Re
   requires isSubtype(typeOf(quote), charType())
   requires 0 <= intFromRef(par_index) &&
     intFromRef(par_index) <
-    (let anon_builtin ==
+    (let anon_builtin_neg1 ==
       (minusInts(stringLength(line), intToRef(2))) in
       intFromRef(stringLength(line)) - intFromRef(intToRef(2)))
   ensures isSubtype(typeOf(result), boolType())
 {
-  boolToRef((let anon_builtin ==
+  boolToRef((let anon_builtin_neg1 ==
     (stringGet(line, par_index)) in
     stringFromRef(line)[intFromRef(par_index)]) ==
   charFromRef(quote) &&
-  (let anon_builtin ==
+  (let anon_builtin_neg1 ==
     (stringGet(line, plusInts(par_index, intToRef(1)))) in
     stringFromRef(line)[intFromRef(plusInts(par_index, intToRef(1)))]) ==
   charFromRef(quote) &&
-  (let anon_builtin ==
+  (let anon_builtin_neg1 ==
     (stringGet(line, plusInts(par_index, intToRef(2)))) in
     stringFromRef(line)[intFromRef(plusInts(par_index, intToRef(2)))]) ==
   charFromRef(quote))
@@ -86,10 +86,12 @@ method trackMultilineString(this: Ref, line: Ref) returns (v_ret_0: Ref)
     (unfolding acc(TomlMultilineString_unique(this), write) in
       boolFromRef(this.isInMultilineLiteral)))
 {
+  var anon_builtin_0: Int
   var i: Ref
   var anon_1: Ref
   refute false
   if (boolFromRef(isStringType(this))) {
+    anon_builtin_0 := 0
     goto lbl_ret_0
   }
   i := intToRef(0)
@@ -123,7 +125,7 @@ method trackMultilineString(this: Ref, line: Ref) returns (v_ret_0: Ref)
     } else {
       anon_3 := boolToRef(false)}
     if (boolFromRef(anon_3)) {
-      anon_2 := boolToRef((let anon_builtin ==
+      anon_2 := boolToRef((let anon_builtin_neg1 ==
           (stringGet(line, i)) in
           stringFromRef(line)[intFromRef(i)]) ==
         35)
@@ -178,8 +180,19 @@ method trackMultilineString(this: Ref, line: Ref) returns (v_ret_0: Ref)
     (unfolding acc(TomlMultilineString_unique(this), write) in
       boolFromRef(this.isInMultilineLiteral)))
   refute false
+  anon_builtin_0 := 1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+  assert anon_builtin_0 == 0 ==>
+    !((unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineBasic)) &&
+    (unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineLiteral)))
+  assert anon_builtin_0 == 1 ==>
+    !((unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineBasic)) &&
+    (unfolding acc(TomlMultilineString_unique(this), write) in
+      boolFromRef(this.isInMultilineLiteral)))
 }
 
 /member_this_receiver.kt: info: Generated Viper text for writeThroughShared:

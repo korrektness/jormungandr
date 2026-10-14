@@ -321,7 +321,7 @@ fun LiftedLambda.invokeBody(
     val context = MethodConverter(converter, signature, resolver, converter.scopeIndexProducer.getFresh(),
         frame, captures = accesses(dispatch)).statementCtxt()
     val body = source.function.body!!.statements.filterNot { it.isExposes() }.map { context.convert(it) }.toBlock()
-    return ConvertedMethodBody(FunctionExp(signature, body, target.label!!), target)
+    return ConvertedMethodBody(FunctionExp(signature, body, target.label!!), target, source.function.body?.source)
 }
 
 private fun StmtConversionContext.establishCaptureFacts(lambda: LiftedLambda, arguments: List<ExpEmbedding>) {

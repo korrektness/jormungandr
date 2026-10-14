@@ -439,23 +439,39 @@ method headOrNull(s: Ref) returns (v_ret_0: Ref)
     (unfolding acc(c_Seq_unique(s), wildcard) in intFromRef(size(s)) == 0) ||
     !(v_ret_0 == nullValue())
 {
+  var anon_builtin: Int
   var anon_0: Ref
   var anon_1: Ref
   if (s == nullValue()) {
     v_ret_0 := nullValue()
+    anon_builtin := 0
     goto lbl_ret_0
   }
   anon_0 := (unfolding acc(c_Seq_unique(s), wildcard) in size(s))
   if (intFromRef(anon_0) == 0) {
     v_ret_0 := nullValue()
+    anon_builtin := 1
     goto lbl_ret_0
   }
   anon_1 := (unfolding acc(c_Seq_unique(s), wildcard) in
       at(s, intToRef(0)))
   v_ret_0 := anon_1
   inhale isSubtype(typeOf(v_ret_0), nullable(stringType()))
+  anon_builtin := 2
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==>
+    s == nullValue() ||
+    (unfolding acc(c_Seq_unique(s), wildcard) in intFromRef(size(s)) == 0) ||
+    !(v_ret_0 == nullValue())
+  assert anon_builtin == 1 ==>
+    s == nullValue() ||
+    (unfolding acc(c_Seq_unique(s), wildcard) in intFromRef(size(s)) == 0) ||
+    !(v_ret_0 == nullValue())
+  assert anon_builtin == 2 ==>
+    s == nullValue() ||
+    (unfolding acc(c_Seq_unique(s), wildcard) in intFromRef(size(s)) == 0) ||
+    !(v_ret_0 == nullValue())
 }
 
 /law_short_circuit.kt: info: Generated Viper text for nullableClient:

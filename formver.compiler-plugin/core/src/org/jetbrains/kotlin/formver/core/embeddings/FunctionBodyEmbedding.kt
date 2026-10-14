@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CompleteFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.callables.toViperMethod
+import org.jetbrains.kotlin.formver.core.linearization.ReturnSites
 import org.jetbrains.kotlin.formver.viper.ast.Method
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
 
@@ -16,9 +17,10 @@ sealed interface FunctionBodyConversionResult
 
 data class FunctionBodyEmbedding(
     val viperBody: Stmt.Seqn,
+    val returnSites: ReturnSites? = null,
 ) : FunctionBodyConversionResult {
     fun toViperMethod(signature: CompleteFunctionSignature, ctx: TypeResolver): Method =
-        signature.toViperMethod(ctx, viperBody)
+        signature.toViperMethod(ctx, viperBody, returnSites)
 }
 
 data class InvalidFunctionBodyEmbedding(

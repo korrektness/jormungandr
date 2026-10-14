@@ -1,5 +1,7 @@
 package org.jetbrains.kotlin.formver.plugin.compiler.reporting
 
+import org.jetbrains.kotlin.KtLightSourceElement
+import org.jetbrains.kotlin.KtPsiSourceElement
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
@@ -150,7 +152,7 @@ fun VerifierError.reportingPosition(checkedSource: KtSourceElement? = null): Pos
     when (val role = (this as? VerificationError)?.lookupSourceRole()) {
         is SourceRole.OverrideRefinement -> role.position
         is SourceRole.ObserverAccess -> role.position
-        is SourceRole.Proof -> {
+        is SourceRole.Proof -> if (role.site.liesWithin(checkedSource)) role.site else {
             val postcondition = (this as VerificationError).result as? viper.silver.verifier.errors.PostconditionViolated
             if (postcondition != null) {
                 val memberPosition = Position.fromSilver(postcondition.member().prettyMetadata._1())
@@ -160,3 +162,18 @@ fun VerifierError.reportingPosition(checkedSource: KtSourceElement? = null): Pos
         }
         else -> position
     }
+
+/**
+ * Whether this position lies inside [declaration], or [declaration] is unknown. A body a class inherits is checked for
+ * the class, so a position in the inherited body does not identify the failure.
+ */
+private fun Position.liesWithin(declaration: KtSourceElement?): Boolean {
+    val source = unwrapOr<KtSourceElement> { null } ?: return false
+    if (declaration == null) return true
+    val sameFile = when {
+        source is KtPsiSourceElement && declaration is KtPsiSourceElement -> source.psi.containingFile == declaration.psi.containingFile
+        source is KtLightSourceElement && declaration is KtLightSourceElement -> source.treeStructure === declaration.treeStructure
+        else -> false
+    }
+    return sameFile && declaration.startOffset <= source.startOffset && source.endOffset <= declaration.endOffset
+}

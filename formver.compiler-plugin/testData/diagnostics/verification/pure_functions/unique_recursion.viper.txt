@@ -125,15 +125,17 @@ method appendGhost(l: Ref, par_v: Ref, n: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), Node())
   ensures acc(Node_unique(v_ret_0), write)
   ensures intFromRef(cappedLength(v_ret_0)) ==
-    (let anon_builtin ==
+    (let anon_builtin_neg1 ==
       (plusInts(n, intToRef(1))) in
       intFromRef(n) + intFromRef(intToRef(1)))
 {
+  var anon_builtin_0: Int
   var anon_7: Ref
   var anon_8: Ref
   if (l == nullValue()) {
     v_ret_0 := con(par_v, nullValue())
     fold acc(Node_unique(v_ret_0), write)
+    anon_builtin_0 := 0
     goto lbl_ret_0
   }
   if (l != nullValue()) {
@@ -146,8 +148,19 @@ method appendGhost(l: Ref, par_v: Ref, n: Ref) returns (v_ret_0: Ref)
     fold acc(Node_unique(l), write)
   }
   v_ret_0 := l
+  anon_builtin_0 := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin_0 == 0 ==>
+    intFromRef(cappedLength(v_ret_0)) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
+  assert anon_builtin_0 == 1 ==>
+    intFromRef(cappedLength(v_ret_0)) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(n, intToRef(1))) in
+      intFromRef(n) + intFromRef(intToRef(1)))
 }
 
 method con(par_value: Ref, par_next: Ref) returns (ret_5: Ref)
@@ -202,11 +215,13 @@ method append(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(cappedLength(v_ret_0)) ==
     intFromRef(capLength(plusInts(old(cappedLength(l)), intToRef(1))))
 {
+  var anon_builtin: Int
   var anon_7: Ref
   var anon_8: Ref
   if (l == nullValue()) {
     v_ret_0 := con(par_v, nullValue())
     fold acc(Node_unique(v_ret_0), write)
+    anon_builtin := 0
     goto lbl_ret_0
   }
   if (l != nullValue()) {
@@ -219,8 +234,15 @@ method append(l: Ref, par_v: Ref) returns (v_ret_0: Ref)
     fold acc(Node_unique(l), write)
   }
   v_ret_0 := l
+  anon_builtin := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==>
+    intFromRef(cappedLength(v_ret_0)) ==
+    intFromRef(capLength(plusInts(old(cappedLength(l)), intToRef(1))))
+  assert anon_builtin == 1 ==>
+    intFromRef(cappedLength(v_ret_0)) ==
+    intFromRef(capLength(plusInts(old(cappedLength(l)), intToRef(1))))
 }
 
 method con(par_value: Ref, par_next: Ref) returns (ret_4: Ref)
@@ -274,11 +296,13 @@ method incAllRec(l: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(cappedLength(v_ret_0)) ==
     old(intFromRef(cappedLength(l)))
 {
+  var anon_builtin: Int
   var anon_7: Ref
   var anon_8: Ref
   var anon_9: Ref
   if (l == nullValue()) {
     v_ret_0 := nullValue()
+    anon_builtin := 0
     goto lbl_ret_0
   }
   if (l != nullValue()) {
@@ -293,8 +317,13 @@ method incAllRec(l: Ref) returns (v_ret_0: Ref)
     fold acc(Node_unique(l), write)
   }
   v_ret_0 := l
+  anon_builtin := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==>
+    intFromRef(cappedLength(v_ret_0)) == old(intFromRef(cappedLength(l)))
+  assert anon_builtin == 1 ==>
+    intFromRef(cappedLength(v_ret_0)) == old(intFromRef(cappedLength(l)))
 }
 
 /unique_recursion.kt: info: Generated Viper text for prepend:

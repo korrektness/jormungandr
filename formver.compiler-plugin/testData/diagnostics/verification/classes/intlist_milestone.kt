@@ -270,11 +270,11 @@ fun <!VIPER_TEXT!>falseClientClaim<!>(list: @Unique @Borrowed IntList) {
 <!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class BrokenIntList<!>(var count: Int, var item: Int) : IntList {
     @Pure @Unique override fun <!VIPER_TEXT!>size<!>(): Int = count
     @Pure @Unique override fun <!VIPER_TEXT!>get<!>(i: Int): Int = item
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed override fun <!VIPER_TEXT!>add<!>(value: Int) {
+    @Unique @Borrowed override fun <!VIPER_TEXT!>add<!>(value: Int) <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
         count++
         item = value
     }<!>
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) {
+    @Unique @Borrowed override fun <!VIPER_TEXT!>set<!>(i: Int, value: Int) <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
         item = value
     }<!>
 }<!>

@@ -186,8 +186,9 @@ method returnFromLoopKeepsOtherRoot(a: Ref, c: Ref, n: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (unfolding acc(Counter_unique(a), write) in intFromRef(a.x) == 1)
 {
+  var anon_builtin: Int
   var i: Ref
-  var anon: Ref
+  var anon_0: Ref
   unfold acc(Counter_unique(a), write)
   a.x := intToRef(1)
   i := intToRef(0)
@@ -198,12 +199,13 @@ method returnFromLoopKeepsOtherRoot(a: Ref, c: Ref, n: Ref)
     invariant isSubtype(typeOf(a), Counter())
     invariant isSubtype(typeOf(c), Counter())
     invariant isSubtype(typeOf(n), intType())
-  anon := ltInts(i, n)
-  if (boolFromRef(anon)) {
+  anon_0 := ltInts(i, n)
+  if (boolFromRef(anon_0)) {
     unfold acc(Counter_unique(c), write)
     c.x := i
     fold acc(Counter_unique(c), write)
     if (intFromRef(i) == 2) {
+      anon_builtin := 0
       goto lbl_ret_0
     }
     i := plusInts(i, intToRef(1))
@@ -214,8 +216,13 @@ method returnFromLoopKeepsOtherRoot(a: Ref, c: Ref, n: Ref)
   assert isSubtype(typeOf(a), Counter())
   assert isSubtype(typeOf(c), Counter())
   assert isSubtype(typeOf(n), intType())
+  anon_builtin := 1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+  assert anon_builtin == 0 ==>
+    (unfolding acc(Counter_unique(a), write) in intFromRef(a.x) == 1)
+  assert anon_builtin == 1 ==>
+    (unfolding acc(Counter_unique(a), write) in intFromRef(a.x) == 1)
 }
 
 /unique_loop_framing.kt: info: Generated Viper text for breakFromNestedLoopKeepsOtherRoot:

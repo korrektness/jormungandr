@@ -334,6 +334,7 @@ data class LinearizationVisitor(
                 signature.formalArgs.filter { it.isUnique }.forEach { foldState.acquire(ctx, OwnedPath(it)) }
             }
             e.body.linearize().toViperMaybeStoringIn(result, ctx)
+            ctx.returnSites?.leaveAtEnd(e.returnLabel, ctx)
             ctx.addLabel(e.returnLabel.toViper(ctx))
             if (foldState != null && signature != null) {
                 signature.formalArgs.filter { it.isUnique && it.isBorrowed }.forEach { foldState.close(ctx, OwnedPath(it)) }
@@ -439,6 +440,7 @@ data class LinearizationVisitor(
                 override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
                     value.toViperStoringIn(result, ctx)
                     ctx.finishMove(returnExp, source, targetOwned = true, OwnedPath(e.target.variable))
+                    ctx.returnSites?.leaveThroughReturn(e.target, this@LinearizationVisitor.source, ctx)
                 }
             }, e.target)
         }

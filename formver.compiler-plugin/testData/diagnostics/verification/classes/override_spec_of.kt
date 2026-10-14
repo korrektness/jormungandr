@@ -28,9 +28,9 @@ abstract class Counter {
 }
 
 <!VIPER_TEXT!>class Inheriting<!> : Counter() {
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
-        return n
-    }<!>
+    override fun <!VIPER_TEXT!>step<!>(n: Int): Int {
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return n<!>
+    }
 }
 
 interface Measure {

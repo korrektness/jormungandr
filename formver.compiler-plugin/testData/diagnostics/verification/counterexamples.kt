@@ -34,7 +34,7 @@ fun <!VIPER_TEXT!>enumLike<!>(x: Choice) {
 
 <!VIPER_TEXT!>class CounterexampleBox<!>(var value: Int)
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>fields<!>(box: @Unique @Borrowed CounterexampleBox) {
+fun <!VIPER_TEXT!>fields<!>(box: @Unique @Borrowed CounterexampleBox) <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
     preconditions { box.value == 3 }
     postconditions<Unit> { box.value == old(box.value) }
     box.value = 4

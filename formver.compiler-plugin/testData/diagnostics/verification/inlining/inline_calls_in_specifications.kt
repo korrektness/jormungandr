@@ -107,11 +107,11 @@ fun <!VIPER_TEXT!>scopeFunctionsOverUniqueReceivers<!>(c: @Unique @Borrowed Coun
     return c.x * 2
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongLetOverUniqueReceiver<!>(c: @Unique @Borrowed Counter): Int {
+fun <!VIPER_TEXT!>wrongLetOverUniqueReceiver<!>(c: @Unique @Borrowed Counter): Int {
     preconditions { c.x < 2147483647 }
     postconditions<Int> { r -> r == c.let { old(it.x) + 1 } }
-    return c.x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return c.x<!>
+}
 
 fun <!VIPER_TEXT!>letInQuantifiers<!>(arr: @Unique @Borrowed IntArray, n: Int) {
     preconditions {
@@ -172,11 +172,11 @@ fun <!VIPER_TEXT!>safeCastInPostcondition<!>(x: Any): Int {
     return if (x is Int) x else 0
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongLetInPostcondition<!>(n: Int): Int {
+fun <!VIPER_TEXT!>wrongLetInPostcondition<!>(n: Int): Int {
     preconditions { n < 2147483647 }
     postconditions<Int> { r -> r == n.let { it + 1 } }
-    return n
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return n<!>
+}
 
 fun <!VERIFICATION_SKIPPED!>reassignmentInPostcondition<!>(n: Int): Int {
     postconditions<Int> { r ->

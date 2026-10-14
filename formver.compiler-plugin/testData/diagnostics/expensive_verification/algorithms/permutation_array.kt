@@ -83,7 +83,7 @@ fun <!VIPER_TEXT!>rotateFirstThree<!>(arr: @Unique @Borrowed IntArray) {
     swap(arr, 1, 2)
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>zeroAll<!>(arr: @Unique @Borrowed IntArray) {
+fun <!VIPER_TEXT!>zeroAll<!>(arr: @Unique @Borrowed IntArray) <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
     postconditions<Unit> {
         contents(arr) == old(contents(arr))
     }

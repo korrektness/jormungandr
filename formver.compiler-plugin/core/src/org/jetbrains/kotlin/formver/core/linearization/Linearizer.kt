@@ -47,6 +47,9 @@ data class Linearizer(
     override val jumpInterceptors: MutableList<JumpInterceptor>
         get() = state.jumpInterceptors
 
+    override val returnSites: ReturnSites?
+        get() = state.returnSites
+
     override fun freshAnonVar(type: TypeEmbedding): AnonymousVariableEmbedding {
         val variable = state.freshAnonVar(type)
         addDeclaration(variable.toLocalVarDecl())

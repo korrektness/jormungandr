@@ -15,10 +15,10 @@ fun interface Acc {
 // A delegated property skips its class's construction and its accessors; clients get no field facts.
 <!VERIFICATION_SKIPPED, VIPER_TEXT!>class LazyHolder<!>(val n: Int) {
     val <!VERIFICATION_SKIPPED!>action<!>: Acc by <!UNSUPPORTED_FEATURE!>lazy {
-        Acc <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
+        Acc { amount ->
             exposes(Acc::class) { total() == 0 }
-            -9
-        }<!>
+            <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>-9<!>
+        }
     }<!>
 }
 

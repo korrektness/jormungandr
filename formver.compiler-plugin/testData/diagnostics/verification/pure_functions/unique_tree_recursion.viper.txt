@@ -176,9 +176,11 @@ method insert(par_t: Ref, par_v: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(cappedSize(v_ret_0)) ==
     intFromRef(capSize(plusInts(old(cappedSize(par_t)), intToRef(1))))
 {
+  var anon_builtin: Int
   if (par_t == nullValue()) {
     v_ret_0 := con(par_v, nullValue(), nullValue())
     fold acc(Tree_unique(v_ret_0), write)
+    anon_builtin := 0
     goto lbl_ret_0
   }
   if (intFromRef(par_v) < intFromRef(g_v(par_t))) {
@@ -207,8 +209,15 @@ method insert(par_t: Ref, par_v: Ref) returns (v_ret_0: Ref)
     }
   }
   v_ret_0 := par_t
+  anon_builtin := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==>
+    intFromRef(cappedSize(v_ret_0)) ==
+    intFromRef(capSize(plusInts(old(cappedSize(par_t)), intToRef(1))))
+  assert anon_builtin == 1 ==>
+    intFromRef(cappedSize(v_ret_0)) ==
+    intFromRef(capSize(plusInts(old(cappedSize(par_t)), intToRef(1))))
 }
 
 /unique_tree_recursion.kt: info: Generated Viper text for leafSize:
@@ -345,6 +354,7 @@ method rotateLeft(par_t: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(cappedSize(v_ret_0)) ==
     old(intFromRef(cappedSize(par_t)))
 {
+  var anon_builtin: Int
   var right: Ref
   var anon_8: Ref
   var anon_9: Ref
@@ -363,6 +373,7 @@ method rotateLeft(par_t: Ref) returns (v_ret_0: Ref)
     par_t.bf_r := right
     fold acc(Tree_unique(par_t), write)
     v_ret_0 := par_t
+    anon_builtin := 0
     goto lbl_ret_0
   }
   anon_8 := cappedSize(right)
@@ -392,6 +403,11 @@ method rotateLeft(par_t: Ref) returns (v_ret_0: Ref)
     fold acc(Tree_unique(right), write)
   }
   v_ret_0 := right
+  anon_builtin := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==>
+    intFromRef(cappedSize(v_ret_0)) == old(intFromRef(cappedSize(par_t)))
+  assert anon_builtin == 1 ==>
+    intFromRef(cappedSize(v_ret_0)) == old(intFromRef(cappedSize(par_t)))
 }

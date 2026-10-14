@@ -85,12 +85,12 @@ fun <!VIPER_TEXT!>listContainsById<!>() {
     override fun <!VIPER_TEXT!>hashCode<!>() = 0
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>equalsCatch<!>(a: Eq, b: Eq): Int {
+fun <!VIPER_TEXT!>equalsCatch<!>(a: Eq, b: Eq): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; val r = a == b; x = 2 } catch (e: Exception) { }
-    return x
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+}
 
 // The JVM shares boxes of small values and makes fresh boxes of large ones, so `===` on boxes has no sound model.
 fun <!VERIFICATION_SKIPPED!>boxedInts<!>(a: Int) {

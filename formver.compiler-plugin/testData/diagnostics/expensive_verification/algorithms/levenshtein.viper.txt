@@ -28,6 +28,7 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0) <= |stringFromRef(first)| ||
     intFromRef(v_ret_0) <= |stringFromRef(second)|
 {
+  var anon_builtin_4: Int
   var firstLen: Ref
   var secondLen: Ref
   var distance: Ref
@@ -39,12 +40,15 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
   var anon_10: Ref
   if (stringFromRef(first) == stringFromRef(second)) {
     v_ret_0 := intToRef(0)
+    anon_builtin_4 := 0
     goto lbl_ret_0
   } elseif (|stringFromRef(first)| == 0) {
     v_ret_0 := stringLength(second)
+    anon_builtin_4 := 1
     goto lbl_ret_0
   } elseif (|stringFromRef(second)| == 0) {
     v_ret_0 := stringLength(first)
+    anon_builtin_4 := 2
     goto lbl_ret_0
   }
   firstLen := plusInts(stringLength(first), intToRef(1))
@@ -346,7 +350,24 @@ method levenshteinDistance(first: Ref, second: Ref) returns (v_ret_0: Ref)
       (minusInts(firstLen, intToRef(1))) in
       intFromRef(firstLen) - intFromRef(intToRef(1)))])
   v_ret_0 := anon_10
+  anon_builtin_4 := 3
   fold acc(IntArray_unique(distance), write)
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin_4 == 0 ==> 0 <= intFromRef(v_ret_0)
+  assert anon_builtin_4 == 1 ==> 0 <= intFromRef(v_ret_0)
+  assert anon_builtin_4 == 2 ==> 0 <= intFromRef(v_ret_0)
+  assert anon_builtin_4 == 3 ==> 0 <= intFromRef(v_ret_0)
+  assert anon_builtin_4 == 0 ==>
+    intFromRef(v_ret_0) <= |stringFromRef(first)| ||
+    intFromRef(v_ret_0) <= |stringFromRef(second)|
+  assert anon_builtin_4 == 1 ==>
+    intFromRef(v_ret_0) <= |stringFromRef(first)| ||
+    intFromRef(v_ret_0) <= |stringFromRef(second)|
+  assert anon_builtin_4 == 2 ==>
+    intFromRef(v_ret_0) <= |stringFromRef(first)| ||
+    intFromRef(v_ret_0) <= |stringFromRef(second)|
+  assert anon_builtin_4 == 3 ==>
+    intFromRef(v_ret_0) <= |stringFromRef(first)| ||
+    intFromRef(v_ret_0) <= |stringFromRef(second)|
 }

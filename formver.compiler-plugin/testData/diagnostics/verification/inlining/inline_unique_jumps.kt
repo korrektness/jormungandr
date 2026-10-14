@@ -26,12 +26,12 @@ fun <!VIPER_TEXT!>returnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder, b: B
     verify(h.inner.x == 1)
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>wrongReturnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder) {
+fun <!VIPER_TEXT!>wrongReturnThroughBorrowedPath<!>(h: @Unique @Borrowed Holder) {
     postconditions<Unit> { h.inner.x == 0 }
     borrowThen(h.inner) {
-        return
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return<!>
     }
-}<!>
+}
 
 fun <!VIPER_TEXT!>returnThroughBorrowedPathKeepsSibling<!>(h: @Unique Holder): Int {
     postconditions<Int> { r -> r == 2 }

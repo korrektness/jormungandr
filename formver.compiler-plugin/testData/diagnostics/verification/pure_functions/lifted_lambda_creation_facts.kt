@@ -177,11 +177,11 @@ inline fun <!VIPER_TEXT!>conditionalContexts<!>(step: Int, make: () -> Unit) {
 fun <!VIPER_TEXT!>multipleCreationContexts<!>(step: Int) {
     conditionalContexts(step) {
         var n = 0
-        consumeCounter(GrowingCounter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+        consumeCounter(GrowingCounter {
             exposes(GrowingCounter::class) { state() == n }
             n += step
-            n
-        }<!>)
+            <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+        })
     }
 }
 
@@ -190,11 +190,11 @@ fun <!VIPER_TEXT!>breakContinuationCounter<!>(step: Int): @Unique GrowingCounter
     if (step <= 0) {
         while (step <= 0) { break }
     }
-    return GrowingCounter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    return GrowingCounter {
         exposes(GrowingCounter::class) { state() == n }
         n += step
-        n
-    }<!>
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+    }
 }
 
 fun <!VIPER_TEXT!>conditionalReturnCounter<!>(step: Int, stop: Boolean): @Unique GrowingCounter {
@@ -206,11 +206,11 @@ fun <!VIPER_TEXT!>conditionalReturnCounter<!>(step: Int, stop: Boolean): @Unique
             n
         }
     }
-    return GrowingCounter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    return GrowingCounter {
         exposes(GrowingCounter::class) { state() == n }
         n += step
-        n
-    }<!>
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+    }
 }
 
 fun <!VIPER_TEXT!>nestedGuardDoesNotLeak<!>(step: Int, a: Boolean): @Unique GrowingCounter {
@@ -222,11 +222,11 @@ fun <!VIPER_TEXT!>nestedGuardDoesNotLeak<!>(step: Int, a: Boolean): @Unique Grow
             n
         }
     }
-    return GrowingCounter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    return GrowingCounter {
         exposes(GrowingCounter::class) { state() == n }
         n += step
-        n
-    }<!>
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+    }
 }
 
 <!VIPER_TEXT!>class ImmutableStep<!>(val amount: Int)
@@ -248,44 +248,44 @@ fun <!VIPER_TEXT!>mutableHeapCounter<!>(box: @Unique MutableStep): @Unique Growi
     preconditions { box.amount > 0 }
     var n = 0
     box.amount = 0
-    return GrowingCounter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    return GrowingCounter {
         exposes(GrowingCounter::class) { state() == n }
         n += box.amount
-        n
-    }<!>
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+    }
 }
 
 fun <!VIPER_TEXT!>mutableHelperCounter<!>(box: @Unique MutableStep): @Unique GrowingCounter {
     preconditions { box.positive() }
     var n = 0
     box.amount = 0
-    return GrowingCounter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    return GrowingCounter {
         exposes(GrowingCounter::class) { state() == n }
         n += box.amount
-        n
-    }<!>
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+    }
 }
 
 fun <!VIPER_TEXT!>uncapturedStateCounter<!>(step: Int, other: Int): @Unique GrowingCounter {
     preconditions { step > other && other >= 0 }
     var n = 0
-    return GrowingCounter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    return GrowingCounter {
         exposes(GrowingCounter::class) { state() == n }
         n += step
-        n
-    }<!>
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+    }
 }
 
 fun <!VIPER_TEXT!>mutableCaptureCounter<!>(initial: Int): @Unique GrowingCounter {
     preconditions { initial > 0 }
     var step = initial
     var n = 0
-    return if (step > 0) GrowingCounter <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    return if (step > 0) GrowingCounter {
         exposes(GrowingCounter::class) { state() == n }
         n += step
         step = 0
-        n
-    }<!> else GrowingCounter {
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+    } else GrowingCounter {
         exposes(GrowingCounter::class) { state() == n }
         n += 1
         n

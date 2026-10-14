@@ -64,9 +64,11 @@ method finallyOverridesReturn() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 2
 {
+  var anon_builtin: Int
   var anon_1: Ref
   var anon_0: Ref
   v_ret_0 := intToRef(1)
+  anon_builtin := 0
   anon_1 := intToRef(2)
   goto tryExit_1
   goto tryExit_2
@@ -78,6 +80,7 @@ method finallyOverridesReturn() returns (v_ret_0: Ref)
   goto tryExit_1
   label tryExit_1
   v_ret_0 := intToRef(2)
+  anon_builtin := 1
   goto lbl_ret_0
   if (intFromRef(anon_1) == 1) {
     inhale false
@@ -86,6 +89,8 @@ method finallyOverridesReturn() returns (v_ret_0: Ref)
     goto lbl_ret_0
   }
   label lbl_ret_0
+  assert anon_builtin == 0 ==> intFromRef(v_ret_0) == 2
+  assert anon_builtin == 1 ==> intFromRef(v_ret_0) == 2
 }
 
 /exception_finally.kt: info: Generated Viper text for finallyOverridesThrow:
@@ -167,6 +172,7 @@ method finallyThrowOverridesReturn() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 2
 {
+  var anon_builtin: Int
   var anon_0: Ref
   var anon_2: Ref
   var anon_1: Ref
@@ -175,6 +181,7 @@ method finallyThrowOverridesReturn() returns (v_ret_0: Ref)
   var anon_7: Ref
   var e: Ref
   v_ret_0 := intToRef(1)
+  anon_builtin := 0
   anon_2 := intToRef(2)
   goto tryExit_2
   goto tryExit_3
@@ -217,10 +224,13 @@ method finallyThrowOverridesReturn() returns (v_ret_0: Ref)
   label catch
   inhale isSubtype(typeOf(e), Exception())
   v_ret_0 := intToRef(2)
+  anon_builtin := 1
   goto lbl_ret_0
   goto tryExit_0
   label tryExit_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==> intFromRef(v_ret_0) == 2
+  assert anon_builtin == 1 ==> intFromRef(v_ret_0) == 2
 }
 
 method message(this: Ref) returns (ret_2: Ref)
@@ -452,6 +462,7 @@ method finallyCatchReturn() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 2
 {
+  var anon_builtin: Int
   var anon_1: Ref
   var anon_0: Ref
   var anon_2: Ref
@@ -487,6 +498,7 @@ method finallyCatchReturn() returns (v_ret_0: Ref)
   label catch
   inhale isSubtype(typeOf(e), Exception())
   v_ret_0 := intToRef(1)
+  anon_builtin := 0
   anon_1 := intToRef(2)
   goto tryExit_1
   goto tryExit_2
@@ -498,6 +510,7 @@ method finallyCatchReturn() returns (v_ret_0: Ref)
   goto tryExit_1
   label tryExit_1
   v_ret_0 := intToRef(2)
+  anon_builtin := 1
   goto lbl_ret_0
   if (intFromRef(anon_1) == 1) {
     inhale false
@@ -506,6 +519,8 @@ method finallyCatchReturn() returns (v_ret_0: Ref)
     goto lbl_ret_0
   }
   label lbl_ret_0
+  assert anon_builtin == 0 ==> intFromRef(v_ret_0) == 2
+  assert anon_builtin == 1 ==> intFromRef(v_ret_0) == 2
 }
 
 method message(this: Ref) returns (ret_2: Ref)
@@ -518,11 +533,13 @@ method finallyNestedReturn() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 3
 {
+  var anon_builtin: Int
   var anon_2: Ref
   var anon_0: Ref
   var anon_3: Ref
   var anon_1: Ref
   v_ret_0 := intToRef(1)
+  anon_builtin := 0
   anon_3 := intToRef(2)
   goto tryExit_4
   goto tryExit_5
@@ -535,6 +552,7 @@ method finallyNestedReturn() returns (v_ret_0: Ref)
   goto tryExit_4
   label tryExit_4
   v_ret_0 := intToRef(2)
+  anon_builtin := 1
   anon_2 := intToRef(2)
   goto tryExit_1
   if (intFromRef(anon_3) == 1) {
@@ -557,6 +575,7 @@ method finallyNestedReturn() returns (v_ret_0: Ref)
   goto tryExit_1
   label tryExit_1
   v_ret_0 := intToRef(3)
+  anon_builtin := 2
   goto lbl_ret_0
   if (intFromRef(anon_2) == 1) {
     inhale false
@@ -565,6 +584,9 @@ method finallyNestedReturn() returns (v_ret_0: Ref)
     goto lbl_ret_0
   }
   label lbl_ret_0
+  assert anon_builtin == 0 ==> intFromRef(v_ret_0) == 3
+  assert anon_builtin == 1 ==> intFromRef(v_ret_0) == 3
+  assert anon_builtin == 2 ==> intFromRef(v_ret_0) == 3
 }
 
 /exception_finally.kt: info: Generated Viper text for finallyNestedPendingReturn:
@@ -913,6 +935,7 @@ method finallyOverridesBreak() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 2
 {
+  var anon_builtin: Int
   var anon_1: Ref
   label cont
   anon_1 := boolToRef(true)
@@ -930,6 +953,7 @@ method finallyOverridesBreak() returns (v_ret_0: Ref)
     goto tryExit_1
     label tryExit_1
     v_ret_0 := intToRef(2)
+    anon_builtin := 0
     goto lbl_ret_0
     if (intFromRef(anon_2) == 1) {
       inhale false
@@ -941,8 +965,11 @@ method finallyOverridesBreak() returns (v_ret_0: Ref)
   }
   label break
   v_ret_0 := intToRef(1)
+  anon_builtin := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==> intFromRef(v_ret_0) == 2
+  assert anon_builtin == 1 ==> intFromRef(v_ret_0) == 2
 }
 
 /exception_finally.kt: info: Generated Viper text for finallyContinueOverridesBreak:
@@ -1071,10 +1098,12 @@ method finallyInlineNonlocalReturn() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 2
 {
+  var anon_builtin: Int
   var anon_1: Ref
   var anon_0: Ref
   var v_ret_3: Ref
   v_ret_0 := intToRef(1)
+  anon_builtin := 0
   anon_1 := intToRef(2)
   goto tryExit_1
   label lbl_ret_3
@@ -1088,6 +1117,7 @@ method finallyInlineNonlocalReturn() returns (v_ret_0: Ref)
   goto tryExit_1
   label tryExit_1
   v_ret_0 := intToRef(2)
+  anon_builtin := 1
   goto lbl_ret_0
   if (intFromRef(anon_1) == 1) {
     inhale false
@@ -1096,6 +1126,8 @@ method finallyInlineNonlocalReturn() returns (v_ret_0: Ref)
     goto lbl_ret_0
   }
   label lbl_ret_0
+  assert anon_builtin == 0 ==> intFromRef(v_ret_0) == 2
+  assert anon_builtin == 1 ==> intFromRef(v_ret_0) == 2
 }
 
 /exception_finally.kt: info: Generated Viper text for finallyCallStates:

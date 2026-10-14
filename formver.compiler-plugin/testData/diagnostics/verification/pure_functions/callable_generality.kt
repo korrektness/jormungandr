@@ -28,11 +28,11 @@ fun <!VIPER_TEXT!>ownedCapture<!>(): @Unique Accumulator {
 
 fun <!VIPER_TEXT!>wrongParameterizedBody<!>(): @Unique Accumulator {
     var n = 0
-    return Accumulator <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ amount ->
+    return Accumulator { amount ->
         exposes(Accumulator::class) { total() == n }
         n -= amount
-        n
-    }<!>
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>n<!>
+    }
 }
 
 fun <!VIPER_TEXT!>parameterClient<!>() {

@@ -116,8 +116,8 @@ interface ViewConsumer {
 }
 
 <!VIPER_TEXT!>class DishonestConsumer<!> : ViewConsumer {
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed
-    override fun <!VIPER_TEXT!>accept<!>(view: @Unique @Borrowed DetailedView): Boolean = false<!>
+    @Unique @Borrowed
+    override fun <!VIPER_TEXT!>accept<!>(view: @Unique @Borrowed DetailedView): Boolean = <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>
 }
 
 fun <!VIPER_TEXT!>consumerClient<!>(consumer: @Unique @Borrowed ViewConsumer, view: @Unique @Borrowed DetailedView) {

@@ -1696,6 +1696,7 @@ method appendNode(node: Ref, par_value: Ref) returns (v_ret_0: Ref)
       intFromRef(nodeGet(v_ret_0, intToRef(anon_builtin_0))) ==
       old(intFromRef(nodeGet(node, intToRef(anon_builtin_0)))))
 {
+  var anon_builtin_2: Int
   var anon_10: Ref
   var anon_11: Ref
   var anon_12: Ref
@@ -1703,6 +1704,7 @@ method appendNode(node: Ref, par_value: Ref) returns (v_ret_0: Ref)
   if (node == nullValue()) {
     v_ret_0 := con(par_value, nullValue())
     fold acc(IntNode_unique(v_ret_0), write)
+    anon_builtin_2 := 0
     goto lbl_ret_0
   }
   if (node != nullValue()) {
@@ -1717,8 +1719,43 @@ method appendNode(node: Ref, par_value: Ref) returns (v_ret_0: Ref)
     fold acc(IntNode_unique(node), write)
   }
   v_ret_0 := node
+  anon_builtin_2 := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin_2 == 0 ==>
+    intFromRef(boundedNodeSize(v_ret_0)) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(old(boundedNodeSize(node)), intToRef(1))) in
+      intFromRef(old(boundedNodeSize(node))) + intFromRef(intToRef(1)))
+  assert anon_builtin_2 == 1 ==>
+    intFromRef(boundedNodeSize(v_ret_0)) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(old(boundedNodeSize(node)), intToRef(1))) in
+      intFromRef(old(boundedNodeSize(node))) + intFromRef(intToRef(1)))
+  assert anon_builtin_2 == 0 ==>
+    intFromRef(nodeGet(v_ret_0, old(boundedNodeSize(node)))) ==
+    intFromRef(par_value)
+  assert anon_builtin_2 == 1 ==>
+    intFromRef(nodeGet(v_ret_0, old(boundedNodeSize(node)))) ==
+    intFromRef(par_value)
+  assert anon_builtin_2 == 0 ==>
+    (forall anon_builtin_0: Int ::
+      { nodeGet(v_ret_0, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < old(intFromRef(boundedNodeSize(node))) ==>
+      intFromRef(nodeGet(v_ret_0, intToRef(anon_builtin_0))) ==
+      old(intFromRef(nodeGet(node, intToRef(anon_builtin_0)))))
+  assert anon_builtin_2 == 1 ==>
+    (forall anon_builtin_0: Int ::
+      { nodeGet(v_ret_0, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 < old(intFromRef(boundedNodeSize(node))) ==>
+      intFromRef(nodeGet(v_ret_0, intToRef(anon_builtin_0))) ==
+      old(intFromRef(nodeGet(node, intToRef(anon_builtin_0)))))
 }
 
 method con(par_value: Ref, par_next: Ref) returns (ret_7: Ref)

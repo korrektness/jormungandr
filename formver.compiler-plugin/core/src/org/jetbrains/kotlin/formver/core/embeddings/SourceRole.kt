@@ -12,10 +12,14 @@ import org.jetbrains.kotlin.formver.viper.ast.Position
 
 sealed interface SourceRole {
     data class Arithmetic(val condition: org.jetbrains.kotlin.formver.common.KotlinCondition) : SourceRole
-    /** The Kotlin clause responsible for an explicit proof obligation. */
+    /**
+     * The Kotlin clause responsible for an explicit proof obligation. A failure is reported at [site] when it is given,
+     * rather than at the position Silicon reports for the failing statement.
+     */
     data class Proof(
         val clause: org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause,
         val declaration: FirBasedSymbol<*>? = null,
+        val site: Position = Position.NoPosition,
     ) : SourceRole
 
     data class ListElementAccessCheck(val accessType: AccessCheckType) : SourceRole {

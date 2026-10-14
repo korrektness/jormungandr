@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionExp
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -22,6 +23,8 @@ import org.jetbrains.kotlin.formver.viper.ast.Method
 data class ConvertedMethodBody(
     val bodyExp: FunctionExp,
     val returnTarget: ReturnTarget,
+    /** The source of the body as written, where a body that does not end in a jump leaves. */
+    val bodySource: KtSourceElement? = null,
 )
 
 /**

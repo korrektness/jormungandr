@@ -106,6 +106,7 @@ method insert(x: Ref, l: Ref) returns (v_ret_0: Ref)
   ensures multisetFromRef(contents(v_ret_0)) ==
     (multisetFromRef(contents(l)) union Multiset(intFromRef(x)))
 {
+  var anon_builtin: Int
   var anon_8: Ref
   var anon_9: Ref
   refute false
@@ -116,13 +117,31 @@ method insert(x: Ref, l: Ref) returns (v_ret_0: Ref)
   if (boolFromRef(anon_8)) {
     v_ret_0 := con(x, l)
     fold acc(Node_unique(v_ret_0), write)
+    anon_builtin := 0
     goto lbl_ret_0
   }
   anon_9 := insert(x, g_next(l))
   v_ret_0 := con(g_value(l), anon_9)
   fold acc(Node_unique(v_ret_0), write)
+  anon_builtin := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==>
+    boolFromRef(isSorted(v_ret_0)) &&
+    (intFromRef(g_value(v_ret_0)) == intFromRef(x) ||
+    !(l == nullValue()) &&
+    intFromRef(g_value(v_ret_0)) == intFromRef(g_value(l)))
+  assert anon_builtin == 1 ==>
+    boolFromRef(isSorted(v_ret_0)) &&
+    (intFromRef(g_value(v_ret_0)) == intFromRef(x) ||
+    !(l == nullValue()) &&
+    intFromRef(g_value(v_ret_0)) == intFromRef(g_value(l)))
+  assert anon_builtin == 0 ==>
+    multisetFromRef(contents(v_ret_0)) ==
+    (multisetFromRef(contents(l)) union Multiset(intFromRef(x)))
+  assert anon_builtin == 1 ==>
+    multisetFromRef(contents(v_ret_0)) ==
+    (multisetFromRef(contents(l)) union Multiset(intFromRef(x)))
 }
 
 /insertion_sort_functional.kt: info: Generated Viper text for insertionSort:
@@ -164,15 +183,24 @@ method insertionSort(l: Ref) returns (v_ret_0: Ref)
   ensures boolFromRef(isSorted(v_ret_0)) &&
     multisetFromRef(contents(v_ret_0)) == multisetFromRef(contents(l))
 {
+  var anon_builtin: Int
   var anon_8: Ref
   var anon_9: Ref
   if (l == nullValue()) {
     v_ret_0 := nullValue()
+    anon_builtin := 0
     goto lbl_ret_0
   }
   anon_9 := insertionSort(next(l))
   anon_8 := insert(value(l), anon_9)
   v_ret_0 := anon_8
+  anon_builtin := 1
   goto lbl_ret_0
   label lbl_ret_0
+  assert anon_builtin == 0 ==>
+    boolFromRef(isSorted(v_ret_0)) &&
+    multisetFromRef(contents(v_ret_0)) == multisetFromRef(contents(l))
+  assert anon_builtin == 1 ==>
+    boolFromRef(isSorted(v_ret_0)) &&
+    multisetFromRef(contents(v_ret_0)) == multisetFromRef(contents(l))
 }

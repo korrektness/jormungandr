@@ -50,6 +50,6 @@ fun <!VIPER_TEXT!>borrowedProperty<!>(s: @Unique @Borrowed MutableSize) {
     init { require(n >= 0) }
     @Law @Pure fun invariant(): Boolean = n >= 0
     @get:Unique @Pure override val size: Int <!VIPER_TEXT!>get<!>() = n
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed override fun <!VIPER_TEXT!>grow<!>() { n += 2 }<!>
+    @Unique @Borrowed override fun <!VIPER_TEXT!>grow<!>() <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{ n += 2 }<!>
 }
 fun <!VIPER_TEXT!>wrongObservation<!>(s: @Unique @Borrowed Sized) { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>s.size < 0<!>) }

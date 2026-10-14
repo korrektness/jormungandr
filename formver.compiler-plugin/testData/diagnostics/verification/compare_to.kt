@@ -10,11 +10,11 @@ fun <!VIPER_TEXT!>compareSign<!>(a: Int, b: Int): Int {
     return a.compareTo(b)
 }
 
-<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>compareIsNotDifference<!>(a: Int): Int {
+fun <!VIPER_TEXT!>compareIsNotDifference<!>(a: Int): Int {
     preconditions { a == 3 }
     postconditions<Int> { it == 2 }
-    return a.compareTo(1)
-}<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return a.compareTo(1)<!>
+}
 
 @Pure
 fun <!VIPER_TEXT!>pureCompare<!>(a: Int, b: Int): Int = a.compareTo(b)

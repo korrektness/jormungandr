@@ -93,8 +93,8 @@ interface ObservedList {
     @Pure @Unique
     override fun <!VIPER_TEXT!>get<!>(index: Int): Int = item
 
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed
-    override fun <!VIPER_TEXT!>add<!>(value: Int) {
+    @Unique @Borrowed
+    override fun <!VIPER_TEXT!>add<!>(value: Int) <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
         item = value
     }<!>
 

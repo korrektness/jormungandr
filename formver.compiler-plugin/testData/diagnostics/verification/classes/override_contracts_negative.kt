@@ -27,7 +27,7 @@ open <!VIPER_TEXT!>class Base<!> {
 }
 
 <!VIPER_TEXT!>class InheritedViolated<!> : Base() {
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>override fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
-        return x - 1
-    }<!>
+    override fun <!VIPER_TEXT!>positive<!>(x: Int): Int {
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x - 1<!>
+    }
 }
