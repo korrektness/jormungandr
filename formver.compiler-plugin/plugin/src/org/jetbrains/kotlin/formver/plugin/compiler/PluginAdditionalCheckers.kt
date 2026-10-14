@@ -44,6 +44,7 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
         override val propertyCheckers: Set<FirPropertyChecker> = setOf(
             ViperPoweredPropertyChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
         )
+        override val fileCheckers: Set<FirFileChecker> = setOf(SpecVacuityChecker(session, config, VerifierLocator()))
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> = setOf(ObserverDeclarationChecker)
         override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(
             ObserverImplementationChecker,

@@ -211,6 +211,10 @@ class NameGraphRenderer(val shortNameResolver: ShortNameResolver) {
                 link(entity.overridden, Relation.IS_PART_OF, entity)
             }
 
+            is VacuityProbeName -> {
+                link(entity.subject, Relation.IS_PART_OF, entity)
+            }
+
             is InheritedMemberName -> {
                 link(entity.member, Relation.IS_PART_OF, entity)
                 link(entity.contract, Relation.IS_PART_OF, entity)

@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.ALWAYS_VAL
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.DUMP_UNIQUENESS_CFG
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.EXTERNAL_SPEC
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.EXTERNAL_TEST_LIBRARY
+import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.PROBE_BUNDLED_SPECS
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.FULL_VIPER_DUMP
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.LOCALITY_CHECK_ONLY
 import org.jetbrains.kotlin.formver.plugin.services.FormVerDirectives.NEVER_VALIDATE
@@ -106,8 +107,9 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
             level.flatMap { m -> m.dependsOnDependencies.map { it.dependencyModule } }.ifEmpty { null }
         }.flatten().distinct()
         val bundledDirectory = File("formver.compiler-plugin/plugin/resources/external-specs").canonicalFile
-        val (bundled, user) = modules.flatMap { addedExternalSpecs(it) }.toList()
-            .partition { it.originalFile.canonicalFile.parentFile == bundledDirectory }
+        val specs = modules.flatMap { addedExternalSpecs(it) }.toList()
+        if (PROBE_BUNDLED_SPECS in module.directives) return ExternalSpecSources(specs.map { it.file })
+        val (bundled, user) = specs.partition { it.originalFile.canonicalFile.parentFile == bundledDirectory }
         return ExternalSpecSources(user.map { it.file }, bundled = bundled.map { it.file })
     }
 
@@ -171,6 +173,10 @@ object FormVerDirectives : SimpleDirectivesContainer() {
 
     val EXTERNAL_SPEC by stringDirective(
         description = "Analyse the Kotlin file at this path, relative to the repository root, as an external specification, and record its diagnostics"
+    )
+
+    val PROBE_BUNDLED_SPECS by directive(
+        description = "Treat the bundled spec sources as user-supplied ones, which compilations check for contradictions"
     )
 
     val EXTERNAL_TEST_LIBRARY by stringDirective(

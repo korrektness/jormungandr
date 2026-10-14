@@ -80,6 +80,10 @@ probe at a method's end covers only the paths that reach it: a contradiction
 confined to one branch needs a probe inside that branch
 (`verification/refute.kt::branchHidden,branchProbed`).
 
+External specifications have a check of their own, which runs in every
+compilation (SPECIFICATIONS.md, "External specifications"). The bundled ones
+are checked by `external_specs/bundled_spec_vacuity.kt`.
+
 The check finds an inconsistent context only. A fact that is consistent but false
 at runtime needs a test that must fail; the register below lists them.
 

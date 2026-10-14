@@ -288,6 +288,7 @@ class FailureReportingTest {
             Failure(FailureKind.INVALID_EXTERNAL_SPEC, source, KotlinCondition.ExternalSpec(ExternalSpecRule.SOURCE_SUBTYPE, "a.B")),
             Failure(FailureKind.EXTERNAL_SPEC_OF_VERIFIED_DECLARATION, source,
                 KotlinCondition.ExternalSpec(ExternalSpecRule.VERIFIED_TARGET, "a.f")),
+            Failure(FailureKind.EXTERNAL_SPEC_VACUOUS, source, KotlinCondition.ExternalSpec(ExternalSpecRule.VACUOUS_LAWS, "a.B")),
             Failure(FailureKind.INVALID_EXPOSES, source, KotlinCondition.Exposes(ExposesRule.BINDING_SHAPE)),
             Failure(FailureKind.INVALID_OBSERVER, source, KotlinCondition.Observer(ObserverRule.GHOST_OWNER)),
             Failure(FailureKind.INVALID_LAW, source, KotlinCondition.Law(LawRule.BODY)),

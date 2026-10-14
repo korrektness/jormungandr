@@ -165,6 +165,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("bundled_spec_vacuity.kt")
+    public void testBundled_spec_vacuity() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/bundled_spec_vacuity.kt");
+    }
+
+    @Test
     @TestMetadata("external_spec_loading.kt")
     public void testExternal_spec_loading() {
       runTest("formver.compiler-plugin/testData/diagnostics/external_specs/external_spec_loading.kt");
@@ -180,6 +186,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("shared_list_members.kt")
     public void testShared_list_members() {
       runTest("formver.compiler-plugin/testData/diagnostics/external_specs/shared_list_members.kt");
+    }
+
+    @Test
+    @TestMetadata("spec_vacuity.kt")
+    public void testSpec_vacuity() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/spec_vacuity.kt");
     }
 
     @Test

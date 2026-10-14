@@ -187,6 +187,12 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             ExternalSpecRule.SOURCE_SUBTYPE -> "Source subtype of externally modeled class: $target"
             ExternalSpecRule.VERIFIED_TARGET ->
                 "SnaKt verified $target, and this specification replaces its verified contract with a trusted one."
+            ExternalSpecRule.VACUOUS_PRECONDITION ->
+                "The precondition of $target is contradictory, so every call to it verifies vacuously."
+            ExternalSpecRule.VACUOUS_POSTCONDITION ->
+                "The postcondition of $target is contradictory, so everything after a call to it verifies vacuously."
+            ExternalSpecRule.VACUOUS_LAWS ->
+                "The laws of $target are contradictory, so everything that reads an owned $target verifies vacuously."
         }
     }
 

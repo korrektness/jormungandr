@@ -19,6 +19,7 @@ object PluginErrors : KtDiagnosticsContainer() {
     val INVALID_SPEC_OF get() = FailureKind.INVALID_SPEC_OF
     val INVALID_EXTERNAL_SPEC get() = FailureKind.INVALID_EXTERNAL_SPEC
     val EXTERNAL_SPEC_OF_VERIFIED_DECLARATION get() = FailureKind.EXTERNAL_SPEC_OF_VERIFIED_DECLARATION
+    val EXTERNAL_SPEC_VACUOUS get() = FailureKind.EXTERNAL_SPEC_VACUOUS
     val INVALID_OBSERVER get() = FailureKind.INVALID_OBSERVER
     val INVALID_LAW get() = FailureKind.INVALID_LAW
     override fun getRendererFactory() = FormalVerificationPluginErrorMessages
@@ -33,6 +34,7 @@ object PluginErrors : KtDiagnosticsContainer() {
         INVALID_SPEC_OF.name,
         INVALID_EXTERNAL_SPEC.name,
         EXTERNAL_SPEC_OF_VERIFIED_DECLARATION.name,
+        EXTERNAL_SPEC_VACUOUS.name,
         INVALID_OBSERVER.name,
         INVALID_LAW.name,
     )

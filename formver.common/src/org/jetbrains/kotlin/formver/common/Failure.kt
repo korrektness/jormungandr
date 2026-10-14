@@ -58,6 +58,7 @@ enum class FailureKind(
     INVALID_SPEC_OF(category = FailureCategory.SPECIFICATION),
     INVALID_EXTERNAL_SPEC(category = FailureCategory.SPECIFICATION),
     EXTERNAL_SPEC_OF_VERIFIED_DECLARATION(Severity.WARNING, category = FailureCategory.SPECIFICATION),
+    EXTERNAL_SPEC_VACUOUS(category = FailureCategory.SPECIFICATION),
     INVALID_EXPOSES(category = FailureCategory.SPECIFICATION),
     INVALID_OBSERVER(category = FailureCategory.SPECIFICATION),
     INVALID_LAW(category = FailureCategory.SPECIFICATION),

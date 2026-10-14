@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
+import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
@@ -47,13 +48,17 @@ class VerificationProgress(
     }
 }
 
-/** The fully qualified name that progress messages and timeouts give a verified declaration. */
+/**
+ * The name that progress messages and timeouts give a verified declaration: its fully qualified name, or the file name
+ * of a specification file whose vacuity probes are verified.
+ */
 val FirDeclaration.verificationLabel: String
     get() = when (this) {
         is FirSimpleFunction -> qualified(symbol.callableId, name)
         is FirPropertyAccessor -> qualified(propertySymbol.callableId, propertySymbol.name) + if (isGetter) ".get" else ".set"
         is FirRegularClass -> symbol.classId.asSingleFqName().asString()
         is FirProperty -> qualified(symbol.callableId, name)
+        is FirFile -> "the specifications in $name"
         else -> error("Unexpected verification owner: ${this::class.simpleName}")
     }
 

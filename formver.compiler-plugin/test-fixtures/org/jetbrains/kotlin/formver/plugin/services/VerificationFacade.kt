@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.diagnostics.KtDiagnostic
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
+import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
@@ -19,6 +20,7 @@ import org.jetbrains.kotlin.formver.core.trustedAssumptions
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationProgress
 import org.jetbrains.kotlin.formver.plugin.compiler.verificationLabel
+import org.jetbrains.kotlin.formver.plugin.compiler.specVacuityFailures
 import org.jetbrains.kotlin.formver.common.PluginConfiguration.Companion.DEFAULT_VERIFICATION_TIMEOUT_SECONDS
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.*
@@ -81,6 +83,11 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                             is FirSimpleFunction -> visitSimpleFunction(element)
                             else -> element.acceptChildren(this)
                         }
+                    }
+
+                    override fun visitFile(file: FirFile) {
+                        if (shouldVerify(file, testServices)) toVerify.add(Pair(testFile, file))
+                        file.acceptChildren(this)
                     }
 
                     override fun visitRegularClass(regularClass: FirRegularClass) {
@@ -149,7 +156,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                     if (vacuityReport != null && hits.isNotEmpty() && verifiedOtherwise) {
                         VacuityProbe.record(vacuityReport, testFile.originalFile.path, decl.symbol.toString(), hits, group)
                     }
-                    if (verifiedOtherwise && attempt.timeout == null) recordTrust(testFile, decl)
+                    if (verifiedOtherwise && attempt.timeout == null && decl !is FirFile) recordTrust(testFile, decl)
                     val diagnostics = verifyFunction(attempt, decl, module)
                     testServices.verificationDiagnosticsCollector.addDiagnostics(diagnostics)
                     testServices.allTagCollector.reportDiagnostics(testFile, diagnostics)
@@ -212,7 +219,9 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         module: TestModule
     ): List<KtDiagnostic> {
         val results = mutableListOf<KtDiagnostic>()
-        attempt.errors.forEach { err ->
+        if (decl is FirFile) specVacuityFailures(attempt.errors, decl.source).forEach {
+            results.add(FailureToFirRenderer.diagnostic(it, module.languageVersionSettings)!!)
+        } else attempt.errors.forEach { err ->
             val source = err.reportingPosition(decl.source).unwrapOr { decl.source }!!
             if (reportedErrors.add(err, source)) {
                 results.add(

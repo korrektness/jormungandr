@@ -8,8 +8,9 @@
 # of it, and calls through the bundled standard-library specs. The check fails
 # if a spec declaration reaches the compiled output, if a reference to one from
 # compiled code is accepted, if a spec binding to a missing library declaration
-# is accepted, if a false claim about a specified call verifies, if a
-# multiplatform consumer's common, platform or platform test code does not
+# is accepted, if a contradictory spec is accepted, if a false claim about a
+# specified call verifies, if a multiplatform consumer's common, platform or
+# platform test code does not
 # verify through the bundled specs, if a default build does not show the trust
 # summary of the verified declarations, if a build with verification errors
 # drops its warnings, if a spec binding to a declaration that another module
@@ -103,6 +104,7 @@ class Counter(private var current: Int) {
 
 fun create(initial: Int): Counter = Counter(initial)
 fun twice(x: Int): Int = x * 2
+fun thrice(x: Int): Int = x * 3
 SRC
 
 # A library that SnaKt verifies, which the consumer's specs then bind.
@@ -212,6 +214,21 @@ interface MissingModel
 fun missingModel(x: Int): Int = 0
 SRC
 
+# Loaded only by the vacuousSpec build: the postcondition contradicts itself.
+cat >"$consumer/specs/VacuousSpecs.kt" <<'SRC'
+package stand.specs.vacuous
+
+import org.jetbrains.kotlin.formver.plugin.*
+
+@ExternalFunction("stand.lib.thrice")
+@Pure fun thriceModel(x: Int): Int = 0
+
+@SpecOf("thriceModel")
+fun thriceSpec(x: Int) {
+    postconditions<Int> { result -> result > x; result < x }
+}
+SRC
+
 cat >"$consumer/build.gradle" <<'BUILD'
 plugins {
     id "org.jetbrains.kotlin.jvm" version "2.3.0"
@@ -239,6 +256,9 @@ formver {
     externalSpec("specs/VerifiedSpecs.kt")
     if (project.hasProperty("badBinding")) {
         externalSpec("specs/BadBinding.kt")
+    }
+    if (project.hasProperty("vacuousSpec")) {
+        externalSpec("specs/VacuousSpecs.kt")
     }
 }
 BUILD
@@ -418,6 +438,18 @@ for line in 5 8; do
         exit 1
     fi
 done
+
+# A contradictory spec is an error on its model, though no code calls it.
+vacuous_log="$work/consumer-vacuous-spec.log"
+if build_consumer -PvacuousSpec >"$vacuous_log" 2>&1; then
+    echo "check-gradle-consumer.sh: a contradictory spec compiled" >&2
+    exit 1
+fi
+if ! grep -q "^e: .*VacuousSpecs.kt:5:.*stand.specs.vacuous.thriceModel is contradictory" "$vacuous_log"; then
+    cat "$vacuous_log" >&2
+    echo "check-gradle-consumer.sh: the contradictory spec failed for another reason" >&2
+    exit 1
+fi
 
 # Each false claim fails verification on its own line: a stand-in library
 # postcondition, the bundled precondition of abs, and a stand-in library

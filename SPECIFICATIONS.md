@@ -257,6 +257,11 @@ A binding to a declaration that SnaKt verified in another module is reported as 
 `EXTERNAL_SPEC_OF_VERIFIED_DECLARATION` on the model: the model's contract replaces the one SnaKt proved. SnaKt marks
 each declaration it verifies with `@Verified` in the compiled output and reads that mark from the dependency. Only JVM
 dependencies, whose class files keep the mark, are tested; a dependency that does not keep it gets no warning.
+A contradictory specification would let every proof that assumes it succeed, so each compilation checks the
+specifications it loads from `externalSpec` files for contradictions: the precondition of each model with a
+specification, its postcondition given the precondition, and the laws each model interface declares together with
+those it inherits. Each contradiction is the error `EXTERNAL_SPEC_VACUOUS` on its model. The check goes through the
+verification cache. The bundled specifications are checked by the repository's tests instead of in each compilation.
 The trust report lists the bindings each verified declaration relies on (docs/soundness.md, "The trust report"). The bundled assumptions are the
 sources indexed by `formver.compiler-plugin/plugin/resources/META-INF/formver/external-specs.list`.
 They compile as part of the user's module, so they declare nothing public and raise no warnings: they compile under

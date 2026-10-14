@@ -206,7 +206,8 @@ class ProgramConverter(
                 typeResolver.unmatchedWhenFunctions +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray })
         ),
-        methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods,
+        methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods +
+            vacuityProbes.methods(linearizedBodyResolver.methods, linearizedBodyResolver.functions),
         predicates = typeResolver.predicates(),
         // Public fields with the same name are represented differently at `FieldEmbedding` level
         // but map to the same Viper field, so we deduplicate before emitting.
@@ -310,6 +311,8 @@ class ProgramConverter(
         body?.let { convertedBodyResolver.storeImpure(header.name, it) }
         registered += RegisteredFunction(declaration, header, returnTarget, uniquenessOutcomeOf(declaration).hasErrors)
     }
+
+    internal val vacuityProbes = SpecVacuityProbes()
 
     /** Registers the proof of a source constructor against its exported contract. */
     @OptIn(SymbolInternals::class)
