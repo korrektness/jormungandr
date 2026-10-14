@@ -58,13 +58,13 @@ class CounterexampleReportingTest {
     }
 
     @Test
-    fun `mapped values retain Kotlin bindings entry state and related declarations`() {
+    fun `mapped values retain Kotlin bindings and related declarations without old parameter values`() {
         val failure = backend().toFailure(diagnosticSource(40))
         val bindings = assertNotNull(failure.counterexample).bindings
-        assertEquals(listOf("argument", "local", "argument"), bindings.map { it.path })
-        assertEquals(listOf(null, null, "old"), bindings.map { it.oldState })
-        assertEquals(listOf(7, 8, 7).map { CounterexampleValue.Integer(it.toBigInteger()) }, bindings.map { it.value })
-        assertEquals(listOf(parameterSource, localSource, parameterSource), bindings.map { it.source })
+        assertEquals(listOf("argument", "local"), bindings.map { it.path })
+        assertEquals(listOf(null, null), bindings.map { it.oldState })
+        assertEquals(listOf(7, 8).map { CounterexampleValue.Integer(it.toBigInteger()) }, bindings.map { it.value })
+        assertEquals(listOf(parameterSource, localSource), bindings.map { it.source })
         assertEquals(listOf(parameterSource, localSource), failure.related.map { it.source })
         assertEquals(FailureKind.VIPER_VERIFICATION_ERROR, failure.kind)
         assertNotNull(failure.backend)

@@ -160,3 +160,154 @@ method receiver(v_this_extension: Ref) returns (v_ret_0: Ref)
   fold acc(CounterexampleBox_unique(v_this_extension), write)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/counterexamples.kt: info: Generated Viper text for declarationOrder:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method declarationOrder(zeta: Ref, alpha: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(zeta), intType())
+  requires isSubtype(typeOf(alpha), intType())
+  requires intFromRef(zeta) == 1
+  requires intFromRef(alpha) == 2
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var middle: Ref
+  middle := plusInts(zeta, alpha)
+  assert !(intFromRef(middle) == 3)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/counterexamples.kt: info: Generated Viper text for returned:
+method returned(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 5
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures !(intFromRef(v_ret_0) == 6)
+{
+  v_ret_0 := plusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/counterexamples.kt: info: Generated Viper text for widths:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method widths(l: Ref, s: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(l), longType())
+  requires isSubtype(typeOf(s), shortType())
+  requires isSubtype(typeOf(b), byteType())
+  requires longFromRef(l) == 5000000000
+  requires shortFromRef(s) ==
+    (let anon ==
+      (convertIntToShort(intToRef(300))) in
+      intFromRef(intToRef(300)))
+  requires byteFromRef(b) ==
+    (let anon ==
+      (convertIntToByte(intToRef(-7))) in
+      intFromRef(intToRef(-7)))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert !(longFromRef(l) == 5000000000)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/counterexamples.kt: info: Generated Viper text for sizes:
+field contents: Seq[Int]
+
+field p_size: Ref
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method sizes(xs: Ref, arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(xs), List())
+  requires acc(xs.p_size, write)
+  requires isSubtype(typeOf(xs.p_size), intType())
+  requires intFromRef(xs.p_size) >= 0
+  requires isSubtype(typeOf(arr), IntArray())
+  requires intFromRef(xs.p_size) == 2
+  requires arraySize(arr) == 3
+  ensures acc(xs.p_size, write)
+  ensures isSubtype(typeOf(xs.p_size), intType())
+  ensures intFromRef(xs.p_size) >= 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := xs.p_size
+  inhale isSubtype(typeOf(anon), intType())
+  assert !(intFromRef(anon) == 2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/counterexamples.kt: info: Generated Viper text for confirmedOverflow:
+method confirmedOverflow(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 1073741824
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := timesInts(x, intToRef(2))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/counterexamples.kt: info: Generated Viper text for confirmedDivision:
+method confirmedDivision(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires intFromRef(y) == 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := divInts(x, y)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/counterexamples.kt: info: Generated Viper text for nonlinearOverflow:
+method nonlinearOverflow(i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0
+  requires intFromRef(i) <= 50000
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := timesInts(i, minusInts(i, intToRef(1)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/counterexamples.kt: info: Generated Viper text for heapOverflow:
+field value: Ref
+
+method heapOverflow(box: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(box), CounterexampleBox())
+  requires acc(CounterexampleBox_unique(box), write)
+  requires (unfolding acc(CounterexampleBox_unique(box), write) in
+      intFromRef(box.value) == 1073741824)
+  ensures acc(CounterexampleBox_unique(box), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures !((let anon ==
+      (timesInts(old((unfolding acc(CounterexampleBox_unique(box), write) in
+        box.value)), intToRef(2))) in
+      intFromRef(old((unfolding acc(CounterexampleBox_unique(box), write) in
+        box.value))) *
+      intFromRef(intToRef(2))) ==
+    0)
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

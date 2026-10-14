@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.embeddings.properties
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
+import org.jetbrains.kotlin.formver.core.embeddings.ModelOrigin
 import org.jetbrains.kotlin.formver.core.embeddings.modelOrigin
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveFieldAccess
@@ -40,10 +41,12 @@ interface FieldEmbedding : PathStep {
     override val symbol: FirPropertySymbol?
         get() = null
 
+    val modelOrigin: ModelOrigin?
+        get() = symbol?.let { type.modelOrigin(it.name.asString(), it.source, isUnique) }
+
     fun toViper(): Field = Field(name, viperType, includeInShortDump,
-        info = symbol?.let { org.jetbrains.kotlin.formver.viper.ast.Info.Wrapped(
-            type.modelOrigin(it.name.asString(), it.source, isUnique),
-        ) } ?: org.jetbrains.kotlin.formver.viper.ast.Info.NoInfo) 
+        info = modelOrigin?.let { org.jetbrains.kotlin.formver.viper.ast.Info.Wrapped(it) }
+            ?: org.jetbrains.kotlin.formver.viper.ast.Info.NoInfo)
 
     override fun valueOf(receiver: ExpEmbedding): ExpEmbedding = PrimitiveFieldAccess(receiver, this)
 

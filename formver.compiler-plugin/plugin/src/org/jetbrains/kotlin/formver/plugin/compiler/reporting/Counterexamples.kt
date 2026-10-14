@@ -57,20 +57,39 @@ private fun VerificationError.failingMember(nodes: List<Node>): Node? =
     result.scope().takeIf { it.isDefined }?.get()
         ?: nodes.filterIsInstance<Member>().singleOrNull { member -> member.descendants().any { it == result.offendingNode() } }
 
-/** Only source-attributed values supported by the Kotlin presentation are exposed. */
-fun VerificationError.kotlinCounterexample(): Counterexample? {
+/**
+ * Only source-attributed values supported by the Kotlin presentation are exposed. An [arithmetic] failure's model is
+ * checked against the failing bound or divisor: a model in which the check holds is dropped.
+ */
+fun VerificationError.kotlinCounterexample(arithmetic: Boolean): Counterexample? {
     val model = siliconModel() ?: return null
+    val unchecked = when (if (arithmetic) failingCheckHolds(model) else false) {
+        true -> return null
+        false -> false
+        null -> true
+    }
     val nodes = model.program().descendants()
     val scope = failingMember(nodes)?.descendants() ?: nodes
-    return KotlinCounterexampleMapper(model, nodes, variableOrigins(scope)).extract()
+    val exit = result is viper.silver.verifier.errors.PostconditionViolated
+    return KotlinCounterexampleMapper(model, nodes, variableOrigins(scope), exit).extract()?.copy(unchecked = unchecked)
 }
 
-private data class SnapshotOrigin(val receiver: String, val path: String, val label: String?, val seen: Set<String>)
+/** Evaluates the failing conjunct, which Silicon reports with a function application's arguments substituted. */
+private fun VerificationError.failingCheckHolds(model: SiliconMappedCounterexample): Boolean? {
+    val check = result.reason().offendingNode() as? Exp ?: return null
+    val store = CollectionConverters.asJava(model.converter().extractedModel().entries())
+        .mapNotNull { (name, entry) -> ModelEvaluator.value(entry)?.let { name to it } }.toMap()
+    return (ModelEvaluator(model.nativeModel(), store, model.program()).evaluate(check) as? ModelValue.Bool)?.value
+}
 
+private data class SnapshotOrigin(val receiver: String, val path: String, val label: String?, val seen: Set<String>, val order: Int)
+
+/** Bindings list in declaration order; [exit] says whether the failure is at function exit, where `result` is bound. */
 private class KotlinCounterexampleMapper(
     private val model: SiliconMappedCounterexample,
     nodes: List<Node>,
     private val variables: Map<String, ModelOrigin>,
+    private val exit: Boolean,
 ) {
     private val native = model.nativeModel()
     private val nativeEntries = CollectionConverters.asJava(native.entries())
@@ -78,7 +97,7 @@ private class KotlinCounterexampleMapper(
     private val fields = nodes.filterIsInstance<Field>().mapNotNull { field -> field.origin()?.let { field.name() to it } }.toMap()
     private val predicates = CollectionConverters.asJava(model.program().predicates()).associateBy { it.name() }
     private val enumValues = enumValues(nodes)
-    private val bindings = mutableListOf<CounterexampleBinding>()
+    private val bindings = mutableListOf<Pair<Int, CounterexampleBinding>>()
 
     fun extract(): Counterexample? {
         collect(converter.extractedModel(), null)
@@ -86,8 +105,10 @@ private class KotlinCounterexampleMapper(
         CollectionConverters.asJava(converter.modelAtLabel())[ENTRY_STATE]?.let { collect(it, ENTRY_STATE) }
         CollectionConverters.asJava(model.oldHeaps())[ENTRY_STATE]?.let { folded(it.values(), ENTRY_STATE) }
         // A model may contain only unsupported values; an empty presentation carries no Kotlin evidence.
-        return bindings.takeIf { it.isNotEmpty() }?.let {
-            Counterexample(it.distinct().sortedWith(compareBy({ it.oldState.orEmpty() }, { it.path })))
+        return bindings.takeIf { it.isNotEmpty() }?.let { found ->
+            Counterexample(found.distinctBy { it.second }
+                .sortedWith(compareBy({ it.second.oldState != null }, { it.first }, { it.second.path }))
+                .map { it.second })
         }
     }
 
@@ -143,27 +164,52 @@ private class KotlinCounterexampleMapper(
         }
     }
 
-    private fun add(path: String, entry: ExtractedModelEntry, origin: ModelOrigin, label: String?, seen: Set<String>) {
-        decode(entry, origin)?.let { bindings.add(CounterexampleBinding(path, it, origin.source, label)) }
-        if (!origin.unique || entry !is RefEntry || entry.name() in seen) return
+    private fun arraySize(entry: ExtractedModelEntry, origin: ModelOrigin): CounterexampleValue? {
+        val function = origin.resolvedArraySize ?: return null
+        val array = entry.knownValue() ?: return null
+        val snapshot = viper.silver.verifier.ConstantEntry(Converter.snapUnitId())
+        val size = Converter.getFunctionValue(native, function, seqOf(snapshot, array), viper.silicon.state.terms.sorts.`Int$`.`MODULE$`)
+        return (size as? LitIntEntry)?.let { CounterexampleValue.Integer(it.value().bigInteger()) }
+    }
+
+    /**
+     * A parameter's own value cannot change, so its value in an old state is omitted; values reached through it are
+     * kept. Read-only fields, such as a collection's size, are shown through any reference, and only in the failing
+     * state.
+     */
+    private fun add(
+        path: String, entry: ExtractedModelEntry, origin: ModelOrigin, label: String?, seen: Set<String>, order: Int,
+        root: Boolean = false,
+    ) {
+        if (!root || label == null) {
+            decode(entry, origin)?.let { bindings.add(order to CounterexampleBinding(path, it, origin.source, label)) }
+        }
+        if (label == null) arraySize(entry, origin)?.let { bindings.add(order to CounterexampleBinding("$path.size", it)) }
+        if (entry !is RefEntry || entry.name() in seen) return
         CollectionConverters.asJava(entry.fields()).forEach { (field, pair) ->
-            fields[field]?.let { add("$path.${it.name}", pair._1(), it, label, seen + entry.name()) }
+            val fieldOrigin = fields[field] ?: return@forEach
+            val shown = if (fieldOrigin.readOnly) label == null else origin.unique
+            if (shown) add("$path.${fieldOrigin.name}", pair._1(), fieldOrigin, label, seen + entry.name(), order)
         }
     }
 
     private fun tracked(name: String, label: String?): ModelOrigin? =
-        variables[name]?.takeIf { label == null || it.parameter }
+        variables[name]?.takeIf { (label == null || it.parameter) && (exit || !it.result) }
+
+    /** The returned value follows the declared variables; `this`, without a declaration, precedes them. */
+    private fun order(origin: ModelOrigin): Int =
+        origin.source?.startOffset ?: if (origin.result) Int.MAX_VALUE else -1
 
     private fun collect(extracted: ExtractedModel, label: String?) {
         CollectionConverters.asJava(extracted.entries()).forEach { (name, entry) ->
-            tracked(name, label)?.let { add(it.name, entry, it, label, emptySet()) }
+            tracked(name, label)?.let { add(it.name, entry, it, label, emptySet(), order(it), root = true) }
         }
     }
 
-    private fun uniqueRoots(label: String?): Map<ValueEntry, List<String>> =
+    private fun uniqueRoots(label: String?): Map<ValueEntry, List<ModelOrigin>> =
         CollectionConverters.asJava(converter.extractedModel().entries()).mapNotNull { (name, entry) ->
             val origin = tracked(name, label)?.takeIf { it.unique } ?: return@mapNotNull null
-            entry.knownValue()?.let { it to origin.name }
+            entry.knownValue()?.let { it to origin }
         }.groupBy({ it.first }, { it.second })
 
     private fun folded(heap: scala.collection.Iterable<viper.silicon.interfaces.state.Chunk>, label: String?) {
@@ -173,14 +219,14 @@ private class KotlinCounterexampleMapper(
             val chunk = chunks.next() as? viper.silicon.state.BasicChunk ?: continue
             if (chunk.args().size() != 1) continue
             val receiver = Converter.evaluateTerm(chunk.args().apply(0), native).knownValue() ?: continue
-            roots[receiver]?.forEach { predicate(chunk.id().name(), chunk.snap(), it, label, emptySet()) }
+            roots[receiver]?.forEach { predicate(chunk.id().name(), chunk.snap(), it.name, label, emptySet(), order(it)) }
         }
     }
 
-    private fun predicate(name: String, snapshot: Term, path: String, label: String?, seen: Set<String>) {
+    private fun predicate(name: String, snapshot: Term, path: String, label: String?, seen: Set<String>, order: Int) {
         val definition = predicates[name] ?: return
         if (name in seen || definition.body().isEmpty || definition.formalArgs().size() != 1) return
-        val origin = SnapshotOrigin(definition.formalArgs().apply(0).name(), path, label, seen + name)
+        val origin = SnapshotOrigin(definition.formalArgs().apply(0).name(), path, label, seen + name, order)
         walk(definition.body().get(), snapshot, origin)
     }
 
@@ -197,7 +243,7 @@ private class KotlinCounterexampleMapper(
     private fun nested(expression: PredicateAccessPredicate, snapshot: Term, origin: SnapshotOrigin) {
         val access = expression.loc()
         if (access.args().size() == 1 && (access.args().apply(0) as? LocalVar)?.name() == origin.receiver)
-            predicate(access.predicateName(), snapshot, origin.path, origin.label, origin.seen)
+            predicate(access.predicateName(), snapshot, origin.path, origin.label, origin.seen, origin.order)
     }
 
     private fun conjunction(expression: And, snapshot: Term, origin: SnapshotOrigin) {
@@ -216,7 +262,8 @@ private class KotlinCounterexampleMapper(
         val sort = Converter.typeToSort(access.typ())
         if (sort.isEmpty) return
         val value = Converter.evaluateTerm(snapshot.convert(sort.get()), native)
-        add("${origin.path}.${fieldOrigin.name}", value, fieldOrigin, origin.label, emptySet())
+        if (fieldOrigin.readOnly && origin.label != null) return
+        add("${origin.path}.${fieldOrigin.name}", value, fieldOrigin, origin.label, emptySet(), origin.order)
     }
 }
 

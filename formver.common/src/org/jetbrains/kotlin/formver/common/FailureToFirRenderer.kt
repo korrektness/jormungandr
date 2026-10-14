@@ -49,7 +49,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 else "$friendly\nBackend [${backend.errorId}/${backend.reasonId}]: ${backend.detail}"
         }
         val bindings = failure.counterexample?.bindings.orEmpty()
-        return if (bindings.isEmpty()) message else message + "\nCounterexample:\n" + bindings.joinToString("\n") {
+        val heading = if (failure.counterexample?.unchecked == true) "Counterexample (unchecked)" else "Counterexample"
+        return if (bindings.isEmpty()) message else message + "\n$heading:\n" + bindings.joinToString("\n") {
             val path = when (val label = it.oldState) {
                 null -> it.path
                 "old" -> "old(${it.path})"

@@ -90,6 +90,10 @@ data class PlaceholderVariableEmbedding(
             org.jetbrains.kotlin.formver.core.names.ExtensionReceiverName -> Info.Wrapped(
                 type.modelOrigin("this", null, isUnique || isBorrowed, parameter = true),
             )
+            // Inlined calls return through deeper return variables.
+            org.jetbrains.kotlin.formver.core.names.ReturnVariableName(0) -> Info.Wrapped(
+                type.modelOrigin("result", null, isUnique, result = true),
+            )
             else -> Info.NoInfo
         }
 }

@@ -6,7 +6,9 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 
+import org.jetbrains.kotlin.formver.core.embeddings.ModelOrigin
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.modelOrigin
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.IntLit
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Is
@@ -24,6 +26,7 @@ class SpecialField(
     override val type: TypeEmbedding,
     override val viperType: Type,
     override val includeInShortDump: Boolean = false,
+    override val modelOrigin: ModelOrigin? = null,
     private val extraInvariantsBuilder: (FieldEmbedding) -> List<TypeInvariantEmbedding> = { listOf() },
 ) : FieldEmbedding {
     override val name: SymbolicName = SpecialFieldName(baseName)
@@ -36,6 +39,7 @@ val CollectionSizeFieldEmbedding: FieldEmbedding = SpecialField(
     type = buildType { int() },
     viperType = Type.Ref,
     includeInShortDump = true,
+    modelOrigin = buildType { int() }.modelOrigin("size", null, readOnly = true),
 ) { field ->
     listOf(
         object : TypeInvariantEmbedding {

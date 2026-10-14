@@ -164,7 +164,8 @@ data class CounterexampleBinding(
     val oldState: String? = null,
 )
 
-data class Counterexample(val bindings: List<CounterexampleBinding>)
+/** [unchecked] says the model was not evaluated against the failing check, so it may not show the failure. */
+data class Counterexample(val bindings: List<CounterexampleBinding>, val unchecked: Boolean = false)
 
 /** Kotlin origins identify cloned obligations; unattributed obligations retain backend node identity. */
 @Suppress("UseDataClass")

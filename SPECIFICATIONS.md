@@ -90,13 +90,22 @@ reported once.
 ### Counterexamples
 
 Silicon's mapped model supplies optional Kotlin counterexample bindings for parameters, locals and fields of unique
-receivers. `this` identifies a receiver; `old(path)` identifies a value in the function-entry state. A binding retains
-its declaration source, displayed as a line and column. Values render as Kotlin integers, booleans, escaped characters,
-`null`, or enum entry names. Several enum names separated by `/` identify indistinguishable model values.
+receivers. `this` identifies a receiver; `old(path)` identifies a value in the function-entry state. Parameters cannot
+change, so a parameter's own entry value is not shown; entry values of fields reached through it are. A failure at
+function exit, a postcondition or a returns effect, binds the returned value as `result`. A `List` or other collection
+binds its size as `xs.size`, and an `IntArray` as `arr.size`, through any reference. Bindings follow declaration order,
+with `this` first and `result` last; entry-state bindings follow the failing-state ones. A binding retains its
+declaration source, displayed as a line and column. Values render as Kotlin integers of every width, booleans, escaped
+characters, `null`, or enum entry names. Several enum names separated by `/` identify indistinguishable model values.
 
 Bindings expose only source-attributed values supported by the presentation. Missing models, ambiguous declaration
 names, unsupported values, and conditional or quantified predicate snapshots contribute no binding. A model describes
 the translated obligation; it can reflect abstraction or missing specifications rather than an executable Kotlin input.
+
+A solver can return a model from a query it could not decide, such as one with nonlinear arithmetic. For
+`INTEGER_OVERFLOW` and `DIVISION_BY_ZERO`, the failing bound or divisor check is evaluated in the model before it is
+shown. A model in which the check holds does not show the failure and is dropped. A model in which the check cannot be
+evaluated, for example because an operand is read from the heap, is shown under `Counterexample (unchecked):`.
 
 Enable model generation with `formver { counterexamples(true) }` in Gradle, or the compiler-plugin option
 `counterexamples=true`. Generation is opt-in because measured model extraction adds substantial verification cost.

@@ -16,7 +16,7 @@ import viper.silver.verifier.reasons
 /** Converts backend evidence into a Kotlin obligation without constructing diagnostic text. */
 fun VerificationError.toFailure(source: KtSourceElement?): Failure {
     val role = lookupSourceRole()
-    val counterexample = kotlinCounterexample()
+    val counterexample = kotlinCounterexample(role is SourceRole.Arithmetic)
     val condition = when (role) {
         is SourceRole.Arithmetic -> role.condition
         is SourceRole.Proof -> KotlinCondition.Proof(
