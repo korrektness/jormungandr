@@ -1,7 +1,13 @@
 package org.jetbrains.kotlin.formver.viper
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.LoggerContext
+import ch.qos.logback.classic.turbo.TurboFilter
+import ch.qos.logback.core.spi.FilterReply
 import org.jetbrains.kotlin.formver.viper.errors.VerificationError
 import org.jetbrains.kotlin.formver.viper.errors.VerifierError
+import org.slf4j.Marker
 import scala.jdk.javaapi.CollectionConverters
 import viper.silver.reporter.StdIOReporter
 import java.io.Closeable
@@ -18,6 +24,54 @@ class InvalidViperProgramException(errors: List<String>) :
 /** Silicon did not finish verifying a program within [seconds]. */
 class VerificationTimeoutException(val seconds: Int) :
     Exception("Verification did not finish within $seconds seconds")
+
+/**
+ * Marks the threads that serve one Silicon backend. A thread inherits the mark of the thread that creates it, so the
+ * verifier and worker threads that Silicon starts during [run] carry this mark. Once [stop] is called, all logging from
+ * threads with this mark is dropped.
+ */
+class SiliconThreads {
+    @Volatile
+    private var stopped = false
+
+    /** Runs [action] on the current thread under this mark. */
+    fun <T> run(action: () -> T): T {
+        val previous = current.get()
+        current.set(this)
+        try {
+            return action()
+        } finally {
+            current.set(previous)
+        }
+    }
+
+    fun stop() {
+        stopped = true
+    }
+
+    companion object {
+        private val current = InheritableThreadLocal<SiliconThreads?>()
+
+        private val filter = object : TurboFilter() {
+            override fun decide(
+                marker: Marker?, logger: Logger?, level: Level?, format: String?, params: Array<out Any?>?, t: Throwable?,
+            ): FilterReply = if (current.get()?.stopped == true) FilterReply.DENY else FilterReply.NEUTRAL
+        }
+
+        init {
+            // Casting LoggerFactory.getILoggerFactory() to LoggerContext, here and in the ViperStdOutLogger that
+            // SiliconFrontendAPI's constructor calls, fails while SLF4J's first-time initialization is in progress in
+            // another thread: it then returns a SubstituteLoggerFactory. Calling getLogger here forces logback to fully
+            // initialize exactly once, under the JVM's class-initialization guarantee. SiliconFrontend creates its
+            // SiliconThreads before it constructs a SiliconFrontendAPI.
+            //
+            // This issue is known to the Silicon team: https://github.com/viperproject/silicon/issues/968
+            org.slf4j.LoggerFactory.getLogger(SiliconThreads::class.java)
+            filter.start()
+            (org.slf4j.LoggerFactory.getILoggerFactory() as LoggerContext).addTurboFilter(filter)
+        }
+    }
+}
 
 /**
  * Passes Viper programs for verification to the Silicon backend via [viper.silicon.SiliconFrontendAPI], using the Z3
@@ -67,6 +121,7 @@ class SiliconFrontend(
         VerificationResultCache.fingerprint(backendDigests + VerificationResultCache.currentFileDigest(Path.of(z3Exe)))
     }
     private var siliconApi: viper.silicon.SiliconFrontendAPI? = null
+    private var siliconThreads = SiliconThreads()
 
     private fun backend(): viper.silicon.SiliconFrontendAPI = siliconApi ?: run {
         val api = viper.silicon.SiliconFrontendAPI(StdIOReporter("stdout_reporter", true))
@@ -139,18 +194,6 @@ class SiliconFrontend(
 
         private fun defaultZ3Name(): String =
             if (System.getProperty("os.name").startsWith("Windows")) "z3.exe" else "z3"
-
-        init {
-            // SiliconFrontendAPI's constructor calls ViperStdOutLogger, which casts LoggerFactory.getILoggerFactory()
-            // to LoggerContext. Under concurrent construction (parallel tests), SLF4J's first-time initialization may
-            // still be in progress and return a SubstituteLoggerFactory instead, causing a ClassCastException.
-            //
-            // Calling getLogger here forces logback to fully initialize exactly once, under the JVM's
-            // class-initialization guarantee, before any constructor runs.
-            //
-            // This issue is known to the Silicon team: https://github.com/viperproject/silicon/issues/968
-            org.slf4j.LoggerFactory.getLogger(SiliconFrontend::class.java)
-        }
     }
 
     /**
@@ -167,14 +210,21 @@ class SiliconFrontend(
         // including RefutePlugin. Its isolated assertion branch leaves the continuation available for further checks.
         val verify = {
             val result = configurationGate.withConfiguration(args) {
-                val api = backend()
-                restoreConfiguration(api)
-                api.verify(viperProgram).also { result ->
-                    // Silicon returns on a timeout while its verifier thread may still wait on Z3. Stopping the backend
-                    // kills Z3, which ends that thread, and the next program starts a fresh backend.
-                    if (result.timedOut()) {
-                        siliconApi = null
-                        api.stop()
+                val threads = siliconThreads
+                threads.run {
+                    val api = backend()
+                    restoreConfiguration(api)
+                    api.verify(viperProgram).also { result ->
+                        // Silicon returns on a timeout while its verifier threads may still wait on Z3. Stopping the
+                        // backend kills Z3, which ends those threads, and the next program starts a fresh backend.
+                        // The threads then fail on the lost prover and log it; the timeout already accounts for that
+                        // failure, so their logging is dropped.
+                        if (result.timedOut()) {
+                            siliconApi = null
+                            siliconThreads = SiliconThreads()
+                            threads.stop()
+                            api.stop()
+                        }
                     }
                 }
             }
