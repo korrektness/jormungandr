@@ -23,17 +23,45 @@ import org.jetbrains.kotlin.name.Name
  */
 sealed interface KotlinName : SymbolicName
 
+private val plainIdentifier = Regex("[A-Za-z_][A-Za-z0-9_]*")
+
+private fun Int.isPlainIdentifierPart(): Boolean =
+    this in 'a'.code..'z'.code || this in 'A'.code..'Z'.code || this in '0'.code..'9'.code || this == '_'.code
+
+/**
+ * Spells a Kotlin identifier as a Viper identifier, injectively.
+ *
+ * An ASCII identifier made of letters, digits and underscores is kept as is. Any other identifier, such as a
+ * backtick name, gets a leading `_`, and each code point outside letters, digits and underscores becomes
+ * `@<hex>@`, as does a leading digit. Only these spellings contain `@`, so they cannot collide with kept ones,
+ * and `$` stays free for separating the parts of long names.
+ */
+private fun viperSpelling(identifier: String): String {
+    if (plainIdentifier.matches(identifier)) return identifier
+    return buildString {
+        append('_')
+        identifier.codePoints().toArray().forEachIndexed { index, codePoint ->
+            val leadingDigit = index == 0 && codePoint in '0'.code..'9'.code
+            if (codePoint.isPlainIdentifierPart() && !leadingDigit) appendCodePoint(codePoint)
+            else append('@').append(Integer.toHexString(codePoint)).append('@')
+        }
+    }
+}
+
+val Name.viperSpelling: String
+    get() = viperSpelling(asStringStripSpecialMarkers())
+
 data class SimpleKotlinName(val name: Name) : KotlinName {
     override val inViper: Boolean = false
 
-    override val candidates: List<CandidateName> = nameOnlyCandidates(name.asStringStripSpecialMarkers())
+    override val candidates: List<CandidateName> = nameOnlyCandidates(name.viperSpelling)
 
     override val children: List<AnyName> = emptyList()
 }
 
 abstract class TypedKotlinName(override val nameType: NameType, open val name: Name) : KotlinName {
     override val candidates: List<CandidateName>
-        get() = nameWithPrefixCandidates(name.asStringStripSpecialMarkers(), nameType)
+        get() = nameWithPrefixCandidates(name.viperSpelling, nameType)
 
     override val children: List<AnyName> = listOf(nameType)
 }
@@ -43,10 +71,10 @@ abstract class TypedKotlinNameWithType(
 ) : KotlinName {
     override val candidates: List<CandidateName>
         get() = buildCandidates {
-            +nameWithPrefixCandidates(name.asStringStripSpecialMarkers(), nameType)
+            +nameWithPrefixCandidates(name.viperSpelling, nameType)
             candidate {
                 +nameType
-                +name.asStringStripSpecialMarkers()
+                +name.viperSpelling
                 +type.name
             }
         }
@@ -95,7 +123,7 @@ data class ClassKotlinName(val name: FqName) : KotlinName {
 
     // Nested classes, companion objects included, take one part per segment: a dotted name is not a Viper identifier.
     override val candidates: List<CandidateName> = buildCandidates {
-        val segments = name.pathSegments().map { it.asString() }
+        val segments = name.pathSegments().map { it.viperSpelling }
         candidate {
             +segments
         }

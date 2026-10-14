@@ -671,6 +671,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("backtick_names.kt")
+    public void testBacktick_names() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/backtick_names.kt");
+    }
+
+    @Test
     @TestMetadata("basic.kt")
     public void testBasic() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/basic.kt");

@@ -36,14 +36,12 @@ val NameScope.packageNameIfAny: FqName?
 
 data class PackageScope(val packageName: FqName) : NameScope {
     override val candidates: List<CandidateName> = buildCandidates {
-        val name = packageName.asString()
-
-        if (name.isEmpty()) {
+        if (packageName.isRoot) {
             candidate { +"pkg" }
             return@buildCandidates
         }
 
-        val split = name.split(".")
+        val split = packageName.pathSegments().map { it.viperSpelling }
 
         split.indices.forEach { i -> candidate { +split.takeLast(i + 1) } }
         candidate {
