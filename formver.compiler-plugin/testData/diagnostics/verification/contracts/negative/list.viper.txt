@@ -1,49 +1,216 @@
 /list.kt: info: Generated Viper text for empty_list_expr_get:
-field size: Ref
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
-method emptyList() returns (ret_2: Ref)
-  ensures isSubtype(typeOf(ret_2), List())
-  ensures acc(ret_2.size, write)
-  ensures isSubtype(typeOf(ret_2.size), intType())
-  ensures intFromRef(ret_2.size) >= 0
-  ensures intFromRef(ret_2.size) == 0
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+method emptyListFunctionModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ListModel())
+  ensures acc(ListModel_unique(ret_1), write)
+  ensures (unfolding acc(ListModel_unique(ret_1), wildcard) in
+      intFromRef(ListModel_g_size(ret_1)) == 0)
 
 
 method empty_list_expr_get() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
   var s: Ref
-  var anon: Ref
-  anon := emptyList()
-  s := get(anon, intToRef(0))
+  var anon_9: Ref
+  anon_9 := emptyListFunctionModel()
+  s := (unfolding acc(ListModel_unique(anon_9), wildcard) in
+      get(anon_9, intToRef(0)))
+  inhale isSubtype(typeOf(s), intType())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method get(this: Ref, par_index: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(this), List())
-  requires acc(this.size, write)
-  requires isSubtype(typeOf(this.size), intType())
-  requires intFromRef(this.size) >= 0
-  requires isSubtype(typeOf(par_index), intType())
-  requires intFromRef(par_index) >= 0
-  requires intFromRef(this.size) > intFromRef(par_index)
-  ensures acc(this.size, write)
-  ensures isSubtype(typeOf(this.size), intType())
-  ensures intFromRef(this.size) >= 0
-  ensures isSubtype(typeOf(ret_1), intType())
-  ensures intFromRef(this.size) == old(intFromRef(this.size))
-
-
 /list.kt: info: Generated Viper text for empty_list_get:
-field size: Ref
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
-method emptyList() returns (ret_1: Ref)
-  ensures isSubtype(typeOf(ret_1), List())
-  ensures acc(ret_1.size, write)
-  ensures isSubtype(typeOf(ret_1.size), intType())
-  ensures intFromRef(ret_1.size) >= 0
-  ensures intFromRef(ret_1.size) == 0
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+
+
+method emptyListFunctionModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ListModel())
+  ensures acc(ListModel_unique(ret_1), write)
+  ensures (unfolding acc(ListModel_unique(ret_1), wildcard) in
+      intFromRef(ListModel_g_size(ret_1)) == 0)
 
 
 method empty_list_get() returns (v_ret_0: Ref)
@@ -51,206 +218,351 @@ method empty_list_get() returns (v_ret_0: Ref)
 {
   var myList: Ref
   var s: Ref
-  myList := emptyList()
-  s := get(myList, intToRef(0))
+  var anon_0: Ref
+  myList := emptyListFunctionModel()
+  inhale isSubtype(typeOf(anon_0), intType())
+  s := anon_0
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
-method get(this: Ref, par_index: Ref) returns (ret_2: Ref)
-  requires isSubtype(typeOf(this), List())
-  requires acc(this.size, write)
-  requires isSubtype(typeOf(this.size), intType())
-  requires intFromRef(this.size) >= 0
-  requires isSubtype(typeOf(par_index), intType())
-  requires intFromRef(par_index) >= 0
-  requires intFromRef(this.size) > intFromRef(par_index)
-  ensures acc(this.size, write)
-  ensures isSubtype(typeOf(this.size), intType())
-  ensures intFromRef(this.size) >= 0
-  ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(this.size) == old(intFromRef(this.size))
-
-
 /list.kt: info: Generated Viper text for unsafe_last:
-field size: Ref
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
-method get(this: Ref, par_index: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(this), List())
-  requires acc(this.size, write)
-  requires isSubtype(typeOf(this.size), intType())
-  requires intFromRef(this.size) >= 0
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
   requires isSubtype(typeOf(par_index), intType())
-  requires intFromRef(par_index) >= 0
-  requires intFromRef(this.size) > intFromRef(par_index)
-  ensures acc(this.size, write)
-  ensures isSubtype(typeOf(this.size), intType())
-  ensures intFromRef(this.size) >= 0
-  ensures isSubtype(typeOf(ret_1), intType())
-  ensures intFromRef(this.size) == old(intFromRef(this.size))
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 method unsafe_last(l: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(l), List())
-  requires acc(l.size, write)
-  requires isSubtype(typeOf(l.size), intType())
-  requires intFromRef(l.size) >= 0
-  ensures acc(l.size, write)
-  ensures isSubtype(typeOf(l.size), intType())
-  ensures intFromRef(l.size) >= 0
+  requires isSubtype(typeOf(l), ListModel())
+  requires acc(ListModel_unique(l), write)
+  ensures acc(ListModel_unique(l), write)
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
-  var anon: Ref
-  anon := l.size
-  inhale isSubtype(typeOf(anon), intType())
-  v_ret_0 := get(l, minusInts(anon, intToRef(1)))
+  var anon_9: Ref
+  var anon_10: Ref
+  anon_9 := (unfolding acc(ListModel_unique(l), wildcard) in
+      ListModel_g_size(l))
+  anon_10 := (unfolding acc(ListModel_unique(l), wildcard) in
+      get(l, minusInts(anon_9, intToRef(1))))
+  v_ret_0 := anon_10
+  inhale isSubtype(typeOf(v_ret_0), intType())
   goto lbl_ret_0
   label lbl_ret_0
 }
 
 /list.kt: info: Generated Viper text for add_get:
-field size: Ref
+function CollectionModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function MutableListModel_c_ListModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 <
+      intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
+      equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_1)))))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 &&
+      anon_builtin_2 <
+      intFromRef(MutableListModel_c_ListModel_g_size(this)) &&
+      MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_2)) ==
+      element ==>
+      boolFromRef(result))
+
+
+function MutableListModel_c_ListModel_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) <
+    intFromRef(MutableListModel_c_ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function MutableListModel_c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) <
+    intFromRef(MutableListModel_c_ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(MutableListModel_c_ListModel_f_contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, MutableListModel_c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
+      !equalsRelation(element, MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_3))))
+
+
+function MutableListModel_c_ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(MutableListModel_c_ListModel_g_size(this)) == 0)
+
+
+function MutableListModel_c_ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function MutableListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), MutableListModel())
+  requires acc(MutableListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_c_IterableModel_f_iterationSequence_args_c_IterableModel_ret_IterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function c_ListModel_f_contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_1: Int :: anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
+      (anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(c_ListModel_g_size(this)) &&
+      equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_1)))))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 &&
+      anon_builtin_2 < intFromRef(c_ListModel_g_size(this)) &&
+      c_ListModel_f_get(this, intToRef(anon_builtin_2)) == element ==>
+      boolFromRef(result))
+
+
+function c_ListModel_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(c_ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_ListModel_f_indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(c_ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(c_ListModel_f_contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, c_ListModel_f_get(this, result))
+  ensures (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+      anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      anon_builtin_3 >= 0 && anon_builtin_3 < intFromRef(result) ==>
+      !equalsRelation(element, c_ListModel_f_get(this, intToRef(anon_builtin_3))))
+
+
+function c_ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(c_ListModel_g_size(this)) == 0)
+
+
+function c_ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_ListModel())
+  requires acc(c_ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
 
 method add(this: Ref, element: Ref) returns (ret_2: Ref)
-  requires isSubtype(typeOf(this), MutableList())
-  requires acc(this.size, write)
-  requires isSubtype(typeOf(this.size), intType())
-  requires intFromRef(this.size) >= 0
-  requires isSubtype(typeOf(element), intType())
-  requires intFromRef(this.size) < 2147483647
-  ensures acc(this.size, write)
-  ensures isSubtype(typeOf(this.size), intType())
-  ensures intFromRef(this.size) >= 0
+  requires isSubtype(typeOf(this), MutableListModel())
+  requires acc(MutableListModel_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  requires (unfolding acc(MutableListModel_unique(this), wildcard) in
+      intFromRef(MutableListModel_c_ListModel_g_size(this)) < 2147483647)
+  ensures acc(MutableListModel_unique(this), write)
   ensures isSubtype(typeOf(ret_2), boolType())
-  ensures intFromRef(this.size) ==
-    (let anon_builtin ==
-      (plusInts(old(this.size), intToRef(1))) in
-      intFromRef(old(this.size)) + intFromRef(intToRef(1)))
+  ensures boolFromRef(ret_2) == true
+  ensures (unfolding acc(MutableListModel_unique(this), wildcard) in
+      intFromRef(MutableListModel_c_ListModel_g_size(this))) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(MutableListModel_unique(this), wildcard) in
+        MutableListModel_c_ListModel_g_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(MutableListModel_unique(this), wildcard) in
+        MutableListModel_c_ListModel_g_size(this)))) +
+      intFromRef(intToRef(1)))
+  ensures (unfolding acc(MutableListModel_unique(this), wildcard) in
+      MutableListModel_c_ListModel_f_get(this, old((unfolding acc(MutableListModel_unique(this), wildcard) in
+        MutableListModel_c_ListModel_g_size(this)))) ==
+      element)
+  ensures (forall anon_builtin_0: Int ::
+      { MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 &&
+      anon_builtin_0 <
+      old((unfolding acc(MutableListModel_unique(this), wildcard) in
+        intFromRef(MutableListModel_c_ListModel_g_size(this)))) ==>
+      (unfolding acc(MutableListModel_unique(this), wildcard) in
+        MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_0)) ==
+        old((unfolding acc(MutableListModel_unique(this), wildcard) in
+          MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_0))))))
 
 
 method add_get(l: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(l), MutableList())
-  requires acc(l.size, write)
-  requires isSubtype(typeOf(l.size), intType())
-  requires intFromRef(l.size) >= 0
-  requires intFromRef(l.size) < 2147483647
-  ensures acc(l.size, write)
-  ensures isSubtype(typeOf(l.size), intType())
-  ensures intFromRef(l.size) >= 0
+  requires isSubtype(typeOf(l), MutableListModel())
+  requires acc(MutableListModel_unique(l), write)
+  requires (unfolding acc(MutableListModel_unique(l), wildcard) in
+      intFromRef(MutableListModel_c_ListModel_g_size(l)) < 2147483647)
+  ensures acc(MutableListModel_unique(l), write)
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  var anon_0: Ref
+  var anon_9: Ref
   var n: Ref
-  anon_0 := add(l, intToRef(1))
-  n := get(l, intToRef(1))
+  var anon_10: Ref
+  anon_9 := add(l, intToRef(1))
+  anon_10 := (unfolding acc(MutableListModel_unique(l), wildcard) in
+      MutableListModel_c_ListModel_f_get(l, intToRef(1)))
+  n := anon_10
+  inhale isSubtype(typeOf(n), intType())
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
-
-method get(this: Ref, par_index: Ref) returns (ret_3: Ref)
-  requires isSubtype(typeOf(this), MutableList())
-  requires acc(this.size, write)
-  requires isSubtype(typeOf(this.size), intType())
-  requires intFromRef(this.size) >= 0
-  requires isSubtype(typeOf(par_index), intType())
-  requires intFromRef(par_index) >= 0
-  requires intFromRef(this.size) > intFromRef(par_index)
-  ensures acc(this.size, write)
-  ensures isSubtype(typeOf(this.size), intType())
-  ensures intFromRef(this.size) >= 0
-  ensures isSubtype(typeOf(ret_3), intType())
-  ensures intFromRef(this.size) == old(intFromRef(this.size))
-
-
-/list.kt: info: Generated Viper text for empty_list_sub:
-field size: Ref
-
-method emptyList() returns (ret_2: Ref)
-  ensures isSubtype(typeOf(ret_2), List())
-  ensures acc(ret_2.size, write)
-  ensures isSubtype(typeOf(ret_2.size), intType())
-  ensures intFromRef(ret_2.size) >= 0
-  ensures intFromRef(ret_2.size) == 0
-
-
-method empty_list_sub() returns (v_ret_0: Ref)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
-{
-  var l: Ref
-  var anon_0: Ref
-  anon_0 := emptyList()
-  l := subList(anon_0, intToRef(0), intToRef(1))
-  label lbl_ret_0
-  inhale isSubtype(typeOf(v_ret_0), unitType())
-}
-
-method subList(this: Ref, fromIndex: Ref, toIndex: Ref)
-  returns (ret_1: Ref)
-  requires isSubtype(typeOf(this), List())
-  requires acc(this.size, write)
-  requires isSubtype(typeOf(this.size), intType())
-  requires intFromRef(this.size) >= 0
-  requires isSubtype(typeOf(fromIndex), intType())
-  requires isSubtype(typeOf(toIndex), intType())
-  requires intFromRef(fromIndex) <= intFromRef(toIndex)
-  requires intFromRef(fromIndex) >= 0
-  requires intFromRef(toIndex) <= intFromRef(this.size)
-  ensures acc(this.size, write)
-  ensures isSubtype(typeOf(this.size), intType())
-  ensures intFromRef(this.size) >= 0
-  ensures isSubtype(typeOf(ret_1), List())
-  ensures acc(ret_1.size, write)
-  ensures isSubtype(typeOf(ret_1.size), intType())
-  ensures intFromRef(ret_1.size) >= 0
-  ensures intFromRef(this.size) == old(intFromRef(this.size))
-  ensures intFromRef(ret_1.size) ==
-    (let anon_builtin ==
-      (minusInts(toIndex, fromIndex)) in
-      intFromRef(toIndex) - intFromRef(fromIndex))
-
-
-/list.kt: info: Generated Viper text for empty_list_sub_negative:
-field size: Ref
-
-method emptyList() returns (ret_2: Ref)
-  ensures isSubtype(typeOf(ret_2), List())
-  ensures acc(ret_2.size, write)
-  ensures isSubtype(typeOf(ret_2.size), intType())
-  ensures intFromRef(ret_2.size) >= 0
-  ensures intFromRef(ret_2.size) == 0
-
-
-method empty_list_sub_negative() returns (v_ret_0: Ref)
-  ensures isSubtype(typeOf(v_ret_0), unitType())
-{
-  var l: Ref
-  var anon_0: Ref
-  anon_0 := emptyList()
-  l := subList(anon_0, intToRef(-1), intToRef(1))
-  label lbl_ret_0
-  inhale isSubtype(typeOf(v_ret_0), unitType())
-}
-
-method subList(this: Ref, fromIndex: Ref, toIndex: Ref)
-  returns (ret_1: Ref)
-  requires isSubtype(typeOf(this), List())
-  requires acc(this.size, write)
-  requires isSubtype(typeOf(this.size), intType())
-  requires intFromRef(this.size) >= 0
-  requires isSubtype(typeOf(fromIndex), intType())
-  requires isSubtype(typeOf(toIndex), intType())
-  requires intFromRef(fromIndex) <= intFromRef(toIndex)
-  requires intFromRef(fromIndex) >= 0
-  requires intFromRef(toIndex) <= intFromRef(this.size)
-  ensures acc(this.size, write)
-  ensures isSubtype(typeOf(this.size), intType())
-  ensures intFromRef(this.size) >= 0
-  ensures isSubtype(typeOf(ret_1), List())
-  ensures acc(ret_1.size, write)
-  ensures isSubtype(typeOf(ret_1.size), intType())
-  ensures intFromRef(ret_1.size) >= 0
-  ensures intFromRef(this.size) == old(intFromRef(this.size))
-  ensures intFromRef(ret_1.size) ==
-    (let anon_builtin ==
-      (minusInts(toIndex, fromIndex)) in
-      intFromRef(toIndex) - intFromRef(fromIndex))

@@ -54,6 +54,5 @@ fun <!VIPER_TEXT!>readStored<!>(): Int {
 
 // Without an opt-out, the same construction fails.
 <!VIPER_TEXT!>class Unannotated<!>(first: String) {
-    private val items: MutableList<String> = mutableListOf()
-    init { <!VIPER_VERIFICATION_ERROR!>items.add(first)<!> }
+    init { verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>first.length == 0<!>) }
 }

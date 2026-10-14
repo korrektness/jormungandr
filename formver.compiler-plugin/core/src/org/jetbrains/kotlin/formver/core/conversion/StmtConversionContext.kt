@@ -303,6 +303,7 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAcce
         else -> return null
     }
     if (ownsReceiverBefore(access, receiver)) return null
+    reportUncheckedLibraryCall(access.source, callee.callableId?.asSingleFqName()?.asString() ?: callee.name.asString())
     val arguments = (access as? FirFunctionCall)?.arguments.orEmpty()
     return Block {
         add(convert(receiver))

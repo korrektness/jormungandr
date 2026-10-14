@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedCallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineFunctionSignature
+import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.isGhostObserver
 import org.jetbrains.kotlin.formver.core.isObserver
 import org.jetbrains.kotlin.formver.core.isObserverOrOverride
@@ -47,6 +48,17 @@ class ObserverBindingRegistry {
         ctx: ProgramConversionContext,
         signature: (SymbolicName) -> NonInlineFunctionSignature,
     ) {
+        // An impure implementation, such as an unmodeled library body, cannot define an observation, so the class
+        // binds none: its observations stay opaque calls.
+        fun bindObserver(
+            type: ClassTypeEmbedding,
+            observer: SymbolicName,
+            implementation: NonInlineFunctionSignature,
+            dynamicDispatch: Boolean,
+            hasImplementation: Boolean,
+        ) {
+            if (implementation.isPure) ctx.typeResolver.bindObserver(type, observer, implementation, dynamicDispatch, hasImplementation)
+        }
         val visited = mutableSetOf<SymbolicName>()
         while (true) {
             val entry = classSymbols.entries.firstOrNull { it.key !in visited } ?: break
@@ -63,7 +75,7 @@ class ObserverBindingRegistry {
                         fun bind(symbol: FirPropertySymbol) {
                             if (symbol.isObserverOrOverride()) {
                                 val observer = ctx.embedProperty(if (symbol.isObserver()) symbol else symbol.unwrapFakeOverrides()).getter as CustomGetter
-                                ctx.typeResolver.bindObserver(type, observer.getterMethod.name, binding,
+                                bindObserver(type, observer.getterMethod.name, binding,
                                     dynamicDispatch = !entry.value.isFinal && !implementation.isFinal,
                                     hasImplementation = !implementation.isAbstract)
                             }
@@ -80,7 +92,7 @@ class ObserverBindingRegistry {
                             if (symbol.isObserverOrOverride()) {
                                 val declaration = if (symbol.isObserver()) symbol else symbol.unwrapFakeOverrides()
                                 val observerName = (ctx.embedAnyFunction(declaration) as NamedCallableEmbedding).name
-                                ctx.typeResolver.bindObserver(type, observerName, binding,
+                                bindObserver(type, observerName, binding,
                                     dynamicDispatch = !entry.value.isFinal && !implementation.isFinal,
                                     hasImplementation = !implementation.isAbstract && !implementation.isGhostObserver(ctx.session))
                             }

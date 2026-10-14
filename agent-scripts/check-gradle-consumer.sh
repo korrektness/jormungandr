@@ -11,8 +11,9 @@
 # is accepted, if a false claim about a specified call verifies, if a
 # multiplatform consumer's common, platform or platform test code does not
 # verify through the bundled specs, if a default build does not show the trust
-# summary of the verified declarations, or if a caller stays verified after the
-# spec it relies on changes. The
+# summary of the verified declarations, if a build with verification errors
+# drops its warnings, or if a caller stays verified after the spec it relies on
+# changes. The
 # multiplatform consumer uses explicit API mode, extra warnings and warnings as
 # errors, which the bundled specs must compile under.
 #
@@ -264,6 +265,11 @@ fun wrongListElement() {
     val list = listOf(7)
     verify(list[0] == 8)
 }
+
+@Deprecated("replaced")
+fun retired(): Int = 0
+
+fun callsRetired(): Int = retired()
 SRC
 
 # The consumer is not part of this build, so the repository's own gradle
@@ -357,6 +363,12 @@ for line in 6 9 11; do
         exit 1
     fi
 done
+# Warnings are reported next to the errors.
+if ! grep -q "^w: .*BadClaim.kt:21:" "$claim_log"; then
+    cat "$claim_log" >&2
+    echo "check-gradle-consumer.sh: a failing build dropped its warnings" >&2
+    exit 1
+fi
 # A multiplatform consumer: the bundled specs must reach code in the common
 # fragment, the platform one and the platform test compilation, so each
 # function verifies only through the collection templates.

@@ -5,24 +5,24 @@
 
 import org.jetbrains.kotlin.formver.plugin.*
 
-fun <!VIPER_TEXT!>sharedSize<!>(xs: List<Int>): Int = xs.size
+fun <!VIPER_TEXT!>sharedSize<!>(xs: List<Int>): Int = <!UNCHECKED_LIBRARY_CALL!>xs.size<!>
 
-fun <!VIPER_TEXT!>sharedIsEmpty<!>(xs: List<Int>): Boolean = xs.isEmpty()
+fun <!VIPER_TEXT!>sharedIsEmpty<!>(xs: List<Int>): Boolean = <!UNCHECKED_LIBRARY_CALL!>xs.isEmpty()<!>
 
-fun <!VIPER_TEXT!>sharedIndex<!>(xs: List<Int>, i: Int): Int = xs[i]
+fun <!VIPER_TEXT!>sharedIndex<!>(xs: List<Int>, i: Int): Int = <!UNCHECKED_LIBRARY_CALL!>xs[i]<!>
 
-fun <!VIPER_TEXT!>sharedGet<!>(xs: List<Int>, i: Int): Int = xs.get(i)
+fun <!VIPER_TEXT!>sharedGet<!>(xs: List<Int>, i: Int): Int = <!UNCHECKED_LIBRARY_CALL!>xs.get(i)<!>
 
-fun <!VIPER_TEXT!>sharedNullableSize<!>(xs: List<Int>?): Int? = xs?.size
+fun <!VIPER_TEXT!>sharedNullableSize<!>(xs: List<Int>?): Int? = <!UNCHECKED_LIBRARY_CALL!>xs?.size<!>
 
 fun <!VIPER_TEXT!>sharedAdd<!>(xs: MutableList<Int>) {
-    xs.add(1)
+    <!UNCHECKED_LIBRARY_CALL!>xs.add(1)<!>
 }
 
 fun <!VIPER_TEXT!>sharedGetCaught<!>(xs: List<Int>, i: Int): Int {
     var result = 0
     try {
-        result = xs[i]
+        result = <!UNCHECKED_LIBRARY_CALL!>xs[i]<!>
     } catch (e: IndexOutOfBoundsException) {
         result = -1
     }
@@ -31,7 +31,7 @@ fun <!VIPER_TEXT!>sharedGetCaught<!>(xs: List<Int>, i: Int): Int {
 
 // A shared receiver gets no facts from the specification.
 fun <!VIPER_TEXT!>sharedSizeUnknown<!>(xs: List<Int>) {
-    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>xs.size >= 0<!>)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!UNCHECKED_LIBRARY_CALL!>xs.size<!> >= 0<!>)
 }
 
 fun <!VIPER_TEXT!>uniqueMembers<!>(xs: @Unique @Borrowed List<Int>) {

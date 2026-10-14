@@ -71,7 +71,17 @@ data class PureExpLinearizer(
     /** The value [action] produces, with the locals declared while producing it bound around it. */
     private fun inNewScope(action: LinearizationContext.() -> Exp): Exp {
         val inner = LetScope()
-        return inner.bindAround(copy(scope = inner).action(), source.asPosition)
+        val value = copy(scope = inner).action()
+        requireBound(inner)
+        return inner.bindAround(value, source.asPosition)
+    }
+
+    /**
+     * A local that [scope] declares and never binds holds a value the verifier knows nothing about, such as the
+     * result of a library call whose receiver is not unique. A method body havocs it; an expression cannot.
+     */
+    private fun requireBound(scope: LetScope) {
+        if (scope.hasUnbound) unsupported("A specification cannot use a value the verifier knows nothing about, such as the result of a library call whose receiver is not unique.")
     }
 
     override fun freshAnonVar(type: TypeEmbedding): AnonymousVariableEmbedding =
@@ -133,6 +143,7 @@ data class PureExpLinearizer(
         val ctx = copy(scope = inner)
         statements.forEach { it.toViperUnusedResult(ctx) }
         val lastExp = last.toViper(ctx)
+        requireBound(inner)
         val result = inner.takeResult(lastExp, builtinType)
         val value = inner.bindAround(result ?: lastExp, source.asPosition)
         return if (builtinType != null && result == null) defaultToViperBuiltinType({ value }, builtinType, null, this)
@@ -248,6 +259,10 @@ class LetScope {
 
     private val declared = mutableMapOf<SymbolicName, Declaration.LocalVarDecl>()
     private val bindings = mutableListOf<Binding>()
+
+    /** Whether a local this scope declares has no value bound to it. */
+    val hasUnbound: Boolean
+        get() = declared.isNotEmpty()
 
     fun declare(decl: Declaration.LocalVarDecl) {
         declared[decl.name] = decl

@@ -65,6 +65,7 @@ enum class FailureKind(
     INVALID_TERMINATION_MEASURE(category = FailureCategory.TRANSLATION),
     UNSUPPORTED_OWNERSHIP(category = FailureCategory.TRANSLATION),
     UNTRACKED_WRITE(Severity.WARNING, category = FailureCategory.TRANSLATION),
+    UNCHECKED_LIBRARY_CALL(Severity.WARNING, category = FailureCategory.TRANSLATION),
     UNSUPPORTED_FEATURE(Severity.WARNING, category = FailureCategory.TRANSLATION),
     VERIFICATION_SKIPPED(Severity.WARNING, declarationName = true, category = FailureCategory.TRANSLATION),
     INTERNAL_ERROR(category = FailureCategory.TOOL),
@@ -139,6 +140,8 @@ sealed interface KotlinCondition {
     /** The verifier did not finish the program of [declaration] within [seconds]. */
     data class Timeout(val declaration: String, val seconds: Int) : KotlinCondition
     data object UntrackedWrite : KotlinCondition
+    /** A call of [member], whose specification owns a receiver that the call does not own. */
+    data class UncheckedLibraryCall(val member: String) : KotlinCondition
     /** A recursive call that may not decrease the caller's termination measure. */
     data object Termination : KotlinCondition
     /** Backend obligations without Kotlin provenance remain explicitly unclassified. */

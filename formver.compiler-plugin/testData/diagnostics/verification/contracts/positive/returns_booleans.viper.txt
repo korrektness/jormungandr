@@ -83,43 +83,43 @@ method call_fun_with_contracts(b: Ref) returns (v_ret_0: Ref)
 }
 
 /returns_booleans.kt: info: Generated Viper text for isNullOrEmpty:
-field size: Ref
+function CollectionModel_c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
-method isEmpty(v_this: Ref) returns (ret_2: Ref)
-  requires isSubtype(typeOf(v_this), Collection())
-  requires acc(v_this.size, write)
-  requires isSubtype(typeOf(v_this.size), intType())
-  requires intFromRef(v_this.size) >= 0
-  ensures acc(v_this.size, write)
-  ensures isSubtype(typeOf(v_this.size), intType())
-  ensures intFromRef(v_this.size) >= 0
-  ensures isSubtype(typeOf(ret_2), boolType())
-  ensures intFromRef(v_this.size) == old(intFromRef(v_this.size))
-  ensures boolFromRef(ret_2) ==> intFromRef(v_this.size) == 0
-  ensures !boolFromRef(ret_2) ==> intFromRef(v_this.size) > 0
+
+function c_IterableModel_f_iterationSequence(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CollectionModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(size(v_this)) == 0)
+
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), CollectionModel())
+  requires acc(CollectionModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
 
 
 method isNullOrEmpty(v_this_extension: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(v_this_extension), nullable(Collection()))
-  requires v_this_extension != nullValue() ==>
-    acc(v_this_extension.size, write)
-  requires v_this_extension != nullValue() ==>
-    isSubtype(typeOf(v_this_extension.size), intType())
-  requires v_this_extension != nullValue() ==>
-    intFromRef(v_this_extension.size) >= 0
-  ensures v_this_extension != nullValue() ==>
-    acc(v_this_extension.size, write)
-  ensures v_this_extension != nullValue() ==>
-    isSubtype(typeOf(v_this_extension.size), intType())
-  ensures v_this_extension != nullValue() ==>
-    intFromRef(v_this_extension.size) >= 0
+  requires isSubtype(typeOf(v_this_extension), nullable(CollectionModel()))
   ensures isSubtype(typeOf(v_ret_0), boolType())
   ensures boolFromRef(v_ret_0) == false ==> v_this_extension != nullValue()
 {
   if (v_this_extension == nullValue()) {
     v_ret_0 := boolToRef(true)
   } else {
-    v_ret_0 := isEmpty(v_this_extension)}
+    var anon: Ref
+    inhale isSubtype(typeOf(anon), boolType())
+    v_ret_0 := anon
+  }
   goto lbl_ret_0
   label lbl_ret_0
 }

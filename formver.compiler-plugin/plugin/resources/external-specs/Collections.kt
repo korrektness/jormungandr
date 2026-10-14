@@ -112,6 +112,13 @@ internal fun <T> emptyListModel(): @Unique ListModel<T> = TODO()
     postconditions<@Unique ListModel<T>> { result -> result.size == 0 }
 }
 
+// https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/empty-list.html: empty read-only list.
+@ExternalFunction("kotlin.collections.emptyList")
+internal fun <T> emptyListFunctionModel(): @Unique ListModel<T> = TODO()
+@SpecOf("emptyListFunctionModel") internal fun <T> emptyListFunctionSpec() {
+    postconditions<@Unique ListModel<T>> { result -> result.size == 0 }
+}
+
 // https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/list-of.html: read-only singleton.
 @ExternalFunction("kotlin.collections.listOf")
 internal fun <T> singletonListModel(element: T): @Unique ListModel<T> = TODO()

@@ -44,14 +44,14 @@ fun <!VIPER_TEXT!>usesBundledSpec<!>() {
     verify(abs(-3) == 3)
 }
 
-fun <!VIPER_TEXT!>usesLibraryContract<!>(list: List<Int>): Int = if (list.isEmpty()) 0 else list[0]
+fun <!VIPER_TEXT!>usesBundledListSpec<!>(list: @Unique @Borrowed List<Int>): Int = if (list.isEmpty()) 0 else list[0]
 
 fun <!VIPER_TEXT!>usesLibraryPropertyContract<!>(text: String) {
     val last = text.lastIndex
     verify(last == text.length - 1)
 }
 
-fun <!VIPER_TEXT!>usesSeveral<!>(counter: @Unique @Borrowed Counter, list: List<Int>) {
+fun <!VIPER_TEXT!>usesSeveral<!>(counter: @Unique @Borrowed Counter, list: @Unique @Borrowed List<Int>) {
     val first = if (list.isEmpty()) 0 else list[0]
     val next = trustedSuccessor(abs(1))
     verify(next > 1)

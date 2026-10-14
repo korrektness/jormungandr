@@ -82,12 +82,12 @@ fun <!VIPER_TEXT!>orEmptyOfNull<!>(xs: @Unique List<Int>?) {
 
 // A shared receiver gets the opaque library call.
 fun <!VIPER_TEXT!>sharedReceivers<!>(xs: List<Int>) {
-    xs.lastIndex
-    xs.indices
-    xs.isNotEmpty()
-    xs.first()
-    xs.getOrNull(0)
-    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>xs.lastIndex >= -1<!>)
+    <!UNCHECKED_LIBRARY_CALL!>xs.lastIndex<!>
+    <!UNCHECKED_LIBRARY_CALL!>xs.indices<!>
+    <!UNCHECKED_LIBRARY_CALL!>xs.isNotEmpty()<!>
+    <!UNCHECKED_LIBRARY_CALL!>xs.first()<!>
+    <!UNCHECKED_LIBRARY_CALL!>xs.getOrNull(0)<!>
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!UNCHECKED_LIBRARY_CALL!>xs.lastIndex<!> >= -1<!>)
 }
 
-fun <!VIPER_TEXT!>sharedOrEmpty<!>(xs: List<Int>?): List<Int> = xs.orEmpty()
+fun <!VIPER_TEXT!>sharedOrEmpty<!>(xs: List<Int>?): List<Int> = <!UNCHECKED_LIBRARY_CALL!>xs.orEmpty()<!>

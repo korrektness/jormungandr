@@ -522,6 +522,29 @@ method message(this: Ref) returns (ret_2: Ref)
 
 
 /exception_sites.kt: info: Generated Viper text for externalCatch:
+function suffixModel(v_this_extension: Ref, startIndex: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), stringType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires intFromRef(startIndex) >= 0 &&
+    intFromRef(startIndex) <= |stringFromRef(v_this_extension)|
+  ensures isSubtype(typeOf(result), stringType())
+  ensures |stringFromRef(result)| ==
+    (let anon_builtin_neg1 ==
+      (minusInts(stringLength(v_this_extension), startIndex)) in
+      intFromRef(stringLength(v_this_extension)) - intFromRef(startIndex))
+  ensures (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      anon_builtin_0 >= 0 && anon_builtin_0 < |stringFromRef(result)| ==>
+      (let anon_builtin_neg1 ==
+        (stringGet(result, intToRef(anon_builtin_0))) in
+        stringFromRef(result)[anon_builtin_0]) ==
+      (let anon_builtin_neg1 ==
+        (stringGet(v_this_extension, plusInts(intToRef(anon_builtin_0), startIndex))) in
+        stringFromRef(v_this_extension)[intFromRef(plusInts(intToRef(anon_builtin_0),
+        startIndex))]))
+
+
 method cause(v_this: Ref) returns (ret_4: Ref)
   requires isSubtype(typeOf(v_this), anyType())
   ensures isSubtype(typeOf(ret_4), nullable(anyType()))
@@ -534,19 +557,10 @@ method externalCatch(s: Ref) returns (v_ret_0: Ref)
 {
   var x: Ref
   var anon_0: Ref
-  var anon_1: Ref
   var e: Ref
   x := intToRef(0)
   x := intToRef(1)
-  if (boolFromRef(anon_1)) {
-    var anon_2: Ref
-    var anon_3: Ref
-    if (boolFromRef(anon_3)) {
-      goto catch
-    }
-    inhale false
-  }
-  anon_0 := substring(s, intToRef(99))
+  anon_0 := suffixModel(s, intToRef(99))
   x := intToRef(2)
   goto tryExit
   label catch
@@ -561,13 +575,6 @@ method externalCatch(s: Ref) returns (v_ret_0: Ref)
 method message(v_this: Ref) returns (ret_3: Ref)
   requires isSubtype(typeOf(v_this), anyType())
   ensures isSubtype(typeOf(ret_3), nullable(anyType()))
-
-
-method substring(v_this_extension: Ref, startIndex: Ref)
-  returns (ret_2: Ref)
-  requires isSubtype(typeOf(v_this_extension), stringType())
-  requires isSubtype(typeOf(startIndex), intType())
-  ensures isSubtype(typeOf(ret_2), stringType())
 
 
 /exception_sites.kt: info: Generated Viper text for abort:

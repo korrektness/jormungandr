@@ -47,6 +47,9 @@ class FormVerGradleSubplugin
             task.inputs.files(externalSpecs)
                 .withPropertyName("formverExternalSpecs")
                 .withPathSensitivity(PathSensitivity.RELATIVE)
+            // The compiler drops warnings from a compilation that has errors, which would hide the declarations
+            // that were not verified behind a failure elsewhere.
+            task.compilerOptions.freeCompilerArgs.add("-Xreport-all-warnings")
         }
 
         // A metadata compilation generates no code, so it never writes the report.

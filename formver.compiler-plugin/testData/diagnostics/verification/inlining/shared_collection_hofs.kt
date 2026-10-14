@@ -9,11 +9,11 @@ import org.jetbrains.kotlin.formver.plugin.*
 }
 
 fun <!VERIFICATION_SKIPPED!>sharedNullableMap<!>(xs: List<Int>?) {
-    val ys = xs?.map <!UNSUPPORTED_FEATURE!>{ 1 }<!>
+    val ys = <!UNCHECKED_LIBRARY_CALL!>xs?.map <!UNSUPPORTED_FEATURE!>{ 1 }<!><!>
 }
 
 fun <!VERIFICATION_SKIPPED!>sharedCallResultFilter<!>(n: Numbers) {
-    val ys = n.all().filter <!UNSUPPORTED_FEATURE!>{ it > 0 }<!>
+    val ys = <!UNCHECKED_LIBRARY_CALL!>n.all().filter <!UNSUPPORTED_FEATURE!>{ it > 0 }<!><!>
 }
 
 fun <!VERIFICATION_SKIPPED!>sharedAny<!>(xs: List<Int>) {

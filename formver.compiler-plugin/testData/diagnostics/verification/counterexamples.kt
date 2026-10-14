@@ -62,7 +62,7 @@ fun <!VIPER_TEXT!>widths<!>(l: Long, s: Short, b: Byte) {
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>l != 5000000000L<!>)
 }
 
-fun <!VIPER_TEXT!>sizes<!>(xs: List<Int>, arr: IntArray) {
+fun <!VIPER_TEXT!>sizes<!>(xs: @Unique @Borrowed List<Int>, arr: IntArray) {
     preconditions { xs.size == 2; arr.size == 3 }
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>xs.size != 2<!>)
 }

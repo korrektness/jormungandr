@@ -115,8 +115,8 @@ class ExtensionRegistrarConfigurator(testServices: TestServices) : EnvironmentCo
     private data class AddedSpec(val file: File, val originalFile: File)
 
     private fun addedExternalSpecs(module: TestModule): List<AddedSpec> {
-        val requested = module.directives[EXTERNAL_SPEC]
-            .mapTo(HashSet()) { File(it).canonicalFile }
+        val requested = ExternalSpecProvider.specsFor(module, module.directives[EXTERNAL_SPEC])
+            .mapTo(HashSet()) { it.canonicalFile }
         val added = module.files.filter { it.isAdditional && it.originalFile.canonicalFile in requested }
         val missing = requested - added.mapTo(HashSet()) { it.originalFile.canonicalFile }
         check(missing.isEmpty()) { "External specs $missing were not added to module ${module.name}." }
@@ -170,7 +170,7 @@ object FormVerDirectives : SimpleDirectivesContainer() {
     )
 
     val EXTERNAL_SPEC by stringDirective(
-        description = "Analyse the Kotlin file at this path, relative to the repository root, as an external specification"
+        description = "Analyse the Kotlin file at this path, relative to the repository root, as an external specification, and record its diagnostics"
     )
 
     val EXTERNAL_TEST_LIBRARY by stringDirective(
@@ -193,11 +193,29 @@ class StdlibReplacementsProvider(testServices: TestServices, baseDir: String = "
 
 }
 
+/**
+ * Adds the spec sources that the plugin jar bundles, as the plugin does for every compilation, and those that the test
+ * names with [EXTERNAL_SPEC].
+ */
 class ExternalSpecProvider(testServices: TestServices) : AdditionalSourceProvider(testServices) {
     override fun produceAdditionalFiles(
         globalDirectives: RegisteredDirectives,
         module: TestModule,
         testModuleStructure: TestModuleStructure,
-    ): List<TestFile> =
-        (globalDirectives[EXTERNAL_SPEC] + module.directives[EXTERNAL_SPEC]).distinct().map { File(it).toTestFile() }
+    ): List<TestFile> = specsFor(module, globalDirectives[EXTERNAL_SPEC] + module.directives[EXTERNAL_SPEC]).map { it.toTestFile() }
+
+    companion object {
+        private val bundled: List<File> by lazy {
+            ExternalSpecSources.bundledIn(File("formver.compiler-plugin/plugin/resources"))
+        }
+
+        /**
+         * The spec files for [module] given the [named] paths. The bundled specs go into a module that depends on no
+         * other fragment, which is where the plugin puts them in a multiplatform compilation.
+         */
+        fun specsFor(module: TestModule, named: List<String>): List<File> {
+            val root = if (module.dependsOnDependencies.isEmpty()) bundled else emptyList()
+            return (root + named.map(::File)).distinctBy { it.canonicalFile }
+        }
+    }
 }

@@ -77,6 +77,10 @@ the top of the file. `FULL_JDK` and `WITH_STDLIB` come from the Kotlin test
 framework; ours are declared in `FormVerDirectives`, in
 `formver.compiler-plugin/test-fixtures/org/jetbrains/kotlin/formver/plugin/services/ExtensionRegistrarConfigurator.kt`.
 
+Every test compiles as the Gradle plugin compiles user code: against the full JDK and the standard library, with
+the bundled specifications of `formver.compiler-plugin/plugin/resources` loaded. A test records diagnostics in a
+specification file only when it names that file with `EXTERNAL_SPEC`.
+
 Which checks run:
 
 Locality and uniqueness checking run in every mode that converts.

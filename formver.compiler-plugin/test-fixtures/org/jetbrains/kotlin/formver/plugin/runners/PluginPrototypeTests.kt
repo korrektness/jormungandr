@@ -18,13 +18,15 @@ import org.jetbrains.kotlin.test.builders.TestConfigurationBuilder
 import org.jetbrains.kotlin.test.configuration.commonServicesConfigurationForCodegenAndDebugTest
 import org.jetbrains.kotlin.test.directives.DiagnosticsDirectives.RENDER_DIAGNOSTICS_FULL_TEXT
 import org.jetbrains.kotlin.test.directives.FirDiagnosticsDirectives.ENABLE_PLUGIN_PHASES
-import org.jetbrains.kotlin.test.directives.LanguageSettingsDirectives.LANGUAGE
+import org.jetbrains.kotlin.test.directives.JvmEnvironmentConfigurationDirectives.FULL_JDK
 import org.jetbrains.kotlin.test.directives.TestPhaseDirectives.LATEST_PHASE_IN_PIPELINE
 import org.jetbrains.kotlin.test.directives.configureFirParser
 import org.jetbrains.kotlin.test.frontend.fir.FirCliJvmFacade
 import org.jetbrains.kotlin.test.model.FrontendKinds
+import org.jetbrains.kotlin.test.model.TestFile
 import org.jetbrains.kotlin.test.runners.AbstractKotlinCompilerWithTargetBackendTest
 import org.jetbrains.kotlin.test.services.*
+import java.io.File
 
 enum class TestMode {
     CHECK_CONVERSION, UPDATE, FULL
@@ -40,10 +42,14 @@ fun getTestMode(): TestMode {
     }
 }
 
-private fun TestServices.hasExternalSpecs() = moduleStructure.modules.any { it.directives[FormVerDirectives.EXTERNAL_SPEC].isNotEmpty() }
+/** Whether [file] is a spec that a module of the test names with [FormVerDirectives.EXTERNAL_SPEC]. */
+private fun TestServices.namesExternalSpec(file: TestFile): Boolean {
+    val canonical = file.originalFile.canonicalFile
+    return moduleStructure.modules.any { module -> module.directives[FormVerDirectives.EXTERNAL_SPEC].any { File(it).canonicalFile == canonical } }
+}
 
 abstract class KindOrMessageDiagnosticsCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
-    override val includeAdditionalFiles: Boolean get() = testServices.hasExternalSpecs()
+    override fun recordsAdditionalFile(file: TestFile): Boolean = testServices.namesExternalSpec(file)
     override fun renderMessage(diagnostic: KtDiagnostic): String =
         if (testServices.moduleStructure.modules.any { FormVerDirectives.DIAGNOSTIC_KINDS in it.directives }) {
             diagnostic.factory.name
@@ -61,7 +67,7 @@ class ConversionDiagnosticsCollector(testServices: TestServices) : KindOrMessage
  * The generated Viper text, kept apart from [ConversionDiagnosticsCollector] so that the diagnostics stay readable.
  */
 class ViperTextCollector(testServices: TestServices) : DiagnosticsCollector(testServices) {
-    override val includeAdditionalFiles: Boolean get() = testServices.hasExternalSpecs()
+    override fun recordsAdditionalFile(file: TestFile): Boolean = testServices.namesExternalSpec(file)
     override val fileExtension: String = ".viper.txt"
     override fun records(diagnostic: KtDiagnostic): Boolean = diagnostic.factory == PluginErrors.VIPER_TEXT
 }
@@ -108,7 +114,7 @@ abstract class AbstractPhasedDiagnosticTest : AbstractKotlinCompilerWithTargetBa
             LATEST_PHASE_IN_PIPELINE with TestPhase.FRONTEND
             +ENABLE_PLUGIN_PHASES
             +RENDER_DIAGNOSTICS_FULL_TEXT
-            LANGUAGE with "+PropertyParamAnnotationDefaultTargetMode"
+            +FULL_JDK
         }
         commonServicesConfigurationForCodegenAndDebugTest(FrontendKinds.FIR)
 

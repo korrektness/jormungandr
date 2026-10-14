@@ -22,6 +22,6 @@ fun <!VIPER_TEXT!>unsupportedBody<!>(): Int {
     return 0
 }
 
-// The signature is still embedded, so its unsupported return type is reported.
-<!UNSUPPORTED_FEATURE!>@NeverVerify
-fun unsupportedSignature(): Double = 1.0<!>
+// The signature is still embedded.
+@NeverVerify
+fun <!VIPER_TEXT!>unsupportedSignature<!>(): Double = 1.0

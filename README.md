@@ -94,6 +94,9 @@ specify the plugin `.jar` with `-Xplugin=`:
 kotlinc -language-version 2.0 -Xplugin=path-to-plugin.jar myfile.kt
 ```
 
+The compiler drops warnings from a compilation that has errors, including the warnings that name declarations which
+were not verified. Pass `-Xreport-all-warnings` to keep them; the Gradle plugin passes it.
+
 The plugin accepts a number of command line options which can be passed via
 `-P plugin:org.jetbrains.kotlin.formver:OPTION=SETTING`:
 

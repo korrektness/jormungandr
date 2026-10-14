@@ -62,5 +62,5 @@ public fun <T> Collection<T>?.<!VIPER_TEXT!>isNullOrEmpty<!>(): Boolean {
         returns(false) implies (this@isNullOrEmpty != null)
     }
 
-    return this == null || isEmpty()
+    return this == null || <!UNCHECKED_LIBRARY_CALL!>isEmpty()<!>
 }

@@ -15,13 +15,13 @@ fun <!VIPER_TEXT!>initialization<!>(l: List<Int>) {
     val myEmptyList = emptyList<Int>()
 }
 
-fun <!VIPER_TEXT!>add_get<!>(l: MutableList<Int>) {
+fun <!VIPER_TEXT!>add_get<!>(l: @Unique @Borrowed MutableList<Int>) {
     preconditions { l.size < 2147483647 }
     l.add(1)
     val n = l[0]
 }
 
-fun <!VIPER_TEXT!>last_or_null<!>(l: List<Int>) : Int? {
+fun <!VIPER_TEXT!>last_or_null<!>(l: @Unique @Borrowed List<Int>) : Int? {
     val size = l.size
     if (size != 0) {
         return l[size - 1]
@@ -30,7 +30,7 @@ fun <!VIPER_TEXT!>last_or_null<!>(l: List<Int>) : Int? {
     }
 }
 
-fun <!VIPER_TEXT!>is_empty<!>(l: List<Int>) : Int {
+fun <!VIPER_TEXT!>is_empty<!>(l: @Unique @Borrowed List<Int>) : Int {
     return if (!l.isEmpty()) {
         l[0]
     } else {
@@ -38,7 +38,7 @@ fun <!VIPER_TEXT!>is_empty<!>(l: List<Int>) : Int {
     }
 }
 
-fun <!VIPER_TEXT!>nullable_list<!>(l: List<Int>?) {
+fun <!VIPER_TEXT!>nullable_list<!>(l: @Unique @Borrowed List<Int>?) {
     if (l != null && !l.isEmpty()) {
         val x = l[l.size - 1]
     }

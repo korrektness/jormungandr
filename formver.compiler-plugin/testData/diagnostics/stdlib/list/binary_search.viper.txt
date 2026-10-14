@@ -1,166 +1,138 @@
-/binary_search.kt: info: Generated Viper text for safe_binary_search:
-field p_size: Ref
-
-method get(this: Ref, par_index: Ref) returns (ret_2: Ref)
-  requires isSubtype(typeOf(this), List())
-  requires acc(this.p_size, write)
-  requires isSubtype(typeOf(this.p_size), intType())
-  requires intFromRef(this.p_size) >= 0
-  requires isSubtype(typeOf(par_index), intType())
-  requires intFromRef(par_index) >= 0
-  requires intFromRef(this.p_size) > intFromRef(par_index)
-  ensures acc(this.p_size, write)
-  ensures isSubtype(typeOf(this.p_size), intType())
-  ensures intFromRef(this.p_size) >= 0
-  ensures isSubtype(typeOf(ret_2), intType())
-  ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
-
-
-method isEmpty(this: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(this), List())
-  requires acc(this.p_size, write)
-  requires isSubtype(typeOf(this.p_size), intType())
-  requires intFromRef(this.p_size) >= 0
-  ensures acc(this.p_size, write)
-  ensures isSubtype(typeOf(this.p_size), intType())
-  ensures intFromRef(this.p_size) >= 0
-  ensures isSubtype(typeOf(ret_1), boolType())
-  ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
-  ensures boolFromRef(ret_1) ==> intFromRef(this.p_size) == 0
-  ensures !boolFromRef(ret_1) ==> intFromRef(this.p_size) > 0
-
-
-method safe_binary_search(arr: Ref, target: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(arr), List())
-  requires acc(arr.p_size, write)
-  requires isSubtype(typeOf(arr.p_size), intType())
-  requires intFromRef(arr.p_size) >= 0
-  requires isSubtype(typeOf(target), intType())
-  ensures acc(arr.p_size, write)
-  ensures isSubtype(typeOf(arr.p_size), intType())
-  ensures intFromRef(arr.p_size) >= 0
-  ensures isSubtype(typeOf(v_ret_0), boolType())
-{
-  var l0_size: Ref
-  var mid: Ref
-  var anon_0: Ref
-  var anon_1: Ref
-  l0_size := arr.p_size
-  inhale isSubtype(typeOf(l0_size), intType())
-  anon_0 := arr.p_size
-  inhale isSubtype(typeOf(anon_0), intType())
-  mid := divInts(anon_0, intToRef(2))
-  anon_1 := isEmpty(arr)
-  if (boolFromRef(anon_1)) {
-    v_ret_0 := boolToRef(false)
-  } else {
-    var anon_2: Ref
-    anon_2 := get(arr, mid)
-    if (intFromRef(anon_2) == intFromRef(target)) {
-      v_ret_0 := boolToRef(true)
-    } else {
-      var anon_3: Ref
-      anon_3 := get(arr, mid)
-      if (intFromRef(anon_3) < intFromRef(target)) {
-        var anon_4: Ref
-        anon_4 := subList(arr, plusInts(mid, intToRef(1)), l0_size)
-        v_ret_0 := safe_binary_search(anon_4, target)
-      } else {
-        var anon_5: Ref
-        anon_5 := subList(arr, intToRef(0), mid)
-        v_ret_0 := safe_binary_search(anon_5, target)
-      }
-    }
-  }
-  goto lbl_ret_0
-  label lbl_ret_0
-}
-
-method subList(this: Ref, fromIndex: Ref, toIndex: Ref)
-  returns (ret_3: Ref)
-  requires isSubtype(typeOf(this), List())
-  requires acc(this.p_size, write)
-  requires isSubtype(typeOf(this.p_size), intType())
-  requires intFromRef(this.p_size) >= 0
-  requires isSubtype(typeOf(fromIndex), intType())
-  requires isSubtype(typeOf(toIndex), intType())
-  requires intFromRef(fromIndex) <= intFromRef(toIndex)
-  requires intFromRef(fromIndex) >= 0
-  requires intFromRef(toIndex) <= intFromRef(this.p_size)
-  ensures acc(this.p_size, write)
-  ensures isSubtype(typeOf(this.p_size), intType())
-  ensures intFromRef(this.p_size) >= 0
-  ensures isSubtype(typeOf(ret_3), List())
-  ensures acc(ret_3.p_size, write)
-  ensures isSubtype(typeOf(ret_3.p_size), intType())
-  ensures intFromRef(ret_3.p_size) >= 0
-  ensures intFromRef(this.p_size) == old(intFromRef(this.p_size))
-  ensures intFromRef(ret_3.p_size) ==
-    (let anon_builtin ==
-      (minusInts(toIndex, fromIndex)) in
-      intFromRef(toIndex) - intFromRef(fromIndex))
-
-
 /binary_search.kt: info: Generated Viper text for unsafe_binary_search_fixed:
-field size: Ref
+function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
 
-method get(this: Ref, par_index: Ref) returns (ret_1: Ref)
-  requires isSubtype(typeOf(this), List())
-  requires acc(this.size, write)
-  requires isSubtype(typeOf(this.size), intType())
-  requires intFromRef(this.size) >= 0
+
+function CollectionModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(CollectionModel_g_size(this)) == 0)
+
+
+function CollectionModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), CollectionModel())
+  requires acc(CollectionModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ListModel_g_size(this)) == 0)
+
+
+function ListModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function c_IterableModel_f_iterationSequence(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_IterableModel())
+  requires acc(c_IterableModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function contains(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (anon_builtin_0 >= 0 &&
+      anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
+      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      anon_builtin_1 >= 0 &&
+      anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
+      get(this, intToRef(anon_builtin_1)) == element ==>
+      boolFromRef(result))
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
   requires isSubtype(typeOf(par_index), intType())
-  requires intFromRef(par_index) >= 0
-  requires intFromRef(this.size) > intFromRef(par_index)
-  ensures acc(this.size, write)
-  ensures isSubtype(typeOf(this.size), intType())
-  ensures intFromRef(this.size) >= 0
-  ensures isSubtype(typeOf(ret_1), intType())
-  ensures intFromRef(this.size) == old(intFromRef(this.size))
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function indexOf(this: Ref, element: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= -1 &&
+    intFromRef(result) < intFromRef(ListModel_g_size(this))
+  ensures (intFromRef(result) == -1) ==
+    !boolFromRef(contains(this, element))
+  ensures intFromRef(result) >= 0 ==>
+    equalsRelation(element, get(this, result))
+  ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+      anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
+      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
 
 
 method unsafe_binary_search_fixed(arr: Ref, target: Ref, left: Ref, right: Ref)
   returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(arr), List())
-  requires acc(arr.size, write)
-  requires isSubtype(typeOf(arr.size), intType())
-  requires intFromRef(arr.size) >= 0
+  requires isSubtype(typeOf(arr), ListModel())
   requires isSubtype(typeOf(target), intType())
   requires isSubtype(typeOf(left), intType())
   requires isSubtype(typeOf(right), intType())
-  ensures acc(arr.size, write)
-  ensures isSubtype(typeOf(arr.size), intType())
-  ensures intFromRef(arr.size) >= 0
   ensures isSubtype(typeOf(v_ret_0), boolType())
 {
-  var anon_0: Ref
-  var anon_1: Ref
+  var anon_12: Ref
+  var anon_13: Ref
   var mid: Ref
-  var anon_3: Ref
+  var anon_15: Ref
+  var anon_1: Ref
   if (intFromRef(left) > intFromRef(right)) {
-    anon_1 := boolToRef(true)
+    anon_13 := boolToRef(true)
   } else {
-    anon_1 := ltInts(left, intToRef(0))}
-  if (boolFromRef(anon_1)) {
-    anon_0 := boolToRef(true)
+    anon_13 := ltInts(left, intToRef(0))}
+  if (boolFromRef(anon_13)) {
+    anon_12 := boolToRef(true)
   } else {
-    var anon_2: Ref
-    anon_2 := arr.size
-    inhale isSubtype(typeOf(anon_2), intType())
-    anon_0 := geInts(right, anon_2)
+    var anon_14: Ref
+    var anon_0: Ref
+    inhale isSubtype(typeOf(anon_0), intType())
+    anon_14 := anon_0
+    anon_12 := geInts(right, anon_14)
   }
-  if (boolFromRef(anon_0)) {
+  if (boolFromRef(anon_12)) {
     v_ret_0 := boolToRef(false)
     goto lbl_ret_0
   }
   mid := plusInts(left, divInts(minusInts(right, left), intToRef(2)))
-  anon_3 := get(arr, mid)
-  if (intFromRef(anon_3) == intFromRef(target)) {
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_15 := anon_1
+  if (intFromRef(anon_15) == intFromRef(target)) {
     v_ret_0 := boolToRef(true)
   } else {
-    var anon_4: Ref
-    anon_4 := get(arr, mid)
-    if (intFromRef(anon_4) < intFromRef(target)) {
+    var anon_16: Ref
+    var anon_2: Ref
+    inhale isSubtype(typeOf(anon_2), intType())
+    anon_16 := anon_2
+    if (intFromRef(anon_16) < intFromRef(target)) {
       v_ret_0 := unsafe_binary_search_fixed(arr, target, plusInts(mid, intToRef(1)),
         right)
     } else {

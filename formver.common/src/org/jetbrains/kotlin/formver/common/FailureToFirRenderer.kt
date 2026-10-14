@@ -233,6 +233,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is KotlinCondition.Timeout ->
                 "Verification of '${condition.declaration}' did not finish within ${condition.seconds} seconds, so it is not verified."
             KotlinCondition.UntrackedWrite -> "Write is not tracked because the local it goes through is shared."
+            is KotlinCondition.UncheckedLibraryCall ->
+                "Call to '${condition.member}' is not checked against its specification because its receiver is not unique. It may throw, and its result is unknown."
             KotlinCondition.Unclassified -> {
                 val evidence = requireNotNull(failure.backend)
                 "Could not establish a generated Kotlin obligation [${evidence.errorId}/${evidence.reasonId}]: ${evidence.detail}"

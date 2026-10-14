@@ -57,6 +57,8 @@ for the same diagnostic.
 
 Warnings about unsupported conversion or skipped verification indicate incomplete coverage. `UNTRACKED_WRITE`
 is a warning because the shared-local write is excluded from the translated state; it is not a proof of that write.
+`UNCHECKED_LIBRARY_CALL` marks a call that is the opaque library call because it does not own the receiver its
+external specification owns (see [External specifications](#external-specifications)).
 Internal failures, unavailable verifiers and invalid generated programs carry machine-readable reason codes.
 
 The authoritative diagnostic names, severities and source-positioning policies are in
@@ -236,8 +238,10 @@ model declarations are compilation errors.
 A member whose model owns its dispatch receiver (`@Unique`, or `@get:Unique` for a property) accepts any receiver,
 and so does an extension whose model's extension receiver is `@Unique`. A
 call whose receiver is unique just before it gets the model's contract, observers and laws. A call on any other
-receiver is the opaque library call: it may throw, and its result is known only through its type. A member declared in
-source that owns its receiver accepts only a unique one.
+receiver is the opaque library call: it may throw, and its result is known only through its type. Such a call is
+reported as `UNCHECKED_LIBRARY_CALL`, and a specification cannot contain one. A parameter declared
+`@Unique @Borrowed` gives the function's calls the model's contract. A member declared in source that owns its receiver
+accepts only a unique one.
 
 Bindings match callable kind, parameter and result types, generic parameters and bounds, extension receivers,
 varargs, property mutability and suspend status. Model-interface types stand for their bound dependency types.

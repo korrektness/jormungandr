@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.diagnostics.KtDiagnostic
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticWithSource
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticWithoutSource
 import org.jetbrains.kotlin.test.frontend.fir.FirOutputArtifact
+import org.jetbrains.kotlin.test.model.TestFile
 import org.jetbrains.kotlin.test.frontend.fir.handlers.FirDiagnosticCollectorService
 import org.jetbrains.kotlin.test.services.TestService
 import org.jetbrains.kotlin.test.services.TestServices
@@ -27,7 +28,8 @@ val updatingTestData: Boolean
 abstract class DiagnosticsCollector(val testServices: TestServices) : TestService {
     abstract val fileExtension: String
 
-    protected open val includeAdditionalFiles: Boolean = false
+    /** Whether the golden file holds diagnostics in [file], a source the harness added to the test. */
+    protected open fun recordsAdditionalFile(file: TestFile): Boolean = false
 
     /**
      * Whether this collector's golden file holds [diagnostic].
@@ -69,7 +71,9 @@ abstract class DiagnosticsCollector(val testServices: TestServices) : TestServic
         for (part in info.partsForDependsOnModules) {
             val currentModule = part.module
             for (file in currentModule.files) {
-                val firFile = (if (includeAdditionalFiles) info.allFirFiles[file] else info.mainFirFiles[file]) ?: continue
+                val firFile = info.mainFirFiles[file]
+                    ?: info.allFirFiles[file]?.takeIf { recordsAdditionalFile(file) }
+                    ?: continue
                 diagnostics.addAll(frontendDiagnosticsPerFile[firFile].map { it.diagnostic }.filter(::records))
             }
         }

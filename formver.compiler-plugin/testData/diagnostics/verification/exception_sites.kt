@@ -86,8 +86,8 @@ fun <!VIPER_TEXT!>byteZeroCatch<!>(a: Byte, b: Byte): Int {
 fun <!VIPER_TEXT!>externalCatch<!>(s: String): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
-    try { x = 1; s.substring(99); x = 2 } catch (e: Exception) { }
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
+    try { x = 1; <!VIPER_VERIFICATION_ERROR!>s.substring(99)<!>; x = 2 } catch (e: Exception) { }
+    return x
 }
 fun <!VIPER_TEXT!>abort<!>(): Nothing { throw IllegalStateException() }
 fun <!VIPER_TEXT!>abortCatch<!>(): Int {

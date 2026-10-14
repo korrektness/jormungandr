@@ -79,6 +79,12 @@ class ExternalSpecSources(files: Collection<File>, bundled: Collection<File> = e
             return resources.map { (name, bytes) -> writeChecked(dir.resolve(name), bytes) }
         }
 
+        /** The spec sources listed in the [BUNDLED_INDEX_RESOURCE] of [directory], a class-path directory, in place. */
+        fun bundledIn(directory: File): List<File> {
+            require(directory.isDirectory) { "$directory is not a directory." }
+            return readBundled(directory).map { (name, _) -> directory.resolve(name) }
+        }
+
         private fun readBundled(location: File): List<Pair<String, ByteArray>> {
             if (location.isDirectory) {
                 return readIndexed(location) { name -> location.resolve(name).takeIf { it.isFile }?.readBytes() }
