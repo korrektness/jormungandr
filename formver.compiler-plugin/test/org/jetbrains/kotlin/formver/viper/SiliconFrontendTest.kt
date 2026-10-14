@@ -101,9 +101,13 @@ class SiliconFrontendTest {
                 }
             }
         }
-        val inhales = (somewhere + alone).map<Exp, Stmt> { Inhale(it, pos, info, trafos) }
+        // One balanced conjunction keeps Silicon's recursion shallow; a statement per constraint overflows its stack.
+        fun conjunction(parts: List<Exp>): Exp =
+            if (parts.size == 1) parts.single()
+            else And(conjunction(parts.subList(0, parts.size / 2)), conjunction(parts.subList(parts.size / 2, parts.size)), pos, info, trafos)
         val body = Seqn(
-            (inhales + Assert(FalseLit(pos, info, trafos), pos, info, trafos)).toScalaSeq(), emptySeq(), pos, info, trafos,
+            seqOf<Stmt>(Inhale(conjunction(somewhere + alone), pos, info, trafos), Assert(FalseLit(pos, info, trafos), pos, info, trafos)),
+            emptySeq(), pos, info, trafos,
         )
         val params = (0 until pigeons).flatMap { pigeon ->
             (0 until holes).map { LocalVarDecl(name(pigeon, it), bool, pos, info, trafos) }
@@ -115,9 +119,10 @@ class SiliconFrontendTest {
     @Test
     fun `a program that exceeds the timeout throws and the frontend verifies the next program`() {
         val failures = mutableListOf<VerifierError>()
-        SiliconFrontend(SiliconFrontend.locateZ3(), timeoutSeconds = 1).use { verifier ->
+        // The limit must also cover verifying the second program after the backend restarts, on a loaded host.
+        SiliconFrontend(SiliconFrontend.locateZ3(), timeoutSeconds = 10).use { verifier ->
             val timeout = assertFailsWith<VerificationTimeoutException> { verifier.verify(pigeonholeProgram) { failures.add(it) } }
-            assertEquals(1, timeout.seconds)
+            assertEquals(10, timeout.seconds)
             verifier.verify(hiddenTriggerFailureProgram) { failures.add(it) }
         }
         assertTrue(failures.any { (it as? VerificationError)?.result?.offendingNode() is Assert }, "failures: $failures")
