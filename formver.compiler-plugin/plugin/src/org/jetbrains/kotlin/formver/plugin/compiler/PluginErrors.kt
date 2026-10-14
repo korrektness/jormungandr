@@ -47,7 +47,8 @@ object VerificationErrors : KtDiagnosticsContainer() {
     val OVERRIDE_NOT_REFINING get() = FailureKind.OVERRIDE_NOT_REFINING.factory
 
     val INVALID_VIPER_PROGRAM get() = FailureKind.INVALID_VIPER_PROGRAM
+    val VERIFICATION_TIMEOUT get() = FailureKind.VERIFICATION_TIMEOUT
     override fun getRendererFactory() = FormalVerificationPluginErrorMessages
     fun tags() = FailureKind.entries.filter { it.category == org.jetbrains.kotlin.formver.common.FailureCategory.PROOF }
-        .map { it.factory.name } + INVALID_VIPER_PROGRAM.name
+        .map { it.factory.name } + INVALID_VIPER_PROGRAM.name + VERIFICATION_TIMEOUT.name
 }

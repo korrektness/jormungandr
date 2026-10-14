@@ -51,6 +51,10 @@ class FormVerGradleSubplugin
                 options += SubpluginOption(FormalVerificationPluginNames.VERIFICATION_CACHE_DIRECTORY_OPTION_NAME, project.file(it).absolutePath)
             }
 
+            formVerExtension.myVerificationTimeout?.let {
+                options += SubpluginOption(FormalVerificationPluginNames.VERIFICATION_TIMEOUT_OPTION_NAME, it.toString())
+            }
+
             formVerExtension.myLogLevel?.let {
                 options += SubpluginOption(FormalVerificationPluginNames.LOG_LEVEL_OPTION_NAME, it)
             }

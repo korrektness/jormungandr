@@ -81,4 +81,45 @@ class SiliconFrontendTest {
         }
         assertTrue(failures.any { (it as? VerificationError)?.result?.offendingNode() is Assert }, "failures: $failures")
     }
+
+    /**
+     * `method m(p_i_h: Bool, ...)` that inhales that each of 15 pigeons sits in one of 14 holes and that no hole holds two
+     * pigeons, then asserts `false`. Refuting the pigeonhole principle takes Z3 exponential time in one query.
+     */
+    private val pigeonholeProgram: Program = run {
+        val pigeons = 15
+        val holes = pigeons - 1
+        fun name(pigeon: Int, hole: Int) = "p_${pigeon}_$hole"
+        fun sits(pigeon: Int, hole: Int): Exp = LocalVar(name(pigeon, hole), bool, pos, info, trafos)
+        val somewhere = (0 until pigeons).map { pigeon ->
+            (0 until holes).map { sits(pigeon, it) }.reduce { left, right -> Or(left, right, pos, info, trafos) }
+        }
+        val alone = (0 until holes).flatMap { hole ->
+            (0 until pigeons).flatMap { first ->
+                (first + 1 until pigeons).map { second ->
+                    Not(And(sits(first, hole), sits(second, hole), pos, info, trafos), pos, info, trafos)
+                }
+            }
+        }
+        val inhales = (somewhere + alone).map<Exp, Stmt> { Inhale(it, pos, info, trafos) }
+        val body = Seqn(
+            (inhales + Assert(FalseLit(pos, info, trafos), pos, info, trafos)).toScalaSeq(), emptySeq(), pos, info, trafos,
+        )
+        val params = (0 until pigeons).flatMap { pigeon ->
+            (0 until holes).map { LocalVarDecl(name(pigeon, it), bool, pos, info, trafos) }
+        }
+        val method = Method("m", params.toScalaSeq(), emptySeq(), emptySeq(), emptySeq(), body.toScalaOption(), pos, info, trafos)
+        Program(emptySeq(), emptySeq(), emptySeq(), emptySeq(), seqOf(method), emptySeq(), pos, info, trafos)
+    }
+
+    @Test
+    fun `a program that exceeds the timeout throws and the frontend verifies the next program`() {
+        val failures = mutableListOf<VerifierError>()
+        SiliconFrontend(SiliconFrontend.locateZ3(), timeoutSeconds = 1).use { verifier ->
+            val timeout = assertFailsWith<VerificationTimeoutException> { verifier.verify(pigeonholeProgram) { failures.add(it) } }
+            assertEquals(1, timeout.seconds)
+            verifier.verify(hiddenTriggerFailureProgram) { failures.add(it) }
+        }
+        assertTrue(failures.any { (it as? VerificationError)?.result?.offendingNode() is Assert }, "failures: $failures")
+    }
 }

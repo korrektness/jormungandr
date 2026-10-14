@@ -109,6 +109,15 @@ The plugin accepts a number of command line options which can be passed via
   Consistency checks run on hits. Failures are verified again to produce current-source diagnostics;
   malformed entries and cache I/O errors surface as errors. Treat the directory as trusted build state.
   Custom Silicon plugins and obligation filters require bypassing the cache.
+- Option `verification_timeout`: the time in seconds that Silicon may spend verifying each declaration, counted
+  separately for each specified lambda (default: `300`; `0` disables the limit). In Gradle, use
+  `formver { verificationTimeout(60) }`. A declaration that runs out of time gets a `VERIFICATION_TIMEOUT`
+  error that names it, and verification goes on with the next declaration. The limit covers a single SMT
+  query: Silicon stops waiting, and the plugin then stops Silicon, which kills its Z3 processes.
+
+The plugin logs the start and the duration of each declaration's verification at the compiler's INFO
+level, which Gradle shows with `--info`. The compiler holds these messages back until it reports its
+diagnostics, so they show which declarations were slow but not which one is running.
 
 ### Z3
 

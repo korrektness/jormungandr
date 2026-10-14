@@ -41,6 +41,7 @@ import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.common.reportTranslation
 import org.jetbrains.kotlin.formver.common.reportTool
 import org.jetbrains.kotlin.formver.common.reportInternalFailure
+import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.print
 import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
 import org.jetbrains.kotlin.formver.core.isLaw
@@ -72,6 +73,7 @@ class ViperPoweredDeclarationChecker(
     private val reportedErrors: ReportedVerifierErrors,
 ) : FirFunctionChecker(MppCheckerKind.Common) {
     private val processedLambdas = mutableSetOf<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol>()
+    private val progress = VerificationProgress(config.messageCollector)
 
     context(context: CheckerContext)
     private fun shouldSkip(): Boolean =
@@ -184,10 +186,14 @@ class ViperPoweredDeclarationChecker(
                 val source = err.reportingPosition(declaration.source).unwrapOr { declaration.source }
                 if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
             }
-            SiliconFrontend(
-                z3Exe, cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
-                pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
-            ).use { it.verify(viperProgram, onFailure) }
+            val name = declaration.verificationLabel + if (index == 0) "" else ".lambda${index - 1}"
+            progress.run(name, declaration.source) {
+                SiliconFrontend(
+                    z3Exe, timeoutSeconds = config.verificationTimeoutSeconds,
+                    cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
+                    pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
+                ).use { it.verify(viperProgram, onFailure) }
+            }?.let { reporter.reportFailure(it) }
         }
     }
 

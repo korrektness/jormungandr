@@ -16,6 +16,10 @@ import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.core.lambdaPrograms
 import org.jetbrains.kotlin.formver.plugin.compiler.VerificationErrors
+import org.jetbrains.kotlin.formver.plugin.compiler.VerificationProgress
+import org.jetbrains.kotlin.formver.plugin.compiler.verificationLabel
+import org.jetbrains.kotlin.formver.common.PluginConfiguration.Companion.DEFAULT_VERIFICATION_TIMEOUT_SECONDS
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.*
 import org.jetbrains.kotlin.formver.common.FailureToFirRenderer
 import org.jetbrains.kotlin.formver.common.Failure
@@ -118,17 +122,22 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                     if (vacuityReport == null) group else group.map(VacuityProbe::probe)
                 }
                 val cacheDirectory = System.getProperty("formver.verificationCacheDirectory")?.let { Path.of(it) }
+                val progress = VerificationProgress(MessageCollector.NONE)
                 val attempts = OrderedVerificationExecutor.shared.mapWithResource(
-                    programs, { TestVerifier(z3, cacheDirectory, FormVerDirectives.COUNTEREXAMPLES in module.directives) },
-                ) { verifier, group ->
+                    toVerify.zip(programs),
+                    { TestVerifier(z3, cacheDirectory, FormVerDirectives.COUNTEREXAMPLES in module.directives) },
+                ) { verifier, (owner, group) ->
                     val errors = mutableListOf<VerifierError>()
                     var invalid: InvalidViperProgramException? = null
+                    var timeout: Failure? = null
                     try {
-                        group.forEach { verifier.verify(it) { error -> errors.add(error) } }
+                        timeout = progress.run(owner.second.verificationLabel, owner.second.source) {
+                            group.forEach { verifier.verify(it) { error -> errors.add(error) } }
+                        }
                     } catch (error: InvalidViperProgramException) {
                         invalid = error
                     }
-                    VerificationAttempt(errors, invalid)
+                    VerificationAttempt(errors, invalid, timeout)
                 }
                 toVerify.zip(attempts).zip(programs).forEach { (verified, group) ->
                     val (owner, probedAttempt) = verified
@@ -153,8 +162,12 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
 
     /** Opt-in fixtures also exercise frontend reuse across Silicon's global configuration changes. */
     private class TestVerifier(z3: String, cache: Path?, private val counterexamples: Boolean) : Closeable {
-        private val verifier = SiliconFrontend(z3, cacheDirectory = cache, counterexamples = counterexamples)
-        private val ordinary = if (counterexamples) SiliconFrontend(z3, counterexamples = false) else null
+        private val verifier = SiliconFrontend(
+            z3, timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS, cacheDirectory = cache, counterexamples = counterexamples,
+        )
+        private val ordinary = if (counterexamples) {
+            SiliconFrontend(z3, timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS, counterexamples = false)
+        } else null
 
         fun verify(program: viper.silver.ast.Program, onFailure: (VerifierError) -> Unit) {
             fun hasModel(error: VerifierError): Boolean = error is VerificationError &&
@@ -176,7 +189,9 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         }
     }
 
-    private data class VerificationAttempt(val errors: List<VerifierError>, val invalid: InvalidViperProgramException?)
+    private data class VerificationAttempt(
+        val errors: List<VerifierError>, val invalid: InvalidViperProgramException?, val timeout: Failure?,
+    )
 
     /** Formats worker results on the compiler thread. */
     @OptIn(InternalDiagnosticFactoryMethod::class)
@@ -196,6 +211,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                 )
             }
         }
+        attempt.timeout?.let { results.add(FailureToFirRenderer.diagnostic(it, module.languageVersionSettings)!!) }
         attempt.invalid?.let { e ->
             results.add(
                 FailureToFirRenderer.diagnostic(

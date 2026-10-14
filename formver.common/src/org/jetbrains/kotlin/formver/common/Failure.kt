@@ -69,6 +69,7 @@ enum class FailureKind(
     VERIFICATION_SKIPPED(Severity.WARNING, declarationName = true, category = FailureCategory.TRANSLATION),
     INTERNAL_ERROR(category = FailureCategory.TOOL),
     VERIFIER_UNAVAILABLE(category = FailureCategory.TOOL),
+    VERIFICATION_TIMEOUT(declarationName = true, category = FailureCategory.TOOL),
     INVALID_VIPER_PROGRAM(category = FailureCategory.TOOL);
 
     val factory: KtDiagnosticFactory1<Failure> by lazy {
@@ -122,6 +123,8 @@ sealed interface KotlinCondition {
     /** Evidence retains details independently of stable machine-readable reasons. */
     data class Translation(val reason: String, val detail: String) : KotlinCondition
     data class Tool(val reason: String, val detail: String) : KotlinCondition
+    /** The verifier did not finish the program of [declaration] within [seconds]. */
+    data class Timeout(val declaration: String, val seconds: Int) : KotlinCondition
     data object UntrackedWrite : KotlinCondition
     /** A recursive call that may not decrease the caller's termination measure. */
     data object Termination : KotlinCondition

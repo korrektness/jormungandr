@@ -57,6 +57,9 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             verificationCacheDirectory = configuration.get(FormalVerificationConfigurationKeys.VERIFICATION_CACHE_DIRECTORY),
             externalSpecs = externalSpecs,
             counterexamples = configuration.get(FormalVerificationConfigurationKeys.COUNTEREXAMPLES, false),
+            verificationTimeoutSeconds = configuration.get(
+                FormalVerificationConfigurationKeys.VERIFICATION_TIMEOUT, PluginConfiguration.DEFAULT_VERIFICATION_TIMEOUT_SECONDS,
+            ),
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
         if (!externalSpecs.isEmpty()) {

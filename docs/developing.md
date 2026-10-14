@@ -45,6 +45,13 @@ function's verification outcome is refused unless
 `-Pformver.recordOutcomes=true` is passed as well; docs/agents-dev.md, under
 Regenerating, says what counts as one.
 
+### Verification timeout
+
+The test facade verifies each declaration with the plugin's default verification
+timeout, which README.md describes under `verification_timeout`. A test that runs
+out of time reports `VERIFICATION_TIMEOUT`, which counts as a failed outcome when
+goldens are regenerated.
+
 ### Negative tests
 
 A test whose functions verify also holds functions that must fail, in the same

@@ -39,6 +39,7 @@ class ViperPoweredClassChecker(
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
     private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors)
     private val programs = ClassPrograms(session, config)
+    private val progress = VerificationProgress(config.messageCollector)
 
     context(context: CheckerContext)
     private fun shouldSkip(declaration: FirRegularClass): Boolean =
@@ -100,12 +101,15 @@ class ViperPoweredClassChecker(
         val z3 = verifierLocator.z3Exe { reason ->
             reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
         } ?: return
-        SiliconFrontend(
-            z3, cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
-            pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
-        ).use { verifier ->
-            verifier.verify(program) { error -> reportFailure(declaration, error) }
-        }
+        progress.run(declaration.verificationLabel, declaration.source) {
+            SiliconFrontend(
+                z3, timeoutSeconds = config.verificationTimeoutSeconds,
+                cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
+                pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
+            ).use { verifier ->
+                verifier.verify(program) { error -> reportFailure(declaration, error) }
+            }
+        }?.let { reporter.reportFailure(it) }
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)

@@ -15,14 +15,20 @@ class VerifierUnavailableException(message: String) : Exception(message)
 class InvalidViperProgramException(errors: List<String>) :
     Exception("Viper rejected the generated program: ${errors.joinToString("; ")}")
 
+/** Silicon did not finish verifying a program within [seconds]. */
+class VerificationTimeoutException(val seconds: Int) :
+    Exception("Verification did not finish within $seconds seconds")
+
 /**
  * Passes Viper programs for verification to the Silicon backend via [viper.silicon.SiliconFrontendAPI], using the Z3
  * binary at [z3Exe], as found by [SiliconFrontend.locateZ3].
  * Use [SiliconFrontend.verify] to consistency-check and verify a given program.
+ * Each [verify] call is bounded by [timeoutSeconds]; zero leaves it unbounded.
  */
 class SiliconFrontend(
     z3Exe: String,
     commandLineArgs: List<String> = emptyList(),
+    private val timeoutSeconds: Int = 0,
     cacheDirectory: Path? = null,
     pluginOptions: List<String> = emptyList(),
     counterexamples: Boolean = false,
@@ -44,6 +50,10 @@ class SiliconFrontend(
         // the statements after a refute may go unchecked without an error.
         add("--numberOfErrorsToReport")
         add("0")
+        if (timeoutSeconds > 0) {
+            add("--timeout")
+            add(timeoutSeconds.toString())
+        }
     }
     private val cache = cacheDirectory?.let { VerificationResultCache(it) }
     private val cacheOptions = args + pluginOptions + listOf(
@@ -141,7 +151,8 @@ class SiliconFrontend(
 
     /**
      * Consistency-checks and verifies [viperProgram], calling [onFailure] for each verification error found.
-     * Throws [InvalidViperProgramException] when Viper reports anything other than verification errors.
+     * Throws [VerificationTimeoutException] when Silicon runs out of time, and [InvalidViperProgramException] when
+     * Viper reports anything else that is not a verification error.
      */
     fun verify(viperProgram: viper.silver.ast.Program, onFailure: (VerifierError) -> Unit) {
         // The AST API starts in the state after the consistency check, so its ConsistencyCheck phase does nothing.
@@ -154,8 +165,16 @@ class SiliconFrontend(
             val result = configurationGate.withConfiguration(args) {
                 val api = backend()
                 restoreConfiguration(api)
-                api.verify(viperProgram)
+                api.verify(viperProgram).also { result ->
+                    // Silicon returns on a timeout while its verifier thread may still wait on Z3. Stopping the backend
+                    // kills Z3, which ends that thread, and the next program starts a fresh backend.
+                    if (result.timedOut()) {
+                        siliconApi = null
+                        api.stop()
+                    }
+                }
             }
+            if (result.timedOut()) throw VerificationTimeoutException(timeoutSeconds)
             when (result) {
                 is viper.silver.verifier.Failure -> {
                     val errors = CollectionConverters.asJava(result.errors())
@@ -171,6 +190,10 @@ class SiliconFrontend(
         if (cache == null) verify()
         else cache.verify(viperProgram.toString(), cacheVersion!!, cacheOptions, verify)
     }
+
+    private fun viper.silver.verifier.VerificationResult.timedOut(): Boolean =
+        this is viper.silver.verifier.Failure &&
+            CollectionConverters.asJava(errors()).any { it is viper.silver.verifier.TimeoutOccurred }
 
     private fun restoreConfiguration(api: viper.silicon.SiliconFrontendAPI) {
         viper.silicon.verifier.`Verifier$`.`MODULE$`.`config_$eq`((api.verifier() as viper.silicon.Silicon).config())

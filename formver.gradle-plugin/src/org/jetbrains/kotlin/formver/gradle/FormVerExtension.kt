@@ -20,6 +20,14 @@ open class FormVerExtension {
         myVerificationCacheDirectory = directory
     }
 
+    internal var myVerificationTimeout: Int? = null
+
+    /** Limits the verification of each declaration to [seconds]; 0 disables the limit. */
+    open fun verificationTimeout(seconds: Int) {
+        require(seconds >= 0)
+        myVerificationTimeout = seconds
+    }
+
     internal var myLogLevel: String? = null
     internal var myErrorStyle: String? = null
     internal var myConversionTargetsSelection: String? = null

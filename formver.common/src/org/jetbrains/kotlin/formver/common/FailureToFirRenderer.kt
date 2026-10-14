@@ -230,6 +230,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is KotlinCondition.Skipped -> skippedMessage(condition)
             is KotlinCondition.Translation -> translationMessage(failure.kind, condition)
             is KotlinCondition.Tool -> toolMessage(failure.kind, condition)
+            is KotlinCondition.Timeout ->
+                "Verification of '${condition.declaration}' did not finish within ${condition.seconds} seconds, so it is not verified."
             KotlinCondition.UntrackedWrite -> "Write is not tracked because the local it goes through is shared."
             KotlinCondition.Unclassified -> {
                 val evidence = requireNotNull(failure.backend)
