@@ -80,8 +80,12 @@ The registry groups user-visible problems as follows:
 
 Primary locations identify the failing use or implementation. A postcondition of an impure function that does not
 hold is reported at the `return` it fails on, or at the function body when the body ends without one. Related
-locations retain available clause declarations,
-ownership-loss origins and counterexample binding declarations.
+locations retain available clause declarations, ownership-loss origins and counterexample binding declarations. When
+the failing clause of a contract lies apart from the primary location, the message quotes it with its line and column.
+A loop invariant failure says whether the invariant was not established on entry, not preserved by an iteration, or
+not established where the loop exits. A class law failure names the law and the owned path it was checked for.
+Integer operations are spelled as Kotlin operators, and an operation whose result may fall outside its range is
+reported once.
 
 ### Counterexamples
 
@@ -422,8 +426,8 @@ those members are held to the same rule. It may not pass `this` to another funct
 
 Constructor proofs allocate fresh field permissions, execute delegated construction, and execute property
 initializers and init blocks in declaration order. Secondary constructors execute phase-two bodies after delegation.
-The returned representation and its opened-predicate description include the invariants. A violating proof is a
-verification error on the class. Delegated properties in law-bearing classes are rejected with `INVALID_LAW`.
+The returned representation and its opened-predicate description include the invariants. A violating proof reports
+`VERIFICATION_CONDITION_NOT_ESTABLISHED` naming the law. Delegated properties in law-bearing classes are rejected with `INVALID_LAW`.
 
 A construction-discipline violation is reported with its reason: `INVALID_LAW` for classes with own or inherited
 class laws, and `VERIFICATION_SKIPPED` for other classes. Callers of such a constructor still assume the class laws.
@@ -431,7 +435,7 @@ class laws, and `VERIFICATION_SKIPPED` for other classes. Callers of such a cons
 Unfolding an owned class receiver exposes its invariant to the member body. Every refold proves the invariant,
 including refolds for calls and control-flow joins. On member exit, a retained unique receiver with class laws is
 refolded even when the receiver is consumed rather than borrowed. Ownership transfers prove the invariant before
-moving the representation. An invariant violation is a verification error.
+moving the representation. An invariant violation reports `VERIFICATION_CONDITION_NOT_ESTABLISHED` naming the law.
 
 For an owned receiver, a concrete observer's function definition reads its pure body under an unfolding of the
 class's unique predicate. The interface-law harness connects the invariant's expanded field expression to the

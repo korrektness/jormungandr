@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.types.renderReadable
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
@@ -60,7 +61,7 @@ internal fun TypeBuilder.embedTypeWithBuilder(type: ConeKotlinType): PretypeBuil
     type is ConeClassLikeType && type.lookupTag.classId == multisetClassId -> {
         val element = type.typeArguments.single().type
         if (element !is ConeTypeParameterType && element?.isInt != true) {
-            throw UnsupportedFeatureException(null, "type `$type`, a `Multiset` whose element type is not `Int`")
+            throw UnsupportedFeatureException(null, "type `${type.renderReadable()}`, a `Multiset` whose element type is not `Int`")
         }
         converter.typeResolver.markMultisetUsed()
         multiset()
@@ -95,4 +96,4 @@ internal fun FunctionPretypeBuilder.embedFunctionPretypeWithBuilder(symbol: FirF
 }
 
 private fun unimplementedTypeEmbedding(type: ConeKotlinType): Nothing =
-    throw UnsupportedFeatureException(null, "type `$type`")
+    throw UnsupportedFeatureException(null, "type `${type.renderReadable()}`")

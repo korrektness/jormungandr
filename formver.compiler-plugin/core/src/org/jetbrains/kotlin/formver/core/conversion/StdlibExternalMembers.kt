@@ -24,7 +24,7 @@ internal fun rejectUnsupportedStdlibMember(symbol: FirCallableSymbol<*>, session
     if (symbol is FirFunctionSymbol<*> && hasStdlibHofTemplate(symbol)) return
     throw UnsupportedFeatureException(
         symbol.source,
-        "standard-library member ${symbol.callableId} without a supported embedding or external specification",
+        "standard-library member `${symbol.callableId?.asSingleFqName() ?: symbol.name}` without a supported embedding or external specification",
     )
 }
 

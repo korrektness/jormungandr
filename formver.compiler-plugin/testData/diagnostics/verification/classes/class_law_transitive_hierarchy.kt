@@ -19,21 +19,21 @@ fun <!VIPER_TEXT!>validTransitiveConstruction<!>() {
     leaf.increment()
     verify(leaf.n >= 0)
 }
-<!VIPER_VERIFICATION_ERROR!>fun <!VIPER_TEXT!>invalidTransitiveMutation<!>(leaf: @Unique @Borrowed TransitiveLeaf) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>invalidTransitiveMutation<!>(leaf: @Unique @Borrowed TransitiveLeaf) {
     leaf.n = -1
 }<!>
 
-<!VIPER_VERIFICATION_ERROR!>open <!VIPER_TEXT!>class InvalidConstructionRoot<!>(var n: Int) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>open <!VIPER_TEXT!>class InvalidConstructionRoot<!>(var n: Int) {
     init { n = -1 }
     @Law @Pure @Unique fun nonnegative(): Boolean = n >= 0
 }<!>
-<!VIPER_VERIFICATION_ERROR!>open <!VIPER_TEXT!>class InvalidRootMiddle<!>(n: Int) : InvalidConstructionRoot(n)<!>
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class InvalidRootLeaf<!>(n: Int) : InvalidRootMiddle(n)<!>
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>open <!VIPER_TEXT!>class InvalidRootMiddle<!>(n: Int) : InvalidConstructionRoot(n)<!>
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class InvalidRootLeaf<!>(n: Int) : InvalidRootMiddle(n)<!>
 
-<!VIPER_VERIFICATION_ERROR!>open <!VIPER_TEXT!>class InitializingMiddle<!>(n: Int) : TransitiveRoot(n) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>open <!VIPER_TEXT!>class InitializingMiddle<!>(n: Int) : TransitiveRoot(n) {
     init { this.n = -1 }
 }<!>
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class InitializingLeaf<!>(n: Int) : InitializingMiddle(n)<!>
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class InitializingLeaf<!>(n: Int) : InitializingMiddle(n)<!>
 
 open <!VIPER_TEXT!>class SecondaryMiddle<!>(n: Int) : TransitiveRoot(n) {
     constructor() : this(-1)
@@ -51,8 +51,8 @@ open <!VIPER_TEXT!>class InheritedBodyRoot<!>(var n: Int) {
     @Law @Pure @Unique fun nonnegative(): Boolean = n >= 0
     @NeverVerify @Unique @Borrowed fun <!VIPER_TEXT!>breakState<!>() { n = -1 }
 }
-<!VIPER_VERIFICATION_ERROR!>open <!VIPER_TEXT!>class InheritedBodyMiddle<!>(n: Int) : InheritedBodyRoot(n)<!>
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class InheritedBodyLeaf<!>(n: Int) : InheritedBodyMiddle(n)<!>
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>open <!VIPER_TEXT!>class InheritedBodyMiddle<!>(n: Int) : InheritedBodyRoot(n)<!>
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class InheritedBodyLeaf<!>(n: Int) : InheritedBodyMiddle(n)<!>
 
 open <!VIPER_TEXT!>class DefaultArgumentRoot<!>(x: Int, y: Int = x + 1, offset: Int = y + 2) {
     val z: Int = y

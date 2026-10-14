@@ -70,7 +70,13 @@ val FirFunctionSymbol<*>.effects: List<FirEffectDeclaration>
  * directly prints an identity hash that differs between runs.
  */
 val FirElement.description: String
-    get() = "${this::class.simpleName} `${source.text}`"
+    get() {
+        val kind = this::class.simpleName.orEmpty().removePrefix("Fir").removeSuffix("Impl")
+            .removePrefix("Simple").removePrefix("Regular")
+            .replace(Regex("(?<=[a-z])(?=[A-Z])"), " ").lowercase()
+        val lines = source.text?.lines().orEmpty()
+        return "$kind `${lines.firstOrNull().orEmpty()}${if (lines.size > 1) " ..." else ""}`"
+    }
 
 val KtSourceElement?.asPosition: Position
     get() = when (this) {

@@ -20,7 +20,7 @@ open <!VIPER_TEXT!>class LawBase<!>(var n: Int) : Reading {
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = m
     @Law @Pure @Unique fun ownNonnegative(): Boolean = read() >= 0
     @Unique @Borrowed fun <!VIPER_TEXT!>incrementOther<!>() { if (m < 2147483647) m++ }
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed fun <!VIPER_TEXT!>breakBase<!>() { n = -1 }<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed fun <!VIPER_TEXT!>breakBase<!>() { n = -1 }<!>
     @Unique @Borrowed fun <!VIPER_TEXT!>inspect<!>() {
         verify(n >= 0)
         verify(m >= 0)
@@ -28,7 +28,7 @@ open <!VIPER_TEXT!>class LawBase<!>(var n: Int) : Reading {
     }
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class NegativeDispatch<!>(n: Int) : LawBase(n) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class NegativeDispatch<!>(n: Int) : LawBase(n) {
     @Pure @Unique override fun <!VIPER_TEXT!>read<!>(): Int = -1
 }<!>
 
@@ -40,7 +40,7 @@ open <!VIPER_TEXT!>class PlainBase<!>(@LawBound var n: Int = 3) : Reading {
     init { require(n >= 0) }
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
     @Unique @Borrowed fun <!VIPER_TEXT!>increment<!>() { if (n < 2147483647) n++ }
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed fun <!VIPER_TEXT!>breakInvariant<!>() { n = -1 }<!>
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed fun <!VIPER_TEXT!>breakInvariant<!>() { n = -1 }<!>
 }
 
 <!VIPER_TEXT!>class DefaultInheritedLaw<!> : PlainBase() {

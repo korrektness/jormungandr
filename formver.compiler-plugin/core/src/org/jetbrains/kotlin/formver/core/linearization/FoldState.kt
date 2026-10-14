@@ -314,9 +314,10 @@ private fun LinearizationContext.foldSink() =
 
         override fun fold(path: OwnedPath, cls: ClassTypeEmbedding) {
             val place = placeOf(path)
-            if (typeResolver.hasClassLaws(cls)) {
-                // Report an invariant violation separately from a missing ownership resource.
-                addGuarded(place) { Stmt.Assert(typeResolver.classLawAssertion(cls, place.exp), source.asPosition) }
+            // Report an invariant violation separately from a missing ownership resource.
+            for ((law, assertion) in typeResolver.classLawAssertions(cls, place.exp)) {
+                val proof = SourceRole.Proof(KotlinCondition.ProofClause.CLASS_LAW, law, subject = path.render()).asInfo
+                addGuarded(place) { Stmt.Assert(assertion, source.asPosition, proof) }
             }
             val info = SourceRole.Ownership(path.render(), SourceRole.Ownership.Site.Fold).asInfo
             addGuarded(place) { Stmt.Fold(hierarchyPredicateAccess(place.exp, cls, source, info), source.asPosition, info) }

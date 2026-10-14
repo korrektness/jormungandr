@@ -34,7 +34,7 @@ method con(flag: Ref) returns (v_ret_0: Ref)
   }
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+      boolFromRef(gtInts(g_value(this), intToRef(0))))
   fold acc(BranchFrontier_unique(v_ret_0), write)
   anon_2 := touch(v_ret_0)
   anon_3 := require(gtInts(g_value(v_ret_0), intToRef(0)))
@@ -110,7 +110,6 @@ method con() returns (v_ret_0: Ref)
   v_ret_0.value := intToRef(1)
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -151,7 +150,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   anon_1 := require(gtInts(g_value(v_ret_0), intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+      boolFromRef(gtInts(g_value(this), intToRef(0))))
   fold acc(PositiveParameter_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(PositiveParameter_unique(v_ret_0), write)
@@ -195,7 +194,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon_0)
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+      boolFromRef(gtInts(g_value(this), intToRef(0))))
   fold acc(LeakBeforeRequire_unique(v_ret_0), write)
   anon_1 := observeConstruction(v_ret_0)
   exhale acc(LeakBeforeRequire_unique(v_ret_0), write)
@@ -271,7 +270,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   }
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+      boolFromRef(gtInts(g_value(this), intToRef(0))))
   fold acc(AbnormalExit_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(AbnormalExit_unique(v_ret_0), write)
@@ -406,7 +405,6 @@ method con() returns (v_ret_0: Ref)
   v_ret_0.value := intToRef(1)
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -448,7 +446,6 @@ method increase(this: Ref) returns (v_ret_0: Ref)
   anon_2 := this.value
   assert (let this ==
       (this) in
-      true &&
       boolFromRef((let anon_1_0 ==
         (this.value) in
         gtInts(anon_1_0, intToRef(0)))))
@@ -460,7 +457,6 @@ method increase(this: Ref) returns (v_ret_0: Ref)
     this.value := plusInts(anon_0, intToRef(1))
     assert (let this ==
         (this) in
-        true &&
         boolFromRef((let anon_1_0 ==
           (this.value) in
           gtInts(anon_1_0, intToRef(0)))))
@@ -505,7 +501,6 @@ method con_c_SecondaryPhaseTwo(start: Ref) returns (v_ret_3: Ref)
   v_ret_3.bf_value := intToRef(1)
   assert (let this ==
       (v_ret_3) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.bf_value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -517,7 +512,6 @@ method con_c_SecondaryPhaseTwo(start: Ref) returns (v_ret_3: Ref)
   label lbl_ret_3
   assert (let this ==
       (v_ret_3) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.bf_value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -542,7 +536,6 @@ method con_c_SecondaryPhaseTwo_args() returns (v_ret_0: Ref)
   v_ret_0.bf_value := intToRef(1)
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.bf_value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -590,7 +583,6 @@ method con_c_SecondaryBroken(broken: Ref) returns (v_ret_3: Ref)
   v_ret_3.value := intToRef(1)
   assert (let this ==
       (v_ret_3) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -600,7 +592,6 @@ method con_c_SecondaryBroken(broken: Ref) returns (v_ret_3: Ref)
     v_ret_3.value := intToRef(-1)
     assert (let this ==
         (v_ret_3) in
-        true &&
         boolFromRef((let anon_0_0 ==
           (this.value) in
           gtInts(anon_0_0, intToRef(0)))))
@@ -628,7 +619,6 @@ method con_c_SecondaryBroken_args() returns (v_ret_0: Ref)
   v_ret_0.value := intToRef(1)
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -669,7 +659,6 @@ method con() returns (v_ret_0: Ref)
   v_ret_0.value := intToRef(1)
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -711,7 +700,6 @@ method increase(this: Ref) returns (v_ret_0: Ref)
   anon_2 := this.value
   assert (let this ==
       (this) in
-      true &&
       boolFromRef((let anon_1_0 ==
         (this.value) in
         gtInts(anon_1_0, intToRef(0)))))
@@ -723,7 +711,6 @@ method increase(this: Ref) returns (v_ret_0: Ref)
     this.value := plusInts(anon_0, intToRef(1))
     assert (let this ==
         (this) in
-        true &&
         boolFromRef((let anon_1_0 ==
           (this.value) in
           gtInts(anon_1_0, intToRef(0)))))
@@ -766,7 +753,6 @@ method EstablishedChild_c_EstablishedParent_f_increase_inherited_body_c_Establis
   anon_5 := this.value
   assert (let this ==
       (this) in
-      true &&
       boolFromRef((let anon_2_0 ==
         (this.value) in
         gtInts(anon_2_0, intToRef(0)))))
@@ -780,7 +766,6 @@ method EstablishedChild_c_EstablishedParent_f_increase_inherited_body_c_Establis
     this.value := plusInts(anon_1, intToRef(1))
     assert (let this ==
         (this) in
-        true &&
         boolFromRef((let anon_2_0 ==
           (this.value) in
           gtInts(anon_2_0, intToRef(0)))))
@@ -827,7 +812,6 @@ method con() returns (v_ret_0: Ref)
   v_ret_0.value := intToRef(1)
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef((let anon_2_0 ==
         (this.value) in
         gtInts(anon_2_0, intToRef(0)))))
@@ -837,7 +821,6 @@ method con() returns (v_ret_0: Ref)
   anon_4 := v_ret_0.value
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef((let anon_2_0 ==
         (this.value) in
         gtInts(anon_2_0, intToRef(0)))))
@@ -849,7 +832,6 @@ method con() returns (v_ret_0: Ref)
     v_ret_0.value := plusInts(anon_0, intToRef(1))
     assert (let this ==
         (v_ret_0) in
-        true &&
         boolFromRef((let anon_2_0 ==
           (this.value) in
           gtInts(anon_2_0, intToRef(0)))))

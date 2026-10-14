@@ -103,10 +103,19 @@ sealed interface KotlinCondition {
     ) : KotlinCondition
     /** A method's postcondition is checked at each `return` ([POSTCONDITION_AT_RETURN]) and at the end of its body. */
     enum class ProofClause {
-        ASSERTION, REFUTATION, LAW, PRECONDITION, POSTCONDITION, POSTCONDITION_AT_RETURN, POSTCONDITION_AT_END,
+        ASSERTION, REFUTATION, LAW, CLASS_LAW, PRECONDITION, POSTCONDITION, POSTCONDITION_AT_RETURN, POSTCONDITION_AT_END,
         LOOP_INVARIANT, EXHAUSTIVE_WHEN,
     }
-    data class Proof(val clause: ProofClause, val declaration: FirBasedSymbol<*>? = null) : KotlinCondition
+    /** The point of a loop at which its invariant is checked. */
+    enum class LoopPhase { ENTRY, PRESERVATION, EXIT }
+    data class Proof(
+        val clause: ProofClause,
+        val declaration: FirBasedSymbol<*>? = null,
+        val subject: String? = null,
+        /** The failing clause expression, when it lies apart from the diagnostic's location. */
+        val clauseSource: KtSourceElement? = null,
+        val loopPhase: LoopPhase? = null,
+    ) : KotlinCondition
     data class IntegerOverflow(val operation: String, val resultType: String, val lower: String, val upper: String) : KotlinCondition
     data class DivisionByZero(val operation: String) : KotlinCondition
     enum class ReturnValue { TRUE, FALSE, NULL, NON_NULL, ANY }

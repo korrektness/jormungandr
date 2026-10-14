@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.formver.plugin.*
     @Law @Pure fun invariant(): Boolean = value >= 0
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BrokenInitialization<!> {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class BrokenInitialization<!> {
     var value = 1
     init { value = -1 }
     @Law @Pure fun invariant(): Boolean = value >= 0
@@ -44,7 +44,7 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
     @Law @Pure fun invariant(): Boolean = value > 0
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BrokenInitializer<!>(start: Int) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class BrokenInitializer<!>(start: Int) {
     val value: Int
     init {
         require(start > -2147483648)
@@ -63,7 +63,7 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
     @Law @Pure @Unique fun invariant(): Boolean = initializedHead(data) > 0
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BrokenOwnedInitialization<!>(var data: @Unique IntArray) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class BrokenOwnedInitialization<!>(var data: @Unique IntArray) {
     init {
         require(data.size > 0)
         data[0] = -1
@@ -100,7 +100,7 @@ fun <!VIPER_TEXT!>positiveInitializer<!>(value: Int): Int {
     @Law @Pure @Unique fun invariant(): Boolean = initializedHead(data) > 0
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class BrokenLocalOwnedInitialization<!> {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class BrokenLocalOwnedInitialization<!> {
     var data: @Unique IntArray = IntArray(1)
     init {
         val replacement: @Unique IntArray = IntArray(1)

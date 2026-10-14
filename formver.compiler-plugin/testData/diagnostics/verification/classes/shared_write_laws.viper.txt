@@ -36,7 +36,6 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   anon_1 := require(gtInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.bf_value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -76,7 +75,6 @@ method preserve(this: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   assert (let this ==
       (this) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.value) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -176,7 +174,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   anon_1 := require(gtInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(this.bf_value, intToRef(0))))
+      boolFromRef(gtInts(this.bf_value, intToRef(0))))
   fold acc(ChildLaw_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(ChildLaw_unique(v_ret_0), write)
@@ -449,10 +447,12 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       (unfolding acc(c_UnprotectedBase_unique(this), write) in
-        true &&
         boolFromRef((let anon_1_0 ==
           (this.bf_value) in
-          gtInts(anon_1_0, intToRef(0)))) &&
+          gtInts(anon_1_0, intToRef(0))))))
+  assert (let this ==
+      (v_ret_0) in
+      (unfolding acc(c_UnprotectedBase_unique(this), write) in
         boolFromRef(gtInts(this.bf_value, intToRef(0)))))
   fold acc(UnprotectedDerived_unique(v_ret_0), write)
   label lbl_ret_0
@@ -563,7 +563,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   anon_1 := require(gtInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(this.bf_value, intToRef(0))))
+      boolFromRef(gtInts(this.bf_value, intToRef(0))))
   fold acc(ImplicitBase_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(ImplicitBase_unique(v_ret_0), write)
@@ -666,7 +666,6 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       (unfolding acc(AnnotatedBase_unique(this), write) in
-        true &&
         boolFromRef((let anon_1_0 ==
           (this.bf_value) in
           gtInts(anon_1_0, intToRef(0))))))
@@ -845,7 +844,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       (unfolding acc(UnprotectedPropertyBase_unique(this), write) in
-        true && boolFromRef(gtInts(this.bf_value, intToRef(0)))))
+        boolFromRef(gtInts(this.bf_value, intToRef(0)))))
   fold acc(UnprotectedPropertyDerived_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(UnprotectedPropertyDerived_unique(v_ret_0), write)
@@ -961,7 +960,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       (unfolding acc(ProtectedPropertyBase_unique(this), write) in
-        true && boolFromRef(gtInts(this.bf_value, intToRef(0)))))
+        boolFromRef(gtInts(this.bf_value, intToRef(0)))))
   fold acc(ProtectedPropertyDerived_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(ProtectedPropertyDerived_unique(v_ret_0), write)
@@ -1107,7 +1106,7 @@ method con(par_stable: Ref) returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       (unfolding acc(StableBase_unique(this), write) in
-        true && boolFromRef(gtInts(g_stable(this), intToRef(0)))))
+        boolFromRef(gtInts(g_stable(this), intToRef(0)))))
   fold acc(StableDerived_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(StableDerived_unique(v_ret_0), write)
@@ -1283,7 +1282,6 @@ method con(par_bound: Ref, par_free: Ref) returns (v_ret_0: Ref)
   anon_1 := require(gtInts(anon_2, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef((let anon_0_0 ==
         (this.bf_bound) in
         gtInts(anon_0_0, intToRef(0)))))
@@ -1364,7 +1362,7 @@ method con(par_value: Ref) returns (v_ret_0: Ref)
   anon_2 := require(gtInts(anon_3, intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(this.bf_value, intToRef(0))))
+      boolFromRef(gtInts(this.bf_value, intToRef(0))))
   fold acc(PropertyLaw_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(PropertyLaw_unique(v_ret_0), write)

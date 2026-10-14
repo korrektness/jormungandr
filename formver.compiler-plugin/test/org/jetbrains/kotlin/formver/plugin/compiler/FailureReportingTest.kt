@@ -130,7 +130,7 @@ class FailureReportingTest {
         val primary = backend.reportingPosition(implementation).unwrapOr<KtSourceElement> { null }
         val problem = backend.toFailure(primary)
         assertSame(implementation, problem.primary)
-        assertEquals(KotlinCondition.Proof(KotlinCondition.ProofClause.POSTCONDITION), problem.condition)
+        assertEquals(KotlinCondition.Proof(KotlinCondition.ProofClause.POSTCONDITION, clauseSource = clause), problem.condition)
         assertEquals(listOf(clause), problem.related.map { it.source })
         assertSame(implementation, backend.reportingPosition(diagnosticSource(30)).unwrapOr<KtSourceElement> { null })
     }

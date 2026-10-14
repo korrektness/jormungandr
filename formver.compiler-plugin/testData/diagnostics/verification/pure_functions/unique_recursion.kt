@@ -119,7 +119,7 @@ fun <!VIPER_TEXT!>oneNode<!>(v: Int): @Unique Node {
 fun <!VIPER_TEXT!>sum<!>(n: @Unique Node?): Int {
     preconditions { decreases(n) }
     if (n == null) return 0
-    return <!INTEGER_OVERFLOW, INTEGER_OVERFLOW!>n.value + sum(n.next)<!>
+    return <!INTEGER_OVERFLOW!>n.value + sum(n.next)<!>
 }
 
 @Pure
@@ -212,7 +212,7 @@ fun <!VIPER_TEXT!>sumFrom<!>(n: @Unique Node?, k: Int): Int {
     preconditions { decreases(n); -1073741824 <= k && k <= 1073741823 }
     val base = k * 2
     if (n == null) return base
-    return <!INTEGER_OVERFLOW, INTEGER_OVERFLOW!>n.value + sumFrom(n.next, k)<!>
+    return <!INTEGER_OVERFLOW!>n.value + sumFrom(n.next, k)<!>
 }
 
 @Pure
@@ -236,7 +236,7 @@ fun <!VIPER_TEXT!>oneNodeSum<!>(v: Int): @Unique Node {
 }
 
 fun <!VIPER_TEXT!>prependUnrolled<!>(l: @Unique Node?, v: Int): @Unique Node {
-    postconditions<Node> { r -> sum(r) == <!INTEGER_OVERFLOW, INTEGER_OVERFLOW!>r.value + sum(r.next)<!> }
+    postconditions<Node> { r -> sum(r) == <!INTEGER_OVERFLOW!>r.value + sum(r.next)<!> }
     return Node(v, l)
 }
 

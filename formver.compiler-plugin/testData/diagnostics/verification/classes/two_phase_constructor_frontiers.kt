@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.formver.plugin.*
     @Law @Pure fun invariant(): Boolean = value > 0
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class LeakBeforeRequire<!>(val value: Int) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class LeakBeforeRequire<!>(val value: Int) {
     init {
         observeConstruction(this)
         require(value > 0)
@@ -64,7 +64,7 @@ fun <!VIPER_TEXT!>positiveParameterClient<!>() {
     @Law @Pure fun invariant(): Boolean = value > 0
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class SecondaryBroken<!> {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class SecondaryBroken<!> {
     var value = 1
     constructor()
     constructor(broken: Boolean): this() {

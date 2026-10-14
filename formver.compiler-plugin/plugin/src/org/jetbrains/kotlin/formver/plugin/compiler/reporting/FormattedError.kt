@@ -19,7 +19,11 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
     val counterexample = kotlinCounterexample()
     val condition = when (role) {
         is SourceRole.Arithmetic -> role.condition
-        is SourceRole.Proof -> KotlinCondition.Proof(role.clause, role.declaration)
+        is SourceRole.Proof -> KotlinCondition.Proof(
+            role.clause, role.declaration, role.subject,
+            position.unwrapOr<KtSourceElement> { null }?.takeUnless { it == source },
+            if (role.clause == KotlinCondition.ProofClause.LOOP_INVARIANT) loopPhase() else null,
+        )
         is SourceRole.ReturnsEffect -> KotlinCondition.Returns(role.toReturnValue())
         is SourceRole.ConditionalEffect -> KotlinCondition.Conditional(role.effect.toReturnValue(), role.condition.toPredicate())
         is SourceRole.ListElementAccessCheck -> KotlinCondition.Index(
@@ -51,8 +55,9 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
     return Failure(
         kind, source, condition,
         if (source == null) ObligationIdentity(result.offendingNode(), result.reason().offendingNode())
-        else ObligationIdentity.atOrigin(listOf(source, condition,
-            obligationShape(result.offendingNode()), obligationShape(result.reason().offendingNode()))),
+        else ObligationIdentity.atOrigin(listOf(source, condition, obligationShape(result.offendingNode()),
+            // The lower and upper bound of one range check are one obligation.
+            if (role is SourceRole.Arithmetic) null else obligationShape(result.reason().offendingNode()))),
         related = (if (role is SourceRole.Proof) listOfNotNull(
             role.declaration?.source?.takeUnless { it == source }?.let { RelatedLocation("Kotlin clause declaration", it) },
             position.unwrapOr<KtSourceElement> { null }?.takeUnless { it == source }
@@ -63,6 +68,14 @@ fun VerificationError.toFailure(source: KtSourceElement?): Failure {
         counterexample = counterexample,
         backend = BackendEvidence(id, result.reason().id(), msg),
     )
+}
+
+private fun VerificationError.loopPhase(): KotlinCondition.LoopPhase? = when (result) {
+    is viper.silver.verifier.errors.LoopInvariantNotEstablished -> KotlinCondition.LoopPhase.ENTRY
+    is viper.silver.verifier.errors.LoopInvariantNotPreserved -> KotlinCondition.LoopPhase.PRESERVATION
+    // The invariant is asserted again where the loop exits.
+    is viper.silver.verifier.errors.AssertFailed -> KotlinCondition.LoopPhase.EXIT
+    else -> null
 }
 
 private fun KotlinCondition.failureKind(): FailureKind = when (this) {

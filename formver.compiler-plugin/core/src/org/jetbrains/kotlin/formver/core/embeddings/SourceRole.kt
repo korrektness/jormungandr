@@ -20,6 +20,8 @@ sealed interface SourceRole {
         val clause: org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause,
         val declaration: FirBasedSymbol<*>? = null,
         val site: Position = Position.NoPosition,
+        /** The owned path a class law is checked for, as the Kotlin source spells it. */
+        val subject: String? = null,
     ) : SourceRole
 
     data class ListElementAccessCheck(val accessType: AccessCheckType) : SourceRole {

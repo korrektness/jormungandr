@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 @Pure
 fun <!VIPER_TEXT!>size<!>(t: @Unique Tree?): Int {
     preconditions { decreases(t) }
-    return if (t == null) 0 else <!INTEGER_OVERFLOW, INTEGER_OVERFLOW!><!INTEGER_OVERFLOW!>1 + size(t.l)<!> + size(t.r)<!>
+    return if (t == null) 0 else <!INTEGER_OVERFLOW!><!INTEGER_OVERFLOW!>1 + size(t.l)<!> + size(t.r)<!>
 }
 
 // `capSize` saturates, so `cappedSize` stays within Int on any tree.

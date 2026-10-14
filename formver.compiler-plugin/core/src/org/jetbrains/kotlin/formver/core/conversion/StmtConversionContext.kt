@@ -595,7 +595,7 @@ fun StmtConversionContext.collectInvariants(block: FirBlock, statements: List<Fi
     }
     statements.forEach { stmt ->
         stmt.requireInvariant()
-        add(stmt.accept(StmtConversionVisitor, this@collectInvariants))
+        add(stmt.accept(StmtConversionVisitor, this@collectInvariants).withPosition(stmt.source))
     }
 }
 
@@ -631,7 +631,7 @@ fun StmtConversionContext.collectInvariantsAndTriggers(block: FirBlock): Invaria
 
         // Otherwise, treat as invariant
         stmt.requireInvariant()
-        invariants.add(stmt.accept(StmtConversionVisitor, this))
+        invariants.add(stmt.accept(StmtConversionVisitor, this).withPosition(stmt.source))
     }
 
     return InvariantsAndTriggers(invariants, triggers)

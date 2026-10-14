@@ -106,3 +106,5 @@ fun <!VIPER_TEXT!>constantOverflow<!>(): Int = <!INTEGER_OVERFLOW!>2147483647 + 
 fun <!VIPER_TEXT!>constantNormalization<!>() {
     verify(-2147483648 < 0, -3 / 2 == -1, -3 % 2 == -1)
 }
+// Both bounds can fail; the operation is reported once.
+fun <!VIPER_TEXT!>eitherBoundOverflow<!>(x: Int, y: Int): Int = <!INTEGER_OVERFLOW!>x - y<!>

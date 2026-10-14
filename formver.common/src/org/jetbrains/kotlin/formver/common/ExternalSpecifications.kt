@@ -152,6 +152,12 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
         else -> null
     }
 
+    private fun FirBasedSymbol<*>.sourceName(): String = when (this) {
+        is FirClassLikeSymbol<*> -> classId.asSingleFqName().asString()
+        is FirCallableSymbol<*> -> callableId?.asSingleFqName()?.asString() ?: toString()
+        else -> toString()
+    }
+
     private fun fail(symbol: FirBasedSymbol<*>, rule: ExternalSpecRule, target: String? = null) {
         val condition = KotlinCondition.ExternalSpec(rule, target)
         // Every failing symbol comes from this session's sources; one without a source would have no checker to report it.
@@ -169,7 +175,7 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
         val declarations = sessions.flatMap { it.predicateBasedProvider.getSymbolsByPredicate(predicate) }.filter { symbol ->
             val file = containerFile(symbol)
             if (file != null && sources.isExternalSpec(file)) true
-            else { fail(symbol, ExternalSpecRule.OUTSIDE_SPECIFICATION_INPUTS, symbol.toString()); false }
+            else { fail(symbol, ExternalSpecRule.OUTSIDE_SPECIFICATION_INPUTS, symbol.sourceName()); false }
         }
         bindClasses(declarations.filterIsInstance<FirRegularClassSymbol>())
         for (model in declarations.filterIsInstance<FirNamedFunctionSymbol>()) {

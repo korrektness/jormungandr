@@ -27,7 +27,7 @@ method con() returns (v_ret_0: Ref)
   inhale intFromRef(second(v_ret_0)) == intFromRef(anon_1)
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(second(this), intToRef(0))))
+      boolFromRef(gtInts(second(this), intToRef(0))))
   fold acc(EarlyPropertyRead_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(EarlyPropertyRead_unique(v_ret_0), write)
@@ -143,7 +143,7 @@ method con() returns (v_ret_0: Ref)
   inhale intFromRef(value(v_ret_0)) == intFromRef(anon_0)
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(value(this), intToRef(0))))
+      boolFromRef(gtInts(value(this), intToRef(0))))
   fold acc(CompletedFinalCall_unique(v_ret_0), write)
   anon_1 := observe(v_ret_0)
   label lbl_ret_0
@@ -206,7 +206,7 @@ method con(flag: Ref) returns (v_ret_0: Ref)
   }
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(second(this), intToRef(0))))
+      boolFromRef(gtInts(second(this), intToRef(0))))
   fold acc(ReadBeforeDelayedAssignment_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(ReadBeforeDelayedAssignment_unique(v_ret_0), write)
@@ -247,7 +247,7 @@ method con(flag: Ref) returns (v_ret_0: Ref)
   anon_2 := require(gtInts(g_value(v_ret_0), intToRef(0)))
   assert (let this ==
       (v_ret_0) in
-      true && boolFromRef(gtInts(g_value(this), intToRef(0))))
+      boolFromRef(gtInts(g_value(this), intToRef(0))))
   fold acc(CompletedAssignments_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(CompletedAssignments_unique(v_ret_0), write)
@@ -362,7 +362,7 @@ method con() returns (v_ret_0: Ref)
       (v_ret_0) in
       (unfolding acc(c_DispatchFinal_unique(this), write) in
         (unfolding acc(DispatchBase_unique(this), write) in
-          true && boolFromRef(gtInts(value(this), intToRef(0))))))
+          boolFromRef(gtInts(value(this), intToRef(0))))))
   fold acc(InheritedFinalDispatch_unique(v_ret_0), write)
   unfold acc(InheritedFinalDispatch_unique(v_ret_0), write)
   anon_1 := c_DispatchFinal_f_observe(v_ret_0)
@@ -383,7 +383,7 @@ method con() returns (v_ret_0: Ref)
       (v_ret_0) in
       (unfolding acc(c_DispatchFinal_unique(this), write) in
         (unfolding acc(DispatchBase_unique(this), write) in
-          true && boolFromRef(gtInts(value(this), intToRef(0))))))
+          boolFromRef(gtInts(value(this), intToRef(0))))))
   fold acc(InheritedFinalDispatch_unique(v_ret_0), write)
   unfold acc(InheritedFinalDispatch_unique(v_ret_0), write)
   unfold acc(c_DispatchFinal_unique(v_ret_0), write)
@@ -454,7 +454,7 @@ method con() returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       (unfolding acc(c_DispatchBase_unique(this), write) in
-        true && boolFromRef(gtInts(value(this), intToRef(0)))))
+        boolFromRef(gtInts(value(this), intToRef(0)))))
   fold acc(FinalClassDispatch_unique(v_ret_0), write)
   unfold acc(FinalClassDispatch_unique(v_ret_0), write)
   anon_1 := c_DispatchBase_f_observe(v_ret_0)
@@ -472,7 +472,7 @@ method con() returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       (unfolding acc(c_DispatchBase_unique(this), write) in
-        true && boolFromRef(gtInts(value(this), intToRef(0)))))
+        boolFromRef(gtInts(value(this), intToRef(0)))))
   fold acc(FinalClassDispatch_unique(v_ret_0), write)
   unfold acc(FinalClassDispatch_unique(v_ret_0), write)
   unfold acc(c_DispatchBase_unique(v_ret_0), write)
@@ -571,7 +571,7 @@ method con() returns (v_ret_0: Ref)
   assert (let this ==
       (v_ret_0) in
       (unfolding acc(c_GenericFinalDispatch_unique(this), write) in
-        true && boolFromRef(gtInts(value(this), intToRef(0)))))
+        boolFromRef(gtInts(value(this), intToRef(0)))))
   fold acc(SubstitutedFinalDispatch_unique(v_ret_0), write)
   anon_1 := SubstitutedFinalDispatch_f_observe(v_ret_0, value(v_ret_0))
   label lbl_ret_0

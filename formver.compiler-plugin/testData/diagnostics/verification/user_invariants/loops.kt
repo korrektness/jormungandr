@@ -9,10 +9,10 @@ import org.jetbrains.kotlin.formver.plugin.verify
 // Incrementing i violates the stated invariant.
 fun <!VIPER_TEXT!>violatedInvariant<!>() {
     var i = 0
-    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>while (i < 2) {
-        loopInvariants { i < 1 }
+    while (i < 2) {
+        loopInvariants { <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>i < 1<!> }
         i = i + 1
-    }<!>
+    }
 }
 
 fun <!VIPER_TEXT!>test<!>(n: Int) {

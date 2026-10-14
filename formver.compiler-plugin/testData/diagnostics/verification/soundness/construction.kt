@@ -27,7 +27,7 @@ fun <!VIPER_TEXT!>overriddenValInit<!>() {
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>)
 }
 
-<!VIPER_VERIFICATION_ERROR!><!VIPER_TEXT!>class Impossible<!>(var n: Int) {
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!><!VIPER_TEXT!>class Impossible<!>(var n: Int) {
     @Law @Pure @Unique fun never(): Boolean = n > n
 }<!>
 

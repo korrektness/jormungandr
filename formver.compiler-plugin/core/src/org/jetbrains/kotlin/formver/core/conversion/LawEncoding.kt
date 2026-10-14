@@ -96,7 +96,7 @@ internal class LawEncoding(private val program: ProgramConversionContext) {
             program.typeResolver.setClassLaws(entry.key, laws.map { law ->
                 val expression = expansion.body(law, mapOf(SubstitutedArgument.DispatchThis to receiver))
                 val signature = with(program) { law.toFunctionSignature() }
-                signature.signature.returns.type.injection.fromRef(expression)
+                law to signature.signature.returns.type.injection.fromRef(expression)
             })
         }
         val prepared = mutableSetOf<ClassTypeEmbedding>()

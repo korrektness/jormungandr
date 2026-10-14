@@ -188,8 +188,9 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
     }
 
     private fun obligationMessage(failure: Failure): String = when (val condition = failure.condition) {
-            is KotlinCondition.IntegerOverflow -> "Could not establish that ${condition.operation} produces a ${condition.resultType} value in [${condition.lower}, ${condition.upper}]."
-            is KotlinCondition.DivisionByZero -> "Could not establish a nonzero divisor for ${condition.operation}."
+            is KotlinCondition.IntegerOverflow ->
+                "Could not establish that ${operator(condition.operation)} stays within the ${condition.resultType} range [${condition.lower}, ${condition.upper}]."
+            is KotlinCondition.DivisionByZero -> "Could not establish a nonzero divisor for ${operator(condition.operation)}."
             is KotlinCondition.Proof -> proofMessage(condition)
             is PurityCondition -> when (condition.rule) {
                 PurityRule.FUNCTION_BODY -> "Impure function body detected in pure function"
@@ -199,25 +200,23 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             }
             is ConversionOwnershipCondition -> conversionOwnershipMessage(condition)
             is TerminationCondition -> terminationMessage(condition)
-            KotlinCondition.Termination -> "Could not prove that this recursive call decreases the termination measure."
+            KotlinCondition.Termination -> "Could not establish that this recursive call decreases the termination measure."
             is AttributeCondition -> attributeMessage(failure.kind, condition)
-            is KotlinCondition.Returns -> "Function may return a ${opposite(condition.effect)} value."
+            is KotlinCondition.Returns -> "Could not establish that the function never returns ${article(opposite(condition.effect))}."
             is KotlinCondition.Conditional -> {
-                val event = if (condition.effect == KotlinCondition.ReturnValue.ANY) "the function returns"
-                    else "a ${returnValue(condition.effect)} value is returned"
-                "Cannot verify that if $event then ${predicate(condition.predicate)}."
+                val value = if (condition.effect == KotlinCondition.ReturnValue.ANY) "" else " ${returnValue(condition.effect)}"
+                "Could not establish `${predicate(condition.predicate)}` when the function returns$value."
             }
             is KotlinCondition.Index -> {
                 val bound = when (condition.bound) {
-                    KotlinCondition.Bound.NEGATIVE -> "less than zero"
-                    KotlinCondition.Bound.NOT_BELOW_SIZE -> "not less than the array's size"
-                    KotlinCondition.Bound.ABOVE_SIZE -> "greater than the list's size"
+                    KotlinCondition.Bound.NEGATIVE -> "is not negative"
+                    KotlinCondition.Bound.NOT_BELOW_SIZE, KotlinCondition.Bound.ABOVE_SIZE -> "is less than its size"
                 }
-                "Invalid index for ${collection(condition.collection, condition.symbol)}, the index may be $bound."
+                "Could not establish that the index into ${collection(condition.collection, condition.symbol)} $bound."
             }
             is KotlinCondition.SubList -> {
-                val bound = if (condition.negative) "including negative indices" else "greater than the list's size"
-                "Invalid sub-list range for ${collection(KotlinCondition.Collection.LIST, condition.symbol)}, the range may be $bound."
+                val bound = if (condition.negative) "has no negative index" else "ends within its size"
+                "Could not establish that the sub-list range of ${collection(KotlinCondition.Collection.LIST, condition.symbol)} $bound."
             }
             is KotlinCondition.Ownership -> ownershipMessage(condition)
             is KotlinCondition.Override -> {
@@ -225,7 +224,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                     KotlinCondition.OverrideClause.PRECONDITION -> "its precondition may not follow from the overridden one"
                     KotlinCondition.OverrideClause.POSTCONDITION -> "its postcondition may not establish the overridden one"
                 }
-                "This override may not satisfy the contract of '${condition.overridden}': $reason."
+                "Could not establish that this override satisfies the contract of '${condition.overridden}': $reason."
             }
             is KotlinCondition.Skipped -> skippedMessage(condition)
             is KotlinCondition.Translation -> translationMessage(failure.kind, condition)
@@ -242,28 +241,42 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 error("Specification conditions must use their specification renderer")
     }
 
-    private fun proofMessage(condition: KotlinCondition.Proof): String = when (condition.clause) {
-        KotlinCondition.ProofClause.ASSERTION -> "Could not establish the asserted Kotlin condition."
-        KotlinCondition.ProofClause.REFUTATION -> "Could not refute the Kotlin condition."
-        KotlinCondition.ProofClause.LAW -> "Could not establish law '${FirDiagnosticRenderers.DECLARATION_NAME.render(requireNotNull(condition.declaration))}' for this implementation."
-        KotlinCondition.ProofClause.PRECONDITION -> "Could not establish the Kotlin precondition at this call."
-        KotlinCondition.ProofClause.POSTCONDITION -> "Could not establish the Kotlin postcondition on return."
-        KotlinCondition.ProofClause.POSTCONDITION_AT_RETURN -> "Could not establish the postcondition on this return."
-        KotlinCondition.ProofClause.POSTCONDITION_AT_END -> "Could not establish the postcondition at the end of this body."
-        KotlinCondition.ProofClause.LOOP_INVARIANT -> "Could not establish the Kotlin loop invariant."
-        KotlinCondition.ProofClause.EXHAUSTIVE_WHEN -> "Could not establish that a branch of this exhaustive 'when' matches."
+    private fun proofMessage(condition: KotlinCondition.Proof): String {
+        val message = when (condition.clause) {
+            KotlinCondition.ProofClause.ASSERTION -> "Could not establish the assertion."
+            KotlinCondition.ProofClause.REFUTATION -> "Could not refute the condition."
+            KotlinCondition.ProofClause.LAW -> "Could not establish law '${FirDiagnosticRenderers.DECLARATION_NAME.render(requireNotNull(condition.declaration))}' for this implementation."
+            KotlinCondition.ProofClause.CLASS_LAW -> "Could not establish class law '${memberSpelling(requireNotNull(condition.declaration) as org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol<*>)}' for ${requireNotNull(condition.subject)}."
+            KotlinCondition.ProofClause.PRECONDITION ->
+                "Could not establish the precondition${condition.declaration?.let { " of '${FirDiagnosticRenderers.DECLARATION_NAME.render(it)}'" }.orEmpty()} at this call."
+            KotlinCondition.ProofClause.POSTCONDITION -> "Could not establish the postcondition on return."
+            KotlinCondition.ProofClause.POSTCONDITION_AT_RETURN -> "Could not establish the postcondition on this return."
+            KotlinCondition.ProofClause.POSTCONDITION_AT_END -> "Could not establish the postcondition at the end of this body."
+            KotlinCondition.ProofClause.LOOP_INVARIANT -> when (condition.loopPhase) {
+                KotlinCondition.LoopPhase.ENTRY -> "Could not establish the loop invariant on entry to the loop."
+                KotlinCondition.LoopPhase.PRESERVATION -> "Could not establish that an iteration preserves the loop invariant."
+                KotlinCondition.LoopPhase.EXIT -> "Could not establish the loop invariant where the loop exits."
+                null -> "Could not establish the loop invariant."
+            }
+            KotlinCondition.ProofClause.EXHAUSTIVE_WHEN -> "Could not establish that a branch of this exhaustive 'when' matches."
+        }
+        val clause = condition.clauseSource ?: return message
+        val text = clause.text?.toString()?.replace(Regex("\\s+"), " ")?.trim()?.takeIf { it.isNotEmpty() } ?: return message
+        val shown = if (text.length > MAX_CLAUSE_LENGTH) text.take(MAX_CLAUSE_LENGTH) + "..." else text
+        val location = counterexampleLocation(clause)?.let { " ($it)" }.orEmpty()
+        return "$message\nFailing clause: `$shown`$location"
     }
 
     private fun translationMessage(kind: FailureKind, condition: KotlinCondition.Translation): String = when (kind) {
-        FailureKind.UNSUPPORTED_FEATURE -> "Unsupported construct [${condition.reason}]: ${condition.detail}"
-        FailureKind.VERIFICATION_SKIPPED -> "Verification skipped [${condition.reason}]: ${condition.detail}"
+        FailureKind.UNSUPPORTED_FEATURE -> "Unsupported construct: ${condition.detail} [${condition.reason}]"
+        FailureKind.VERIFICATION_SKIPPED -> "Verification skipped: ${condition.detail} [${condition.reason}]"
         else -> "${condition.detail} [${condition.reason}]"
     }
 
     private fun toolMessage(kind: FailureKind, condition: KotlinCondition.Tool): String = when (kind) {
-        FailureKind.VERIFIER_UNAVAILABLE -> "The verifier cannot run [${condition.reason}]: ${condition.detail}"
-        FailureKind.INVALID_VIPER_PROGRAM -> "Invalid generated Viper program [${condition.reason}]: ${condition.detail}"
-        else -> "An internal error has occurred [${condition.reason}].\nDetails: ${condition.detail}\nPlease report this at https://github.com/jesyspa/kotlin"
+        FailureKind.VERIFIER_UNAVAILABLE -> "The verifier cannot run: ${condition.detail} [${condition.reason}]"
+        FailureKind.INVALID_VIPER_PROGRAM -> "Invalid generated Viper program: ${condition.detail} [${condition.reason}]"
+        else -> "An internal error has occurred: ${condition.detail} [${condition.reason}]\nPlease report this at https://github.com/jesyspa/SnaKt/issues"
     }
 
     private fun ownershipMessage(condition: KotlinCondition.Ownership): String {
@@ -276,7 +289,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             KotlinCondition.OwnershipSite.PRECONDITION -> "the argument for parameter ${condition.path}" to "at the call to `${condition.function}`"
             KotlinCondition.OwnershipSite.POSTCONDITION -> condition.path to "when `${condition.function}` returns"
         }
-        return "SnaKt could not establish ownership of $path $site."
+        return "Could not establish ownership of $path $site."
     }
 
     private fun skippedMessage(condition: KotlinCondition.Skipped): String {
@@ -292,7 +305,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is FirPropertyAccessorSymbol -> "<${if (function.isGetter) "get" else "set"}-${function.propertySymbol.name}>"
             else -> FirDiagnosticRenderers.DECLARATION_NAME.render(function)
         }
-        return "Verification skipped [${condition.reason.name}]: Function '$name' was not verified because of $reason"
+        return "Verification skipped: function '$name' was not verified because of $reason [${condition.reason.name}]"
     }
 
     private fun terminationMessage(condition: TerminationCondition): String = when (condition.rule) {
@@ -342,6 +355,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
     }
 
     private const val MAX_SITE_SNIPPET_LENGTH = 40
+    private const val MAX_CLAUSE_LENGTH = 80
 
     private fun siteSnippet(site: KtSourceElement?): String? {
         val text = site?.text?.lineSequence()?.firstOrNull()?.trim() ?: return null
@@ -457,6 +471,21 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             else -> error("Unexpected attribute rule: ${condition.kind}")
         }
     }
+
+    /** Kotlin spells built-in integer operations as operators; conversions are calls. */
+    private fun operator(operation: String): String = when (operation) {
+        "plus" -> "+"
+        "minus" -> "-"
+        "times" -> "*"
+        "div" -> "/"
+        "rem" -> "%"
+        "inc" -> "++"
+        "dec" -> "--"
+        "unaryMinus" -> "unary -"
+        else -> if (operation.startsWith("to")) "$operation()" else operation
+    }
+
+    private fun article(value: String): String = "${if (value.first() in "aeiou") "an" else "a"} $value value"
 
     private fun returnValue(value: KotlinCondition.ReturnValue): String = when (value) {
         KotlinCondition.ReturnValue.TRUE -> "true"

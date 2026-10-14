@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.formver.viper.ast.Method
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Function
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 
 /**
  * Name used to look up properties.
@@ -163,28 +164,35 @@ class TypeResolver {
         it.rewriteCaptureValues(mapOf(listOf(DispatchReceiverName) to receiver))
     }
 
-    private val classLawBodies = linkedMapOf<SymbolicName, List<Exp>>()
+    private val classLawBodies = linkedMapOf<SymbolicName, List<Pair<FirBasedSymbol<*>, Exp>>>()
     var classLawExpansion: ClassLawExpansion? = null
 
     fun registerClassLaws(type: ClassTypeEmbedding) {
         classLawBodies.putIfAbsent(type.name, emptyList())
     }
 
-    fun setClassLaws(type: ClassTypeEmbedding, laws: List<Exp>) {
+    fun setClassLaws(type: ClassTypeEmbedding, laws: List<Pair<FirBasedSymbol<*>, Exp>>) {
         classLawBodies[type.name] = laws
     }
 
     fun hasClassLaws(type: ClassTypeEmbedding) = type.name in classLawBodies
 
-    fun classLawAssertion(type: ClassTypeEmbedding, receiver: Exp, openSuperclasses: Set<ClassTypeEmbedding> = emptySet()): Exp = Exp.LetBinding(
-        Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref), receiver,
-        generateSequence(superClass(type), ::superClass).filter { it !in openSuperclasses }.toList().foldRight(
-            classLawBodies[type.name].orEmpty().fold<Exp, Exp>(Exp.BoolLit(true)) { acc, law -> Exp.And(acc, law) },
-        ) { parent, law ->
-            Exp.Unfolding(Exp.PredicateAccess(parent.uniquePredicateName,
-                listOf(Exp.LocalVar(DispatchReceiverName, Type.Ref)), PermExp.FullPerm()), law)
-        },
-    )
+    fun classLawAssertion(type: ClassTypeEmbedding, receiver: Exp, openSuperclasses: Set<ClassTypeEmbedding> = emptySet()): Exp =
+        classLawScope(type, receiver, openSuperclasses,
+            classLawBodies[type.name].orEmpty().fold<Pair<FirBasedSymbol<*>, Exp>, Exp>(Exp.BoolLit(true)) { acc, (_, law) -> Exp.And(acc, law) })
+
+    /** Each own class law of [type] for [receiver], so that a failure names the law. */
+    fun classLawAssertions(type: ClassTypeEmbedding, receiver: Exp): List<Pair<FirBasedSymbol<*>, Exp>> =
+        classLawBodies[type.name].orEmpty().map { (law, body) -> law to classLawScope(type, receiver, emptySet(), body) }
+
+    private fun classLawScope(type: ClassTypeEmbedding, receiver: Exp, openSuperclasses: Set<ClassTypeEmbedding>, body: Exp): Exp =
+        Exp.LetBinding(
+            Declaration.LocalVarDecl(DispatchReceiverName, Type.Ref), receiver,
+            generateSequence(superClass(type), ::superClass).filter { it !in openSuperclasses }.toList().foldRight(body) { parent, law ->
+                Exp.Unfolding(Exp.PredicateAccess(parent.uniquePredicateName,
+                    listOf(Exp.LocalVar(DispatchReceiverName, Type.Ref)), PermExp.FullPerm()), law)
+            },
+        )
 
     private val interfaceLawBodies = linkedMapOf<SymbolicName, List<Exp>>()
 

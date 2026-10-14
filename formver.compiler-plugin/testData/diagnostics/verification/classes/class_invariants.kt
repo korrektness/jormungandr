@@ -22,12 +22,12 @@ import org.jetbrains.kotlin.formver.plugin.*
         refute(false)
     }
 
-    <!VIPER_VERIFICATION_ERROR!>@Unique @Borrowed
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed
     fun <!VIPER_TEXT!>reset<!>() {
         value = 0
     }<!>
 
-    <!VIPER_VERIFICATION_ERROR!>@Unique
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique
     fun <!VIPER_TEXT!>consumeBroken<!>() {
         value = -1
     }<!>

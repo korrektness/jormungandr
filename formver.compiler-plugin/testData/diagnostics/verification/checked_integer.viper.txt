@@ -398,7 +398,6 @@ method con(par_x: Ref) returns (v_ret_0: Ref)
   inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon)
   assert (let this ==
       (v_ret_0) in
-      true &&
       boolFromRef(gtInts(plusInts(g_x(this), intToRef(1)), g_x(this))))
   fold acc(CheckedArithmeticLaw_unique(v_ret_0), write)
   label lbl_ret_0
@@ -537,4 +536,15 @@ method constantNormalization() returns (v_ret_0: Ref)
     -1
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/checked_integer.kt: info: Generated Viper text for eitherBoundOverflow:
+method eitherBoundOverflow(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := minusInts(x, y)
+  goto lbl_ret_0
+  label lbl_ret_0
 }
