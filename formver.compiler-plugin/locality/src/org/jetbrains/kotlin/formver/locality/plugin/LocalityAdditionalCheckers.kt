@@ -30,10 +30,10 @@ class LocalityAdditionalCheckers(session: FirSession) : FirAdditionalCheckersExt
 
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
         override val propertyCheckers: Set<FirPropertyChecker> =
-            setOf(PropertyLocalityChecker)
+            setOf(UntrustedDeclarationChecker(PropertyLocalityChecker))
 
         override val valueParameterCheckers: Set<FirValueParameterChecker> =
-            setOf(ValueParameterLocalityChecker)
+            setOf(UntrustedDeclarationChecker(ValueParameterLocalityChecker))
 
         override val functionCheckers: Set<FirFunctionChecker> =
             setOf(BorrowedPlacementChecker)
@@ -41,22 +41,22 @@ class LocalityAdditionalCheckers(session: FirSession) : FirAdditionalCheckersExt
 
     override val expressionCheckers: ExpressionCheckers = object : ExpressionCheckers() {
         override val variableAssignmentCheckers: Set<FirVariableAssignmentChecker> =
-            setOf(AssignmentLocalityChecker)
+            setOf(UntrustedExpressionChecker(AssignmentLocalityChecker))
 
         override val callCheckers: Set<FirCallChecker> =
-            setOf(CallLocalityChecker)
+            setOf(UntrustedExpressionChecker(CallLocalityChecker))
 
         override val qualifiedAccessExpressionCheckers: Set<FirQualifiedAccessExpressionChecker> =
-            setOf(QualifiedAccessLocalityChecker)
+            setOf(UntrustedExpressionChecker(QualifiedAccessLocalityChecker))
 
         override val propertyAccessExpressionCheckers: Set<FirPropertyAccessExpressionChecker> =
-            setOf(PropertyAccessLocalityChecker)
+            setOf(UntrustedExpressionChecker(PropertyAccessLocalityChecker))
 
         override val returnExpressionCheckers: Set<FirReturnExpressionChecker> =
-            setOf(ReturnLocalityChecker)
+            setOf(UntrustedExpressionChecker(ReturnLocalityChecker))
 
         override val throwExpressionCheckers: Set<FirThrowExpressionChecker> =
-            setOf(ThrowLocalityChecker)
+            setOf(UntrustedExpressionChecker(ThrowLocalityChecker))
     }
 
     override val typeCheckers: TypeCheckers = object : TypeCheckers() {

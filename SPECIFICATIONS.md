@@ -20,7 +20,7 @@ fun divide(numerator: Int, denominator: Int): Int {
 
 **Annotations:**
 - `@NeverVerify` — do not verify this function or look at its body. Its signature and specification are still
-  converted for its callers, and problems in them are reported.
+  converted for its callers, and problems in them are reported. docs/soundness.md says what its body is trusted to do.
 - `@NeverConvert` — skip Viper conversion entirely
 
 An annotation on a class applies to every declaration in the class: its construction, its members and its nested

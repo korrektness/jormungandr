@@ -15,7 +15,6 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationDataRegistry
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.declarations.utils.isInline
-import org.jetbrains.kotlin.fir.resolve.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
@@ -124,16 +123,6 @@ fun FirBasedSymbol<*>.isPure(session: FirSession): Boolean = isReadOnlyPure(sess
 fun FirBasedSymbol<*>.isLaw(session: FirSession) = hasAnnotation(annotationId("Law"), session)
 
 fun FirBasedSymbol<*>.isManual(session: FirSession) = hasAnnotation(annotationId("Manual"), session)
-
-/** Whether [this] or a class that contains it, directly or through nested classes, carries the annotation [name]. */
-private fun FirBasedSymbol<*>.hasOwnOrClassAnnotation(name: String, session: FirSession): Boolean =
-    hasAnnotation(annotationId(name), session) || getContainingClassSymbol()?.hasOwnOrClassAnnotation(name, session) == true
-
-fun FirBasedSymbol<*>.neverConvert(session: FirSession) = hasOwnOrClassAnnotation("NeverConvert", session)
-
-/** Whether [this] is not verified: it or a class containing it is `@NeverVerify` or `@NeverConvert`. */
-fun FirBasedSymbol<*>.neverVerify(session: FirSession) =
-    hasOwnOrClassAnnotation("NeverVerify", session) || neverConvert(session)
 
 fun FirFunctionSymbol<*>.isFormverFunctionNamed(name: String) =
     this is FirNamedFunctionSymbol && callableId == formverCallableId(className = null, name)

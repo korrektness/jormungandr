@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.formver.common.reportTranslation
 import org.jetbrains.kotlin.formver.common.reportTool
 import org.jetbrains.kotlin.formver.common.reportInternalFailure
 import org.jetbrains.kotlin.formver.core.names.embedName
-import org.jetbrains.kotlin.formver.core.neverVerify
+import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors

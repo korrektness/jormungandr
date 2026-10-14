@@ -1,3 +1,49 @@
+/external_spec_ownership.kt: info: Generated Viper text for rejectedBorrow:
+function g_label(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method advance(this: Ref, step: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), CounterModel())
+  requires acc(CounterModel_unique(this), write)
+  requires isSubtype(typeOf(step), intType())
+  requires intFromRef(step) >= 0
+  requires (unfolding acc(CounterModel_unique(this), wildcard) in
+      intFromRef(value(this)) <=
+      (let anon_builtin ==
+        (minusInts(intToRef(2147483647), step)) in
+        intFromRef(intToRef(2147483647)) - intFromRef(step)))
+  ensures acc(CounterModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) ==
+    (let anon_builtin ==
+      (plusInts(old((unfolding acc(CounterModel_unique(this), wildcard) in
+        value(this))), step)) in
+      intFromRef(old((unfolding acc(CounterModel_unique(this), wildcard) in
+        value(this)))) +
+      intFromRef(step))
+  ensures (unfolding acc(CounterModel_unique(this), wildcard) in
+      intFromRef(value(this)) == intFromRef(ret_1))
+
+
+method rejectedBorrow(counter: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), CounterModel())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  anon_0 := advance(counter, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /external_spec_ownership.kt: info: Generated Viper text for SourceGauge:
 function GaugeModel_f_read(this: Ref): Ref
   requires isSubtype(typeOf(this), GaugeModel())

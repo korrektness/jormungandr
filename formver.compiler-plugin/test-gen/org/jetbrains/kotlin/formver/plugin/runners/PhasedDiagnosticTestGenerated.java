@@ -535,6 +535,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("opt_outs.kt")
+    public void testOpt_outs() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/opt_outs.kt");
+    }
+
+    @Test
     @TestMetadata("override_accepted.kt")
     public void testOverride_accepted() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/override_accepted.kt");

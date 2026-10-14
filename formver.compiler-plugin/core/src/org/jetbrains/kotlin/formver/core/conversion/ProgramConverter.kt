@@ -46,6 +46,8 @@ import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.*
+import org.jetbrains.kotlin.formver.locality.plugin.neverConvert
+import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.domains.SeqMultisetDomain

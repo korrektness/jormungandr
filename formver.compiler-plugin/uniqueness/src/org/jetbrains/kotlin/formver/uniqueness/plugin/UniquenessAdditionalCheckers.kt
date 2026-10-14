@@ -22,6 +22,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.type.FirResolvedTypeRefChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.type.TypeCheckers
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 import org.jetbrains.kotlin.formver.locality.plugin.DispatchReceiverAnnotationPlacementChecker
+import org.jetbrains.kotlin.formver.locality.plugin.UntrustedDeclarationChecker
+import org.jetbrains.kotlin.formver.locality.plugin.UntrustedExpressionChecker
 import org.jetbrains.kotlin.formver.locality.plugin.defaultUniquenessAnnotationId
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_UNIQUENESS_TYPE_TARGET
 
@@ -41,44 +43,44 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
             )
 
         override val propertyCheckers: Set<FirPropertyChecker> =
-            setOf(PropertyUniquenessChecker)
+            setOf(UntrustedDeclarationChecker(PropertyUniquenessChecker))
 
         override val functionCheckers: Set<FirFunctionChecker> =
             setOf(
-                DefaultArgumentUniquenessCollisionChecker,
-                FunctionCaptureUniquenessChecker,
-                FunctionEscapeUniquenessConsistencyChecker,
-                FunctionExitUniquenessConsistencyChecker,
-                FunctionUseAfterMoveChecker,
+                UntrustedDeclarationChecker(DefaultArgumentUniquenessCollisionChecker),
+                UntrustedDeclarationChecker(FunctionCaptureUniquenessChecker),
+                UntrustedDeclarationChecker(FunctionEscapeUniquenessConsistencyChecker),
+                UntrustedDeclarationChecker(FunctionExitUniquenessConsistencyChecker),
+                UntrustedDeclarationChecker(FunctionUseAfterMoveChecker),
                 PureFunctionResultChecker,
                 DispatchReceiverAnnotationPlacementChecker(defaultUniquenessAnnotationId, INVALID_UNIQUENESS_TYPE_TARGET),
             )
 
         override val valueParameterCheckers: Set<FirValueParameterChecker> =
-            setOf(ValueParameterUniquenessChecker)
+            setOf(UntrustedDeclarationChecker(ValueParameterUniquenessChecker))
     }
 
     override val expressionCheckers: ExpressionCheckers = object : ExpressionCheckers() {
         override val variableAssignmentCheckers: Set<FirVariableAssignmentChecker> =
-            setOf(AssignmentUniquenessChecker)
+            setOf(UntrustedExpressionChecker(AssignmentUniquenessChecker))
 
         override val callCheckers: Set<FirCallChecker> =
-            setOf(CallUniquenessChecker)
+            setOf(UntrustedExpressionChecker(CallUniquenessChecker))
 
         override val functionCallCheckers: Set<FirFunctionCallChecker> =
-            setOf(FunctionCallArgumentUniquenessCollisionChecker, UniquePredPlacementChecker)
+            setOf(UntrustedExpressionChecker(FunctionCallArgumentUniquenessCollisionChecker), UniquePredPlacementChecker)
 
         override val qualifiedAccessExpressionCheckers: Set<FirQualifiedAccessExpressionChecker> =
             setOf(
-                QualifiedAccessUniquenessChecker,
-                QualifiedAccessArgumentUniquenessCollisionChecker
+                UntrustedExpressionChecker(QualifiedAccessUniquenessChecker),
+                UntrustedExpressionChecker(QualifiedAccessArgumentUniquenessCollisionChecker),
             )
 
         override val returnExpressionCheckers: Set<FirReturnExpressionChecker> =
-            setOf(ReturnUniquenessChecker)
+            setOf(UntrustedExpressionChecker(ReturnUniquenessChecker))
 
         override val throwExpressionCheckers: Set<FirThrowExpressionChecker> =
-            setOf(ThrowUniquenessChecker)
+            setOf(UntrustedExpressionChecker(ThrowUniquenessChecker))
     }
 
     override val typeCheckers: TypeCheckers = object : TypeCheckers() {

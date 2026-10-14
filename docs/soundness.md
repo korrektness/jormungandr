@@ -20,7 +20,14 @@ three things part of every result:
   postconditions, laws and observer facts. `FunctionSignature.kt` emits a header
   without a body for a callee in another declaration, for an abstract or
   interface member, and for `@NeverVerify`. The result holds only if every
-  implementation that can be reached verifies too. A program is verified when
+  implementation that can be reached verifies too. Code that SnaKt does not
+  verify because of `@NeverVerify` or `@NeverConvert`, on the declaration or a
+  class containing it, or on a constructor of the class it constructs, is
+  trusted to meet its declared signature: its pre- and postconditions and its
+  `@Unique` and `@Borrowed` annotations. Uniqueness and locality checking skips
+  it outside its specifications, and still checks its callers against that
+  signature (`locality/plugin/OptOuts.kt`,
+  `uniqueness_checker/opt_outs.kt`). A program is verified when
   every declaration in it is: a client of a class whose own law fails still
   verifies, because it relies on the constructor's promise
   (`verification/soundness/construction.kt::constructImpossible`).

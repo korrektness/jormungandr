@@ -45,8 +45,8 @@ import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.formver.core.embeddings.expression.debug.print
 import org.jetbrains.kotlin.formver.core.names.SimpleNameResolver
 import org.jetbrains.kotlin.formver.core.isLaw
-import org.jetbrains.kotlin.formver.core.neverConvert
-import org.jetbrains.kotlin.formver.core.neverVerify
+import org.jetbrains.kotlin.formver.locality.plugin.neverConvert
+import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 import org.jetbrains.kotlin.formver.core.shouldVerify
 import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.core.lambdaPrograms

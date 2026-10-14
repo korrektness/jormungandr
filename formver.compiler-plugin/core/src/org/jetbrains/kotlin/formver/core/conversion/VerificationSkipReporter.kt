@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.formver.common.Failure
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.formver.core.diagnostics.ConversionErrors
-import org.jetbrains.kotlin.formver.core.neverVerify
+import org.jetbrains.kotlin.formver.locality.plugin.neverVerify
 
 /** Reports [ConversionErrors.VERIFICATION_SKIPPED] at most once per declaration source. */
 class VerificationSkipReporter(
