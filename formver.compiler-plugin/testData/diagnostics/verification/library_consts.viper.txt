@@ -1,0 +1,64 @@
+/library_consts.kt: info: Generated Viper text for stdlibConsts:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method stdlibConsts() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 2147483647 == 2147483647
+  assert 9223372036854775807 == 9223372036854775807
+  assert -32768 ==
+    (let anon ==
+      (convertIntToShort(intToRef(-32768))) in
+      intFromRef(intToRef(-32768)))
+  assert 127 ==
+    (let anon ==
+      (convertIntToByte(intToRef(127))) in
+      intFromRef(intToRef(127)))
+  assert 65535 == 65535
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/library_consts.kt: info: Generated Viper text for libraryConsts:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method libraryConsts() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert -7 == -7
+  assert 5000000000 == 5000000000
+  assert 300 ==
+    (let anon ==
+      (convertIntToShort(intToRef(300))) in
+      intFromRef(intToRef(300)))
+  assert -5 ==
+    (let anon ==
+      (convertIntToByte(intToRef(-5))) in
+      intFromRef(intToRef(-5)))
+  assert 113 == 113
+  assert true
+  assert |stringFromRef(stringLit())| == 2
+  assert 11 == 11
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/library_consts.kt: info: Generated Viper text for wrongLibraryConst:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongLibraryConst() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 2147483647 == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

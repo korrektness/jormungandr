@@ -125,10 +125,11 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         literalExpression: FirLiteralExpression,
         data: StmtConversionContext,
     ): ExpEmbedding = when (literalExpression.kind) {
-        ConstantValueKind.Int -> IntLit((literalExpression.value as Long).toInt())
-        ConstantValueKind.Long -> LongLit(literalExpression.value as Long)
-        ConstantValueKind.Short -> ShortLit((literalExpression.value as Long).toShort())
-        ConstantValueKind.Byte -> ByteLit((literalExpression.value as Long).toByte())
+        // A literal parsed from source holds a Long; one deserialized from a library's const holds its own type.
+        ConstantValueKind.Int -> IntLit((literalExpression.value as Number).toInt())
+        ConstantValueKind.Long -> LongLit((literalExpression.value as Number).toLong())
+        ConstantValueKind.Short -> ShortLit((literalExpression.value as Number).toShort())
+        ConstantValueKind.Byte -> ByteLit((literalExpression.value as Number).toByte())
         ConstantValueKind.Boolean -> BooleanLit(literalExpression.value as Boolean)
         ConstantValueKind.Char -> CharLit(literalExpression.value as Char)
         ConstantValueKind.String -> StringLit(literalExpression.value as String)

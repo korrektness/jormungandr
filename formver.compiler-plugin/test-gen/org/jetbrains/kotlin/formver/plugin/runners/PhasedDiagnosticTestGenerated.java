@@ -731,6 +731,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("library_consts.kt")
+    public void testLibrary_consts() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/library_consts.kt");
+    }
+
+    @Test
     @TestMetadata("local_class.kt")
     public void testLocal_class() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/local_class.kt");
