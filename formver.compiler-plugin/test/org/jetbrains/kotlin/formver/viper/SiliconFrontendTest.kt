@@ -87,35 +87,30 @@ class SiliconFrontendTest {
     }
 
     /**
-     * `method m(p_i_h: Bool, ...)` that inhales that each of 15 pigeons sits in one of 14 holes and that no hole holds two
-     * pigeons, then asserts `false`. Refuting the pigeonhole principle takes Z3 exponential time in one query.
+     * `method m(h_0: Int, ..., h_10: Int)` that inhales that each of 11 pigeons sits in one of 10 holes and that no two
+     * pigeons share a hole, then asserts `false`. Refuting the pigeonhole principle takes Z3 exponential time in one
+     * query: with 9 holes Z3 4.8.7 runs for over two minutes.
+     *
+     * Silicon produces and evaluates in continuation-passing style, so its stack grows with every conjunct it inhales,
+     * however the conjunction is nested. Integer holes keep the conjuncts few.
      */
     private val pigeonholeProgram: Program = run {
-        val pigeons = 15
+        val pigeons = 11
         val holes = pigeons - 1
-        fun name(pigeon: Int, hole: Int) = "p_${pigeon}_$hole"
-        fun sits(pigeon: Int, hole: Int): Exp = LocalVar(name(pigeon, hole), bool, pos, info, trafos)
-        val somewhere = (0 until pigeons).map { pigeon ->
-            (0 until holes).map { sits(pigeon, it) }.reduce { left, right -> Or(left, right, pos, info, trafos) }
+        fun hole(pigeon: Int): Exp = LocalVar("h_$pigeon", int, pos, info, trafos)
+        fun lit(value: Int): Exp = IntLit(value.toScalaBigInt(), pos, info, trafos)
+        val inRange = (0 until pigeons).flatMap { pigeon ->
+            listOf(LeCmp(lit(0), hole(pigeon), pos, info, trafos), LtCmp(hole(pigeon), lit(holes), pos, info, trafos))
         }
-        val alone = (0 until holes).flatMap { hole ->
-            (0 until pigeons).flatMap { first ->
-                (first + 1 until pigeons).map { second ->
-                    Not(And(sits(first, hole), sits(second, hole), pos, info, trafos), pos, info, trafos)
-                }
-            }
+        val apart = (0 until pigeons).flatMap { first ->
+            (first + 1 until pigeons).map { second -> NeCmp(hole(first), hole(second), pos, info, trafos) }
         }
-        // One balanced conjunction keeps Silicon's recursion shallow; a statement per constraint overflows its stack.
-        fun conjunction(parts: List<Exp>): Exp =
-            if (parts.size == 1) parts.single()
-            else And(conjunction(parts.subList(0, parts.size / 2)), conjunction(parts.subList(parts.size / 2, parts.size)), pos, info, trafos)
+        val constraints = (inRange + apart).reduce<Exp, Exp> { left, right -> And(left, right, pos, info, trafos) }
         val body = Seqn(
-            seqOf<Stmt>(Inhale(conjunction(somewhere + alone), pos, info, trafos), Assert(FalseLit(pos, info, trafos), pos, info, trafos)),
+            seqOf<Stmt>(Inhale(constraints, pos, info, trafos), Assert(FalseLit(pos, info, trafos), pos, info, trafos)),
             emptySeq(), pos, info, trafos,
         )
-        val params = (0 until pigeons).flatMap { pigeon ->
-            (0 until holes).map { LocalVarDecl(name(pigeon, it), bool, pos, info, trafos) }
-        }
+        val params = (0 until pigeons).map { LocalVarDecl("h_$it", int, pos, info, trafos) }
         val method = Method("m", params.toScalaSeq(), emptySeq(), emptySeq(), emptySeq(), body.toScalaOption(), pos, info, trafos)
         Program(emptySeq(), emptySeq(), emptySeq(), emptySeq(), seqOf(method), emptySeq(), pos, info, trafos)
     }
