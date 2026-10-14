@@ -66,11 +66,13 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
                 FormalVerificationConfigurationKeys.VERIFICATION_TIMEOUT, PluginConfiguration.DEFAULT_VERIFICATION_TIMEOUT_SECONDS,
             ),
             trustLedger = TrustLedger(),
+            verifiedDeclarations = VerifiedDeclarations(),
         )
         FirExtensionRegistrarAdapter.registerExtension(FormalVerificationPluginExtensionRegistrar(config))
         IrGenerationExtension.registerExtension(
             TrustReportWriter(config.trustLedger!!, configuration.get(FormalVerificationConfigurationKeys.TRUST_REPORT), configuration.messageCollector)
         )
+        IrGenerationExtension.registerExtension(VerifiedMarker(config.verifiedDeclarations!!))
         if (!externalSpecs.isEmpty()) {
             FirExtensionRegistrarAdapter.registerExtension(ExternalSpecExtensionRegistrar(externalSpecs))
             IrGenerationExtension.registerExtension(ExternalSpecIrStripper(externalSpecs))

@@ -48,6 +48,10 @@ SnaKt lists the trusted pieces that each verified declaration's program uses:
 - `bundled spec` and `user spec`: the external binding of a class or callable
   that the program calls or reads, from a spec that SnaKt bundles or one the
   user supplies (SPECIFICATIONS.md, "External specifications").
+- `rebinds verified`: such a binding of a declaration that SnaKt verified in
+  the dependency. The spec's contract replaces the one SnaKt proved, so the
+  proof does not cover it. SPECIFICATIONS.md, "External specifications", says
+  which dependencies SnaKt recognises as verified.
 - `@NeverVerify` and `@NeverConvert`: a callee or custom accessor that SnaKt
   does not verify, through its own annotation or a containing class's.
 - `library contract`: a contract that `conversion/StdLibConverter.kt` gives a

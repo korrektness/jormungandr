@@ -14,6 +14,7 @@ data class TrustedAssumption(val kind: Kind, val name: String) : Comparable<Trus
     enum class Kind(val label: String) {
         BUNDLED_SPEC("bundled spec"),
         USER_SPEC("user spec"),
+        REBINDS_VERIFIED("rebinds verified"),
         NEVER_VERIFY("@NeverVerify"),
         NEVER_CONVERT("@NeverConvert"),
         LIBRARY_CONTRACT("library contract"),

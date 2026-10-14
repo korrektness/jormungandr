@@ -22,6 +22,8 @@ data class PluginConfiguration(
     val verificationTimeoutSeconds: Int = DEFAULT_VERIFICATION_TIMEOUT_SECONDS,
     /** Collects each verified program's trusted assumptions for the trust report; null when none is written. */
     val trustLedger: TrustLedger? = null,
+    /** Collects the declarations whose programs verified, for [VerifiedMarker]; null when nothing marks them. */
+    val verifiedDeclarations: VerifiedDeclarations? = null,
 ) {
     companion object {
         const val DEFAULT_VERIFICATION_TIMEOUT_SECONDS = 300

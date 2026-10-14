@@ -26,8 +26,8 @@ import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.formver.common.PluginConfiguration
 
 /**
- * Reports binding errors on the model declarations they concern; the registry attaches every error to a source
- * declaration of the session, so each one is reported exactly once.
+ * Reports binding errors, and bindings to declarations that SnaKt verified, on the model declarations they concern; the
+ * registry attaches each of them to a source declaration of the session, so each one is reported exactly once.
  */
 object ExternalSpecificationBindingChecker : FirBasicDeclarationChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -35,6 +35,9 @@ object ExternalSpecificationBindingChecker : FirBasicDeclarationChecker(MppCheck
         val registry = context.session.externalSpecifications ?: return
         for (error in registry.errorsOf(declaration.symbol)) {
             reporter.reportFailure(Failure(FailureKind.INVALID_EXTERNAL_SPEC, declaration.source, error.condition))
+        }
+        for (rebinding in registry.rebindingsOf(declaration.symbol)) {
+            reporter.reportFailure(Failure(FailureKind.EXTERNAL_SPEC_OF_VERIFIED_DECLARATION, declaration.source, rebinding.condition))
         }
     }
 }

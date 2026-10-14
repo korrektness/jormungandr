@@ -12,8 +12,9 @@
 # multiplatform consumer's common, platform or platform test code does not
 # verify through the bundled specs, if a default build does not show the trust
 # summary of the verified declarations, if a build with verification errors
-# drops its warnings, or if a caller stays verified after the spec it relies on
-# changes. The
+# drops its warnings, if a spec binding to a declaration that another module
+# verified is not reported, or if a caller stays verified after the spec it
+# relies on changes. The
 # multiplatform consumer uses explicit API mode, extra warnings and warnings as
 # errors, which the bundled specs must compile under.
 #
@@ -53,7 +54,7 @@ consumer="$work/consumer"
 
 mkdir -p "$consumer/src/main/kotlin" "$consumer/src/badReference/kotlin" \
     "$consumer/src/badClaim/kotlin" "$consumer/specs" "$consumer/gradle" \
-    "$consumer/lib/src/main/kotlin"
+    "$consumer/lib/src/main/kotlin" "$consumer/vlib/src/main/kotlin"
 # The same daemon JVM as this build: the newest JDKs cannot run Gradle's script
 # or Kotlin compilers.
 cp gradle/gradle-daemon-jvm.properties "$consumer/gradle/"
@@ -75,7 +76,7 @@ plugins {
     id "org.gradle.toolchains.foojay-resolver-convention" version "1.0.0"
 }
 rootProject.name = "consumer"
-include "lib"
+include "lib", "vlib"
 SETTINGS
 
 # The stand-in library: compiled without the plugin, so its bodies are not
@@ -102,6 +103,57 @@ class Counter(private var current: Int) {
 
 fun create(initial: Int): Counter = Counter(initial)
 fun twice(x: Int): Int = x * 2
+SRC
+
+# A library that SnaKt verifies, which the consumer's specs then bind.
+cat >"$consumer/vlib/build.gradle" <<'BUILD'
+plugins {
+    id "org.jetbrains.kotlin.jvm"
+    id "org.jetbrains.kotlin.formver"
+}
+
+repositories {
+    mavenCentral()
+    maven { url System.getProperty("formver.repo") }
+}
+BUILD
+cat >"$consumer/vlib/src/main/kotlin/Half.kt" <<'SRC'
+package stand.vlib
+
+import org.jetbrains.kotlin.formver.plugin.*
+
+fun half(x: Int): Int {
+    preconditions { x >= 0 }
+    postconditions<Int> { result -> result <= x }
+    return x / 2
+}
+
+class Box {
+    val size: Int
+        get() = 1
+}
+SRC
+
+cat >"$consumer/specs/VerifiedSpecs.kt" <<'SRC'
+package stand.specs.verified
+
+import org.jetbrains.kotlin.formver.plugin.*
+
+@ExternalFunction("stand.vlib.half")
+@Pure fun halfModel(x: Int): Int = 0
+
+@SpecOf("halfModel")
+fun halfSpec(x: Int) {
+    preconditions { x >= 0 }
+    postconditions<Int> { result -> result <= x }
+}
+
+@ExternalSpec("stand.vlib.Box")
+interface BoxModel {
+    @Pure @get:Unique val size: Int
+
+    @Law @Pure @Unique fun single(): Boolean = size == 1
+}
 SRC
 
 cat >"$consumer/specs/CounterSpecs.kt" <<'SRC'
@@ -173,6 +225,7 @@ repositories {
 
 dependencies {
     implementation project(":lib")
+    implementation project(":vlib")
 }
 
 for (extra in ["badReference", "badClaim"]) {
@@ -183,6 +236,7 @@ for (extra in ["badReference", "badClaim"]) {
 
 formver {
     externalSpec("specs/CounterSpecs.kt")
+    externalSpec("specs/VerifiedSpecs.kt")
     if (project.hasProperty("badBinding")) {
         externalSpec("specs/BadBinding.kt")
     }
@@ -244,6 +298,10 @@ fun stdlibModels(element: Element) {
     val text = "hello".substring(1, 4)
     verify(text.length == 3 && text[0] == 'e')
 }
+
+fun halving(box: @Unique @Borrowed stand.vlib.Box) {
+    verify(stand.vlib.half(8) <= 8 && box.size == 1)
+}
 SRC
 cat >"$consumer/src/badReference/kotlin/BadReference.kt" <<'SRC'
 fun badReference(x: Int): Int = stand.specs.twiceModel(x)
@@ -297,7 +355,8 @@ if [[ ! -f "$classes/MainKt.class" ]]; then
 fi
 # Spec packages, files and declarations, both the consumer's and the bundled.
 spec_names=(-e stand/specs -e stand.specs -e CounterSpecs -e CounterModel
-    -e createModel -e createSpec -e twiceModel -e twiceSpec -e formver/external -e IntAbs -e absModel -e absSpecification)
+    -e createModel -e createSpec -e twiceModel -e twiceSpec -e formver/external -e IntAbs -e absModel -e absSpecification
+    -e VerifiedSpecs -e halfModel -e halfSpec -e BoxModel)
 leaked="$(find "$classes" -type f -exec grep -l "${spec_names[@]}" {} + || true)"
 if [[ -n "$leaked" ]]; then
     echo "check-gradle-consumer.sh: an external spec reached the compiled output:" >&2
@@ -313,10 +372,22 @@ if ! grep -q "^SnaKt verified .* Details: $report$" "$log"; then
     echo "check-gradle-consumer.sh: the build did not show the trust summary" >&2
     exit 1
 fi
-for entry in "user spec: stand.lib.twice(Int): Int" "bundled spec: kotlin.math.abs(Int): Int"; do
+for entry in "user spec: stand.lib.twice(Int): Int" "bundled spec: kotlin.math.abs(Int): Int" \
+    "rebinds verified: stand.vlib.half(Int): Int" "rebinds verified: stand.vlib.Box"; do
     if ! grep -qF "    $entry" "$report"; then
         cat "$report" >&2
         echo "check-gradle-consumer.sh: the trust report does not list $entry" >&2
+        exit 1
+    fi
+done
+
+# A spec binding to a declaration that the library verified is a warning on
+# the model, and the binding still applies.
+for warning in "5:.*stand.vlib.half," "14:.*stand.vlib.Box," "16:.*stand.vlib.Box.size,"; do
+    line="${warning%%:*}"
+    if ! grep -q "^w: .*VerifiedSpecs.kt:$warning" "$log"; then
+        cat "$log" >&2
+        echo "check-gradle-consumer.sh: the binding on VerifiedSpecs.kt line $line to a verified declaration was not reported" >&2
         exit 1
     fi
 done

@@ -68,6 +68,17 @@ annotation class ExternalFunction(val target: String)
 @Target(AnnotationTarget.PROPERTY)
 annotation class ExternalProperty(val target: String)
 
+/**
+ * Marks a declaration that SnaKt verified in the compilation that produced it. SnaKt adds it to compiled output; see
+ * "External specifications" in SPECIFICATIONS.md for what it changes.
+ */
+@Target(
+    AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY, AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER,
+)
+@Retention(AnnotationRetention.BINARY)
+annotation class Verified
+
 /** Selects the dependency member name for a mirrored model member. */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 annotation class ExternalMember(val target: String)

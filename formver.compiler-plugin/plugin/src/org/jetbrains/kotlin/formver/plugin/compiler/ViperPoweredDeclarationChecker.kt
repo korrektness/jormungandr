@@ -205,7 +205,10 @@ class ViperPoweredDeclarationChecker(
                 reporter.reportFailure(it)
                 return
             }
-            if (!failed) config.trustLedger?.record(context.containingFilePath!!, name, programConversionContext.trust.assumptions)
+            if (!failed) {
+                config.trustLedger?.record(context.containingFilePath!!, name, programConversionContext.trust.assumptions)
+                if (index == 0) config.verifiedDeclarations?.record(declaration.symbol)
+            }
         }
     }
 

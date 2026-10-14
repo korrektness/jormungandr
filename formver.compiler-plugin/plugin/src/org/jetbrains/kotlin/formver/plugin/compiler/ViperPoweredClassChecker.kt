@@ -121,7 +121,10 @@ class ViperPoweredClassChecker(
             reporter.reportFailure(it)
             return
         }
-        if (!failed) config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, program.trustedAssumptions)
+        if (!failed) {
+            config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, program.trustedAssumptions)
+            config.verifiedDeclarations?.record(declaration.symbol)
+        }
     }
 
     context(context: CheckerContext, reporter: DiagnosticReporter)

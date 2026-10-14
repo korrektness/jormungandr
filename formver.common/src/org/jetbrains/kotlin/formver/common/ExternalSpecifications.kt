@@ -40,8 +40,8 @@ val externalPropertyId = annotationId("ExternalProperty")
 val externalMemberId = annotationId("ExternalMember")
 
 /**
- * A binding failure attached to [symbol], a source declaration of the session whose registry found it, so that the
- * checkers of that session reach it.
+ * A binding failure, or a binding to a declaration that SnaKt verified, attached to [symbol], a source declaration of
+ * the session whose registry found it, so that the checkers of that session reach it.
  */
 data class ExternalSpecificationError(val symbol: FirBasedSymbol<*>, val condition: KotlinCondition.ExternalSpec)
 
@@ -63,6 +63,7 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
     private val callables = linkedMapOf<FirCallableSymbol<*>, FirCallableSymbol<*>>()
     private val models = mutableSetOf<FirBasedSymbol<*>>()
     private val failures = mutableListOf<ExternalSpecificationError>()
+    private val rebindings = mutableListOf<ExternalSpecificationError>()
     private var initialized = false
 
     val errors: List<ExternalSpecificationError>
@@ -72,19 +73,32 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
 
     fun errorsOf(symbol: FirBasedSymbol<*>): List<ExternalSpecificationError> = errorsBySymbol[symbol].orEmpty()
 
+    private val rebindingsBySymbol by lazy { initialize(); rebindings.groupBy { it.symbol } }
+
+    /** The bindings of the model [symbol] to a declaration that SnaKt verified, which the model's contract replaces. */
+    fun rebindingsOf(symbol: FirBasedSymbol<*>): List<ExternalSpecificationError> = rebindingsBySymbol[symbol].orEmpty()
+
     /** The trusted assumption that the binding of [target], a bound dependency class or callable, makes. */
     fun bindingAssumption(target: FirBasedSymbol<*>): TrustedAssumption {
         initialize()
-        val (model, name) = when (target) {
-            is FirRegularClassSymbol -> classes[target] to target.classId.asSingleFqName().asString()
-            is FirCallableSymbol<*> -> modelCallable(target) to target.unwrapUseSiteSubstitutionOverrides().unwrapFakeOverrides().let {
-                (if (it is FirPropertyAccessorSymbol) it.propertySymbol else it).trustName
+        val declaration = when (target) {
+            is FirCallableSymbol<*> -> target.unwrapUseSiteSubstitutionOverrides().unwrapFakeOverrides().let {
+                if (it is FirPropertyAccessorSymbol) it.propertySymbol else it
             }
+            else -> target
+        }
+        val (model, name) = when (declaration) {
+            is FirRegularClassSymbol -> classes[declaration] to declaration.classId.asSingleFqName().asString()
+            is FirCallableSymbol<*> -> modelCallable(declaration) to declaration.trustName
             else -> null to null
         }
         checkNotNull(model) { "$target has no external binding." }
-        val bundled = containerFile(model)?.sourceFile?.path?.let(sources::isBundled) == true
-        return TrustedAssumption(if (bundled) TrustedAssumption.Kind.BUNDLED_SPEC else TrustedAssumption.Kind.USER_SPEC, name!!)
+        val kind = when {
+            declaration.isVerified() -> TrustedAssumption.Kind.REBINDS_VERIFIED
+            containerFile(model)?.sourceFile?.path?.let(sources::isBundled) == true -> TrustedAssumption.Kind.BUNDLED_SPEC
+            else -> TrustedAssumption.Kind.USER_SPEC
+        }
+        return TrustedAssumption(kind, name!!)
     }
 
     fun modelClass(symbol: FirRegularClassSymbol): FirRegularClassSymbol? {
@@ -172,6 +186,17 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
         failures += ExternalSpecificationError(symbol, condition)
     }
 
+    // SnaKt verifies a property through its accessors, which carry the mark.
+    private fun FirBasedSymbol<*>.isVerified(): Boolean =
+        listOfNotNull(this, (this as? FirPropertySymbol)?.getterSymbol, (this as? FirPropertySymbol)?.setterSymbol)
+            .any { it.getAnnotationByClassId(verifiedId, session) != null }
+
+    private fun rebinds(model: FirBasedSymbol<*>, target: FirBasedSymbol<*>) {
+        if (!target.isVerified()) return
+        val condition = KotlinCondition.ExternalSpec(ExternalSpecRule.VERIFIED_TARGET, target.sourceName())
+        rebindings += ExternalSpecificationError(model, condition)
+    }
+
     private fun initialize() {
         if (initialized) return
         initialized = true
@@ -213,6 +238,7 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
             }
         }
         if (failures.isNotEmpty()) {
+            rebindings.clear()
             classes.clear()
             callables.clear()
             models.clear()
@@ -246,7 +272,10 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
         classes.clear()
         classes.putAll(valid)
         models += valid.values
-        for ((target, model) in valid) bindMembers(target, model)
+        for ((target, model) in valid) {
+            rebinds(model, target)
+            bindMembers(target, model)
+        }
     }
 
     private fun resolveClasses(name: String): List<FirRegularClassSymbol> {
@@ -295,6 +324,7 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
             else -> {
                 callables[target] = model
                 models += model
+                rebinds(model, target)
                 if (target is FirPropertySymbol && model is FirPropertySymbol) {
                     // Field-only dependency properties have no accessor symbols; the property binding supplies metadata.
                     target.getterSymbol?.let { getter ->
