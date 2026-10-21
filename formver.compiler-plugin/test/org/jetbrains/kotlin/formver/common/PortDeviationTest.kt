@@ -7,6 +7,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.config.CompilerConfiguration
+import org.jetbrains.kotlin.codeMetaInfo.clearTextFromDiagnosticMarkup
 import org.jetbrains.kotlin.lexer.KotlinLexer
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
@@ -26,6 +27,9 @@ class PortDeviationChecker : Closeable {
     private val erasedAnnotations = setOf("Pure", "Unique", "Borrowed", "WrappingIntArithmetic", "TrustedElementEquality")
 
     override fun close() = Disposer.dispose(disposable)
+
+    /** Reconstruct the source compiled by the diagnostics test framework. */
+    fun portSource(marked: String): String = clearTextFromDiagnosticMarkup(marked)
 
     private fun parse(source: String): KtFile = factory.createFile(source).also {
         val errors = PsiTreeUtil.collectElementsOfType(it, PsiErrorElement::class.java)
@@ -244,6 +248,16 @@ class PortDeviationTest {
     }
 
     @Test
+    fun `diagnostic markup clears without hiding executable deviations`() = checker { checker ->
+        val base = fixture("base.kt")
+        val marked = fixture("marked.kt")
+        checker.checkPort(base, checker.portSource(marked), "")
+        val changed = marked.replace("return 1", "return 2")
+        assertFailsWith<IllegalStateException> { checker.checkPort(base, checker.portSource(changed), "") }
+        assertFailsWith<IllegalArgumentException> { checker.checkPort(base, marked, "") }
+    }
+
+    @Test
     fun `assignment sites stay pinned even with an approved body diff`() = checker { checker ->
         val base = fixture("base.kt")
         for (changed in listOf(
@@ -383,7 +397,7 @@ class PortDeviationTest {
         assumeTrue(port.exists(), "ArrayDeque port is absent")
         checker { checker ->
             val upstream = data.resolve("upstream/kotlin-v2.3.0/ArrayDeque.kt").readText()
-            checker.checkPort(upstream, port.readText(), port.resolveSibling("ArrayDeque.port.diff").readText())
+            checker.checkPort(upstream, checker.portSource(port.readText()), port.resolveSibling("ArrayDeque.port.diff").readText())
         }
     }
 }
