@@ -5,7 +5,8 @@ stages, the acceptance checks and what stays trusted. `docs/targets/kotlin-array
 evidence, the upstream pin and the scope of the deliverables M and F; this plan cites its labels (P1–P7, V1–V9).
 
 The language reference in `SPECIFICATIONS.md` records supported verifier features.
-S1's generic-array element model and S2's disjoint copying and fill are implemented.
+S1, S2, S3 and S10 are implemented. "Feasibility" records what the port needs beyond them and which claims it
+restricts.
 
 ## Selection
 
@@ -63,12 +64,11 @@ Decision:
 - The port's storage is `Array<Any?>`, so the model gives the port no element typing. The only typed step is
   `elementData[i] as E` in `internalGet`, an erased no-op covered by "Type invariants". The port writes only `E`
   values and `null`, so the assumption holds for the port's own writes.
-- P2 (null hygiene) is a class law, not only a postcondition of the clearing operations. The mutants do
-  not need it: without P2 a cleared buffer may hold a slot equal to the argument, so the verifier rejects the
-  KT-80390 mutant on `result < size` either way. P2 is in scope because it is
-  an upstream guarantee in its own right (removed elements are not retained), and `removeKeepsSlot` tests it. State
-  P2 through a `@Pure` helper that maps a buffer index to its window offset, so the quantifier triggers on
-  `elementData[j]`. Its cost on every member is measured in S6 and S7.
+- P2 (null hygiene) is a postcondition of each member that vacates slots (`removeFirst`, `removeLast`, `clear`):
+  the vacated slots hold `null` on return. It is not a class law, because a class law cannot read array elements
+  (see "Feasibility", G6). The mutants do not need it: without P2 a cleared buffer may hold a slot equal to the
+  argument, so the verifier rejects the KT-80390 mutant on `result < size` either way. P2 is in scope because it is
+  an upstream guarantee in its own right (removed elements are not retained), and `removeKeepsSlot` tests it.
 
 ### V2: `copyInto`, aliasing and permissions
 
@@ -118,29 +118,43 @@ each needs its own unsigned or bitwise encoding.
 ### D4 and V5: element equality
 
 A global V5 is rejected: one where every executed `==` of the arbitrary kind returns the specification relation,
-everywhere. That equates arbitrary executable `equals` with an equivalence relation across all code.
+everywhere. That makes every arbitrary executable `equals` a deterministic function of its operands across all
+code.
 
 What the port needs is narrower. In `indexOf`, `lastIndexOf` and `contains`, the result depends on executed
 `element == elementData[i]`, whose static type is the unbounded `E`; today that is an arbitrary Boolean. The
-postconditions (the `ListModel.indexOf` form) compare with the specification relation `EqualsRelation`, which the
-register entry "Element equality in collections" already assumes is an equivalence relation.
+postconditions (the `ListModel.indexOf` form) compare with the specification relation `EqualsRelation`. The
+`EqualsRelation` domain fixes the relation only for a null left operand, value types and identity classes; it has
+no reflexivity, symmetry or transitivity axiom, so `x == x` on an unbounded `E` does not verify.
 
-Decision: a function annotation, registered, that links the two inside the annotated function only. In such a
-function an executed `==` of the arbitrary kind may still throw, and on normal return its result is
-`EqualsRelation(l, r)`. Nothing changes elsewhere. The annotation goes on exactly `indexOf` and `lastIndexOf`;
-`contains` calls `indexOf` and needs none. The trust report lists each use; a new register entry "Executed element equality"
-names it with tests.
+Decision: a function annotation `@TrustedElementEquality`, a trusted assumption, that links the two inside the
+annotated function only.
+
+- Scope: an executed `==`, `!=` or `when`-subject comparison of the `Dynamic` kind in
+  `conversion/KotlinEquality.kt` whose left operand's static type is a type parameter, nullable or not, in the
+  body of the annotated function. An inlined callee keeps its own mode, as for D3. `Value`, `Identity`,
+  `Structural` and `Declared` kinds are unchanged, and so is a `Dynamic` comparison whose left operand is an
+  interface, open class or library type.
+- Encoding: the executed form keeps its nondeterministic exceptional exit when a catch is active, and its value is
+  `EqualsRelation(l, r)` instead of a fresh Boolean. No axiom is added to the domain. The `ListModel.indexOf`
+  postconditions need none: each clause compares `element` with a stored element, and the executed comparison
+  supplies exactly that relation value.
+- Registration: unlike `@WrappingIntArithmetic`, which is a semantic opt-in, each annotated function is a
+  `TrustedAssumption` in the trust report. The register entry "Executed element equality" in `docs/soundness.md`
+  names the annotation and its tests.
+- Use: exactly `indexOf` and `lastIndexOf`; `contains` calls `indexOf` and needs none. The ownership check of
+  `convertEquality` does not apply: `element` is a shared parameter and `elementData[i]` a shared element.
 
 What stays trusted, for these functions only:
 
-- each executed `equals` call is deterministic and agrees with the specification relation;
+- each executed `equals` call on the element type agrees with the specification relation, which makes it
+  deterministic;
 - the call does not reach the deque (the existing "Unique borrows" entry; a hostile `equals` holding an alias is
-  outside the ownership discipline already);
-- the equivalence axioms of the relation (the existing entry; not new).
+  outside the ownership discipline already).
 
-What a hostile `equals` can do: one that is not reflexive, not deterministic or not consistent makes the real
-`indexOf`/`contains` return what the contract excludes, for example `contains(x)` false right after `addLast(x)`. A
-client proof built on that contract can then be wrong at run time. It cannot break P1, P2 or `size`: the search
+What a hostile `equals` can do: one whose result changes between calls on the same operands makes the real
+`indexOf`/`contains` return what the contract excludes, for example `indexOf(x)` returning `-1` right after a call
+that returned `0`, while the contract fixes both results by the same relation value. A client proof built on that contract can then be wrong at run time. It cannot break P1, P2 or `size`: the search
 members do not write, so the laws hold whatever `equals` returns. A throwing `equals` gives an exceptional exit, on
 which nothing is claimed. For `E` of `Int`, `String`, an enum or an identity class, the language fixes `equals`, so
 the assumption is true and no residual trust remains; the consumer uses `Int`.
@@ -148,8 +162,8 @@ the assumption is true and no residual trust remains; the consumer uses `Int`.
 Tests in S4, on a stand-alone generic search over an owned `Array<E>`: the annotated search verifies the
 `ListModel.indexOf` postcondition; the same body without the annotation still verifies `result >= -1 && result <
 size` and fails only the equality clauses, which shows which clauses rest on the assumption; an un-annotated caller of an annotated function gets
-only the callee's contract; `soundness/equality.kt` gains an `UNSOUND` case with a non-reflexive `equals` in an
-annotated search that verifies a false `contains`. S8 repeats the un-annotated sibling on the port's `indexOf`.
+only the callee's contract; `soundness/equality.kt` gains an `UNSOUND` case with an `equals` that alternates its
+result, where two calls of an annotated search verify equal results that differ at run time. S8 repeats the un-annotated sibling on the port's `indexOf`.
 
 Both mutants are detectable without this decision (note, "Regression cases KT-80390 and KT-80661"). The mutants
 still carry the annotation, so that they differ from the upstream body only in the guard.
@@ -176,7 +190,7 @@ still carry the annotation, so that they differ from the upstream body only in t
   pinning the set of assignment sites, this proves `elementData === emptyElementData ⇔ elementData.size == 0` for
   the port's histories, which is what the rewritten test needs.
 - Residual trust, labelled in the provenance file: the stripped diff is behaviour-preserving for its listed hunks
-  (D-1 superclass removal, D-2 `size` as a plain `var`, D-3 `modCount` as a field, D-4 private copies of
+  (D-1 superclass removal, D-2 `size` as a `@Pure` getter over a private `var`, D-3 `modCount` as a field, D-4 private copies of
   `AbstractList` helpers, D-5 `@InlineOnly` removal, D-6 the shared empty sentinel replaced by `arrayOfNulls(0)` and
   `elementData === emptyElementData` by `elementData.size == 0`, D-7 removed members, D-8 added specification). The proof is of the port,
   not of the shipped class.
@@ -189,6 +203,61 @@ declares only the in-scope members and does not extend `MutableListModel`, so an
 require the supertype model, the inherited members are listed in the trust report as bound to the `MutableList`
 model, not proved by the port. Whether constructors of a bound class can be modelled is unchecked **[H]**; S9
 starts by checking it, and if not, a constructor-binding change is its own stage before S9.
+
+`DequeSpec` has two observers: `size` and `elementAt(index)`, the element at a window offset. The port implements
+`elementAt` with a `@Pure` body that reads `elementData` (D-8), which needs G2. Upstream `get` throws on a bad index,
+so it cannot be a `@Pure` observer in the port; the port proves that `get(i)` returns `elementAt(i)` and changes
+nothing. The model declares `get` as the observer, as `ListModel` does, and the spec-equality test of S9 compares
+the model's `get` with the port's `elementAt` under that mapping, and the model's mutator contracts with the
+port's.
+
+## Feasibility
+
+A spike of a reduced port (P1 law, wrap-around helpers, `get`, `addLast`, `removeFirst`, `removeLast`,
+`copyElements`, a three-loop `indexOf`) checks what the M build needs. Each spike file verified in 12–17 s wall
+time including Gradle start-up, and no declaration came near the 300 s per-declaration timeout. The one exception
+was a law using `%`, which timed out in its helper; the port states offsets with conditional subtraction, never `%`.
+The landed foundations verify in 10–12 s wall per file (`generic_array_elements`, `generic_array_bulk`,
+`wrapping_arithmetic`, `int_shift`, `int_coerce_at_least`). The quantifier-cost risk of the note is therefore
+not the constraint. The constraints are these gaps:
+
+- G1: `===` is rejected when both operands may hold a boxed value, and a source class's specification has no
+  exemption. Every element-preservation clause of the port (`get(i) === elementAt(i)`, the frame of `addLast`, the
+  result of `removeFirst`) compares `E` or `Any?` operands, and the `==` fallback does not verify because
+  `EqualsRelation` is not reflexive. Fix (S5a): accept `===` inside specification blocks (`preconditions`,
+  `postconditions`, `loopInvariants`, `verify`, laws), where it compares model references; injected values are
+  one-to-one in `Ref`, so for them it means equal values. Executed `===` and `@Pure` bodies keep the rejection,
+  so no executed code observes runtime box identity. This states no new assumption; SPECIFICATIONS.md gains the
+  meaning and the register entry "Boxed identity" its scope.
+- G2: a `@Pure` function with a `@Unique` receiver or parameter must return a value type, so the port cannot
+  implement `elementAt`. Elements of a unique `Array<T>` are shared values (V1), so returning one does not alias
+  owned data. Fix (S5b): the purity check accepts a non-value result that is an element read of a unique array, or
+  an unchecked cast of one.
+- G3: a `var` cannot be a `@Pure` observer. Restriction instead of a fix: the port keeps `size` in a private `var`
+  and exposes `@Pure @get:Unique override val size` reading it (D-2). An `@Pure override var` currently reports
+  `INVALID_OBSERVER` and an `INTERNAL_ERROR` (`ClassCastException`, `BackingFieldGetter` to `CustomGetter`) on every
+  member of the class; S5b replaces the internal error with the `INVALID_OBSERVER` diagnostic alone.
+- G6: a class law cannot read array elements ("Non-value read or call in law"). Restriction: P2 is a postcondition
+  of the vacating members (V1), not a law.
+- G7: a postcondition that indexes a unique array field with a `@Pure` member call of the same receiver does not
+  verify even against the identical returned expression (`return elementData[positiveMod(head + index)]` with
+  `result === elementData[positiveMod(head + index)]`); the same comparison in a `verify` inside the body does.
+  The contract nests the call inside `unfolding` of the receiver predicate. G8: the same call inside a `forAll` in
+  the postcondition of a member that reassigns `elementData` reports `OWNERSHIP_NOT_ESTABLISHED`. Fix (S5c):
+  reproduce both as tests, then encode such calls outside the unfolding. Stating contracts through `elementAt` may
+  avoid both; S5c checks that first and keeps the tests either way.
+
+Claim restrictions:
+
+- Capacity: `internalIndex` computes `head + index` with `head < capacity` and `index < size <= capacity`, which
+  exceeds `Int.MAX_VALUE` once the capacity is above 2^30. The port carries a law `elementData.size <= 2^30`, a
+  precondition `initialCapacity <= 2^30` on the `(Int)` constructor, and `size < 715827882` on `addFirst`,
+  `addLast` and `add` (growth from a full buffer of that size stays at or below 2^30). `DequeSpec` and the model carry the
+  preconditions. Nothing is claimed for larger deques. Upstream at such sizes is not reproduced and not claimed to
+  be defective.
+- Element equality: element-preservation clauses state reference identity (G1); search clauses state
+  `EqualsRelation` (D4).
+- P2 per operation, not as a law (G6).
 
 ## Stages
 
@@ -203,18 +272,22 @@ the diff including tests.
 | S3 | V3 constant `shr`, D3 annotation, `coerceAtLeast` model | the D3 tests; `(-3) shr 1 == -2` verifies, `== -1` fails | 400–600 |
 | S4 | D4 annotation and register entry | the D4 tests | 300–500 |
 | S5 | Vendored upstream, provenance, deviation checker with fixtures | checker fixtures pass and fail as stated in D2 | 300–500 plus the vendored file |
-| S6 | Port skeleton: class, P1/P2 laws, constructors, mod helpers, `get`, `set`, `first`/`last` (+`OrNull`), `DequeSpec` | members verify; `getWrapped` (no `positiveMod`) and `firstOnEmpty` fail; deviation check passes | 400–600 |
-| S7 | `ensureCapacity`, `copyElements`, `registerModification`, `addFirst`/`addLast`/`add`, `removeFirst`/`removeLast` (+`OrNull`) | a client `rotate(d)` verifies through the port; `removeKeepsSlot` fails P2; D-6 `verify`s hold | 400–700 |
+| S5a | G1: `===` in specification blocks | in a source class with `Array<Any?>` storage, `get(i) === elementAt(i)` verifies; executed `===` on `Any?` operands and `===` in a `@Pure` body stay `UNSUPPORTED_FEATURE`; a false `===` claim on two different stored references fails | 200–400 |
+| S5b | G2: element results of `@Pure` unique readers; G3 internal error | `elementAt` over a unique `Array<Any?>` field verifies as an observer of an interface; a `@Pure` reader returning a unique field's object stays `PURITY_VIOLATION`; `@Pure override var` reports `INVALID_OBSERVER` only | 200–400 |
+| S5c | G7, G8: `@Pure` member calls in contracts | the identical-expression postcondition and the quantified frame after reassigning `elementData` verify; a false frame claim fails | 200–500 |
+| S6 | Port skeleton: class, P1 law and capacity law, constructors, mod helpers, `get`, `set`, `first`/`last` (+`OrNull`), `DequeSpec` with `size` and `elementAt` | members verify; `getWrapped` (no `positiveMod`) and `firstOnEmpty` fail; deviation check passes | 400–600 |
+| S7 | `ensureCapacity`, `copyElements`, `registerModification`, `addFirst`/`addLast`/`add`, `removeFirst`/`removeLast` (+`OrNull`), capacity preconditions | a client `rotate(d)` verifies through the port; `removeKeepsSlot` fails the P2 postcondition; `addLast` without the capacity precondition reports `INTEGER_OVERFLOW`; D-6 `verify`s hold | 400–700 |
 | S8 | `indexOf`, `lastIndexOf`, `contains`, `clear`, `nullifyNonEmpty`; mutants | upstream bodies verify; `indexOfPre80390` fails on `result < size`; `lastIndexOfPre80661` fails on `(result == -1) == !contains(element)`; vacuity clean on the port | 300–500 |
 | S9 | `external-specs/ArrayDeque.kt`, bundled-vacuity entry, spec-equality test, consumer in testData and in the Gradle consumer project | the consumer claims and negatives above; `peekEmpty` fails its precondition; `check-gradle-consumer.sh` passes with the trust report entry | 500–800 |
-| S10 | Upstream patch artifact for defect 1 | `docs/targets/arraydeque/filterInPlace.patch` plus `ArrayDequeTest` cases using `testArrayDeque`'s layout enumeration with a throwing `contains` at every position; the cases fail on 2.3.0 and pass patched, run against a scratch build and reported in the commit | 200–400 |
+| S10 | Upstream patch artifact for defect 1 | `docs/upstream/arraydeque-removeall/` (patch, report, reproduction, test driver) plus `ArrayDequeTest` cases using `testArrayDeque`'s layout enumeration with a throwing `contains` at every position; the cases fail on 2.3.0 and pass patched, run against a scratch build and reported in the commit | 200–400 |
 
-Order: S1 → S2; S1 → S4; S3 and S5 are independent of everything else; S6 needs S1, S3, S5; S7 needs S2, S6; S8 needs
-S4, S7; S9 needs S8. S10 is independent of all verifier work. No stage touches two verifier subsystems.
+Order: S1 → S2; S1 → S4; S3 and S5 are independent of everything else; S5a, S5b and S5c are independent of each
+other; S6 needs S1, S3, S5, S5a, S5b, S5c; S7 needs S2, S6; S8 needs S4, S7; S9 needs S8. S10 is independent of all verifier work. No stage touches two verifier subsystems.
 
 Stop rule: if S6 or S7 cannot verify a member within the default per-declaration timeout after splitting the
 wrapped and unwrapped windows into lemma functions (note, "Risks"), stop and report the timings before S8. Do not
-raise the timeout to pass.
+raise the timeout to pass. If S5a, S5b or S5c needs more than twice its size estimate, or its fix needs a new
+trusted assumption, stop and report before S6.
 
 ## Out of scope
 

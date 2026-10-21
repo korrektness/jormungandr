@@ -150,8 +150,9 @@ P4. Bounds behaviour: a contract with `index in 0 until size` as its preconditio
 `first()` with `size > 0`. The throwing paths are left out of the contracts, because SnaKt claims nothing on
 abnormal exit.
 
-P5. Overflow: `addFirst`, `addLast` and `add` take `size < Int.MAX_VALUE`, as `MutableListModel.add` does. Under
-that precondition the `"Deque is too big."` branch is dead. `newCapacity` is verified under V4.
+P5. Overflow: `addFirst`, `addLast` and `add` take the capacity precondition of the plan's
+[Feasibility section](arraydeque-plan.md#feasibility), which is stricter than `MutableListModel.add`'s
+`size < Int.MAX_VALUE`. Under it the `"Deque is too big."` branch is dead. `newCapacity` is verified under V4.
 
 P6. Exception safety (F only), on every exceptional exit of a member that borrows its receiver:
 (a) P1 and P2 hold;
@@ -354,7 +355,6 @@ is wanted for other reasons.
 - Usage counts outside the Kotlin repo.
 - Whether F1/F2 would find any functional bug that the layout tests miss.
 - Wasm `array.copy` and Native `copyImpl` overlap semantics, beyond their documented contract.
-- Solver times for the port. Nothing has been run through SnaKt.
-- Whether a generic class whose fields are `Array<Any?>` and whose laws quantify over them verifies within the
-  default timeout. The plan's S6 measures this.
+- Solver times for the full port. The plan's [Feasibility section](arraydeque-plan.md#feasibility) has the
+  times of a reduced port.
 - The maintainers' view of drafts A and B. Neither is filed.
