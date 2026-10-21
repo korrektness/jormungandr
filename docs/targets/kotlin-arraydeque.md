@@ -2,13 +2,13 @@
 
 Use this note when deciding whether to point SnaKt at `kotlin.collections.ArrayDeque`, and when planning that work.
 It is a research and design note: nothing here is implemented. Statements are tagged **[E]** for evidence checked
-while writing this note (a command, a source location or a run), and **[H]** for hypotheses that a stage below has to
+while writing this note (a command, a source location or a run), and **[H]** for hypotheses that a stage has to
 confirm.
 
-## Recommendation
+`docs/targets/arraydeque-plan.md` holds the plan built on this note: the selection, the design decisions, the
+stages, the acceptance checks and what stays trusted. This note holds the evidence, the pin and the scope.
 
-Select ArrayDeque at the minimal deliverable (M, below). Do not commit to the full refinement (F) until M has
-measured verification times.
+## Value
 
 - The target has upstream defects. The pin carries fixes for two wrap-around bugs (KT-80390, KT-80661). The
   2.3.0 source has one open defect and one unspecified aliasing behaviour. Both reproduce, and neither has a
@@ -22,13 +22,13 @@ measured verification times.
 - SnaKt as it stands cannot detect either new finding. The defect breaks content preservation on an exceptional exit, and
   exceptional exits carry no obligations. The aliasing case is ruled out by the ownership discipline as a
   precondition rather than detected. To find bugs of the first kind, M is not enough: it needs stage F3.
-- Compared with persistent collections and Ktor ranges: `docs/targets/` holds no note on either, so the
-  comparison under "Selection" rests on the targets' shape.
 
 ## Pin
 
-- Upstream: JetBrains/kotlin tag `v2.3.0`, the Kotlin version SnaKt builds against
-  (`gradle/libs.versions.toml`, `kotlin = "2.3.0"`). **[E]**
+- Upstream: JetBrains/kotlin tag `v2.3.0`, commit `f95cb2f7693a15966fd8fd9b1d78d440545e7b66`, the Kotlin version
+  SnaKt builds against (`gradle/libs.versions.toml`, `kotlin = "2.3.0"`). **[E]**
+- `ArrayDeque.kt` at the pin has sha256 `1369874f80ec51c6c484276aacc53fe4a401870b1de0e907cc1217278d6c40ae`. The
+  file is Apache-2.0; the license and notice are `license/LICENSE.txt` and `license/NOTICE.txt`. **[E]**
 - Files: `libraries/stdlib/src/kotlin/collections/ArrayDeque.kt` (672 lines),
   `libraries/stdlib/test/collections/ArrayDequeTest.kt` (754 lines), helpers in
   `libraries/stdlib/src/kotlin/collections/AbstractList.kt` (`checkElementIndex`, `checkPositionIndex`,
@@ -81,7 +81,7 @@ KT-80661 mutant of `lastIndexOf` replaces the condition with `head > tail`: `las
 full buffer. A postcondition of the `ListModel.indexOf` form in
 `formver.compiler-plugin/plugin/resources/external-specs/Collections.kt` rejects both mutants. The `null`
 case is in reach already, because the executed `==` against `null` is exact. The present-element case needs
-verifier change V5.
+the plan's equality decision (D4).
 
 ### New defect 1: `removeAll`/`retainAll` corrupt the deque when `contains` throws [E]
 
@@ -138,9 +138,8 @@ pointwise: `get(i) == elementData[internalIndex(i)]`. This needs no constructor 
 P1. Representation law: `0 <= size <= elementData.size`; `elementData.size == 0 || 0 <= head < elementData.size`;
 `elementData.size == 0 implies head == 0`.
 
-P2. Null hygiene: every slot outside the live window is `null`. Upstream relies on it: `copyElements` copies the
-whole buffer, and the KT-80390 mutant of `indexOf` is wrong only because of what P2 puts in the empty slots. P2 is a
-quantified class law over the buffer.
+P2. Null hygiene: every slot outside the live window is `null`. Its status as a law is decided in the plan's
+[V1 section](arraydeque-plan.md#v1-array-element-model).
 
 P3. Per-operation contracts equal to the bundled `MutableListModel` contracts where the operation exists there
 (`add`, `add(index)`, `set`, `remove`, `get`, `indexOf`, `contains`). The deque operations get the analogous
@@ -172,17 +171,12 @@ Not claimed: termination of foreign `equals`/`contains`, `modCount` and iterator
 
 ### M: verified port of the core operations, plus a bundled specification
 
-- A port of the upstream class in `testData` that changes only what the deviation list allows. Members: the
+- A port of the upstream class, proved against P3's contracts, and a bundled model with the same contracts.
+  Members: the
   constructors except `ArrayDeque(Collection)`, `isEmpty`, `get`, `set`, `first`/`last` (+`OrNull`),
   `addFirst`/`addLast`, `add(e)`, `removeFirst`/`removeLast` (+`OrNull`), `indexOf`, `lastIndexOf`, `contains`,
   `clear`, and the private helpers they call (`ensureCapacity`, `copyElements`, `newCapacity`, the mod helpers,
   `nullifyNonEmpty`).
-- A source interface `DequeSpec<E>` holding P3's contracts. The port implements it, so override refinement proves
-  the port against it (SPECIFICATIONS.md, "Overrides").
-- `external-specs/ArrayDeque.kt` binding `kotlin.collections.ArrayDeque`. Its contracts are the text of
-  `DequeSpec`, and a test checks the two are equal.
-- Negative siblings: the KT-80390 mutant of `indexOf` (`head >= tail`) and the KT-80661 mutant of `lastIndexOf`
-  (`head > tail`) fail.
 - This covers the BFS/worklist use of the class and the code of both regression cases. It does not cover
   middle insertion or removal, bulk operations, or exception safety.
 
@@ -202,111 +196,33 @@ enumeration upstream already tests that code at sizes up to 15 **[H: low odds of
 
 | # | Change | Generality | Size |
 |---|---|---|---|
-| V1 | `Array<T>` element model: the predicate holds a `Seq[Ref]`; reads and writes through a unique path; `size`; `arrayOfNulls(n)`, `emptyArray()`; elements typed `T` under the existing type-invariant assumption | every generic container | 2–3 sol changes |
-| V2 | `copyInto(dst, off, from, to)` for `IntArray` and `Array<T>` with the documented semantics for the same array and overlapping ranges: `dst' = dst[..off] ++ old(src)[from..to] ++ dst[off+len..]`, bounds as obligations; `fill(v, from, to)` | every array algorithm | 1–2 sol changes |
-| V3 | `x shr s` for a constant `s` as `floorDiv(x, 2^(s and 31))`, the arithmetic shift with Kotlin's masked distance. Upstream uses only `shr 1`. `ushr` and `and` stay unmodelled; each needs its own unsigned or bitwise encoding | broad | 1 sol change |
-| V4 | Wrapping arithmetic where a function says so (D3) | narrow but recurring in JDK-derived code | 1 sol change after D3 |
-| V5 | Executed `==` of kind `Dynamic` returns `EqualsRelation(l, r)` and may throw, which extends the "Element equality in collections" assumption to executed code | every generic collection | 1 sol change + register update |
+| V1 | Generic array element model: [plan, V1](arraydeque-plan.md#v1-array-element-model) | every generic container | plan stage S1 |
+| V2 | `copyInto` and `fill`: [plan, V2](arraydeque-plan.md#v2-copyinto-aliasing-and-permissions) | every array algorithm | plan stage S2 (disjoint arrays); same-array copies are F |
+| V3 | Constant `shr`: [plan, D3](arraydeque-plan.md#d3-wrapping-arithmetic) | broad | plan stage S3 |
+| V4 | Wrapping arithmetic: [plan, D3](arraydeque-plan.md#d3-wrapping-arithmetic) | narrow but recurring in JDK-derived code | plan stage S3 |
+| V5 | Executed element equality: [plan, D4](arraydeque-plan.md#d4-and-v5-element-equality) | every generic collection | plan stage S4 |
 | V6 | Obligations at the exceptional exits of members that borrow a unique receiver: class laws, and a declared exceptional postcondition that may refer to entry values | broad; high churn | opus design, then 2–4 sol changes |
 | V7 | `iterator()`/`hasNext()`/`next()` on an owned `Collection` against its iteration sequence | broad | opus design, then 2–3 sol changes |
 | V8 | A ghost index map that witnesses one sequence as an order-preserving subsequence of another, usable in normal and exceptional postconditions | narrow | opus design |
 | V9 | A source subtype of a modelled library class, verified against the model (conformance), so that the upstream class can be checked without the port | broad; removes deviation D-1 | opus design; later than F |
 
-## Trusted boundaries
+## Stages beyond the minimum target
 
-- The port matches upstream. The proof covers the port, and a deviation check (stage S11) keeps the port equal to
-  upstream apart from the deviations listed below. Every deviation is trusted to preserve behaviour.
-- Deviations: D-1 the class drops its superclass `AbstractMutableList` and the `override` modifiers; D-2 `size`
-  becomes a plain `var` with a private setter; D-3 `modCount` becomes a field of the port; D-4 the `AbstractList`
-  index checks and `newCapacity` become private copies, verbatim; D-5 `@kotlin.internal.InlineOnly` is removed;
-  D-6 the shared `emptyElementData` sentinel becomes a fresh `arrayOfNulls(0)`, and `elementData ===
-  emptyElementData` becomes `elementData.size == 0`. The rewrite relies on the upstream invariant
-  `elementData === emptyElementData ⇔ elementData.size == 0`: every assignment is the sentinel,
-  `arrayOfNulls(n)` with `n > 0`, a non-empty `toTypedArray()` or a larger copy. An allocated empty deque is off
-  the sentinel, so the invariant is about capacity, not `size`. It is argued by hand, not proved **[H]**. D-7 the members outside the deliverable are removed; D-8
-  specification blocks and laws are added.
-- Platform `copyInto` meets V2. Inspected: the JVM (`System.arraycopy`) and the JS `arrayCopy` overlap logic.
-  The Wasm `array.copy` and Native `copyImpl` were followed to their intrinsics only. **[gap]**
-- `Collection.toTypedArray()` returns a fresh array of exactly `size` elements (F only; the JVM calls
-  `toArray(arrayOfNulls(0))`).
-- Element `equals` is an equivalence relation (V5; docs/soundness.md, "Element equality in collections").
-- The unchecked cast `as E` is covered by the existing type-argument assumption (docs/soundness.md,
-  "Type invariants").
-- The bundled ArrayDeque model is the ordinary trusted external spec (docs/soundness.md, "External
-  specifications"). It is checked equal to the contracts that the port proves.
-
-## Opus design decisions
-
-- D0. Port first, conformance (V9) later. Recommendation: port. V9 would also have to trust `AbstractMutableList`'s
-  inherited `iterator`, `subList`, `equals` and `hashCode` bodies. That is a larger and less local change.
-- D1. Where the port lives: `testData/diagnostics/targets/arraydeque/`, with the vendored upstream file under
-  `formver.compiler-plugin/testData/upstream/kotlin-2.3.0/` (Apache-2.0, notice kept). Recommendation as stated.
-- D2. Form of the deviation check: a committed unified diff from the vendored upstream to the port, checked by
-  `agent-scripts/check-testdata.sh`. Recommendation: one diff per file, with the specification blocks stripped by
-  a fixed rule (leading `preconditions`/`postconditions`/`loopInvariants` blocks and `@Law` members) before the
-  comparison.
-- D3. Wrapping arithmetic: an opt-in function annotation (`@WrappingArithmetic`, recorded in the register) that
-  encodes `+`, `-` and `*` modulo 2^32 inside that function. `newCapacity` uses only `+`, `-` and `shr 1`. The alternative is a precondition-strengthened copy
-  of `newCapacity`, which would be a further deviation. Recommendation: the annotation. It keeps the
-  upstream body verbatim. The wrapped encoding stays linear for `+`, `-` and multiplication by a constant;
-  `*` of two variables is nonlinear under either encoding.
-- D4. Whether V5 is acceptable. It makes executed equality agree with the relation the specifications already
-  assume. A source `equals` that breaks the relation then gives a wrong proof in executed code too.
-  Recommendation: accept, and add a register entry with an abusing test.
-- D5. The shape of V6: which exits carry law obligations (every call that may throw, or only calls on shared or
-  foreign receivers), and the golden churn across the suite. Recommendation: measure the churn on a branch
-  before deciding.
-- D6. Whether P2 (null hygiene) is a law or only a postcondition of the clearing operations. Recommendation:
-  a law. `copyElements` needs it, and so does the indexOf regression.
-
-## Stages
-
-Each stage is one bounded, sol-sized change unless marked. Each lands with public-entry tests and a negative
+The plan stages the minimum target. These stages extend it to F. Each lands with public-entry tests and a negative
 sibling in the same file (docs/developing.md, "Negative tests").
 
 | Stage | Change | Public-entry regression tests | Needs |
 |---|---|---|---|
-| S1 | V1 reads, writes and `size` for `Array<T>` | `stdlib/array/generic_array_elements.kt`: `swap`, `fillNulls` verify; `writeShared` and `readPastEnd` fail | — |
-| S2 | V1 `arrayOfNulls`, `emptyArray`, null-hygiene quantifiers | `newArrayIsNull` verifies; `newArrayNonNull` fails | S1 |
-| S3 | V2 `copyInto` and `fill` | `copy_into.kt`: `shiftLeftOverlap` and `shiftRightOverlap` verify against memmove semantics; `naiveForwardOverlap` (the claim a forward loop would give) fails; `copyPastEnd` fails | S1 |
-| S4 | V3 `shr` | `halfOf(n)` verifies `n shr 1 == n / 2` for `n >= 0` and `(-3) shr 1 == -2`; `x shr 33 == x shr 1` verifies; a sibling claiming `(-3) shr 1 == -1` fails | — |
-| S5 | V4 per D3 | the verbatim `newCapacity` verifies `result >= minCapacity`; the same body without the annotation reports `INTEGER_OVERFLOW` | D3 |
-| S6 | V5 per D4 | `indexOfGeneric<E>` over an owned `Array<E>` verifies a `ListModel`-style postcondition; the abuse case in `soundness/equality.kt` is extended | D4 |
-| S7 | Port skeleton: class, P1/P2 laws, constructors, mod helpers, `get`, `set`, `first`/`last`, `DequeSpec` | the port's members verify; `getWrapped` and `firstOnEmpty` siblings fail | S1–S4, D1, D6 |
-| S8 | `ensureCapacity`, `copyElements`, `addFirst`/`addLast`/`add`, `removeFirst`/`removeLast` (+`OrNull`) | a client `rotate(d)` verifies through the port; `removeKeepsSlot` (a sibling that skips `elementData[head] = null`) fails P2 | S5, S7 |
-| S9 | `indexOf`, `lastIndexOf`, `contains`, `clear`, `nullifyNonEmpty` | `indexOfPre80390` and `lastIndexOfPre80661` (the `indexOf` condition as `head >= tail`, the `lastIndexOf` condition as `head > tail`) fail their postconditions | S6, S8 |
-| S10 | `external-specs/ArrayDeque.kt` and its bundled-vacuity entry | `bfs` client verifies through the bundled spec; a client `peekEmpty` fails its precondition | S9 |
-| S11 | Vendored upstream file and the deviation check per D2 | the check fails when a port body differs from upstream outside the diff | D1, D2 |
-| F1 | `add(index)`, `removeAt`, `remove(e)` | the port verifies; `addShiftOffByOne` fails | S11 |
+| F1 | `add(index)`, `removeAt`, `remove(e)` | the port verifies; `addShiftOffByOne` fails | the minimum target |
 | F2 | `removeRange` and its shift loops | the port verifies; a loop that stops after two segments fails | F1 |
-| F3 (opus) | V6 and V8, then `filterInPlace` with P6 | the upstream `removeAll` fails P6(b) with a throwing `contains`; a variant whose exception cleanup restores the element under test, moves the unprocessed suffix to follow the kept prefix, nulls the vacated slots and sets `size` to their total, in both branches, verifies; a variant that only delays nulling fails P6(b) in the linear branch | D5 |
+| F3 (opus) | V6 and V8, then `filterInPlace` with P6 | the upstream `removeAll` fails P6(b) with a throwing `contains`; a variant whose exception cleanup restores the element under test, moves the unprocessed suffix to follow the kept prefix, nulls the vacated slots and sets `size` to their total, in both branches, verifies; a variant that only delays nulling fails P6(b) in the linear branch | the plan's "Deciding on exceptional exits" |
 | F4 (opus) | V7, then `addAll`, `addAll(index)`, `ArrayDeque(Collection)` with P7 | the port verifies; `d.addAll(1, d)` in a client is an ownership error | F1 |
 | F5 (opus) | The normal-exit content specification of `removeAll`/`retainAll` (kept elements are exactly those the predicate keeps) | `retainAllKeepsOrder` verifies; a sibling that reverses kept elements fails | F3 |
-
-## Executable definition of value
-
-The target delivers value when every check below passes on `main`. Names follow the stage table.
-
-1. `./agent-scripts/test.sh --verify arraydeque` passes, and the port's in-scope members carry no
-   `VERIFICATION_SKIPPED`, `UNSUPPORTED_FEATURE` or `UNTRACKED_WRITE`.
-2. In the same goldens, `indexOfPre80390` and `lastIndexOfPre80661` fail with postcondition diagnostics, and the
-   2.3.0 bodies verify. A proof that cannot tell the 2.3.0 code from the mutants delivers nothing.
-3. `./agent-scripts/test.sh --vacuity arraydeque` lists nothing.
-4. The deviation check of S11 passes, and the deviation list in this note equals the hunks of the committed
-   diff.
-5. `./agent-scripts/check-gradle-consumer.sh` passes with a client that uses `ArrayDeque` through the bundled spec,
-   and the trust report lists the binding as `bundled spec`.
-6. For F: the upstream `filterInPlace` fails P6(b) (the proof route to new defect 1) while it meets P6(a), and `d.addAll(1, d)` is
-   rejected in a client.
-7. Total `--verify` time for the port is reported in the land commit. Selection of F depends on it.
-
-Reporting defect 1 and finding 2 upstream, from the drafts below, counts as value delivered whatever
-maintainers decide.
 
 ## Maintenance cost
 
 - Upstream drift: the pin is a release tag. When the pin moves, an upstream change shows up as a failure of the
-  S11 check, and the cost is re-applying the diff. How often that happens is not measured **[H: rarely]**.
+  deviation check, and the cost is re-applying the diff. How often that happens is not measured **[H: rarely]**.
 - Bundled spec: one more spec file in the vacuity check and the consumer check.
 - Golden churn: V1–V5 add tests and should change few goldens **[H]**. V6 can change many outcomes across the
   suite **[H]**.
@@ -317,16 +233,15 @@ maintainers decide.
 
 - The proof covers a port. The deviation check reduces the risk, and V9 removes it. Without V9, the deliverable
   does not prove that the shipped class meets its contracts.
-- V5 and V4 widen trusted assumptions. Each needs a register entry and an abusing test.
 - Quantifier instability across the wrap-around case split **[H]**. Mitigation: state the wrapped and unwrapped
   windows as separate lemma functions with explicit triggers.
 - F3–F5 are research. F may stop at F2.
-- Maintainers may close finding 2 "As Designed", the state of KT-55285. Value item 6 does not depend on their
-  answer.
+- Maintainers may close finding 2 "As Designed", the state of KT-55285.
 
 ## Upstream contribution strategy
 
-The strategy assumes no maintainer interest in SnaKt.
+Filing and offering patches are outside the current program (the plan's "Out of scope"). The strategy applies if
+that changes, and assumes no maintainer interest in SnaKt.
 
 1. File the two drafts below as separate YouTrack issues. Nothing is filed; the drafts are not published.
 2. Offer patches for the fixes the drafts name, with `ArrayDequeTest` cases that use the existing
@@ -430,30 +345,15 @@ is a power of two, and indices wrap with `and capacityBitmask`. **[E]** It is a 
   the `MutableList` refinement.
 - Its `IntArray` storage is already supported. A proof of it would show little new.
 
-What transfers (a wrap-around window law, a copy on growth) is covered by S3 and S7. Use it only if bitwise `and`
+What transfers (a wrap-around window law, a copy on growth) is covered by the plan's S2 and S6. Use it only if bitwise `and`
 is wanted for other reasons.
-
-## Selection against the alternatives
-
-- Persistent collections (kotlinx.collections.immutable): trie and HAMT structures with structural sharing. Their
-  nodes are shared immutable data, which fits SnaKt's `val` and `@Pure` recursion rather than its unique mutable
-  state. Proofs are deeper and recursive. The upstream bug evidence is unknown to this note.
-- Ktor ranges: small arithmetic functions. Cheap, with high odds of success, and few verifier changes.
-- ArrayDeque sits between the two. It has known upstream defects (three, one of them new here, plus one
-  unspecified aliasing divergence), wide deployment
-  across platforms, and verifier changes (V1–V5) that every array-backed container needs. Its main weakness is
-  the port boundary.
-
-Select ArrayDeque M if the alternatives cannot show comparable defect evidence. File drafts A and B whichever
-target is selected.
 
 ## Evidence gaps
 
 - Usage counts outside the Kotlin repo.
 - Whether F1/F2 would find any functional bug that the layout tests miss.
 - Wasm `array.copy` and Native `copyImpl` overlap semantics, beyond their documented contract.
-- Whether D-6's sentinel equivalence holds on every path. It is argued, not checked.
-- Solver times for S7–S9. Nothing has been run through SnaKt.
+- Solver times for the port. Nothing has been run through SnaKt.
 - Whether a generic class whose fields are `Array<Any?>` and whose laws quantify over them converts at all
-  before S1. This note assumes it does not.
+  before the plan's S1. This note assumes it does not.
 - The maintainers' view of drafts A and B. Neither is filed.
