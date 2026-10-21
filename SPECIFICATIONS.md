@@ -973,6 +973,32 @@ that branch. A law `size <= 0 || at(0) != null` needs the precondition of `at`
 only when `size > 0`. The infix `and` and `or` evaluate both operands, so
 `(b != 0) and (a / b > 0)` needs `b != 0` for its division.
 
+A specification may index a unique array with a `@Pure` call that borrows the
+array's owner, as in `elementData[positiveMod(head + i)]`, also inside `forAll`.
+The call's preconditions must hold in the state the specification reads: in a
+postcondition that is the state after the call, so a precondition that reads a
+`var` property needs the property framed by an earlier clause, such as
+`elementData.size == old(elementData.size)`. Inside `old(...)` the call reads
+the state before the call.
+
+```kotlin
+class Ring(var elementData: @Unique Array<Any?>) {
+    @Pure @Unique @Borrowed fun positiveMod(i: Int): Int {
+        preconditions { i >= 0 && i - elementData.size < elementData.size }
+        return if (i >= elementData.size) i - elementData.size else i
+    }
+
+    @Unique @Borrowed fun get(index: Int): Any? {
+        preconditions { index >= 0 && index < elementData.size }
+        postconditions<Any?> { result ->
+            elementData.size == old(elementData.size)
+            result === elementData[positiveMod(index)]
+        }
+        return elementData[positiveMod(index)]
+    }
+}
+```
+
 A `@Pure` function cannot return an alias into data its caller still owns. Its
 result cannot be `@Unique`. A function with a `@Unique` parameter must return a
 value type, with an exception for direct element reads of a unique `Array<T>`,

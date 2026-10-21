@@ -192,7 +192,12 @@ no result invariants. Residual trust remains the erased-type boundary in
 [Type invariants](#type-invariants); the reader rule introduces no element ownership
 or additional typing assumption.
 
+A specification's element read unfolds the array predicate around the sequence
+alone, so a `@Pure` call in the index takes the owner's predicate folded and
+proves its own preconditions; this assumes nothing.
+
 Tests: `verification/pure_functions/array_element_readers.kt`,
+`verification/pure_functions/pure_contract_calls.kt::getPastEnd,copyShifted,growWrongHeap`,
 `stdlib/array/int_array_elements.kt::readPastEnd,writeShared`,
 `stdlib/array/generic_array_elements.kt::writeShared,readPastEnd,newArrayNonNull`,
 `stdlib/array/generic_array_bulk.kt::copyGrow,fillWindow,copyPastEnd,selfCopy`,

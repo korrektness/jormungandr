@@ -27,8 +27,9 @@ import org.jetbrains.kotlin.formver.viper.ast.UnaryExp
  * - at a `let` whose variable is the root of one of its arguments, or whose value mentions such a root, unless an
  *   equal `unfolding` rises from the value;
  * - at `old`, inside which `unfolding`s are placed independently;
- * - below an operand when another operand of the same expression applies a function to the predicate's argument
- *   at one of [predicateParameters]: inside the `unfolding` that predicate is not available folded;
+ * - below an operand when another operand of the same expression, or the expression itself, applies a function to
+ *   the predicate's argument at one of [predicateParameters]: inside the `unfolding` that predicate is not available
+ *   folded;
  * - at any other expression.
  */
 fun Exp.hoistUnfoldings(predicateParameters: Set<PredicateParameter>): Exp =
@@ -112,7 +113,7 @@ private fun Exp.hoist(): Hoisted = when (this) {
     is Exp.GeCmp -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
     is Exp.EqCmp -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
     is Exp.NeCmp -> transparent(listOf(left, right)) { (l, r) -> copy(left = l, right = r) }
-    is Exp.FuncApp -> transparent(args) { copy(args = it) }
+    is Exp.FuncApp -> transparent(args, application = this) { copy(args = it) }
     is Exp.DomainFuncApp -> transparent(args) { copy(args = it) }
     is Exp.FieldAccess -> transparent(listOf(rcv)) { (rcv) -> copy(rcv = rcv) }
     else -> hoistCollection() ?: Hoisted(this, emptyList())
@@ -137,19 +138,22 @@ private fun Exp.hoistCollection(): Hoisted? = when (this) {
 }
 
 context(predicateParameters: Set<PredicateParameter>)
-private fun transparent(children: List<Exp>, rebuild: (List<Exp>) -> Exp): Hoisted {
-    val hoisted = settle(children.map { it.hoist() })
+private fun transparent(children: List<Exp>, application: Exp.FuncApp? = null, rebuild: (List<Exp>) -> Exp): Hoisted {
+    val hoisted = settle(children.map { it.hoist() }, application)
     return Hoisted(rebuild(hoisted.map { it.body }), merge(hoisted.map { it.pending }))
 }
 
 /**
- * [operands] of one expression, each keeping below it the `unfolding`s that another operand needs folded, together
- * with the `unfolding`s after them, whose predicates they may provide.
+ * [operands] of one expression, each keeping below it the `unfolding`s that another operand or [application], the
+ * expression applied to them, needs folded, together with the `unfolding`s after them, whose predicates they may
+ * provide.
  */
 context(predicateParameters: Set<PredicateParameter>)
-private fun settle(operands: List<Hoisted>): List<Hoisted> = operands.mapIndexed { index, operand ->
+private fun settle(operands: List<Hoisted>, application: Exp.FuncApp? = null): List<Hoisted> = operands.mapIndexed { index, operand ->
     val others = operands.filterIndexed { other, _ -> other != index }.map { it.body }
-    val firstStaying = operand.pending.indexOfFirst { unfolding -> others.any { it.takesPredicateOf(unfolding) } }
+    val firstStaying = operand.pending.indexOfFirst { unfolding ->
+        others.any { it.takesPredicateOf(unfolding) } || application?.appliesToPredicateOf(unfolding) == true
+    }
     if (firstStaying < 0) operand
     else Hoisted(wrap(operand.body, operand.pending.drop(firstStaying)), operand.pending.take(firstStaying))
 }
@@ -158,6 +162,15 @@ private fun settle(operands: List<Hoisted>): List<Hoisted> = operands.mapIndexed
 context(predicateParameters: Set<PredicateParameter>)
 private fun Exp.takesPredicateOf(unfolding: Exp.Unfolding): Boolean =
     takesPredicateAt(unfolding.predicateAccess.formalArgs.map { it.pathKey() }.toSet())
+
+/** Whether [this] itself, not a subexpression, takes the predicate of [unfolding] at one of its arguments. */
+context(predicateParameters: Set<PredicateParameter>)
+private fun Exp.FuncApp.appliesToPredicateOf(unfolding: Exp.Unfolding): Boolean {
+    val paths = unfolding.predicateAccess.formalArgs.map { it.pathKey() }.toSet()
+    return args.withIndex().any { (index, arg) ->
+        PredicateParameter(functionName, index) in predicateParameters && arg.pathKey(throughUnfoldings = true) in paths
+    }
+}
 
 context(predicateParameters: Set<PredicateParameter>)
 private fun Exp.takesPredicateAt(paths: Set<List<Any>?>): Boolean =

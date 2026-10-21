@@ -194,8 +194,13 @@ data class PureExpLinearizer(
             .foldRight(value) { predicateAccess, acc -> Exp.Unfolding(predicateAccess, acc) }
     }
 
+    /**
+     * An element read opens the predicate around the sequence alone: the index is evaluated with the predicate
+     * folded, so that a function applied there can take it.
+     */
     override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?, valueIsReference: Boolean): Exp {
-        val read = Exp.Unfolding(predicate, value, source.asPosition)
+        val read = if (value is Exp.SeqIndex) value.copy(seq = Exp.Unfolding(predicate, value.seq, source.asPosition))
+        else Exp.Unfolding(predicate, value, source.asPosition)
         return if (valueIsReference) read else type.injection.toRef(read, pos = source.asPosition)
     }
 
@@ -225,9 +230,11 @@ fun ExpEmbedding.pureToViper(
     functionResult: Exp? = null,
     observerFootprintOpen: Boolean = true,
     variableNames: Map<SymbolicName, SymbolicName> = emptyMap(),
+    predicateParameters: MutableSet<PredicateParameter> = mutableSetOf(),
 ): Exp {
-    val linearizer = PureExpLinearizer(source, typeResolver, observerReceiver = observerReceiver,
-        functionResult = functionResult, observerFootprintOpen = observerFootprintOpen, variableNames = variableNames)
+    val linearizer = PureExpLinearizer(source, typeResolver, predicateParameters = predicateParameters,
+        observerReceiver = observerReceiver, functionResult = functionResult,
+        observerFootprintOpen = observerFootprintOpen, variableNames = variableNames)
     val lin = toLinearizable(source)
     val exp = if (toBuiltin) lin.toViperBuiltinType(linearizer) else lin.toViper(linearizer)
     val hoisted = linearizer.hoistUnfoldings(exp)
@@ -242,8 +249,11 @@ fun List<ExpEmbedding>.pureToViper(
     functionResult: Exp? = null,
     observerFootprintOpen: Boolean = true,
     variableNames: Map<SymbolicName, SymbolicName> = emptyMap(),
-): List<Exp> =
-    map { it.pureToViper(toBuiltin, typeResolver, source, observerReceiver, functionResult, observerFootprintOpen, variableNames) }
+    predicateParameters: MutableSet<PredicateParameter> = mutableSetOf(),
+): List<Exp> = map {
+    it.pureToViper(toBuiltin, typeResolver, source, observerReceiver, functionResult, observerFootprintOpen, variableNames,
+        predicateParameters)
+}
 
 /**
  * The locals a block in a specification declares, and the values bound to them, in the order they are bound. Each

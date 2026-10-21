@@ -787,13 +787,13 @@ method lendGeneric(view: Ref) returns (v_ret_0: Ref)
   ensures (unfolding acc(GenericView_unique(view), wildcard) in
       value(view)) ==
     old((unfolding acc(GenericView_unique(view), wildcard) in value(view)))
-  ensures (unfolding acc(GenericView_unique(view), wildcard) in
-      (forall anon_builtin: Ref ::
-        { same(view, anon_builtin) }
-        isSubtype(typeOf(anon_builtin), Flag()) ==>
-        boolFromRef(same(view, anon_builtin)) ==
-        old((unfolding acc(GenericView_unique(view), wildcard) in
-          boolFromRef(same(view, anon_builtin))))))
+  ensures (forall anon_builtin: Ref ::
+      { same(view, anon_builtin) }
+      isSubtype(typeOf(anon_builtin), Flag()) ==>
+      (unfolding acc(GenericView_unique(view), wildcard) in
+        boolFromRef(same(view, anon_builtin))) ==
+      old((unfolding acc(GenericView_unique(view), wildcard) in
+        boolFromRef(same(view, anon_builtin)))))
 {
   var anon_0: Ref
   anon_0 := (unfolding acc(GenericView_unique(view), wildcard) in
@@ -981,13 +981,13 @@ method lendGeneric(view: Ref) returns (ret_3: Ref)
       c_GenericView_f_value(view)) ==
     old((unfolding acc(c_GenericView_unique(view), wildcard) in
       c_GenericView_f_value(view)))
-  ensures (unfolding acc(c_GenericView_unique(view), wildcard) in
-      (forall anon_builtin: Ref ::
-        { c_GenericView_f_same(view, anon_builtin) }
-        isSubtype(typeOf(anon_builtin), Flag()) ==>
-        boolFromRef(c_GenericView_f_same(view, anon_builtin)) ==
-        old((unfolding acc(c_GenericView_unique(view), wildcard) in
-          boolFromRef(c_GenericView_f_same(view, anon_builtin))))))
+  ensures (forall anon_builtin: Ref ::
+      { c_GenericView_f_same(view, anon_builtin) }
+      isSubtype(typeOf(anon_builtin), Flag()) ==>
+      (unfolding acc(c_GenericView_unique(view), wildcard) in
+        boolFromRef(c_GenericView_f_same(view, anon_builtin))) ==
+      old((unfolding acc(c_GenericView_unique(view), wildcard) in
+        boolFromRef(c_GenericView_f_same(view, anon_builtin)))))
 
 
 /interface_generic_view.kt: info: Generated Viper text for genericNullableView:

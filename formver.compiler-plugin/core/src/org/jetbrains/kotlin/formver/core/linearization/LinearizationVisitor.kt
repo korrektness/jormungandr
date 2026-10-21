@@ -79,14 +79,18 @@ data class LinearizationVisitor(
             is PureExpLinearizer -> ctx.lawView
             else -> null
         }
+        // The functions the conditions apply to unique arguments are reported to [ctx], whose `unfolding`s must not
+        // rise over them.
+        val predicateParameters = mutableSetOf<PredicateParameter>()
         val conjunction = if (lawView != null) {
-            val lawContext = PureExpLinearizer(ctx.source, ctx.typeResolver, lawView = lawView)
+            val lawContext = PureExpLinearizer(ctx.source, ctx.typeResolver, predicateParameters = predicateParameters, lawView = lawView)
             conditions.map { it.linearize().toViperBuiltinType(lawContext) }.toConjunction()
         } else if (ctx is PureExpLinearizer && ctx.observerReceiver != null) {
             conditions.map { it.linearize().toViperBuiltinType(ctx) }.toConjunction()
         } else {
-            conditions.pureToViper(true, ctx.typeResolver, ctx.source).toConjunction()
+            conditions.pureToViper(true, ctx.typeResolver, ctx.source, predicateParameters = predicateParameters).toConjunction()
         }
+        predicateParameters.forEach(ctx::addPredicateParameter)
         if (triggerExpressions.isEmpty()) return conjunction to derivedTriggers(variable.name, conjunction)
         val triggerContext = if (ctx is PureExpLinearizer) ctx.copy(isTrigger = true)
         else PureExpLinearizer(ctx.source, ctx.typeResolver, isTrigger = true)

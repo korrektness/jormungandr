@@ -1,0 +1,777 @@
+/pure_contract_calls.kt: info: Generated Viper text for ReproGet:
+field bf_elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function g_head(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReproGet())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(par_elementData: Ref, par_head: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_elementData), Array())
+  requires acc(Array_unique(par_elementData), write)
+  requires isSubtype(typeOf(par_head), intType())
+  ensures isSubtype(typeOf(v_ret_0), ReproGet())
+  ensures isSubtype(typeOf(v_ret_0), ReproGet()) &&
+    acc(v_ret_0.bf_elementData, write) &&
+    isSubtype(typeOf(v_ret_0.bf_elementData), Array()) &&
+    acc(Array_unique(v_ret_0.bf_elementData), write)
+  ensures v_ret_0.bf_elementData == par_elementData
+  ensures intFromRef(g_head(v_ret_0)) == intFromRef(par_head)
+  ensures v_ret_0.bf_elementData == par_elementData
+  ensures intFromRef(g_head(v_ret_0)) == intFromRef(par_head)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_elementData)
+  inhale typeOf(v_ret_0) == ReproGet()
+  v_ret_0.bf_elementData := par_elementData
+  anon := par_head
+  inhale intFromRef(g_head(v_ret_0)) == intFromRef(anon)
+  fold acc(ReproGet_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ReproGet_unique(v_ret_0), write)
+}
+
+/pure_contract_calls.kt: info: Generated Viper text for positiveMod:
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function head(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReproGet())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function positiveMod(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReproGet())
+  requires acc(ReproGet_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires (unfolding acc(ReproGet_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    intFromRef(i) >= 0 &&
+    (unfolding acc(ReproGet_unique(this), write) in
+      intFromRef(i) < referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+{
+  i
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/pure_contract_calls.kt: info: Generated Viper text for get:
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function head(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReproGet())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function positiveMod(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReproGet())
+  requires acc(ReproGet_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires (unfolding acc(ReproGet_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    intFromRef(i) >= 0 &&
+    (unfolding acc(ReproGet_unique(this), write) in
+      intFromRef(i) < referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+{
+  i
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method get(this: Ref, par_index: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReproGet())
+  requires acc(ReproGet_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(head(this)) == 0 && intFromRef(par_index) >= 0 &&
+    (unfolding acc(ReproGet_unique(this), write) in
+      intFromRef(par_index) < referenceArraySize(this.elementData))
+  ensures acc(ReproGet_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  ensures (unfolding acc(ReproGet_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      old((unfolding acc(ReproGet_unique(this), write) in
+        referenceArraySize(this.elementData))))
+  ensures v_ret_0 ==
+    (unfolding acc(ReproGet_unique(this), write) in
+      (unfolding acc(Array_unique(this.elementData), write) in
+        this.elementData.referenceContents))[intFromRef(positiveMod(this, plusInts(head(this),
+    par_index)))]
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  refute false
+  unfold acc(ReproGet_unique(this), write)
+  anon_0 := this.elementData
+  fold acc(ReproGet_unique(this), write)
+  anon_1 := positiveMod(this, plusInts(head(this), par_index))
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) < referenceArraySize(anon_0)
+  unfold acc(ReproGet_unique(this), write)
+  unfold acc(Array_unique(this.elementData), write)
+  anon_2 := anon_0.referenceContents[intFromRef(anon_1)]
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  fold acc(Array_unique(this.elementData), write)
+  fold acc(ReproGet_unique(this), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/pure_contract_calls.kt: info: Generated Viper text for getPastEnd:
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function head(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReproGet())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function positiveMod(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReproGet())
+  requires acc(ReproGet_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires (unfolding acc(ReproGet_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    intFromRef(i) >= 0 &&
+    (unfolding acc(ReproGet_unique(this), write) in
+      intFromRef(i) < referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+{
+  i
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method getPastEnd(this: Ref, par_index: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReproGet())
+  requires acc(ReproGet_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(head(this)) == 0 && intFromRef(par_index) >= 0 &&
+    (unfolding acc(ReproGet_unique(this), write) in
+      intFromRef(par_index) < referenceArraySize(this.elementData))
+  ensures acc(ReproGet_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  ensures (unfolding acc(ReproGet_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      old((unfolding acc(ReproGet_unique(this), write) in
+        referenceArraySize(this.elementData))))
+  ensures (unfolding acc(ReproGet_unique(this), write) in
+      (unfolding acc(Array_unique(this.elementData), write) in
+        this.elementData.referenceContents))[intFromRef(positiveMod(this, plusInts(plusInts(head(this),
+    par_index), intToRef(1))))] ==
+    (unfolding acc(ReproGet_unique(this), write) in
+      (unfolding acc(Array_unique(this.elementData), write) in
+        this.elementData.referenceContents))[intFromRef(positiveMod(this, plusInts(plusInts(head(this),
+    par_index), intToRef(1))))]
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  unfold acc(ReproGet_unique(this), write)
+  anon_0 := this.elementData
+  fold acc(ReproGet_unique(this), write)
+  anon_1 := positiveMod(this, plusInts(head(this), par_index))
+  assert intFromRef(anon_1) >= 0
+  assert intFromRef(anon_1) < referenceArraySize(anon_0)
+  unfold acc(ReproGet_unique(this), write)
+  unfold acc(Array_unique(this.elementData), write)
+  anon_2 := anon_0.referenceContents[intFromRef(anon_1)]
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  fold acc(Array_unique(this.elementData), write)
+  fold acc(ReproGet_unique(this), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/pure_contract_calls.kt: info: Generated Viper text for ReproCopy:
+field bf_elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function g_head(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReproCopy())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(par_elementData: Ref, par_head: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_elementData), Array())
+  requires acc(Array_unique(par_elementData), write)
+  requires isSubtype(typeOf(par_head), intType())
+  ensures isSubtype(typeOf(v_ret_0), ReproCopy())
+  ensures isSubtype(typeOf(v_ret_0), ReproCopy()) &&
+    acc(v_ret_0.bf_elementData, write) &&
+    isSubtype(typeOf(v_ret_0.bf_elementData), Array()) &&
+    acc(Array_unique(v_ret_0.bf_elementData), write)
+  ensures v_ret_0.bf_elementData == par_elementData
+  ensures intFromRef(g_head(v_ret_0)) == intFromRef(par_head)
+  ensures v_ret_0.bf_elementData == par_elementData
+  ensures intFromRef(g_head(v_ret_0)) == intFromRef(par_head)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_elementData)
+  inhale typeOf(v_ret_0) == ReproCopy()
+  v_ret_0.bf_elementData := par_elementData
+  anon := par_head
+  inhale intFromRef(g_head(v_ret_0)) == intFromRef(anon)
+  fold acc(ReproCopy_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ReproCopy_unique(v_ret_0), write)
+}
+
+/pure_contract_calls.kt: info: Generated Viper text for positiveMod:
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function head(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReproCopy())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function positiveMod(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReproCopy())
+  requires acc(ReproCopy_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires (unfolding acc(ReproCopy_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    intFromRef(i) >= 0 &&
+    (unfolding acc(ReproCopy_unique(this), write) in
+      intFromRef(i) < referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+{
+  i
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/pure_contract_calls.kt: info: Generated Viper text for copy:
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function head(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReproCopy())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function positiveMod(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReproCopy())
+  requires acc(ReproCopy_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires (unfolding acc(ReproCopy_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    intFromRef(i) >= 0 &&
+    (unfolding acc(ReproCopy_unique(this), write) in
+      intFromRef(i) < referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+{
+  i
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method copy(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReproCopy())
+  requires acc(ReproCopy_unique(this), write)
+  requires intFromRef(head(this)) == 0 &&
+    (unfolding acc(ReproCopy_unique(this), write) in
+      referenceArraySize(this.elementData) > 0)
+  ensures acc(ReproCopy_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(ReproCopy_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      old((unfolding acc(ReproCopy_unique(this), write) in
+        referenceArraySize(this.elementData))))
+  ensures (forall anon_builtin: Int ::anon_builtin >= -2147483648 &&
+      anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      0 <= anon_builtin &&
+      (unfolding acc(ReproCopy_unique(this), write) in
+        anon_builtin < referenceArraySize(this.elementData)) ==>
+      (unfolding acc(ReproCopy_unique(this), write) in
+        (unfolding acc(Array_unique(this.elementData), write) in
+          this.elementData.referenceContents))[intFromRef(positiveMod(this,
+      plusInts(head(this), intToRef(anon_builtin))))] ==
+      old((unfolding acc(ReproCopy_unique(this), write) in
+        (unfolding acc(Array_unique(this.elementData), write) in
+          this.elementData.referenceContents))[intFromRef(positiveMod(this,
+      plusInts(head(this), intToRef(anon_builtin))))]))
+{
+  var fresh: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  refute false
+  unfold acc(ReproCopy_unique(this), write)
+  anon_3 := this.elementData
+  anon_0 := intToRef(referenceArraySize(anon_3))
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_2 := anon_1
+  fresh := anon_2
+  anon_4 := this.elementData
+  anon_5 := this.elementData
+  assert intFromRef(intToRef(0)) >= 0
+  assert intFromRef(intToRef(0)) <=
+    intFromRef(intToRef(referenceArraySize(anon_5)))
+  assert intFromRef(intToRef(referenceArraySize(anon_5))) <=
+    referenceArraySize(anon_4)
+  unfold acc(Array_unique(this.elementData), write)
+  assert intFromRef(intToRef(0)) >= 0
+  assert intFromRef(intToRef(0)) <= referenceArraySize(fresh)
+  assert intFromRef(intToRef(referenceArraySize(anon_5))) -
+    intFromRef(intToRef(0)) <=
+    referenceArraySize(fresh) - intFromRef(intToRef(0))
+  unfold acc(Array_unique(fresh), write)
+  fresh.referenceContents := fresh.referenceContents[..intFromRef(intToRef(0))] ++
+    anon_4.referenceContents[intFromRef(intToRef(0))..][..intFromRef(intToRef(referenceArraySize(anon_5))) -
+    intFromRef(intToRef(0))] ++
+    fresh.referenceContents[intFromRef(intToRef(0)) +
+    (intFromRef(intToRef(referenceArraySize(anon_5))) -
+    intFromRef(intToRef(0)))..]
+  fold acc(Array_unique(this.elementData), write)
+  fold acc(Array_unique(fresh), write)
+  this.elementData := fresh
+  label lbl_ret_0
+  fold acc(ReproCopy_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_contract_calls.kt: info: Generated Viper text for copyShifted:
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function head(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReproCopy())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function positiveMod(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReproCopy())
+  requires acc(ReproCopy_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires (unfolding acc(ReproCopy_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    intFromRef(i) >= 0 &&
+    (unfolding acc(ReproCopy_unique(this), write) in
+      intFromRef(i) < referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+{
+  i
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method copyShifted(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReproCopy())
+  requires acc(ReproCopy_unique(this), write)
+  requires intFromRef(head(this)) == 0 &&
+    (unfolding acc(ReproCopy_unique(this), write) in
+      referenceArraySize(this.elementData) > 0)
+  ensures acc(ReproCopy_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(ReproCopy_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      old((unfolding acc(ReproCopy_unique(this), write) in
+        referenceArraySize(this.elementData))))
+  ensures (forall anon_builtin: Int ::anon_builtin >= -2147483648 &&
+      anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      0 <= anon_builtin &&
+      (unfolding acc(ReproCopy_unique(this), write) in
+        anon_builtin < referenceArraySize(this.elementData)) ==>
+      (unfolding acc(ReproCopy_unique(this), write) in
+        (unfolding acc(Array_unique(this.elementData), write) in
+          this.elementData.referenceContents))[intFromRef(positiveMod(this,
+      plusInts(head(this), intToRef(anon_builtin))))] ==
+      old((unfolding acc(ReproCopy_unique(this), write) in
+        (unfolding acc(Array_unique(this.elementData), write) in
+          this.elementData.referenceContents))[intFromRef(positiveMod(this,
+      plusInts(head(this), intToRef(anon_builtin))))]))
+{
+  var fresh: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  unfold acc(ReproCopy_unique(this), write)
+  anon_3 := this.elementData
+  anon_0 := intToRef(referenceArraySize(anon_3))
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_2 := anon_1
+  fresh := anon_2
+  anon_4 := this.elementData
+  anon_5 := this.elementData
+  assert intFromRef(intToRef(0)) >= 0
+  assert intFromRef(intToRef(0)) <=
+    intFromRef(minusInts(intToRef(referenceArraySize(anon_5)), intToRef(1)))
+  assert intFromRef(minusInts(intToRef(referenceArraySize(anon_5)), intToRef(1))) <=
+    referenceArraySize(anon_4)
+  unfold acc(Array_unique(this.elementData), write)
+  assert intFromRef(intToRef(1)) >= 0
+  assert intFromRef(intToRef(1)) <= referenceArraySize(fresh)
+  assert intFromRef(minusInts(intToRef(referenceArraySize(anon_5)), intToRef(1))) -
+    intFromRef(intToRef(0)) <=
+    referenceArraySize(fresh) - intFromRef(intToRef(1))
+  unfold acc(Array_unique(fresh), write)
+  fresh.referenceContents := fresh.referenceContents[..intFromRef(intToRef(1))] ++
+    anon_4.referenceContents[intFromRef(intToRef(0))..][..intFromRef(minusInts(intToRef(referenceArraySize(anon_5)),
+    intToRef(1))) -
+    intFromRef(intToRef(0))] ++
+    fresh.referenceContents[intFromRef(intToRef(1)) +
+    (intFromRef(minusInts(intToRef(referenceArraySize(anon_5)), intToRef(1))) -
+    intFromRef(intToRef(0)))..]
+  fold acc(Array_unique(this.elementData), write)
+  fold acc(Array_unique(fresh), write)
+  this.elementData := fresh
+  label lbl_ret_0
+  fold acc(ReproCopy_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_contract_calls.kt: info: Generated Viper text for Growing:
+field bf_elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(par_elementData: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_elementData), Array())
+  requires acc(Array_unique(par_elementData), write)
+  ensures isSubtype(typeOf(v_ret_0), Growing())
+  ensures isSubtype(typeOf(v_ret_0), Growing()) &&
+    acc(v_ret_0.bf_elementData, write) &&
+    isSubtype(typeOf(v_ret_0.bf_elementData), Array()) &&
+    acc(Array_unique(v_ret_0.bf_elementData), write)
+  ensures v_ret_0.bf_elementData == par_elementData
+  ensures v_ret_0.bf_elementData == par_elementData
+{
+  v_ret_0 := new(bf_elementData)
+  inhale typeOf(v_ret_0) == Growing()
+  v_ret_0.bf_elementData := par_elementData
+  fold acc(Growing_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Growing_unique(v_ret_0), write)
+}
+
+/pure_contract_calls.kt: info: Generated Viper text for positiveMod:
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function positiveMod(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Growing())
+  requires acc(Growing_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires (unfolding acc(Growing_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    intFromRef(i) >= 0 &&
+    (unfolding acc(Growing_unique(this), write) in
+      (let anon_builtin ==
+        (minusInts(i, intToRef(referenceArraySize(this.elementData)))) in
+        intFromRef(i) -
+        intFromRef(intToRef(referenceArraySize(this.elementData)))) <
+      referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Growing_unique(this), write) in
+    (let anon_1_0 ==
+      (this.elementData) in
+      (intFromRef(i) >= referenceArraySize(anon_1_0) ?
+        (let anon_3_0 ==
+          (this.elementData) in
+          minusInts(i, intToRef(referenceArraySize(anon_3_0)))) :
+        i)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/pure_contract_calls.kt: info: Generated Viper text for grow:
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function positiveMod(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Growing())
+  requires acc(Growing_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires (unfolding acc(Growing_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    intFromRef(i) >= 0 &&
+    (unfolding acc(Growing_unique(this), write) in
+      (let anon_builtin ==
+        (minusInts(i, intToRef(referenceArraySize(this.elementData)))) in
+        intFromRef(i) -
+        intFromRef(intToRef(referenceArraySize(this.elementData)))) <
+      referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Growing_unique(this), write) in
+    (let anon_3_0 ==
+      (this.elementData) in
+      (intFromRef(i) >= referenceArraySize(anon_3_0) ?
+        (let anon_5_0 ==
+          (this.elementData) in
+          minusInts(i, intToRef(referenceArraySize(anon_5_0)))) :
+        i)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method grow(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Growing())
+  requires acc(Growing_unique(this), write)
+  requires (unfolding acc(Growing_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    (unfolding acc(Growing_unique(this), write) in
+      referenceArraySize(this.elementData) < 1000)
+  ensures acc(Growing_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Growing_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      (let anon_builtin ==
+        (timesInts(old((unfolding acc(Growing_unique(this), write) in
+          intToRef(referenceArraySize(this.elementData)))), intToRef(2))) in
+        intFromRef(old((unfolding acc(Growing_unique(this), write) in
+          intToRef(referenceArraySize(this.elementData))))) *
+        intFromRef(intToRef(2))))
+  ensures (unfolding acc(Growing_unique(this), write) in
+      (unfolding acc(Array_unique(this.elementData), write) in
+        this.elementData.referenceContents[0])) ==
+    old((unfolding acc(Growing_unique(this), write) in
+      (unfolding acc(Array_unique(this.elementData), write) in
+        this.elementData.referenceContents))[intFromRef(positiveMod(this, (unfolding acc(Growing_unique(this), write) in
+      intToRef(referenceArraySize(this.elementData)))))])
+  ensures (unfolding acc(Growing_unique(this), write) in
+      (unfolding acc(Array_unique(this.elementData), write) in
+        this.elementData.referenceContents))[intFromRef(positiveMod(this, old((unfolding acc(Growing_unique(this), write) in
+      intToRef(referenceArraySize(this.elementData))))))] ==
+    nullValue()
+{
+  var fresh: Ref
+  var anon_7: Ref
+  var anon_0: Ref
+  var anon_8: Ref
+  var anon_1: Ref
+  var anon_9: Ref
+  var anon_10: Ref
+  refute false
+  unfold acc(Growing_unique(this), write)
+  anon_8 := this.elementData
+  anon_0 := timesInts(intToRef(referenceArraySize(anon_8)), intToRef(2))
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_7 := anon_1
+  fresh := anon_7
+  anon_9 := this.elementData
+  anon_10 := this.elementData
+  assert intFromRef(intToRef(0)) >= 0
+  assert intFromRef(intToRef(0)) <=
+    intFromRef(intToRef(referenceArraySize(anon_10)))
+  assert intFromRef(intToRef(referenceArraySize(anon_10))) <=
+    referenceArraySize(anon_9)
+  unfold acc(Array_unique(this.elementData), write)
+  assert intFromRef(intToRef(0)) >= 0
+  assert intFromRef(intToRef(0)) <= referenceArraySize(fresh)
+  assert intFromRef(intToRef(referenceArraySize(anon_10))) -
+    intFromRef(intToRef(0)) <=
+    referenceArraySize(fresh) - intFromRef(intToRef(0))
+  unfold acc(Array_unique(fresh), write)
+  fresh.referenceContents := fresh.referenceContents[..intFromRef(intToRef(0))] ++
+    anon_9.referenceContents[intFromRef(intToRef(0))..][..intFromRef(intToRef(referenceArraySize(anon_10))) -
+    intFromRef(intToRef(0))] ++
+    fresh.referenceContents[intFromRef(intToRef(0)) +
+    (intFromRef(intToRef(referenceArraySize(anon_10))) -
+    intFromRef(intToRef(0)))..]
+  fold acc(Array_unique(this.elementData), write)
+  fold acc(Array_unique(fresh), write)
+  this.elementData := fresh
+  label lbl_ret_0
+  fold acc(Growing_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_contract_calls.kt: info: Generated Viper text for growWrongHeap:
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function positiveMod(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Growing())
+  requires acc(Growing_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires (unfolding acc(Growing_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    intFromRef(i) >= 0 &&
+    (unfolding acc(Growing_unique(this), write) in
+      (let anon_builtin ==
+        (minusInts(i, intToRef(referenceArraySize(this.elementData)))) in
+        intFromRef(i) -
+        intFromRef(intToRef(referenceArraySize(this.elementData)))) <
+      referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(Growing_unique(this), write) in
+    (let anon_3_0 ==
+      (this.elementData) in
+      (intFromRef(i) >= referenceArraySize(anon_3_0) ?
+        (let anon_5_0 ==
+          (this.elementData) in
+          minusInts(i, intToRef(referenceArraySize(anon_5_0)))) :
+        i)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method growWrongHeap(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Growing())
+  requires acc(Growing_unique(this), write)
+  requires (unfolding acc(Growing_unique(this), write) in
+      referenceArraySize(this.elementData) > 0) &&
+    (unfolding acc(Growing_unique(this), write) in
+      referenceArraySize(this.elementData) < 1000)
+  ensures acc(Growing_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Growing_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      (let anon_builtin ==
+        (timesInts(old((unfolding acc(Growing_unique(this), write) in
+          intToRef(referenceArraySize(this.elementData)))), intToRef(2))) in
+        intFromRef(old((unfolding acc(Growing_unique(this), write) in
+          intToRef(referenceArraySize(this.elementData))))) *
+        intFromRef(intToRef(2))))
+  ensures (unfolding acc(Growing_unique(this), write) in
+      (unfolding acc(Array_unique(this.elementData), write) in
+        this.elementData.referenceContents))[intFromRef(positiveMod(this, old((unfolding acc(Growing_unique(this), write) in
+      intToRef(referenceArraySize(this.elementData))))))] ==
+    old((unfolding acc(Growing_unique(this), write) in
+      (unfolding acc(Array_unique(this.elementData), write) in
+        this.elementData.referenceContents[0])))
+{
+  var fresh: Ref
+  var anon_7: Ref
+  var anon_0: Ref
+  var anon_8: Ref
+  var anon_1: Ref
+  var anon_9: Ref
+  var anon_10: Ref
+  unfold acc(Growing_unique(this), write)
+  anon_8 := this.elementData
+  anon_0 := timesInts(intToRef(referenceArraySize(anon_8)), intToRef(2))
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_7 := anon_1
+  fresh := anon_7
+  anon_9 := this.elementData
+  anon_10 := this.elementData
+  assert intFromRef(intToRef(0)) >= 0
+  assert intFromRef(intToRef(0)) <=
+    intFromRef(intToRef(referenceArraySize(anon_10)))
+  assert intFromRef(intToRef(referenceArraySize(anon_10))) <=
+    referenceArraySize(anon_9)
+  unfold acc(Array_unique(this.elementData), write)
+  assert intFromRef(intToRef(0)) >= 0
+  assert intFromRef(intToRef(0)) <= referenceArraySize(fresh)
+  assert intFromRef(intToRef(referenceArraySize(anon_10))) -
+    intFromRef(intToRef(0)) <=
+    referenceArraySize(fresh) - intFromRef(intToRef(0))
+  unfold acc(Array_unique(fresh), write)
+  fresh.referenceContents := fresh.referenceContents[..intFromRef(intToRef(0))] ++
+    anon_9.referenceContents[intFromRef(intToRef(0))..][..intFromRef(intToRef(referenceArraySize(anon_10))) -
+    intFromRef(intToRef(0))] ++
+    fresh.referenceContents[intFromRef(intToRef(0)) +
+    (intFromRef(intToRef(referenceArraySize(anon_10))) -
+    intFromRef(intToRef(0)))..]
+  fold acc(Array_unique(this.elementData), write)
+  fold acc(Array_unique(fresh), write)
+  this.elementData := fresh
+  label lbl_ret_0
+  fold acc(Growing_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

@@ -1948,6 +1948,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("pure_contract_calls.kt")
+      public void testPure_contract_calls() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/pure_contract_calls.kt");
+      }
+
+      @Test
       @TestMetadata("pure_function_with_heap_dependent_expressions.kt")
       public void testPure_function_with_heap_dependent_expressions() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/pure_function_with_heap_dependent_expressions.kt");
