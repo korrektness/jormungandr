@@ -206,7 +206,9 @@ class ViperPoweredDeclarationChecker(
                 return
             }
             if (!failed) {
-                config.trustLedger?.record(context.containingFilePath!!, name) { programConversionContext.trust.assumptions }
+                config.trustLedger?.record(context.containingFilePath!!, name, { programConversionContext.trust.semanticOptIns }) {
+                    programConversionContext.trust.assumptions
+                }
                 if (index == 0) config.verifiedDeclarations?.record(declaration.symbol)
             }
         }

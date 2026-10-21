@@ -29,6 +29,11 @@ annotation class Borrowed
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY)
 annotation class Pure
 
+/** Selects wrapping Int addition and subtraction; see "Integer arithmetic" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class WrappingIntArithmetic
+
 /** Marks a callable ghost observer; see "Callable specifications" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)

@@ -98,6 +98,20 @@ object IntegerOperators {
         })
     }
 
+    val wrappingBinary: Map<Binary, BinaryOperatorExpEmbeddingTemplate> = binary.keys.filter {
+        it.result == IntegerKind.Int && it.operation in listOf("plus", "minus")
+    }.associateWith { op ->
+        buildBinaryOperator {
+            setName("wrapping${op.operation}${op.receiver.name}${op.argument.name}")
+            withSignature {
+                withParam { existing(op.receiver.pretype) }
+                withParam { existing(op.argument.pretype) }
+                withReturnType { int() }
+            }
+            viperImplementation { OperatorExpEmbeddings.wrapInt(binaryValue(op.operation, args[0], args[1])) }
+        }
+    }
+
     val unary: Map<Unary, UnaryOperatorExpEmbeddingTemplate> = buildMap {
         for (a in IntegerKind.entries) {
             val operations = if (a == IntegerKind.Char) listOf("inc", "dec")
@@ -138,5 +152,5 @@ object IntegerOperators {
         })
     }
 
-    val templates get() = binary.values + unary.values
+    val templates get() = binary.values + wrappingBinary.values + unary.values
 }

@@ -177,6 +177,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("int_coerce_at_least.kt")
+    public void testInt_coerce_at_least() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/int_coerce_at_least.kt");
+    }
+
+    @Test
     @TestMetadata("list_extensions.kt")
     public void testList_extensions() {
       runTest("formver.compiler-plugin/testData/diagnostics/external_specs/list_extensions.kt");
@@ -932,6 +938,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("viper_keyword_names.kt")
     public void testViper_keyword_names() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/viper_keyword_names.kt");
+    }
+
+    @Test
+    @TestMetadata("wrapping_arithmetic.kt")
+    public void testWrapping_arithmetic() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/wrapping_arithmetic.kt");
     }
 
     @Nested

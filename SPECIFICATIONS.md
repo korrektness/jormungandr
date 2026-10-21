@@ -123,6 +123,8 @@ its failing values uniquely.
 
 Division truncates toward zero; remainder has the dividend's sign. A zero divisor reports `DIVISION_BY_ZERO`. `MIN_VALUE / -1` overflows; `MIN_VALUE % -1` is zero. Widening conversions are exact, and narrowing conversions must prove the target range. Char arithmetic and conversions must stay within 0 through 65535. Arithmetic failures are proof obligations, not catchable exits.
 
+`@WrappingIntArithmetic` on a function gives binary `+` and `-` whose Kotlin result type is `Int` their two's-complement wrapping semantics, including compound assignments. This applies to its body and specifications. Other operations retain their overflow and division obligations. Each callee, including an inline function or lambda, uses its own arithmetic mode. The trust report lists annotated functions under `@WrappingIntArithmetic`; this mode encodes Kotlin semantics exactly and introduces no assumption.
+
 `Int.shr` with a literal distance `c` is modelled as floor division by `2^(c and 31)`, including negative receivers. A variable distance is unsupported. Other integer shifts and bitwise operations have no intrinsic model.
 
 ## Equality

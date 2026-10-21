@@ -24,7 +24,7 @@ class TrustReportCollector(private val testServices: TestServices) : TestService
         get() = testServices.moduleStructure.modules.any { FormVerDirectives.TRUST_REPORT in it.directives }
 
     fun record(file: String, label: String, trust: TrustedAssumptionCollector) {
-        if (enabled) ledger.record(file, label) { trust.assumptions }
+        if (enabled) ledger.record(file, label, { trust.semanticOptIns }) { trust.assumptions }
     }
 
     fun assertEquality() {

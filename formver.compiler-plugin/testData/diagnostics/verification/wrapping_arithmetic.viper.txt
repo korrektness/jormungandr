@@ -1,0 +1,379 @@
+/wrapping_arithmetic.kt: info: Generated Viper text for wrapBoundaries:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrapBoundaries(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) == 2147483647
+  requires intFromRef(y) == -2147483648
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  assert (intFromRef(x) + 1 > 2147483647 ?
+      intFromRef(x) + 1 - 4294967296 :
+      (intFromRef(x) + 1 < -2147483648 ?
+        intFromRef(x) + 1 + 4294967296 :
+        intFromRef(x) + 1)) ==
+    intFromRef(y)
+  assert (intFromRef(y) - 1 > 2147483647 ?
+      intFromRef(y) - 1 - 4294967296 :
+      (intFromRef(y) - 1 < -2147483648 ?
+        intFromRef(y) - 1 + 4294967296 :
+        intFromRef(y) - 1)) ==
+    intFromRef(x)
+  assert (intFromRef(x) + intFromRef(x) > 2147483647 ?
+      intFromRef(x) + intFromRef(x) - 4294967296 :
+      (intFromRef(x) + intFromRef(x) < -2147483648 ?
+        intFromRef(x) + intFromRef(x) + 4294967296 :
+        intFromRef(x) + intFromRef(x))) ==
+    -2
+  assert (intFromRef(y) + intFromRef(y) > 2147483647 ?
+      intFromRef(y) + intFromRef(y) - 4294967296 :
+      (intFromRef(y) + intFromRef(y) < -2147483648 ?
+        intFromRef(y) + intFromRef(y) + 4294967296 :
+        intFromRef(y) + intFromRef(y))) ==
+    0
+  assert (intFromRef(x) - intFromRef(y) > 2147483647 ?
+      intFromRef(x) - intFromRef(y) - 4294967296 :
+      (intFromRef(x) - intFromRef(y) < -2147483648 ?
+        intFromRef(x) - intFromRef(y) + 4294967296 :
+        intFromRef(x) - intFromRef(y))) ==
+    -1
+  assert (2147483647 + 1 > 2147483647 ?
+      2147483647 + 1 - 4294967296 :
+      (2147483647 + 1 < -2147483648 ?
+        2147483647 + 1 + 4294967296 :
+        2147483647 + 1)) ==
+    -2147483648
+  n := x
+  n := wrappingPlusInts(n, intToRef(1))
+  assert intFromRef(n) == intFromRef(y)
+  n := wrappingMinusInts(n, intToRef(1))
+  assert intFromRef(n) == intFromRef(x)
+  assert (intFromRef(x) + 1 > 2147483647 ?
+      intFromRef(x) + 1 - 4294967296 :
+      (intFromRef(x) + 1 < -2147483648 ?
+        intFromRef(x) + 1 + 4294967296 :
+        intFromRef(x) + 1)) >
+    intFromRef(x)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for wrappingSuccessor:
+function wrappingSuccessor(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(x) + 1 > 2147483647 ?
+      intFromRef(x) + 1 - 4294967296 :
+      (intFromRef(x) + 1 < -2147483648 ?
+        intFromRef(x) + 1 + 4294967296 :
+        intFromRef(x) + 1))
+{
+  wrappingPlusInts(x, intToRef(1))
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for ordinaryCaller:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function wrappingSuccessor(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (intFromRef(x) + 1 > 2147483647 ?
+      intFromRef(x) + 1 - 4294967296 :
+      (intFromRef(x) + 1 < -2147483648 ?
+        intFromRef(x) + 1 + 4294967296 :
+        intFromRef(x) + 1))
+{
+  wrappingPlusInts(x, intToRef(1))
+}
+
+method ordinaryCaller(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 2147483647
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  var v_ret_4: Ref
+  assert intFromRef(wrappingSuccessor(x)) == -2147483648
+  v_ret_4 := wrappingPlusInts(x, intToRef(1))
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon := v_ret_4
+  assert intFromRef(anon) == -2147483648
+  assert plusInts(x, intToRef(1)) == plusInts(x, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method wrappingInline(x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_3), intType())
+
+
+/wrapping_arithmetic.kt: info: Generated Viper text for wrappingInline:
+method wrappingInline(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := wrappingPlusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for checkedInline:
+method checkedInline(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := plusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for checkedInlineCall:
+method checkedInline(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method checkedInlineCall(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var v_ret_2: Ref
+  v_ret_2 := plusInts(x, intToRef(1))
+  goto lbl_ret_2
+  label lbl_ret_2
+  v_ret_0 := v_ret_2
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for mixedOperands:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method mixedOperands(x: Ref, one: Ref, two: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(one), byteType())
+  requires isSubtype(typeOf(two), shortType())
+  requires intFromRef(x) == 2147483647
+  requires byteFromRef(one) ==
+    (let anon ==
+      (convertIntToByte(intToRef(1))) in
+      intFromRef(intToRef(1)))
+  requires shortFromRef(two) ==
+    (let anon ==
+      (convertIntToShort(intToRef(2))) in
+      intFromRef(intToRef(2)))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (intFromRef(x) + byteFromRef(one) > 2147483647 ?
+      intFromRef(x) + byteFromRef(one) - 4294967296 :
+      (intFromRef(x) + byteFromRef(one) < -2147483648 ?
+        intFromRef(x) + byteFromRef(one) + 4294967296 :
+        intFromRef(x) + byteFromRef(one))) ==
+    -2147483648
+  assert (intFromRef(x) + shortFromRef(two) > 2147483647 ?
+      intFromRef(x) + shortFromRef(two) - 4294967296 :
+      (intFromRef(x) + shortFromRef(two) < -2147483648 ?
+        intFromRef(x) + shortFromRef(two) + 4294967296 :
+        intFromRef(x) + shortFromRef(two))) ==
+    (-2147483648 + 1 > 2147483647 ?
+      -2147483648 + 1 - 4294967296 :
+      (-2147483648 + 1 < -2147483648 ?
+        -2147483648 + 1 + 4294967296 :
+        -2147483648 + 1))
+  assert (byteFromRef(one) + intFromRef(x) > 2147483647 ?
+      byteFromRef(one) + intFromRef(x) - 4294967296 :
+      (byteFromRef(one) + intFromRef(x) < -2147483648 ?
+        byteFromRef(one) + intFromRef(x) + 4294967296 :
+        byteFromRef(one) + intFromRef(x))) ==
+    -2147483648
+  assert (intFromRef(x) - byteFromRef(one) > 2147483647 ?
+      intFromRef(x) - byteFromRef(one) - 4294967296 :
+      (intFromRef(x) - byteFromRef(one) < -2147483648 ?
+        intFromRef(x) - byteFromRef(one) + 4294967296 :
+        intFromRef(x) - byteFromRef(one))) ==
+    (2147483647 - 1 > 2147483647 ?
+      2147483647 - 1 - 4294967296 :
+      (2147483647 - 1 < -2147483648 ?
+        2147483647 - 1 + 4294967296 :
+        2147483647 - 1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for otherOperationsStayChecked:
+method otherOperationsStayChecked(x: Ref, choice: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(choice), intType())
+  requires intFromRef(x) == -2147483648
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := choice
+  if (intFromRef(anon) == 0) {
+    assert timesInts(x, intToRef(2)) == timesInts(x, intToRef(2))
+  } elseif (intFromRef(anon) == 1) {
+    assert divInts(x, intToRef(-1)) == divInts(x, intToRef(-1))
+  } elseif (intFromRef(anon) == 2) {
+    assert remInts(x, intToRef(0)) == remInts(x, intToRef(0))
+  } else {
+    assert negInt(x) == negInt(x)}
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for longStaysChecked:
+method longStaysChecked(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) == -9223372036854775808
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := minusLongLong(x, longToRef(9223372036854775807))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for newCapacity:
+method f_newCapacity(oldCapacity: Ref, minCapacity: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(oldCapacity), intType())
+  requires isSubtype(typeOf(minCapacity), intType())
+  requires intFromRef(oldCapacity) >= 0
+  requires intFromRef(minCapacity) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= intFromRef(minCapacity)
+{
+  var l0_newCapacity: Ref
+  l0_newCapacity := wrappingPlusInts(oldCapacity, shiftRightInt(oldCapacity,
+    longToRef(2)))
+  if ((intFromRef(l0_newCapacity) - intFromRef(minCapacity) > 2147483647 ?
+    intFromRef(l0_newCapacity) - intFromRef(minCapacity) - 4294967296 :
+    (intFromRef(l0_newCapacity) - intFromRef(minCapacity) < -2147483648 ?
+      intFromRef(l0_newCapacity) - intFromRef(minCapacity) + 4294967296 :
+      intFromRef(l0_newCapacity) - intFromRef(minCapacity))) <
+  0) {
+    l0_newCapacity := minCapacity
+  }
+  if ((intFromRef(l0_newCapacity) -
+  (2147483647 - 8 > 2147483647 ?
+    2147483647 - 8 - 4294967296 :
+    (2147483647 - 8 < -2147483648 ?
+      2147483647 - 8 + 4294967296 :
+      2147483647 - 8)) >
+  2147483647 ?
+    intFromRef(l0_newCapacity) -
+    (2147483647 - 8 > 2147483647 ?
+      2147483647 - 8 - 4294967296 :
+      (2147483647 - 8 < -2147483648 ?
+        2147483647 - 8 + 4294967296 :
+        2147483647 - 8)) -
+    4294967296 :
+    (intFromRef(l0_newCapacity) -
+    (2147483647 - 8 > 2147483647 ?
+      2147483647 - 8 - 4294967296 :
+      (2147483647 - 8 < -2147483648 ?
+        2147483647 - 8 + 4294967296 :
+        2147483647 - 8)) <
+    -2147483648 ?
+      intFromRef(l0_newCapacity) -
+      (2147483647 - 8 > 2147483647 ?
+        2147483647 - 8 - 4294967296 :
+        (2147483647 - 8 < -2147483648 ?
+          2147483647 - 8 + 4294967296 :
+          2147483647 - 8)) +
+      4294967296 :
+      intFromRef(l0_newCapacity) -
+      (2147483647 - 8 > 2147483647 ?
+        2147483647 - 8 - 4294967296 :
+        (2147483647 - 8 < -2147483648 ?
+          2147483647 - 8 + 4294967296 :
+          2147483647 - 8)))) >
+  0) {
+    if (intFromRef(minCapacity) >
+    (2147483647 - 8 > 2147483647 ?
+      2147483647 - 8 - 4294967296 :
+      (2147483647 - 8 < -2147483648 ?
+        2147483647 - 8 + 4294967296 :
+        2147483647 - 8))) {
+      l0_newCapacity := intToRef(2147483647)
+    } else {
+      l0_newCapacity := wrappingMinusInts(intToRef(2147483647), intToRef(8))}
+  }
+  v_ret_0 := l0_newCapacity
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for checkedCapacity:
+method checkedCapacity(oldCapacity: Ref, minCapacity: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(oldCapacity), intType())
+  requires isSubtype(typeOf(minCapacity), intType())
+  requires intFromRef(oldCapacity) >= 0
+  requires intFromRef(minCapacity) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= intFromRef(minCapacity)
+{
+  var newCapacity: Ref
+  newCapacity := plusInts(oldCapacity, shiftRightInt(oldCapacity, longToRef(2)))
+  if ((let anon ==
+    (minusInts(newCapacity, minCapacity)) in
+    intFromRef(newCapacity) - intFromRef(minCapacity)) <
+  0) {
+    newCapacity := minCapacity
+  }
+  if ((let anon ==
+    (minusInts(newCapacity, minusInts(intToRef(2147483647), intToRef(8)))) in
+    intFromRef(newCapacity) -
+    intFromRef(minusInts(intToRef(2147483647), intToRef(8)))) >
+  0) {
+    if (intFromRef(minCapacity) >
+    (let anon ==
+      (minusInts(intToRef(2147483647), intToRef(8))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(8)))) {
+      newCapacity := intToRef(2147483647)
+    } else {
+      newCapacity := minusInts(intToRef(2147483647), intToRef(8))}
+  }
+  v_ret_0 := newCapacity
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_arithmetic.kt: info: Generated Viper text for capacityAboveArrayLimit:
+method capacityAboveArrayLimit() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) <=
+    (2147483647 - 8 > 2147483647 ?
+      2147483647 - 8 - 4294967296 :
+      (2147483647 - 8 < -2147483648 ?
+        2147483647 - 8 + 4294967296 :
+        2147483647 - 8))
+{
+  v_ret_0 := newCapacity(intToRef(1), intToRef(2147483647))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method newCapacity(oldCapacity: Ref, minCapacity: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(oldCapacity), intType())
+  requires isSubtype(typeOf(minCapacity), intType())
+  requires intFromRef(oldCapacity) >= 0
+  requires intFromRef(minCapacity) >= 0
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) >= intFromRef(minCapacity)

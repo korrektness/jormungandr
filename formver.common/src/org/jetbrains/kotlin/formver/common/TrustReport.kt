@@ -24,11 +24,25 @@ data class TrustedAssumption(val kind: Kind, val name: String) : Comparable<Trus
     override fun compareTo(other: TrustedAssumption): Int = compareValuesBy(this, other, { it.kind }, { it.name })
 }
 
+/** An exact semantic mode selected by a source annotation, independent of trusted assumptions. */
+data class SemanticOptIn(val name: String) : Comparable<SemanticOptIn> {
+    override fun compareTo(other: SemanticOptIn): Int = name.compareTo(other.name)
+}
+
 /**
  * The verified declarations of a module, by source file and then by verification label, each with the trusted
  * assumptions its program used. [render] writes the report file, whose first line is [summary]; [parse] reads it back.
  */
-class TrustReport(entries: Map<String, Map<String, Set<TrustedAssumption>>>) {
+class TrustReport(
+    entries: Map<String, Map<String, Set<TrustedAssumption>>>,
+    semanticOptIns: Map<String, Map<String, Set<SemanticOptIn>>> = emptyMap(),
+) {
+    val semanticOptIns: Map<String, Map<String, List<SemanticOptIn>>> =
+        semanticOptIns.filterKeys { it in entries }.mapValues { (file, declarations) ->
+            declarations.filter { (label, modes) -> label in entries.getValue(file) && modes.isNotEmpty() }
+                .mapValues { (_, modes) -> modes.sorted() }
+        }.filterValues { it.isNotEmpty() }
+
     val files: Map<String, Map<String, List<TrustedAssumption>>> =
         entries.filterValues { it.isNotEmpty() }.toSortedMap().mapValues { (_, declarations) ->
             declarations.toSortedMap().mapValues { (_, assumptions) -> assumptions.sorted() }
@@ -57,6 +71,9 @@ class TrustReport(entries: Map<String, Map<String, Set<TrustedAssumption>>>) {
             for ((label, assumptions) in declarations) {
                 appendLine("$DECLARATION_INDENT$label")
                 for (assumption in assumptions) appendLine("$ASSUMPTION_INDENT${assumption.kind.label}: ${assumption.name}")
+                for (mode in semanticOptIns[file]?.get(label).orEmpty()) {
+                    appendLine("${ASSUMPTION_INDENT}$WRAPPING_LABEL: ${mode.name}")
+                }
             }
         }
     }
@@ -67,16 +84,23 @@ class TrustReport(entries: Map<String, Map<String, Set<TrustedAssumption>>>) {
      * file for which [exists] fails are dropped too.
      */
     fun updatedWith(newer: TrustReport, recompiled: Set<String>, exists: (String) -> Boolean): TrustReport =
-        TrustReport(entries().filterKeys { it !in recompiled && exists(it) } + newer.entries())
+        TrustReport(
+            entries().filterKeys { it !in recompiled && exists(it) } + newer.entries(),
+            modes().filterKeys { it !in recompiled && exists(it) } + newer.modes(),
+        )
 
     /** This report with each file name replaced by [rename] of it. */
-    fun renamed(rename: (String) -> String): TrustReport = TrustReport(entries().mapKeys { rename(it.key) })
+    fun renamed(rename: (String) -> String): TrustReport =
+        TrustReport(entries().mapKeys { rename(it.key) }, modes().mapKeys { rename(it.key) })
+
+    private fun modes() = semanticOptIns.mapValues { (_, declarations) -> declarations.mapValues { it.value.toSet() } }
 
     private fun entries() = files.mapValues { (_, declarations) -> declarations.mapValues { it.value.toSet() } }
 
     companion object {
         private const val DECLARATION_INDENT = "  "
         private const val ASSUMPTION_INDENT = "    "
+        private const val WRAPPING_LABEL = "@WrappingIntArithmetic"
         private val kindsByLabel = TrustedAssumption.Kind.entries.associateBy { it.label }
 
         /** Reads a report that [render] wrote; any other text throws [IllegalArgumentException]. */
@@ -95,6 +119,9 @@ class TrustReport(entries: Map<String, Map<String, Set<TrustedAssumption>>>) {
 
         private fun parseEntries(text: String): TrustReport {
             val entries = linkedMapOf<String, MutableMap<String, MutableSet<TrustedAssumption>>>()
+            val modes = linkedMapOf<String, MutableMap<String, MutableSet<SemanticOptIn>>>()
+            var file: String? = null
+            var declaration: String? = null
             var declarations: MutableMap<String, MutableSet<TrustedAssumption>>? = null
             var assumptions: MutableSet<TrustedAssumption>? = null
             // The first line is the summary, which [parse] checks against the entries.
@@ -106,24 +133,34 @@ class TrustReport(entries: Map<String, Map<String, Set<TrustedAssumption>>>) {
                     line.startsWith(ASSUMPTION_INDENT) -> {
                         val (label, name) = line.removePrefix(ASSUMPTION_INDENT).split(": ", limit = 2)
                             .takeIf { it.size == 2 } ?: malformed()
-                        val kind = kindsByLabel[label] ?: malformed()
-                        (assumptions ?: malformed()) += TrustedAssumption(kind, name)
+                        if (label == WRAPPING_LABEL) {
+                            val currentFile = file ?: malformed()
+                            val currentDeclaration = declaration ?: malformed()
+                            modes.getOrPut(currentFile) { linkedMapOf() }
+                                .getOrPut(currentDeclaration) { mutableSetOf() } += SemanticOptIn(name)
+                        } else {
+                            val kind = kindsByLabel[label] ?: malformed()
+                            (assumptions ?: malformed()) += TrustedAssumption(kind, name)
+                        }
                     }
                     line.startsWith(DECLARATION_INDENT) -> {
                         val current = declarations ?: malformed()
                         val label = line.removePrefix(DECLARATION_INDENT)
                         if (label in current) malformed()
+                        declaration = label
                         assumptions = mutableSetOf<TrustedAssumption>().also { current[label] = it }
                     }
                     line.first().isWhitespace() -> malformed()
                     else -> {
                         if (line in entries) malformed()
                         declarations = linkedMapOf<String, MutableSet<TrustedAssumption>>().also { entries[line] = it }
+                        file = line
+                        declaration = null
                         assumptions = null
                     }
                 }
             }
-            return TrustReport(entries)
+            return TrustReport(entries, modes)
         }
     }
 }
@@ -134,14 +171,24 @@ class TrustReport(entries: Map<String, Map<String, Set<TrustedAssumption>>>) {
  */
 class TrustLedger {
     private val entries = mutableMapOf<String, MutableMap<String, () -> Set<TrustedAssumption>>>()
+    private val semanticOptIns = mutableMapOf<String, MutableMap<String, () -> Set<SemanticOptIn>>>()
 
     @Synchronized
-    fun record(file: String, label: String, assumptions: () -> Set<TrustedAssumption>) {
+    fun record(
+        file: String,
+        label: String,
+        modes: () -> Set<SemanticOptIn> = { emptySet() },
+        assumptions: () -> Set<TrustedAssumption>,
+    ) {
         entries.getOrPut(file) { mutableMapOf() }[label] = assumptions
+        semanticOptIns.getOrPut(file) { mutableMapOf() }[label] = modes
     }
 
     @Synchronized
-    fun snapshot(): TrustReport = TrustReport(entries.mapValues { (_, labels) -> labels.mapValues { it.value() } })
+    fun snapshot(): TrustReport = TrustReport(
+        entries.mapValues { (_, labels) -> labels.mapValues { it.value() } },
+        semanticOptIns.mapValues { (_, labels) -> labels.mapValues { it.value() } },
+    )
 }
 
 /**

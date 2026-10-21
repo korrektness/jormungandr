@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignature
+import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.EstablishConstruction
 import org.jetbrains.kotlin.formver.core.embeddings.expression.VariableEmbedding
@@ -40,6 +41,13 @@ class MethodConverter(
     override val constructionPhases: ConstructionPhases? = null,
     override val constructionBoundary: EstablishConstruction? = null,
 ) : MethodConversionContext, ProgramConversionContext by programCtx {
+    override val wrapsIntArithmetic: Boolean =
+        (signature as? NamedFunctionSignature)?.symbol?.wrapsIntArithmetic(session) == true
+
+    init {
+        if (wrapsIntArithmetic) (signature as? NamedFunctionSignature)?.symbol?.let { trust.recordWrappingArithmetic(it) }
+    }
+
     private var propertyResolver = PropertyResolver(scopeDepth)
 
     override val isValidForForAllBlock: Boolean

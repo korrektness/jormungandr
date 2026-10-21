@@ -1,0 +1,61 @@
+/int_coerce_at_least.kt: info: Generated Viper text for minimumCapacity:
+function coerceAtLeastModel(v_this_extension: Ref, minimumValue: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), intType())
+  requires isSubtype(typeOf(minimumValue), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef((intFromRef(v_this_extension) < intFromRef(minimumValue) ?
+      minimumValue :
+      v_this_extension))
+
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method minimumCapacity(requested: Ref, minimum: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(requested), intType())
+  requires isSubtype(typeOf(minimum), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var capacity: Ref
+  var anon: Ref
+  capacity := coerceAtLeastModel(requested, minimum)
+  assert intFromRef(capacity) >= intFromRef(requested)
+  assert intFromRef(capacity) >= intFromRef(minimum)
+  if (intFromRef(requested) < intFromRef(minimum)) {
+    anon := minimum
+  } else {
+    anon := requested}
+  assert intFromRef(capacity) == intFromRef(anon)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/int_coerce_at_least.kt: info: Generated Viper text for strictMinimum:
+function coerceAtLeastModel(v_this_extension: Ref, minimumValue: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), intType())
+  requires isSubtype(typeOf(minimumValue), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef((intFromRef(v_this_extension) < intFromRef(minimumValue) ?
+      minimumValue :
+      v_this_extension))
+
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method strictMinimum(requested: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(requested), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var capacity: Ref
+  capacity := coerceAtLeastModel(requested, intToRef(10))
+  assert intFromRef(capacity) > intFromRef(requested)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

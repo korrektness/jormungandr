@@ -120,7 +120,7 @@ A YouTrack search for `project:KT ArrayDeque` (about 45 issues) has no report of
 | Generic-array `copyInto`, `fill` | Disjoint copying and fill modelled | SPECIFICATIONS.md, "Array<T>" |
 | `arrayOfNulls`, `emptyArray` | Modelled | SPECIFICATIONS.md, "Array<T>" |
 | `Int.shr`, `Int.and` | `shr` with a literal distance is modelled; `and` has no executable intrinsic | SPECIFICATIONS.md, "Integer arithmetic" |
-| Wrapping `+` in `newCapacity` | Every `+` must stay in range; overflow is `INTEGER_OVERFLOW` | SPECIFICATIONS.md, "Integer arithmetic" |
+| Wrapping `+` and `-` in `newCapacity` | Supported through the plan's D3 function annotation | SPECIFICATIONS.md, "Integer arithmetic" |
 | `element == elementData[i]` with `E` unbounded | Executed: an unconstrained Boolean. Specified: `EqualsRelation` | `conversion/KotlinEquality.kt::EqualityLowering` |
 | Subclassing `AbstractMutableList` | Rejected: a source subtype of a modelled type is an `INVALID_EXTERNAL_SPEC` | SPECIFICATIONS.md, "External specifications"; `testData/diagnostics/stdlib/list/custom_list.kt` |
 | `override var size` | An overriding property is a call and carries no stable facts | SPECIFICATIONS.md, "Rejected constructs" |

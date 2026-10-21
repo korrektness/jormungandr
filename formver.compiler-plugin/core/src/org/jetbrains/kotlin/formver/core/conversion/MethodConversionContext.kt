@@ -45,6 +45,7 @@ class ReturnTarget private constructor(val variable: VariableEmbedding, val labe
  */
 interface MethodConversionContext : ProgramConversionContext {
     val signature: FunctionSignature
+    val wrapsIntArithmetic: Boolean
     val defaultResolvedReturnTarget: ReturnTarget
     val isValidForForAllBlock: Boolean
 

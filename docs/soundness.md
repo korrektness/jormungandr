@@ -61,6 +61,10 @@ SnaKt lists the trusted pieces that each verified declaration's program uses:
 - `library contract`: a contract that `conversion/StdLibConverter.kt` gives a
   library function by name.
 
+The report also lists the `@WrappingIntArithmetic` semantic opt-in described in
+SPECIFICATIONS.md, "Integer arithmetic". Semantic opt-ins are separate from trusted
+assumptions and excluded from trust counts. It introduces no trust-register entry.
+
 The report's first line counts the verified declarations, those that rely on a
 trusted piece, and the distinct trusted pieces they rely on, in total and by kind.
 

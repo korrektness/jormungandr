@@ -53,6 +53,24 @@ object OperatorExpEmbeddings {
         }
     }
 
+    fun wrapInt(value: Exp): Exp {
+        val modulus = Exp.IntLit(1L shl Int.SIZE_BITS)
+        return Exp.TernaryExp(value gt Int.MAX_VALUE.toExp(), Exp.Sub(value, modulus),
+            Exp.TernaryExp(value lt Int.MIN_VALUE.toExp(), Exp.Add(value, modulus), value))
+    }
+
+    val WrappingAddIntInt = buildBinaryOperator {
+        setName("wrappingPlusInts")
+        setSignature(intIntToIntType)
+        viperImplementation { wrapInt(Exp.Add(args[0], args[1], pos, info)) }
+    }
+
+    val WrappingSubIntInt = buildBinaryOperator {
+        setName("wrappingMinusInts")
+        setSignature(intIntToIntType)
+        viperImplementation { wrapInt(Exp.Sub(args[0], args[1], pos, info)) }
+    }
+
     val ShiftRightInt = buildBinaryOperator {
         setName("shiftRightInt")
         withSignature {
@@ -423,6 +441,7 @@ object OperatorExpEmbeddings {
     val allTemplates
         get() = listOf(
             AddIntInt, SubIntInt, MulIntInt, DivIntInt, RemIntInt, NegInt, CompareIntInt, ShiftRightInt,
+            WrappingAddIntInt, WrappingSubIntInt,
             LeIntInt, GeIntInt, LtIntInt, GtIntInt,
             Not, And, Or, Implies, Xor,
             AddCharInt, SubCharChar, SubCharInt,

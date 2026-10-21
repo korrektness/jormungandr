@@ -122,7 +122,9 @@ class ViperPoweredClassChecker(
             return
         }
         if (!failed) {
-            config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel) { program.trust.assumptions }
+            config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, { program.trust.semanticOptIns }) {
+                program.trust.assumptions
+            }
             config.verifiedDeclarations?.record(declaration.symbol)
         }
     }

@@ -98,8 +98,9 @@ object SpecialKotlinFunctions {
                 withParam { existing(op.argument.pretype) }
                 withReturnType { existing(op.result.pretype) }
             }
-            addFunction(signature, SpecialPackages.kotlin, className = op.receiver.name, name = op.operation) { args, _ ->
-                template(args[0], args[1])
+            addFunction(signature, SpecialPackages.kotlin, className = op.receiver.name, name = op.operation) { args, ctx ->
+                val operation = if (ctx.wrapsIntArithmetic) IntegerOperators.wrappingBinary[op] ?: template else template
+                operation(args[0], args[1])
             }
         }
         for ((op, template) in IntegerOperators.unary) {
@@ -117,11 +118,13 @@ object SpecialKotlinFunctions {
             withReturnType { int() }
         }
         withCallableType(intIntToIntType) {
-            addFunction(SpecialPackages.kotlin, className = "Int", name = "plus") { args, _ ->
-                AddIntInt(args[0], args[1])
+            addFunction(SpecialPackages.kotlin, className = "Int", name = "plus") { args, ctx ->
+                val operation = if (ctx.wrapsIntArithmetic) OperatorExpEmbeddings.WrappingAddIntInt else AddIntInt
+                operation(args[0], args[1])
             }
-            addFunction(SpecialPackages.kotlin, className = "Int", name = "minus") { args, _ ->
-                SubIntInt(args[0], args[1])
+            addFunction(SpecialPackages.kotlin, className = "Int", name = "minus") { args, ctx ->
+                val operation = if (ctx.wrapsIntArithmetic) OperatorExpEmbeddings.WrappingSubIntInt else SubIntInt
+                operation(args[0], args[1])
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "shr") { args, _ ->
                 val distance = args[1].ignoringCastsAndMetaNodes() as? IntLit

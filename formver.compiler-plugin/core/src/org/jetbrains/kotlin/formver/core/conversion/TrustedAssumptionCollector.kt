@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.formver.common.SemanticOptIn
 import org.jetbrains.kotlin.formver.common.TrustedAssumption
 import org.jetbrains.kotlin.formver.common.trustName
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
@@ -42,6 +43,13 @@ class TrustedAssumptionCollector(
         @OptIn(SymbolInternals::class)
         get() = trusted + sourceCallees.filter { (callee, _) -> callee.fir.verificationSkipped == true }
             .map { (_, name) -> TrustedAssumption(TrustedAssumption.Kind.SKIPPED, name.trustName) }
+
+    val semanticOptIns = sortedSetOf<SemanticOptIn>()
+
+    /** Records an exact arithmetic mode so the report exposes where overflow obligations are disabled. */
+    fun recordWrappingArithmetic(symbol: FirCallableSymbol<*>) {
+        semanticOptIns += SemanticOptIn(symbol.trustName)
+    }
 
     /** Records the external binding of [target]. */
     fun recordBinding(target: FirBasedSymbol<*>) {

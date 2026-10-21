@@ -40,6 +40,27 @@ class TrustReportTest {
     }
 
     @Test
+    fun `semantic opt-ins survive report updates without counting as trust`() {
+        val mode = SemanticOptIn("capacity(Int, Int): Int")
+        val ledger = TrustLedger()
+        ledger.record("kept.kt", "capacity", { setOf(mode) }) { emptySet() }
+        val clean = ledger.snapshot()
+        assertEquals(TrustReport(mapOf("kept.kt" to mapOf("capacity" to emptySet()))).summary, clean.summary)
+        val mixed = clean.updatedWith(TrustReport(mapOf("other.kt" to mapOf("caller" to setOf(abs)))), emptySet()) { true }
+        val parsed = TrustReport.parse(mixed.renamed { "src/$it" }.render())
+        assertEquals(mapOf("src/kept.kt" to mapOf("capacity" to listOf(mode))), parsed.semanticOptIns)
+        assertEquals(
+            TrustReport(mapOf("kept.kt" to mapOf("capacity" to emptySet()), "other.kt" to mapOf("caller" to setOf(abs)))).summary,
+            parsed.summary,
+        )
+        val replaced = parsed.updatedWith(
+            TrustReport(mapOf("src/kept.kt" to mapOf("capacity" to emptySet()))), setOf("src/kept.kt"),
+        ) { true }
+        assertEquals(emptyMap(), replaced.semanticOptIns)
+        assertEquals(emptyMap(), parsed.updatedWith(TrustReport(emptyMap()), emptySet()) { false }.semanticOptIns)
+    }
+
+    @Test
     fun `a malformed report is rejected`() {
         assertFailsWith<IllegalArgumentException> { TrustReport.parse("summary\n\n  declaration without a file\n") }
         assertFailsWith<IllegalArgumentException> { TrustReport.parse("summary\n\na.kt\n  f\n    unknown kind: x\n") }
