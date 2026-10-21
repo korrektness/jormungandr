@@ -153,13 +153,13 @@ data class Linearizer(
     override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean): Exp =
         step.valueOf(receiver.toViper(this), source.asPosition)
 
-    override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp {
+    override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?, valueIsReference: Boolean): Exp {
         val result = freshAnonVar(type)
         if (ownerPath == null) {
             addStatement { SpecialMethods.havocMethod.toMethodCall(listOf(result.type.runtimeType), listOf(result.toLocalVarUse())) }
         } else {
             foldState?.openOwn(this, ownerPath)
-            addStatement { Stmt.assign(result.toLocalVarUse(), type.injection.toRef(value, pos = source.asPosition)) }
+            addStatement { Stmt.assign(result.toLocalVarUse(), if (valueIsReference) value else type.injection.toRef(value, pos = source.asPosition)) }
         }
         return result.toViperExp(this)
     }

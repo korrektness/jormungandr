@@ -40,6 +40,7 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
     context(ctx: TypeResolver)
     fun uniquePredicate(): Predicate = when (this) {
         IntArrayEmbedding.classType -> IntArrayEmbedding.uniquePredicate()
+        GenericArrayEmbedding.classType -> GenericArrayEmbedding.uniquePredicate()
         StringBuilderEmbedding.classType -> StringBuilderEmbedding.uniquePredicate()
         else -> if (ctx.isInterface(this)) {
             val receiver = Exp.LocalVar(DispatchReceiverName, Type.Ref)
@@ -52,7 +53,7 @@ data class ClassTypeEmbedding(override val name: ScopedName) : PretypeEmbedding 
 
     /** Whether this type's unique predicate has a built-in representation. */
     val hasBuiltinPredicate: Boolean
-        get() = this == IntArrayEmbedding.classType || this == StringBuilderEmbedding.classType
+        get() = this == IntArrayEmbedding.classType || this == GenericArrayEmbedding.classType || this == StringBuilderEmbedding.classType
 
     context(ctx: TypeResolver)
     private fun userClassUniquePredicate(): Predicate = ClassPredicateBuilder.build(name, uniquePredicateName) {

@@ -20,7 +20,7 @@ data class ModelOrigin(
     val result: Boolean = false,
     /** A field whose value never changes, shown through any reference. */
     val readOnly: Boolean = false,
-    /** The function giving the size of an `IntArray` value. */
+    /** The function giving an array's permission-free size. */
     val arraySize: SymbolicName? = null,
     val resolvedArraySize: String? = null,
 ) : org.jetbrains.kotlin.formver.viper.ast.ResolvableInfo {
@@ -50,6 +50,10 @@ fun TypeEmbedding.modelOrigin(
         else -> ModelOrigin.Kind.REFERENCE
     }
     val decoder = if (kind == ModelOrigin.Kind.REFERENCE) null else getNonNullable().injection.fromRef.name
-    val arraySize = if (pretype == IntArrayEmbedding.classType) IntArrayEmbedding.arraySizeFunction.name else null
+    val arraySize = when (pretype) {
+        IntArrayEmbedding.classType -> IntArrayEmbedding.arraySizeFunction.name
+        GenericArrayEmbedding.classType -> GenericArrayEmbedding.arraySizeFunction.name
+        else -> null
+    }
     return ModelOrigin(name, source, kind, unique, parameter, decoder, result = result, readOnly = readOnly, arraySize = arraySize)
 }

@@ -159,7 +159,7 @@ fun StmtConversionContext.pureLambdaValue(
 }
 
 /** The variable or property that [this] array expression reads, for naming it in a bounds error. */
-private fun FirExpression.arraySymbol(): FirBasedSymbol<*>? = when (this) {
+internal fun FirExpression.arraySymbol(): FirBasedSymbol<*>? = when (this) {
     is FirSmartCastExpression -> originalExpression.arraySymbol()
     is FirQualifiedAccessExpression -> when (val symbol = calleeReference.symbol) {
         is FirVariableSymbol<*> -> symbol.receiverTemporaryInitializer?.arraySymbol() ?: symbol

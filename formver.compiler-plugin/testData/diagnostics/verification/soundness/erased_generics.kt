@@ -4,7 +4,7 @@
 import org.jetbrains.kotlin.formver.plugin.*
 
 // Invariants inhaled after an unchecked cast or an erased generic substitution (docs/soundness.md, "Type invariants").
-// The values are read as `Any`, where the JVM inserts no checkcast, so they really are `String`s at runtime.
+// Values are read through erased element types; the static element type can disagree with the stored value.
 // UNSOUND marks an assertion that is false at runtime but verifies: a sound verifier reports
 // VERIFICATION_CONDITION_NOT_ESTABLISHED on it.
 
@@ -36,6 +36,14 @@ fun <T> <!VIPER_TEXT!>coerce<!>(x: Any): T = x as T
 fun <!VIPER_TEXT!>uncheckedGenericReturn<!>() {
     val y: Any = coerce<Int>("a")
     verify(y is Int)
+}
+
+// UNSOUND: the nullability cast preserves the JVM component class; reading the null slot inhales `String`.
+fun <!VIPER_TEXT!>castArrayElement<!>() {
+    @Suppress("UNCHECKED_CAST")
+    val strings: @Unique Array<String> = arrayOfNulls<String>(1) as Array<String>
+    val item: Any? = strings[0]
+    verify(item != null)
 }
 
 fun <T> <!VIPER_TEXT!>identity<!>(t: T): T = t

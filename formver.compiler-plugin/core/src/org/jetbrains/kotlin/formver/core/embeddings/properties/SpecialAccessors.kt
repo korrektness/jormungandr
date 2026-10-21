@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.embeddings.properties
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArraySize
+import org.jetbrains.kotlin.formver.core.embeddings.expression.GenericArraySize
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings
 
 object LengthFieldGetter : GetterEmbedding {
@@ -25,6 +26,11 @@ object MultisetSizeGetter : GetterEmbedding {
         OperatorExpEmbeddings.MultisetSize(receiver)
 
     override fun getValueSimple(receiver: ExpEmbedding, ctx: TypeResolver) = OperatorExpEmbeddings.MultisetSize(receiver)
+}
+
+object GenericArraySizeGetter : GetterEmbedding {
+    override fun getValue(receiver: ExpEmbedding, ctx: TypeResolver, receiverOwned: Boolean) = GenericArraySize(receiver)
+    override fun getValueSimple(receiver: ExpEmbedding, ctx: TypeResolver) = GenericArraySize(receiver)
 }
 
 object IntArraySizeGetter : GetterEmbedding {

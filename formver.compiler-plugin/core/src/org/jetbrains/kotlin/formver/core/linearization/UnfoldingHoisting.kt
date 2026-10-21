@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.GenericArrayEmbedding
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.BinaryExp
 import org.jetbrains.kotlin.formver.viper.ast.Exp
@@ -241,7 +242,8 @@ private fun Exp.mentionedVariables(permissionFree: Boolean = false): Set<Symboli
         is Exp.WithInfo -> listOf(inner)
         is Exp.LocalVar -> return if (permissionFree) emptySet() else setOf(name)
         is Exp.FuncApp -> {
-            if (functionName == IntArrayEmbedding.arraySizeFunction.name) childrenPermissionFree = true
+            if (functionName == IntArrayEmbedding.arraySizeFunction.name || functionName == GenericArrayEmbedding.arraySizeFunction.name)
+                childrenPermissionFree = true
             args
         }
         is Exp.IntLit, is Exp.BoolLit, is Exp.NullLit, is Exp.Result -> emptyList()

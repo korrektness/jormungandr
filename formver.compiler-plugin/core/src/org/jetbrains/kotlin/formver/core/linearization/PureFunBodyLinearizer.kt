@@ -153,13 +153,13 @@ data class PureFunBodyLinearizer(
     }
 
     /** The value is read under the access invariants of the owner's arguments, then the owner's predicate. */
-    override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp {
+    override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?, valueIsReference: Boolean): Exp {
         val owners = predicate.formalArgs.map {
             it as? Exp.LocalVar ?: throw SnaktInternalException(source, "Invalid owner encountered in pure function")
         }
         val accessInvariants = (owners.flatMap { ssaConverter.accessInvariantsOf(it) } + predicate).distinct()
         val result = freshAnonVar(type)
-        ssaConverter.addAssignment(result.name, type.injection.toRef(value, pos = source.asPosition), accessInvariants)
+        ssaConverter.addAssignment(result.name, if (valueIsReference) value else type.injection.toRef(value, pos = source.asPosition), accessInvariants)
         return result.toViperExp(this)
     }
 

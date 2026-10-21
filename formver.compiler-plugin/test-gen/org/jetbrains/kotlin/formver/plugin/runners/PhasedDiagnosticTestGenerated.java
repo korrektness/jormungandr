@@ -256,6 +256,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("generic_array_elements.kt")
+      public void testGeneric_array_elements() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/array/generic_array_elements.kt");
+      }
+
+      @Test
       @TestMetadata("int_array.kt")
       public void testInt_array() {
         runTest("formver.compiler-plugin/testData/diagnostics/stdlib/array/int_array.kt");
@@ -514,6 +520,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("expect_actual.kt")
     public void testExpect_actual() {
       runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/expect_actual.kt");
+    }
+
+    @Test
+    @TestMetadata("generic_array.kt")
+    public void testGeneric_array() {
+      runTest("formver.compiler-plugin/testData/diagnostics/uniqueness_checker/generic_array.kt");
     }
 
     @Test

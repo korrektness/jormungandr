@@ -51,7 +51,7 @@ fun FirQualifiedAccessExpression.isLawValueOperation(): Boolean = toResolvedCall
     it.packageName.asString() == "kotlin" &&
             ((this is FirFunctionCall && it.className?.asString() in classes && it.callableName.asString() in operations) ||
                     (it.className?.asString() == "String" && it.callableName.asString() == "length") ||
-                    (it.className?.asString() == "IntArray" &&
+                    (it.className?.asString() in setOf("IntArray", "Array") &&
                             it.callableName.asString() == "size"))
 } == true
 
@@ -173,7 +173,7 @@ fun constructorInitializerConditions(
     val postconditions = fields.mapNotNull { (property, initializer) ->
         if (writes.mayChange(property)) return@mapNotNull null
         val readsOwnedState = initializer.subtree().any { expression ->
-            expression is FieldAccess || expression is PrimitiveFieldAccess || expression is IntArrayGet ||
+            expression is FieldAccess || expression is PrimitiveFieldAccess || expression is IntArrayGet || expression is GenericArrayGet ||
                 expression is FunctionCall && expression.function.formalArgs.any { it.isUnique }
         }
         if (readsOwnedState) return@mapNotNull null

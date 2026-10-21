@@ -63,6 +63,8 @@ import org.jetbrains.kotlin.formver.core.boundDispatchReceiver
 import org.jetbrains.kotlin.formver.core.functionCallArguments
 import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayElementAccess
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayElementAccess
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayFactory
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -252,7 +254,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         propertyAccessExpression.stringBuilderIntrinsic(data.session)?.let {
             return data.convertStringBuilderIntrinsic(propertyAccessExpression, it)
         }
-        (data.convertReceiverlessRead(propertyAccessExpression)
+        (data.convertGenericArrayLastIndex(propertyAccessExpression)
+            ?: data.convertReceiverlessRead(propertyAccessExpression)
             ?: data.convertUnownedSpecifiedMember(propertyAccessExpression))?.let { return it }
         data.typeResolver.classLawExpansion?.let { expansion ->
             val symbol = propertyAccessExpression.toResolvedCallableSymbol() as? FirPropertySymbol
@@ -413,6 +416,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             }
         }
         data.convertUnownedSpecifiedMember(functionCall)?.let { return it }
+        if (functionCall.isGenericArrayElementAccess()) return data.convertGenericArrayElementAccess(functionCall)
+        if (symbol.isGenericArrayFactory()) return data.convertGenericArrayFactory(functionCall)
         if (functionCall.isIntArrayElementAccess()) return data.convertIntArrayElementAccess(functionCall)
         if (functionCall.isIntArrayInit()) return data.convertIntArrayInit(functionCall)
         return data.convertStdlibHof(functionCall)

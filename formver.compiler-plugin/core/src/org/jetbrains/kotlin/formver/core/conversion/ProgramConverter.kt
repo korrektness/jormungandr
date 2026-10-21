@@ -193,6 +193,9 @@ class ProgramConverter(
     private val usesIntArray: Boolean
         get() = typeResolver.lookupClassTypeEmbedding(IntArrayEmbedding.classType.name) != null
 
+    private val usesGenericArray: Boolean
+        get() = typeResolver.lookupClassTypeEmbedding(GenericArrayEmbedding.classType.name) != null
+
     private val usesStringBuilder: Boolean
         get() = typeResolver.lookupClassTypeEmbedding(StringBuilderEmbedding.classType.name) != null
 
@@ -204,7 +207,8 @@ class ProgramConverter(
                     SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
                 linearizedBodyResolver.functions + typeResolver.observerViewFunctions() + typeResolver.stringLiteralFunctions +
                 typeResolver.unmatchedWhenFunctions +
-                listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray })
+                listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray },
+                    GenericArrayEmbedding.arraySizeFunction.takeIf { usesGenericArray })
         ),
         methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods +
             vacuityProbes.methods(linearizedBodyResolver.methods, linearizedBodyResolver.functions),
@@ -212,7 +216,8 @@ class ProgramConverter(
         // Public fields with the same name are represented differently at `FieldEmbedding` level
         // but map to the same Viper field, so we deduplicate before emitting.
         fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
-                listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder }),
+                listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder },
+                    GenericArrayEmbedding.contentsField.takeIf { usesGenericArray }),
         adts = emptyList(),
         domains = listOf(RuntimeTypeDomain(typeResolver)) +
                 listOfNotNull(SeqMultisetDomain.takeIf { usesIntArray && typeResolver.usesMultiset }) +
@@ -858,6 +863,10 @@ class ProgramConverter(
     internal fun embedClass(symbol: FirRegularClassSymbol): ClassTypeEmbedding {
         session.externalSpecifications?.modelClass(symbol)?.let { return embedClass(it).also { trust.recordBinding(symbol) } }
         observerBindingRegistry.registerClass(this, symbol)
+        if (symbol.classId == GenericArrayEmbedding.classId) {
+            registerBuiltinHierarchy(symbol, GenericArrayEmbedding.classType)
+            return GenericArrayEmbedding.classType
+        }
         if (symbol.classId == IntArrayEmbedding.classId) {
             registerBuiltinHierarchy(symbol, IntArrayEmbedding.classType)
             return IntArrayEmbedding.classType

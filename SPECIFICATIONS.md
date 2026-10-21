@@ -95,7 +95,7 @@ Silicon's mapped model supplies optional Kotlin counterexample bindings for para
 receivers. `this` identifies a receiver; `old(path)` identifies a value in the function-entry state. Parameters cannot
 change, so a parameter's own entry value is not shown; entry values of fields reached through it are. A failure at
 function exit, a postcondition or a returns effect, binds the returned value as `result`. A `List` or other collection
-binds its size as `xs.size`, and an `IntArray` as `arr.size`, through any reference. Bindings follow declaration order,
+binds its size as `xs.size`, and an `IntArray` or `Array<T>` as `arr.size`, through any reference. Bindings follow declaration order,
 with `this` first and `result` last; entry-state bindings follow the failing-state ones. A binding retains its
 declaration source, displayed as a line and column. Values render as Kotlin integers of every width, booleans, escaped
 characters, `null`, or enum entry names. Several enum names separated by `/` identify indistinguishable model values.
@@ -579,7 +579,7 @@ Each argument to `triggers()` becomes a separate trigger. This differs from Vipe
 
 SnaKt reasons about mutable heap data through ownership. A value is either
 *unique*, meaning one path owns it, or *shared*. Default `val` properties are
-immutable and need no annotations. A `var` property, or an `IntArray` element,
+immutable and need no annotations. A `var` property, or an `IntArray` or `Array<T>` element,
 is read and written for real only through a unique path.
 
 ### Annotations
@@ -822,9 +822,9 @@ states on those paths. A return value or `try` expression value is captured
 before the finalizer runs. An abrupt completion in the finalizer replaces the
 pending completion; nested finalizers run from the innermost outward.
 
-`IntArray` and String index bounds, division by zero, and integer overflow
-remain verification obligations inside `try`. An element access of any other
-array type is an ordinary library call, which may throw. The checked arithmetic
+`IntArray`, `Array<T>` and String index bounds, division by zero, and integer overflow
+remain verification obligations inside `try`. An element access of an unmodelled
+primitive array type is an ordinary library call, which may throw. The checked arithmetic
 fragment is described under Integer arithmetic. Verification does not establish freedom
 from exceptions in opaque library operations or from JVM resource, linkage,
 or asynchronous failures.
@@ -878,6 +878,20 @@ fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
     arr[j] = tmp
 }
 ```
+
+### `Array<T>`
+
+A unique generic array stores a sequence of references. Indexed reads and writes,
+including `get` and `set`, follow the ownership and bounds rules of `IntArray`.
+A read inhales its static element type; the unchecked-cast assumption is in
+`docs/soundness.md`, "Type invariants". Elements themselves are shared values.
+Storing an owned reference moves that value, including through an erased cast.
+Indexed assignment and `set` borrow the array receiver.
+`size` is permission-free and `lastIndex` is `size - 1`.
+
+`arrayOfNulls<T>(n)` requires `n >= 0` and creates `n` null slots.
+`emptyArray<T>()` creates zero slots. A local owns either result when declared
+`@Unique Array<...>`. `Array(n) { ... }` and `arrayOf(...)` have no element model.
 
 ### Multisets
 

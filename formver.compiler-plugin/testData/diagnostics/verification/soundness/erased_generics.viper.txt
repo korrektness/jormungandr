@@ -231,6 +231,53 @@ method uncheckedGenericReturn() returns (v_ret_0: Ref)
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
+/erased_generics.kt: info: Generated Viper text for castArrayElement:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method castArrayElement() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var strings: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var item: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  anon_0 := intToRef(1)
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_2 := anon_1
+  strings := anon_2
+  assert 0 >= 0
+  assert 0 < referenceArraySize(strings)
+  unfold acc(Array_unique(strings), write)
+  anon_4 := strings.referenceContents[0]
+  anon_3 := anon_4
+  inhale isSubtype(typeOf(anon_3), stringType())
+  item := anon_3
+  assert !(item == nullValue())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
 /erased_generics.kt: info: Generated Viper text for identity:
 method identity(par_t: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(par_t), nullable(anyType()))

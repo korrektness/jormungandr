@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.formver.core.conversion
 import org.jetbrains.kotlin.formver.core.embeddings.callables.SpecialFunctions
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.GenericArrayEmbedding
 import org.jetbrains.kotlin.formver.core.linearization.subExps
 import org.jetbrains.kotlin.formver.core.linearization.pureToViper
 import org.jetbrains.kotlin.formver.viper.SymbolicName
@@ -43,7 +44,7 @@ private class StableCaptureFacts(private val context: ProgramConversionContext) 
                 else -> true
             }
         }
-        val special = (SpecialFunctions.all + SpecialFunctions.multiset + IntArrayEmbedding.arraySizeFunction)
+        val special = (SpecialFunctions.all + SpecialFunctions.multiset + IntArrayEmbedding.arraySizeFunction + GenericArrayEmbedding.arraySizeFunction)
             .firstOrNull { it.name == name }
         if (special != null) return special.body?.let(::stable) ?: special.pres.none { it.hasOwnershipAssertion() }
         return signature?.formalArgs?.none { it.isUnique || it.isBorrowed } == true

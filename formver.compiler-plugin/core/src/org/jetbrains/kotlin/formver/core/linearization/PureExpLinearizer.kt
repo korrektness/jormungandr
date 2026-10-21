@@ -194,8 +194,10 @@ data class PureExpLinearizer(
             .foldRight(value) { predicateAccess, acc -> Exp.Unfolding(predicateAccess, acc) }
     }
 
-    override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp =
-        type.injection.toRef(Exp.Unfolding(predicate, value, source.asPosition), pos = source.asPosition)
+    override fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?, valueIsReference: Boolean): Exp {
+        val read = Exp.Unfolding(predicate, value, source.asPosition)
+        return if (valueIsReference) read else type.injection.toRef(read, pos = source.asPosition)
+    }
 
     override fun addModifier(mod: StmtModifier) =
         unsupported("This construct needs a statement, which a specification cannot contain.")

@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayFactory
+
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.fir.references.toResolvedFunctionSymbol
@@ -53,6 +55,7 @@ fun FirReceiverParameterSymbol.resolveUniqueness(): Uniqueness =
 context(context: CheckerContext)
 fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
     if (this is FirConstructorSymbol) resolveConstructorResultUniqueness()
+    else if (isGenericArrayFactory()) Uniqueness.Unique
     else externalSpecificationSymbol(context.session).resolvedReturnType.scopeUniqueness
 
 context(context: CheckerContext)
@@ -182,6 +185,7 @@ context(context: CheckerContext)
 fun FirFunctionCall.resolveCallResultUniqueness(): Uniqueness {
     // An unresolved callee is already a compiler error.
     val target = calleeReference.toResolvedFunctionSymbol() ?: return resolvedType.scopeUniqueness
+    if (target.isGenericArrayFactory()) return Uniqueness.Unique
     val model = target.externalSpecificationSymbol(context.session)
     return if (model != target) model.resolvedReturnType.scopeUniqueness else resolvedType.scopeUniqueness
 }

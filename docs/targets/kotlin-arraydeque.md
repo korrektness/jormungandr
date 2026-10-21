@@ -116,8 +116,9 @@ A YouTrack search for `project:KT ArrayDeque` (about 45 issues) has no report of
 
 | Need | Status in SnaKt | Source |
 |---|---|---|
-| `Array<Any?>` elements | Opaque library call, may throw | docs/soundness.md, "Arrays" |
-| `copyInto`, `fill`, `arrayOfNulls` | Not modelled for any array type | no occurrence in `core/src` or `testData` |
+| `Array<Any?>` elements | Modelled | SPECIFICATIONS.md, "Array<T>" |
+| `copyInto`, `fill` | Not modelled for any array type | plan stage S2 |
+| `arrayOfNulls`, `emptyArray` | Modelled | SPECIFICATIONS.md, "Array<T>" |
 | `Int.shr`, `Int.and` | `shr` with a literal distance is modelled; `and` has no executable intrinsic | SPECIFICATIONS.md, "Integer arithmetic" |
 | Wrapping `+` in `newCapacity` | Every `+` must stay in range; overflow is `INTEGER_OVERFLOW` | SPECIFICATIONS.md, "Integer arithmetic" |
 | `element == elementData[i]` with `E` unbounded | Executed: an unconstrained Boolean. Specified: `EqualsRelation` | `conversion/KotlinEquality.kt::EqualityLowering` |
@@ -354,6 +355,6 @@ is wanted for other reasons.
 - Whether F1/F2 would find any functional bug that the layout tests miss.
 - Wasm `array.copy` and Native `copyImpl` overlap semantics, beyond their documented contract.
 - Solver times for the port. Nothing has been run through SnaKt.
-- Whether a generic class whose fields are `Array<Any?>` and whose laws quantify over them converts at all
-  before the plan's S1. This note assumes it does not.
+- Whether a generic class whose fields are `Array<Any?>` and whose laws quantify over them verifies within the
+  default timeout. The plan's S6 measures this.
 - The maintainers' view of drafts A and B. Neither is filed.

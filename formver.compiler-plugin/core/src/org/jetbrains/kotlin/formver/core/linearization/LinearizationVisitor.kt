@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.asTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.GenericArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
@@ -927,6 +928,53 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitGenericArraySize(e: GenericArraySize): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp = RuntimeTypeDomain.intInjection.toRef(
+            GenericArrayEmbedding.arraySize(e.array.withoutOwnerUnfoldings().linearize().toViper(ctx), ctx.source.asPosition),
+            pos = ctx.source.asPosition,
+        )
+    }
+
+    override fun visitGenericArrayAllNull(e: GenericArrayAllNull): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {
+        override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
+            GenericArrayEmbedding.allNull(e.array.linearize().toViper(ctx), ctx.source.asPosition)
+    }
+
+    override fun visitGenericArrayGet(e: GenericArrayGet): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            val value = toViper(ctx)
+            if (ctx is PureExpLinearizer) ctx.evaluateUnused(value)
+        }
+
+        override fun toViper(ctx: LinearizationContext): Exp {
+            val array = snapshotBefore(e.array.linearize().toViper(ctx), e.array.type, listOf(e.index), ctx)
+            val index = e.index.linearize().toViperBuiltinType(ctx)
+            val path = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = false)
+            if (ctx.logicOperatorPolicy == LogicOperatorPolicy.CONVERT_TO_IF)
+                ctx.assertInBounds(array, index, e.arraySymbol, generic = true)
+            return ctx.addOwnedRead(GenericArrayEmbedding.uniquePredicateAccess(array, ctx.source.asPosition),
+                GenericArrayEmbedding.element(array, index, ctx.source.asPosition), e.type, path, valueIsReference = true)
+        }
+    }
+
+    override fun visitGenericArraySet(e: GenericArraySet): Linearizable = object : UnitResultLinearizable(e) {
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            val path = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = true)
+            val array = snapshotBefore(e.array.linearize().toViper(ctx), e.array.type, listOf(e.index, e.value), ctx)
+            val index = atomicIndex(e.index, ctx, e.value)
+            val source = ctx.moveSource(e.value, targetOwned = false)
+            val value = e.value.linearize().toViper(ctx)
+            ctx.assertInBounds(array, index, e.arraySymbol, generic = true)
+            ctx.finishMove(e.value, source, targetOwned = false, target = null)
+            if (path == null) return
+            ctx.foldState?.openOwn(ctx, path)
+            val contents = array.fieldAccess(GenericArrayEmbedding.contentsField, ctx.source.asPosition)
+            ctx.addStatement {
+                Stmt.FieldAssign(contents, Exp.SeqUpdate(contents, index, value, ctx.source.asPosition), ctx.source.asPosition)
+            }
+        }
+    }
+
     override fun visitIntArraySize(e: IntArraySize): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp = RuntimeTypeDomain.intInjection.toRef(
             IntArrayEmbedding.arraySize(e.array.withoutOwnerUnfoldings().linearize().toViper(ctx), ctx.source.asPosition),
@@ -1454,12 +1502,12 @@ private fun LinearizationContext.updateStringBuilder(
 }
 
 /** Assert that [index] is a valid index into [array], reporting a failure as an array bounds error. */
-private fun LinearizationContext.assertInBounds(array: Exp, index: Exp, arraySymbol: FirBasedSymbol<*>?) {
+private fun LinearizationContext.assertInBounds(array: Exp, index: Exp, arraySymbol: FirBasedSymbol<*>?, generic: Boolean = false) {
     val pos = source.asPosition
     fun role(bound: SourceRole.ArrayElementAccessCheck.Bound) = SourceRole.ArrayElementAccessCheck(bound, arraySymbol).asInfo
     addStatement { Stmt.Assert(Exp.GeCmp(index, Exp.IntLit(0), pos, role(SourceRole.ArrayElementAccessCheck.Bound.NEGATIVE)), pos) }
     addStatement {
-        Stmt.Assert(Exp.LtCmp(index, IntArrayEmbedding.arraySize(array, pos), pos, role(SourceRole.ArrayElementAccessCheck.Bound.NOT_BELOW_SIZE)), pos)
+        Stmt.Assert(Exp.LtCmp(index, if (generic) GenericArrayEmbedding.arraySize(array, pos) else IntArrayEmbedding.arraySize(array, pos), pos, role(SourceRole.ArrayElementAccessCheck.Bound.NOT_BELOW_SIZE)), pos)
     }
 }
 

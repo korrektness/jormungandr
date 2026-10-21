@@ -157,7 +157,7 @@ jumps to each enclosing `catch` before the site's effects apply; a call's
 `catch` sees the state before the call. That is sound because a `try` body
 holds no owned state (SPECIFICATIONS.md, "Rejected constructs") and shared
 state is read as an arbitrary value. A failing arithmetic operation, and an
-`IntArray` or String index out of bounds, is a proof obligation instead, so a
+`IntArray`, `Array<T>` or String index out of bounds, is a proof obligation instead, so a
 `catch` never needs to see it. An unmatched
 exhaustive `when` has no edge: see "Closed hierarchies".
 
@@ -167,18 +167,20 @@ Tests: `verification/exception_sites.kt::midTry,castCatch,sharedGetCatch,charArr
 
 ### Arrays
 
-An `IntArray`'s predicate holds its elements as a sequence whose length is
-`arraySize`, a function that gives a value from 0 to `Int.MAX_VALUE` and
-needs no permission, since a JVM array's length never changes. Each element is
-an `Int`. `IntArray(n)` gives `n` zeros, as the JVM fills a new array with them.
-Every element access checks its index. A read through a shared path gives an
-arbitrary `Int`, and a write through one is dropped
-(`linearization/LinearizationVisitor.kt`).
+An `IntArray`'s predicate holds a sequence of bounded integers. An `Array<T>`'s
+predicate holds a sequence of references with no element-type invariant. Both
+predicates tie the sequence length to a heap-independent length function, since
+an array's length never changes. Generic reads rely on the static-typing
+assumption in "Type invariants".
 
-Other array types have no model: an element access is an ordinary library call
-with no contract, which may throw.
+Access, bounds and factory behaviour are specified in `SPECIFICATIONS.md`,
+"IntArray", "Array<T>" and "Exceptions". The encodings live in
+`embeddings/types/IntArrayEmbedding.kt`, `embeddings/types/GenericArrayEmbedding.kt`
+and `linearization/LinearizationVisitor.kt`.
 
 Tests: `stdlib/array/int_array_elements.kt::readPastEnd,writeShared`,
+`stdlib/array/generic_array_elements.kt::writeShared,readPastEnd,newArrayNonNull`,
+`verification/soundness/erased_generics.kt::castArrayElement`,
 `verification/exception_sites.kt::sharedGetCatch,charArrayCatch`.
 
 ### `StringBuilder`

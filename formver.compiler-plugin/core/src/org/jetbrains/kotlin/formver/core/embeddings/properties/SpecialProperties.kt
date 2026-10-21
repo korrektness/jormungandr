@@ -44,6 +44,14 @@ object StringSizeProperty :
     override fun match(symbol: FirPropertySymbol): Boolean = symbol.callableId == kotlinCallableId("String", "length")
 }
 
+object GenericArraySizeProperty : SpecialProperty(
+    PropertyEmbedding(GenericArraySizeGetter, setter = null, hasDefaultBehaviour = true,
+        isUnique = false, isVal = true, type = IntTypeEmbedding.asTypeEmbedding())
+) {
+    context(typeResolver: TypeResolver, session: FirSession)
+    override fun match(symbol: FirPropertySymbol): Boolean = symbol.callableId == kotlinCallableId("Array", "size")
+}
+
 object IntArraySizeProperty :
     SpecialProperty(
         PropertyEmbedding(
@@ -108,7 +116,7 @@ object CollectionSizeProperty :
 
 object SpecialProperties {
 
-    val all: List<SpecialProperty> = listOf(StringSizeProperty, IntArraySizeProperty, MultisetSizeProperty, CollectionSizeProperty)
+    val all: List<SpecialProperty> = listOf(StringSizeProperty, IntArraySizeProperty, GenericArraySizeProperty, MultisetSizeProperty, CollectionSizeProperty)
 
     context(typeResolver: TypeResolver, session: FirSession)
     fun lookup(symbol: FirPropertySymbol): PropertyEmbedding? = all.firstOrNull { it.match(symbol) }?.property

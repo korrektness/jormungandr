@@ -157,10 +157,11 @@ interface LinearizationContext {
 
     /**
      * [value], a read of the contents of a built-in owned object under its unique [predicate], as a `Ref` of [type],
-     * whose injection [value] is in. In a body, [ownerPath] is the object's path when it is owned: the read then
+     * whose injection [value] is in, unless [valueIsReference] supplies the stored reference directly.
+     * In a body, [ownerPath] is the object's path when it is owned: the read then
      * unfolds the predicate, and otherwise havocks the value.
      */
-    fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?): Exp
+    fun addOwnedRead(predicate: Exp.PredicateAccess, value: Exp, type: TypeEmbedding, ownerPath: OwnedPath?, valueIsReference: Boolean = false): Exp
 
     fun addModifier(mod: StmtModifier)
 

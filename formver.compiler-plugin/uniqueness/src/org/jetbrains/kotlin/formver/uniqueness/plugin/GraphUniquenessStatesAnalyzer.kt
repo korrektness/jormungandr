@@ -6,6 +6,8 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayElementAccess
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayElementAccess
+import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArraySetId
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayLoop
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isCollectionLoop
 
@@ -144,7 +146,7 @@ class GraphUniquenessStatesAnalyzer(
         this[Unit] ?: initialState
 
     private val FirFunctionCall.movesArguments: Boolean
-        get() = this !in readOnlyContext && !isPureCall(context.session) && !isIntArrayElementAccess() &&
+        get() = this !in readOnlyContext && !isPureCall(context.session) && !isIntArrayElementAccess() && !isGenericArrayElementAccess() &&
                 !isIntArrayLoop() && !isCollectionLoop() && stringBuilderIntrinsic(context.session) == null
 
     override fun visitSubGraph(node: CFGNodeWithSubgraphs<*>, graph: ControlFlowGraph): Boolean {
@@ -273,6 +275,13 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
         val call = node.fir
+        if (call !in readOnlyContext && call.toResolvedCallableSymbol()?.callableId == genericArraySetId) {
+            return with(context) {
+                data.transformValues { flow ->
+                    flow.put(Unit, call.arguments.last().resolveAccessState().move(flow.getOrInitialize()))
+                }
+            }
+        }
         if (!call.movesArguments) return visitNode(node, data)
 
         with(context) {

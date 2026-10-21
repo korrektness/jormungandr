@@ -66,6 +66,10 @@ internal class ExprPurityVisitor(
     override fun visitForAllEmbedding(e: ForAllEmbedding) = e.allChildrenPure(this)
     override fun visitExistsEmbedding(e: ExistsEmbedding) = e.allChildrenPure(this)
     override fun visitOld(e: Old) = e.allChildrenPure(this)
+    override fun visitGenericArraySize(e: GenericArraySize) = e.allChildrenPure(this)
+    override fun visitGenericArrayAllNull(e: GenericArrayAllNull) = e.allChildrenPure(this)
+    override fun visitGenericArrayGet(e: GenericArrayGet) = e.allChildrenPure(this)
+    override fun visitGenericArraySet(e: GenericArraySet): Boolean = false
     override fun visitIntArraySize(e: IntArraySize) = e.allChildrenPure(this)
     override fun visitIntArrayAllZero(e: IntArrayAllZero) = e.allChildrenPure(this)
     override fun visitIntArrayContents(e: IntArrayContents) = e.allChildrenPure(this)
