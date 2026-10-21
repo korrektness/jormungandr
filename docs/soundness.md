@@ -186,7 +186,14 @@ Access, bounds and factory behaviour are specified in `SPECIFICATIONS.md`,
 `embeddings/types/IntArrayEmbedding.kt`, `embeddings/types/GenericArrayEmbedding.kt`
 and `linearization/LinearizationVisitor.kt`.
 
-Tests: `stdlib/array/int_array_elements.kt::readPastEnd,writeShared`,
+Pure shared-element results follow SPECIFICATIONS.md, "Pure functions and specifications".
+Their SSA reads unfold the array predicate around the sequence lookup and assume
+no result invariants. Residual trust remains the erased-type boundary in
+[Type invariants](#type-invariants); the reader rule introduces no element ownership
+or additional typing assumption.
+
+Tests: `verification/pure_functions/array_element_readers.kt`,
+`stdlib/array/int_array_elements.kt::readPastEnd,writeShared`,
 `stdlib/array/generic_array_elements.kt::writeShared,readPastEnd,newArrayNonNull`,
 `stdlib/array/generic_array_bulk.kt::copyGrow,fillWindow,copyPastEnd,selfCopy`,
 `uniqueness_checker/generic_array.kt::fillMovesValue,copyResultMovesDestination`,

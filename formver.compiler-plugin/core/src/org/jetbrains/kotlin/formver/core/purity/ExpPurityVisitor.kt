@@ -111,7 +111,8 @@ internal class ExprPurityVisitor(
     override fun visitTryFinally(e: TryFinally): Boolean = false
     override fun visitWhile(e: While): Boolean = false
     override fun visitNonDeterministically(e: NonDeterministically): Boolean = false
-    override fun visitInhaleInvariants(e: InhaleInvariants): Boolean = admitsInlinedCalls && e.exp.accept(this)
+    override fun visitInhaleInvariants(e: InhaleInvariants): Boolean =
+        (admitsInlinedCalls || e.exp.isSharedArrayElement()) && e.exp.accept(this)
     override fun visitFieldAccessPermissions(e: FieldAccessPermissions): Boolean = false
     override fun visitPredicateAccessPermissions(e: PredicateAccessPermissions): Boolean = false
     override fun visitLabelExp(e: LabelExp): Boolean = false
@@ -123,6 +124,15 @@ internal class ExprPurityVisitor(
     override fun visitCollectionListAllocation(e: CollectionListAllocation): Boolean = false
     override fun visitStringBuilderAppend(e: StringBuilderAppend): Boolean = false
     override fun visitStringBuilderClear(e: StringBuilderClear): Boolean = false
+}
+
+/** Array predicates own slots, not the objects stored in them. */
+internal fun ExpEmbedding.isSharedArrayElement(): Boolean = when (this) {
+    is GenericArrayGet -> receiverOwned
+    is Cast -> inner.isSharedArrayElement()
+    is InhaleInvariants -> exp.isSharedArrayElement()
+    is WithPosition -> inner.isSharedArrayElement()
+    else -> false
 }
 
 private fun ExpEmbedding.allChildrenPure(v: ExprPurityVisitor): Boolean =

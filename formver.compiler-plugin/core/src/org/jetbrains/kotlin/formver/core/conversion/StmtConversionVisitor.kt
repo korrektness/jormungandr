@@ -99,16 +99,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
     override fun visitReturnExpression(
         returnExpression: FirReturnExpression,
         data: StmtConversionContext,
-    ): ExpEmbedding {
-        val expr = when (returnExpression.result) {
-            is FirUnitExpression -> UnitLit
-            else -> data.convert(returnExpression.result)
-        }
-        // returnTarget is null when it is the implicit return of a lambda
-        val returnTargetName = returnExpression.target.labelName
-        val target = data.resolveReturnTarget(returnTargetName)
-        return Return(expr.withType(target.variable.type), target)
-    }
+    ): ExpEmbedding = data.convertReturn(returnExpression)
 
     override fun visitResolvedQualifier(
         resolvedQualifier: FirResolvedQualifier, data: StmtConversionContext

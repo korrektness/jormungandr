@@ -974,8 +974,14 @@ only when `size > 0`. The infix `and` and `or` evaluate both operands, so
 `(b != 0) and (a / b > 0)` needs `b != 0` for its division.
 
 A `@Pure` function cannot return an alias into data its caller still owns. Its
-result cannot be `@Unique`, and when it has a `@Unique` parameter its result
-must be a value type.
+result cannot be `@Unique`. A function with a `@Unique` parameter must return a
+value type, with an exception for direct element reads of a unique `Array<T>`,
+optionally wrapped in an unchecked cast whose erased type needs no runtime check.
+Array elements are shared values (see [Array<T>](#arrayt)); returning one transfers
+no ownership. Pure observers may also return shared observations. Returning an
+owned path from a unique receiver or parameter reports `PURITY_VIOLATION` during
+conversion. Pure element reads prove bounds and result typing without inhaling
+result invariants.
 
 ```kotlin
 @Pure

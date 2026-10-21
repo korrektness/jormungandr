@@ -11,6 +11,16 @@ import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.expressions.FirExpression
+import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.FirOperation
+import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
+import org.jetbrains.kotlin.fir.expressions.FirTypeOperatorCall
+import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
+import org.jetbrains.kotlin.fir.expressions.arguments
+import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
+import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArrayGetId
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure
@@ -24,8 +34,8 @@ private val FirTypeRef.isUnique: Boolean
 
 /**
  * Checks the result of a `@Pure` function. It may not be `@Unique`, and when the function has a `@Unique` parameter,
- * receiver or context parameter it must be a value type: a Viper function cannot allocate, so any reference it
- * returns aliases its inputs.
+ * receiver or context parameter its reference results must be shared array elements.
+ * Ownership and cast safety are checked during conversion.
  */
 object PureFunctionResultChecker : FirFunctionChecker(MppCheckerKind.Common) {
     context(context: CheckerContext, reporter: DiagnosticReporter)
@@ -47,8 +57,31 @@ object PureFunctionResultChecker : FirFunctionChecker(MppCheckerKind.Common) {
                     declaration.contextParameters.map { it.returnTypeRef } +
                     declaration.valueParameters.map { it.returnTypeRef }
 
-        if (parameterTypeRefs.any { it.isUnique } && !returnTypeRef.coneType.isValueType()) {
+        if (parameterTypeRefs.any { it.isUnique } && !returnTypeRef.coneType.isValueType() &&
+            !declaration.returnsArrayElements()) {
             reporter.reportAttributeFailure(source, INVALID_PURE_REFERENCE_RESULT)
         }
     }
+}
+
+private fun FirExpression.isArrayElement(): Boolean = when (this) {
+    is FirFunctionCall -> toResolvedCallableSymbol()?.callableId == genericArrayGetId
+    is FirTypeOperatorCall -> operation == FirOperation.AS && arguments.single().isArrayElement()
+    else -> false
+}
+
+private fun FirFunction.returnsArrayElements(): Boolean {
+    var found = false
+    var allElements = true
+    body?.accept(object : FirVisitorVoid() {
+        override fun visitElement(element: FirElement) = element.acceptChildren(this)
+        override fun visitReturnExpression(returnExpression: FirReturnExpression) {
+            if (returnExpression.target.labeledElement == this@returnsArrayElements) {
+                found = true
+                allElements = allElements && returnExpression.result.isArrayElement()
+            }
+            returnExpression.acceptChildren(this)
+        }
+    })
+    return found && allElements
 }

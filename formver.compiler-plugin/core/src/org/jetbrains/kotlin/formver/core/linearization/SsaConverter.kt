@@ -205,7 +205,7 @@ class SsaConverter(
 
     private fun Exp.withAccessInvariants(name: SsaVariableName): Exp =
         when (this) {
-            is Exp.FieldAccess, is Exp.FuncApp, is Exp.DomainFuncApp -> accessInvariants[name]?.foldRight(this) { invariant, acc ->
+            is Exp.FieldAccess, is Exp.FuncApp, is Exp.DomainFuncApp, is Exp.SeqIndex -> accessInvariants[name]?.foldRight(this) { invariant, acc ->
                 Exp.Unfolding(invariant, acc)
             } ?: this
 

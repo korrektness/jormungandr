@@ -1810,6 +1810,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("array_element_readers.kt")
+      public void testArray_element_readers() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/array_element_readers.kt");
+      }
+
+      @Test
       @TestMetadata("branching.kt")
       public void testBranching() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/branching.kt");

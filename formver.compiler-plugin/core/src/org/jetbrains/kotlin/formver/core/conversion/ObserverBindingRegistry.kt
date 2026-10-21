@@ -68,7 +68,8 @@ class ObserverBindingRegistry {
                 val scope = entry.value.unsubstitutedScope()
                 for (name in scope.getCallableNames()) {
                     scope.processPropertiesByName(name) { member ->
-                        if (member !is FirPropertySymbol || !member.isObserverOrOverride()) return@processPropertiesByName
+                        // Mutable properties are diagnosed by the observer checker and cannot supply a binding.
+                        if (member !is FirPropertySymbol || member.isVar || !member.isObserverOrOverride()) return@processPropertiesByName
                         val implementation = member.unwrapFakeOverrides()
                         val getter = ctx.embedProperty(implementation).getter as CustomGetter
                         val binding = signature(getter.getterMethod.name)

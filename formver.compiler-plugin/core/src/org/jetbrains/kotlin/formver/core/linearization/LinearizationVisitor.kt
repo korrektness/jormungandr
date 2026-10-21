@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.linearization
 
+import org.jetbrains.kotlin.formver.core.purity.isSharedArrayElement
+
 import org.jetbrains.kotlin.formver.core.embeddings.types.StringBuilderEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.CharTypeEmbedding
 import org.jetbrains.kotlin.KtSourceElement
@@ -590,7 +592,9 @@ data class LinearizationVisitor(
     override fun visitInhaleInvariants(e: InhaleInvariants): Linearizable {
         val inhaling = inhalingInvariants(e)
         val value = e.exp.linearize()
-        fun LinearizationContext.chosen() = if (inhalesInvariants) inhaling else value
+        // A pure element read supplies its value without assuming the conversion's result invariants.
+        fun LinearizationContext.chosen() =
+            if (inhalesInvariants && !(this is PureFunBodyLinearizer && e.exp.isSharedArrayElement())) inhaling else value
         return object : Linearizable {
             override fun toViper(ctx: LinearizationContext): Exp = ctx.chosen().toViper(ctx)
 

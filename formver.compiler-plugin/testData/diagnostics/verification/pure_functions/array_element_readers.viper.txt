@@ -1,0 +1,330 @@
+/array_element_readers.kt: info: Generated Viper text for elementAt:
+function elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Elements())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+/array_element_readers.kt: info: Generated Viper text for Payload:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Payload())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Payload()
+  fold acc(Payload_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Payload_unique(v_ret_0), write)
+}
+
+/array_element_readers.kt: info: Generated Viper text for ElementBuffer:
+field referenceContents: Seq[Ref]
+
+function ElementBuffer_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  requires acc(ElementBuffer_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 &&
+    intFromRef(i) < referenceArraySize(g_elementData(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(ElementBuffer_unique(this), write) in
+    (let anon_2_0 ==
+      (g_elementData(this)) in
+      (unfolding acc(Array_unique(anon_2_0), write) in
+        anon_2_0.referenceContents[intFromRef(i)])))
+}
+
+function Elements_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Elements())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_elementData(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function g_payload(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Payload())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(par_elementData: Ref, par_payload: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_elementData), Array())
+  requires acc(Array_unique(par_elementData), write)
+  requires isSubtype(typeOf(par_payload), Payload())
+  requires acc(Payload_unique(par_payload), write)
+  ensures isSubtype(typeOf(v_ret_0), ElementBuffer())
+  ensures isSubtype(typeOf(v_ret_0), ElementBuffer()) &&
+    acc(Array_unique(g_elementData(v_ret_0)), write) &&
+    acc(Payload_unique(g_payload(v_ret_0)), write)
+  ensures g_elementData(v_ret_0) == par_elementData
+  ensures g_payload(v_ret_0) == par_payload
+  ensures g_elementData(v_ret_0) == par_elementData
+  ensures g_payload(v_ret_0) == par_payload
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ElementBuffer()
+  anon_0 := par_elementData
+  inhale g_elementData(v_ret_0) == anon_0
+  anon_1 := par_payload
+  inhale g_payload(v_ret_0) == anon_1
+  fold acc(ElementBuffer_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ElementBuffer_unique(v_ret_0), write)
+}
+
+/array_element_readers.kt: info: Generated Viper text for elementAt:
+field referenceContents: Seq[Ref]
+
+function ElementBuffer_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  requires acc(ElementBuffer_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 &&
+    intFromRef(i) < referenceArraySize(elementData(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(ElementBuffer_unique(this), write) in
+    (let anon_0_0 ==
+      (elementData(this)) in
+      (unfolding acc(Array_unique(anon_0_0), write) in
+        anon_0_0.referenceContents[intFromRef(i)])))
+}
+
+function Elements_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Elements())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function elementData(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function payload(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Payload())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/array_element_readers.kt: info: Generated Viper text for castElementAt:
+field referenceContents: Seq[Ref]
+
+function ElementBuffer_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  requires acc(ElementBuffer_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 &&
+    intFromRef(i) < referenceArraySize(elementData(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(ElementBuffer_unique(this), write) in
+    (let anon_2_0 ==
+      (elementData(this)) in
+      (unfolding acc(Array_unique(anon_2_0), write) in
+        anon_2_0.referenceContents[intFromRef(i)])))
+}
+
+function Elements_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Elements())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function castElementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  requires acc(ElementBuffer_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 &&
+    intFromRef(i) < referenceArraySize(elementData(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(ElementBuffer_unique(this), write) in
+    (let anon_0_0 ==
+      (elementData(this)) in
+      (unfolding acc(Array_unique(anon_0_0), write) in
+        anon_0_0.referenceContents[intFromRef(i)])))
+}
+
+function elementData(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function payload(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Payload())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/array_element_readers.kt: info: Generated Viper text for pastEnd:
+field referenceContents: Seq[Ref]
+
+function ElementBuffer_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  requires acc(ElementBuffer_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 &&
+    intFromRef(i) < referenceArraySize(elementData(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(ElementBuffer_unique(this), write) in
+    (let anon_3_0 ==
+      (elementData(this)) in
+      (unfolding acc(Array_unique(anon_3_0), write) in
+        anon_3_0.referenceContents[intFromRef(i)])))
+}
+
+function Elements_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Elements())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function elementData(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function pastEnd(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  requires acc(ElementBuffer_unique(this), write)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(ElementBuffer_unique(this), write) in
+    (let anon_0_0 ==
+      (elementData(this)) in
+      (unfolding acc(Array_unique(anon_0_0), write) in
+        (let anon_1_0 ==
+          (elementData(this)) in
+          (unfolding acc(ElementBuffer_unique(this), write) in
+            anon_0_0.referenceContents[referenceArraySize(anon_1_0)])))))
+}
+
+function payload(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Payload())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/array_element_readers.kt: info: Generated Viper text for fromParameter:
+field referenceContents: Seq[Ref]
+
+function fromParameter(a: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(a), Array())
+  requires acc(Array_unique(a), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 && intFromRef(i) < referenceArraySize(a)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(Array_unique(a), write) in
+    a.referenceContents[intFromRef(i)])
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/array_element_readers.kt: info: Generated Viper text for MutableSize:
+field bf_size: Ref
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SizedBuffer())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), MutableSize())
+  ensures isSubtype(typeOf(v_ret_0), MutableSize()) &&
+    acc(v_ret_0.bf_size, write) &&
+    isSubtype(typeOf(v_ret_0.bf_size), intType())
+  ensures intFromRef(v_ret_0.bf_size) == 0
+{
+  v_ret_0 := new(bf_size)
+  inhale typeOf(v_ret_0) == MutableSize()
+  v_ret_0.bf_size := intToRef(0)
+  fold acc(MutableSize_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(MutableSize_unique(v_ret_0), write)
+}
+
+/array_element_readers.kt: info: Generated Viper text for first:
+field bf_size: Ref
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SizedBuffer())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method first(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), MutableSize())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(1)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/array_element_readers.kt: info: Generated Viper text for second:
+field bf_size: Ref
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SizedBuffer())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method second(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), MutableSize())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(2)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/array_element_readers.kt: info: Generated Viper text for third:
+field bf_size: Ref
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SizedBuffer())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function third(this: Ref): Ref
+  requires isSubtype(typeOf(this), MutableSize())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(3)
+}

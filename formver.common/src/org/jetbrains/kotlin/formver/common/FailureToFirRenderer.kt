@@ -477,7 +477,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             FailureKind.OVERRIDE_UNIQUENESS_MISMATCH -> "Uniqueness or borrowing annotations differ from those of the overridden declaration."
             FailureKind.ACTUAL_UNIQUENESS_MISMATCH -> "Uniqueness or borrowing annotations differ from those of the expect declaration."
             FailureKind.INVALID_PURE_UNIQUE_RESULT -> "A pure function cannot return a unique value."
-            FailureKind.INVALID_PURE_REFERENCE_RESULT -> "A pure function with a unique parameter cannot return a reference."
+            FailureKind.INVALID_PURE_REFERENCE_RESULT -> "Unsupported reference result in a pure function with unique parameters."
             FailureKind.INVALID_UNIQUE_PRED_PLACEMENT -> "'UniquePred' constructed outside a specification builtin."
             else -> error("Unexpected attribute rule: ${condition.kind}")
         }
