@@ -1,0 +1,130 @@
+diff --git a/libraries/stdlib/src/kotlin/collections/ArrayDeque.kt b/libraries/stdlib/src/kotlin/collections/ArrayDeque.kt
+index 59d4e5cf4e4b..709f0ab6a22f 100644
+--- a/libraries/stdlib/src/kotlin/collections/ArrayDeque.kt
++++ b/libraries/stdlib/src/kotlin/collections/ArrayDeque.kt
+@@ -501,7 +501,13 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
+                 val element = elementData[index]
+
+                 @Suppress("UNCHECKED_CAST")
+-                if (predicate(element as E))
++                val keep = try {
++                    predicate(element as E)
++                } catch (exception: Throwable) {
++                    restoreFilterSuffix(index, newTail, tail)
++                    throw exception
++                }
++                if (keep)
+                     elementData[newTail++] = element
+                 else
+                     modified = true
+@@ -512,10 +518,16 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
+         } else {
+             for (index in head until elementData.size) {
+                 val element = elementData[index]
+-                elementData[index] = null
+
+                 @Suppress("UNCHECKED_CAST")
+-                if (predicate(element as E))
++                val keep = try {
++                    predicate(element as E)
++                } catch (exception: Throwable) {
++                    restoreFilterSuffix(index, positiveMod(newTail), tail)
++                    throw exception
++                }
++                elementData[index] = null
++                if (keep)
+                     elementData[newTail++] = element
+                 else
+                     modified = true
+@@ -525,10 +537,16 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
+
+             for (index in 0 until tail) {
+                 val element = elementData[index]
+-                elementData[index] = null
+
+                 @Suppress("UNCHECKED_CAST")
+-                if (predicate(element as E)) {
++                val keep = try {
++                    predicate(element as E)
++                } catch (exception: Throwable) {
++                    restoreFilterSuffix(index, newTail, tail)
++                    throw exception
++                }
++                elementData[index] = null
++                if (keep) {
+                     elementData[newTail] = element
+                     newTail = incremented(newTail)
+                 } else {
+@@ -544,6 +562,22 @@ public class ArrayDeque<E> : AbstractMutableList<E> {
+         return modified
+     }
+
++    private fun restoreFilterSuffix(index: Int, newTail: Int, tail: Int) {
++        val removed = negativeMod(index - newTail)
++        if (removed == 0) return
++
++        var readIndex = index
++        var writeIndex = newTail
++        do {
++            elementData[writeIndex] = elementData[readIndex]
++            readIndex = incremented(readIndex)
++            writeIndex = incremented(writeIndex)
++        } while (readIndex != tail)
++        nullifyNonEmpty(writeIndex, tail)
++        registerModification()
++        size -= removed
++    }
++
+     public override fun clear() {
+         if (isNotEmpty()) {
+             registerModification()
+diff --git a/libraries/stdlib/test/collections/ArrayDequeTest.kt b/libraries/stdlib/test/collections/ArrayDequeTest.kt
+index 0f7a7f47c557..9801336d0627 100644
+--- a/libraries/stdlib/test/collections/ArrayDequeTest.kt
++++ b/libraries/stdlib/test/collections/ArrayDequeTest.kt
+@@ -631,6 +631,45 @@ class ArrayDequeTest {
+         assertEquals(elements, deque)
+     }
+
++    @Test
++    fun bulkFilterContainsThrows() = testArrayDeque { bufferSize, dequeSize, head, tail ->
++        for (retain in listOf(false, true)) {
++            // The final position is the non-throwing control.
++            for (throwAt in 0..dequeSize) {
++                val deque = generateArrayDeque(head, tail, bufferSize)
++                val original = deque.toList()
++                val failure = IllegalStateException()
++                var calls = 0
++                val elements = object : AbstractCollection<Int>() {
++                    override val size: Int get() = 1
++                    override fun iterator(): Iterator<Int> = listOf(0).iterator()
++                    override fun contains(element: Int): Boolean {
++                        if (calls++ == throwAt) throw failure
++                        return element % 2 == 0
++                    }
++                }
++                val expected = original.take(throwAt).filter { (it % 2 == 0) == retain } + original.drop(throwAt)
++                if (throwAt < dequeSize) {
++                    assertSame(failure, assertFailsWith<IllegalStateException> {
++                        if (retain) deque.retainAll(elements) else deque.removeAll(elements)
++                    })
++                } else {
++                    val changed = if (retain) deque.retainAll(elements) else deque.removeAll(elements)
++                    assertEquals(expected.size != original.size, changed)
++                }
++                assertEquals(expected.size, deque.size)
++                assertEquals(expected, deque.toList())
++                for (index in expected.indices) assertEquals(expected[index], deque[index])
++                deque.addFirst(100)
++                deque.addLast(101)
++                assertEquals(listOf(100) + expected + 101, deque.toList())
++                assertEquals(100, deque.removeFirst())
++                assertEquals(101, deque.removeLast())
++                assertEquals(expected, deque.toList())
++            }
++        }
++    }
++
+     @Test
+     fun set() = testArrayDeque { bufferSize: Int, dequeSize: Int, head: Int, tail: Int ->
+         for (index in 0 until dequeSize) {
