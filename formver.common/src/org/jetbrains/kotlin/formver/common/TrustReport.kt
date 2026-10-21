@@ -19,6 +19,7 @@ data class TrustedAssumption(val kind: Kind, val name: String) : Comparable<Trus
         NEVER_CONVERT("@NeverConvert"),
         SKIPPED("skipped"),
         LIBRARY_CONTRACT("library contract"),
+        ELEMENT_EQUALITY("@TrustedElementEquality"),
     }
 
     override fun compareTo(other: TrustedAssumption): Int = compareValuesBy(this, other, { it.kind }, { it.name })

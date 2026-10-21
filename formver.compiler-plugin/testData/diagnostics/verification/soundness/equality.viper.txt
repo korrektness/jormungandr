@@ -1210,3 +1210,300 @@ method expectObjectEq(a: Ref, b: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/equality.kt: info: Generated Viper text for Alternating:
+field next: Ref
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Alternating())
+  ensures isSubtype(typeOf(v_ret_0), Alternating()) &&
+    acc(v_ret_0.next, write) &&
+    isSubtype(typeOf(v_ret_0.next), boolType())
+  ensures boolFromRef(v_ret_0.next) == false
+{
+  v_ret_0 := new(next)
+  inhale typeOf(v_ret_0) == Alternating()
+  v_ret_0.next := boolToRef(false)
+  fold acc(Alternating_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Alternating_unique(v_ret_0), write)
+}
+
+/equality.kt: info: Generated Viper text for equals:
+field next: Ref
+
+method equals(this: Ref, other: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Alternating())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := havoc(boolType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/equality.kt: info: Generated Viper text for hashCode:
+field next: Ref
+
+method hashCode(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Alternating())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/equality.kt: info: Generated Viper text for elementSearch:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method elementSearch(arr: Ref, element: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), Array())
+  requires acc(Array_unique(arr), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures acc(Array_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= -1 &&
+    intFromRef(v_ret_0) < referenceArraySize(arr)
+  ensures (intFromRef(v_ret_0) == -1) ==
+    !(exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (0 <= anon_builtin_0 && anon_builtin_0 < referenceArraySize(arr) &&
+      (unfolding acc(Array_unique(arr), write) in
+        equalsRelation(element, arr.referenceContents[anon_builtin_0]))))
+  ensures (unfolding acc(Array_unique(arr), write) in
+      intFromRef(v_ret_0) >= 0 ==>
+      equalsRelation(element, arr.referenceContents[intFromRef(v_ret_0)]))
+  ensures (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(v_ret_0) ==>
+        !equalsRelation(element, arr.referenceContents[anon_builtin_1])))
+  ensures (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_2: Int ::
+        { equalsRelation(element, arr.referenceContents[anon_builtin_2]) }
+        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        0 <= anon_builtin_2 && anon_builtin_2 < referenceArraySize(arr) ==>
+        equalsRelation(element, arr.referenceContents[anon_builtin_2]) ==
+        old((unfolding acc(Array_unique(arr), write) in
+          equalsRelation(element, arr.referenceContents[anon_builtin_2])))))
+{
+  var anon_builtin_5: Int
+  var i: Ref
+  var anon_19: Ref
+  i := intToRef(0)
+  label cont
+    invariant acc(Array_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(arr), Array())
+    invariant isSubtype(typeOf(element), nullable(anyType()))
+    invariant 0 <= intFromRef(i) &&
+      intFromRef(i) <= referenceArraySize(arr)
+    invariant (unfolding acc(Array_unique(arr), write) in
+        (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+          anon_builtin_3 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(i) ==>
+          !equalsRelation(element, arr.referenceContents[anon_builtin_3])))
+    invariant (unfolding acc(Array_unique(arr), write) in
+        (forall anon_builtin_4: Int ::
+          { equalsRelation(element, arr.referenceContents[anon_builtin_4]) }
+          anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+          0 <= anon_builtin_4 && anon_builtin_4 < referenceArraySize(arr) ==>
+          equalsRelation(element, arr.referenceContents[anon_builtin_4]) ==
+          old((unfolding acc(Array_unique(arr), write) in
+            equalsRelation(element, arr.referenceContents[anon_builtin_4])))))
+  anon_19 := ltInts(i, intToRef(referenceArraySize(arr)))
+  if (boolFromRef(anon_19)) {
+    var anon_20: Ref
+    var anon_16: Ref
+    var anon_17: Ref
+    var anon_21: Ref
+    var anon_18: Ref
+    anon_16 := element
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < referenceArraySize(arr)
+    unfold acc(Array_unique(arr), write)
+    anon_21 := arr.referenceContents[intFromRef(i)]
+    anon_17 := anon_21
+    inhale isSubtype(typeOf(anon_17), nullable(anyType()))
+    anon_20 := boolToRef(equalsRelation(anon_16, anon_17))
+    fold acc(Array_unique(arr), write)
+    if (boolFromRef(anon_20)) {
+      v_ret_0 := i
+      anon_builtin_5 := 0
+      goto lbl_ret_0
+    }
+    anon_18 := i
+    i := plusInts(anon_18, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(arr), Array())
+  assert isSubtype(typeOf(element), nullable(anyType()))
+  assert 0 <= intFromRef(i) && intFromRef(i) <= referenceArraySize(arr)
+  assert (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_3: Int ::anon_builtin_3 >= -2147483648 &&
+        anon_builtin_3 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(i) ==>
+        !equalsRelation(element, arr.referenceContents[anon_builtin_3])))
+  assert (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_4: Int ::
+        { equalsRelation(element, arr.referenceContents[anon_builtin_4]) }
+        anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+        0 <= anon_builtin_4 && anon_builtin_4 < referenceArraySize(arr) ==>
+        equalsRelation(element, arr.referenceContents[anon_builtin_4]) ==
+        old((unfolding acc(Array_unique(arr), write) in
+          equalsRelation(element, arr.referenceContents[anon_builtin_4])))))
+  v_ret_0 := intToRef(-1)
+  anon_builtin_5 := 1
+  goto lbl_ret_0
+  label lbl_ret_0
+  assert anon_builtin_5 == 0 ==>
+    intFromRef(v_ret_0) >= -1 &&
+    intFromRef(v_ret_0) < referenceArraySize(arr)
+  assert anon_builtin_5 == 1 ==>
+    intFromRef(v_ret_0) >= -1 &&
+    intFromRef(v_ret_0) < referenceArraySize(arr)
+  assert anon_builtin_5 == 0 ==>
+    (unfolding acc(Array_unique(arr), write) in
+      intFromRef(v_ret_0) >= 0 ==>
+      equalsRelation(element, arr.referenceContents[intFromRef(v_ret_0)]))
+  assert anon_builtin_5 == 1 ==>
+    (unfolding acc(Array_unique(arr), write) in
+      intFromRef(v_ret_0) >= 0 ==>
+      equalsRelation(element, arr.referenceContents[intFromRef(v_ret_0)]))
+  assert anon_builtin_5 == 0 ==>
+    (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(v_ret_0) ==>
+        !equalsRelation(element, arr.referenceContents[anon_builtin_1])))
+  assert anon_builtin_5 == 1 ==>
+    (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(v_ret_0) ==>
+        !equalsRelation(element, arr.referenceContents[anon_builtin_1])))
+  assert anon_builtin_5 == 0 ==>
+    (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_2: Int ::
+        { equalsRelation(element, arr.referenceContents[anon_builtin_2]) }
+        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        0 <= anon_builtin_2 && anon_builtin_2 < referenceArraySize(arr) ==>
+        equalsRelation(element, arr.referenceContents[anon_builtin_2]) ==
+        old((unfolding acc(Array_unique(arr), write) in
+          equalsRelation(element, arr.referenceContents[anon_builtin_2])))))
+  assert anon_builtin_5 == 1 ==>
+    (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_2: Int ::
+        { equalsRelation(element, arr.referenceContents[anon_builtin_2]) }
+        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        0 <= anon_builtin_2 && anon_builtin_2 < referenceArraySize(arr) ==>
+        equalsRelation(element, arr.referenceContents[anon_builtin_2]) ==
+        old((unfolding acc(Array_unique(arr), write) in
+          equalsRelation(element, arr.referenceContents[anon_builtin_2])))))
+}
+
+/equality.kt: info: Generated Viper text for alternatingSearchResults:
+field next: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method alternatingSearchResults() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_arr: Ref
+  var anon_12: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_element: Ref
+  var first: Ref
+  var second: Ref
+  anon_0 := intToRef(1)
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_12 := anon_1
+  l0_arr := anon_12
+  l0_element := con()
+  fold acc(Alternating_unique(l0_element), write)
+  first := elementSearch(l0_arr, l0_element)
+  second := elementSearch(l0_arr, l0_element)
+  assert intFromRef(first) == intFromRef(second)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Alternating())
+  ensures isSubtype(typeOf(ret_1), Alternating()) && acc(ret_1.next, write) &&
+    isSubtype(typeOf(ret_1.next), boolType())
+  ensures boolFromRef(ret_1.next) == false
+
+
+method elementSearch(par_arr: Ref, par_element: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(par_arr), Array())
+  requires acc(Array_unique(par_arr), write)
+  requires isSubtype(typeOf(par_element), nullable(anyType()))
+  ensures acc(Array_unique(par_arr), write)
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) >= -1 &&
+    intFromRef(ret_3) < referenceArraySize(par_arr)
+  ensures (intFromRef(ret_3) == -1) ==
+    !(exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (0 <= anon_builtin_0 && anon_builtin_0 < referenceArraySize(par_arr) &&
+      (unfolding acc(Array_unique(par_arr), write) in
+        equalsRelation(par_element, par_arr.referenceContents[anon_builtin_0]))))
+  ensures (unfolding acc(Array_unique(par_arr), write) in
+      intFromRef(ret_3) >= 0 ==>
+      equalsRelation(par_element, par_arr.referenceContents[intFromRef(ret_3)]))
+  ensures (unfolding acc(Array_unique(par_arr), write) in
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(ret_3) ==>
+        !equalsRelation(par_element, par_arr.referenceContents[anon_builtin_1])))
+  ensures (unfolding acc(Array_unique(par_arr), write) in
+      (forall anon_builtin_2: Int ::
+        { equalsRelation(par_element, par_arr.referenceContents[anon_builtin_2]) }
+        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        0 <= anon_builtin_2 && anon_builtin_2 < referenceArraySize(par_arr) ==>
+        equalsRelation(par_element, par_arr.referenceContents[anon_builtin_2]) ==
+        old((unfolding acc(Array_unique(par_arr), write) in
+          equalsRelation(par_element, par_arr.referenceContents[anon_builtin_2])))))

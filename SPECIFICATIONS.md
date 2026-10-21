@@ -140,11 +140,19 @@ compares its subject with `==`. SnaKt picks the meaning of `equals` from the sta
 - A source class that declares `equals` calls it through its specification. The call may throw like any other.
 - A type parameter compares by value or identity when one of its bounds does.
 - Any other type, such as an interface, an open class, an `expect` class, an unbounded type parameter or a library
-  class, gives an arbitrary result. The call may throw.
+  class, gives an arbitrary result (Dynamic equality). The call may throw.
 
 In a specification, an `equals` that is not a `@Pure` function, a data class with a `var` component and a data class
 that contains itself compare through a relation that only says what a null `a`, a value type or an identity class
 gives. `==` on an owned value whose `equals` is not value or identity equality is unsupported in executed code.
+
+`@TrustedElementEquality` on a function makes an executed Dynamic comparison (`==`, `!=` or a `when`-subject
+comparison) whose left operand's static type is a type parameter, nullable or non-null, use `EqualsRelation` as
+its value. The exceptional exit remains possible when a catch is active. Value, identity, structural and declared
+equality retain their meanings, as do Dynamic comparisons with other left-operand types. Each callee, including
+an inline function, uses its own mode. The relation gains no reflexivity, symmetry or transitivity axioms.
+Each annotated function is a trusted assumption in the trust report; residual trust is registered in
+[Executed element equality](docs/soundness.md#executed-element-equality).
 
 `a === b` is rejected when both operands may hold a value of the same type among `Int`, `Long`, `Short`, `Byte`,
 `Char`, `Boolean` and `String`, such as `x: Any` and `y: Int`. The JVM boxes these values and shares boxes of small

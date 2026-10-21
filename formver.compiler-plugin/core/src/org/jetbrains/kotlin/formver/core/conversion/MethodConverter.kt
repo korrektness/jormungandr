@@ -44,8 +44,12 @@ class MethodConverter(
     override val wrapsIntArithmetic: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.wrapsIntArithmetic(session) == true
 
+    override val trustsElementEquality: Boolean =
+        (signature as? NamedFunctionSignature)?.symbol?.trustsElementEquality(session) == true
+
     init {
         if (wrapsIntArithmetic) (signature as? NamedFunctionSignature)?.symbol?.let { trust.recordWrappingArithmetic(it) }
+        if (trustsElementEquality) (signature as? NamedFunctionSignature)?.symbol?.let { trust.recordElementEquality(it) }
     }
 
     private var propertyResolver = PropertyResolver(scopeDepth)

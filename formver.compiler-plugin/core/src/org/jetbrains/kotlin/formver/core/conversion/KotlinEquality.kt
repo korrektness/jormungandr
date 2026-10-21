@@ -87,7 +87,11 @@ internal fun StmtConversionContext.convertEquality(
     val kind = equalityKind(leftType)
     if (kind == EqualityKind.Value || kind == EqualityKind.Identity) return EqCmp(left, right)
     val owned = ownsBefore(call, leftArg) || ownsBefore(call, rightArg)
-    return EqualityLowering(this, call).lower(kind, left, right, leftType.isMarkedOrFlexiblyNullable, owned)
+    val elementType = leftType.lowerBoundIfFlexible().let {
+        if (it is ConeDefinitelyNotNullType) it.original else it
+    }
+    val trustedDynamic = trustsElementEquality && kind == EqualityKind.Dynamic && elementType is ConeTypeParameterType
+    return EqualityLowering(this, call).lower(kind, left, right, leftType.isMarkedOrFlexiblyNullable, owned, trustedDynamic)
 }
 
 /**
@@ -208,13 +212,16 @@ private class EqualityLowering(val ctx: StmtConversionContext, val call: FirEqua
 
     fun lower(
         kind: EqualityKind, left: ExpEmbedding, right: ExpEmbedding, leftNullable: Boolean, owned: Boolean,
+        trustedDynamic: Boolean,
     ): ExpEmbedding {
         val leftVar = ctx.freshAnonVar(left.type)
         val rightVar = ctx.freshAnonVar(right.type)
         val executed = if (owned) null else blockOf(
             Declare(leftVar, left),
             Declare(rightVar, right),
-            executedGuarded(kind, leftVar, rightVar, leftNullable),
+            if (trustedDynamic) nullGuarded(leftVar, rightVar, leftNullable) { l, r ->
+                dynamic(l, r, trusted = true)
+            } else executedGuarded(kind, leftVar, rightVar, leftNullable),
         )
         return ObjectEquality(
             left, right, executed,
@@ -256,10 +263,12 @@ private class EqualityLowering(val ctx: StmtConversionContext, val call: FirEqua
         EqualityKind.Value, EqualityKind.Identity -> EqCmp(left, right)
         is EqualityKind.Structural -> structural(kind.cls, left, right, ::executedGuarded)
         is EqualityKind.Declared -> declaredCall(kind, left, right)
-        EqualityKind.Dynamic -> Block {
-            if (ctx.activeCatchLabels.isNotEmpty()) add(NonDeterministically(ctx.exceptionalExit()))
-            add(ctx.unconstrainedValue(buildType { boolean() }))
-        }
+        EqualityKind.Dynamic -> dynamic(left, right, trusted = false)
+    }
+
+    private fun dynamic(left: ExpEmbedding, right: ExpEmbedding, trusted: Boolean): ExpEmbedding = Block {
+        if (ctx.activeCatchLabels.isNotEmpty()) add(NonDeterministically(ctx.exceptionalExit()))
+        add(if (trusted) EqualsRelation(left, right) else ctx.unconstrainedValue(buildType { boolean() }))
     }
 
     private fun specified(kind: EqualityKind, left: ExpEmbedding, right: ExpEmbedding): ExpEmbedding = when (kind) {

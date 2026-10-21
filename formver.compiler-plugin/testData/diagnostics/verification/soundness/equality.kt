@@ -118,6 +118,46 @@ fun <!VIPER_TEXT!>expectObjectEq<!>(a: Single, b: Any) {
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>r == (a === b)<!>)
 }
 
+<!VIPER_TEXT!>class Alternating<!> {
+    var next = false
+    override fun <!VIPER_TEXT!>equals<!>(other: Any?): Boolean {
+        next = !next
+        return next
+    }
+    override fun <!VIPER_TEXT!>hashCode<!>() = 0
+}
+
+@TrustedElementEquality
+fun <E> <!VIPER_TEXT!>elementSearch<!>(arr: @Unique @Borrowed Array<E>, element: E): Int {
+    postconditions<Int> { result ->
+        result >= -1 && result < arr.size
+        (result == -1) == !exists<Int> { i -> (0 <= i && i < arr.size) && element == arr[i] }
+        (result >= 0) implies (element == arr[result])
+        forAll<Int> { i -> (0 <= i && i < result) implies (element != arr[i]) }
+        forAll<Int> { i -> (0 <= i && i < arr.size) implies ((element == arr[i]) == old(element == arr[i])) }
+    }
+    var i = 0
+    while (i < arr.size) {
+        loopInvariants {
+            0 <= i && i <= arr.size
+            forAll<Int> { k -> (0 <= k && k < i) implies (element != arr[k]) }
+            forAll<Int> { k -> (0 <= k && k < arr.size) implies ((element == arr[k]) == old(element == arr[k])) }
+        }
+        if (element == arr[i]) return i
+        i++
+    }
+    return -1
+}
+
+fun <!VIPER_TEXT!>alternatingSearchResults<!>() {
+    val arr: @Unique Array<Alternating?> = arrayOfNulls<Alternating>(1)
+    val element = Alternating()
+    val first = elementSearch(arr, element)
+    val second = elementSearch(arr, element)
+    // UNSOUND: equals returns true then false, so the searches return 0 then -1 at runtime.
+    verify(first == second)
+}
+
 // MODULE: jvm()()(common)
 // FILE: equality_actual.kt
 

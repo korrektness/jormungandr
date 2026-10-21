@@ -51,6 +51,11 @@ class TrustedAssumptionCollector(
         semanticOptIns += SemanticOptIn(symbol.trustName)
     }
 
+    /** Records the executed element equality assumption of [symbol]. */
+    fun recordElementEquality(symbol: FirCallableSymbol<*>) {
+        trusted += TrustedAssumption(TrustedAssumption.Kind.ELEMENT_EQUALITY, symbol.trustName)
+    }
+
     /** Records the external binding of [target]. */
     fun recordBinding(target: FirBasedSymbol<*>) {
         trusted += session.externalSpecifications!!.bindingAssumption(target)

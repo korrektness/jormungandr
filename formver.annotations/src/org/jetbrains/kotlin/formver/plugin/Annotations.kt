@@ -34,6 +34,11 @@ annotation class Pure
 @Retention(AnnotationRetention.BINARY)
 annotation class WrappingIntArithmetic
 
+/** Selects trusted executed element equality; see "Equality" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class TrustedElementEquality
+
 /** Marks a callable ghost observer; see "Callable specifications" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)

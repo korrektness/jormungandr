@@ -58,6 +58,7 @@ SnaKt lists the trusted pieces that each verified declaration's program uses:
   does not verify, through its own annotation or a containing class's.
 - `skipped`: a callee or custom accessor of the module that SnaKt skipped with
   `VERIFICATION_SKIPPED`. The program uses its contract, which nothing proves.
+- `@TrustedElementEquality`: a function's [executed element equality](#executed-element-equality) assumption.
 - `library contract`: a contract that `conversion/StdLibConverter.kt` gives a
   library function by name.
 
@@ -311,6 +312,17 @@ and unchanged while the element is in a collection. A source `equals` is not
 checked against this. SPECIFICATIONS.md, "Equality", has the rules.
 
 Test: `verification/soundness/equality.kt::setAddById,listContainsById`.
+
+### Executed element equality
+
+`@TrustedElementEquality` selects the function-local encoding described in SPECIFICATIONS.md, "Equality".
+Residual trust: each executed `equals` on the element type agrees with the specification relation, so its result
+is deterministic. The call does not reach the deque; this relies on [Unique borrows](#unique-borrows).
+
+Tests: `stdlib/array/trusted_element_equality.kt` covers search contracts, unannotated siblings, nullable operators,
+non-type-parameter operands, catches and inline mode boundaries.
+`verification/soundness/equality.kt::alternatingSearchResults` labels the consequence of violating this assumption
+with an alternating `equals` as UNSOUND.
 
 ### Boxed identity
 
