@@ -184,6 +184,8 @@ fun abs(x: Int): Int {
 ```
 
 Multiple conditions are implicitly conjoined. The postconditions block receives the return value as its parameter.
+A call on an instantiated generic receiver uses the member declaration's specification, with the class's type
+parameters standing for the call's type arguments.
 
 A condition is a single expression. Besides operators, it may use `if`, `when`, `?.`, `?:` and `as?` for their
 values, and call `@Pure` functions and inline functions whose bodies are in the sources being compiled, together

@@ -1016,6 +1016,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("generic_member_contracts.kt")
+      public void testGeneric_member_contracts() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/generic_member_contracts.kt");
+      }
+
+      @Test
       @TestMetadata("inheritance.kt")
       public void testInheritance() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/inheritance.kt");

@@ -1,0 +1,1040 @@
+/generic_member_contracts.kt: info: Generated Viper text for GenericEcho:
+predicate GenericEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericEcho())
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), GenericEcho())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == GenericEcho()
+  fold acc(GenericEcho_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(GenericEcho_unique(v_ret_0), write)
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for echo:
+predicate GenericEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericEcho())
+}
+
+method echo(this: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), GenericEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  ensures v_ret_0 == value
+{
+  v_ret_0 := value
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for nonNull:
+predicate GenericEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericEcho())
+}
+
+method nonNull(this: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), GenericEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  requires !(value == nullValue())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  ensures v_ret_0 == value
+{
+  v_ret_0 := value
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for lostContract:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate GenericEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericEcho())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method echo(this: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), GenericEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures ret_1 == value
+
+
+method lostContract(g: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(g), GenericEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var returned: Ref
+  returned := echo(g, value)
+  assert returned == value
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for twoInstantiations:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate c_GenericEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), c_GenericEcho())
+}
+
+method c_GenericEcho_f_echo_Int(this: Ref, value: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_GenericEcho())
+  requires isSubtype(typeOf(value), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures ret_2 == value
+
+
+method c_GenericEcho_f_echo_String(this: Ref, value: Ref)
+  returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_GenericEcho())
+  requires isSubtype(typeOf(value), stringType())
+  ensures isSubtype(typeOf(ret_1), stringType())
+  ensures ret_1 == value
+
+
+method twoInstantiations(strings: Ref, ints: Ref, text: Ref, number: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(strings), c_GenericEcho())
+  requires isSubtype(typeOf(ints), c_GenericEcho())
+  requires isSubtype(typeOf(text), stringType())
+  requires isSubtype(typeOf(number), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var returnedText: Ref
+  var returnedNumber: Ref
+  returnedText := c_GenericEcho_f_echo_String(strings, text)
+  returnedNumber := c_GenericEcho_f_echo_Int(ints, number)
+  assert returnedText == text
+  assert intFromRef(returnedNumber) == intFromRef(number)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for falseIdentity:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate GenericEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericEcho())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method echo(this: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), GenericEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures ret_1 == value
+
+
+method falseIdentity(g: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(g), GenericEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var returned: Ref
+  returned := echo(g, value)
+  assert !(returned == value)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for validPrecondition:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate GenericEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericEcho())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method nonNull(this: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), GenericEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  requires !(value == nullValue())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures ret_1 == value
+
+
+method validPrecondition(g: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(g), GenericEcho())
+  requires isSubtype(typeOf(value), anyType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var returned: Ref
+  returned := nonNull(g, value)
+  assert returned == value
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for invalidPrecondition:
+predicate GenericEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), GenericEcho())
+}
+
+method invalidPrecondition(g: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(g), GenericEcho())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := nonNull(g, nullValue())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method nonNull(this: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), GenericEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  requires !(value == nullValue())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures ret_1 == value
+
+
+/generic_member_contracts.kt: info: Generated Viper text for SpecEcho:
+predicate SpecEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), SpecEcho())
+}
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SpecEcho())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == SpecEcho()
+  fold acc(SpecEcho_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(SpecEcho_unique(v_ret_0), write)
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for echo:
+predicate SpecEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), SpecEcho())
+}
+
+method echo(this: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), SpecEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  ensures v_ret_0 == value
+{
+  v_ret_0 := value
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for siblingSpecification:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+predicate SpecEcho_unique(this: Ref) {
+  isSubtype(typeOf(this), SpecEcho())
+}
+
+method echo(this: Ref, value: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), SpecEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+  ensures ret_1 == value
+
+
+method siblingSpecification(g: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(g), SpecEcho())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var returned: Ref
+  returned := echo(g, value)
+  assert returned == value
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for size:
+function elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BoxView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BoxView())
+}
+
+predicate footprint(this: Ref)
+
+/generic_member_contracts.kt: info: Generated Viper text for elementAt:
+function elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) && intFromRef(i) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+predicate BoxView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BoxView())
+}
+
+predicate footprint(this: Ref)
+
+/generic_member_contracts.kt: info: Generated Viper text for Box:
+field referenceContents: Seq[Ref]
+
+function BoxView_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(BoxView_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function BoxView_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Box_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(Box_unique(this), write) in
+    (let anon_2_0 ==
+      (g_data(this)) in
+      (unfolding acc(Array_unique(anon_2_0), write) in
+        anon_2_0.referenceContents[intFromRef(i)])))
+}
+
+function Box_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    (g_data(this)) in
+    intToRef(referenceArraySize(anon_1_0)))
+}
+
+function g_data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+predicate Array_unique(this: Ref) {
+  isSubtype(typeOf(this), Array()) && acc(this.referenceContents, write) &&
+  |this.referenceContents| == referenceArraySize(this)
+}
+
+predicate BoxView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BoxView())
+}
+
+predicate Box_unique(this: Ref) {
+  isSubtype(typeOf(this), Box()) && acc(Array_unique(g_data(this)), write)
+}
+
+predicate footprint(this: Ref)
+
+method con(par_data: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_data), Array())
+  requires acc(Array_unique(par_data), write)
+  ensures isSubtype(typeOf(v_ret_0), Box())
+  ensures isSubtype(typeOf(v_ret_0), Box()) &&
+    acc(Array_unique(g_data(v_ret_0)), write)
+  ensures g_data(v_ret_0) == par_data
+  ensures g_data(v_ret_0) == par_data
+{
+  var anon_0: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Box()
+  anon_0 := par_data
+  inhale g_data(v_ret_0) == anon_0
+  fold acc(Box_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Box_unique(v_ret_0), write)
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for size:
+field referenceContents: Seq[Ref]
+
+function BoxView_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(BoxView_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function BoxView_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Box_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(Box_unique(this), write) in
+    (let anon_1_0 ==
+      (data(this)) in
+      (unfolding acc(Array_unique(anon_1_0), write) in
+        anon_1_0.referenceContents[intFromRef(i)])))
+}
+
+function Box_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    (data(this)) in
+    intToRef(referenceArraySize(anon_0_0)))
+}
+
+function data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+predicate Array_unique(this: Ref) {
+  isSubtype(typeOf(this), Array()) && acc(this.referenceContents, write) &&
+  |this.referenceContents| == referenceArraySize(this)
+}
+
+predicate BoxView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BoxView())
+}
+
+predicate Box_unique(this: Ref) {
+  isSubtype(typeOf(this), Box()) && acc(Array_unique(data(this)), write)
+}
+
+predicate footprint(this: Ref)
+
+/generic_member_contracts.kt: info: Generated Viper text for elementAt:
+field referenceContents: Seq[Ref]
+
+function Box_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(Box_unique(this), write) in
+    (let anon_1_0 ==
+      (data(this)) in
+      (unfolding acc(Array_unique(anon_1_0), write) in
+        anon_1_0.referenceContents[intFromRef(i)])))
+}
+
+function Box_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    (data(this)) in
+    intToRef(referenceArraySize(anon_0_0)))
+}
+
+function c_BoxView_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), c_BoxView())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(c_BoxView_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_BoxView_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BoxView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+predicate Array_unique(this: Ref) {
+  isSubtype(typeOf(this), Array()) && acc(this.referenceContents, write) &&
+  |this.referenceContents| == referenceArraySize(this)
+}
+
+predicate Box_unique(this: Ref) {
+  isSubtype(typeOf(this), Box()) && acc(Array_unique(data(this)), write)
+}
+
+predicate c_BoxView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), c_BoxView())
+}
+
+predicate footprint(this: Ref)
+
+method Box_c_BoxView_restore(this: Ref)
+  requires acc(c_BoxView_unique(this), write)
+  requires isSubtype(typeOf(this), Box())
+  ensures acc(Box_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BoxView())) && true ==>
+    Box_f_size(this) ==
+    old((unfolding acc(c_BoxView_unique(this), wildcard) in
+      c_BoxView_f_size(this)))
+  ensures (forall i: Ref ::
+      { Box_f_elementAt(this, i) }
+      true && old(isSubtype(typeOf(this), c_BoxView())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(0 <= intFromRef(i) &&
+      (unfolding acc(c_BoxView_unique(this), wildcard) in
+        intFromRef(i) < intFromRef(c_BoxView_f_size(this)))) ==>
+      Box_f_elementAt(this, i) ==
+      old((unfolding acc(c_BoxView_unique(this), wildcard) in
+        c_BoxView_f_elementAt(this, i))))
+
+
+method Box_c_BoxView_upcast(this: Ref)
+  requires acc(Box_unique(this), write)
+  ensures acc(c_BoxView_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Box())) && true ==>
+    (unfolding acc(c_BoxView_unique(this), wildcard) in
+      c_BoxView_f_size(this)) ==
+    old(Box_f_size(this))
+  ensures (forall i: Ref ::
+      { c_BoxView_f_elementAt(this, i) }
+      true && old(isSubtype(typeOf(this), Box())) && true &&
+      old(isSubtype(typeOf(i), intType())) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(Box_f_size(this))) &&
+      old(0 <= intFromRef(i) &&
+      intFromRef(i) < intFromRef(Box_f_size(this))) ==>
+      (unfolding acc(c_BoxView_unique(this), wildcard) in
+        c_BoxView_f_elementAt(this, i)) ==
+      old(Box_f_elementAt(this, i)))
+
+
+method refines_c_BoxView_f_elementAt(this: Ref, i: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_BoxView())
+  requires acc(c_BoxView_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    (unfolding acc(c_BoxView_unique(this), wildcard) in
+      intFromRef(i) < intFromRef(c_BoxView_f_size(this)))
+  requires isSubtype(typeOf(this), Box())
+{
+  Box_c_BoxView_restore(this)
+  ret := Box_f_elementAt(this, i)
+  Box_c_BoxView_upcast(this)
+  assert isSubtype(typeOf(ret), nullable(anyType()))
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for get:
+field referenceContents: Seq[Ref]
+
+function BoxView_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(BoxView_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function BoxView_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Box_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(Box_unique(this), write) in
+    (let anon_1_0 ==
+      (data(this)) in
+      (unfolding acc(Array_unique(anon_1_0), write) in
+        anon_1_0.referenceContents[intFromRef(i)])))
+}
+
+function Box_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    (data(this)) in
+    intToRef(referenceArraySize(anon_0_0)))
+}
+
+function data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+predicate Array_unique(this: Ref) {
+  isSubtype(typeOf(this), Array()) && acc(this.referenceContents, write) &&
+  |this.referenceContents| == referenceArraySize(this)
+}
+
+predicate BoxView_unique(this: Ref) {
+  acc(footprint(this), write) && isSubtype(typeOf(this), BoxView())
+}
+
+predicate Box_unique(this: Ref) {
+  isSubtype(typeOf(this), Box()) && acc(Array_unique(data(this)), write)
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate footprint(this: Ref)
+
+method get(this: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(this))
+  ensures acc(Box_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  ensures v_ret_0 == Box_f_elementAt(this, i)
+  ensures intFromRef(Box_f_size(this)) == old(intFromRef(Box_f_size(this)))
+  ensures (forall anon_builtin: Int ::
+      { Box_f_elementAt(this, intToRef(anon_builtin)) }
+      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      0 <= anon_builtin && anon_builtin < intFromRef(Box_f_size(this)) ==>
+      Box_f_elementAt(this, intToRef(anon_builtin)) ==
+      old(Box_f_elementAt(this, intToRef(anon_builtin))))
+{
+  var anon_3: Ref
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < referenceArraySize(data(this))
+  unfold acc(Box_unique(this), write)
+  unfold acc(Array_unique(data(this)), write)
+  anon_3 := data(this).referenceContents[intFromRef(i)]
+  v_ret_0 := anon_3
+  inhale isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  fold acc(Array_unique(data(this)), write)
+  fold acc(Box_unique(this), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generic_member_contracts.kt: info: Generated Viper text for borrowTwice:
+field referenceContents: Seq[Ref]
+
+function BoxView_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(BoxView_footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(BoxView_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function BoxView_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(BoxView_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Box_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(Box_unique(this), write) in
+    (let anon_1_0 ==
+      (data(this)) in
+      (unfolding acc(Array_unique(anon_1_0), write) in
+        anon_1_0.referenceContents[intFromRef(i)])))
+}
+
+function Box_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    (data(this)) in
+    intToRef(referenceArraySize(anon_0_0)))
+}
+
+function data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+predicate Array_unique(this: Ref) {
+  isSubtype(typeOf(this), Array()) && acc(this.referenceContents, write) &&
+  |this.referenceContents| == referenceArraySize(this)
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BoxView_footprint(this: Ref)
+
+predicate BoxView_unique(this: Ref) {
+  acc(BoxView_footprint(this), write) && isSubtype(typeOf(this), BoxView())
+}
+
+predicate Box_unique(this: Ref) {
+  isSubtype(typeOf(this), Box()) && acc(Array_unique(data(this)), write)
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method borrowTwice(box: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(box), Box())
+  requires acc(Box_unique(box), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(box))
+  ensures acc(Box_unique(box), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var first: Ref
+  var anon_3: Ref
+  var second: Ref
+  first := get(box, i)
+  anon_3 := Box_f_elementAt(box, i)
+  assert first == anon_3
+  second := get(box, i)
+  assert second == first
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method get(this: Ref, i: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(this))
+  ensures acc(Box_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures ret_2 == Box_f_elementAt(this, i)
+  ensures intFromRef(Box_f_size(this)) == old(intFromRef(Box_f_size(this)))
+  ensures (forall anon_builtin: Int ::
+      { Box_f_elementAt(this, intToRef(anon_builtin)) }
+      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      0 <= anon_builtin && anon_builtin < intFromRef(Box_f_size(this)) ==>
+      Box_f_elementAt(this, intToRef(anon_builtin)) ==
+      old(Box_f_elementAt(this, intToRef(anon_builtin))))
+
+
+/generic_member_contracts.kt: info: Generated Viper text for wrongIndex:
+field referenceContents: Seq[Ref]
+
+function BoxView_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(BoxView_footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(BoxView_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function BoxView_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BoxView())
+  requires acc(BoxView_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function Box_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(Box_unique(this), write) in
+    (let anon_1_0 ==
+      (data(this)) in
+      (unfolding acc(Array_unique(anon_1_0), write) in
+        anon_1_0.referenceContents[intFromRef(i)])))
+}
+
+function Box_f_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    (data(this)) in
+    intToRef(referenceArraySize(anon_0_0)))
+}
+
+function data(this: Ref): Ref
+  requires isSubtype(typeOf(this), Box())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+predicate Array_unique(this: Ref) {
+  isSubtype(typeOf(this), Array()) && acc(this.referenceContents, write) &&
+  |this.referenceContents| == referenceArraySize(this)
+}
+
+predicate BooleanArray_unique(this: Ref) {
+  isSubtype(typeOf(this), BooleanArray())
+}
+
+predicate BoxView_footprint(this: Ref)
+
+predicate BoxView_unique(this: Ref) {
+  acc(BoxView_footprint(this), write) && isSubtype(typeOf(this), BoxView())
+}
+
+predicate Box_unique(this: Ref) {
+  isSubtype(typeOf(this), Box()) && acc(Array_unique(data(this)), write)
+}
+
+predicate Cloneable_footprint(this: Ref)
+
+predicate Cloneable_unique(this: Ref) {
+  acc(Cloneable_footprint(this), write) &&
+  isSubtype(typeOf(this), Cloneable())
+}
+
+predicate InvariantBuilder_unique(this: Ref) {
+  isSubtype(typeOf(this), InvariantBuilder())
+}
+
+predicate Serializable_footprint(this: Ref)
+
+predicate Serializable_unique(this: Ref) {
+  acc(Serializable_footprint(this), write) &&
+  isSubtype(typeOf(this), Serializable())
+}
+
+method get(this: Ref, i: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Box())
+  requires acc(Box_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires 0 <= intFromRef(i) &&
+    intFromRef(i) < intFromRef(Box_f_size(this))
+  ensures acc(Box_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+  ensures ret_2 == Box_f_elementAt(this, i)
+  ensures intFromRef(Box_f_size(this)) == old(intFromRef(Box_f_size(this)))
+  ensures (forall anon_builtin: Int ::
+      { Box_f_elementAt(this, intToRef(anon_builtin)) }
+      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      0 <= anon_builtin && anon_builtin < intFromRef(Box_f_size(this)) ==>
+      Box_f_elementAt(this, intToRef(anon_builtin)) ==
+      old(Box_f_elementAt(this, intToRef(anon_builtin))))
+
+
+method wrongIndex(box: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(box), Box())
+  requires acc(Box_unique(box), write)
+  requires intFromRef(Box_f_size(box)) >= 2
+  ensures acc(Box_unique(box), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var returned: Ref
+  var anon_3: Ref
+  returned := get(box, intToRef(0))
+  anon_3 := Box_f_elementAt(box, intToRef(1))
+  assert returned == anon_3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

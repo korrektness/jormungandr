@@ -271,7 +271,10 @@ entry of a function or a custom accessor (`ProgramConverter.registerAccessor`).
 Kotlin typing justifies
 them, except for a type argument: the encoding assumes that a value has its
 substituted type argument, but the JVM checks it only where Kotlin inserts a
-cast. `IterationSequence.get` and the collection templates apply this
+cast. The substituted parameter and result type conditions of calls on instantiated
+generic receivers are part of this assumption. Their member contracts come from
+the declaration and are verified against its erased bounds.
+`IterationSequence.get` and the collection templates apply this
 substituted element-type assumption to each indexed element of their
 iteration snapshot. An unchecked
 cast to `Cell<Int>`, `List<Int>` or a type parameter `T` gives a value read as
@@ -280,7 +283,8 @@ a false result.
 
 Tests: `verification/soundness/erased_generics.kt` and
 `verification/soundness/erased_iteration.kt`, whose `UNSOUND` cases verify,
-`verification/classes/interface_family_downcast.kt::downcast`.
+`verification/classes/interface_family_downcast.kt::downcast`,
+`verification/classes/generic_member_contracts.kt`.
 
 ### Havocked shared fields
 

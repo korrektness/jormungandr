@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.formver.common.purityFailure
 import org.jetbrains.kotlin.formver.common.unsupportedOwnershipFailure
 import org.jetbrains.kotlin.formver.common.reportFailure
 import org.jetbrains.kotlin.formver.common.reportTranslation
+import org.jetbrains.kotlin.fir.unwrapUseSiteSubstitutionOverrides
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
@@ -610,7 +611,7 @@ class ProgramConverter(
     private fun embedFormverContract(
         symbol: FirFunctionSymbol<*>, signature: NamedFunctionSignature, returnTarget: ReturnTarget
     ): Pair<List<ExpEmbedding>, List<ExpEmbedding>> {
-        @OptIn(SymbolInternals::class) val declaration = symbol.fir
+        @OptIn(SymbolInternals::class) val declaration = symbol.unwrapUseSiteSubstitutionOverrides().fir
 
         // Specifications are allowed on simple functions and on the getters of external property models.
         val specification = when {
