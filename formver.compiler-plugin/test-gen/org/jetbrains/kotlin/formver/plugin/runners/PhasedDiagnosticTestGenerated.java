@@ -2110,6 +2110,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testProperty_reads() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/property_reads.kt");
       }
+
+      @Test
+      @TestMetadata("spec_identity.kt")
+      public void testSpec_identity() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/soundness/spec_identity.kt");
+      }
     }
 
     @Nested

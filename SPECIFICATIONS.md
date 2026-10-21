@@ -154,9 +154,15 @@ an inline function, uses its own mode. The relation gains no reflexivity, symmet
 Each annotated function is a trusted assumption in the trust report; residual trust is registered in
 [Executed element equality](docs/soundness.md#executed-element-equality).
 
-`a === b` is rejected when both operands may hold a value of the same type among `Int`, `Long`, `Short`, `Byte`,
-`Char`, `Boolean` and `String`, such as `x: Any` and `y: Int`. The JVM boxes these values and shares boxes of small
-integers, so whether two boxes of one value are the same object depends on the value and on where each box came from.
+In specification blocks (`preconditions`, `postconditions`, `loopInvariants`, `verify` and laws), `a === b`
+compares model references, and `a !== b` is its negation. Values injected one-to-one into `Ref` compare by value.
+This introduces no assumption about `equals`.
+
+In executed code, including `@Pure` bodies, `a === b` is rejected when both operands may hold a value of the same
+type among `Int`, `Long`, `Short`, `Byte`, `Char`, `Boolean` and `String`, such as `x: Any` and `y: Int`. The JVM
+boxes these values and shares boxes of small integers, so whether two boxes of one value are the same object
+depends on the value and on where each box came from. External specifications' own type parameters denote model
+elements and are exempt from this rejection.
 
 The collection specifications compare elements with `==`: `list.contains(x)` holds when `x == list[i]` for some
 index, and `Set.contains`, `MutableSet.add` and `Map.containsKey` look for an element equal to the argument. An

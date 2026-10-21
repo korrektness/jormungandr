@@ -326,12 +326,13 @@ with an alternating `equals` as UNSOUND.
 
 ### Boxed identity
 
-`===` is rejected where both operands may hold a boxed value of one type. Inside
-external specifications, `===` on operands typed by the specification's own type
-parameters is allowed: there it states that the collection holds the same
-reference. The specifications' storage facts rely on this.
+[Specification identity](../SPECIFICATIONS.md#equality) compares model references;
+its scope includes source specifications and laws. Executed comparisons, including
+`@Pure` bodies, retain the boxed-identity rejection. External model elements have
+the exemption defined there. No additional trusted assumption is introduced.
 
-Test: `verification/soundness/equality.kt::boxedInts,boxedGeneric`.
+Tests: `verification/soundness/equality.kt::boxedInts,boxedGeneric`,
+`verification/soundness/spec_identity.kt`.
 
 ### Construction facts
 

@@ -311,8 +311,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             FirOperation.EQ -> data.convertEquality(equalityOperatorCall, left, right)
             FirOperation.NOT_EQ -> Not(data.convertEquality(equalityOperatorCall, left, right))
             FirOperation.IDENTITY, FirOperation.NOT_IDENTITY -> {
-                data.checkIdentityComparable(equalityOperatorCall)
-                val identity = IdentityCmp(left, right)
+                val identity = IdentityCmp(left, right, executionRejection = data.identityExecutionRejection(equalityOperatorCall))
                 if (equalityOperatorCall.operation == FirOperation.IDENTITY) identity else Not(identity)
             }
             else -> throw UnsupportedFeatureException(

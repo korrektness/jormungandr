@@ -1,0 +1,327 @@
+/spec_identity.kt: info: Generated Viper text for ReferenceStorage:
+field referenceContents: Seq[Ref]
+
+function g_first(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_second(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function g_storage(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), Array())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(par_storage: Ref, par_first: Ref, par_second: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_storage), Array())
+  requires acc(Array_unique(par_storage), write)
+  requires isSubtype(typeOf(par_first), nullable(anyType()))
+  requires isSubtype(typeOf(par_second), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), ReferenceStorage())
+  ensures isSubtype(typeOf(v_ret_0), ReferenceStorage()) &&
+    acc(Array_unique(g_storage(v_ret_0)), write)
+  ensures g_storage(v_ret_0) == par_storage
+  ensures g_first(v_ret_0) == par_first
+  ensures g_second(v_ret_0) == par_second
+  ensures g_storage(v_ret_0) == par_storage
+  ensures g_first(v_ret_0) == par_first
+  ensures g_second(v_ret_0) == par_second
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ReferenceStorage()
+  anon_0 := par_storage
+  inhale g_storage(v_ret_0) == anon_0
+  anon_1 := par_first
+  inhale g_first(v_ret_0) == anon_1
+  anon_2 := par_second
+  inhale g_second(v_ret_0) == anon_2
+  fold acc(ReferenceStorage_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ReferenceStorage_unique(v_ret_0), write)
+}
+
+/spec_identity.kt: info: Generated Viper text for elementAt:
+field referenceContents: Seq[Ref]
+
+function elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (intFromRef(i) == 0 ? first(this) : second(this))
+}
+
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function second(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function storage(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), Array())
+
+
+/spec_identity.kt: info: Generated Viper text for get:
+field referenceContents: Seq[Ref]
+
+function elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (intFromRef(i) == 0 ? first(this) : second(this))
+}
+
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function second(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function storage(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), Array())
+
+
+method get(this: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  requires acc(ReferenceStorage_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires referenceArraySize(storage(this)) == 2
+  requires 0 <= intFromRef(i) && intFromRef(i) < 2
+  ensures acc(ReferenceStorage_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  ensures v_ret_0 == elementAt(this, i)
+{
+  var anon: Ref
+  refute false
+  assert 0 >= 0
+  assert 0 < referenceArraySize(storage(this))
+  unfold acc(ReferenceStorage_unique(this), write)
+  unfold acc(Array_unique(storage(this)), write)
+  storage(this).referenceContents := storage(this).referenceContents[0 :=
+    first(this)]
+  assert 1 >= 0
+  assert 1 < referenceArraySize(storage(this))
+  storage(this).referenceContents := storage(this).referenceContents[1 :=
+    second(this)]
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < referenceArraySize(storage(this))
+  anon := storage(this).referenceContents[intFromRef(i)]
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  fold acc(Array_unique(storage(this)), write)
+  fold acc(ReferenceStorage_unique(this), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/spec_identity.kt: info: Generated Viper text for wrongSlot:
+field referenceContents: Seq[Ref]
+
+function elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (intFromRef(i) == 0 ? first(this) : second(this))
+}
+
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function second(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function storage(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), Array())
+
+
+method wrongSlot(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  requires acc(ReferenceStorage_unique(this), write)
+  requires referenceArraySize(storage(this)) == 2
+  requires !(first(this) == second(this))
+  ensures acc(ReferenceStorage_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  ensures v_ret_0 == elementAt(this, intToRef(0))
+{
+  var anon: Ref
+  refute false
+  assert 0 >= 0
+  assert 0 < referenceArraySize(storage(this))
+  unfold acc(ReferenceStorage_unique(this), write)
+  unfold acc(Array_unique(storage(this)), write)
+  storage(this).referenceContents := storage(this).referenceContents[0 :=
+    first(this)]
+  assert 1 >= 0
+  assert 1 < referenceArraySize(storage(this))
+  storage(this).referenceContents := storage(this).referenceContents[1 :=
+    second(this)]
+  assert 1 >= 0
+  assert 1 < referenceArraySize(storage(this))
+  anon := storage(this).referenceContents[1]
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), nullable(anyType()))
+  fold acc(Array_unique(storage(this)), write)
+  fold acc(ReferenceStorage_unique(this), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/spec_identity.kt: info: Generated Viper text for preserve:
+field referenceContents: Seq[Ref]
+
+function elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (intFromRef(i) == 0 ? first(this) : second(this))
+}
+
+function first(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function second(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function storage(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  ensures isSubtype(typeOf(result), Array())
+
+
+method get(this: Ref, i: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  requires acc(ReferenceStorage_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires referenceArraySize(storage(this)) == 2
+  requires 0 <= intFromRef(i) && intFromRef(i) < 2
+  ensures acc(ReferenceStorage_unique(this), write)
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+  ensures ret_3 == elementAt(this, i)
+
+
+method preserve(this: Ref, i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ReferenceStorage())
+  requires acc(ReferenceStorage_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires referenceArraySize(storage(this)) == 2
+  requires 0 <= intFromRef(i) && intFromRef(i) < 2
+  ensures acc(ReferenceStorage_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var j: Ref
+  var anon_4: Ref
+  refute false
+  j := intToRef(0)
+  label cont
+    invariant acc(ReferenceStorage_unique(this), write)
+    invariant isSubtype(typeOf(j), intType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(this), ReferenceStorage())
+    invariant 0 <= intFromRef(j) && intFromRef(j) <= 2
+    invariant first(this) == elementAt(this, intToRef(0))
+  anon_4 := ltInts(j, intToRef(2))
+  if (boolFromRef(anon_4)) {
+    var value: Ref
+    var anon_0: Ref
+    value := get(this, i)
+    assert value == elementAt(this, i)
+    refute false
+    anon_0 := j
+    j := plusInts(anon_0, intToRef(1))
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(j), intType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(this), ReferenceStorage())
+  assert 0 <= intFromRef(j) && intFromRef(j) <= 2
+  assert first(this) == elementAt(this, intToRef(0))
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/spec_identity.kt: info: Generated Viper text for element:
+function element(this: Ref): Ref
+  requires isSubtype(typeOf(this), ReferenceLaw())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+/spec_identity.kt: info: Generated Viper text for injectedValue:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method injectedValue() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var a: Ref
+  var b: Ref
+  a := intToRef(1000)
+  b := intToRef(1000)
+  assert a == b
+  assert !(a == b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

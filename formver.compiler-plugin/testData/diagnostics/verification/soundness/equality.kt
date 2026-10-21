@@ -96,9 +96,9 @@ fun <!VIPER_TEXT!>equalsCatch<!>(a: Eq, b: Eq): Int {
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
 }
 
-// The JVM shares boxes of small values and makes fresh boxes of large ones, so `===` on boxes has no sound model.
+// Executed boxed identity is rejected; specification identity compares model references.
 fun <!VERIFICATION_SKIPPED!>boxedInts<!>(a: Int) {
-    if (a == 1000) { val x: Any = a; val y: Any = a; verify(<!UNSUPPORTED_FEATURE!>x === y<!>) }
+    if (a == 1000) { val x: Any = a; val y: Any = a; val same = <!UNSUPPORTED_FEATURE!>x === y<!> }
 }
 
 fun <!VERIFICATION_SKIPPED!>boxedGeneric<!>(a: Any, b: Int) = <!IMPLICIT_BOXING_IN_IDENTITY_EQUALS, UNSUPPORTED_FEATURE!>a === b<!>

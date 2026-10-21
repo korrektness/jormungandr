@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.externalSpecifications
 import org.jetbrains.kotlin.fir.analysis.checkers.unsubstitutedScope
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
@@ -95,21 +94,17 @@ internal fun StmtConversionContext.convertEquality(
 }
 
 /**
- * Rejects Kotlin `a === b` when both operands may hold a value of the same injected type. The JVM boxes such values,
- * and whether two boxes of one value are one object depends on the value and on how each box was made, so no
- * reference model of `===` on them is sound. Operands typed by type parameters of external specification declarations
- * are exempt: there `===` states that the model holds the reference a collection stores.
+ * The rejection reason for executed `a === b` when both operands may hold one injected type.
+ * Specification evaluation compares model references; see SPECIFICATIONS.md, "Equality".
  */
-internal fun StmtConversionContext.checkIdentityComparable(call: FirEqualityOperatorCall) {
+internal fun StmtConversionContext.identityExecutionRejection(call: FirEqualityOperatorCall): String? {
     val (left, right) = call.arguments.map { it.resolvedType }
-    if (isModelElement(left) && isModelElement(right)) return
+    if (isModelElement(left) && isModelElement(right)) return null
     val shared = injectedClassIds.firstOrNull { id ->
         val injected = id.constructClassLikeType()
         mayHold(left, injected) && mayHold(right, injected)
-    } ?: return
-    throw UnsupportedFeatureException(
-        call.source, "`===` on operands that may both hold a boxed ${shared.shortClassName}",
-    )
+    } ?: return null
+    return "`===` on operands that may both hold a boxed ${shared.shortClassName}"
 }
 
 private fun StmtConversionContext.isModelElement(type: ConeKotlinType): Boolean {

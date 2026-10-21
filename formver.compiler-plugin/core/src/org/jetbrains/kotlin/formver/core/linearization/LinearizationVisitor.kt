@@ -808,7 +808,19 @@ data class LinearizationVisitor(
                 info = e.sourceRole.asInfo
             )
 
+        private fun checkExecution(ctx: LinearizationContext) {
+            if (e is IdentityCmp && ctx.equalityEvaluation != EqualityEvaluation.SPECIFIED) {
+                e.executionRejection?.let { throw UnsupportedFeatureException(ctx.source, it) }
+            }
+        }
+
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            checkExecution(ctx)
+            super.toViperUnusedResult(ctx)
+        }
+
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp {
+            checkExecution(ctx)
             fun ExpEmbedding.operand(): Exp =
                 if (e.comparesUnwrapped) linearize().toViperBuiltinType(ctx) else linearize().toViper(ctx)
             return e.comparisonOperation(

@@ -47,11 +47,12 @@ data class NeCmp(
     override fun <R> accept(v: ExpVisitor<R>): R = v.visitNeCmp(this)
 }
 
-/** Kotlin reference equality (`===`). */
+/** Model reference equality, with [executionRejection] enforced outside specification evaluation. */
 data class IdentityCmp(
     override val left: ExpEmbedding,
     override val right: ExpEmbedding,
     override val sourceRole: SourceRole? = null,
+    val executionRejection: String? = null,
 ) : AnyComparisonExpression {
     override val comparisonOperation = EqAny
     override val comparesUnwrapped = false
