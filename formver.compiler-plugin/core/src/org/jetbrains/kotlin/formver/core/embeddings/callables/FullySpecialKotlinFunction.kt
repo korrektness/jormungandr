@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.embeddings.callables
 
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.conversion.StmtConversionContext
 import org.jetbrains.kotlin.formver.core.conversion.insertQuantifierFunctionCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -121,6 +122,11 @@ object SpecialKotlinFunctions {
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "minus") { args, _ ->
                 SubIntInt(args[0], args[1])
+            }
+            addFunction(SpecialPackages.kotlin, className = "Int", name = "shr") { args, _ ->
+                val distance = args[1].ignoringCastsAndMetaNodes() as? IntLit
+                    ?: throw UnsupportedFeatureException(null, "Int.shr with a non-literal distance")
+                OperatorExpEmbeddings.ShiftRightInt(args[0], LongLit(1L shl (distance.value and (Int.SIZE_BITS - 1))))
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "times") { args, _ ->
                 MulIntInt(args[0], args[1])

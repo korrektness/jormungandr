@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.cha
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.asInfo
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.intInjection
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.longInjection
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.stringInjection
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildFunctionPretype
 import org.jetbrains.kotlin.formver.viper.ast.*
@@ -49,6 +50,20 @@ object OperatorExpEmbeddings {
         viperImplementation { Exp.Add(args[0], args[1], pos, info) }
         additionalConditions {
             precondition { overflow(Exp.Add(intInjection.fromRef(args[0]), intInjection.fromRef(args[1])), "+") }
+        }
+    }
+
+    val ShiftRightInt = buildBinaryOperator {
+        setName("shiftRightInt")
+        withSignature {
+            withParam { int() }
+            withParam { long() }
+            withReturnType { int() }
+        }
+        // The divisor is positive, so Viper division gives arithmetic shift's floor semantics.
+        viperImplementation { Exp.Div(args[0], args[1], pos, info) }
+        additionalConditions {
+            precondition { longInjection.fromRef(args[1]) gt 0.toExp() }
         }
     }
 
@@ -407,7 +422,7 @@ object OperatorExpEmbeddings {
 
     val allTemplates
         get() = listOf(
-            AddIntInt, SubIntInt, MulIntInt, DivIntInt, RemIntInt, NegInt, CompareIntInt,
+            AddIntInt, SubIntInt, MulIntInt, DivIntInt, RemIntInt, NegInt, CompareIntInt, ShiftRightInt,
             LeIntInt, GeIntInt, LtIntInt, GtIntInt,
             Not, And, Or, Implies, Xor,
             AddCharInt, SubCharChar, SubCharInt,

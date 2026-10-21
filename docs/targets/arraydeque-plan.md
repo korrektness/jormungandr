@@ -4,7 +4,7 @@ Use this plan when building or reviewing the ArrayDeque target. It owns the sele
 stages, the acceptance checks and what stays trusted. `docs/targets/kotlin-arraydeque.md` (the note) owns the
 evidence, the upstream pin and the scope of the deliverables M and F; this plan cites its labels (P1–P7, V1–V9).
 
-Nothing here is implemented.
+The language reference in `SPECIFICATIONS.md` records supported verifier features.
 
 ## Selection
 

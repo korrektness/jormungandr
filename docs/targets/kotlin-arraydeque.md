@@ -1,7 +1,7 @@
 # Target: Kotlin stdlib `ArrayDeque`
 
 Use this note when deciding whether to point SnaKt at `kotlin.collections.ArrayDeque`, and when planning that work.
-It is a research and design note: nothing here is implemented. Statements are tagged **[E]** for evidence checked
+It is a research and design note. The language reference in `SPECIFICATIONS.md` records supported verifier features. Statements are tagged **[E]** for evidence checked
 while writing this note (a command, a source location or a run), and **[H]** for hypotheses that a stage has to
 confirm.
 
@@ -118,7 +118,7 @@ A YouTrack search for `project:KT ArrayDeque` (about 45 issues) has no report of
 |---|---|---|
 | `Array<Any?>` elements | Opaque library call, may throw | docs/soundness.md, "Arrays" |
 | `copyInto`, `fill`, `arrayOfNulls` | Not modelled for any array type | no occurrence in `core/src` or `testData` |
-| `Int.shr`, `Int.and` | Not executable intrinsics (`FullySpecialKotlinFunction.kt` has none) | a law may name them (`ClassLawConstruction.kt::isLawValueOperation`) |
+| `Int.shr`, `Int.and` | `shr` with a literal distance is modelled; `and` has no executable intrinsic | SPECIFICATIONS.md, "Integer arithmetic" |
 | Wrapping `+` in `newCapacity` | Every `+` must stay in range; overflow is `INTEGER_OVERFLOW` | SPECIFICATIONS.md, "Integer arithmetic" |
 | `element == elementData[i]` with `E` unbounded | Executed: an unconstrained Boolean. Specified: `EqualsRelation` | `conversion/KotlinEquality.kt::EqualityLowering` |
 | Subclassing `AbstractMutableList` | Rejected: a source subtype of a modelled type is an `INVALID_EXTERNAL_SPEC` | SPECIFICATIONS.md, "External specifications"; `testData/diagnostics/stdlib/list/custom_list.kt` |

@@ -123,6 +123,8 @@ its failing values uniquely.
 
 Division truncates toward zero; remainder has the dividend's sign. A zero divisor reports `DIVISION_BY_ZERO`. `MIN_VALUE / -1` overflows; `MIN_VALUE % -1` is zero. Widening conversions are exact, and narrowing conversions must prove the target range. Char arithmetic and conversions must stay within 0 through 65535. Arithmetic failures are proof obligations, not catchable exits.
 
+`Int.shr` with a literal distance `c` is modelled as floor division by `2^(c and 31)`, including negative receivers. A variable distance is unsupported. Other integer shifts and bitwise operations have no intrinsic model.
+
 ## Equality
 
 Kotlin `a == b` is `a.equals(b)`, or `b === null` when `a` is null; `a != b` is its negation, and a `when` branch

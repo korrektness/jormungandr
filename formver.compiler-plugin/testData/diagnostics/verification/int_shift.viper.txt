@@ -1,0 +1,112 @@
+/int_shift.kt: info: Generated Viper text for nonNegativeHalf:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method nonNegativeHalf(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (shiftRightInt(n, longToRef(2))) in
+      intFromRef(n) \ longFromRef(longToRef(2))) ==
+    (let anon ==
+      (divInts(n, intToRef(2))) in
+      (intFromRef(n) < 0 != intFromRef(intToRef(2)) < 0 ?
+        -((intFromRef(n) < 0 ? -intFromRef(n) : intFromRef(n)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))) :
+        (intFromRef(n) < 0 ? -intFromRef(n) : intFromRef(n)) \
+        (intFromRef(intToRef(2)) < 0 ?
+          -intFromRef(intToRef(2)) :
+          intFromRef(intToRef(2)))))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/int_shift.kt: info: Generated Viper text for negativeFloor:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method negativeFloor(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) == -3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let anon ==
+      (shiftRightInt(n, longToRef(2))) in
+      intFromRef(n) \ longFromRef(longToRef(2))) ==
+    -2
+  assert (let anon ==
+      (shiftRightInt(n, longToRef(2))) in
+      intFromRef(n) \ longFromRef(longToRef(2))) ==
+    -1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/int_shift.kt: info: Generated Viper text for maskedDistance:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method maskedDistance(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  assert (let anon_builtin ==
+      (shiftRightInt(x, longToRef(2))) in
+      intFromRef(x) \ longFromRef(longToRef(2))) ==
+    (let anon_builtin ==
+      (shiftRightInt(x, longToRef(2))) in
+      intFromRef(x) \ longFromRef(longToRef(2)))
+  assert (let anon_builtin ==
+      (shiftRightInt(x, longToRef(1))) in
+      intFromRef(x) \ longFromRef(longToRef(1))) ==
+    intFromRef(x)
+  assert (let anon_builtin ==
+      (shiftRightInt(x, longToRef(1))) in
+      intFromRef(x) \ longFromRef(longToRef(1))) ==
+    intFromRef(x)
+  if (intFromRef(x) < 0) {
+    anon_0 := intToRef(-1)
+  } else {
+    anon_0 := intToRef(0)}
+  assert (let anon_builtin ==
+      (shiftRightInt(x, longToRef(2147483648))) in
+      intFromRef(x) \ longFromRef(longToRef(2147483648))) ==
+    intFromRef(anon_0)
+  assert (let anon_builtin ==
+      (shiftRightInt(x, longToRef(2))) in
+      intFromRef(x) \ longFromRef(longToRef(2))) ==
+    (let anon_builtin ==
+      (shiftRightInt(x, longToRef(2))) in
+      intFromRef(x) \ longFromRef(longToRef(2)))
+  assert (let anon_builtin ==
+      (shiftRightInt(x, longToRef(2147483648))) in
+      intFromRef(x) \ longFromRef(longToRef(2147483648))) ==
+    (let anon_builtin ==
+      (shiftRightInt(x, longToRef(2147483648))) in
+      intFromRef(x) \ longFromRef(longToRef(2147483648)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/int_shift.kt: info: Generated Viper text for pureHalf:
+function pureHalf(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    (let anon ==
+      (shiftRightInt(x, longToRef(2))) in
+      intFromRef(x) \ longFromRef(longToRef(2)))
+{
+  shiftRightInt(x, longToRef(2))
+}
