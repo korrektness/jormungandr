@@ -179,21 +179,17 @@ still carry the annotation, so that they differ from the upstream body only in t
   committed `ArrayDeque.port.diff`. The rule removes: leading `preconditions`/`postconditions` blocks,
   `loopInvariants` blocks, `verify(...)` statements, `@Law` and `@SpecOf` members, and the annotations `@Pure`,
   `@Unique`, `@Borrowed` and the two annotations of D3 and D4. It removes nothing else. Specification syntax has no
-  effect on execution, so stripping it cannot hide a body change. Tests: a fixture whose port changes one body
-  expression fails the check; a fixture that only adds a specification block passes.
+  effect on execution under the syntactic trust assumptions in `testData/upstream/kotlin-v2.3.0/PROVENANCE.md`.
+  Tests: a fixture whose port changes one body expression fails the check; a fixture that only adds a specification block passes.
 - The deviation list lives in the committed diff, one D-label per hunk, not in prose. D-1 has knock-on hunks: the port has no `Collection` supertype, so `isNotEmpty()` and the `AbstractList` index checks
   need private copies. The diff records each.
-- D-6 is checked, not argued. Upstream assigns `elementData` at six sites; four are in M (the `(Int)` constructor,
+- D-6 has a syntactic assignment-site guard. Upstream assigns `elementData` at six sites; four are in M (the `(Int)` constructor,
   `()`, `ensureCapacity`'s first allocation, `copyElements`). The port carries a `verify` at each: the sentinel
   sites assign a size-0 array, and the others assign `size > 0` (`ensureCapacity` allocates at least 10;
   `copyElements` allocates `newCapacity >= minCapacity > old size`, from the S3 postcondition). With the diff check
-  pinning the set of assignment sites, this proves `elementData === emptyElementData ⇔ elementData.size == 0` for
-  the port's histories, which is what the rewritten test needs.
-- Residual trust, labelled in the provenance file: the stripped diff is behaviour-preserving for its listed hunks
-  (D-1 superclass removal, D-2 `size` as a `@Pure` getter over a private `var`, D-3 `modCount` as a field, D-4 private copies of
-  `AbstractList` helpers, D-5 `@InlineOnly` removal, D-6 the shared empty sentinel replaced by `arrayOfNulls(0)` and
-  `elementData === emptyElementData` by `elementData.size == 0`, D-7 removed members, D-8 added specification). The proof is of the port,
-  not of the shipped class.
+  pinning direct reference-assignment sites, the intended invariant is `elementData === emptyElementData ⇔ elementData.size == 0`
+  for the port's histories. The guard's scope and residual trust are recorded in the provenance file; it does not establish equivalence.
+- Residual trust and proof scope are recorded in `formver.compiler-plugin/testData/upstream/kotlin-v2.3.0/PROVENANCE.md`.
 
 ### Bundled model shape
 
