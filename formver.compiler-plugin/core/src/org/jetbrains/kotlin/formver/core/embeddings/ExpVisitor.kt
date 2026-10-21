@@ -80,6 +80,7 @@ interface ExpVisitor<R> {
     fun visitPermissionLit(e: PermissionLit): R
     fun visitFold(e: Fold): R
     fun visitUnfold(e: Unfold): R
+    fun visitGenericArrayBulkUpdate(e: GenericArrayBulkUpdate): R
     fun visitGenericArraySize(e: GenericArraySize): R
     fun visitGenericArrayAllNull(e: GenericArrayAllNull): R
     fun visitGenericArrayGet(e: GenericArrayGet): R
@@ -173,6 +174,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitPermissionLit(e: PermissionLit): R = visitDefault(e)
     override fun visitFold(e: Fold): R = visitDefault(e)
     override fun visitUnfold(e: Unfold): R = visitDefault(e)
+    override fun visitGenericArrayBulkUpdate(e: GenericArrayBulkUpdate): R = visitDefault(e)
     override fun visitGenericArraySize(e: GenericArraySize): R = visitDefault(e)
     override fun visitGenericArrayAllNull(e: GenericArrayAllNull): R = visitDefault(e)
     override fun visitGenericArrayGet(e: GenericArrayGet): R = visitDefault(e)

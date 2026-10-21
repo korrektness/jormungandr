@@ -43,6 +43,35 @@ fun receiverRemainsOwned() {
     consumeArray(arr)
 }
 
+fun fillMovesValue(arr: @Unique @Borrowed Array<MutableValue?>) {
+    val value: @Unique MutableValue = MutableValue(1)
+    arr.fill(value)
+    consume(<!INVALID_MOVED_ACCESS!>value<!>)
+}
+
+fun fillCastMovesValue(arr: @Unique @Borrowed Array<Any?>) {
+    val value: @Unique MutableValue = MutableValue(1)
+    arr.fill(value as Any?)
+    consume(<!INVALID_MOVED_ACCESS!>value<!>)
+}
+
+fun copyBorrowsBothArrays(src: @Unique Array<MutableValue?>, dst: @Unique Array<MutableValue?>) {
+    src.copyInto(dst)
+    consumeArray(src)
+    consumeArray(dst)
+}
+
+fun copyResultMovesDestination(src: @Unique @Borrowed Array<MutableValue?>, dst: @Unique Array<MutableValue?>) {
+    val result: @Unique Array<MutableValue?> = src.copyInto(dst)
+    consumeArray(<!INVALID_MOVED_ACCESS!>dst<!>)
+    consumeArray(result)
+}
+
+fun sharedCopyResultMovesDestination(src: @Unique @Borrowed Array<MutableValue?>, dst: @Unique Array<MutableValue?>) {
+    val result = src.copyInto(dst)
+    consumeArray(<!INVALID_MOVED_ACCESS!>dst<!>)
+}
+
 fun unstoredValueRemainsOwned(arr: Array<MutableValue?>) {
     val value: @Unique MutableValue = MutableValue(1)
     arr[0] = null

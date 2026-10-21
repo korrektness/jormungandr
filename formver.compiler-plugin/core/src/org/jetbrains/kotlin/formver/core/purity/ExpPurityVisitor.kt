@@ -70,6 +70,7 @@ internal class ExprPurityVisitor(
     override fun visitGenericArrayAllNull(e: GenericArrayAllNull) = e.allChildrenPure(this)
     override fun visitGenericArrayGet(e: GenericArrayGet) = e.allChildrenPure(this)
     override fun visitGenericArraySet(e: GenericArraySet): Boolean = false
+    override fun visitGenericArrayBulkUpdate(e: GenericArrayBulkUpdate): Boolean = false
     override fun visitIntArraySize(e: IntArraySize) = e.allChildrenPure(this)
     override fun visitIntArrayAllZero(e: IntArrayAllZero) = e.allChildrenPure(this)
     override fun visitIntArrayContents(e: IntArrayContents) = e.allChildrenPure(this)

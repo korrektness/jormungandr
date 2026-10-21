@@ -125,6 +125,7 @@ private fun Exp.hoistCollection(): Hoisted? = when (this) {
     is Exp.SeqLength -> transparent(listOf(seq)) { (seq) -> copy(seq = seq) }
     is Exp.SeqIndex -> transparent(listOf(seq, idx)) { (seq, idx) -> copy(seq = seq, idx = idx) }
     is Exp.SeqTake -> transparent(listOf(seq, idx)) { (seq, idx) -> copy(seq = seq, idx = idx) }
+    is Exp.SeqDrop -> transparent(listOf(seq, idx)) { (seq, idx) -> copy(seq = seq, idx = idx) }
     is Exp.SeqUpdate -> transparent(listOf(seq, idx, elem)) { (seq, idx, elem) -> copy(seq = seq, idx = idx, elem = elem) }
     is Exp.ExplicitSeq -> transparent(args) { copy(args = it) }
     is Exp.ExplicitMultiset -> transparent(args) { copy(args = it) }

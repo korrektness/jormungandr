@@ -39,6 +39,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.asTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.GenericArrayEmbedding
+import org.jetbrains.kotlin.formver.intrinsics.plugin.GenericArrayBulk
 import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
 import org.jetbrains.kotlin.formver.core.embeddings.types.fillHoles
 import org.jetbrains.kotlin.formver.core.embeddings.types.injection
@@ -53,6 +54,8 @@ import org.jetbrains.kotlin.formver.viper.ast.Exp.Companion.toConjunction
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
 import org.jetbrains.kotlin.formver.viper.ast.Type
 import org.jetbrains.kotlin.formver.viper.ast.viperLiteral
+import org.jetbrains.kotlin.formver.viper.ast.ge
+import org.jetbrains.kotlin.formver.viper.ast.le
 
 data class LinearizationVisitor(
     val source: KtSourceElement? = null,
@@ -928,6 +931,67 @@ data class LinearizationVisitor(
         }
     }
 
+    override fun visitGenericArrayBulkUpdate(e: GenericArrayBulkUpdate): Linearizable =
+        object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            override fun toViper(ctx: LinearizationContext): Exp {
+                val pos = ctx.source.asPosition
+                val expressions = e.arguments.map { it.second }
+                val array = snapshotBefore(e.array.linearize().toViper(ctx), e.array.type, expressions, ctx)
+                val values = e.arguments.mapIndexed { i, (name, expression) ->
+                    name to snapshotBefore(expression.linearize().toViper(ctx), expression.type, expressions.drop(i + 1), ctx)
+                }.toMap()
+                fun index(name: String, default: Exp) = values[name]?.let { RuntimeTypeDomain.intInjection.fromRef(it) } ?: default
+                val from = index("startIndex", index("fromIndex", Exp.IntLit(0)))
+                val to = index("endIndex", index("toIndex", GenericArrayEmbedding.arraySize(array, pos)))
+                fun check(condition: Exp) = ctx.addStatement {
+                    Stmt.Assert(condition, pos, SourceRole.Proof(org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.ASSERTION).asInfo)
+                }
+                check(from ge Exp.IntLit(0))
+                check(from le to)
+                check(to le GenericArrayEmbedding.arraySize(array, pos))
+                val receiverPath = ctx.ownedReceiverPath(e.array, receiverOwned = true, isWrite = e.kind == GenericArrayBulk.Fill)!!
+                ctx.foldState?.openOwn(ctx, receiverPath)
+                val contents = array.fieldAccess(GenericArrayEmbedding.contentsField, pos)
+                val count = Exp.Sub(to, from, pos)
+                val target: Exp.FieldAccess
+                val offset: Exp
+                val replacement: Exp
+                val source: OwnedPath?
+                val destination: Exp
+                var destinationPath: OwnedPath? = null
+                if (e.kind == GenericArrayBulk.CopyInto) {
+                    destination = values.getValue("destination")
+                    offset = index("destinationOffset", Exp.IntLit(0))
+                    val size = GenericArrayEmbedding.arraySize(destination, pos)
+                    check(offset ge Exp.IntLit(0))
+                    check(offset le size)
+                    check(count le Exp.Sub(size, offset, pos))
+                    destinationPath = ctx.ownedReceiverPath(e.destination, receiverOwned = true, isWrite = true)!!
+                    ctx.foldState?.openOwn(ctx, destinationPath)
+                    target = destination.fieldAccess(GenericArrayEmbedding.contentsField, pos)
+                    replacement = Exp.SeqTake(Exp.SeqDrop(contents, from, pos), count, pos)
+                    source = null
+                } else {
+                    destination = array
+                    offset = from
+                    target = contents
+                    val value = e.arguments.single { it.first == "element" }.second
+                    source = ctx.moveSource(value, targetOwned = false)
+                    replacement = GenericArrayEmbedding.repeatFunction.toFuncApp(listOf(values.getValue("element"), count), pos)
+                }
+                val updated = Exp.SeqAppend(Exp.SeqAppend(Exp.SeqTake(target, offset, pos), replacement, pos),
+                    Exp.SeqDrop(target, Exp.Add(offset, count, pos), pos), pos)
+                ctx.addStatement { Stmt.FieldAssign(target, updated, pos) }
+                ctx.foldState?.close(ctx, receiverPath)
+                destinationPath?.let { ctx.foldState?.close(ctx, it) }
+                if (e.kind == GenericArrayBulk.Fill)
+                    ctx.finishMove(e.arguments.single { it.first == "element" }.second, source, targetOwned = false, target = null)
+                return if (e.kind == GenericArrayBulk.CopyInto) destination else RuntimeTypeDomain.unitValue(pos = pos)
+            }
+
+            override fun toViperUnusedResult(ctx: LinearizationContext) { toViper(ctx) }
+        }
+
     override fun visitGenericArraySize(e: GenericArraySize): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp = RuntimeTypeDomain.intInjection.toRef(
             GenericArrayEmbedding.arraySize(e.array.withoutOwnerUnfoldings().linearize().toViper(ctx), ctx.source.asPosition),
@@ -1205,7 +1269,7 @@ data class LinearizationVisitor(
     }
 
     /**
-     * Runs the `StringBuilder` updates that [value] consists of when they act on a path, the initialization of an
+     * Runs the `StringBuilder` or `copyInto` updates that [value] consists of when they act on a path, the initialization of an
      * [IntArrayInit], an [InlineCall] whose callee returns `@Unique`, or a conditional or block that yields a fresh
      * unique value on every path, and returns the path, the call's result or the temporary that each path moves its
      * value into, which then moves in place of [value]. Any other [value] is returned unchanged. A move folds its
@@ -1218,6 +1282,13 @@ data class LinearizationVisitor(
             val temporary = ctx.freshAnonVar(value.type)
             root.movedInto(temporary).linearize().toViperUnusedResult(ctx)
             return temporary
+        }
+        if (root is GenericArrayBulkUpdate && root.kind == GenericArrayBulk.CopyInto) {
+            value.linearize().toViperUnusedResult(ctx)
+            val path = root.destination.ownedPath()!!
+            return path.fields.fold<org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep, ExpEmbedding>(path.root) { receiver, step ->
+                step.valueOf(receiver)
+            }
         }
         if (root is IntArrayInit) {
             value.linearize().toViperUnusedResult(ctx)

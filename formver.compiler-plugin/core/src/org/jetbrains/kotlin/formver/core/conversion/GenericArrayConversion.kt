@@ -6,6 +6,9 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
+import org.jetbrains.kotlin.formver.intrinsics.plugin.GenericArrayBulk
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.types.resolvedType
@@ -17,6 +20,21 @@ import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArrayGetId
+
+fun StmtConversionContext.convertGenericArrayBulk(call: FirFunctionCall, kind: GenericArrayBulk): ExpEmbedding {
+    val receiver = call.extensionReceiver!!
+    if (!ownsBefore(call, receiver)) throw UnsupportedFeatureException(call.source, "bulk access through a shared generic array")
+    val mapping = call.resolvedArgumentMapping!!
+    if (kind == GenericArrayBulk.CopyInto) {
+        val destination = mapping.entries.single { it.value.name.asString() == "destination" }.key
+        if (ownershipFrame.pathOf(receiver) == ownershipFrame.pathOf(destination))
+            throw UnsupportedFeatureException(call.source, "copyInto on the same array path")
+        if (!ownsBefore(call, destination)) throw UnsupportedFeatureException(call.source, "copyInto to a shared generic array")
+    }
+    return WithPosition(GenericArrayBulkUpdate(kind, convert(receiver), mapping.map { (argument, parameter) ->
+        parameter.name.asString() to convert(argument)
+    }), checkNotNull(call.source))
+}
 
 fun StmtConversionContext.convertGenericArrayLastIndex(access: FirPropertyAccessExpression): ExpEmbedding? {
     val receiver = access.extensionReceiver ?: return null

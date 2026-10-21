@@ -11,7 +11,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.IntegerOperators
 
 object SpecialFunctions {
     val all
-        get() = (OperatorExpEmbeddings.allTemplates + IntegerOperators.templates).map { it.refsOperation }
+        get() = (OperatorExpEmbeddings.allTemplates + IntegerOperators.templates).map { it.refsOperation } +
+                org.jetbrains.kotlin.formver.core.embeddings.types.GenericArrayEmbedding.repeatFunction
 
     val iterationSequence
         get() = OperatorExpEmbeddings.iterationSequenceTemplates.map { it.refsOperation } +

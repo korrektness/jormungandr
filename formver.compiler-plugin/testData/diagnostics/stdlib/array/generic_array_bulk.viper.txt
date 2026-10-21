@@ -1,0 +1,483 @@
+/generic_array_bulk.kt: info: Generated Viper text for Element:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Element())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Element()
+  fold acc(Element_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Element_unique(v_ret_0), write)
+}
+
+/generic_array_bulk.kt: info: Generated Viper text for copyGrow:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method copyGrow(src: Ref, n: Ref, split: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(src), Array())
+  requires acc(Array_unique(src), write)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(split), intType())
+  requires intFromRef(n) >= referenceArraySize(src)
+  requires 0 <= intFromRef(split) &&
+    intFromRef(split) <= referenceArraySize(src)
+  ensures acc(Array_unique(src), write)
+  ensures isSubtype(typeOf(v_ret_0), Array())
+  ensures acc(Array_unique(v_ret_0), write)
+  ensures referenceArraySize(v_ret_0) == intFromRef(n)
+  ensures (forall anon_builtin_0: Int ::
+      { v_ret_0.referenceContents[anon_builtin_0] }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
+      (let anon_builtin_neg1 ==
+        (minusInts(intToRef(referenceArraySize(src)), split)) in
+        intFromRef(intToRef(referenceArraySize(src))) - intFromRef(split)) ==>
+      (unfolding acc(Array_unique(v_ret_0), write) in
+        v_ret_0.referenceContents[anon_builtin_0] ==
+        old((unfolding acc(Array_unique(src), write) in
+          src.referenceContents[(let anon_builtin_neg1 ==
+            (plusInts(intToRef(anon_builtin_0), split)) in
+            anon_builtin_0 + intFromRef(split))]))))
+  ensures (forall anon_builtin_1: Int ::
+      { v_ret_0.referenceContents[anon_builtin_1] }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      (let anon_builtin_neg1 ==
+        (minusInts(intToRef(referenceArraySize(src)), split)) in
+        intFromRef(intToRef(referenceArraySize(src))) - intFromRef(split)) <=
+      anon_builtin_1 &&
+      anon_builtin_1 < referenceArraySize(src) ==>
+      (unfolding acc(Array_unique(v_ret_0), write) in
+        v_ret_0.referenceContents[anon_builtin_1] ==
+        old((unfolding acc(Array_unique(src), write) in
+          src.referenceContents[(let anon_builtin_neg1 ==
+            (minusInts(intToRef(anon_builtin_1), minusInts(intToRef(referenceArraySize(src)),
+            split))) in
+            anon_builtin_1 -
+            intFromRef(minusInts(intToRef(referenceArraySize(src)), split)))]))))
+  ensures (unfolding acc(Array_unique(v_ret_0), write) in
+      (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
+        anon_builtin_2 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        referenceArraySize(src) <= anon_builtin_2 &&
+        anon_builtin_2 < intFromRef(n) ==>
+        v_ret_0.referenceContents[anon_builtin_2] == nullValue()))
+  ensures (unfolding acc(Array_unique(src), write) in
+      (forall anon_builtin_3: Int ::
+        { src.referenceContents[anon_builtin_3] }
+        anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        0 <= anon_builtin_3 && anon_builtin_3 < referenceArraySize(src) ==>
+        src.referenceContents[anon_builtin_3] ==
+        old((unfolding acc(Array_unique(src), write) in
+          src.referenceContents[anon_builtin_3]))))
+{
+  var dst: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := n
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_2 := anon_1
+  dst := anon_2
+  assert intFromRef(split) >= 0
+  assert intFromRef(split) <= intFromRef(intToRef(referenceArraySize(src)))
+  assert intFromRef(intToRef(referenceArraySize(src))) <=
+    referenceArraySize(src)
+  unfold acc(Array_unique(src), write)
+  assert intFromRef(intToRef(0)) >= 0
+  assert intFromRef(intToRef(0)) <= referenceArraySize(dst)
+  assert intFromRef(intToRef(referenceArraySize(src))) - intFromRef(split) <=
+    referenceArraySize(dst) - intFromRef(intToRef(0))
+  unfold acc(Array_unique(dst), write)
+  dst.referenceContents := dst.referenceContents[..intFromRef(intToRef(0))] ++
+    src.referenceContents[intFromRef(split)..][..intFromRef(intToRef(referenceArraySize(src))) -
+    intFromRef(split)] ++
+    dst.referenceContents[intFromRef(intToRef(0)) +
+    (intFromRef(intToRef(referenceArraySize(src))) - intFromRef(split))..]
+  fold acc(Array_unique(src), write)
+  fold acc(Array_unique(dst), write)
+  assert intFromRef(intToRef(0)) >= 0
+  assert intFromRef(intToRef(0)) <= intFromRef(split)
+  assert intFromRef(split) <= referenceArraySize(src)
+  unfold acc(Array_unique(src), write)
+  assert intFromRef(minusInts(intToRef(referenceArraySize(src)), split)) >=
+    0
+  assert intFromRef(minusInts(intToRef(referenceArraySize(src)), split)) <=
+    referenceArraySize(dst)
+  assert intFromRef(split) - intFromRef(intToRef(0)) <=
+    referenceArraySize(dst) -
+    intFromRef(minusInts(intToRef(referenceArraySize(src)), split))
+  unfold acc(Array_unique(dst), write)
+  dst.referenceContents := dst.referenceContents[..intFromRef(minusInts(intToRef(referenceArraySize(src)),
+    split))] ++
+    src.referenceContents[intFromRef(intToRef(0))..][..intFromRef(split) -
+    intFromRef(intToRef(0))] ++
+    dst.referenceContents[intFromRef(minusInts(intToRef(referenceArraySize(src)),
+    split)) +
+    (intFromRef(split) - intFromRef(intToRef(0)))..]
+  fold acc(Array_unique(src), write)
+  fold acc(Array_unique(dst), write)
+  v_ret_0 := dst
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/generic_array_bulk.kt: info: Generated Viper text for fillWindow:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function repeatReferences(repeatedValue: Ref, repeatedCount: Int): Seq[Ref]
+  requires repeatedCount >= 0
+  ensures |result| == repeatedCount
+  ensures (forall j: Int ::
+      { result[j] }
+      j >= 0 && j < repeatedCount ==> result[j] == repeatedValue)
+
+
+method fillWindow(arr: Ref, value: Ref, from: Ref, to: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), Array())
+  requires acc(Array_unique(arr), write)
+  requires isSubtype(typeOf(value), nullable(Element()))
+  requires isSubtype(typeOf(from), intType())
+  requires isSubtype(typeOf(to), intType())
+  requires 0 <= intFromRef(from) && intFromRef(from) <= intFromRef(to) &&
+    intFromRef(to) <= referenceArraySize(arr)
+  ensures acc(Array_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        intFromRef(from) <= anon_builtin_0 &&
+        anon_builtin_0 < intFromRef(to) ==>
+        arr.referenceContents[anon_builtin_0] == value))
+  ensures (unfolding acc(Array_unique(arr), write) in
+      (forall anon_builtin_1: Int ::
+        { arr.referenceContents[anon_builtin_1] }
+        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < referenceArraySize(arr) &&
+        (anon_builtin_1 < intFromRef(from) ||
+        intFromRef(to) <= anon_builtin_1) ==>
+        arr.referenceContents[anon_builtin_1] ==
+        old((unfolding acc(Array_unique(arr), write) in
+          arr.referenceContents[anon_builtin_1]))))
+{
+  assert intFromRef(from) >= 0
+  assert intFromRef(from) <= intFromRef(to)
+  assert intFromRef(to) <= referenceArraySize(arr)
+  unfold acc(Array_unique(arr), write)
+  arr.referenceContents := arr.referenceContents[..intFromRef(from)] ++
+    repeatReferences(value, intFromRef(to) - intFromRef(from)) ++
+    arr.referenceContents[intFromRef(from) +
+    (intFromRef(to) - intFromRef(from))..]
+  fold acc(Array_unique(arr), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_array_bulk.kt: info: Generated Viper text for copyDefaults:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function repeatReferences(repeatedValue: Ref, repeatedCount: Int): Seq[Ref]
+  requires repeatedCount >= 0
+  ensures |result| == repeatedCount
+  ensures (forall j: Int ::
+      { result[j] }
+      j >= 0 && j < repeatedCount ==> result[j] == repeatedValue)
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method copyDefaults(src: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(src), Array())
+  requires acc(Array_unique(src), write)
+  ensures acc(Array_unique(src), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var dst: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_result: Ref
+  anon_0 := intToRef(referenceArraySize(src))
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_2 := anon_1
+  dst := anon_2
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(src)
+  assert referenceArraySize(src) <= referenceArraySize(src)
+  unfold acc(Array_unique(src), write)
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(dst)
+  assert referenceArraySize(src) - 0 <= referenceArraySize(dst) - 0
+  unfold acc(Array_unique(dst), write)
+  dst.referenceContents := dst.referenceContents[..0] ++
+    src.referenceContents[0..][..referenceArraySize(src) - 0] ++
+    dst.referenceContents[0 + (referenceArraySize(src) - 0)..]
+  fold acc(Array_unique(src), write)
+  fold acc(Array_unique(dst), write)
+  l0_result := dst
+  assert (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      (unfolding acc(Array_unique(l0_result), write) in
+        (unfolding acc(Array_unique(src), write) in
+          0 <= anon_builtin_0 && anon_builtin_0 < referenceArraySize(src) ==>
+          l0_result.referenceContents[anon_builtin_0] ==
+          src.referenceContents[anon_builtin_0])))
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(l0_result)
+  assert referenceArraySize(l0_result) <= referenceArraySize(l0_result)
+  unfold acc(Array_unique(l0_result), write)
+  l0_result.referenceContents := l0_result.referenceContents[..0] ++
+    repeatReferences(nullValue(), referenceArraySize(l0_result) - 0) ++
+    l0_result.referenceContents[0 + (referenceArraySize(l0_result) - 0)..]
+  fold acc(Array_unique(l0_result), write)
+  assert (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      (unfolding acc(Array_unique(l0_result), write) in
+        0 <= anon_builtin_1 &&
+        anon_builtin_1 < referenceArraySize(l0_result) ==>
+        l0_result.referenceContents[anon_builtin_1] == nullValue()))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_array_bulk.kt: info: Generated Viper text for nestedCopy:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method nestedCopy(first: Ref, second: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(first), Array())
+  requires acc(Array_unique(first), write)
+  requires isSubtype(typeOf(second), Array())
+  requires acc(Array_unique(second), write)
+  requires referenceArraySize(first) == referenceArraySize(second)
+  ensures acc(Array_unique(first), write)
+  ensures acc(Array_unique(second), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var dst: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var l0_result: Ref
+  anon_0 := intToRef(referenceArraySize(first))
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_2 := anon_1
+  dst := anon_2
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(second)
+  assert referenceArraySize(second) <= referenceArraySize(second)
+  unfold acc(Array_unique(second), write)
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(dst)
+  assert referenceArraySize(second) - 0 <= referenceArraySize(dst) - 0
+  unfold acc(Array_unique(dst), write)
+  dst.referenceContents := dst.referenceContents[..0] ++
+    second.referenceContents[0..][..referenceArraySize(second) - 0] ++
+    dst.referenceContents[0 + (referenceArraySize(second) - 0)..]
+  fold acc(Array_unique(second), write)
+  fold acc(Array_unique(dst), write)
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(first)
+  assert referenceArraySize(first) <= referenceArraySize(first)
+  unfold acc(Array_unique(first), write)
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(dst)
+  assert referenceArraySize(first) - 0 <= referenceArraySize(dst) - 0
+  unfold acc(Array_unique(dst), write)
+  dst.referenceContents := dst.referenceContents[..0] ++
+    first.referenceContents[0..][..referenceArraySize(first) - 0] ++
+    dst.referenceContents[0 + (referenceArraySize(first) - 0)..]
+  fold acc(Array_unique(first), write)
+  fold acc(Array_unique(dst), write)
+  l0_result := dst
+  assert (forall anon_builtin: Int ::anon_builtin >= -2147483648 &&
+      anon_builtin <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      (unfolding acc(Array_unique(l0_result), write) in
+        (unfolding acc(Array_unique(first), write) in
+          0 <= anon_builtin && anon_builtin < referenceArraySize(first) ==>
+          l0_result.referenceContents[anon_builtin] ==
+          first.referenceContents[anon_builtin])))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_array_bulk.kt: info: Generated Viper text for copyPastEnd:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method copyPastEnd(src: Ref, dst: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(src), Array())
+  requires acc(Array_unique(src), write)
+  requires isSubtype(typeOf(dst), Array())
+  requires acc(Array_unique(dst), write)
+  requires referenceArraySize(src) > 0
+  requires referenceArraySize(dst) == 0
+  ensures acc(Array_unique(src), write)
+  ensures acc(Array_unique(dst), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(src)
+  assert referenceArraySize(src) <= referenceArraySize(src)
+  unfold acc(Array_unique(src), write)
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(dst)
+  assert referenceArraySize(src) - 0 <= referenceArraySize(dst) - 0
+  unfold acc(Array_unique(dst), write)
+  dst.referenceContents := dst.referenceContents[..0] ++
+    src.referenceContents[0..][..referenceArraySize(src) - 0] ++
+    dst.referenceContents[0 + (referenceArraySize(src) - 0)..]
+  fold acc(Array_unique(src), write)
+  fold acc(Array_unique(dst), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_array_bulk.kt: info: Generated Viper text for fillPastEnd:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function repeatReferences(repeatedValue: Ref, repeatedCount: Int): Seq[Ref]
+  requires repeatedCount >= 0
+  ensures |result| == repeatedCount
+  ensures (forall j: Int ::
+      { result[j] }
+      j >= 0 && j < repeatedCount ==> result[j] == repeatedValue)
+
+
+method fillPastEnd(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), Array())
+  requires acc(Array_unique(arr), write)
+  ensures acc(Array_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(intToRef(-1)) >= 0
+  assert intFromRef(intToRef(-1)) <= intFromRef(intToRef(0))
+  assert intFromRef(intToRef(0)) <= referenceArraySize(arr)
+  unfold acc(Array_unique(arr), write)
+  arr.referenceContents := arr.referenceContents[..intFromRef(intToRef(-1))] ++
+    repeatReferences(nullValue(), intFromRef(intToRef(0)) -
+    intFromRef(intToRef(-1))) ++
+    arr.referenceContents[intFromRef(intToRef(-1)) +
+    (intFromRef(intToRef(0)) - intFromRef(intToRef(-1)))..]
+  fold acc(Array_unique(arr), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_array_bulk.kt: info: Generated Viper text for wrongFill:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function repeatReferences(repeatedValue: Ref, repeatedCount: Int): Seq[Ref]
+  requires repeatedCount >= 0
+  ensures |result| == repeatedCount
+  ensures (forall j: Int ::
+      { result[j] }
+      j >= 0 && j < repeatedCount ==> result[j] == repeatedValue)
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongFill(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), Array())
+  requires acc(Array_unique(arr), write)
+  requires referenceArraySize(arr) > 0
+  ensures acc(Array_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  assert 0 >= 0
+  assert 0 <= referenceArraySize(arr)
+  assert referenceArraySize(arr) <= referenceArraySize(arr)
+  unfold acc(Array_unique(arr), write)
+  arr.referenceContents := arr.referenceContents[..0] ++
+    repeatReferences(nullValue(), referenceArraySize(arr) - 0) ++
+    arr.referenceContents[0 + (referenceArraySize(arr) - 0)..]
+  fold acc(Array_unique(arr), write)
+  assert 0 >= 0
+  assert 0 < referenceArraySize(arr)
+  unfold acc(Array_unique(arr), write)
+  anon_1 := arr.referenceContents[0]
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), nullable(Element()))
+  assert !(anon_0 == nullValue())
+  label lbl_ret_0
+  fold acc(Array_unique(arr), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

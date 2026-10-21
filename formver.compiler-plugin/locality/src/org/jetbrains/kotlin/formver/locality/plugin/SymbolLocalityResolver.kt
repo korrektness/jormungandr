@@ -6,6 +6,8 @@
 package org.jetbrains.kotlin.formver.locality.plugin
 
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isStringBuilderClearReceiver
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayBulkReceiver
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isArrayCopyDestination
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -32,9 +34,16 @@ private fun isInlinedIntoSpecification(function: FirBasedSymbol<*>?): Boolean =
     function is FirFunctionSymbol<*> && function.isInline && context.isInSpecification() &&
         function !in context.containingDeclarations
 
+private val FirReceiverParameterSymbol.isBorrowedIntrinsicReceiver: Boolean
+    get() = isStringBuilderClearReceiver || isGenericArrayBulkReceiver
+
+context(context: CheckerContext)
+private fun FirValueParameterSymbol.isBorrowedParameter(): Boolean =
+    isReadOnlyBorrowed(context.session) || isArrayCopyDestination || isInlinedIntoSpecification(containingDeclarationSymbol)
+
 context(context: CheckerContext)
 fun FirReceiverParameterSymbol.resolveLocality(): Locality =
-    if (isReadOnlyBorrowed(context.session) || isStringBuilderClearReceiver ||
+    if (isReadOnlyBorrowed(context.session) || isBorrowedIntrinsicReceiver ||
         isInlinedIntoSpecification(containingDeclarationSymbol)
     ) Locality.Local else externalSpecificationSymbol(context.session).resolvedType.locality
 
@@ -57,9 +66,7 @@ context(context: CheckerContext)
 fun FirVariableSymbol<*>.resolveLocality(): Locality {
     if (resolvedReturnType is ConeErrorType) return Locality.Global
 
-    if (this is FirValueParameterSymbol &&
-        (isReadOnlyBorrowed(context.session) || isInlinedIntoSpecification(containingDeclarationSymbol))
-    ) return Locality.Local
+    if (this is FirValueParameterSymbol && isBorrowedParameter()) return Locality.Local
 
     if (resolvedReturnTypeRef.source?.kind !is KtFakeSourceElementKind.ImplicitTypeRef) {
         return externalSpecificationSymbol(context.session).resolvedReturnType.locality

@@ -65,6 +65,7 @@ import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderIntrinsic
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayFactory
+import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArrayBulk
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -420,7 +421,8 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (symbol.isGenericArrayFactory()) return data.convertGenericArrayFactory(functionCall)
         if (functionCall.isIntArrayElementAccess()) return data.convertIntArrayElementAccess(functionCall)
         if (functionCall.isIntArrayInit()) return data.convertIntArrayInit(functionCall)
-        return data.convertStdlibHof(functionCall)
+        return functionCall.genericArrayBulk()?.let { data.convertGenericArrayBulk(functionCall, it) }
+            ?: data.convertStdlibHof(functionCall)
             ?: data.convertMultisetIntrinsic(functionCall)
             ?: data.convertIterationSequenceIntrinsic(functionCall)
             ?: functionCall.stringBuilderIntrinsic(data.session)?.let { data.convertStringBuilderIntrinsic(functionCall, it) }

@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.intrinsics.plugin.aliasedStringBuilderReceiver
+import org.jetbrains.kotlin.formver.intrinsics.plugin.aliasedArrayCopyDestination
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
@@ -28,7 +29,7 @@ import org.jetbrains.kotlin.formver.type.plugin.UnifyingExpressionTypeFactResolv
  */
 context(context: CheckerContext)
 fun FirExpression.resolveTerminalAccessState(): AccessState {
-    aliasedStringBuilderReceiver(context.session)?.let { return it.resolveAccessState() }
+    (aliasedArrayCopyDestination() ?: aliasedStringBuilderReceiver(context.session))?.let { return it.resolveAccessState() }
     return when (this) {
         is FirQualifiedAccessExpression -> {
             when (val symbol = calleeReference.symbol) {

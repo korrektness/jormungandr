@@ -5,7 +5,7 @@ stages, the acceptance checks and what stays trusted. `docs/targets/kotlin-array
 evidence, the upstream pin and the scope of the deliverables M and F; this plan cites its labels (P1–P7, V1–V9).
 
 The language reference in `SPECIFICATIONS.md` records supported verifier features.
-S1's generic-array element model is implemented. S2's disjoint copying and fill remain planned.
+S1's generic-array element model and S2's disjoint copying and fill are implemented.
 
 ## Selection
 

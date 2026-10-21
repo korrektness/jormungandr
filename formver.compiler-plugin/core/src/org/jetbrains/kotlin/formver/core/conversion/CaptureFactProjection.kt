@@ -56,7 +56,7 @@ internal fun Exp.captureValueKey(): Any = capturePath() ?: when (this) {
     is Exp.Result -> listOf(javaClass, type)
     is Exp.DecreasesWildcard -> javaClass
     is BinaryExp, is UnaryExp, is Exp.ExplicitSeq, is Exp.ExplicitMultiset, is Exp.SeqLength,
-    is Exp.SeqTake, is Exp.SeqIndex, is Exp.SeqUpdate, is Exp.Old, is Exp.PermissionCheck,
+    is Exp.SeqTake, is Exp.SeqDrop, is Exp.SeqIndex, is Exp.SeqUpdate, is Exp.Old, is Exp.PermissionCheck,
     is Exp.TernaryExp, is Exp.DecreasesTuple -> listOf(javaClass, subExps().map { it.captureValueKey() })
     is Exp.LocalVar -> error("A local variable has a capture path")
 }
@@ -81,6 +81,16 @@ private fun BinaryExp.rewriteOperands(rewrite: (Exp) -> Exp): Exp = when (this) 
     is Exp.MultisetMinus -> copy(left = rewrite(left), right = rewrite(right))
     is Exp.MultisetCount -> copy(left = rewrite(left), right = rewrite(right))
     is Exp.SeqContains -> copy(left = rewrite(left), right = rewrite(right))
+}
+
+/** Sequence operands and indices share the enclosing capture scope. */
+private fun Exp.rewriteSequenceOperands(rewrite: (Exp) -> Exp): Exp = when (this) {
+    is Exp.SeqLength -> copy(seq = rewrite(seq))
+    is Exp.SeqTake -> copy(seq = rewrite(seq), idx = rewrite(idx))
+    is Exp.SeqDrop -> copy(seq = rewrite(seq), idx = rewrite(idx))
+    is Exp.SeqIndex -> copy(seq = rewrite(seq), idx = rewrite(idx))
+    is Exp.SeqUpdate -> copy(seq = rewrite(seq), idx = rewrite(idx), elem = rewrite(elem))
+    else -> error("Expected a sequence operation, got $this")
 }
 
 /** Rewrite free captured values, including substituted inline arguments and enclosing closure reads. */
@@ -109,10 +119,8 @@ internal fun Exp.rewriteCaptureValues(
         is Exp.AdtConstructorApp -> copy(args = args.rewrite())
         is Exp.ExplicitSeq -> copy(args = args.rewrite())
         is Exp.ExplicitMultiset -> copy(args = args.rewrite())
-        is Exp.SeqLength -> copy(seq = seq.rewrite())
-        is Exp.SeqTake -> copy(seq = seq.rewrite(), idx = idx.rewrite())
-        is Exp.SeqIndex -> copy(seq = seq.rewrite(), idx = idx.rewrite())
-        is Exp.SeqUpdate -> copy(seq = seq.rewrite(), idx = idx.rewrite(), elem = elem.rewrite())
+        is Exp.SeqLength, is Exp.SeqTake, is Exp.SeqDrop, is Exp.SeqIndex, is Exp.SeqUpdate ->
+            rewriteSequenceOperands { it.rewrite() }
         is Exp.MultisetSize -> copy(arg = arg.rewrite())
         is Exp.Old -> copy(exp = exp.rewrite())
         is Exp.PredicateAccess -> copy(formalArgs = formalArgs.rewrite())

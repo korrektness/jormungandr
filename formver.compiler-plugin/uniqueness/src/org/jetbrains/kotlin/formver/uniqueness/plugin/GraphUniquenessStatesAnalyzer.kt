@@ -8,6 +8,9 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArraySetId
+import org.jetbrains.kotlin.formver.intrinsics.plugin.GenericArrayBulk
+import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArrayBulk
+import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayLoop
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isCollectionLoop
 
@@ -147,7 +150,7 @@ class GraphUniquenessStatesAnalyzer(
 
     private val FirFunctionCall.movesArguments: Boolean
         get() = this !in readOnlyContext && !isPureCall(context.session) && !isIntArrayElementAccess() && !isGenericArrayElementAccess() &&
-                !isIntArrayLoop() && !isCollectionLoop() && stringBuilderIntrinsic(context.session) == null
+                !isIntArrayLoop() && !isCollectionLoop() && genericArrayBulk() == null && stringBuilderIntrinsic(context.session) == null
 
     override fun visitSubGraph(node: CFGNodeWithSubgraphs<*>, graph: ControlFlowGraph): Boolean {
         return graph.extendsLocalFlow
@@ -275,10 +278,13 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
         val call = node.fir
-        if (call !in readOnlyContext && call.toResolvedCallableSymbol()?.callableId == genericArraySetId) {
+        if (call !in readOnlyContext && (call.toResolvedCallableSymbol()?.callableId == genericArraySetId ||
+                    call.genericArrayBulk() == GenericArrayBulk.Fill)) {
+            val parameterName = if (call.genericArrayBulk() == GenericArrayBulk.Fill) "element" else "value"
+            val value = call.resolvedArgumentMapping!!.entries.single { it.value.name.asString() == parameterName }.key
             return with(context) {
                 data.transformValues { flow ->
-                    flow.put(Unit, call.arguments.last().resolveAccessState().move(flow.getOrInitialize()))
+                    flow.put(Unit, value.resolveAccessState().move(flow.getOrInitialize()))
                 }
             }
         }

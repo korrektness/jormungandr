@@ -117,7 +117,7 @@ A YouTrack search for `project:KT ArrayDeque` (about 45 issues) has no report of
 | Need | Status in SnaKt | Source |
 |---|---|---|
 | `Array<Any?>` elements | Modelled | SPECIFICATIONS.md, "Array<T>" |
-| `copyInto`, `fill` | Not modelled for any array type | plan stage S2 |
+| Generic-array `copyInto`, `fill` | Disjoint copying and fill modelled | SPECIFICATIONS.md, "Array<T>" |
 | `arrayOfNulls`, `emptyArray` | Modelled | SPECIFICATIONS.md, "Array<T>" |
 | `Int.shr`, `Int.and` | `shr` with a literal distance is modelled; `and` has no executable intrinsic | SPECIFICATIONS.md, "Integer arithmetic" |
 | Wrapping `+` in `newCapacity` | Every `+` must stay in range; overflow is `INTEGER_OVERFLOW` | SPECIFICATIONS.md, "Integer arithmetic" |

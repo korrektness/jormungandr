@@ -256,6 +256,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("generic_array_bulk.kt")
+      public void testGeneric_array_bulk() {
+        runTest("formver.compiler-plugin/testData/diagnostics/stdlib/array/generic_array_bulk.kt");
+      }
+
+      @Test
       @TestMetadata("generic_array_elements.kt")
       public void testGeneric_array_elements() {
         runTest("formver.compiler-plugin/testData/diagnostics/stdlib/array/generic_array_elements.kt");

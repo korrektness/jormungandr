@@ -893,6 +893,21 @@ Indexed assignment and `set` borrow the array receiver.
 `emptyArray<T>()` creates zero slots. A local owns either result when declared
 `@Unique Array<...>`. `Array(n) { ... }` and `arrayOf(...)` have no element model.
 
+`src.copyInto(dst, destinationOffset, startIndex, endIndex)` requires distinct
+unique paths for `src` and `dst`. It replaces `endIndex - startIndex` destination
+slots beginning at `destinationOffset` with the source range and preserves all
+other slots. Both arrays are borrowed. The result aliases `dst`, so assigning
+it moves the destination path. The same path in both roles is `UNSUPPORTED_FEATURE`.
+
+`arr.fill(element, fromIndex, toIndex)` requires a unique receiver. It replaces
+exactly that range with `element` and moves an owned element argument. Shared
+bulk receivers or destinations are `UNSUPPORTED_FEATURE`.
+
+Bulk ranges are half-open. Each call proves `0 <= from <= to <= size`; copying
+also proves `0 <= destinationOffset <= dst.size` and that the copied range fits.
+Omitted starts and offsets are zero, and omitted ends are the receiver size.
+Explicit arguments are evaluated once in source order.
+
 ### Multisets
 
 A `Multiset<Int>` states which elements a collection holds, counted with

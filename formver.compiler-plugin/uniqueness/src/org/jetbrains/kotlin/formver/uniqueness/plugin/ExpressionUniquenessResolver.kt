@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
 import org.jetbrains.kotlin.formver.intrinsics.plugin.aliasedStringBuilderReceiver
+import org.jetbrains.kotlin.formver.intrinsics.plugin.aliasedArrayCopyDestination
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
@@ -52,7 +53,7 @@ fun FirExpression.resolveTerminalUniqueness(): Uniqueness {
     return when (this) {
         is FirFunctionCall -> {
             if (specifiedLambda() != null) return Uniqueness.Unique
-            val aliasedReceiver = aliasedStringBuilderReceiver(context.session)
+            val aliasedReceiver = aliasedArrayCopyDestination() ?: aliasedStringBuilderReceiver(context.session)
             if (aliasedReceiver != null) {
                 aliasedReceiver.resolveUniqueness()
             } else if (calleeReference.symbol is FirConstructorSymbol) {

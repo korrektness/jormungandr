@@ -171,7 +171,10 @@ An `IntArray`'s predicate holds a sequence of bounded integers. An `Array<T>`'s
 predicate holds a sequence of references with no element-type invariant. Both
 predicates tie the sequence length to a heap-independent length function, since
 an array's length never changes. Generic reads rely on the static-typing
-assumption in "Type invariants".
+assumption in "Type invariants". Disjoint copies splice the source sequence into
+the destination sequence. Filling splices a sequence with the specified length
+and repeated reference. These encodings trust the documented stdlib bulk-operation
+contracts; same-array copy semantics have no encoding.
 
 Access, bounds and factory behaviour are specified in `SPECIFICATIONS.md`,
 "IntArray", "Array<T>" and "Exceptions". The encodings live in
@@ -180,6 +183,8 @@ and `linearization/LinearizationVisitor.kt`.
 
 Tests: `stdlib/array/int_array_elements.kt::readPastEnd,writeShared`,
 `stdlib/array/generic_array_elements.kt::writeShared,readPastEnd,newArrayNonNull`,
+`stdlib/array/generic_array_bulk.kt::copyGrow,fillWindow,copyPastEnd,selfCopy`,
+`uniqueness_checker/generic_array.kt::fillMovesValue,copyResultMovesDestination`,
 `verification/soundness/erased_generics.kt::castArrayElement`,
 `verification/exception_sites.kt::sharedGetCatch,charArrayCatch`.
 

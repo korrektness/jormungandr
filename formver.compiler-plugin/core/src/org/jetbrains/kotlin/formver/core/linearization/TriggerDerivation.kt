@@ -128,6 +128,7 @@ internal fun Exp.subExps(): List<Exp> = when (this) {
     is Exp.ExplicitMultiset -> args
     is Exp.SeqLength -> listOf(seq)
     is Exp.SeqTake -> listOf(seq, idx)
+    is Exp.SeqDrop -> listOf(seq, idx)
     is Exp.SeqIndex -> listOf(seq, idx)
     is Exp.SeqUpdate -> listOf(seq, idx, elem)
     is Exp.Old -> listOf(exp)
