@@ -242,6 +242,10 @@ not the constraint. The constraints are these gaps:
   the postcondition of a member that reassigns `elementData` reports `OWNERSHIP_NOT_ESTABLISHED`. Fix (S5c):
   reproduce both as tests, then encode such calls outside the unfolding. Stating contracts through `elementAt` may
   avoid both; S5c checks that first and keeps the tests either way.
+- G9–G12: a constructor that assigns owned storage from a `when` with a `throw` arm is skipped; a call on an
+  instantiated generic source class gets no member contract; the correspondence check parses diagnostic markup;
+  a `preconditions` block in a secondary constructor is dropped. Fixes (S5d, S5e, S5f, S5g):
+  `docs/targets/arraydeque-gaps-design.md`, which owns their designs and tests. None adds a trusted assumption.
 
 Claim restrictions:
 
@@ -271,6 +275,10 @@ the diff including tests.
 | S5a | G1: `===` in specification blocks | in a source class with `Array<Any?>` storage, `get(i) === elementAt(i)` verifies; executed `===` on `Any?` operands and `===` in a `@Pure` body stay `UNSUPPORTED_FEATURE`; a false `===` claim on two different stored references fails | 200–400 |
 | S5b | G2: element results of `@Pure` unique readers; G3 internal error | `elementAt` over a unique `Array<Any?>` field verifies as an observer of an interface; a `@Pure` reader returning a unique field's object stays `PURITY_VIOLATION`; `@Pure override var` reports `INVALID_OBSERVER` only | 200–400 |
 | S5c | G7, G8: `@Pure` member calls in contracts | the identical-expression postcondition and the quantified frame after reassigning `elementData` verify; a false frame claim fails | 200–500 |
+| S5d | G9: arms that end abnormally in moves of fresh unique values | the tests of G9 in `arraydeque-gaps-design.md` | 150–300 |
+| S5e | G10: contracts of use-site substitution overrides | the tests of G10 in `arraydeque-gaps-design.md` | 150–300 |
+| S5f | G11: markup clearing in the correspondence check | the tests of G11 in `arraydeque-gaps-design.md` | 50–150 |
+| S5g | G12: preconditions of secondary constructors | the tests of G12 in `arraydeque-gaps-design.md` | 200–400 |
 | S6 | Port skeleton: class, P1 law and capacity law, constructors, mod helpers, `get`, `set`, `first`/`last` (+`OrNull`), `DequeSpec` with `size` and `elementAt` | members verify; `getWrapped` (no `positiveMod`) and `firstOnEmpty` fail; deviation check passes | 400–600 |
 | S7 | `ensureCapacity`, `copyElements`, `registerModification`, `addFirst`/`addLast`/`add`, `removeFirst`/`removeLast` (+`OrNull`), capacity preconditions | a client `rotate(d)` verifies through the port; `removeKeepsSlot` fails the P2 postcondition; `addLast` without the capacity precondition reports `INTEGER_OVERFLOW`; D-6 `verify`s hold | 400–700 |
 | S8 | `indexOf`, `lastIndexOf`, `contains`, `clear`, `nullifyNonEmpty`; mutants | upstream bodies verify; `indexOfPre80390` fails on `result < size`; `lastIndexOfPre80661` fails on `(result == -1) == !contains(element)`; vacuity clean on the port | 300–500 |
@@ -278,11 +286,11 @@ the diff including tests.
 | S10 | Upstream patch artifact for defect 1 | `docs/upstream/arraydeque-removeall/` (patch, report, reproduction, test driver) plus `ArrayDequeTest` cases using `testArrayDeque`'s layout enumeration with a throwing `contains` at every position; the cases fail on 2.3.0 and pass patched, run against a scratch build and reported in the commit | 200–400 |
 
 Order: S1 → S2; S1 → S4; S3 and S5 are independent of everything else; S5a, S5b and S5c are independent of each
-other; S6 needs S1, S3, S5, S5a, S5b, S5c; S7 needs S2, S6; S8 needs S4, S7; S9 needs S8. S10 is independent of all verifier work. No stage touches two verifier subsystems.
+other; S5d–S5g are independent of each other; S6 needs S1, S3, S5, S5a–S5g; S7 needs S2, S6; S8 needs S4, S7; S9 needs S8. S10 is independent of all verifier work. No stage touches two verifier subsystems.
 
 Stop rule: if S6 or S7 cannot verify a member within the default per-declaration timeout after splitting the
 wrapped and unwrapped windows into lemma functions (note, "Risks"), stop and report the timings before S8. Do not
-raise the timeout to pass. If S5a, S5b or S5c needs more than twice its size estimate, or its fix needs a new
+raise the timeout to pass. If one of S5a–S5g needs more than twice its size estimate, or its fix needs a new
 trusted assumption, stop and report before S6.
 
 ## Out of scope
