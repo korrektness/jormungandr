@@ -136,6 +136,8 @@ class FoldState(private val typeResolver: TypeResolver) {
 
     fun holds(path: OwnedPath): Boolean = trie.holds(path)
 
+    fun kill() = trie.kill()
+
     fun release(ctx: LinearizationContext, path: OwnedPath) = trie.release(ctx.foldSink(), path)
 
     fun open(ctx: LinearizationContext, path: OwnedPath, field: PathStep) = trie.open(ctx.foldSink(), path, field)

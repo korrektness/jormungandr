@@ -382,10 +382,14 @@ A site's exceptional exit ends in `inhale false` after its edges to the
 enclosing `catch` blocks (`StmtConversionContext.exceptionalExit`). Outside a
 `try`, a call has no exceptional exit: the exception leaves the function, where
 no postcondition is claimed. `throw` and a call that returns `Nothing` have no
-normal successor, so `inhale false` follows them too.
+normal successor, so `inhale false` follows them too. Ownership bookkeeping
+marks an explicit `throw` exit dead and emits no ownership operations there; a merge takes
+its state from the edges that reach it. For the supported abnormal arms of
+owned conditional moves, see SPECIFICATIONS.md, "Moves".
 
 Tests: `verification/control_flow/throw.kt::throwCaughtSkipsState`,
-`verification/negative/try_catch.kt::useException`.
+`verification/negative/try_catch.kt::useException`,
+`verification/classes/conditional_owned_storage.kt`.
 
 ### Property reads
 

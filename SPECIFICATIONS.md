@@ -715,6 +715,11 @@ fun detach(b: @Unique Node): @Unique Node? {
 }
 ```
 
+A conditional, `when` or block moves a fresh unique value when every branch
+yields one or leaves abnormally (`throw`, `return`, `break` or `continue`).
+A call returning `Nothing` as an arm of an owned conditional move is rejected,
+including calls with an `@Unique` result annotation.
+
 ### Inline functions and default arguments
 
 An inline function whose body is in the sources being compiled is verified as

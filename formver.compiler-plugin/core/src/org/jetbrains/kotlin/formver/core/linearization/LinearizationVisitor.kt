@@ -37,6 +37,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.*
 import org.jetbrains.kotlin.formver.viper.ast.PermExp
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.NothingTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.asTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
@@ -498,6 +499,7 @@ data class LinearizationVisitor(
     override fun visitUnreachable(e: Unreachable): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             ctx.addStatement { Stmt.Inhale(Exp.BoolLit(false, ctx.source.asPosition), ctx.source.asPosition) }
+            ctx.foldState?.kill()
         }
     }
 
@@ -695,7 +697,9 @@ data class LinearizationVisitor(
             val exceptionalExit = e.exceptionalExit
             if (normalReturn != null && exceptionalExit != null && ctx.logicOperatorPolicy == LogicOperatorPolicy.CONVERT_TO_IF) {
                 val values = args.zip(e.refsOperation.argsInjections) { arg, injection -> injection.fromRef(arg) }
-                val abnormal = ctx.asBlock { exceptionalExit.linearize().toViperUnusedResult(this) }
+                val abnormal = ctx.withFoldStateRestored {
+                    asBlock { exceptionalExit.linearize().toViperUnusedResult(this) }
+                }
                 ctx.addStatement { Stmt.If(Exp.Not(normalReturn(values)), abnormal, null, source.asPosition) }
             }
             return e.refsOperation.toFuncApp(args, pos = ctx.source.asPosition, info = e.sourceRole.asInfo)
@@ -1299,6 +1303,9 @@ data class LinearizationVisitor(
     private fun runUpdatesOfPath(value: ExpEmbedding, ctx: LinearizationContext): ExpEmbedding {
         var root = value.ignoringCastsAndMetaNodes()
         if ((root is If || root is Block) && root.yieldsFreshUnique()) {
+            if (root.hasNothingCallArm()) {
+                throw UnsupportedFeatureException(ctx.source, "a Nothing-returning call in an owned conditional move")
+            }
             val temporary = ctx.freshAnonVar(value.type)
             root.movedInto(temporary).linearize().toViperUnusedResult(ctx)
             return temporary
@@ -1586,7 +1593,7 @@ private fun LinearizationContext.updateStringBuilder(
     val updated = newContents(contents)
     if (exceptionalExit != null) {
         val fits = Exp.LeCmp(Exp.SeqLength(updated), Exp.IntLit(Int.MAX_VALUE))
-        val abnormal = asBlock(exceptionalExit)
+        val abnormal = withFoldStateRestored { asBlock(exceptionalExit) }
         addStatement { Stmt.If(Exp.Not(fits), abnormal, null, source.asPosition) }
     }
     addStatement { Stmt.FieldAssign(contents, updated, source.asPosition) }
@@ -1716,21 +1723,39 @@ private fun ExpEmbedding.isFreshUnique(): Boolean = when (val exp = ignoringCast
 
 /**
  * Whether [this] yields a fresh unique value on every path: a fresh unique value itself, the result of an inline call
- * whose callee returns `@Unique`, or a block or conditional ending in such values.
+ * whose callee returns `@Unique`, or a block or conditional whose completing arms end in such values.
  */
 private fun ExpEmbedding.yieldsFreshUnique(): Boolean = when (val exp = ignoringCastsAndMetaNodes()) {
-    is If -> exp.thenBranch.yieldsFreshUnique() && exp.elseBranch.yieldsFreshUnique()
+    is If -> exp.thenBranch.armYieldsFreshUnique() && exp.elseBranch.armYieldsFreshUnique()
     is Block -> exp.exps.lastOrNull()?.yieldsFreshUnique() ?: false
     is InlineCall -> exp.returnsUnique
     else -> exp.isFreshUnique()
 }
 
+private fun ExpEmbedding.hasNothingCallArm(): Boolean = when (val exp = ignoringCastsAndMetaNodes()) {
+    is If -> exp.thenBranch.hasNothingCallArm() || exp.elseBranch.hasNothingCallArm()
+    is Block -> exp.exps.lastOrNull()?.hasNothingCallArm() ?: false
+    is MethodCall, is FunctionCall, is InlineCall -> exp.type.pretype == NothingTypeEmbedding && !exp.type.flags.nullable
+    else -> false
+}
+
+private fun ExpEmbedding.endsAbnormally(): Boolean = when (val exp = ignoringCastsAndMetaNodes()) {
+    is Unreachable, is Goto -> true
+    is Block -> exp.exps.lastOrNull()?.endsAbnormally() ?: false
+    else -> false
+}
+
+private fun ExpEmbedding.armYieldsFreshUnique(): Boolean = endsAbnormally() || yieldsFreshUnique()
+
 /** [this], which [yieldsFreshUnique], with each value it yields moved into [target]. */
 private fun ExpEmbedding.movedInto(target: VariableEmbedding): ExpEmbedding = when (val exp = ignoringCastsAndMetaNodes()) {
-    is If -> If(exp.condition, exp.thenBranch.movedInto(target), exp.elseBranch.movedInto(target), buildType { unit() })
+    is If -> If(exp.condition, exp.thenBranch.moveArmInto(target), exp.elseBranch.moveArmInto(target), buildType { unit() })
     is Block -> Block { addAll(exp.exps.dropLast(1)); add(exp.exps.last().movedInto(target)) }
     else -> Assign(target, this, targetOwned = true)
 }
+
+private fun ExpEmbedding.moveArmInto(target: VariableEmbedding): ExpEmbedding =
+    if (endsAbnormally()) this else movedInto(target)
 
 /**
  * Prepares a move out of [value] before it is linearized: when [value] is a held path, folds what can be folded under

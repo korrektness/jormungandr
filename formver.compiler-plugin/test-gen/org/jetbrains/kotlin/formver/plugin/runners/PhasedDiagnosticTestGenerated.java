@@ -998,6 +998,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("conditional_owned_storage.kt")
+      public void testConditional_owned_storage() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/conditional_owned_storage.kt");
+      }
+
+      @Test
       @TestMetadata("construction_opt_outs.kt")
       public void testConstruction_opt_outs() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/construction_opt_outs.kt");

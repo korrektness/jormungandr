@@ -1,0 +1,636 @@
+/conditional_owned_storage.kt: info: Generated Viper text for ConditionalStorage:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method con_ConditionalStorage(capacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  ensures isSubtype(typeOf(v_ret_0), ConditionalStorage())
+  ensures isSubtype(typeOf(v_ret_0), ConditionalStorage()) &&
+    acc(v_ret_0.data, write) &&
+    isSubtype(typeOf(v_ret_0.data), Array()) &&
+    acc(Array_unique(v_ret_0.data), write)
+{
+  var v_ret_2: Ref
+  var anon_4: Ref
+  var anon_7: Ref
+  var anon_8: Ref
+  v_ret_0 := new(data)
+  inhale typeOf(v_ret_0) == ConditionalStorage()
+  if (intFromRef(capacity) == 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_0 := intToRef(0)
+    assert intFromRef(anon_0) >= 0
+    anon_1 := new()
+    inhale acc(Array_unique(anon_1), write)
+    inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+      (unfolding acc(Array_unique(anon_1), write) in
+        (forall j: Int ::
+          { anon_1.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_1) ==>
+          anon_1.referenceContents[j] == nullValue()))
+    anon_4 := anon_1
+  } elseif (intFromRef(capacity) > 0) {
+    var anon_2: Ref
+    var anon_3: Ref
+    anon_2 := capacity
+    assert intFromRef(anon_2) >= 0
+    anon_3 := new()
+    inhale acc(Array_unique(anon_3), write)
+    inhale referenceArraySize(anon_3) == intFromRef(anon_2) &&
+      (unfolding acc(Array_unique(anon_3), write) in
+        (forall j: Int ::
+          { anon_3.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_3) ==>
+          anon_3.referenceContents[j] == nullValue()))
+    anon_4 := anon_3
+  } else {
+    var anon_5: Ref
+    var anon_6: Ref
+    anon_6 := plus(stringLit(), capacity)
+    anon_5 := con_IllegalArgumentException(anon_6)
+    fold acc(Throwable_unique(anon_5), write)
+    fold acc(Exception_unique(anon_5), write)
+    fold acc(RuntimeException_unique(anon_5), write)
+    fold acc(IllegalArgumentException_unique(anon_5), write)
+    inhale false
+  }
+  v_ret_0.data := anon_4
+  anon_7 := v_ret_0.data
+  assert intFromRef(capacity) == 0 ==> referenceArraySize(anon_7) == 0
+  anon_8 := v_ret_0.data
+  assert intFromRef(capacity) > 0 ==>
+    referenceArraySize(anon_8) == intFromRef(capacity)
+  label lbl_ret_2
+  fold acc(ConditionalStorage_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ConditionalStorage_unique(v_ret_0), write)
+}
+
+method con_IllegalArgumentException(p0: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_5), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_5), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_5), RuntimeException()) &&
+    (isSubtype(typeOf(ret_5), Exception()) &&
+    isSubtype(typeOf(ret_5), Throwable())))
+
+
+method message(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method plus(this: Ref, other: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_6), stringType())
+
+
+/conditional_owned_storage.kt: info: Generated Viper text for reset:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method con() returns (ret_4: Ref)
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_4), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_4), RuntimeException()) &&
+    (isSubtype(typeOf(ret_4), Exception()) &&
+    isSubtype(typeOf(ret_4), Throwable())))
+
+
+method message(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method reset(this: Ref, capacity: Ref, value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), ConditionalStorage())
+  requires acc(ConditionalStorage_unique(this), write)
+  requires isSubtype(typeOf(capacity), intType())
+  requires isSubtype(typeOf(value), nullable(anyType()))
+  requires intFromRef(capacity) > 0
+  ensures acc(ConditionalStorage_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_2: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  if (intFromRef(capacity) > 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_0 := capacity
+    assert intFromRef(anon_0) >= 0
+    anon_1 := new()
+    inhale acc(Array_unique(anon_1), write)
+    inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+      (unfolding acc(Array_unique(anon_1), write) in
+        (forall j: Int ::
+          { anon_1.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_1) ==>
+          anon_1.referenceContents[j] == nullValue()))
+    anon_2 := anon_1
+  } else {
+    var anon_3: Ref
+    anon_3 := con()
+    fold acc(Throwable_unique(anon_3), write)
+    fold acc(Exception_unique(anon_3), write)
+    fold acc(RuntimeException_unique(anon_3), write)
+    fold acc(IllegalArgumentException_unique(anon_3), write)
+    inhale false
+  }
+  unfold acc(ConditionalStorage_unique(this), write)
+  this.data := anon_2
+  anon_4 := this.data
+  assert 0 >= 0
+  assert 0 < referenceArraySize(anon_4)
+  unfold acc(Array_unique(this.data), write)
+  anon_4.referenceContents := anon_4.referenceContents[0 := value]
+  anon_6 := this.data
+  assert 0 >= 0
+  assert 0 < referenceArraySize(anon_6)
+  anon_7 := anon_6.referenceContents[0]
+  anon_5 := anon_7
+  inhale isSubtype(typeOf(anon_5), nullable(anyType()))
+  assert anon_5 == value
+  label lbl_ret_0
+  fold acc(Array_unique(this.data), write)
+  fold acc(ConditionalStorage_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/conditional_owned_storage.kt: info: Generated Viper text for LocalThenAssign:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method con_IllegalArgumentException() returns (ret_5: Ref)
+  ensures isSubtype(typeOf(ret_5), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_5), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_5), RuntimeException()) &&
+    (isSubtype(typeOf(ret_5), Exception()) &&
+    isSubtype(typeOf(ret_5), Throwable())))
+
+
+method con_LocalThenAssign(capacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  ensures isSubtype(typeOf(v_ret_0), LocalThenAssign())
+  ensures isSubtype(typeOf(v_ret_0), LocalThenAssign()) &&
+    acc(v_ret_0.data, write) &&
+    isSubtype(typeOf(v_ret_0.data), Array()) &&
+    acc(Array_unique(v_ret_0.data), write)
+{
+  var v_ret_2: Ref
+  var d: Ref
+  var anon_4: Ref
+  var anon_6: Ref
+  v_ret_0 := new(data)
+  inhale typeOf(v_ret_0) == LocalThenAssign()
+  if (intFromRef(capacity) == 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_0 := intToRef(0)
+    assert intFromRef(anon_0) >= 0
+    anon_1 := new()
+    inhale acc(Array_unique(anon_1), write)
+    inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+      (unfolding acc(Array_unique(anon_1), write) in
+        (forall j: Int ::
+          { anon_1.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_1) ==>
+          anon_1.referenceContents[j] == nullValue()))
+    anon_4 := anon_1
+  } elseif (intFromRef(capacity) > 0) {
+    var anon_2: Ref
+    var anon_3: Ref
+    anon_2 := capacity
+    assert intFromRef(anon_2) >= 0
+    anon_3 := new()
+    inhale acc(Array_unique(anon_3), write)
+    inhale referenceArraySize(anon_3) == intFromRef(anon_2) &&
+      (unfolding acc(Array_unique(anon_3), write) in
+        (forall j: Int ::
+          { anon_3.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_3) ==>
+          anon_3.referenceContents[j] == nullValue()))
+    anon_4 := anon_3
+  } else {
+    var anon_5: Ref
+    anon_5 := con_IllegalArgumentException()
+    fold acc(Throwable_unique(anon_5), write)
+    fold acc(Exception_unique(anon_5), write)
+    fold acc(RuntimeException_unique(anon_5), write)
+    fold acc(IllegalArgumentException_unique(anon_5), write)
+    inhale false
+  }
+  d := anon_4
+  v_ret_0.data := d
+  anon_6 := v_ret_0.data
+  assert referenceArraySize(anon_6) == intFromRef(capacity)
+  label lbl_ret_2
+  fold acc(LocalThenAssign_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(LocalThenAssign_unique(v_ret_0), write)
+}
+
+method message(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+/conditional_owned_storage.kt: info: Generated Viper text for failCapacity:
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method failCapacity() returns (v_ret_0: Ref)
+  ensures false
+  ensures isSubtype(typeOf(v_ret_0), nothingType())
+{
+  var anon: Ref
+  anon := con()
+  fold acc(Throwable_unique(anon), write)
+  fold acc(Exception_unique(anon), write)
+  fold acc(RuntimeException_unique(anon), write)
+  fold acc(IllegalArgumentException_unique(anon), write)
+  inhale false
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/conditional_owned_storage.kt: info: Generated Viper text for failUnannotated:
+method cause(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+method con() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_3), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_3), RuntimeException()) &&
+    (isSubtype(typeOf(ret_3), Exception()) &&
+    isSubtype(typeOf(ret_3), Throwable())))
+
+
+method failUnannotated() returns (v_ret_0: Ref)
+  ensures false
+  ensures isSubtype(typeOf(v_ret_0), nothingType())
+{
+  var anon: Ref
+  anon := con()
+  fold acc(Throwable_unique(anon), write)
+  fold acc(Exception_unique(anon), write)
+  fold acc(RuntimeException_unique(anon), write)
+  fold acc(IllegalArgumentException_unique(anon), write)
+  inhale false
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method message(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/conditional_owned_storage.kt: info: Generated Viper text for UnannotatedNothingArm:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(capacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  ensures isSubtype(typeOf(v_ret_0), UnannotatedNothingArm())
+  ensures isSubtype(typeOf(v_ret_0), UnannotatedNothingArm()) &&
+    acc(v_ret_0.data, write) &&
+    isSubtype(typeOf(v_ret_0.data), Array()) &&
+    acc(Array_unique(v_ret_0.data), write)
+{
+  var v_ret_2: Ref
+  var anon_2: Ref
+  v_ret_0 := new(data)
+  inhale typeOf(v_ret_0) == UnannotatedNothingArm()
+  if (intFromRef(capacity) >= 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_0 := capacity
+    assert intFromRef(anon_0) >= 0
+    anon_1 := new()
+    inhale acc(Array_unique(anon_1), write)
+    inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+      (unfolding acc(Array_unique(anon_1), write) in
+        (forall j: Int ::
+          { anon_1.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_1) ==>
+          anon_1.referenceContents[j] == nullValue()))
+    anon_2 := anon_1
+  } else {
+    var anon_3: Ref
+    anon_3 := failUnannotated()
+    anon_2 := anon_3
+  }
+  v_ret_0.data := anon_2
+  label lbl_ret_2
+  label lbl_ret_0
+}
+
+method failUnannotated() returns (ret_3: Ref)
+  ensures false
+  ensures isSubtype(typeOf(ret_3), nothingType())
+
+
+/conditional_owned_storage.kt: info: Generated Viper text for WrongSize:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method cause(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method con_IllegalArgumentException() returns (ret_5: Ref)
+  ensures isSubtype(typeOf(ret_5), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_5), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_5), RuntimeException()) &&
+    (isSubtype(typeOf(ret_5), Exception()) &&
+    isSubtype(typeOf(ret_5), Throwable())))
+
+
+method con_WrongSize(capacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  ensures isSubtype(typeOf(v_ret_0), WrongSize())
+  ensures isSubtype(typeOf(v_ret_0), WrongSize()) &&
+    acc(v_ret_0.data, write) &&
+    isSubtype(typeOf(v_ret_0.data), Array()) &&
+    acc(Array_unique(v_ret_0.data), write)
+{
+  var v_ret_2: Ref
+  var anon_4: Ref
+  var anon_6: Ref
+  v_ret_0 := new(data)
+  inhale typeOf(v_ret_0) == WrongSize()
+  if (intFromRef(capacity) == 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_0 := intToRef(0)
+    assert intFromRef(anon_0) >= 0
+    anon_1 := new()
+    inhale acc(Array_unique(anon_1), write)
+    inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+      (unfolding acc(Array_unique(anon_1), write) in
+        (forall j: Int ::
+          { anon_1.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_1) ==>
+          anon_1.referenceContents[j] == nullValue()))
+    anon_4 := anon_1
+  } elseif (intFromRef(capacity) > 0) {
+    var anon_2: Ref
+    var anon_3: Ref
+    anon_2 := capacity
+    assert intFromRef(anon_2) >= 0
+    anon_3 := new()
+    inhale acc(Array_unique(anon_3), write)
+    inhale referenceArraySize(anon_3) == intFromRef(anon_2) &&
+      (unfolding acc(Array_unique(anon_3), write) in
+        (forall j: Int ::
+          { anon_3.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_3) ==>
+          anon_3.referenceContents[j] == nullValue()))
+    anon_4 := anon_3
+  } else {
+    var anon_5: Ref
+    anon_5 := con_IllegalArgumentException()
+    fold acc(Throwable_unique(anon_5), write)
+    fold acc(Exception_unique(anon_5), write)
+    fold acc(RuntimeException_unique(anon_5), write)
+    fold acc(IllegalArgumentException_unique(anon_5), write)
+    inhale false
+  }
+  v_ret_0.data := anon_4
+  anon_6 := v_ret_0.data
+  assert referenceArraySize(anon_6) > 0
+  label lbl_ret_2
+  fold acc(WrongSize_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(WrongSize_unique(v_ret_0), write)
+}
+
+method message(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+/conditional_owned_storage.kt: info: Generated Viper text for sharedArray:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method sharedArray() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Array())
+{
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  anon_0 := intToRef(0)
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_2 := anon_1
+  v_ret_0 := anon_2
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/conditional_owned_storage.kt: info: Generated Viper text for SharedArm:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(capacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  ensures isSubtype(typeOf(v_ret_0), SharedArm())
+  ensures isSubtype(typeOf(v_ret_0), SharedArm()) &&
+    acc(v_ret_0.data, write) &&
+    isSubtype(typeOf(v_ret_0.data), Array()) &&
+    acc(Array_unique(v_ret_0.data), write)
+{
+  var v_ret_2: Ref
+  var anon_2: Ref
+  v_ret_0 := new(data)
+  inhale typeOf(v_ret_0) == SharedArm()
+  if (intFromRef(capacity) > 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_0 := capacity
+    assert intFromRef(anon_0) >= 0
+    anon_1 := new()
+    inhale acc(Array_unique(anon_1), write)
+    inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+      (unfolding acc(Array_unique(anon_1), write) in
+        (forall j: Int ::
+          { anon_1.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_1) ==>
+          anon_1.referenceContents[j] == nullValue()))
+    anon_2 := anon_1
+  } else {
+    anon_2 := sharedArray()}
+  v_ret_0.data := anon_2
+  label lbl_ret_2
+  label lbl_ret_0
+}
+
+method sharedArray() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), Array())
+
+
+/conditional_owned_storage.kt: info: Generated Viper text for LiveState:
+field value: Ref
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), LiveState())
+  ensures isSubtype(typeOf(v_ret_0), LiveState()) &&
+    acc(v_ret_0.value, write) &&
+    isSubtype(typeOf(v_ret_0.value), intType())
+  ensures intFromRef(v_ret_0.value) == 0
+{
+  v_ret_0 := new(value)
+  inhale typeOf(v_ret_0) == LiveState()
+  v_ret_0.value := intToRef(0)
+  fold acc(LiveState_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(LiveState_unique(v_ret_0), write)
+}
+
+/conditional_owned_storage.kt: info: Generated Viper text for checkedConcat:
+field value: Ref
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method checkedConcat(this: Ref, a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), LiveState())
+  requires acc(LiveState_unique(this), write)
+  requires isSubtype(typeOf(a), stringType())
+  requires isSubtype(typeOf(b), stringType())
+  requires |stringFromRef(a)| <= 100
+  requires |stringFromRef(b)| <= 100
+  ensures acc(LiveState_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var joined: Ref
+  var anon_0: Ref
+  if (!(|stringFromRef(a)| + |stringFromRef(b)| <= 2147483647)) {
+    inhale false
+  }
+  joined := addStrings(a, b)
+  unfold acc(LiveState_unique(this), write)
+  this.value := intToRef(7)
+  anon_0 := this.value
+  assert intFromRef(anon_0) == 7
+  assert |stringFromRef(joined)| ==
+    (let anon_builtin ==
+      (plusInts(stringLength(a), stringLength(b))) in
+      intFromRef(stringLength(a)) + intFromRef(stringLength(b)))
+  label lbl_ret_0
+  fold acc(LiveState_unique(this), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method plus(this: Ref, other: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_2), stringType())
