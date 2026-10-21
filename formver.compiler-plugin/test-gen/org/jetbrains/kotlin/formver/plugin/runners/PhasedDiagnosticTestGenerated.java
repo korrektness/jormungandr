@@ -412,6 +412,32 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
   }
 
   @Nested
+  @TestMetadata("formver.compiler-plugin/testData/diagnostics/targets")
+  @TestDataPath("$PROJECT_ROOT")
+  public class Targets {
+    @Test
+    public void testAllFilesPresentInTargets() {
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics/targets"), Pattern.compile("^(.+)\\.kt$"), null, true);
+    }
+
+    @Nested
+    @TestMetadata("formver.compiler-plugin/testData/diagnostics/targets/arraydeque")
+    @TestDataPath("$PROJECT_ROOT")
+    public class Arraydeque {
+      @Test
+      public void testAllFilesPresentInArraydeque() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics/targets/arraydeque"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      }
+
+      @Test
+      @TestMetadata("ArrayDeque.kt")
+      public void testArrayDeque() {
+        runTest("formver.compiler-plugin/testData/diagnostics/targets/arraydeque/ArrayDeque.kt");
+      }
+    }
+  }
+
+  @Nested
   @TestMetadata("formver.compiler-plugin/testData/diagnostics/uniqueness_checker")
   @TestDataPath("$PROJECT_ROOT")
   public class Uniqueness_checker {

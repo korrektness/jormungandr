@@ -1,0 +1,723 @@
+# D-1: Test-source relocation and compilation directives.
+@@ -6,1 +6,4 @@
+-package kotlin.collections
++// FULL_JDK
++// RETURN_VALUE_CHECKER_MODE: CHECKER
++@file:Suppress("RETURN_VALUE_NOT_USED", "NOTHING_TO_INLINE")
++import org.jetbrains.kotlin.formver.plugin.*
+# D-8: DequeSpec observers and proof-source documentation.
+@@ -8,8 +11,7 @@
+-/**
+- * Resizable-array implementation of the deque data structure.
+- *
+- * The name deque is short for "double ended queue" and is usually pronounced "deck".
+- *
+- * The collection provide methods for convenient access to the both ends.
+- * It also implements [MutableList] interface and supports efficient get/set operations by index.
+- */
++// D-8: Source-port specifications; residual trust: upstream/kotlin-v2.3.0/PROVENANCE.md.
++interface DequeSpec<E> {
++    val size: Int
++    fun elementAt(index: Int): E
++}
++
++// D-1: The source port has no AbstractMutableList supertype.
+# D-1: Replace the collection superclass with DequeSpec.
+@@ -17,1 +19,1 @@
+-public class ArrayDeque<E> : AbstractMutableList<E> {
++public class ArrayDeque<E> : DequeSpec<E> {
+# D-2: Expose size through an observer over private count.
+@@ -21,2 +23,3 @@
+-    override var size: Int = 0
+-        private set
++    // D-2: The size observer reads private mutable storage.
++    private var count: Int = 0
++    override val size: Int get() = count
+# D-7: Omit the capacity constructor from the proved claim (G12).
+@@ -24,10 +26,0 @@
+-    /**
+-     * Constructs an empty deque with specified [initialCapacity], or throws [IllegalArgumentException] if [initialCapacity] is negative.
+-     */
+-    public constructor(initialCapacity: Int) {
+-        elementData = when {
+-            initialCapacity == 0 -> emptyElementData
+-            initialCapacity > 0 -> arrayOfNulls(initialCapacity)
+-            else -> throw IllegalArgumentException("Illegal Capacity: $initialCapacity")
+-        }
+-    }
+# D-7: Record the capacity-constructor claim restriction.
+@@ -34,0 +28,1 @@
++    // D-7: The capacity constructor is outside the proved claim; see docs/targets/arraydeque-gaps-design.md (G12).
+# D-6: Use owned empty storage; omit collection construction and growth members.
+@@ -39,39 +33,2 @@
+-        elementData = emptyElementData
+-    }
+-
+-    /**
+-     * Constructs a deque that contains the same elements as the specified [elements] collection in the same order.
+-     */
+-    public constructor(elements: Collection<E>) {
+-        elementData = elements.toTypedArray()
+-        size = elementData.size
+-        if (elementData.isEmpty()) elementData = emptyElementData
+-    }
+-
+-    /**
+-     * Ensures that the capacity of this deque is at least equal to the specified [minCapacity].
+-     *
+-     * If the current capacity is less than the [minCapacity], a new backing storage is allocated with greater capacity.
+-     * Otherwise, this method takes no action and simply returns.
+-     */
+-    private fun ensureCapacity(minCapacity: Int) {
+-        if (minCapacity < 0) throw IllegalStateException("Deque is too big.")    // overflow
+-        if (minCapacity <= elementData.size) return
+-        if (elementData === emptyElementData) {
+-            elementData = arrayOfNulls(minCapacity.coerceAtLeast(defaultMinCapacity))
+-            return
+-        }
+-
+-        val newCapacity = AbstractList.newCapacity(elementData.size, minCapacity)
+-        copyElements(newCapacity)
+-    }
+-
+-    /**
+-     * Creates a new array with the specified [newCapacity] size and copies elements in the [elementData] array to it.
+-     */
+-    private fun copyElements(newCapacity: Int) {
+-        val newElements = arrayOfNulls<Any?>(newCapacity)
+-        elementData.copyInto(newElements, 0, head, elementData.size)
+-        elementData.copyInto(newElements, elementData.size - head, 0, head)
+-        head = 0
+-        elementData = newElements
++        // D-6: Unique empty storage substitutes for the shared sentinel.
++        elementData = arrayOfNulls(0)
+# D-5: Omit InlineOnly from the retained helper.
+@@ -80,1 +37,2 @@
+-    @kotlin.internal.InlineOnly
++    // D-7: This partial port contains the skeleton members.
++    // D-5: InlineOnly is omitted from source helpers.
+# D-5: Omit InlineOnly from the retained helper.
+@@ -90,1 +48,1 @@
+-    @kotlin.internal.InlineOnly
++    // D-5: InlineOnly is omitted from source helpers.
+# D-8: Add the elementAt logical-window observer.
+@@ -97,1 +55,6 @@
+-    override fun isEmpty(): Boolean = size == 0
++    // D-8: A non-throwing observer for logical window offsets.
++    override fun elementAt(index: Int): E {
++        val physical = positiveMod(head + index)
++        @Suppress("UNCHECKED_CAST")
++        return elementData[physical] as E
++    }
+# D-4: Supply collection observer copies without the collection superclass.
+@@ -98,0 +62,7 @@
++    // D-1: isEmpty has no inherited declaration to override.
++    fun isEmpty(): Boolean = size == 0
++
++    // D-4: Private copies of collection observers; count is the D-2 storage for size.
++    private fun isNotEmpty(): Boolean = !isEmpty()
++    private val lastIndex: Int get() = count - 1
++
+# D-7: Omit mutators; retain get using the private index check.
+@@ -119,253 +89,4 @@
+-    /**
+-     * Prepends the specified [element] to this deque.
+-     */
+-    public fun addFirst(element: E) {
+-        registerModification()
+-        ensureCapacity(size + 1)
+-
+-        head = decremented(head)
+-        elementData[head] = element
+-        size += 1
+-    }
+-
+-    /**
+-     * Appends the specified [element] to this deque.
+-     */
+-    public fun addLast(element: E) {
+-        registerModification()
+-        ensureCapacity(size + 1)
+-
+-        elementData[internalIndex(size)] = element
+-        size += 1
+-    }
+-
+-    /**
+-     * Removes the first element from this deque and returns that removed element, or throws [NoSuchElementException] if this deque is empty.
+-     */
+-    @IgnorableReturnValue
+-    public fun removeFirst(): E {
+-        if (isEmpty()) throw NoSuchElementException("ArrayDeque is empty.")
+-        registerModification()
+-
+-        val element = internalGet(head)
+-        elementData[head] = null
+-        head = incremented(head)
+-        size -= 1
+-        return element
+-    }
+-
+-    /**
+-     * Removes the first element from this deque and returns that removed element, or returns `null` if this deque is empty.
+-     */
+-    @IgnorableReturnValue
+-    public fun removeFirstOrNull(): E? = if (isEmpty()) null else removeFirst()
+-
+-    /**
+-     * Removes the last element from this deque and returns that removed element, or throws [NoSuchElementException] if this deque is empty.
+-     */
+-    @IgnorableReturnValue
+-    public fun removeLast(): E {
+-        if (isEmpty()) throw NoSuchElementException("ArrayDeque is empty.")
+-        registerModification()
+-
+-        val internalLastIndex = internalIndex(lastIndex)
+-        val element = internalGet(internalLastIndex)
+-        elementData[internalLastIndex] = null
+-        size -= 1
+-        return element
+-    }
+-
+-    /**
+-     * Removes the last element from this deque and returns that removed element, or returns `null` if this deque is empty.
+-     */
+-    @IgnorableReturnValue
+-    public fun removeLastOrNull(): E? = if (isEmpty()) null else removeLast()
+-
+-    // MutableList, MutableCollection
+-    @IgnorableReturnValue
+-    public override fun add(element: E): Boolean {
+-        addLast(element)
+-        return true
+-    }
+-
+-    public override fun add(index: Int, element: E) {
+-        AbstractList.checkPositionIndex(index, size)
+-
+-        if (index == size) {
+-            addLast(element)
+-            return
+-        } else if (index == 0) {
+-            addFirst(element)
+-            return
+-        }
+-
+-        registerModification()
+-        ensureCapacity(size + 1)
+-
+-        // Elements in circular array lay in 2 ways:
+-        //   1. `head` is less than `tail`:       [#, #, e1, e2, e3, #]
+-        //   2. `head` is greater than `tail`:    [e3, #, #, #, e1, e2]
+-        // where head is the index of the first element in the circular array,
+-        // and tail is the index following the last element.
+-        //
+-        // At this point the insertion index is not equal to head or tail.
+-        // Also the circular array can store at least one more element.
+-        //
+-        // Depending on where the given element must be inserted the preceding or the succeeding
+-        // elements will be shifted to make room for the element to be inserted.
+-        //
+-        // In case the preceding elements are shifted:
+-        //   * if the insertion index is greater than the head (regardless of circular array form)
+-        //      -> shift the preceding elements
+-        //   * otherwise, the circular array has (2) form and the insertion index is less than tail
+-        //      -> shift all elements in the back of the array
+-        //      -> shift preceding elements in the front of the array
+-        // In case the succeeding elements are shifted:
+-        //   * if the insertion index is less than the tail (regardless of circular array form)
+-        //      -> shift the succeeding elements
+-        //   * otherwise, the circular array has (2) form and the insertion index is greater than head
+-        //      -> shift all elements in the front of the array
+-        //      -> shift succeeding elements in the back of the array
+-
+-        val internalIndex = internalIndex(index)
+-
+-        if (index < (size + 1) shr 1) {
+-            // closer to the first element -> shift preceding elements
+-            val decrementedInternalIndex = decremented(internalIndex)
+-            val decrementedHead = decremented(head)
+-
+-            if (decrementedInternalIndex >= head) {
+-                elementData[decrementedHead] = elementData[head]  // head can be zero
+-                elementData.copyInto(elementData, head, head + 1, decrementedInternalIndex + 1)
+-            } else { // head > tail
+-                elementData.copyInto(elementData, head - 1, head, elementData.size) // head can't be zero
+-                elementData[elementData.size - 1] = elementData[0]
+-                elementData.copyInto(elementData, 0, 1, decrementedInternalIndex + 1)
+-            }
+-
+-            elementData[decrementedInternalIndex] = element
+-            head = decrementedHead
+-        } else {
+-            // closer to the last element -> shift succeeding elements
+-            val tail = internalIndex(size)
+-
+-            if (internalIndex < tail) {
+-                elementData.copyInto(elementData, internalIndex + 1, internalIndex, tail)
+-            } else { // head > tail
+-                elementData.copyInto(elementData, 1, 0, tail)
+-                elementData[0] = elementData[elementData.size - 1]
+-                elementData.copyInto(elementData, internalIndex + 1, internalIndex, elementData.size - 1)
+-            }
+-
+-            elementData[internalIndex] = element
+-        }
+-        size += 1
+-    }
+-
+-    private fun copyCollectionElements(internalIndex: Int, elements: Collection<E>) {
+-        val iterator = elements.iterator()
+-
+-        for (index in internalIndex until elementData.size) {
+-            if (!iterator.hasNext()) break
+-            elementData[index] = iterator.next()
+-        }
+-        for (index in 0 until head) {
+-            if (!iterator.hasNext()) break
+-            elementData[index] = iterator.next()
+-        }
+-
+-        size += elements.size
+-    }
+-
+-    @IgnorableReturnValue
+-    public override fun addAll(elements: Collection<E>): Boolean {
+-        if (elements.isEmpty()) return false
+-
+-        registerModification()
+-        ensureCapacity(this.size + elements.size)
+-        copyCollectionElements(internalIndex(size), elements)
+-        return true
+-    }
+-
+-    @IgnorableReturnValue
+-    public override fun addAll(index: Int, elements: Collection<E>): Boolean {
+-        AbstractList.checkPositionIndex(index, size)
+-
+-        if (elements.isEmpty()) {
+-            return false
+-        } else if (index == size) {
+-            return addAll(elements)
+-        }
+-
+-        registerModification()
+-        ensureCapacity(this.size + elements.size)
+-
+-        val tail = internalIndex(size)
+-        val internalIndex = internalIndex(index)
+-        val elementsSize = elements.size
+-
+-        if (index < (size + 1) shr 1) {
+-            // closer to the first element -> shift preceding elements
+-
+-            var shiftedHead = head - elementsSize
+-
+-            if (internalIndex >= head) {
+-                if (shiftedHead >= 0) {
+-                    elementData.copyInto(elementData, shiftedHead, head, internalIndex)
+-                } else { // head < tail, insertion leads to head >= tail
+-                    shiftedHead += elementData.size
+-                    val elementsToShift = internalIndex - head
+-                    val shiftToBack = elementData.size - shiftedHead
+-
+-                    if (shiftToBack >= elementsToShift) {
+-                        elementData.copyInto(elementData, shiftedHead, head, internalIndex)
+-                    } else {
+-                        elementData.copyInto(elementData, shiftedHead, head, head + shiftToBack)
+-                        elementData.copyInto(elementData, 0, head + shiftToBack, internalIndex)
+-                    }
+-                }
+-            } else { // head > tail, internalIndex < tail
+-                elementData.copyInto(elementData, shiftedHead, head, elementData.size)
+-                if (elementsSize >= internalIndex) {
+-                    elementData.copyInto(elementData, elementData.size - elementsSize, 0, internalIndex)
+-                } else {
+-                    elementData.copyInto(elementData, elementData.size - elementsSize, 0, elementsSize)
+-                    elementData.copyInto(elementData, 0, elementsSize, internalIndex)
+-                }
+-            }
+-            head = shiftedHead
+-            copyCollectionElements(negativeMod(internalIndex - elementsSize), elements)
+-        } else {
+-            // closer to the last element -> shift succeeding elements
+-
+-            val shiftedInternalIndex = internalIndex + elementsSize
+-
+-            if (internalIndex < tail) {
+-                if (tail + elementsSize <= elementData.size) {
+-                    elementData.copyInto(elementData, shiftedInternalIndex, internalIndex, tail)
+-                } else { // head < tail, insertion leads to head >= tail
+-                    if (shiftedInternalIndex >= elementData.size) {
+-                        elementData.copyInto(elementData, shiftedInternalIndex - elementData.size, internalIndex, tail)
+-                    } else {
+-                        val shiftToFront = tail + elementsSize - elementData.size
+-                        elementData.copyInto(elementData, 0, tail - shiftToFront, tail)
+-                        elementData.copyInto(elementData, shiftedInternalIndex, internalIndex, tail - shiftToFront)
+-                    }
+-                }
+-            } else { // head > tail, internalIndex > head
+-                elementData.copyInto(elementData, elementsSize, 0, tail)
+-                if (shiftedInternalIndex >= elementData.size) {
+-                    elementData.copyInto(elementData, shiftedInternalIndex - elementData.size, internalIndex, elementData.size)
+-                } else {
+-                    elementData.copyInto(elementData, 0, elementData.size - elementsSize, elementData.size)
+-                    elementData.copyInto(elementData, shiftedInternalIndex, internalIndex, elementData.size - elementsSize)
+-                }
+-            }
+-            copyCollectionElements(internalIndex, elements)
+-        }
+-
+-        return true
+-    }
+-
+-    public override fun get(index: Int): E {
+-        AbstractList.checkElementIndex(index, size)
++    // D-1: List operations have no inherited declaration to override.
++    public operator fun get(index: Int): E {
++        // D-4: The index check is a private copy.
++        checkElementIndex(index, size)
+# D-4: Use the private index check in the standalone set operation.
+@@ -377,2 +98,3 @@
+-    public override fun set(index: Int, element: E): E {
+-        AbstractList.checkElementIndex(index, size)
++    public operator fun set(index: Int, element: E): E {
++        // D-4: The index check is a private copy.
++        checkElementIndex(index, size)
+# D-7: Omit searches, mutators and inherited-list operations.
+@@ -386,222 +108,1 @@
+-
+-    public override fun contains(element: E): Boolean = indexOf(element) != -1
+-
+-    public override fun indexOf(element: E): Int {
+-        val tail = internalIndex(size)
+-
+-        if (head < tail) {
+-            for (index in head until tail) {
+-                if (element == elementData[index]) return index - head
+-            }
+-        } else if (isNotEmpty() && head >= tail) {
+-            for (index in head until elementData.size) {
+-                if (element == elementData[index]) return index - head
+-            }
+-            for (index in 0 until tail) {
+-                if (element == elementData[index]) return index + elementData.size - head
+-            }
+-        }
+-
+-        return -1
+-    }
+-
+-    public override fun lastIndexOf(element: E): Int {
+-        val tail = internalIndex(size)
+-
+-        if (head < tail) {
+-            for (index in tail - 1 downTo head) {
+-                if (element == elementData[index]) return index - head
+-            }
+-        } else if (isNotEmpty() && head >= tail) {
+-            for (index in tail - 1 downTo 0) {
+-                if (element == elementData[index]) return index + elementData.size - head
+-            }
+-            for (index in elementData.lastIndex downTo head) {
+-                if (element == elementData[index]) return index - head
+-            }
+-        }
+-
+-        return -1
+-    }
+-
+-    @IgnorableReturnValue
+-    public override fun remove(element: E): Boolean {
+-        val index = indexOf(element)
+-        if (index == -1) return false
+-        removeAt(index)
+-        return true
+-    }
+-
+-    @IgnorableReturnValue
+-    public override fun removeAt(index: Int): E {
+-        AbstractList.checkElementIndex(index, size)
+-
+-        if (index == lastIndex) {
+-            return removeLast()
+-        } else if (index == 0) {
+-            return removeFirst()
+-        }
+-
+-        registerModification()
+-
+-        val internalIndex = internalIndex(index)
+-        val element = internalGet(internalIndex)
+-
+-        if (index < size shr 1) {
+-            // closer to the first element -> shift preceding elements
+-            if (internalIndex >= head) {
+-                elementData.copyInto(elementData, head + 1, head, internalIndex)
+-            } else { // head > tail, internalIndex < head
+-                elementData.copyInto(elementData, 1, 0, internalIndex)
+-                elementData[0] = elementData[elementData.size - 1]
+-                elementData.copyInto(elementData, head + 1, head, elementData.size - 1)
+-            }
+-
+-            elementData[head] = null
+-            head = incremented(head)
+-        } else {
+-            // closer to the last element -> shift succeeding elements
+-            val internalLastIndex = internalIndex(lastIndex)
+-
+-            if (internalIndex <= internalLastIndex) {
+-                elementData.copyInto(elementData, internalIndex, internalIndex + 1, internalLastIndex + 1)
+-            } else { // head > tail, internalIndex > head
+-                elementData.copyInto(elementData, internalIndex, internalIndex + 1, elementData.size)
+-                elementData[elementData.size - 1] = elementData[0]
+-                elementData.copyInto(elementData, 0, 1, internalLastIndex + 1)
+-            }
+-
+-            elementData[internalLastIndex] = null
+-        }
+-        size -= 1
+-
+-        return element
+-    }
+-
+-    @IgnorableReturnValue
+-    public override fun removeAll(elements: Collection<E>): Boolean = filterInPlace { !elements.contains(it) }
+-
+-    @IgnorableReturnValue
+-    public override fun retainAll(elements: Collection<E>): Boolean = filterInPlace { elements.contains(it) }
+-
+-    private inline fun filterInPlace(predicate: (E) -> Boolean): Boolean {
+-        if (this.isEmpty() || elementData.isEmpty())
+-            return false
+-
+-        val tail = internalIndex(size)
+-        var newTail = head
+-        var modified = false
+-
+-        if (head < tail) {
+-            for (index in head until tail) {
+-                val element = elementData[index]
+-
+-                @Suppress("UNCHECKED_CAST")
+-                if (predicate(element as E))
+-                    elementData[newTail++] = element
+-                else
+-                    modified = true
+-            }
+-
+-            elementData.fill(null, newTail, tail)
+-
+-        } else {
+-            for (index in head until elementData.size) {
+-                val element = elementData[index]
+-                elementData[index] = null
+-
+-                @Suppress("UNCHECKED_CAST")
+-                if (predicate(element as E))
+-                    elementData[newTail++] = element
+-                else
+-                    modified = true
+-            }
+-
+-            newTail = positiveMod(newTail)
+-
+-            for (index in 0 until tail) {
+-                val element = elementData[index]
+-                elementData[index] = null
+-
+-                @Suppress("UNCHECKED_CAST")
+-                if (predicate(element as E)) {
+-                    elementData[newTail] = element
+-                    newTail = incremented(newTail)
+-                } else {
+-                    modified = true
+-                }
+-            }
+-        }
+-        if (modified) {
+-            registerModification()
+-            size = negativeMod(newTail - head)
+-        }
+-
+-        return modified
+-    }
+-
+-    public override fun clear() {
+-        if (isNotEmpty()) {
+-            registerModification()
+-
+-            val tail = internalIndex(size)
+-            nullifyNonEmpty(head, tail)
+-        }
+-        head = 0
+-        size = 0
+-    }
+-
+-    @Suppress("NOTHING_TO_OVERRIDE", "NO_EXPLICIT_VISIBILITY_IN_API_MODE") // different visibility inherited from the base class
+-    override fun <T> toArray(array: Array<T>): Array<T> {
+-        @Suppress("UNCHECKED_CAST")
+-        val dest = (if (array.size >= size) array else arrayOfNulls(array, size)) as Array<Any?>
+-
+-        val tail = internalIndex(size)
+-        if (head < tail) {
+-            elementData.copyInto(dest, startIndex = head, endIndex = tail)
+-        } else if (isNotEmpty()) {
+-            elementData.copyInto(dest, destinationOffset = 0, startIndex = head, endIndex = elementData.size)
+-            elementData.copyInto(dest, destinationOffset = elementData.size - head, startIndex = 0, endIndex = tail)
+-        }
+-
+-        @Suppress("UNCHECKED_CAST")
+-        return terminateCollectionToArray(size, dest) as Array<T>
+-    }
+-
+-    @Suppress("NOTHING_TO_OVERRIDE", "NO_EXPLICIT_VISIBILITY_IN_API_MODE") // different visibility inherited from the base class
+-    override fun toArray(): Array<Any?> {
+-        return toArray(arrayOfNulls<Any?>(size))
+-    }
+-
+-    override fun removeRange(fromIndex: Int, toIndex: Int) {
+-        AbstractList.checkRangeIndexes(fromIndex, toIndex, size)
+-
+-        val length = toIndex - fromIndex
+-        when (length) {
+-            0 -> return
+-            size -> {
+-                clear()
+-                return
+-            }
+-            1 -> {
+-                removeAt(fromIndex)
+-                return
+-            }
+-        }
+-
+-        registerModification()
+-
+-        if (fromIndex < size - toIndex) {
+-            // closer to the first element -> shift preceding elements
+-            removeRangeShiftPreceding(fromIndex, toIndex)
+-
+-            val newHead = positiveMod(head + length)
+-            nullifyNonEmpty(head, newHead)
+-            head = newHead
+-        } else {
+-            // closer to the last element -> shift succeeding elements
+-            removeRangeShiftSucceeding(fromIndex, toIndex)
+-
+-            val tail = internalIndex(size)
+-            nullifyNonEmpty(negativeMod(tail - length), tail)
+-        }
++}
+# D-4: Supply the private element-index check.
+@@ -609,1 +110,4 @@
+-        size -= length
++// D-4: Private copies of AbstractList index checks.
++private fun checkElementIndex(index: Int, size: Int) {
++    if (index < 0 || index >= size) {
++        throw IndexOutOfBoundsException("index: $index, size: $size")
+# D-7: Omit range-shifting implementation.
+@@ -611,9 +115,1 @@
+-
+-    private fun removeRangeShiftPreceding(fromIndex: Int, toIndex: Int) {
+-        var copyFromIndex = internalIndex(fromIndex - 1)    // upper bound of range, inclusive
+-        var copyToIndex = internalIndex(toIndex - 1)        // upper bound of range, inclusive
+-        var copyCount = fromIndex
+-
+-        while (copyCount > 0) { // maximum 3 iterations
+-            val segmentLength = minOf(copyCount, copyFromIndex + 1, copyToIndex + 1)
+-            elementData.copyInto(elementData, copyToIndex - segmentLength + 1, copyFromIndex - segmentLength + 1, copyFromIndex + 1)
++}
+# D-4: Supply the private position-index check.
+@@ -621,4 +117,3 @@
+-            copyFromIndex = negativeMod(copyFromIndex - segmentLength)
+-            copyToIndex = negativeMod(copyToIndex - segmentLength)
+-            copyCount -= segmentLength
+-        }
++private fun checkPositionIndex(index: Int, size: Int) {
++    if (index < 0 || index > size) {
++        throw IndexOutOfBoundsException("index: $index, size: $size")
+# D-7: Omit range-shifting implementation.
+@@ -626,9 +121,1 @@
+-
+-    private fun removeRangeShiftSucceeding(fromIndex: Int, toIndex: Int) {
+-        var copyFromIndex = internalIndex(toIndex) // lower bound of range, inclusive
+-        var copyToIndex = internalIndex(fromIndex) // lower bound of range, inclusive
+-        var copyCount = size - toIndex
+-
+-        while (copyCount > 0) { // maximum 3 iterations
+-            val segmentLength = minOf(copyCount, elementData.size - copyFromIndex, elementData.size - copyToIndex)
+-            elementData.copyInto(elementData, copyToIndex, copyFromIndex, copyFromIndex + segmentLength)
++}
+# D-8: Introduce public-entry proof fixtures.
+@@ -636,5 +123,1 @@
+-            copyFromIndex = positiveMod(copyFromIndex + segmentLength)
+-            copyToIndex = positiveMod(copyToIndex + segmentLength)
+-            copyCount -= segmentLength
+-        }
+-    }
++// D-8: Public-entry proofs and negative siblings for the partial source port.
+# D-8: Add the empty-deque proof fixture in place of omitted nullification.
+@@ -642,9 +125,5 @@
+-    /** If `internalFromIndex == internalToIndex`, the buffer is considered full and all elements are nullified. */
+-    private fun nullifyNonEmpty(internalFromIndex: Int, internalToIndex: Int) {
+-        if (internalFromIndex < internalToIndex) {
+-            elementData.fill(null, internalFromIndex, internalToIndex)
+-        } else {
+-            elementData.fill(null, internalFromIndex, elementData.size)
+-            elementData.fill(null, 0, internalToIndex)
+-        }
+-    }
++fun emptyDeque() {
++    val d: ArrayDeque<Any?> = ArrayDeque()
++    val a = d.firstOrNull()
++    val b = d.lastOrNull()
++}
+# D-8: Add the element-access/frame proof fixture in place of omitted modification tracking.
+@@ -652,3 +131,12 @@
+-    private fun registerModification() {
+-        modCount += 1
+-    }
++fun <E> access(d: ArrayDeque<E>, index: Int, other: Int, value: E) {
++    val n = d.size
++    val before = d[index]
++    val untouched = d[other]
++    val replaced = d.set(index, value)
++    val after = d[index]
++    val preserved = d[other]
++    val first = d.first()
++    val last = d.last()
++    val firstNullable = d.firstOrNull()
++    val lastNullable = d.lastOrNull()
++}
+# D-8: Add the empty-reader negative in place of omitted upstream test helpers.
+@@ -656,4 +144,3 @@
+-    // for testing
+-    internal fun <T> testToArray(array: Array<T>): Array<T> = toArray(array)
+-    internal fun testToArray(): Array<Any?> = toArray()
+-    internal fun testRemoveRange(fromIndex: Int, toIndex: Int) = removeRange(fromIndex, toIndex)
++fun <E> firstOnEmpty(d: ArrayDeque<E>) {
++    val first = d.firstOrNull()
++}
+# D-8: Add a wrapped-window control in place of the omitted companion.
+@@ -661,4 +148,5 @@
+-    internal companion object {
+-        private val emptyElementData = emptyArray<Any?>()
+-        private const val defaultMinCapacity = 10
+-    }
++// The control wraps offsets crossing the physical end of the backing array.
++fun <E> getCircular(data: Array<E>, head: Int, index: Int): E {
++    val physical = head + index
++    return data[if (physical >= data.size) physical - data.size else physical]
++}
+# D-8: Add the unwrapped-index negative in place of the omitted upstream structure helper.
+@@ -666,6 +154,3 @@
+-    // For testing only
+-    internal fun internalStructure(structure: (head: Int, elements: Array<Any?>) -> Unit) {
+-        val tail = internalIndex(size)
+-        val head = if (isEmpty() || head < tail) head else head - elementData.size
+-        structure(head, toArray())
+-    }
++// Omitting positiveMod leaves a wrapped logical offset past the physical end.
++fun <E> getWrapped(data: Array<E>, head: Int, index: Int): E {
++    return data[head + index]
