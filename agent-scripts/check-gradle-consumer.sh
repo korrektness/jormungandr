@@ -9,9 +9,10 @@
 # if a spec declaration reaches the compiled output, if a reference to one from
 # compiled code is accepted, if a spec binding to a missing library declaration
 # is accepted, if a contradictory spec is accepted, if a false claim about a
-# specified call verifies, if a multiplatform consumer's common, platform or
-# platform test code does not
-# verify through the bundled specs, if a default build does not show the trust
+# specified call or a false closure claim about the breadth-first search over
+# the bundled ArrayDeque verifies, if a multiplatform consumer's common,
+# platform or platform test code does not verify through the bundled specs, if a
+# default build does not show the trust
 # summary of the verified declarations, if a build with verification errors
 # drops its warnings, if a spec binding to a declaration that another module
 # verified is not reported, or if a caller stays verified after the spec it
@@ -360,6 +361,23 @@ fun retired(): Int = 0
 fun callsRetired(): Int = retired()
 SRC
 
+# The breadth-first search that the diagnostics tests verify, compiled from the
+# same source with the diagnostic markup stripped. scanSkipLast, the one
+# declaration of the negative file that this consumer needs, is the false claim.
+bfs_tests="$ROOT/formver.compiler-plugin/testData/diagnostics/external_specs"
+sed -E 's/<!([A-Z_]*!)?>//g' "$bfs_tests/arraydeque_bfs.kt" >"$consumer/src/main/kotlin/Bfs.kt"
+{
+    echo 'import org.jetbrains.kotlin.formver.plugin.*'
+    echo
+    sed -n '/^fun <!VIPER_TEXT!>scanSkipLast</,/^fun <!VIPER_TEXT!>bfsWithoutVertexBound</p' \
+        "$bfs_tests/arraydeque_bfs_negative.kt" | sed '$d'
+} | sed -E 's/<!([A-Z_]*!)?>//g' >"$consumer/src/badClaim/kotlin/BadScan.kt"
+scan_return="$(grep -n '^    return f$' "$consumer/src/badClaim/kotlin/BadScan.kt" | cut -d: -f1)"
+if [[ -z "$scan_return" || "$(wc -l <<<"$scan_return")" -ne 1 ]]; then
+    echo "check-gradle-consumer.sh: BadScan.kt does not contain exactly one return of scanSkipLast" >&2
+    exit 1
+fi
+
 # The consumer is not part of this build, so the repository's own gradle
 # invocation does not apply; the wrapper is reused for its Gradle version.
 build_consumer() {
@@ -372,8 +390,8 @@ if ! build_consumer >"$log" 2>&1; then
     echo "check-gradle-consumer.sh: consumer build failed" >&2
     exit 1
 fi
-if grep -q "^w: .*Main.kt" "$log"; then
-    grep "^w: .*Main.kt" "$log" >&2
+if grep -q "^w: .*\(Main\|Bfs\).kt" "$log"; then
+    grep "^w: .*\(Main\|Bfs\).kt" "$log" >&2
     echo "check-gradle-consumer.sh: the consumer's claims did not verify" >&2
     exit 1
 fi
@@ -405,6 +423,8 @@ fi
 for entry in "user spec: stand.lib.twice(Int): Int" "bundled spec: kotlin.math.abs(Int): Int" \
     "bundled spec: kotlin.collections.ArrayDeque.ArrayDeque(): ArrayDeque<E>" \
     "bundled spec: kotlin.collections.ArrayDeque.addLast(E): Unit" \
+    "bundled spec: kotlin.collections.ArrayDeque.removeFirst(): E" \
+    "bundled spec: kotlin.collections.ArrayDeque.isEmpty(): Boolean" \
     "rebinds verified: stand.vlib.half(Int): Int" "rebinds verified: stand.vlib.Box"; do
     if ! grep -qF "    $entry" "$report"; then
         cat "$report" >&2
@@ -478,6 +498,12 @@ for line in 6 9 11; do
         exit 1
     fi
 done
+# The postcondition of the successor scan fails where the scan returns.
+if ! grep -q "^e: .*BadScan.kt:$scan_return:" "$claim_log"; then
+    cat "$claim_log" >&2
+    echo "check-gradle-consumer.sh: the false closure claim on BadScan.kt line $scan_return verified" >&2
+    exit 1
+fi
 # Warnings are reported next to the errors.
 if ! grep -q "^w: .*BadClaim.kt:21:" "$claim_log"; then
     cat "$claim_log" >&2
