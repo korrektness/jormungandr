@@ -209,26 +209,28 @@ class SiliconFrontend(
         // SilFrontend.verification invokes the default plugins' beforeVerify and mapVerificationResult hooks,
         // including RefutePlugin. Its isolated assertion branch leaves the continuation available for further checks.
         val verify = {
+            val threads = siliconThreads
+            val api = siliconApi ?: configurationGate.withExclusiveConfiguration(args) { threads.run { backend() } }
             val result = configurationGate.withConfiguration(args) {
-                val threads = siliconThreads
                 threads.run {
-                    val api = backend()
                     restoreConfiguration(api)
-                    api.verify(viperProgram).also { result ->
-                        // Silicon returns on a timeout while its verifier threads may still wait on Z3. Stopping the
-                        // backend kills Z3, which ends those threads, and the next program starts a fresh backend.
-                        // The threads then fail on the lost prover and log it; the timeout already accounts for that
-                        // failure, so their logging is dropped.
-                        if (result.timedOut()) {
-                            siliconApi = null
-                            siliconThreads = SiliconThreads()
-                            threads.stop()
-                            api.stop()
-                        }
-                    }
+                    api.verify(viperProgram)
                 }
             }
-            if (result.timedOut()) throw VerificationTimeoutException(timeoutSeconds)
+            if (result.timedOut()) {
+                configurationGate.withExclusiveConfiguration(args) {
+                    // Silicon returns on a timeout while its verifier threads may still wait on Z3. Stopping the
+                    // backend kills Z3, which ends those threads, and the next program starts a fresh backend.
+                    // The threads then fail on the lost prover and log it; the timeout already accounts for that
+                    // failure, so their logging is dropped.
+                    siliconApi = null
+                    siliconThreads = SiliconThreads()
+                    threads.stop()
+                    restoreConfiguration(api)
+                    api.stop()
+                }
+                throw VerificationTimeoutException(timeoutSeconds)
+            }
             when (result) {
                 is viper.silver.verifier.Failure -> {
                     val errors = CollectionConverters.asJava(result.errors())
@@ -254,7 +256,7 @@ class SiliconFrontend(
     }
 
     override fun close() {
-        configurationGate.withConfiguration(args) {
+        configurationGate.withExclusiveConfiguration(args) {
             siliconApi?.let { api ->
                 restoreConfiguration(api)
                 api.stop()
