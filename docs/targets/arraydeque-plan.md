@@ -46,7 +46,8 @@ with an `ArrayDeque<Int>` worklist and an `IntArray` parent map. It is the shape
 parent links, and when the loop ends every successor of a visited vertex is visited. A second function,
 `enqueueOnce`, adds a vertex only when `!queue.contains(v)` and proves it is then `last()`. Negative siblings: a loop
 bound that skips the last successor fails the closure claim, and `enqueueOnce` claiming `size` grew without the
-`contains` test fails.
+`contains` test fails. `docs/targets/arraydeque-bfs-design.md` owns the consumer's invariants, its verifier
+prerequisite and its landing split.
 
 ## Design decisions
 
