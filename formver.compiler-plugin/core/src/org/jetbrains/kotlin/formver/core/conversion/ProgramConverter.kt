@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.fir.unwrapUseSiteSubstitutionOverrides
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.directOverriddenSymbolsSafe
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirPropertyAccessor
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -613,8 +614,9 @@ class ProgramConverter(
     ): Pair<List<ExpEmbedding>, List<ExpEmbedding>> {
         @OptIn(SymbolInternals::class) val declaration = symbol.unwrapUseSiteSubstitutionOverrides().fir
 
-        // Specifications are allowed on simple functions and on the getters of external property models.
+        // Constructor requirements are parameter-only; property models carry their getter contracts.
         val specification = when {
+            declaration is FirConstructor -> declaration.constructorSpecification()
             declaration is FirSimpleFunction -> context(checkerContext) { declaration.symbol.specificationOwner() }
                 ?.let { @OptIn(SymbolInternals::class) it.fir.userSpecification(session) }
             declaration is FirPropertyAccessor && declaration.isGetter -> declaration.propertySymbol.userSpecification(session)

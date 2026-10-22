@@ -183,6 +183,11 @@ fun abs(x: Int): Int {
 }
 ```
 
+A secondary constructor may start with a `preconditions` block over its parameters. It cannot read `this`,
+including the properties of the object under construction. The body assumes these conditions; constructor calls
+and `this(...)` or `super(...)` delegations establish them before construction executes.
+Constructor postconditions and specification blocks in `init` blocks have no contract semantics.
+
 Multiple conditions are implicitly conjoined. The postconditions block receives the return value as its parameter.
 A call on an instantiated generic receiver uses the member declaration's specification, with the class's type
 parameters standing for the call's type arguments.

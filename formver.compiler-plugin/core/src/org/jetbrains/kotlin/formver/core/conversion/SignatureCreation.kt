@@ -265,6 +265,7 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
                 owner == converter.provenConstruction)
         val contract = current.signature.buildConditions(typeResolver) {
             userFunctionPreconditions(consumes = { param -> verifiedConstruction || stored.none { it.first == param } })
+            addPreconditions(converter.embedContract(symbol, current.signature, returnTarget).first)
             userFunctionPostcondition(resultFolded = constructed == null)
             if (constructed != null) {
                 val omitted = if (verifiedConstruction) emptySet() else stored.mapTo(mutableSetOf()) { it.second.name }

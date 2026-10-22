@@ -5,7 +5,14 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
+import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
+import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
+import org.jetbrains.kotlin.formver.core.isFormverFunctionNamed
 import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
@@ -37,7 +44,23 @@ val specOfId = annotationId("SpecOf")
  * A specification together with the function it is written in: that function's value parameters are the ones the
  * specification names, and its uniqueness analysis is the one its reads are checked against.
  */
-data class UserSpecification(val holder: FirSimpleFunction, val spec: FirSpecification)
+data class UserSpecification(val holder: FirFunction, val spec: FirSpecification)
+
+/** Parameter-only entry requirements of a secondary constructor. */
+fun FirConstructor.constructorSpecification(): UserSpecification? {
+    if (isPrimary) return null
+    val precond = body?.statements?.firstOrNull()
+        ?.extractFormverFirBlock { isFormverFunctionNamed("preconditions") }?.body ?: return null
+    precond.accept(object : FirVisitorVoid() {
+        override fun visitElement(element: FirElement) {
+            if (element is FirThisReceiverExpression) throw UnsupportedFeatureException(
+                element.source, "constructor preconditions reading this",
+            )
+            element.acceptChildren(this)
+        }
+    })
+    return UserSpecification(this, FirSpecification(precond, null, null))
+}
 
 /** The name a `@SpecOf` annotation on this function gives, or `null` when it has none. */
 fun FirNamedFunctionSymbol.specOfTargetName(session: FirSession): String? =

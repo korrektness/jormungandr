@@ -78,7 +78,7 @@ fun constructionBody(
     val type = program.embedType(constructor.resolvedReturnType).pretype as ClassTypeEmbedding
     val receiver = target.variable
     val actions = mutableListOf<ExpEmbedding>(AllocateObject(receiver, type, constructionFields(owner)))
-    fun initialize(symbol: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>) {
+    fun initialize(symbol: FirConstructorSymbol, arguments: Map<SubstitutedArgument, ExpEmbedding>, delegated: Boolean = false) {
         val declaring = symbol.resolvedReturnType.toRegularClassSymbol(program.session)!!
         val phases = ConstructionPhases(declaring)
         val declaringType = program.embedType(symbol.resolvedReturnType).pretype as ClassTypeEmbedding
@@ -88,6 +88,11 @@ fun constructionBody(
         val context = MethodConverter(program, signature, resolver, program.scopeIndexProducer.getFresh(),
             OwnershipFrame.root(program.uniquenessAnalysisOf(symbol), emptyList()), constructionReceiver = receiver,
             constructionPhases = phases, constructionBoundary = boundary).statementCtxt()
+        if (delegated) symbol.fir.constructorSpecification()?.spec?.precond?.let { clauses ->
+            actions += context.collectInvariants(clauses).withProofClause(
+                org.jetbrains.kotlin.formver.common.KotlinCondition.ProofClause.PRECONDITION, symbol,
+            ).map { Assert(it).withPosition(clauses.source) }
+        }
         fun initializerContext(declaration: FirDeclaration): StmtConversionContext {
             val analysis = context(program.checkerContext) {
                 program.session.uniquenessFacts.initializationAnalysis(declaration, declaring)
@@ -123,7 +128,7 @@ fun constructionBody(
                     targetOwned = context(program.checkerContext) { parameter.isUnique() })
                 parentArguments[key] = value
             }
-            initialize(parent, parentArguments)
+            initialize(parent, parentArguments, delegated = true)
         }
         val delegatesWithinClass = parent?.resolvedReturnType?.toRegularClassSymbol(program.session) == declaring
         for (declaration in declaring.fir.declarations.takeUnless { delegatesWithinClass }.orEmpty()) {

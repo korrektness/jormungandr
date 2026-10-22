@@ -1,0 +1,419 @@
+/constructor_preconditions.kt: info: Generated Viper text for Sized:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_c_Sized_args() returns (v_ret_4: Ref)
+  ensures isSubtype(typeOf(v_ret_4), c_Sized())
+  ensures isSubtype(typeOf(v_ret_4), c_Sized()) && acc(v_ret_4.data, write) &&
+    isSubtype(typeOf(v_ret_4.data), Array()) &&
+    acc(Array_unique(v_ret_4.data), write) &&
+    (let this ==
+      (v_ret_4) in
+      true &&
+      boolFromRef((let anon_8_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_8_0)), intToRef(1073741824)))))
+{
+  var anon_2: Ref
+  var anon_11: Ref
+  var v_ret_8: Ref
+  var anon_12: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_13: Ref
+  v_ret_4 := new(data)
+  inhale typeOf(v_ret_4) == c_Sized()
+  anon_2 := intToRef(16)
+  if (0 <= intFromRef(anon_2)) {
+    anon_11 := leInts(anon_2, intToRef(1073741824))
+  } else {
+    anon_11 := boolToRef(false)}
+  assert boolFromRef(anon_11)
+  anon_3 := anon_2
+  assert intFromRef(anon_3) >= 0
+  anon_4 := new()
+  inhale acc(Array_unique(anon_4), write)
+  inhale referenceArraySize(anon_4) == intFromRef(anon_3) &&
+    (unfolding acc(Array_unique(anon_4), write) in
+      (forall j: Int ::
+        { anon_4.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_4) ==>
+        anon_4.referenceContents[j] == nullValue()))
+  anon_12 := anon_4
+  v_ret_4.data := anon_12
+  anon_13 := v_ret_4.data
+  assert referenceArraySize(anon_13) == intFromRef(anon_2)
+  label lbl_ret_8
+  assert (let this ==
+      (v_ret_4) in
+      boolFromRef((let anon_8_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_8_0)), intToRef(1073741824)))))
+  fold acc(c_Sized_unique(v_ret_4), write)
+  label lbl_ret_4
+  unfold acc(c_Sized_unique(v_ret_4), write)
+}
+
+method con_c_Sized_args_Boolean(valid: Ref) returns (v_ret_10: Ref)
+  requires isSubtype(typeOf(valid), boolType())
+  ensures isSubtype(typeOf(v_ret_10), c_Sized())
+  ensures isSubtype(typeOf(v_ret_10), c_Sized()) &&
+    acc(v_ret_10.data, write) &&
+    isSubtype(typeOf(v_ret_10.data), Array()) &&
+    acc(Array_unique(v_ret_10.data), write) &&
+    (let this ==
+      (v_ret_10) in
+      true &&
+      boolFromRef((let anon_8_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_8_0)), intToRef(1073741824)))))
+{
+  var anon_5: Ref
+  var anon_14: Ref
+  var v_ret_14: Ref
+  var anon_15: Ref
+  var anon_6: Ref
+  var anon_7: Ref
+  var anon_16: Ref
+  v_ret_10 := new(data)
+  inhale typeOf(v_ret_10) == c_Sized()
+  if (boolFromRef(valid)) {
+    anon_5 := intToRef(1)
+  } else {
+    anon_5 := intToRef(-1)}
+  if (0 <= intFromRef(anon_5)) {
+    anon_14 := leInts(anon_5, intToRef(1073741824))
+  } else {
+    anon_14 := boolToRef(false)}
+  assert boolFromRef(anon_14)
+  anon_6 := anon_5
+  assert intFromRef(anon_6) >= 0
+  anon_7 := new()
+  inhale acc(Array_unique(anon_7), write)
+  inhale referenceArraySize(anon_7) == intFromRef(anon_6) &&
+    (unfolding acc(Array_unique(anon_7), write) in
+      (forall j: Int ::
+        { anon_7.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_7) ==>
+        anon_7.referenceContents[j] == nullValue()))
+  anon_15 := anon_7
+  v_ret_10.data := anon_15
+  anon_16 := v_ret_10.data
+  assert referenceArraySize(anon_16) == intFromRef(anon_5)
+  label lbl_ret_14
+  assert (let this ==
+      (v_ret_10) in
+      boolFromRef((let anon_8_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_8_0)), intToRef(1073741824)))))
+  fold acc(c_Sized_unique(v_ret_10), write)
+  label lbl_ret_10
+  unfold acc(c_Sized_unique(v_ret_10), write)
+}
+
+method con_c_Sized_args_Int(capacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  requires 0 <= intFromRef(capacity) && intFromRef(capacity) <= 1073741824
+  ensures isSubtype(typeOf(v_ret_0), c_Sized())
+  ensures isSubtype(typeOf(v_ret_0), c_Sized()) && acc(v_ret_0.data, write) &&
+    isSubtype(typeOf(v_ret_0.data), Array()) &&
+    acc(Array_unique(v_ret_0.data), write) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_8_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_8_0)), intToRef(1073741824)))))
+{
+  var v_ret_2: Ref
+  var anon_9: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_10: Ref
+  v_ret_0 := new(data)
+  inhale typeOf(v_ret_0) == c_Sized()
+  anon_0 := capacity
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_9 := anon_1
+  v_ret_0.data := anon_9
+  anon_10 := v_ret_0.data
+  assert referenceArraySize(anon_10) == intFromRef(capacity)
+  label lbl_ret_2
+  assert (let this ==
+      (v_ret_0) in
+      boolFromRef((let anon_8_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_8_0)), intToRef(1073741824)))))
+  fold acc(c_Sized_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(c_Sized_unique(v_ret_0), write)
+}
+
+/constructor_preconditions.kt: info: Generated Viper text for zeroAndPositive:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con_c_Sized(capacity: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  requires 0 <= intFromRef(capacity) && intFromRef(capacity) <= 1073741824
+  ensures isSubtype(typeOf(ret_1), c_Sized())
+  ensures isSubtype(typeOf(ret_1), c_Sized()) && acc(ret_1.data, write) &&
+    isSubtype(typeOf(ret_1.data), Array()) &&
+    acc(Array_unique(ret_1.data), write) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_0_0)), intToRef(1073741824)))))
+
+
+method con_c_Sized_args() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), c_Sized())
+  ensures isSubtype(typeOf(ret_3), c_Sized()) && acc(ret_3.data, write) &&
+    isSubtype(typeOf(ret_3.data), Array()) &&
+    acc(Array_unique(ret_3.data), write) &&
+    (let this ==
+      (ret_3) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_0_0)), intToRef(1073741824)))))
+
+
+method zeroAndPositive() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var zero: Ref
+  var positive: Ref
+  var delegated: Ref
+  zero := con_c_Sized(intToRef(0))
+  fold acc(c_Sized_unique(zero), write)
+  positive := con_c_Sized(intToRef(10))
+  fold acc(c_Sized_unique(positive), write)
+  delegated := con_c_Sized_args()
+  fold acc(c_Sized_unique(delegated), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/constructor_preconditions.kt: info: Generated Viper text for negativeCapacity:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(capacity: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  requires 0 <= intFromRef(capacity) && intFromRef(capacity) <= 1073741824
+  ensures isSubtype(typeOf(ret_1), Sized())
+  ensures isSubtype(typeOf(ret_1), Sized()) && acc(ret_1.data, write) &&
+    isSubtype(typeOf(ret_1.data), Array()) &&
+    acc(Array_unique(ret_1.data), write) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_0_0)), intToRef(1073741824)))))
+
+
+method negativeCapacity() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var rejected: Ref
+  rejected := con(intToRef(-1))
+  fold acc(Sized_unique(rejected), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/constructor_preconditions.kt: info: Generated Viper text for excessCapacity:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(capacity: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  requires 0 <= intFromRef(capacity) && intFromRef(capacity) <= 1073741824
+  ensures isSubtype(typeOf(ret_1), Sized())
+  ensures isSubtype(typeOf(ret_1), Sized()) && acc(ret_1.data, write) &&
+    isSubtype(typeOf(ret_1.data), Array()) &&
+    acc(Array_unique(ret_1.data), write) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_0_0)), intToRef(1073741824)))))
+
+
+method excessCapacity() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var rejected: Ref
+  rejected := con(intToRef(1073741825))
+  fold acc(Sized_unique(rejected), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/constructor_preconditions.kt: info: Generated Viper text for Unrestricted:
+field data: Ref
+
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(capacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  ensures isSubtype(typeOf(v_ret_0), Unrestricted())
+  ensures isSubtype(typeOf(v_ret_0), Unrestricted()) &&
+    acc(v_ret_0.data, write) &&
+    isSubtype(typeOf(v_ret_0.data), Array()) &&
+    acc(Array_unique(v_ret_0.data), write) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_2_0)), intToRef(1073741824)))))
+{
+  var v_ret_2: Ref
+  var anon_3: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(data)
+  inhale typeOf(v_ret_0) == Unrestricted()
+  anon_0 := capacity
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_3 := anon_1
+  v_ret_0.data := anon_3
+  label lbl_ret_2
+  assert (let this ==
+      (v_ret_0) in
+      boolFromRef((let anon_2_0 ==
+        (this.data) in
+        leInts(intToRef(referenceArraySize(anon_2_0)), intToRef(1073741824)))))
+  fold acc(Unrestricted_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Unrestricted_unique(v_ret_0), write)
+}
+
+/constructor_preconditions.kt: info: Generated Viper text for Parent:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(capacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(capacity), intType())
+  requires intFromRef(capacity) > 0
+  ensures isSubtype(typeOf(v_ret_0), Parent())
+{
+  var v_ret_2: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Parent()
+  assert intFromRef(capacity) > 0
+  label lbl_ret_2
+  fold acc(Parent_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Parent_unique(v_ret_0), write)
+}
+
+/constructor_preconditions.kt: info: Generated Viper text for GoodChild:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), GoodChild())
+  ensures isSubtype(typeOf(v_ret_0), GoodChild()) &&
+    isSubtype(typeOf(v_ret_0), Parent())
+{
+  var anon: Ref
+  var v_ret_4: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == GoodChild()
+  anon := intToRef(1)
+  assert intFromRef(anon) > 0
+  assert intFromRef(anon) > 0
+  label lbl_ret_4
+  fold acc(Parent_unique(v_ret_0), write)
+  fold acc(GoodChild_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(GoodChild_unique(v_ret_0), write)
+  unfold acc(Parent_unique(v_ret_0), write)
+}
+
+/constructor_preconditions.kt: info: Generated Viper text for BadChild:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), BadChild())
+  ensures isSubtype(typeOf(v_ret_0), BadChild()) &&
+    isSubtype(typeOf(v_ret_0), Parent())
+{
+  var anon: Ref
+  var v_ret_4: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == BadChild()
+  anon := intToRef(0)
+  assert intFromRef(anon) > 0
+  assert intFromRef(anon) > 0
+  label lbl_ret_4
+  fold acc(Parent_unique(v_ret_0), write)
+  fold acc(BadChild_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(BadChild_unique(v_ret_0), write)
+  unfold acc(Parent_unique(v_ret_0), write)
+}

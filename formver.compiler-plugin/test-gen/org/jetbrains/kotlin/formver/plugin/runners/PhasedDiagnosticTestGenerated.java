@@ -1078,6 +1078,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("constructor_preconditions.kt")
+      public void testConstructor_preconditions() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/constructor_preconditions.kt");
+      }
+
+      @Test
       @TestMetadata("generic_member_contracts.kt")
       public void testGeneric_member_contracts() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/classes/generic_member_contracts.kt");
