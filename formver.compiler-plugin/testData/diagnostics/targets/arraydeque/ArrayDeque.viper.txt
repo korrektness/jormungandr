@@ -33,16 +33,16 @@ function ArrayDeque_f_elementAt(this: Ref, par_index: Ref): Ref
     intFromRef(par_index) < intFromRef(ArrayDeque_g_size(this))
   ensures isSubtype(typeOf(result), nullable(anyType()))
 {
-  (let anon_14_0 ==
+  (let anon_18_0 ==
     ((unfolding acc(ArrayDeque_unique(this), write) in this.head)) in
     (unfolding acc(ArrayDeque_unique(this), write) in
       (let physical_0 ==
-        (positiveMod(this, plusInts(anon_14_0, par_index))) in
+        (positiveMod(this, plusInts(anon_18_0, par_index))) in
         (unfolding acc(ArrayDeque_unique(this), write) in
-          (let anon_15_0 ==
+          (let anon_19_0 ==
             (this.elementData) in
-            (unfolding acc(Array_unique(anon_15_0), write) in
-              anon_15_0.referenceContents[intFromRef(physical_0)]))))))
+            (unfolding acc(Array_unique(anon_19_0), write) in
+              anon_19_0.referenceContents[intFromRef(physical_0)]))))))
 }
 
 function ArrayDeque_g_size(this: Ref): Ref
@@ -79,9 +79,9 @@ function lastIndex(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 {
   (unfolding acc(ArrayDeque_unique(this), write) in
-    (let anon_13_0 ==
+    (let anon_17_0 ==
       (this.count) in
-      minusInts(anon_13_0, intToRef(1))))
+      minusInts(anon_17_0, intToRef(1))))
 }
 
 function positiveMod(this: Ref, par_index: Ref): Ref
@@ -108,12 +108,12 @@ function positiveMod(this: Ref, par_index: Ref): Ref
         par_index)))
 {
   (unfolding acc(ArrayDeque_unique(this), write) in
-    (let anon_18_0 ==
+    (let anon_22_0 ==
       (this.elementData) in
-      (intFromRef(par_index) >= referenceArraySize(anon_18_0) ?
-        (let anon_20_0 ==
+      (intFromRef(par_index) >= referenceArraySize(anon_22_0) ?
+        (let anon_24_0 ==
           (this.elementData) in
-          minusInts(par_index, intToRef(referenceArraySize(anon_20_0)))) :
+          minusInts(par_index, intToRef(referenceArraySize(anon_24_0)))) :
         par_index)))
 }
 
@@ -122,7 +122,15 @@ function referenceArraySize(this: Ref): Int
   ensures result <= 2147483647
 
 
-method con() returns (v_ret_0: Ref)
+method cause(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_5), nullable(anyType()))
+
+
+method con_ArrayDeque(initialCapacity: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(initialCapacity), intType())
+  requires 0 <= intFromRef(initialCapacity) &&
+    intFromRef(initialCapacity) <= 1073741824
   ensures isSubtype(typeOf(v_ret_0), ArrayDeque())
   ensures isSubtype(typeOf(v_ret_0), ArrayDeque()) &&
     acc(v_ret_0.head, write) &&
@@ -137,161 +145,375 @@ method con() returns (v_ret_0: Ref)
     (let this ==
       (v_ret_0) in
       true &&
-      boolFromRef((let anon_2_0 ==
+      boolFromRef((let anon_6_0 ==
         (this.count) in
-        (let anon_3_0 ==
-          ((0 <= intFromRef(anon_2_0) ? this.count : null)) in
-          (let anon_4_0 ==
-            ((0 <= intFromRef(anon_2_0) ? this.elementData : null)) in
-            (let anon_5_0 ==
-              ((0 <= intFromRef(anon_2_0) &&
-              intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) ?
+        (let anon_7_0 ==
+          ((0 <= intFromRef(anon_6_0) ? this.count : null)) in
+          (let anon_8_0 ==
+            ((0 <= intFromRef(anon_6_0) ? this.elementData : null)) in
+            (let anon_9_0 ==
+              ((0 <= intFromRef(anon_6_0) &&
+              intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) ?
                 this.elementData :
                 null)) in
-              (let anon_6_0 ==
-                ((0 <= intFromRef(anon_2_0) &&
-                intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
-                !(referenceArraySize(anon_5_0) == 0) ?
+              (let anon_10_0 ==
+                ((0 <= intFromRef(anon_6_0) &&
+                intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                !(referenceArraySize(anon_9_0) == 0) ?
                   this.head :
                   null)) in
-                (let anon_7_0 ==
-                  ((0 <= intFromRef(anon_2_0) &&
-                  intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
-                  !(referenceArraySize(anon_5_0) == 0) &&
-                  0 <= intFromRef(anon_6_0) ?
+                (let anon_11_0 ==
+                  ((0 <= intFromRef(anon_6_0) &&
+                  intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                  !(referenceArraySize(anon_9_0) == 0) &&
+                  0 <= intFromRef(anon_10_0) ?
                     this.head :
                     null)) in
-                  (let anon_8_0 ==
-                    ((0 <= intFromRef(anon_2_0) &&
-                    intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
-                    !(referenceArraySize(anon_5_0) == 0) &&
-                    0 <= intFromRef(anon_6_0) ?
+                  (let anon_12_0 ==
+                    ((0 <= intFromRef(anon_6_0) &&
+                    intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                    !(referenceArraySize(anon_9_0) == 0) &&
+                    0 <= intFromRef(anon_10_0) ?
                       this.elementData :
                       null)) in
-                    (let anon_9_0 ==
-                      ((0 <= intFromRef(anon_2_0) &&
-                      intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
-                      (referenceArraySize(anon_5_0) == 0 ||
-                      0 <= intFromRef(anon_6_0) &&
-                      intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) ?
+                    (let anon_13_0 ==
+                      ((0 <= intFromRef(anon_6_0) &&
+                      intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                      (referenceArraySize(anon_9_0) == 0 ||
+                      0 <= intFromRef(anon_10_0) &&
+                      intFromRef(anon_11_0) < referenceArraySize(anon_12_0)) ?
                         this.elementData :
                         null)) in
-                      (let anon_10_0 ==
-                        ((0 <= intFromRef(anon_2_0) &&
-                        intFromRef(anon_3_0) <=
-                        referenceArraySize(anon_4_0) &&
-                        (referenceArraySize(anon_5_0) == 0 ||
-                        0 <= intFromRef(anon_6_0) &&
-                        intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
-                        !!(referenceArraySize(anon_9_0) == 0) ?
+                      (let anon_14_0 ==
+                        ((0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) <=
+                        referenceArraySize(anon_8_0) &&
+                        (referenceArraySize(anon_9_0) == 0 ||
+                        0 <= intFromRef(anon_10_0) &&
+                        intFromRef(anon_11_0) <
+                        referenceArraySize(anon_12_0)) &&
+                        !!(referenceArraySize(anon_13_0) == 0) ?
                           this.head :
                           null)) in
-                        boolToRef(0 <= intFromRef(anon_2_0) &&
-                        intFromRef(anon_3_0) <=
-                        referenceArraySize(anon_4_0) &&
-                        (referenceArraySize(anon_5_0) == 0 ||
-                        0 <= intFromRef(anon_6_0) &&
-                        intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
-                        (!(referenceArraySize(anon_9_0) == 0) ||
-                        intFromRef(anon_10_0) == 0) &&
-                        (let anon_11_0 ==
+                        boolToRef(0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) <=
+                        referenceArraySize(anon_8_0) &&
+                        (referenceArraySize(anon_9_0) == 0 ||
+                        0 <= intFromRef(anon_10_0) &&
+                        intFromRef(anon_11_0) <
+                        referenceArraySize(anon_12_0)) &&
+                        (!(referenceArraySize(anon_13_0) == 0) ||
+                        intFromRef(anon_14_0) == 0) &&
+                        (let anon_15_0 ==
                           (this.elementData) in
-                          referenceArraySize(anon_11_0) <= 1073741824)))))))))))))
+                          referenceArraySize(anon_15_0) <= 1073741824)))))))))))))
   ensures intFromRef(v_ret_0.head) == 0
   ensures intFromRef(v_ret_0.count) == 0
   ensures intFromRef(v_ret_0.modCount) == 0
 {
   var v_ret_2: Ref
-  var anon_22: Ref
-  var anon_0: Ref
-  var anon_1: Ref
-  var anon_23: Ref
+  var anon_26: Ref
+  var anon_29: Ref
   v_ret_0 := new(head, elementData, count, modCount)
   inhale typeOf(v_ret_0) == ArrayDeque()
   v_ret_0.head := intToRef(0)
   v_ret_0.count := intToRef(0)
   v_ret_0.modCount := intToRef(0)
-  anon_0 := intToRef(0)
-  assert intFromRef(anon_0) >= 0
-  anon_1 := new()
-  inhale acc(Array_unique(anon_1), write)
-  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
-    (unfolding acc(Array_unique(anon_1), write) in
-      (forall j: Int ::
-        { anon_1.referenceContents[j] }
-        j >= 0 && j < referenceArraySize(anon_1) ==>
-        anon_1.referenceContents[j] == nullValue()))
-  anon_22 := anon_1
-  v_ret_0.elementData := anon_22
-  anon_23 := v_ret_0.elementData
-  assert referenceArraySize(anon_23) == 0
+  if (intFromRef(initialCapacity) == 0) {
+    var anon_0: Ref
+    var anon_1: Ref
+    anon_0 := intToRef(0)
+    assert intFromRef(anon_0) >= 0
+    anon_1 := new()
+    inhale acc(Array_unique(anon_1), write)
+    inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+      (unfolding acc(Array_unique(anon_1), write) in
+        (forall j: Int ::
+          { anon_1.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_1) ==>
+          anon_1.referenceContents[j] == nullValue()))
+    anon_26 := anon_1
+  } elseif (intFromRef(initialCapacity) > 0) {
+    var anon_2: Ref
+    var anon_3: Ref
+    anon_2 := initialCapacity
+    assert intFromRef(anon_2) >= 0
+    anon_3 := new()
+    inhale acc(Array_unique(anon_3), write)
+    inhale referenceArraySize(anon_3) == intFromRef(anon_2) &&
+      (unfolding acc(Array_unique(anon_3), write) in
+        (forall j: Int ::
+          { anon_3.referenceContents[j] }
+          j >= 0 && j < referenceArraySize(anon_3) ==>
+          anon_3.referenceContents[j] == nullValue()))
+    anon_26 := anon_3
+  } else {
+    var anon_27: Ref
+    var anon_28: Ref
+    anon_28 := plus(stringLit(), initialCapacity)
+    anon_27 := con_IllegalArgumentException(anon_28)
+    fold acc(Throwable_unique(anon_27), write)
+    fold acc(Exception_unique(anon_27), write)
+    fold acc(RuntimeException_unique(anon_27), write)
+    fold acc(IllegalArgumentException_unique(anon_27), write)
+    inhale false
+  }
+  v_ret_0.elementData := anon_26
+  anon_29 := v_ret_0.elementData
+  assert referenceArraySize(anon_29) == intFromRef(initialCapacity)
   label lbl_ret_2
   assert (let this ==
       (v_ret_0) in
-      boolFromRef((let anon_2_0 ==
+      boolFromRef((let anon_6_0 ==
         (this.count) in
-        (let anon_3_0 ==
-          ((0 <= intFromRef(anon_2_0) ? this.count : null)) in
-          (let anon_4_0 ==
-            ((0 <= intFromRef(anon_2_0) ? this.elementData : null)) in
-            (let anon_5_0 ==
-              ((0 <= intFromRef(anon_2_0) &&
-              intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) ?
+        (let anon_7_0 ==
+          ((0 <= intFromRef(anon_6_0) ? this.count : null)) in
+          (let anon_8_0 ==
+            ((0 <= intFromRef(anon_6_0) ? this.elementData : null)) in
+            (let anon_9_0 ==
+              ((0 <= intFromRef(anon_6_0) &&
+              intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) ?
                 this.elementData :
                 null)) in
-              (let anon_6_0 ==
-                ((0 <= intFromRef(anon_2_0) &&
-                intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
-                !(referenceArraySize(anon_5_0) == 0) ?
+              (let anon_10_0 ==
+                ((0 <= intFromRef(anon_6_0) &&
+                intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                !(referenceArraySize(anon_9_0) == 0) ?
                   this.head :
                   null)) in
-                (let anon_7_0 ==
-                  ((0 <= intFromRef(anon_2_0) &&
-                  intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
-                  !(referenceArraySize(anon_5_0) == 0) &&
-                  0 <= intFromRef(anon_6_0) ?
+                (let anon_11_0 ==
+                  ((0 <= intFromRef(anon_6_0) &&
+                  intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                  !(referenceArraySize(anon_9_0) == 0) &&
+                  0 <= intFromRef(anon_10_0) ?
                     this.head :
                     null)) in
-                  (let anon_8_0 ==
-                    ((0 <= intFromRef(anon_2_0) &&
-                    intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
-                    !(referenceArraySize(anon_5_0) == 0) &&
-                    0 <= intFromRef(anon_6_0) ?
+                  (let anon_12_0 ==
+                    ((0 <= intFromRef(anon_6_0) &&
+                    intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                    !(referenceArraySize(anon_9_0) == 0) &&
+                    0 <= intFromRef(anon_10_0) ?
                       this.elementData :
                       null)) in
-                    (let anon_9_0 ==
-                      ((0 <= intFromRef(anon_2_0) &&
-                      intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
-                      (referenceArraySize(anon_5_0) == 0 ||
-                      0 <= intFromRef(anon_6_0) &&
-                      intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) ?
+                    (let anon_13_0 ==
+                      ((0 <= intFromRef(anon_6_0) &&
+                      intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                      (referenceArraySize(anon_9_0) == 0 ||
+                      0 <= intFromRef(anon_10_0) &&
+                      intFromRef(anon_11_0) < referenceArraySize(anon_12_0)) ?
                         this.elementData :
                         null)) in
-                      (let anon_10_0 ==
-                        ((0 <= intFromRef(anon_2_0) &&
-                        intFromRef(anon_3_0) <=
-                        referenceArraySize(anon_4_0) &&
-                        (referenceArraySize(anon_5_0) == 0 ||
-                        0 <= intFromRef(anon_6_0) &&
-                        intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
-                        !!(referenceArraySize(anon_9_0) == 0) ?
+                      (let anon_14_0 ==
+                        ((0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) <=
+                        referenceArraySize(anon_8_0) &&
+                        (referenceArraySize(anon_9_0) == 0 ||
+                        0 <= intFromRef(anon_10_0) &&
+                        intFromRef(anon_11_0) <
+                        referenceArraySize(anon_12_0)) &&
+                        !!(referenceArraySize(anon_13_0) == 0) ?
                           this.head :
                           null)) in
-                        boolToRef(0 <= intFromRef(anon_2_0) &&
-                        intFromRef(anon_3_0) <=
-                        referenceArraySize(anon_4_0) &&
-                        (referenceArraySize(anon_5_0) == 0 ||
-                        0 <= intFromRef(anon_6_0) &&
-                        intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
-                        (!(referenceArraySize(anon_9_0) == 0) ||
-                        intFromRef(anon_10_0) == 0) &&
-                        (let anon_11_0 ==
+                        boolToRef(0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) <=
+                        referenceArraySize(anon_8_0) &&
+                        (referenceArraySize(anon_9_0) == 0 ||
+                        0 <= intFromRef(anon_10_0) &&
+                        intFromRef(anon_11_0) <
+                        referenceArraySize(anon_12_0)) &&
+                        (!(referenceArraySize(anon_13_0) == 0) ||
+                        intFromRef(anon_14_0) == 0) &&
+                        (let anon_15_0 ==
                           (this.elementData) in
-                          referenceArraySize(anon_11_0) <= 1073741824)))))))))))))
+                          referenceArraySize(anon_15_0) <= 1073741824)))))))))))))
   fold acc(ArrayDeque_unique(v_ret_0), write)
   label lbl_ret_0
   unfold acc(ArrayDeque_unique(v_ret_0), write)
 }
+
+method con_ArrayDeque_args() returns (v_ret_8: Ref)
+  ensures isSubtype(typeOf(v_ret_8), ArrayDeque())
+  ensures isSubtype(typeOf(v_ret_8), ArrayDeque()) &&
+    acc(v_ret_8.head, write) &&
+    isSubtype(typeOf(v_ret_8.head), intType()) &&
+    acc(v_ret_8.elementData, write) &&
+    isSubtype(typeOf(v_ret_8.elementData), Array()) &&
+    acc(Array_unique(v_ret_8.elementData), write) &&
+    acc(v_ret_8.count, write) &&
+    isSubtype(typeOf(v_ret_8.count), intType()) &&
+    acc(v_ret_8.modCount, write) &&
+    isSubtype(typeOf(v_ret_8.modCount), intType()) &&
+    (let this ==
+      (v_ret_8) in
+      true &&
+      boolFromRef((let anon_6_0 ==
+        (this.count) in
+        (let anon_7_0 ==
+          ((0 <= intFromRef(anon_6_0) ? this.count : null)) in
+          (let anon_8_0 ==
+            ((0 <= intFromRef(anon_6_0) ? this.elementData : null)) in
+            (let anon_9_0 ==
+              ((0 <= intFromRef(anon_6_0) &&
+              intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) ?
+                this.elementData :
+                null)) in
+              (let anon_10_0 ==
+                ((0 <= intFromRef(anon_6_0) &&
+                intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                !(referenceArraySize(anon_9_0) == 0) ?
+                  this.head :
+                  null)) in
+                (let anon_11_0 ==
+                  ((0 <= intFromRef(anon_6_0) &&
+                  intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                  !(referenceArraySize(anon_9_0) == 0) &&
+                  0 <= intFromRef(anon_10_0) ?
+                    this.head :
+                    null)) in
+                  (let anon_12_0 ==
+                    ((0 <= intFromRef(anon_6_0) &&
+                    intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                    !(referenceArraySize(anon_9_0) == 0) &&
+                    0 <= intFromRef(anon_10_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_13_0 ==
+                      ((0 <= intFromRef(anon_6_0) &&
+                      intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                      (referenceArraySize(anon_9_0) == 0 ||
+                      0 <= intFromRef(anon_10_0) &&
+                      intFromRef(anon_11_0) < referenceArraySize(anon_12_0)) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_14_0 ==
+                        ((0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) <=
+                        referenceArraySize(anon_8_0) &&
+                        (referenceArraySize(anon_9_0) == 0 ||
+                        0 <= intFromRef(anon_10_0) &&
+                        intFromRef(anon_11_0) <
+                        referenceArraySize(anon_12_0)) &&
+                        !!(referenceArraySize(anon_13_0) == 0) ?
+                          this.head :
+                          null)) in
+                        boolToRef(0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) <=
+                        referenceArraySize(anon_8_0) &&
+                        (referenceArraySize(anon_9_0) == 0 ||
+                        0 <= intFromRef(anon_10_0) &&
+                        intFromRef(anon_11_0) <
+                        referenceArraySize(anon_12_0)) &&
+                        (!(referenceArraySize(anon_13_0) == 0) ||
+                        intFromRef(anon_14_0) == 0) &&
+                        (let anon_15_0 ==
+                          (this.elementData) in
+                          referenceArraySize(anon_15_0) <= 1073741824)))))))))))))
+  ensures intFromRef(v_ret_8.head) == 0
+  ensures intFromRef(v_ret_8.count) == 0
+  ensures intFromRef(v_ret_8.modCount) == 0
+{
+  var v_ret_10: Ref
+  var anon_30: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var anon_31: Ref
+  v_ret_8 := new(head, elementData, count, modCount)
+  inhale typeOf(v_ret_8) == ArrayDeque()
+  v_ret_8.head := intToRef(0)
+  v_ret_8.count := intToRef(0)
+  v_ret_8.modCount := intToRef(0)
+  anon_4 := intToRef(0)
+  assert intFromRef(anon_4) >= 0
+  anon_5 := new()
+  inhale acc(Array_unique(anon_5), write)
+  inhale referenceArraySize(anon_5) == intFromRef(anon_4) &&
+    (unfolding acc(Array_unique(anon_5), write) in
+      (forall j: Int ::
+        { anon_5.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_5) ==>
+        anon_5.referenceContents[j] == nullValue()))
+  anon_30 := anon_5
+  v_ret_8.elementData := anon_30
+  anon_31 := v_ret_8.elementData
+  assert referenceArraySize(anon_31) == 0
+  label lbl_ret_10
+  assert (let this ==
+      (v_ret_8) in
+      boolFromRef((let anon_6_0 ==
+        (this.count) in
+        (let anon_7_0 ==
+          ((0 <= intFromRef(anon_6_0) ? this.count : null)) in
+          (let anon_8_0 ==
+            ((0 <= intFromRef(anon_6_0) ? this.elementData : null)) in
+            (let anon_9_0 ==
+              ((0 <= intFromRef(anon_6_0) &&
+              intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) ?
+                this.elementData :
+                null)) in
+              (let anon_10_0 ==
+                ((0 <= intFromRef(anon_6_0) &&
+                intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                !(referenceArraySize(anon_9_0) == 0) ?
+                  this.head :
+                  null)) in
+                (let anon_11_0 ==
+                  ((0 <= intFromRef(anon_6_0) &&
+                  intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                  !(referenceArraySize(anon_9_0) == 0) &&
+                  0 <= intFromRef(anon_10_0) ?
+                    this.head :
+                    null)) in
+                  (let anon_12_0 ==
+                    ((0 <= intFromRef(anon_6_0) &&
+                    intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                    !(referenceArraySize(anon_9_0) == 0) &&
+                    0 <= intFromRef(anon_10_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_13_0 ==
+                      ((0 <= intFromRef(anon_6_0) &&
+                      intFromRef(anon_7_0) <= referenceArraySize(anon_8_0) &&
+                      (referenceArraySize(anon_9_0) == 0 ||
+                      0 <= intFromRef(anon_10_0) &&
+                      intFromRef(anon_11_0) < referenceArraySize(anon_12_0)) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_14_0 ==
+                        ((0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) <=
+                        referenceArraySize(anon_8_0) &&
+                        (referenceArraySize(anon_9_0) == 0 ||
+                        0 <= intFromRef(anon_10_0) &&
+                        intFromRef(anon_11_0) <
+                        referenceArraySize(anon_12_0)) &&
+                        !!(referenceArraySize(anon_13_0) == 0) ?
+                          this.head :
+                          null)) in
+                        boolToRef(0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) <=
+                        referenceArraySize(anon_8_0) &&
+                        (referenceArraySize(anon_9_0) == 0 ||
+                        0 <= intFromRef(anon_10_0) &&
+                        intFromRef(anon_11_0) <
+                        referenceArraySize(anon_12_0)) &&
+                        (!(referenceArraySize(anon_13_0) == 0) ||
+                        intFromRef(anon_14_0) == 0) &&
+                        (let anon_15_0 ==
+                          (this.elementData) in
+                          referenceArraySize(anon_15_0) <= 1073741824)))))))))))))
+  fold acc(ArrayDeque_unique(v_ret_8), write)
+  label lbl_ret_8
+  unfold acc(ArrayDeque_unique(v_ret_8), write)
+}
+
+method con_IllegalArgumentException(p0: Ref) returns (ret_6: Ref)
+  requires isSubtype(typeOf(p0), nullable(stringType()))
+  ensures isSubtype(typeOf(ret_6), IllegalArgumentException())
+  ensures isSubtype(typeOf(ret_6), IllegalArgumentException()) &&
+    (isSubtype(typeOf(ret_6), RuntimeException()) &&
+    (isSubtype(typeOf(ret_6), Exception()) &&
+    isSubtype(typeOf(ret_6), Throwable())))
+
 
 method laws(this: Ref)
   requires acc(ArrayDeque_unique(this), write)
@@ -301,6 +523,17 @@ method laws(this: Ref)
   assert boolFromRef(boolToRef(0 <= intFromRef(ArrayDeque_g_size(this)) &&
     intFromRef(ArrayDeque_g_size(this)) <= 1073741824))
 }
+
+method message(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_4), nullable(anyType()))
+
+
+method plus(this: Ref, other: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), stringType())
+  requires isSubtype(typeOf(other), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_7), stringType())
+
 
 /ArrayDeque.kt: info: Generated Viper text for size:
 field count: Ref
@@ -14532,6 +14765,414 @@ method newDeque() returns (v_ret_0: Ref)
   v_ret_0 := l2_result
   goto lbl_ret_0
   label lbl_ret_0
+}
+
+/ArrayDeque.kt: info: Generated Viper text for capacityDeque:
+field count: Ref
+
+field elementData: Ref
+
+field head: Ref
+
+field modCount: Ref
+
+field referenceContents: Seq[Ref]
+
+function ArrayDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_12_0 ==
+    ((unfolding acc(ArrayDeque_unique(this), write) in this.head)) in
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_12_0, par_index))) in
+        (unfolding acc(ArrayDeque_unique(this), write) in
+          (let anon_13_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_13_0), write) in
+              anon_13_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function ArrayDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayDeque_unique(this), write) in this.count)
+}
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(DequeSpec_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(DequeSpec_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function lastIndex(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayDeque_unique(this), write) in
+    (let anon_11_0 ==
+      (this.count) in
+      minusInts(anon_11_0, intToRef(1))))
+}
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(ArrayDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(ArrayDeque_unique(this), write) in
+    (let anon_16_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_16_0) ?
+        (let anon_18_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_18_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method capacityDeque() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var zero: Ref
+  var positive: Ref
+  var anon_20: Ref
+  var anon_21: Ref
+  zero := con(intToRef(0))
+  fold acc(ArrayDeque_unique(zero), write)
+  positive := con(intToRef(10))
+  fold acc(ArrayDeque_unique(positive), write)
+  anon_21 := ArrayDeque_g_size(zero)
+  if (intFromRef(anon_21) == 0) {
+    var anon_22: Ref
+    anon_22 := ArrayDeque_g_size(positive)
+    anon_20 := boolToRef(intFromRef(anon_22) == 0)
+  } else {
+    anon_20 := boolToRef(false)}
+  assert boolFromRef(anon_20)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method con(initialCapacity: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(initialCapacity), intType())
+  requires 0 <= intFromRef(initialCapacity) &&
+    intFromRef(initialCapacity) <= 1073741824
+  ensures isSubtype(typeOf(ret_1), ArrayDeque())
+  ensures isSubtype(typeOf(ret_1), ArrayDeque()) && acc(ret_1.head, write) &&
+    isSubtype(typeOf(ret_1.head), intType()) &&
+    acc(ret_1.elementData, write) &&
+    isSubtype(typeOf(ret_1.elementData), Array()) &&
+    acc(Array_unique(ret_1.elementData), write) &&
+    acc(ret_1.count, write) &&
+    isSubtype(typeOf(ret_1.count), intType()) &&
+    acc(ret_1.modCount, write) &&
+    isSubtype(typeOf(ret_1.modCount), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.count) in
+        (let anon_1_0 ==
+          ((0 <= intFromRef(anon_0_0) ? this.count : null)) in
+          (let anon_2_0 ==
+            ((0 <= intFromRef(anon_0_0) ? this.elementData : null)) in
+            (let anon_3_0 ==
+              ((0 <= intFromRef(anon_0_0) &&
+              intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) ?
+                this.elementData :
+                null)) in
+              (let anon_4_0 ==
+                ((0 <= intFromRef(anon_0_0) &&
+                intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                !(referenceArraySize(anon_3_0) == 0) ?
+                  this.head :
+                  null)) in
+                (let anon_5_0 ==
+                  ((0 <= intFromRef(anon_0_0) &&
+                  intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                  !(referenceArraySize(anon_3_0) == 0) &&
+                  0 <= intFromRef(anon_4_0) ?
+                    this.head :
+                    null)) in
+                  (let anon_6_0 ==
+                    ((0 <= intFromRef(anon_0_0) &&
+                    intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                    !(referenceArraySize(anon_3_0) == 0) &&
+                    0 <= intFromRef(anon_4_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_7_0 ==
+                      ((0 <= intFromRef(anon_0_0) &&
+                      intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                      (referenceArraySize(anon_3_0) == 0 ||
+                      0 <= intFromRef(anon_4_0) &&
+                      intFromRef(anon_5_0) < referenceArraySize(anon_6_0)) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_8_0 ==
+                        ((0 <= intFromRef(anon_0_0) &&
+                        intFromRef(anon_1_0) <=
+                        referenceArraySize(anon_2_0) &&
+                        (referenceArraySize(anon_3_0) == 0 ||
+                        0 <= intFromRef(anon_4_0) &&
+                        intFromRef(anon_5_0) < referenceArraySize(anon_6_0)) &&
+                        !!(referenceArraySize(anon_7_0) == 0) ?
+                          this.head :
+                          null)) in
+                        boolToRef(0 <= intFromRef(anon_0_0) &&
+                        intFromRef(anon_1_0) <=
+                        referenceArraySize(anon_2_0) &&
+                        (referenceArraySize(anon_3_0) == 0 ||
+                        0 <= intFromRef(anon_4_0) &&
+                        intFromRef(anon_5_0) < referenceArraySize(anon_6_0)) &&
+                        (!(referenceArraySize(anon_7_0) == 0) ||
+                        intFromRef(anon_8_0) == 0) &&
+                        (let anon_9_0 ==
+                          (this.elementData) in
+                          referenceArraySize(anon_9_0) <= 1073741824)))))))))))))
+  ensures intFromRef(ret_1.head) == 0
+  ensures intFromRef(ret_1.count) == 0
+  ensures intFromRef(ret_1.modCount) == 0
+
+
+/ArrayDeque.kt: info: Generated Viper text for negativeCapacityDeque:
+field count: Ref
+
+field elementData: Ref
+
+field head: Ref
+
+field modCount: Ref
+
+field referenceContents: Seq[Ref]
+
+function ArrayDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_12_0 ==
+    ((unfolding acc(ArrayDeque_unique(this), write) in this.head)) in
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_12_0, par_index))) in
+        (unfolding acc(ArrayDeque_unique(this), write) in
+          (let anon_13_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_13_0), write) in
+              anon_13_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function ArrayDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayDeque_unique(this), write) in this.count)
+}
+
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function lastIndex(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayDeque_unique(this), write) in
+    (let anon_11_0 ==
+      (this.count) in
+      minusInts(anon_11_0, intToRef(1))))
+}
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(ArrayDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(ArrayDeque_unique(this), write) in
+    (let anon_16_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_16_0) ?
+        (let anon_18_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_18_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con(initialCapacity: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(initialCapacity), intType())
+  requires 0 <= intFromRef(initialCapacity) &&
+    intFromRef(initialCapacity) <= 1073741824
+  ensures isSubtype(typeOf(ret_1), ArrayDeque())
+  ensures isSubtype(typeOf(ret_1), ArrayDeque()) && acc(ret_1.head, write) &&
+    isSubtype(typeOf(ret_1.head), intType()) &&
+    acc(ret_1.elementData, write) &&
+    isSubtype(typeOf(ret_1.elementData), Array()) &&
+    acc(Array_unique(ret_1.elementData), write) &&
+    acc(ret_1.count, write) &&
+    isSubtype(typeOf(ret_1.count), intType()) &&
+    acc(ret_1.modCount, write) &&
+    isSubtype(typeOf(ret_1.modCount), intType()) &&
+    (let this ==
+      (ret_1) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.count) in
+        (let anon_1_0 ==
+          ((0 <= intFromRef(anon_0_0) ? this.count : null)) in
+          (let anon_2_0 ==
+            ((0 <= intFromRef(anon_0_0) ? this.elementData : null)) in
+            (let anon_3_0 ==
+              ((0 <= intFromRef(anon_0_0) &&
+              intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) ?
+                this.elementData :
+                null)) in
+              (let anon_4_0 ==
+                ((0 <= intFromRef(anon_0_0) &&
+                intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                !(referenceArraySize(anon_3_0) == 0) ?
+                  this.head :
+                  null)) in
+                (let anon_5_0 ==
+                  ((0 <= intFromRef(anon_0_0) &&
+                  intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                  !(referenceArraySize(anon_3_0) == 0) &&
+                  0 <= intFromRef(anon_4_0) ?
+                    this.head :
+                    null)) in
+                  (let anon_6_0 ==
+                    ((0 <= intFromRef(anon_0_0) &&
+                    intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                    !(referenceArraySize(anon_3_0) == 0) &&
+                    0 <= intFromRef(anon_4_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_7_0 ==
+                      ((0 <= intFromRef(anon_0_0) &&
+                      intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                      (referenceArraySize(anon_3_0) == 0 ||
+                      0 <= intFromRef(anon_4_0) &&
+                      intFromRef(anon_5_0) < referenceArraySize(anon_6_0)) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_8_0 ==
+                        ((0 <= intFromRef(anon_0_0) &&
+                        intFromRef(anon_1_0) <=
+                        referenceArraySize(anon_2_0) &&
+                        (referenceArraySize(anon_3_0) == 0 ||
+                        0 <= intFromRef(anon_4_0) &&
+                        intFromRef(anon_5_0) < referenceArraySize(anon_6_0)) &&
+                        !!(referenceArraySize(anon_7_0) == 0) ?
+                          this.head :
+                          null)) in
+                        boolToRef(0 <= intFromRef(anon_0_0) &&
+                        intFromRef(anon_1_0) <=
+                        referenceArraySize(anon_2_0) &&
+                        (referenceArraySize(anon_3_0) == 0 ||
+                        0 <= intFromRef(anon_4_0) &&
+                        intFromRef(anon_5_0) < referenceArraySize(anon_6_0)) &&
+                        (!(referenceArraySize(anon_7_0) == 0) ||
+                        intFromRef(anon_8_0) == 0) &&
+                        (let anon_9_0 ==
+                          (this.elementData) in
+                          referenceArraySize(anon_9_0) <= 1073741824)))))))))))))
+  ensures intFromRef(ret_1.head) == 0
+  ensures intFromRef(ret_1.count) == 0
+  ensures intFromRef(ret_1.modCount) == 0
+
+
+method negativeCapacityDeque() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var rejected: Ref
+  rejected := con(intToRef(-1))
+  fold acc(ArrayDeque_unique(rejected), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
 }
 
 /ArrayDeque.kt: info: Generated Viper text for emptyDeque:

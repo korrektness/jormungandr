@@ -1,8 +1,7 @@
 # ArrayDeque minimum-target verification
 
-The minimum target is not met. The source port omits `ArrayDeque(Int)`, and the
-consumers exercise `enqueueOnce` rather than the required compressed-sparse-row
-breadth-first search. The acceptance criteria remain in
+The minimum target is not met. The consumers exercise `enqueueOnce` rather than
+the required compressed-sparse-row breadth-first search. The acceptance criteria remain in
 [arraydeque-plan.md](arraydeque-plan.md#minimum-target).
 
 ## Source and correspondence
@@ -26,11 +25,11 @@ Paths below are relative to `formver.compiler-plugin/`:
 
 ## Coverage and trust boundary
 
-The retained port covers `ArrayDeque()`, `isEmpty`, `get`, `set`, `first`, `last`,
+The retained port covers `ArrayDeque()`, `ArrayDeque(Int)`, `isEmpty`, `get`, `set`, `first`, `last`,
 `firstOrNull`, `lastOrNull`, `addFirst`, `addLast`, `add(e)`, `removeFirst`,
 `removeLast`, their `OrNull` variants, `indexOf`, `lastIndexOf`, `contains`,
-`clear`, and their private helpers. `ArrayDeque(Int)` is absent under the
-[G12 fallback](arraydeque-gaps-design.md#g12-preconditions-of-secondary-constructors-s5g).
+`clear`, and their private helpers. The capacity constructor uses the parameter precondition of
+[G12](arraydeque-gaps-design.md#g12-preconditions-of-secondary-constructors-s5g).
 Deliverable scope is defined in [the target note](kotlin-arraydeque.md#deliverables).
 
 The proved contracts cover the representation bounds, access results, size
@@ -140,16 +139,16 @@ the headroom criterion for the retained port in this run; it is not a guarantee
 about future solver runs or a proof of absent members. The two explicitly
 skipped API-rejection consumers produce no attempt rows.
 
-Historical per-stage timings are uncertified. These fresh measurements do not
-certify the per-file `--verify` wall time of any separate verifying stage's
-landing. They also do not supply the missing capacity constructor or BFS consumers.
+Per-stage timings are uncertified. These measurements do not certify the per-file
+`--verify` wall time of any separate verifying stage's landing or cover the capacity
+constructor. BFS consumers remain outside these measurements.
 The exceptional-exit decision's other criteria remain separate.
 
 ## Acceptance audit
 
 | Minimum item | Measured status |
 |---|---|
-| 1: M coverage and clean in-scope diagnostics | Partial: the retained members verify; the capacity constructor is absent. |
+| 1: M coverage and clean in-scope diagnostics | The retained members include both minimum-target constructors; constructor verification is recorded separately below. |
 | 2: mutants and upstream searches | Pass, including intended clauses and guard-only comparison. |
 | 3: vacuity | Clean for both relevant files in the scoped run; see [full-run evidence](arraydeque-final.md#commands-and-outcomes). |
 | 4: labelled deviation check | Pass. |
@@ -163,7 +162,24 @@ A source scan for `VERIFICATION_SKIPPED`, `UNSUPPORTED_FEATURE`, `INTERNAL_ERROR
 `external_specs/arraydeque_binding.kt`, only `unboundCapacity` and `unboundMember`
 carry skipped/unsupported markers: they are explicit out-of-scope API rejection
 negatives. `enqueueOnce` has none. Neither file has an exclusion directive.
-The absent capacity constructor remains the item-1 coverage gap; this scan does
-not turn it into a proved declaration.
 
 Timing-report audit command: `git log --format='%s%n%b'`.
+
+## Capacity-constructor checks
+
+The port constructor has the upstream `when` body with the D-6 empty-storage substitution.
+Its body proves the representation law and storage length under its parameter requirement.
+Public-entry clients establish empty size for zero and positive capacities; a negative capacity
+fails the call requirement.
+
+| Command | Wall seconds | Result |
+|---|---:|---|
+| `./agent-scripts/test.sh targets/arraydeque/ArrayDeque.kt` | 53.325 | 3 tests pass |
+| `./agent-scripts/test.sh --verify targets/arraydeque/ArrayDeque.kt` | 142.015 | 3 tests pass; 47 cache hits, 11 verified, 187.752 s Silicon |
+| `./agent-scripts/test.sh --vacuity targets/arraydeque/ArrayDeque.kt` | 112.724 | 3 tests pass; no contradictory context |
+| `./agent-scripts/test.sh PortDeviationTest` | 15.981 | 12 tests pass |
+| `./agent-scripts/test.sh ArrayDequeSpecEqualityTest` | 30.278 | 2 tests pass |
+
+One capacity-constructor vacuity attempt reaches the standard 300-second timeout in
+`ArrayDeque.lastIndexOf` after 441.694 seconds wall time. The successful run uses the same
+timeout; its 12 uncached programs take 232.100 seconds of Silicon time, alongside 46 cache hits.

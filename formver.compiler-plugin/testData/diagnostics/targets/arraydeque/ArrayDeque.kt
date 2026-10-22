@@ -35,7 +35,20 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
         (elementData.size == 0 || (0 <= head && head < elementData.size)) &&
         (elementData.size != 0 || head == 0) && elementData.size <= 1073741824
 
-    // D-7: The capacity constructor is outside the proved claim; see docs/targets/arraydeque-gaps-design.md (G12).
+    /**
+     * Constructs an empty deque with specified [initialCapacity], or throws [IllegalArgumentException] if [initialCapacity] is negative.
+     */
+    public constructor(initialCapacity: Int) {
+        preconditions { 0 <= initialCapacity && initialCapacity <= 1073741824 }
+        elementData = when {
+            // D-6: Unique empty storage substitutes for the shared sentinel.
+            initialCapacity == 0 -> arrayOfNulls(0)
+            initialCapacity > 0 -> arrayOfNulls(initialCapacity)
+            else -> throw IllegalArgumentException("Illegal Capacity: $initialCapacity")
+        }
+        verify(elementData.size == initialCapacity)
+    }
+
     /**
      * Constructs an empty deque.
      */
@@ -628,6 +641,16 @@ fun <E> <!VIPER_TEXT!>newDeque<!>(): @Unique ArrayDeque<E> {
     postconditions<ArrayDeque<E>> { result -> result.size == 0 }
     val result: @Unique ArrayDeque<E> = ArrayDeque<E>()
     return result
+}
+
+fun <!VIPER_TEXT!>capacityDeque<!>() {
+    val zero: @Unique ArrayDeque<Any?> = ArrayDeque(0)
+    val positive: @Unique ArrayDeque<Any?> = ArrayDeque(10)
+    verify(zero.size == 0 && positive.size == 0)
+}
+
+fun <!VIPER_TEXT!>negativeCapacityDeque<!>() {
+    val rejected: @Unique ArrayDeque<Any?> = <!VIPER_VERIFICATION_ERROR!>ArrayDeque(-1)<!>
 }
 
 fun <!VIPER_TEXT!>emptyDeque<!>() {

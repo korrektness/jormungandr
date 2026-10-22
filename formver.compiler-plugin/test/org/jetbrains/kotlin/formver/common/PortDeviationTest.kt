@@ -458,7 +458,10 @@ class PortDeviationTest {
         assumeTrue(port.exists(), "ArrayDeque port is absent")
         checker { checker ->
             val upstream = data.resolve("upstream/kotlin-v2.3.0/ArrayDeque.kt").readText()
-            checker.checkPort(upstream, checker.portSource(port.readText()), port.resolveSibling("ArrayDeque.port.diff").readText())
+            val source = checker.portSource(port.readText())
+            assertEquals(setOf("class(ArrayDeque) / constructor()", "class(ArrayDeque) / constructor(Int)"),
+                checker.assignmentSites(source).map { it.owner }.filter { "constructor(" in it }.toSet())
+            checker.checkPort(upstream, source, port.resolveSibling("ArrayDeque.port.diff").readText())
         }
     }
 }
