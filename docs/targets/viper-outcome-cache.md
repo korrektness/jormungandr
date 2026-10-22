@@ -20,7 +20,7 @@ hypotheses that an implementation stage has to confirm.
   (`silver/.../ast/pretty/PrettyPrinter.scala`, `showAnnotation` and the `DomainFuncApp` case.)
 - Users enable it with the `verification_cache_directory` plugin option (README.md). The test fixtures enable it
   with `-Pformver.verificationCacheDirectory=<dir>`. `test.sh` passes that property in verification modes.
-  `land-gate.yaml` verifies cold. **[E]**
+  `land-gate.yaml` uses `agent-scripts/gate-test.sh` with the [cold sample](#the-land-gate). **[E]**
 - `test.sh --verify-changed` runs the `update` task: it verifies a test file only when its conversion output
   differs from the committed golden. It skips per file rather than per program, and it does not notice a change of
   Silicon, Z3 or the encoding that leaves the golden text alone. **[E]**

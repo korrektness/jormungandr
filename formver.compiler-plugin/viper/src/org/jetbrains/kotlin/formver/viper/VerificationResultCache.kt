@@ -17,6 +17,8 @@ class VerificationResultCache(
     private val directory: Path,
     private val reportDirectory: Path? = null,
     private val clock: Clock = Clock.systemUTC(),
+    private val refresh: Boolean = false,
+    private val coldSample: String? = null,
 ) {
     fun verify(program: String, version: String, options: List<String>, verify: () -> Boolean): Boolean {
         val format = "formver-verification-success-v2"
@@ -29,8 +31,12 @@ class VerificationResultCache(
         } catch (_: NoSuchFileException) {
             null
         }
+        val valid = stored?.contentEquals(expected) == true
+        val sampled = coldSample?.let {
+            fingerprint(listOf(key, it)).take(SAMPLE_HASH_DIGITS).toLong(HEX_RADIX) < SAMPLE_THRESHOLD
+        } == true
         if (stored != null) {
-            if (stored.contentEquals(expected)) {
+            if (valid && !refresh && !sampled) {
                 try {
                     if (Duration.between(Files.getLastModifiedTime(entry).toInstant(), clock.instant()).toDays() >= 1) {
                         Files.setLastModifiedTime(entry, FileTime.from(clock.instant()))
@@ -41,15 +47,20 @@ class VerificationResultCache(
                 report(key, "hit")
                 return true
             }
-            // The store is best-effort: damaged records require fresh verification.
-            Files.deleteIfExists(entry)
-            report(key, "corrupt")
+            if (!valid) {
+                // The store is best-effort: damaged records require fresh verification.
+                Files.deleteIfExists(entry)
+                report(key, "corrupt")
+            }
         }
         val start = System.nanoTime()
         val success = try {
             verify()
         } finally {
             report(key, "miss", (System.nanoTime() - start) / NANOS_PER_SECOND)
+        }
+        check(!valid || success) {
+            "Verification cache outcome disagreement for $key: stored success, fresh failure\n$program"
         }
         if (success) {
             Files.createDirectories(shard)
@@ -76,6 +87,9 @@ class VerificationResultCache(
     companion object {
         private const val NANOS_PER_SECOND = 1e9
         private const val REPORT_KEY_LENGTH = 16
+        private const val SAMPLE_HASH_DIGITS = 8
+        private const val HEX_RADIX = 16
+        private const val SAMPLE_THRESHOLD = 0x1_0000_0000L / 20
 
         fun fingerprint(parts: List<String>): String {
             val digest = MessageDigest.getInstance("SHA-256")

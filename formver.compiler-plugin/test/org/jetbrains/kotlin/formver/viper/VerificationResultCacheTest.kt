@@ -28,6 +28,27 @@ class VerificationResultCacheTest {
     }
 
     @Test
+    fun `sampled and refreshed hits require agreement with fresh verification`() {
+        VerificationResultCache(directory).verify("program", "version", emptyList()) { true }
+        val modes = listOf(
+            VerificationResultCache(directory, coldSample = "86"),
+            VerificationResultCache(directory, refresh = true),
+        )
+        modes.forEach { cache ->
+            var calls = 0
+            assertTrue(cache.verify("program", "version", emptyList()) { calls++; true })
+            assertEquals(1, calls)
+            val failure = assertFailsWith<IllegalStateException> {
+                cache.verify("program", "version", emptyList()) { false }
+            }
+            assertTrue(failure.message.orEmpty().contains("program"))
+        }
+        assertTrue(VerificationResultCache(directory, coldSample = "0").verify("program", "version", emptyList()) {
+            error("This sample must leave the hit cached")
+        })
+    }
+
+    @Test
     fun `program version and options changes miss`() {
         val cache = VerificationResultCache(directory)
         var calls = 0

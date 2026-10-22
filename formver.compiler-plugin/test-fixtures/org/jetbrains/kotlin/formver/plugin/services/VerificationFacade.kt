@@ -197,6 +197,8 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         private val verifier = SiliconFrontend(
             z3, timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS, cacheDirectory = cache, counterexamples = counterexamples,
             cacheReportDirectory = System.getProperty("formver.verificationCacheReport")?.let { Path.of(it) },
+            cacheRefresh = java.lang.Boolean.getBoolean("formver.verificationCacheRefresh"),
+            cacheColdSample = System.getProperty("formver.verificationColdSample"),
         )
         private val ordinary = if (counterexamples) {
             SiliconFrontend(z3, timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS, counterexamples = false)

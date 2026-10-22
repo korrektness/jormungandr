@@ -24,16 +24,17 @@ class VerificationCacheTest(unittest.TestCase):
             scripts = root / 'agent-scripts'
             shutil.copytree(SCRIPTS, scripts)
             gradle = root / 'gradlew'
-            gradle.write_text('#!/bin/sh\nprintf "%s\\n" "$@" >> args\n')
+            gradle.write_text('#!/bin/sh\nprintf "%s\\n" "$@" >> args\nprintf "timings=%s\\n" "$SNAKT_VERIFICATION_TIMINGS" >> args\n')
             gradle.chmod(0o755)
             temporary_outputs = root / 'tmp'
             temporary_outputs.mkdir()
             env = dict(os.environ, SNAKT_VERIFICATION_CACHE=str(root / 'cache'),
-                       SNAKT_TEST_DUMP_DIR=str(root / 'dumps'), TMPDIR=str(temporary_outputs))
+                       SNAKT_TEST_DUMP_DIR=str(root / 'dumps'), TMPDIR=str(temporary_outputs),
+                       SNAKT_VERIFICATION_TIMINGS=str(root / 'timings'))
 
-            def run(*flags, environment=env):
+            def run(*flags, environment=env, driver='test.sh'):
                 (root / 'args').unlink(missing_ok=True)
-                result = subprocess.run(['bash', str(scripts / 'test.sh'), *flags],
+                result = subprocess.run(['bash', str(scripts / driver), *flags],
                                         env=environment, capture_output=True, text=True)
                 self.assertEqual(0, result.returncode, result.stdout + result.stderr)
                 return (root / 'args').read_text().splitlines()
@@ -41,10 +42,27 @@ class VerificationCacheTest(unittest.TestCase):
             warm = run('--verify')
             self.assertIn(f'-Pformver.verificationCacheDirectory={root / "cache"}', warm)
             self.assertTrue(any(arg.startswith('-Pformver.verificationCacheReport=') for arg in warm))
+            refreshed = run('--verify', '--timings', str(root / 'explicit-timings'), '--refresh-cache')
+            self.assertIn('-Pformver.verificationCacheRefresh=true', refreshed)
+            self.assertIn(f'timings={root / "explicit-timings"}', refreshed)
             for args in (run('--verify', '--cold'),
                          run('--verify', environment=dict(env, SNAKT_VERIFICATION_CACHE='off')),
                          run()):
                 self.assertFalse(any(arg.startswith('-Pformver.verificationCache') for arg in args))
+
+            for check in ('check-testdata.sh', 'check-gradle-consumer.sh'):
+                (scripts / check).write_text('#!/bin/sh\nexit 0\n')
+            binaries = root / 'bin'
+            binaries.mkdir()
+            git = binaries / 'git'
+            git.write_text('#!/bin/sh\necho candidate-sha\n')
+            git.chmod(0o755)
+            gate_env = dict(env, PATH=str(binaries) + os.pathsep + env['PATH'])
+            gate = run(driver='gate-test.sh', environment=gate_env)
+            self.assertIn('-Pformver.verificationColdSample=candidate-sha', gate)
+            self.assertIn(f'-Pformver.verificationCacheDirectory={root / "cache"}', gate)
+            cold_gate = run(driver='gate-test.sh', environment=dict(gate_env, SNAKT_VERIFICATION_CACHE='off'))
+            self.assertFalse(any(arg.startswith('-Pformver.verification') for arg in cold_gate))
 
     def test_prune_preserves_active_entries_and_batches_maintenance(self):
         with tempfile.TemporaryDirectory() as temporary:

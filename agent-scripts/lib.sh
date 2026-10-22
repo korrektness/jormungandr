@@ -115,6 +115,10 @@ count_xml_results() {
     python3 "$LIB_DIR/junit_counts.py" "${files[@]}" || return 2
 }
 
+verification_cache_store() {
+    printf '%s' "${SNAKT_VERIFICATION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/snakt/verification}"
+}
+
 # Where DumpAssertionDiffExtension writes its dumps (see docs/agents-dev.md).
 # Per-user and per-checkout, because callers glob and clear this directory and
 # a shared /tmp would hand them another user's or another worktree's files.

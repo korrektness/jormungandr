@@ -87,6 +87,8 @@ class SiliconFrontend(
     pluginOptions: List<String> = emptyList(),
     counterexamples: Boolean = false,
     cacheReportDirectory: Path? = null,
+    cacheRefresh: Boolean = false,
+    cacheColdSample: String? = null,
 ) : Closeable {
     private val args = buildList {
         addAll(commandLineArgs)
@@ -110,7 +112,9 @@ class SiliconFrontend(
             add(timeoutSeconds.toString())
         }
     }
-    private val cache = cacheDirectory?.let { VerificationResultCache(it, cacheReportDirectory) }
+    private val cache = cacheDirectory?.let {
+        VerificationResultCache(it, cacheReportDirectory, refresh = cacheRefresh, coldSample = cacheColdSample)
+    }
     private val cacheOptions = args.chunked(2).filter { it[0] != "--z3Exe" }.flatten() + pluginOptions + listOf(
         System.getProperty("java.runtime.version"), System.getProperty("os.name"), System.getProperty("os.arch"),
     )

@@ -22,6 +22,7 @@ Usage:
 
 --timings <directory> writes per-declaration verification TSV reports outside goldens.
 --cold disables verification cache reads and writes.
+--refresh-cache verifies cached programs and compares their outcomes.
 SNAKT_VERIFICATION_CACHE selects the store directory; 'off' disables caching.
 
 --vacuity lists every probe that failed in a declaration that otherwise
@@ -35,6 +36,7 @@ EOF
 MODE=conversion
 RECORD_OUTCOMES=0
 COLD=0
+REFRESH=0
 set_mode() {
     if [[ "$MODE" != conversion && "$MODE" != "$1" ]]; then
         echo "--verify, --verify-changed, --update-goldens and --vacuity select different runs; pass one." >&2
@@ -46,6 +48,7 @@ set_mode() {
 while [[ "${1:-}" == -* ]]; do
     case "$1" in
         --cold) COLD=1 ;;
+        --refresh-cache) REFRESH=1 ;;
         --timings)
             if [[ -z "${2:-}" || "$2" == -* ]]; then
                 echo "Missing directory for --timings" >&2
@@ -100,15 +103,22 @@ if [[ -n "$PATTERN" ]]; then
     args+=(--tests "*$(gradle_filter "$PATTERN")*")
 fi
 
+if [[ "$COLD" -eq 1 && "$REFRESH" -eq 1 ]]; then
+    echo "Both --cold and --refresh-cache were selected." >&2
+    exit 1
+fi
 CACHE_REPORT=""
 if [[ "$MODE" != conversion ]]; then
-    CACHE_STORE="${SNAKT_VERIFICATION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/snakt/verification}"
+    CACHE_STORE="$(verification_cache_store)"
     if [[ "$COLD" -eq 0 && "$CACHE_STORE" != off ]]; then
         python3 "$SCRIPT_DIR/verification_cache.py" prune "$CACHE_STORE"
         CACHE_REPORT="$(mktemp -d)"
         trap 'rm -rf "$CACHE_REPORT"' EXIT
         args+=(-Pformver.verificationCacheDirectory="$CACHE_STORE"
                -Pformver.verificationCacheReport="$CACHE_REPORT")
+        if [[ "$REFRESH" -eq 1 ]]; then
+            args+=(-Pformver.verificationCacheRefresh=true)
+        fi
     fi
 fi
 
