@@ -38,8 +38,9 @@ holder. The model is a `FirSimpleFunction`, so `ProgramConverter.embedFormverCon
 (`FirNamedFunctionSymbol` branch) and the trust classification in `bindingAssumption` take it unchanged.
 
 The other ArrayDeque constructors, `(Int)` and `(Collection)`, stay unbound, so a call of either is
-`UNSUPPORTED_FEATURE`. That matches the port: its `(Int)` constructor is outside the proved claim (G12 fallback of
-`docs/targets/arraydeque-gaps-design.md`), and `(Collection)` is not ported.
+`UNSUPPORTED_FEATURE`. The port proves the restricted `(Int)` constructor under G12 of
+`docs/targets/arraydeque-gaps-design.md`; its bundled binding is outside this design's scope.
+`(Collection)` is not ported.
 
 ### Unbound members stay rejected
 

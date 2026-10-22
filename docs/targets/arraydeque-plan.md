@@ -350,8 +350,8 @@ What would reopen the decision: a selected second target that needs V6, or a req
 claim about the fix. Either one reopens criteria 1, 2 and 5, which then need per-declaration timings, a churn branch
 and the V8 spike.
 
-The minimum target is not met yet: items 1, 6 and 8 are open (`docs/targets/arraydeque-results.md`, "Acceptance
-audit"). That work is independent of exceptional exits.
+Minimum-target status and remaining gaps belong to the
+[acceptance audit](arraydeque-results.md#acceptance-audit). They are independent of exceptional exits.
 
 ## What stays trusted
 

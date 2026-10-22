@@ -1,22 +1,23 @@
 # ArrayDeque minimum-target verification
 
-The minimum target is not met. The consumers exercise `enqueueOnce` rather than
-the required compressed-sparse-row breadth-first search. The acceptance criteria remain in
+The functional port and consumer checks pass. The minimum target remains unmet:
+item 3 lacks full-command certification for the complete consumer set, and item 8
+lacks the required per-file verification timings in each verifying stage's land commit. The acceptance criteria belong to
 [arraydeque-plan.md](arraydeque-plan.md#minimum-target).
 
 ## Source and correspondence
 
-The provenance file listed below owns the upstream version, commit, source hash,
-license and residual trust labels. Byte comparisons against its upstream tag
-match for the vendored source and the copied license and notice files.
+The upstream pin is Kotlin v2.3.0. The
+[provenance file](../../formver.compiler-plugin/testData/upstream/kotlin-v2.3.0/PROVENANCE.md)
+owns its tag commit, source hash, license and residual trust labels. Independent
+byte comparisons with `git -C ~/dev/kotlin/master show v2.3.0:<path>` match the
+vendored source, LICENSE.txt and NOTICE.txt. The external checkout is read-only.
 
 Paths below are relative to `formver.compiler-plugin/`:
 
-- Provenance and residual trust:
-  `testData/upstream/kotlin-v2.3.0/PROVENANCE.md`.
 - Deviations D-1 through D-8:
   `testData/diagnostics/targets/arraydeque/ArrayDeque.port.diff`.
-  This committed diff is the deviation list; its bodies are not reproduced here.
+  This committed diff is the deviation list.
 - Correspondence and guard-only mutant checks: `PortDeviationTest`, using its
   fixed specification-stripping rule and diagnostic-markup normalization.
 - Public-contract projection: `ArrayDequeSpecEqualityTest`, comparing
@@ -25,17 +26,19 @@ Paths below are relative to `formver.compiler-plugin/`:
 
 ## Coverage and trust boundary
 
-The retained port covers `ArrayDeque()`, `ArrayDeque(Int)`, `isEmpty`, `get`, `set`, `first`, `last`,
-`firstOrNull`, `lastOrNull`, `addFirst`, `addLast`, `add(e)`, `removeFirst`,
-`removeLast`, their `OrNull` variants, `indexOf`, `lastIndexOf`, `contains`,
-`clear`, and their private helpers. The capacity constructor uses the parameter precondition of
-[G12](arraydeque-gaps-design.md#g12-preconditions-of-secondary-constructors-s5g).
-Deliverable scope is defined in [the target note](kotlin-arraydeque.md#deliverables).
+The retained port covers `ArrayDeque()`, `ArrayDeque(Int)`, `isEmpty`, `get`, `set`,
+`first`, `last`, `firstOrNull`, `lastOrNull`, `addFirst`, `addLast`, `add(e)`,
+`removeFirst`, `removeLast`, their `OrNull` variants, `indexOf`, `lastIndexOf`,
+`contains`, `clear`, and their private helpers. The capacity constructor uses the
+parameter precondition of [G12](arraydeque-gaps-design.md#g12-preconditions-of-secondary-constructors-s5g).
+Public-entry capacity clients cover zero and positive capacities and reject a
+negative capacity. The bundled `(Int)` overload remains unbound; the binding
+consumer explicitly rejects it. The bundled constructor claim covers `()` only.
 
-The proved contracts cover the representation bounds, access results, size
-changes, pointwise element frames, end insertion/removal, search results and
-clearing on normal return, subject to the claim restrictions in the plan's
-[Feasibility section](arraydeque-plan.md#feasibility).
+The contracts cover representation bounds, access results, size changes,
+pointwise element frames, end insertion/removal, search and clearing on normal
+return, subject to the plan's [claim restrictions](arraydeque-plan.md#feasibility).
+There is no exceptional-exit proof.
 
 The port trust report is
 `testData/diagnostics/targets/arraydeque/ArrayDeque.trust.txt`. Its distinct
@@ -43,143 +46,131 @@ registered dependencies are:
 
 - Bundled spec: `kotlin.ranges.coerceAtLeast(this: Int, Int): Int`.
 - `@TrustedElementEquality`: `ArrayDeque.indexOf(E): Int` and
-  `ArrayDeque.lastIndexOf(E): Int`, plus `ArrayDeque.indexOf(Int): Int` and
-  `ArrayDeque.lastIndexOf(Int): Int` for `searchAndClear`.
+  `ArrayDeque.lastIndexOf(E): Int`, plus their `Int` instantiations for `searchAndClear`.
 - Wrapping-arithmetic functions: `ArrayDeque.registerModification(): Unit` and
-  `newCapacity(Int, Int): Int`; their interpretation is owned by the plan's
+  `newCapacity(Int, Int): Int`; interpretation belongs to the plan's
   [D3 decision](arraydeque-plan.md#d3-wrapping-arithmetic).
 
-For what the equality annotation assumes about executed equality and deque
-reachability, and the `Int` consumer's residual equality trust, see the plan's
-[D4 decision](arraydeque-plan.md#d4-and-v5-element-equality). The erased cast in
-`internalGet` rests on [Type invariants](../soundness.md#type-invariants).
+The scoped executed-equality assumption, its reachability restriction and the
+`Int` consumer's equality interpretation belong to
+[D4](arraydeque-plan.md#d4-and-v5-element-equality). No global equivalence-relation
+assumption is made for arbitrary executable `equals`. The erased `internalGet`
+cast rests on [Type invariants](../soundness.md#type-invariants). Distinct-array
+copying follows [V2](arraydeque-plan.md#v2-copyinto-aliasing-and-permissions).
 
-For proof scope and residual trust, see the provenance file above and [the target note](kotlin-arraydeque.md). For distinct-array copying, see the plan's [V2 decision](arraydeque-plan.md#v2-copyinto-aliasing-and-permissions). There is no claim of deployment or upstream acceptance. Nothing is filed upstream.
+The proof is of a port. Mechanical correspondence guards drift; it does not prove
+behavioural equivalence to the shipped class. Residual D-label and specification
+erasure trust belongs to the provenance file. Bundled contracts remain external
+specification assumptions, with their projection checked against the port.
 
 ## Measurements
 
-[Command transcript](arraydeque-results.txt) contains the exact test commands,
-combined stdout/stderr and Bash wall times. All five commands exit 0:
+[Command transcript](arraydeque-results.txt) records exact commands, combined
+stdout/stderr and Bash wall times. Commands run from the repository root with
+`SNAKT_VERIFICATION_CACHE=off`. No golden regeneration or timeout override is used.
+The timing directory is empty at launch.
 
-| Command | Wall seconds | Output |
+| Command | Wall seconds | Result |
 |---|---:|---|
-| `./agent-scripts/test.sh --verify arraydeque` | 322.841 | 5 tests, 5 passed, 0 failed |
-| `./agent-scripts/test.sh PortDeviationTest` | 11.961 | 12 tests, 12 passed, 0 failed |
-| `./agent-scripts/test.sh ArrayDequeSpecEqualityTest` | 9.221 | 2 tests, 2 passed, 0 failed |
-| `./agent-scripts/test.sh --vacuity arraydeque` | 425.279 | 5 tests passed; no contradictory context |
-| `./agent-scripts/check-gradle-consumer.sh` | 260.328 | consumer build passed |
+| `./agent-scripts/test.sh --verify --cold --timings /tmp/close-final-scratch/reports arraydeque` | 425.293 | 7 tests pass; cache off |
+| `./agent-scripts/test.sh PortDeviationTest` | 18.308 | 12 tests pass |
+| `./agent-scripts/test.sh ArrayDequeSpecEqualityTest` | 16.908 | 2 tests pass |
+| `./agent-scripts/test.sh --vacuity --cold arraydeque` | 450.635 | 7 tests pass; no contradictory context |
+| `./agent-scripts/check-gradle-consumer.sh` | 739.830 | Consumer build and trust assertions pass |
 
-JUnit reports these per-file wall durations within the `--verify` run; they
-exclude driver overhead and overlap because tests run concurrently:
+JUnit per-file wall durations from the cold `--verify` run exclude driver overhead
+and overlap because tests run concurrently. Paths are under
+`formver.compiler-plugin/testData/diagnostics/`:
 
-| File under `testData/diagnostics/` | Seconds |
+| File | Seconds |
 |---|---:|
-| `targets/arraydeque/ArrayDeque.kt` | 306.552 |
-| `targets/arraydeque/indexOfPre80390.kt` | 149.955 |
-| `targets/arraydeque/lastIndexOfPre80661.kt` | 77.585 |
-| `external_specs/arraydeque_binding.kt` | 9.493 |
+| `targets/arraydeque/ArrayDeque.kt` | 321.581 |
+| `targets/arraydeque/indexOfPre80390.kt` | 296.776 |
+| `targets/arraydeque/lastIndexOfPre80661.kt` | 109.653 |
+| `external_specs/arraydeque_binding.kt` | 9.844 |
+| `external_specs/arraydeque_bfs.kt` | 196.934 |
+| `external_specs/arraydeque_bfs_negative.kt` | 109.652 |
 
-No timeout override is used in the recorded runs. These whole-file measurements
-are separate from the cold declaration measurements below.
+The search mutants have exactly their expected failures: two `result < size`
+diagnostics for `indexOfPre80390`, and the contains-absence equivalence diagnostic
+for `lastIndexOfPre80661`. Guard-only comparisons and retained storage-assignment
+pins pass. The upstream-shaped searches have no diagnostics.
 
-The mutant test outcomes match their expected failures. `indexOfPre80390` has
-two diagnostics, both on `result < size`. `lastIndexOfPre80661` has one, on
-`(result == -1) == !contains(element)`, expressed through its existential
-specification expansion. `PortDeviationTest` checks these exact failing clauses
-and confirms that each mutant search function differs from the port only in the
-wrapped-branch guard. The upstream-shaped port searches have no diagnostics.
-The real-port correspondence test passes against the committed diff, including
-its D-label requirement and retained storage-assignment pins.
-
-The scoped vacuity run includes both the port and the binding consumer; its
-probe-report directory has no TSV entries. The unfiltered
-`./agent-scripts/test.sh --vacuity` is not run in this stage. The managed land
-workflow assigns the full suite, including `./agent-scripts/check-all.sh`, to
-the gate; there is no fresh `check-all.sh` result here.
-
-The published-consumer script passes its trust-report assertions for
-`bundled spec: kotlin.collections.ArrayDeque.ArrayDeque(): ArrayDeque<E>` and
-`bundled spec: kotlin.collections.ArrayDeque.addLast(E): Unit`. The script's
-successful stdout does not print the report itself. Its consumer constructs a
-queue and runs conditional insertion; it does not implement BFS.
+The scoped vacuity command covers the port, binding, BFS and negative fixtures.
+It prints no contradictory context. An empty probe directory need not exist;
+the command's reported outcome is the evidence. The full unfiltered vacuity
+command has no fresh execution here; its independent failure and scoped relevance
+are recorded in [the execution audit](arraydeque-final.md#full-vacuity-gap).
+The land gate owns the suite and `check-all.sh` for this documentation-only stage.
 
 ## Cold per-declaration measurements
 
-Command, from the repository root:
+[All 87 attempt rows](arraydeque-declaration-times.tsv) retain names, offsets,
+outcomes, elapsed seconds, effective timeouts and cache status. The
+[report format](../agents-dev.md#declaration-timings) defines the measured interval.
+Complete files retain their proof contexts; declarations are not extracted.
 
-```sh
-./agent-scripts/test.sh --verify --cold --timings /tmp/close-timing-scratch/reports arraydeque
-```
+| File | Verified / expected failure | Slowest declaration | Seconds |
+|---|---:|---|---:|
+| `ArrayDeque.kt` | 47 / 11 | `ArrayDeque.lastIndexOf` | 62.039 |
+| `indexOfPre80390.kt` | 7 / 1 | `SearchDeque.indexOfPre80390` | 71.216 |
+| `lastIndexOfPre80661.kt` | 7 / 1 | `SearchDeque.lastIndexOfPre80661` | 50.744 |
+| `arraydeque_binding.kt` | 2 / 5 | `enqueueOnce` | 3.310 |
+| `arraydeque_bfs.kt` | 3 / 0 | `scanSuccessors` | 86.782 |
+| `arraydeque_bfs_negative.kt` | 0 / 3 | `scanSkipLast` | 99.828 |
 
-The report directory is empty at launch. The command exits 0: 5 tests pass,
-including the generated file-presence test. Bash wall time is 519.489 seconds.
-[All 79 attempt rows](arraydeque-declaration-times.tsv) retain declaration names,
-source offsets, outcomes, elapsed seconds, effective timeouts and cache status.
-The [report format](../agents-dev.md#declaration-timings) defines the measured interval.
-The complete port, both complete mutant fixtures and the bundled-binding consumer
-file run in their existing proof contexts; no declaration is extracted.
-
-Paths in this table are under `formver.compiler-plugin/testData/diagnostics/`.
-JUnit file times overlap because verification runs concurrently.
-
-| File | Attempts (verified / expected failure) | JUnit seconds | Slowest declaration | Declaration seconds |
-|---|---:|---:|---|---:|
-| `targets/arraydeque/ArrayDeque.kt` | 46 / 10 | 482.580 | `ArrayDeque.lastIndexOf` | 106.908 |
-| `targets/arraydeque/indexOfPre80390.kt` | 7 / 1 | 136.081 | `SearchDeque.indexOfPre80390` | 85.950 |
-| `targets/arraydeque/lastIndexOfPre80661.kt` | 7 / 1 | 231.002 | `SearchDeque.lastIndexOfPre80661` | 87.407 |
-| `external_specs/arraydeque_binding.kt` | 2 / 5 | 37.763 | `enqueueOnce` | 15.100 |
-
-Every row reports an effective timeout of 300 seconds and cache status `off`.
-There are no timeout, invalid-program or unexpected-error outcomes. The port's
-`indexOf` verifies in 105.869 seconds; `lastIndexOf` is the slowest attempt across
-all four files. Its margin is 193.092 seconds to the 300-second limit and 43.092
-seconds to the strict 150-second headroom criterion. Every selected declaration,
-including negative siblings, is under both thresholds in this run. This establishes
-the headroom criterion for the retained port in this run; it is not a guarantee
-about future solver runs or a proof of absent members. The two explicitly
-skipped API-rejection consumers produce no attempt rows.
-
-Per-stage timings are uncertified. These measurements do not certify the per-file
-`--verify` wall time of any separate verifying stage's landing or cover the capacity
-constructor. BFS consumers remain outside these measurements.
-The exceptional-exit decision's other criteria remain separate.
+All rows use an effective timeout of 300 seconds and cache `off`. There are 66
+verified and 21 expected-failure outcomes, with no timeout, invalid or error
+outcomes. Every selected declaration is below 150 seconds in this run. The
+slowest port declaration has 87.961 seconds to that threshold and 237.961 seconds
+to its timeout. This establishes measured headroom for the complete retained
+port, including the capacity constructor, and the consumers in this run. It is
+not a guarantee about future solver runs or absent members.
 
 ## Acceptance audit
 
 | Minimum item | Measured status |
 |---|---|
-| 1: M coverage and clean in-scope diagnostics | The retained members include both minimum-target constructors; constructor verification is recorded separately below. |
-| 2: mutants and upstream searches | Pass, including intended clauses and guard-only comparison. |
-| 3: vacuity | Clean for both relevant files in the scoped run; see [full-run evidence](arraydeque-final.md#commands-and-outcomes). |
-| 4: labelled deviation check | Pass. |
-| 5: bundled-model contract projection | Pass. |
-| 6: BFS consumers and bundled binding | Not met: the bundled binding works for conditional insertion; both BFS consumers and the skipped-successor negative are absent. |
-| 7: provenance | Source hash, tag commit, license/notice bytes and residual D-labels match. |
-| 8: land-message verification timings | Not certified: the audit does not establish per-file `--verify` wall times for every verifying stage. |
+| 1: M coverage and clean in-scope diagnostics | Pass: both constructors and all retained M members verify; only intended negative clients carry failures. |
+| 2: mutants and upstream searches | Pass: intended clauses fail in guard-only mutants; upstream-shaped bodies verify. |
+| 3: vacuity | Scoped pass; full-command certification unmet: the unfiltered run fails in the counterexamples harness and does not include the BFS fixtures. No fresh unfiltered run establishes the complete consumer set. |
+| 4: labelled deviation check | Pass: all 12 correspondence tests pass. |
+| 5: bundled-model contract projection | Pass: both projection tests pass. |
+| 6: BFS consumers and bundled binding | Pass: testData and published-plugin BFS verify; skipped-successor closure and unconditional enqueue-growth negatives fail as intended. |
+| 7: provenance | Pass: tag commit, source hash, license/notice bytes and residual D-labels match. |
+| 8: land-message verification timings | Unmet: the BFS proof land commit and capacity-constructor restoration land commit contain no numeric per-file `--verify` wall times. Fresh audit timings cannot satisfy a requirement on those land commits. |
 
-A source scan for `VERIFICATION_SKIPPED`, `UNSUPPORTED_FEATURE`, `INTERNAL_ERROR`,
-`UNTRACKED_WRITE`, and exclusion directives finds none in the port. In
-`external_specs/arraydeque_binding.kt`, only `unboundCapacity` and `unboundMember`
-carry skipped/unsupported markers: they are explicit out-of-scope API rejection
-negatives. `enqueueOnce` has none. Neither file has an exclusion directive.
+Inspect item 8 with `git log --format='%h %s%n%b'`, selecting subjects
+`Verify the CSR breadth-first search through the bundled ArrayDeque model` and
+`Restore the restricted ArrayDeque capacity constructor in the port`. Stage
+artifacts contain execution timings, but those are not the required land commits.
+No complete certification of every other verifying stage is asserted.
 
-Timing-report audit command: `git log --format='%s%n%b'`.
+A source scan finds no `VERIFICATION_SKIPPED`, `UNSUPPORTED_FEATURE`,
+`INTERNAL_ERROR`, `UNTRACKED_WRITE` or verification exclusions in the port or
+positive BFS. In `arraydeque_binding.kt`, only `unboundCapacity` and
+`unboundMember` are explicitly skipped API-rejection negatives.
 
-## Capacity-constructor checks
+The BFS proves the rank-decreasing parent-edge witness and successor closure
+specified by [the consumer design](arraydeque-bfs-design.md), under its owned-array,
+CSR-index and vertex-bound preconditions. The discovery step uses a runtime
+`check(f < rank.size)`; the claim is on normal return and does not prove that this
+check cannot throw. The published
+consumer compiles the same markup-stripped positive source, rejects `scanSkipLast`
+on its closure return, and requires bundled `removeFirst` and `isEmpty` trust
+entries. `enqueueOnce` and its false-growth sibling also pass their golden checks.
 
-The port constructor has the upstream `when` body with the D-6 empty-storage substitution.
-Its body proves the representation law and storage length under its parameter requirement.
-Public-entry clients establish empty size for zero and positive capacities; a negative capacity
-fails the call requirement.
+## Patch status and remaining gaps
 
-| Command | Wall seconds | Result |
-|---|---:|---|
-| `./agent-scripts/test.sh targets/arraydeque/ArrayDeque.kt` | 53.325 | 3 tests pass |
-| `./agent-scripts/test.sh --verify targets/arraydeque/ArrayDeque.kt` | 142.015 | 3 tests pass; 47 cache hits, 11 verified, 187.752 s Silicon |
-| `./agent-scripts/test.sh --vacuity targets/arraydeque/ArrayDeque.kt` | 112.724 | 3 tests pass; no contradictory context |
-| `./agent-scripts/test.sh PortDeviationTest` | 15.981 | 12 tests pass |
-| `./agent-scripts/test.sh ArrayDequeSpecEqualityTest` | 30.278 | 2 tests pass |
+Patch status: prepared, NOT submitted. The
+[patch report](../upstream/arraydeque-removeall/REPORT.md) owns its guarantee
+analysis and executable layout tests. No issue or PR is filed, and there is no
+claim of deployment or upstream acceptance. `addAll(index, this)` is unspecified
+aliasing and is not classified as a defect.
 
-One capacity-constructor vacuity attempt reaches the standard 300-second timeout in
-`ArrayDeque.lastIndexOf` after 441.694 seconds wall time. The successful run uses the same
-timeout; its 12 uncached programs take 232.100 seconds of Silicon time, alongside 46 cache hits.
+Remaining gaps are items 3 and 8, the unbound bundled
+capacity overload, port-to-shipped-class residual trust, and the out-of-scope
+members and exceptional exits in the [plan](arraydeque-plan.md#out-of-scope).
+The [F3 decision](arraydeque-plan.md#decision-f3-is-not-justified) remains separate.
+The briefing's advisory memo has no supplied path and is absent from the inspected
+repository and workflow artifacts; no recommendation from it is treated as a decision.
