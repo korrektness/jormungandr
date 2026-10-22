@@ -5,17 +5,15 @@ method maxCharacter(s: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), charType())
   ensures (forall anon_builtin_0: Int ::
       { stringFromRef(s)[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(s)| ==>
       (let anon_builtin_neg1 ==
         (stringGet(s, intToRef(anon_builtin_0))) in
         stringFromRef(s)[anon_builtin_0]) <=
       charFromRef(v_ret_0)) &&
-    (exists anon_builtin_1: Int :: { stringFromRef(s)[anon_builtin_1] } anon_builtin_1 >=
-      -2147483648 &&
+    (exists anon_builtin_1: Int :: { stringFromRef(s)[anon_builtin_1] } -2147483648 <=
+      anon_builtin_1 &&
       anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) &&
       (0 <= anon_builtin_1 && anon_builtin_1 < |stringFromRef(s)| &&
       (let anon_builtin_neg1 ==
         (stringGet(s, intToRef(anon_builtin_1))) in
@@ -34,17 +32,15 @@ method maxCharacter(s: Ref) returns (v_ret_0: Ref)
     invariant 1 <= intFromRef(i) && intFromRef(i) <= |stringFromRef(s)|
     invariant (forall anon_builtin_2: Int ::
         { stringFromRef(s)[anon_builtin_2] }
-        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
         0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(i) ==>
         (let anon_builtin_neg1 ==
           (stringGet(s, intToRef(anon_builtin_2))) in
           stringFromRef(s)[anon_builtin_2]) <=
         charFromRef(m))
-    invariant (exists anon_builtin_3: Int :: { stringFromRef(s)[anon_builtin_3] } anon_builtin_3 >=
-        -2147483648 &&
+    invariant (exists anon_builtin_3: Int :: { stringFromRef(s)[anon_builtin_3] } -2147483648 <=
+        anon_builtin_3 &&
         anon_builtin_3 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) &&
         (0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(i) &&
         (let anon_builtin_neg1 ==
           (stringGet(s, intToRef(anon_builtin_3))) in
@@ -68,17 +64,15 @@ method maxCharacter(s: Ref) returns (v_ret_0: Ref)
   assert 1 <= intFromRef(i) && intFromRef(i) <= |stringFromRef(s)|
   assert (forall anon_builtin_2: Int ::
       { stringFromRef(s)[anon_builtin_2] }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(i) ==>
       (let anon_builtin_neg1 ==
         (stringGet(s, intToRef(anon_builtin_2))) in
         stringFromRef(s)[anon_builtin_2]) <=
       charFromRef(m))
-  assert (exists anon_builtin_3: Int :: { stringFromRef(s)[anon_builtin_3] } anon_builtin_3 >=
-      -2147483648 &&
+  assert (exists anon_builtin_3: Int :: { stringFromRef(s)[anon_builtin_3] } -2147483648 <=
+      anon_builtin_3 &&
       anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) &&
       (0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(i) &&
       (let anon_builtin_neg1 ==
         (stringGet(s, intToRef(anon_builtin_3))) in

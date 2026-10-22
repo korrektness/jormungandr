@@ -380,8 +380,7 @@ method push(b: Ref, par_v: Ref) returns (v_ret_0: Ref)
         intFromRef(par_v)))
   ensures (forall anon_builtin_0: Int ::
       { data(b).contents[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 && anon_builtin_0 < arraySize(data(b)) &&
       !(anon_builtin_0 ==
       old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count)))) ==>
@@ -452,8 +451,7 @@ method push(b: Ref, par_v: Ref) returns (ret_2: Ref)
         intFromRef(par_v)))
   ensures (forall anon_builtin_0: Int ::
       { data(b).contents[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 && anon_builtin_0 < arraySize(data(b)) &&
       !(anon_builtin_0 ==
       old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count)))) ==>
@@ -763,8 +761,7 @@ method push(b: Ref, par_v: Ref) returns (ret_2: Ref)
         intFromRef(par_v)))
   ensures (forall anon_builtin_0: Int ::
       { data(b).contents[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 && anon_builtin_0 < arraySize(data(b)) &&
       !(anon_builtin_0 ==
       old((unfolding acc(Buf_unique(b), write) in intFromRef(b.count)))) ==>

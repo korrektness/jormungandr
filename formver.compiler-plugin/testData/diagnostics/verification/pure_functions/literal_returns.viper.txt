@@ -104,8 +104,7 @@ function verifiedAnnotatedIntLitReturn(par_arg: Ref): Ref
   ensures intFromRef(result) == 42
   ensures (forall anon: Int ::
       { anon == intFromRef(result) }
-      anon >= -2147483648 && anon <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon)), intType()) ==>
+      -2147483648 <= anon && anon <= 2147483647 ==>
       anon == intFromRef(result) ==> anon == intFromRef(par_arg))
 {
   intToRef(42)

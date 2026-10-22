@@ -144,3 +144,17 @@ internal fun Exp.subExps(): List<Exp> = when (this) {
     is Exp.IntLit, is Exp.NullLit, is Exp.BoolLit, is Exp.LocalVar, is Exp.Result, is Exp.EmptySeq,
     is Exp.EmptyMultiset, is Exp.DecreasesWildcard -> emptyList()
 }
+
+/**
+ * [this] with the `unfolding`s around trigger terms removed. A trigger matches the field read inside an `unfolding`,
+ * and Silicon rejects an `unfolding` in a trigger whose body keeps it below a conjunction.
+ */
+internal fun Exp.withoutTriggerUnfoldings(): Exp = when (this) {
+    is Exp.Unfolding -> body.withoutTriggerUnfoldings()
+    is Exp.FieldAccess -> copy(rcv = rcv.withoutTriggerUnfoldings())
+    is Exp.SeqLength -> copy(seq = seq.withoutTriggerUnfoldings())
+    is Exp.SeqIndex -> copy(seq = seq.withoutTriggerUnfoldings(), idx = idx.withoutTriggerUnfoldings())
+    is Exp.FuncApp -> copy(args = args.map { it.withoutTriggerUnfoldings() })
+    is Exp.DomainFuncApp -> copy(args = args.map { it.withoutTriggerUnfoldings() })
+    else -> this
+}

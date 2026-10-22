@@ -754,8 +754,7 @@ method get(this: Ref, i: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(Box_f_size(this)) == old(intFromRef(Box_f_size(this)))
   ensures (forall anon_builtin: Int ::
       { Box_f_elementAt(this, intToRef(anon_builtin)) }
-      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
       0 <= anon_builtin && anon_builtin < intFromRef(Box_f_size(this)) ==>
       Box_f_elementAt(this, intToRef(anon_builtin)) ==
       old(Box_f_elementAt(this, intToRef(anon_builtin))))
@@ -902,8 +901,7 @@ method get(this: Ref, i: Ref) returns (ret_2: Ref)
   ensures intFromRef(Box_f_size(this)) == old(intFromRef(Box_f_size(this)))
   ensures (forall anon_builtin: Int ::
       { Box_f_elementAt(this, intToRef(anon_builtin)) }
-      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
       0 <= anon_builtin && anon_builtin < intFromRef(Box_f_size(this)) ==>
       Box_f_elementAt(this, intToRef(anon_builtin)) ==
       old(Box_f_elementAt(this, intToRef(anon_builtin))))
@@ -1016,8 +1014,7 @@ method get(this: Ref, i: Ref) returns (ret_2: Ref)
   ensures intFromRef(Box_f_size(this)) == old(intFromRef(Box_f_size(this)))
   ensures (forall anon_builtin: Int ::
       { Box_f_elementAt(this, intToRef(anon_builtin)) }
-      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
       0 <= anon_builtin && anon_builtin < intFromRef(Box_f_size(this)) ==>
       Box_f_elementAt(this, intToRef(anon_builtin)) ==
       old(Box_f_elementAt(this, intToRef(anon_builtin))))

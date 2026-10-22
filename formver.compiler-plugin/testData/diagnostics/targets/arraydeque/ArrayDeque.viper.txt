@@ -759,8 +759,7 @@ method registerModification(this: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin))) }
-      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
       0 <= anon_builtin &&
       anon_builtin < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) ==
@@ -987,8 +986,7 @@ method copyElements(v_this: Ref, par_newCapacity: Ref) returns (ret_9: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(v_this)) ==>
       ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_1)) ==
@@ -1010,8 +1008,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(v_this)) ==>
       ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) ==
@@ -1347,8 +1344,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(v_this)) ==>
       ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) ==
@@ -1357,8 +1353,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(v_this)) ==>
       ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) ==
@@ -1367,8 +1362,7 @@ method ensureCapacity(v_this: Ref, minCapacity: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(v_this)) ==>
       ArrayDeque_f_elementAt(v_this, intToRef(anon_builtin_0)) ==
@@ -1521,8 +1515,7 @@ method copyElements(this: Ref, newCapacity: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin))) }
-      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
       0 <= anon_builtin &&
       anon_builtin < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) ==
@@ -3080,8 +3073,7 @@ method first(this: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin))) }
-      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
       0 <= anon_builtin &&
       anon_builtin < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) ==
@@ -3409,8 +3401,7 @@ method firstOrNull(this: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin))) }
-      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
       0 <= anon_builtin &&
       anon_builtin < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) ==
@@ -3773,8 +3764,7 @@ method last(this: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -4148,8 +4138,7 @@ method lastOrNull(this: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -4652,8 +4641,7 @@ method ensureCapacity(this: Ref, minCapacity: Ref) returns (ret_5: Ref)
   ensures (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -4678,8 +4666,7 @@ method registerModification(this: Ref) returns (ret_3: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -4839,8 +4826,7 @@ method addLast(this: Ref, element: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < old(intFromRef(ArrayDeque_g_size(this))) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -5088,8 +5074,7 @@ method ensureCapacity(this: Ref, minCapacity: Ref) returns (ret_5: Ref)
   ensures (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -5114,8 +5099,7 @@ method registerModification(this: Ref) returns (ret_3: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -5320,8 +5304,7 @@ method registerModification(this: Ref) returns (ret_6: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -5351,8 +5334,7 @@ method removeFirst(this: Ref) returns (v_ret_0: Ref)
         nullValue()))
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -5805,8 +5787,7 @@ method removeFirst(this: Ref) returns (ret_3: Ref)
         nullValue()))
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -5840,8 +5821,7 @@ method removeFirstOrNull(this: Ref) returns (v_ret_0: Ref)
         nullValue()))
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -6057,8 +6037,7 @@ method registerModification(this: Ref) returns (ret_7: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -6092,8 +6071,7 @@ method removeLast(this: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -6524,8 +6502,7 @@ method removeLast(this: Ref) returns (ret_4: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -6563,8 +6540,7 @@ method removeLastOrNull(this: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -6703,8 +6679,7 @@ method add(this: Ref, element: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < old(intFromRef(ArrayDeque_g_size(this))) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -6734,8 +6709,7 @@ method addLast(this: Ref, element: Ref) returns (ret_3: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < old(intFromRef(ArrayDeque_g_size(this))) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -6871,8 +6845,7 @@ method contains(this: Ref, element: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -6920,8 +6893,7 @@ method indexOf(this: Ref, element: Ref) returns (ret_4: Ref)
   ensures (forall anon_builtin_4: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4))) }
-      anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
       0 <= anon_builtin_4 &&
       anon_builtin_4 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4)) ==
@@ -7116,8 +7088,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -7372,8 +7343,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
             referenceArraySize(this.elementData))))
       invariant (forall anon_builtin_3: Int ::
           { this.elementData.referenceContents[anon_builtin_3] }
-          anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
           0 <= anon_builtin_3 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             anon_builtin_3 < referenceArraySize(this.elementData)) ==>
@@ -7388,8 +7358,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
         intFromRef(l27_index) <= intFromRef(tail)
       invariant (forall anon_builtin_4: Int ::
           { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4))) }
-          anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+          -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
           0 <= anon_builtin_4 &&
           anon_builtin_4 < intFromRef(ArrayDeque_g_size(this)) &&
           (unfolding acc(ArrayDeque_unique(this), write) in
@@ -7628,8 +7597,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
         intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
       (forall anon_builtin_3: Int ::
         { this.elementData.referenceContents[anon_builtin_3] }
-        anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
         0 <= anon_builtin_3 &&
         (unfolding acc(ArrayDeque_unique(this), write) in
           anon_builtin_3 < referenceArraySize(this.elementData)) ==>
@@ -7654,8 +7622,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
         intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
       (forall anon_builtin_4: Int ::
         { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4))) }
-        anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+        -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
         0 <= anon_builtin_4 &&
         anon_builtin_4 < intFromRef(ArrayDeque_g_size(this)) &&
         (unfolding acc(ArrayDeque_unique(this), write) in
@@ -7848,8 +7815,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
               referenceArraySize(this.elementData))))
         invariant (forall anon_builtin_5: Int ::
             { this.elementData.referenceContents[anon_builtin_5] }
-            anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+            -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
             0 <= anon_builtin_5 &&
             (unfolding acc(ArrayDeque_unique(this), write) in
               anon_builtin_5 < referenceArraySize(this.elementData)) ==>
@@ -7865,8 +7831,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
             intFromRef(l36_index) <= referenceArraySize(this.elementData))
         invariant (forall anon_builtin_6: Int ::
             { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_6))) }
-            anon_builtin_6 >= -2147483648 && anon_builtin_6 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+            -2147483648 <= anon_builtin_6 && anon_builtin_6 <= 2147483647 ==>
             0 <= anon_builtin_6 &&
             anon_builtin_6 < intFromRef(ArrayDeque_g_size(this)) &&
             (unfolding acc(ArrayDeque_unique(this), write) in
@@ -8108,8 +8073,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_5: Int ::
           { this.elementData.referenceContents[anon_builtin_5] }
-          anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+          -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
           0 <= anon_builtin_5 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             anon_builtin_5 < referenceArraySize(this.elementData)) ==>
@@ -8135,8 +8099,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_6: Int ::
           { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_6))) }
-          anon_builtin_6 >= -2147483648 && anon_builtin_6 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+          -2147483648 <= anon_builtin_6 && anon_builtin_6 <= 2147483647 ==>
           0 <= anon_builtin_6 &&
           anon_builtin_6 < intFromRef(ArrayDeque_g_size(this)) &&
           (unfolding acc(ArrayDeque_unique(this), write) in
@@ -8168,8 +8131,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
               referenceArraySize(this.elementData))))
         invariant (forall anon_builtin_7: Int ::
             { this.elementData.referenceContents[anon_builtin_7] }
-            anon_builtin_7 >= -2147483648 && anon_builtin_7 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+            -2147483648 <= anon_builtin_7 && anon_builtin_7 <= 2147483647 ==>
             0 <= anon_builtin_7 &&
             (unfolding acc(ArrayDeque_unique(this), write) in
               anon_builtin_7 < referenceArraySize(this.elementData)) ==>
@@ -8183,8 +8145,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(l40_index) <= intFromRef(tail)
         invariant (forall anon_builtin_8: Int ::
             { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_8))) }
-            anon_builtin_8 >= -2147483648 && anon_builtin_8 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+            -2147483648 <= anon_builtin_8 && anon_builtin_8 <= 2147483647 ==>
             0 <= anon_builtin_8 &&
             anon_builtin_8 < intFromRef(ArrayDeque_g_size(this)) &&
             (unfolding acc(ArrayDeque_unique(this), write) in
@@ -8431,8 +8392,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_7: Int ::
           { this.elementData.referenceContents[anon_builtin_7] }
-          anon_builtin_7 >= -2147483648 && anon_builtin_7 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+          -2147483648 <= anon_builtin_7 && anon_builtin_7 <= 2147483647 ==>
           0 <= anon_builtin_7 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             anon_builtin_7 < referenceArraySize(this.elementData)) ==>
@@ -8456,8 +8416,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_8: Int ::
           { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_8))) }
-          anon_builtin_8 >= -2147483648 && anon_builtin_8 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+          -2147483648 <= anon_builtin_8 && anon_builtin_8 <= 2147483647 ==>
           0 <= anon_builtin_8 &&
           anon_builtin_8 < intFromRef(ArrayDeque_g_size(this)) &&
           (unfolding acc(ArrayDeque_unique(this), write) in
@@ -8578,8 +8537,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -8588,8 +8546,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -8598,8 +8555,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -8608,8 +8564,7 @@ method indexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -8805,8 +8760,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -9068,8 +9022,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
             referenceArraySize(this.elementData))))
       invariant (forall anon_builtin_3: Int ::
           { this.elementData.referenceContents[anon_builtin_3] }
-          anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
           0 <= anon_builtin_3 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             anon_builtin_3 < referenceArraySize(this.elementData)) ==>
@@ -9087,8 +9040,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
         intFromRef(l27_index) < intFromRef(tail)
       invariant (forall anon_builtin_4: Int ::
           { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4))) }
-          anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+          -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
           0 <= anon_builtin_4 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             (let anon_builtin_neg1 ==
@@ -9334,8 +9286,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
         intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
       (forall anon_builtin_3: Int ::
         { this.elementData.referenceContents[anon_builtin_3] }
-        anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
         0 <= anon_builtin_3 &&
         (unfolding acc(ArrayDeque_unique(this), write) in
           anon_builtin_3 < referenceArraySize(this.elementData)) ==>
@@ -9363,8 +9314,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
         intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
       (forall anon_builtin_4: Int ::
         { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4))) }
-        anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+        -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
         0 <= anon_builtin_4 &&
         (unfolding acc(ArrayDeque_unique(this), write) in
           (let anon_builtin_neg1 ==
@@ -9492,8 +9442,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
               referenceArraySize(this.elementData))))
         invariant (forall anon_builtin_5: Int ::
             { this.elementData.referenceContents[anon_builtin_5] }
-            anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+            -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
             0 <= anon_builtin_5 &&
             (unfolding acc(ArrayDeque_unique(this), write) in
               anon_builtin_5 < referenceArraySize(this.elementData)) ==>
@@ -9507,8 +9456,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(l36_index) < intFromRef(tail)
         invariant (forall anon_builtin_6: Int ::
             { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_6))) }
-            anon_builtin_6 >= -2147483648 && anon_builtin_6 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+            -2147483648 <= anon_builtin_6 && anon_builtin_6 <= 2147483647 ==>
             0 <= anon_builtin_6 &&
             (unfolding acc(ArrayDeque_unique(this), write) in
               (let anon_builtin_neg1 ==
@@ -9762,8 +9710,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_5: Int ::
           { this.elementData.referenceContents[anon_builtin_5] }
-          anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+          -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
           0 <= anon_builtin_5 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             anon_builtin_5 < referenceArraySize(this.elementData)) ==>
@@ -9787,8 +9734,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_6: Int ::
           { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_6))) }
-          anon_builtin_6 >= -2147483648 && anon_builtin_6 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+          -2147483648 <= anon_builtin_6 && anon_builtin_6 <= 2147483647 ==>
           0 <= anon_builtin_6 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             (let anon_builtin_neg1 ==
@@ -9901,8 +9847,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
               referenceArraySize(this.elementData))))
         invariant (forall anon_builtin_7: Int ::
             { this.elementData.referenceContents[anon_builtin_7] }
-            anon_builtin_7 >= -2147483648 && anon_builtin_7 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+            -2147483648 <= anon_builtin_7 && anon_builtin_7 <= 2147483647 ==>
             0 <= anon_builtin_7 &&
             (unfolding acc(ArrayDeque_unique(this), write) in
               anon_builtin_7 < referenceArraySize(this.elementData)) ==>
@@ -9921,8 +9866,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
             intFromRef(l40_index) < referenceArraySize(this.elementData))
         invariant (forall anon_builtin_8: Int ::
             { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_8))) }
-            anon_builtin_8 >= -2147483648 && anon_builtin_8 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+            -2147483648 <= anon_builtin_8 && anon_builtin_8 <= 2147483647 ==>
             0 <= anon_builtin_8 &&
             (unfolding acc(ArrayDeque_unique(this), write) in
               (let anon_builtin_neg1 ==
@@ -10171,8 +10115,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_7: Int ::
           { this.elementData.referenceContents[anon_builtin_7] }
-          anon_builtin_7 >= -2147483648 && anon_builtin_7 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+          -2147483648 <= anon_builtin_7 && anon_builtin_7 <= 2147483647 ==>
           0 <= anon_builtin_7 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             anon_builtin_7 < referenceArraySize(this.elementData)) ==>
@@ -10201,8 +10144,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_8: Int ::
           { equalsRelation(element, ArrayDeque_f_elementAt(this, intToRef(anon_builtin_8))) }
-          anon_builtin_8 >= -2147483648 && anon_builtin_8 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+          -2147483648 <= anon_builtin_8 && anon_builtin_8 <= 2147483647 ==>
           0 <= anon_builtin_8 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             (let anon_builtin_neg1 ==
@@ -10325,8 +10267,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -10335,8 +10276,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -10345,8 +10285,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -10355,8 +10294,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (v_ret_0: Ref)
     (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -10788,8 +10726,7 @@ method indexOfUntrusted(this: Ref, element: Ref) returns (v_ret_0: Ref)
             referenceArraySize(this.elementData))))
       invariant (forall anon_builtin_2: Int ::
           { this.elementData.referenceContents[anon_builtin_2] }
-          anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+          -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
           0 <= anon_builtin_2 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             anon_builtin_2 < referenceArraySize(this.elementData)) ==>
@@ -11034,8 +10971,7 @@ method indexOfUntrusted(this: Ref, element: Ref) returns (v_ret_0: Ref)
         intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
       (forall anon_builtin_2: Int ::
         { this.elementData.referenceContents[anon_builtin_2] }
-        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
         0 <= anon_builtin_2 &&
         (unfolding acc(ArrayDeque_unique(this), write) in
           anon_builtin_2 < referenceArraySize(this.elementData)) ==>
@@ -11237,8 +11173,7 @@ method indexOfUntrusted(this: Ref, element: Ref) returns (v_ret_0: Ref)
               referenceArraySize(this.elementData))))
         invariant (forall anon_builtin_3: Int ::
             { this.elementData.referenceContents[anon_builtin_3] }
-            anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+            -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
             0 <= anon_builtin_3 &&
             (unfolding acc(ArrayDeque_unique(this), write) in
               anon_builtin_3 < referenceArraySize(this.elementData)) ==>
@@ -11487,8 +11422,7 @@ method indexOfUntrusted(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_3: Int ::
           { this.elementData.referenceContents[anon_builtin_3] }
-          anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
           0 <= anon_builtin_3 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             anon_builtin_3 < referenceArraySize(this.elementData)) ==>
@@ -11530,8 +11464,7 @@ method indexOfUntrusted(this: Ref, element: Ref) returns (v_ret_0: Ref)
               referenceArraySize(this.elementData))))
         invariant (forall anon_builtin_4: Int ::
             { this.elementData.referenceContents[anon_builtin_4] }
-            anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-            isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+            -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
             0 <= anon_builtin_4 &&
             (unfolding acc(ArrayDeque_unique(this), write) in
               anon_builtin_4 < referenceArraySize(this.elementData)) ==>
@@ -11781,8 +11714,7 @@ method indexOfUntrusted(this: Ref, element: Ref) returns (v_ret_0: Ref)
           intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
         (forall anon_builtin_4: Int ::
           { this.elementData.referenceContents[anon_builtin_4] }
-          anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+          -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
           0 <= anon_builtin_4 &&
           (unfolding acc(ArrayDeque_unique(this), write) in
             anon_builtin_4 < referenceArraySize(this.elementData)) ==>
@@ -12021,8 +11953,7 @@ method clear(this: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { old(intFromRef(positiveMod(this, (unfolding acc(ArrayDeque_unique(this), write) in
         plusInts(this.head, intToRef(anon_builtin_0)))))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < old(intFromRef(ArrayDeque_g_size(this))) ==>
       (unfolding acc(ArrayDeque_unique(this), write) in
@@ -12319,8 +12250,7 @@ method registerModification(this: Ref) returns (ret_5: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -12858,8 +12788,7 @@ method registerModification(this: Ref) returns (ret_5: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -13569,8 +13498,7 @@ method ensureCapacity(this: Ref, minCapacity: Ref) returns (ret_5: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -13595,8 +13523,7 @@ method registerModification(this: Ref) returns (ret_2: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -13782,8 +13709,7 @@ method get(this: Ref, par_index: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -14133,8 +14059,7 @@ method set(this: Ref, par_index: Ref, element: Ref) returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) &&
       !(anon_builtin_0 == intFromRef(par_index)) ==>
@@ -15402,8 +15327,7 @@ method firstOrNull(this: Ref) returns (ret_3: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -15428,8 +15352,7 @@ method lastOrNull(this: Ref) returns (ret_6: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -15633,8 +15556,7 @@ method f_first(this: Ref) returns (ret_7: Ref)
   ensures (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -15658,8 +15580,7 @@ method f_last(this: Ref) returns (ret_9: Ref)
   ensures (forall anon_builtin_3: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_3)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_3))) }
-      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
       0 <= anon_builtin_3 &&
       anon_builtin_3 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_3)) ==
@@ -15684,8 +15605,7 @@ method firstOrNull(this: Ref) returns (ret_11: Ref)
   ensures (forall anon_builtin_4: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4))) }
-      anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
       0 <= anon_builtin_4 &&
       anon_builtin_4 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_4)) ==
@@ -15710,8 +15630,7 @@ method get(this: Ref, par_index: Ref) returns (ret_2: Ref)
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_0)) ==
@@ -15737,8 +15656,7 @@ method lastOrNull(this: Ref) returns (ret_13: Ref)
   ensures (forall anon_builtin_5: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_5)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_5))) }
-      anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+      -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
       0 <= anon_builtin_5 &&
       anon_builtin_5 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_5)) ==
@@ -15765,8 +15683,7 @@ method set(this: Ref, par_index: Ref, element: Ref) returns (ret_5: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) &&
       !(anon_builtin_1 == intFromRef(par_index)) ==>
@@ -15913,8 +15830,7 @@ method firstOrNull(this: Ref) returns (ret_2: Ref)
   ensures (forall anon_builtin: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin))) }
-      anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+      -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
       0 <= anon_builtin &&
       anon_builtin < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin)) ==
@@ -16041,8 +15957,7 @@ method addLast(this: Ref, element: Ref) returns (ret_7: Ref)
   ensures (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < old(intFromRef(ArrayDeque_g_size(this))) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -16072,8 +15987,7 @@ method removeFirst(this: Ref) returns (ret_5: Ref)
         nullValue()))
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -16094,8 +16008,7 @@ method rotateLeft(d: Ref) returns (v_ret_0: Ref)
     old(ArrayDeque_f_elementAt(d, intToRef(0)))
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(d, intToRef(anon_builtin_0)) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 <
       (let anon_builtin_neg1 ==
@@ -16297,8 +16210,7 @@ method removeLast(this: Ref) returns (ret_5: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -16453,8 +16365,7 @@ method rotateLeft(d: Ref) returns (ret_5: Ref)
     old(ArrayDeque_f_elementAt(d, intToRef(0)))
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(d, intToRef(anon_builtin_1)) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 <
       (let anon_builtin_neg1 ==
@@ -16473,8 +16384,7 @@ method rotateLeftUnchanged(d: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(d, intToRef(anon_builtin_0)) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(d)) &&
       anon_builtin_0 < old(intFromRef(ArrayDeque_g_size(d))) ==>
@@ -16624,8 +16534,7 @@ method rotateRightUnchanged(d: Ref) returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), unitType())
   ensures (forall anon_builtin_0: Int ::
       { ArrayDeque_f_elementAt(d, intToRef(anon_builtin_0)) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < intFromRef(ArrayDeque_g_size(d)) &&
       anon_builtin_0 < old(intFromRef(ArrayDeque_g_size(d))) ==>
@@ -16797,8 +16706,7 @@ method add(this: Ref, element: Ref) returns (ret_6: Ref)
   ensures (forall anon_builtin_1: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1))) }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < old(intFromRef(ArrayDeque_g_size(this))) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_1)) ==
@@ -16984,8 +16892,7 @@ method removeFirstOrNull(this: Ref) returns (ret_11: Ref)
         nullValue()))
   ensures (forall anon_builtin_3: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_3)) }
-      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
       0 <= anon_builtin_3 &&
       anon_builtin_3 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_3)) ==
@@ -17023,8 +16930,7 @@ method removeLastOrNull(this: Ref) returns (ret_8: Ref)
   ensures (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -17459,8 +17365,7 @@ method clear(this: Ref) returns (ret_13: Ref)
   ensures (forall anon_builtin_8: Int ::
       { old(intFromRef(positiveMod(this, (unfolding acc(ArrayDeque_unique(this), write) in
         plusInts(this.head, intToRef(anon_builtin_8)))))) }
-      anon_builtin_8 >= -2147483648 && anon_builtin_8 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+      -2147483648 <= anon_builtin_8 && anon_builtin_8 <= 2147483647 ==>
       0 <= anon_builtin_8 &&
       anon_builtin_8 < old(intFromRef(ArrayDeque_g_size(this))) ==>
       (unfolding acc(ArrayDeque_unique(this), write) in
@@ -17497,8 +17402,7 @@ method contains(this: Ref, element: Ref) returns (ret_10: Ref)
   ensures (forall anon_builtin_7: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_7)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_7))) }
-      anon_builtin_7 >= -2147483648 && anon_builtin_7 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+      -2147483648 <= anon_builtin_7 && anon_builtin_7 <= 2147483647 ==>
       0 <= anon_builtin_7 &&
       anon_builtin_7 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_7)) ==
@@ -17540,8 +17444,7 @@ method indexOf(this: Ref, element: Ref) returns (ret_1: Ref)
   ensures (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
@@ -17584,8 +17487,7 @@ method lastIndexOf(this: Ref, element: Ref) returns (ret_6: Ref)
   ensures (forall anon_builtin_5: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_5)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_5))) }
-      anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+      -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
       0 <= anon_builtin_5 &&
       anon_builtin_5 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_5)) ==
@@ -17782,8 +17684,7 @@ method clear(this: Ref) returns (ret_1: Ref)
   ensures (forall anon_builtin_0: Int ::
       { old(intFromRef(positiveMod(this, (unfolding acc(ArrayDeque_unique(this), write) in
         plusInts(this.head, intToRef(anon_builtin_0)))))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < old(intFromRef(ArrayDeque_g_size(this))) ==>
       (unfolding acc(ArrayDeque_unique(this), write) in
@@ -17836,8 +17737,7 @@ method contains(this: Ref, element: Ref) returns (ret_5: Ref)
   ensures (forall anon_builtin_2: Int ::
       { ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
       { old(ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < intFromRef(ArrayDeque_g_size(this)) ==>
       ArrayDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==

@@ -40,8 +40,7 @@ method zFuncHelper(s: Ref, res: Ref, i: Ref, checkedLeft: Ref, checkedRight: Ref
         intFromRef(stringLength(s)) - anon_builtin_0) &&
       (forall anon_builtin_1: Int ::
         { stringFromRef(s)[anon_builtin_1] }
-        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
         0 <= anon_builtin_1 &&
         anon_builtin_1 <
         intFromRef(decodedMatch(stringGet(res, intToRef(anon_builtin_0)))) ==>
@@ -65,8 +64,7 @@ method zFuncHelper(s: Ref, res: Ref, i: Ref, checkedLeft: Ref, checkedRight: Ref
         stringFromRef(s)[intFromRef(decodedMatch(stringGet(res, intToRef(anon_builtin_0))))]))))
   requires (forall anon_builtin_2: Int ::
       { stringFromRef(s)[anon_builtin_2] }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 <
       (let anon_builtin_neg1 ==
@@ -83,8 +81,7 @@ method zFuncHelper(s: Ref, res: Ref, i: Ref, checkedLeft: Ref, checkedRight: Ref
     intFromRef(ret) <= |stringFromRef(s)|
   ensures (forall anon_builtin_3: Int ::
       { stringFromRef(s)[anon_builtin_3] }
-      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
       intFromRef(i) <= anon_builtin_3 && anon_builtin_3 < intFromRef(ret) ==>
       (let anon_builtin_neg1 ==
         (stringGet(s, minusInts(intToRef(anon_builtin_3), i))) in
@@ -120,8 +117,7 @@ method zFunction(v_this_extension: Ref) returns (ret: Ref)
         intFromRef(stringLength(v_this_extension)) - anon_builtin_0) &&
       (forall anon_builtin_1: Int ::
         { stringFromRef(v_this_extension)[anon_builtin_1] }
-        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
         0 <= anon_builtin_1 &&
         anon_builtin_1 <
         intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) ==>
@@ -173,8 +169,7 @@ method zFunctionNaive(v_this_extension: Ref) returns (ret: Ref)
         intFromRef(stringLength(v_this_extension)) - anon_builtin_0) &&
       (forall anon_builtin_1: Int ::
         { stringFromRef(v_this_extension)[anon_builtin_1] }
-        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
         0 <= anon_builtin_1 &&
         anon_builtin_1 <
         intFromRef(decodedMatch(stringGet(ret, intToRef(anon_builtin_0)))) ==>

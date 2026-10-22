@@ -686,8 +686,7 @@ method letInQuantifiers(arr: Ref, n: Ref) returns (v_ret_0: Ref)
   requires (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin_0: Int ::
         { arr.contents[anon_builtin_0] }
-        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
         0 <= anon_builtin_0 && anon_builtin_0 < arraySize(arr) ==>
         (let anon_0 ==
           (intToRef(arr.contents[anon_builtin_0])) in

@@ -96,7 +96,7 @@ data class LinearizationVisitor(
         val triggerContext = if (ctx is PureExpLinearizer) ctx.copy(isTrigger = true)
         else PureExpLinearizer(ctx.source, ctx.typeResolver, isTrigger = true)
         val viperTriggers = triggerExpressions.map { triggerExpr ->
-            Exp.Trigger(listOf(triggerExpr.linearize().toViperBuiltinType(triggerContext)))
+            Exp.Trigger(listOf(triggerExpr.linearize().toViperBuiltinType(triggerContext).withoutTriggerUnfoldings()))
         }
         return conjunction to viperTriggers
     }
@@ -1384,7 +1384,7 @@ data class LinearizationVisitor(
             return Exp.Forall(
                 variables = listOf(e.variable.toLocalVarDecl()),
                 triggers = viperTriggers,
-                exp = quantifierDomain(e.variable, ctx)?.let { Exp.Implies(it, conjunction) } ?: conjunction,
+                exp = quantifierDomain(e.variable, viperTriggers, ctx)?.let { Exp.Implies(it, conjunction) } ?: conjunction,
                 pos = ctx.source.asPosition,
                 info = e.sourceRole.asInfo,
             )
@@ -1400,22 +1400,27 @@ data class LinearizationVisitor(
             return Exp.Exists(
                 variables = listOf(e.variable.toLocalVarDecl()),
                 triggers = viperTriggers,
-                exp = quantifierDomain(e.variable, ctx)?.let { Exp.And(it, conjunction) } ?: conjunction,
+                exp = quantifierDomain(e.variable, viperTriggers, ctx)?.let { Exp.And(it, conjunction) } ?: conjunction,
                 pos = ctx.source.asPosition,
                 info = e.sourceRole.asInfo,
             )
         }
     }
 
-    private fun quantifierDomain(variable: VariableEmbedding, ctx: LinearizationContext): Exp? = when {
+    private fun quantifierDomain(variable: VariableEmbedding, triggers: List<Exp.Trigger>, ctx: LinearizationContext): Exp? = when {
         variable.isOriginallyRef -> variable.toViperExp(ctx).isOf(variable.type.runtimeType)
         variable.type.pretype == StringTypeEmbedding -> IntegerBounds.string(variable.toLocalVarUse(ctx.source.asPosition))
         else -> IntegerKind.entries.firstOrNull { it.pretype == variable.type.pretype }?.let {
-            // Membership provides a matchable injection term; range constrains the native variable.
-            Exp.And(
-                it.range(variable.toLocalVarUse(ctx.source.asPosition)),
-                variable.toViperExp(ctx).isOf(variable.type.runtimeType),
-            )
+            val variableUse = variable.toLocalVarUse(ctx.source.asPosition)
+            if (triggers.isEmpty()) {
+                // Membership provides a matchable injection term for the triggers Silicon infers.
+                Exp.And(it.range(variableUse), variable.toViperExp(ctx).isOf(variable.type.runtimeType))
+            } else {
+                // The `RuntimeType` axiom on the injection implies membership, so a trigger set makes it redundant.
+                // The bounds are written lower bound first: Silicon's proof search over the array quantifiers of a
+                // permutation swap does not finish within the budget when the lower bound is written `v >= lower`.
+                Exp.And(Exp.IntLit(it.lower) le variableUse, variableUse le Exp.IntLit(it.upper))
+            }
         }
     }
 

@@ -112,8 +112,7 @@ method squares(n: Ref) returns (ret: Ref)
   ensures (unfolding acc(IntArray_unique(ret), write) in
       (forall anon_builtin_0: Int ::
         { ret.contents[anon_builtin_0] }
-        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
         0 <= anon_builtin_0 && anon_builtin_0 < intFromRef(n) ==>
         ret.contents[anon_builtin_0] ==
         (let anon_builtin_neg1 ==
@@ -271,8 +270,7 @@ method wrongElement(n: Ref) returns (v_ret_0: Ref)
     invariant (unfolding acc(IntArray_unique(anon_1), write) in
         (forall anon_builtin_0: Int ::
           { anon_1.contents[anon_builtin_0] }
-          anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+          -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
           anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_2) ==>
           anon_1.contents[anon_builtin_0] ==
           (let anon_builtin_neg1 ==
@@ -304,8 +302,7 @@ method wrongElement(n: Ref) returns (v_ret_0: Ref)
   assert (unfolding acc(IntArray_unique(anon_1), write) in
       (forall anon_builtin_0: Int ::
         { anon_1.contents[anon_builtin_0] }
-        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
         anon_builtin_0 >= 0 && anon_builtin_0 < intFromRef(anon_2) ==>
         anon_1.contents[anon_builtin_0] ==
         (let anon_builtin_neg1 ==

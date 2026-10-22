@@ -166,9 +166,11 @@ the triggers of every array quantifier in the suite. The consumer writes its tri
 
 ### Tests (new file `verification/user_invariants/array_triggers.kt`)
 
-- `permutationSwap`: two `@Unique @Borrowed IntArray`s with the two permutation quantifiers, each with
-  `triggers(order[k])` or `triggers(rank[v])`, the four-write swap, and the postcondition
-  `rank[w] == f && order[f] == w`. It verifies.
+- `permutationSwap`: two `@Unique @Borrowed IntArray`s with the permutation invariant as four quantifiers (bounds of
+  `order[k]` and `rank[v]` triggered on that read, inverse laws triggered on the nested reads `rank[order[k]]` and
+  `order[rank[v]]`), the four-write swap, and the postcondition `rank[w] == f && order[f] == w`. It verifies. A
+  single quantifier triggered on `order[k]` whose body reads `rank[order[k]]` and a second on `rank[v]` form a matching
+  loop, and Silicon's verification time then depends on the number of parallel verifiers.
 - `permutationSwapWrong`: the same body claiming `order[f] == f`. It fails that postcondition.
 - `triggeredBound`: a precondition `forAll<Int> { i -> triggers(a[i]); (0 <= i && i < a.size) implies (0 <= a[i] && a[i] <= b.size) }`
   over a conjunction body, and `verify(a[u + 1] - a[u] >= -b.size)` for an in-range `u`. It verifies.

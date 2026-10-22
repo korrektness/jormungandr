@@ -3,8 +3,7 @@ method forAllWithSimpleTrigger() returns (v_ret_0: Ref)
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures (forall anon_builtin_0: Int ::
       { intFromRef(timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       (-46340 <= anon_builtin_0 && anon_builtin_0 <= 46340 ==>
       (let anon_builtin_neg1 ==
         (timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) in
@@ -27,8 +26,7 @@ method forAllWithMultipleTriggers() returns (v_ret_0: Ref)
   ensures (forall anon_builtin_0: Int ::
       { intFromRef(timesInts(intToRef(anon_builtin_0), intToRef(anon_builtin_0))) }
       { intFromRef(plusInts(intToRef(anon_builtin_0), intToRef(1))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       -46340 <= anon_builtin_0 && anon_builtin_0 <= 46340 &&
       !(anon_builtin_0 == 0) ==>
       (let anon_builtin_neg1 ==
@@ -57,8 +55,7 @@ method forAllWithTriggersInLoop(str: Ref) returns (v_ret_0: Ref)
     invariant isSubtype(typeOf(str), stringType())
     invariant (forall anon_builtin_0: Int ::
         { charFromRef(stringGet(str, intToRef(anon_builtin_0))) }
-        anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
         0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(str)| ==>
         ((let anon_builtin_neg1 ==
           (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),
@@ -95,8 +92,7 @@ method forAllWithTriggersInLoop(str: Ref) returns (v_ret_0: Ref)
   assert isSubtype(typeOf(str), stringType())
   assert (forall anon_builtin_0: Int ::
       { charFromRef(stringGet(str, intToRef(anon_builtin_0))) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(str)| ==>
       ((let anon_builtin_neg1 ==
         (timesLongLong(convertIntToLong(subChars(stringGet(str, intToRef(anon_builtin_0)),

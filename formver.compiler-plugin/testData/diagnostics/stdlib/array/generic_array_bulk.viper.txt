@@ -31,8 +31,7 @@ method copyGrow(src: Ref, n: Ref, split: Ref) returns (v_ret_0: Ref)
   ensures referenceArraySize(v_ret_0) == intFromRef(n)
   ensures (forall anon_builtin_0: Int ::
       { v_ret_0.referenceContents[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 <
       (let anon_builtin_neg1 ==
@@ -46,8 +45,7 @@ method copyGrow(src: Ref, n: Ref, split: Ref) returns (v_ret_0: Ref)
             anon_builtin_0 + intFromRef(split))]))))
   ensures (forall anon_builtin_1: Int ::
       { v_ret_0.referenceContents[anon_builtin_1] }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       (let anon_builtin_neg1 ==
         (minusInts(intToRef(referenceArraySize(src)), split)) in
         intFromRef(intToRef(referenceArraySize(src))) - intFromRef(split)) <=
@@ -71,8 +69,7 @@ method copyGrow(src: Ref, n: Ref, split: Ref) returns (v_ret_0: Ref)
   ensures (unfolding acc(Array_unique(src), write) in
       (forall anon_builtin_3: Int ::
         { src.referenceContents[anon_builtin_3] }
-        anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
         0 <= anon_builtin_3 && anon_builtin_3 < referenceArraySize(src) ==>
         src.referenceContents[anon_builtin_3] ==
         old((unfolding acc(Array_unique(src), write) in
@@ -174,8 +171,7 @@ method fillWindow(arr: Ref, value: Ref, from: Ref, to: Ref)
   ensures (unfolding acc(Array_unique(arr), write) in
       (forall anon_builtin_1: Int ::
         { arr.referenceContents[anon_builtin_1] }
-        anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
         0 <= anon_builtin_1 && anon_builtin_1 < referenceArraySize(arr) &&
         (anon_builtin_1 < intFromRef(from) ||
         intFromRef(to) <= anon_builtin_1) ==>

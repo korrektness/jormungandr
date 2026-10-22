@@ -200,8 +200,7 @@ method add(this: Ref, element: Ref) returns (ret_2: Ref)
       element)
   ensures (forall anon_builtin_0: Int ::
       { MutableListModel_c_ListModel_f_get(this, intToRef(anon_builtin_0)) }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       anon_builtin_0 >= 0 &&
       anon_builtin_0 <
       old((unfolding acc(MutableListModel_unique(this), wildcard) in

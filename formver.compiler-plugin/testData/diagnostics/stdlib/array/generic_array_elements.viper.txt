@@ -37,8 +37,7 @@ method swap(arr: Ref, i: Ref, j: Ref) returns (v_ret_0: Ref)
   ensures (unfolding acc(Array_unique(arr), write) in
       (forall anon_builtin: Int ::
         { arr.referenceContents[anon_builtin] }
-        anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+        -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
         0 <= anon_builtin && anon_builtin < referenceArraySize(arr) &&
         !(anon_builtin == intFromRef(i)) &&
         !(anon_builtin == intFromRef(j)) ==>

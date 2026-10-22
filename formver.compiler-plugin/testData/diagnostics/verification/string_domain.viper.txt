@@ -180,8 +180,7 @@ method concatPreservesCharacterBound(a: Ref, b: Ref, lower: Ref)
   requires |stringFromRef(b)| <= 100
   requires (forall anon_builtin_0: Int ::
       { stringFromRef(a)[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 && anon_builtin_0 < |stringFromRef(a)| ==>
       charFromRef(lower) <=
       (let anon_builtin_neg1 ==
@@ -189,8 +188,7 @@ method concatPreservesCharacterBound(a: Ref, b: Ref, lower: Ref)
         stringFromRef(a)[anon_builtin_0]))
   requires (forall anon_builtin_1: Int ::
       { stringFromRef(b)[anon_builtin_1] }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 && anon_builtin_1 < |stringFromRef(b)| ==>
       charFromRef(lower) <=
       (let anon_builtin_neg1 ==
@@ -209,8 +207,7 @@ method concatPreservesCharacterBound(a: Ref, b: Ref, lower: Ref)
       intFromRef(stringLength(a)) + intFromRef(stringLength(b)))
   assert (forall anon_builtin_2: Int ::
       { stringFromRef(joined)[anon_builtin_2] }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 && anon_builtin_2 < |stringFromRef(joined)| ==>
       charFromRef(lower) <=
       (let anon_builtin_neg1 ==

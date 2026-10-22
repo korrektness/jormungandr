@@ -26,8 +26,7 @@ method swap(arr: Ref, i: Ref, j: Ref) returns (v_ret_0: Ref)
   ensures (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin: Int ::
         { arr.contents[anon_builtin] }
-        anon_builtin >= -2147483648 && anon_builtin <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin)), intType()) ==>
+        -2147483648 <= anon_builtin && anon_builtin <= 2147483647 ==>
         0 <= anon_builtin && anon_builtin < arraySize(arr) &&
         !(anon_builtin == intFromRef(i)) &&
         !(anon_builtin == intFromRef(j)) ==>
@@ -85,8 +84,7 @@ method swap(arr: Ref, i: Ref, j: Ref) returns (ret_5: Ref)
   ensures (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin_2: Int ::
         { arr.contents[anon_builtin_2] }
-        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
         0 <= anon_builtin_2 && anon_builtin_2 < arraySize(arr) &&
         !(anon_builtin_2 == intFromRef(i)) &&
         !(anon_builtin_2 == intFromRef(j)) ==>
@@ -153,8 +151,7 @@ method swap(arr: Ref, i: Ref, j: Ref) returns (ret_7: Ref)
   ensures (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin_4: Int ::
         { arr.contents[anon_builtin_4] }
-        anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+        -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
         0 <= anon_builtin_4 && anon_builtin_4 < arraySize(arr) &&
         !(anon_builtin_4 == intFromRef(i)) &&
         !(anon_builtin_4 == intFromRef(j)) ==>
@@ -412,8 +409,7 @@ method swap(arr: Ref, par_i: Ref, par_j: Ref) returns (ret_15: Ref)
   ensures (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin_11: Int ::
         { arr.contents[anon_builtin_11] }
-        anon_builtin_11 >= -2147483648 && anon_builtin_11 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_11)), intType()) ==>
+        -2147483648 <= anon_builtin_11 && anon_builtin_11 <= 2147483647 ==>
         0 <= anon_builtin_11 && anon_builtin_11 < arraySize(arr) &&
         !(anon_builtin_11 == intFromRef(par_i)) &&
         !(anon_builtin_11 == intFromRef(par_j)) ==>
@@ -596,8 +592,7 @@ method swap(arr: Ref, par_i: Ref, par_j: Ref) returns (ret_11: Ref)
   ensures (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin_7: Int ::
         { arr.contents[anon_builtin_7] }
-        anon_builtin_7 >= -2147483648 && anon_builtin_7 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+        -2147483648 <= anon_builtin_7 && anon_builtin_7 <= 2147483647 ==>
         0 <= anon_builtin_7 && anon_builtin_7 < arraySize(arr) &&
         !(anon_builtin_7 == intFromRef(par_i)) &&
         !(anon_builtin_7 == intFromRef(par_j)) ==>
@@ -645,8 +640,7 @@ method loopFrameKeepsBound(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
     invariant (unfolding acc(IntArray_unique(arr), write) in
         (forall anon_builtin_2: Int ::
           { arr.contents[anon_builtin_2] }
-          anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+          -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
           0 <= anon_builtin_2 && anon_builtin_2 < arraySize(arr) ==>
           arr.contents[anon_builtin_2] ==
           old((unfolding acc(IntArray_unique(arr), write) in
@@ -666,8 +660,7 @@ method loopFrameKeepsBound(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
   assert (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin_2: Int ::
         { arr.contents[anon_builtin_2] }
-        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
         0 <= anon_builtin_2 && anon_builtin_2 < arraySize(arr) ==>
         arr.contents[anon_builtin_2] ==
         old((unfolding acc(IntArray_unique(arr), write) in
@@ -694,8 +687,7 @@ method userTriggerOnFrame(arr: Ref, i: Ref) returns (v_ret_0: Ref)
   ensures (unfolding acc(IntArray_unique(arr), write) in
       (forall anon: Int ::
         { arr.contents[anon] }
-        anon >= -2147483648 && anon <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon)), intType()) ==>
+        -2147483648 <= anon && anon <= 2147483647 ==>
         0 <= anon && anon < arraySize(arr) && !(anon == intFromRef(i)) ==>
         arr.contents[anon] ==
         old((unfolding acc(IntArray_unique(arr), write) in
@@ -740,8 +732,7 @@ method rejectedCandidates(arr: Ref) returns (v_ret_0: Ref)
   requires acc(IntArray_unique(arr), write)
   requires (forall anon_builtin_0: Int ::
       { arr.contents[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 <
       (let anon_builtin_neg1 ==
@@ -771,12 +762,10 @@ method rejectedCandidates(arr: Ref) returns (v_ret_0: Ref)
   ensures (unfolding acc(IntArray_unique(arr), write) in
       (forall anon_builtin_2: Int ::
         { arr.contents[anon_builtin_2] }
-        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
         (forall anon_builtin_3: Int ::
           { first(intToRef(arr.contents[anon_builtin_2]), intToRef(anon_builtin_3)) }
-          anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
           0 <= anon_builtin_2 && anon_builtin_2 < arraySize(arr) ==>
           intFromRef(first(intToRef(arr.contents[anon_builtin_2]), intToRef(anon_builtin_3))) ==
           old((unfolding acc(IntArray_unique(arr), write) in

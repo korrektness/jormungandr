@@ -2272,6 +2272,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("array_triggers.kt")
+      public void testArray_triggers() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/user_invariants/array_triggers.kt");
+      }
+
+      @Test
       @TestMetadata("conditional_specifications.kt")
       public void testConditional_specifications() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/user_invariants/conditional_specifications.kt");

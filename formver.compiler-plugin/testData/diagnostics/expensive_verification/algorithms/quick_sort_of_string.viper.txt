@@ -8,8 +8,7 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
   ensures boolFromRef(calcMin) ==>
     (forall anon_builtin_0: Int ::
       { stringFromRef(v_this_extension)[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
       charFromRef(v_ret_0) <=
@@ -19,8 +18,7 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
   ensures !boolFromRef(calcMin) ==>
     (forall anon_builtin_1: Int ::
       { stringFromRef(v_this_extension)[anon_builtin_1] }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
       charFromRef(v_ret_0) >=
@@ -43,8 +41,7 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
     invariant boolFromRef(calcMin) ==>
       (forall anon_builtin_2: Int ::
         { stringFromRef(v_this_extension)[anon_builtin_2] }
-        anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+        -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
         0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(i) ==>
         charFromRef(res) <=
         (let anon_builtin_neg1 ==
@@ -53,8 +50,7 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
     invariant !boolFromRef(calcMin) ==>
       (forall anon_builtin_3: Int ::
         { stringFromRef(v_this_extension)[anon_builtin_3] }
-        anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
         0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(i) ==>
         charFromRef(res) >=
         (let anon_builtin_neg1 ==
@@ -90,8 +86,7 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
   assert boolFromRef(calcMin) ==>
     (forall anon_builtin_2: Int ::
       { stringFromRef(v_this_extension)[anon_builtin_2] }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 && anon_builtin_2 < intFromRef(i) ==>
       charFromRef(res) <=
       (let anon_builtin_neg1 ==
@@ -100,8 +95,7 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
   assert !boolFromRef(calcMin) ==>
     (forall anon_builtin_3: Int ::
       { stringFromRef(v_this_extension)[anon_builtin_3] }
-      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
       0 <= anon_builtin_3 && anon_builtin_3 < intFromRef(i) ==>
       charFromRef(res) >=
       (let anon_builtin_neg1 ==
@@ -122,8 +116,7 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
   ensures boolFromRef(calcMin) ==>
     (forall anon_builtin_1: Int ::
       { stringFromRef(v_this_extension)[anon_builtin_1] }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
       charFromRef(ret_3) <=
@@ -133,8 +126,7 @@ method minOrMaxChar(v_this_extension: Ref, calcMin: Ref)
   ensures !boolFromRef(calcMin) ==>
     (forall anon_builtin_2: Int ::
       { stringFromRef(v_this_extension)[anon_builtin_2] }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       0 <= anon_builtin_2 &&
       anon_builtin_2 < |stringFromRef(v_this_extension)| ==>
       charFromRef(ret_3) >=
@@ -149,8 +141,7 @@ method quickSort(v_this_extension: Ref) returns (v_ret_0: Ref)
   ensures |stringFromRef(v_ret_0)| == |stringFromRef(v_this_extension)|
   ensures (forall anon_builtin_0: Int ::
       { stringFromRef(v_ret_0)[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       1 <= anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
       (let anon_builtin_neg1 ==
@@ -182,8 +173,7 @@ method quickSort(v_this_extension: Ref) returns (v_ret_0: Ref)
   assert anon_builtin_6 == 0 ==>
     (forall anon_builtin_0: Int ::
       { stringFromRef(v_ret_0)[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       1 <= anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
       (let anon_builtin_neg1 ==
@@ -196,8 +186,7 @@ method quickSort(v_this_extension: Ref) returns (v_ret_0: Ref)
   assert anon_builtin_6 == 1 ==>
     (forall anon_builtin_0: Int ::
       { stringFromRef(v_ret_0)[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       1 <= anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
       (let anon_builtin_neg1 ==
@@ -217,8 +206,7 @@ method quickSortRec(v_this_extension: Ref, par_minVal: Ref, par_maxVal: Ref)
   requires (forall anon_builtin_3: Int ::
       { stringFromRef(v_this_extension)[anon_builtin_3] }
       { stringFromRef(v_this_extension)[anon_builtin_3] }
-      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
       0 <= anon_builtin_3 &&
       anon_builtin_3 < |stringFromRef(v_this_extension)| ==>
       charFromRef(par_minVal) <=
@@ -234,8 +222,7 @@ method quickSortRec(v_this_extension: Ref, par_minVal: Ref, par_maxVal: Ref)
   ensures (forall anon_builtin_4: Int ::
       { stringFromRef(ret_6)[anon_builtin_4] }
       { stringFromRef(ret_6)[anon_builtin_4] }
-      anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
       0 <= anon_builtin_4 &&
       anon_builtin_4 < |stringFromRef(v_this_extension)| ==>
       charFromRef(par_minVal) <=
@@ -248,8 +235,7 @@ method quickSortRec(v_this_extension: Ref, par_minVal: Ref, par_maxVal: Ref)
       charFromRef(par_maxVal))
   ensures (forall anon_builtin_5: Int ::
       { stringFromRef(ret_6)[anon_builtin_5] }
-      anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+      -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
       1 <= anon_builtin_5 &&
       anon_builtin_5 < |stringFromRef(v_this_extension)| ==>
       (let anon_builtin_neg1 ==
@@ -284,8 +270,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
   requires (forall anon_builtin_0: Int ::
       { stringFromRef(v_this_extension)[anon_builtin_0] }
       { stringFromRef(v_this_extension)[anon_builtin_0] }
-      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
       0 <= anon_builtin_0 &&
       anon_builtin_0 < |stringFromRef(v_this_extension)| ==>
       charFromRef(minVal) <=
@@ -301,8 +286,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
   ensures (forall anon_builtin_1: Int ::
       { stringFromRef(v_ret_0)[anon_builtin_1] }
       { stringFromRef(v_ret_0)[anon_builtin_1] }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
       charFromRef(minVal) <=
@@ -315,8 +299,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
       charFromRef(maxVal))
   ensures (forall anon_builtin_2: Int ::
       { stringFromRef(v_ret_0)[anon_builtin_2] }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       1 <= anon_builtin_2 &&
       anon_builtin_2 < |stringFromRef(v_this_extension)| ==>
       (let anon_builtin_neg1 ==
@@ -378,8 +361,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
     invariant (forall anon_builtin_3: Int ::
         { stringFromRef(lessString)[anon_builtin_3] }
         { stringFromRef(lessString)[anon_builtin_3] }
-        anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
         0 <= anon_builtin_3 && anon_builtin_3 < |stringFromRef(lessString)| ==>
         charFromRef(minVal) <=
         (let anon_builtin_neg1 ==
@@ -392,8 +374,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
     invariant (forall anon_builtin_4: Int ::
         { stringFromRef(greaterString)[anon_builtin_4] }
         { stringFromRef(greaterString)[anon_builtin_4] }
-        anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+        -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
         0 <= anon_builtin_4 &&
         anon_builtin_4 < |stringFromRef(greaterString)| ==>
         charFromRef(medVal) <=
@@ -406,8 +387,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
         charFromRef(maxVal))
     invariant (forall anon_builtin_5: Int ::
         { stringFromRef(eqString)[anon_builtin_5] }
-        anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
-        isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+        -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
         0 <= anon_builtin_5 && anon_builtin_5 < |stringFromRef(eqString)| ==>
         (let anon_builtin_neg1 ==
           (stringGet(eqString, intToRef(anon_builtin_5))) in
@@ -470,8 +450,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
   assert (forall anon_builtin_3: Int ::
       { stringFromRef(lessString)[anon_builtin_3] }
       { stringFromRef(lessString)[anon_builtin_3] }
-      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      -2147483648 <= anon_builtin_3 && anon_builtin_3 <= 2147483647 ==>
       0 <= anon_builtin_3 && anon_builtin_3 < |stringFromRef(lessString)| ==>
       charFromRef(minVal) <=
       (let anon_builtin_neg1 ==
@@ -484,8 +463,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
   assert (forall anon_builtin_4: Int ::
       { stringFromRef(greaterString)[anon_builtin_4] }
       { stringFromRef(greaterString)[anon_builtin_4] }
-      anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+      -2147483648 <= anon_builtin_4 && anon_builtin_4 <= 2147483647 ==>
       0 <= anon_builtin_4 &&
       anon_builtin_4 < |stringFromRef(greaterString)| ==>
       charFromRef(medVal) <=
@@ -498,8 +476,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
       charFromRef(maxVal))
   assert (forall anon_builtin_5: Int ::
       { stringFromRef(eqString)[anon_builtin_5] }
-      anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+      -2147483648 <= anon_builtin_5 && anon_builtin_5 <= 2147483647 ==>
       0 <= anon_builtin_5 && anon_builtin_5 < |stringFromRef(eqString)| ==>
       (let anon_builtin_neg1 ==
         (stringGet(eqString, intToRef(anon_builtin_5))) in
@@ -527,8 +504,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
     (forall anon_builtin_1: Int ::
       { stringFromRef(v_ret_0)[anon_builtin_1] }
       { stringFromRef(v_ret_0)[anon_builtin_1] }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
       charFromRef(minVal) <=
@@ -543,8 +519,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
     (forall anon_builtin_1: Int ::
       { stringFromRef(v_ret_0)[anon_builtin_1] }
       { stringFromRef(v_ret_0)[anon_builtin_1] }
-      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      -2147483648 <= anon_builtin_1 && anon_builtin_1 <= 2147483647 ==>
       0 <= anon_builtin_1 &&
       anon_builtin_1 < |stringFromRef(v_this_extension)| ==>
       charFromRef(minVal) <=
@@ -558,8 +533,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
   assert anon_builtin_6 == 0 ==>
     (forall anon_builtin_2: Int ::
       { stringFromRef(v_ret_0)[anon_builtin_2] }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       1 <= anon_builtin_2 &&
       anon_builtin_2 < |stringFromRef(v_this_extension)| ==>
       (let anon_builtin_neg1 ==
@@ -572,8 +546,7 @@ method quickSortRec(v_this_extension: Ref, minVal: Ref, maxVal: Ref)
   assert anon_builtin_6 == 1 ==>
     (forall anon_builtin_2: Int ::
       { stringFromRef(v_ret_0)[anon_builtin_2] }
-      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
-      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      -2147483648 <= anon_builtin_2 && anon_builtin_2 <= 2147483647 ==>
       1 <= anon_builtin_2 &&
       anon_builtin_2 < |stringFromRef(v_this_extension)| ==>
       (let anon_builtin_neg1 ==
