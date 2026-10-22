@@ -195,10 +195,9 @@ still carry the annotation, so that they differ from the upstream body only in t
 
 Concrete library classes have no bundled model yet; only interfaces are bound. Decision: `ArrayDequeModel<E>`
 declares only the in-scope members and does not extend `MutableListModel`, so an out-of-scope member called on an
-`ArrayDeque` receiver is an opaque library call and not a contract the port never proved. If the binding rules
-require the supertype model, the inherited members are listed in the trust report as bound to the `MutableList`
-model, not proved by the port. Whether constructors of a bound class can be modelled is unchecked **[H]**; S9
-starts by checking it, and if not, a constructor-binding change is its own stage before S9.
+`ArrayDeque` receiver is rejected, not given a contract the port never proved. `ArrayDeque()` binds through a
+constructor model (S9a); `docs/targets/arraydeque-ctor-binding.md` owns the constructor binding, the unbound-member
+policy and their fallbacks.
 
 `DequeSpec` has two observers: `size` and `elementAt(index)`, the element at a window offset. The port implements
 `elementAt` with a `@Pure` body that reads `elementData` (D-8), which needs G2. Upstream `get` throws on a bad index,
@@ -282,11 +281,12 @@ the diff including tests.
 | S6 | Port skeleton: class, P1 law and capacity law, constructors, mod helpers, `get`, `set`, `first`/`last` (+`OrNull`), `DequeSpec` with `size` and `elementAt` | members verify; `getWrapped` (no `positiveMod`) and `firstOnEmpty` fail; deviation check passes | 400–600 |
 | S7 | `ensureCapacity`, `copyElements`, `registerModification`, `addFirst`/`addLast`/`add`, `removeFirst`/`removeLast` (+`OrNull`), capacity preconditions | clients `rotateLeft` (`removeFirst`, then `addLast`) and `rotateRight` (`removeLast`, then `addFirst`) verify the rotated sequence through the port, and a sibling claiming the unrotated sequence fails; `newCapacity` without `@WrappingIntArithmetic` reports `INTEGER_OVERFLOW`; a `copyElements` whose second `copyInto` copies one element too many fails its bounds obligation; `ArrayDeque.port.diff` carries no proof-lemma hunk; `removeKeepsSlot` fails the P2 postcondition; `addLast` without the capacity precondition reports `INTEGER_OVERFLOW`; D-6 `verify`s hold | 400–700 |
 | S8 | `indexOf`, `lastIndexOf`, `contains`, `clear`, `nullifyNonEmpty`; mutants | upstream bodies verify; `indexOfPre80390` fails on `result < size`; `lastIndexOfPre80661` fails on `(result == -1) == !contains(element)`; vacuity clean on the port | 300–500 |
+| S9a | Constructor models of bound dependency classes | the S9a tests of `docs/targets/arraydeque-ctor-binding.md` | 300–500 |
 | S9 | `external-specs/ArrayDeque.kt`, bundled-vacuity entry, spec-equality test, consumer in testData and in the Gradle consumer project | the consumer claims and negatives above; `peekEmpty` fails its precondition; `check-gradle-consumer.sh` passes with the trust report entry | 500–800 |
 | S10 | Upstream patch artifact for defect 1 | `docs/upstream/arraydeque-removeall/` (patch, report, reproduction, test driver) plus `ArrayDequeTest` cases using `testArrayDeque`'s layout enumeration with a throwing `contains` at every position; the cases fail on 2.3.0 and pass patched, run against a scratch build and reported in the commit | 200–400 |
 
 Order: S1 → S2; S1 → S4; S3 and S5 are independent of everything else; S5a, S5b and S5c are independent of each
-other; S5d–S5g are independent of each other; S6 needs S1, S3, S5, S5a–S5g; S7 needs S2, S6; S8 needs S4, S7; S9 needs S8. S10 is independent of all verifier work. No stage touches two verifier subsystems.
+other; S5d–S5g are independent of each other; S6 needs S1, S3, S5, S5a–S5g; S7 needs S2, S6; S8 needs S4, S7; S9a is independent of everything else; S9 needs S8 and S9a. S10 is independent of all verifier work. No stage touches two verifier subsystems.
 
 Stop rule: if S6 or S7 cannot verify a member within the default per-declaration timeout with the frame triggers of
 `docs/targets/arraydeque-proof-barrier.md`, stop and report the timings before S8. Do not raise the timeout to
