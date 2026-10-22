@@ -156,6 +156,7 @@ method newArrayIsNull(n: Ref) returns (v_ret_0: Ref)
   var anon_5: Ref
   var anon_0: Ref
   var anon_1: Ref
+  var last: Ref
   anon_0 := n
   assert intFromRef(anon_0) >= 0
   anon_1 := new()
@@ -190,13 +191,28 @@ method newArrayIsNull(n: Ref) returns (v_ret_0: Ref)
     assert equalsRelation(anon_6, stringLit())
     fold acc(Array_unique(arr), write)
   }
-  assert (let anon_builtin_neg1 ==
-      (minusInts(intToRef(referenceArraySize(arr)), intToRef(1))) in
-      intFromRef(intToRef(referenceArraySize(arr))) -
-      intFromRef(intToRef(1))) ==
+  last := minusInts(intToRef(referenceArraySize(arr)), intToRef(1))
+  assert intFromRef(last) ==
     (let anon_builtin_neg1 ==
       (minusInts(n, intToRef(1))) in
       intFromRef(n) - intFromRef(intToRef(1)))
+  if (intFromRef(last) >= 0) {
+    var anon_8: Ref
+    var anon_9: Ref
+    assert intFromRef(last) >= 0
+    assert intFromRef(last) < referenceArraySize(arr)
+    unfold acc(Array_unique(arr), write)
+    arr.referenceContents := arr.referenceContents[intFromRef(last) :=
+      nullValue()]
+    assert intFromRef(last) >= 0
+    assert intFromRef(last) < referenceArraySize(arr)
+    anon_9 := arr.referenceContents[intFromRef(last)]
+    anon_8 := anon_9
+    inhale isSubtype(typeOf(anon_8), nullable(anyType()))
+    assert anon_8 == nullValue()
+    fold acc(Array_unique(arr), write)
+  }
+  assert intFromRef(last) == intFromRef(n)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
@@ -243,6 +259,43 @@ method empty() returns (v_ret_0: Ref)
   } else {
     anon_3 := boolToRef(false)}
   assert boolFromRef(anon_3)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/generic_array_elements.kt: info: Generated Viper text for lastIndexAfterMove:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method lastIndexAfterMove() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var arr: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var moved: Ref
+  var last: Ref
+  anon_0 := intToRef(1)
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_2 := anon_1
+  arr := anon_2
+  moved := arr
+  last := minusInts(intToRef(referenceArraySize(arr)), intToRef(1))
+  assert 0 >= 0
+  assert 0 < referenceArraySize(moved)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

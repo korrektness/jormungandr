@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.formver.locality.plugin
 
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isStringBuilderClearReceiver
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayBulkReceiver
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayLastIndexReceiver
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isArrayCopyDestination
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
 import org.jetbrains.kotlin.KtFakeSourceElementKind
@@ -35,7 +36,7 @@ private fun isInlinedIntoSpecification(function: FirBasedSymbol<*>?): Boolean =
         function !in context.containingDeclarations
 
 private val FirReceiverParameterSymbol.isBorrowedIntrinsicReceiver: Boolean
-    get() = isStringBuilderClearReceiver || isGenericArrayBulkReceiver
+    get() = isStringBuilderClearReceiver || isGenericArrayBulkReceiver || isGenericArrayLastIndexReceiver
 
 context(context: CheckerContext)
 private fun FirValueParameterSymbol.isBorrowedParameter(): Boolean =

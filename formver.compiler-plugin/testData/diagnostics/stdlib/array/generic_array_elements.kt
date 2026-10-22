@@ -42,12 +42,25 @@ fun <!VIPER_TEXT!>newArrayIsNull<!>(n: Int) {
         arr[0] = "value"
         verify(arr[0] == "value")
     }
-    verify(arr.lastIndex == n - 1)
+    val last = arr.lastIndex
+    verify(last == n - 1)
+    if (last >= 0) {
+        arr[last] = null
+        verify(arr[last] == null)
+    }
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>last == n<!>)
 }
 
 fun <!VIPER_TEXT!>empty<!>() {
     val arr: @Unique Array<String> = emptyArray<String>()
     verify(arr.size == 0 && arr.lastIndex == -1)
+}
+
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>lastIndexAfterMove<!>() {
+    val arr: @Unique Array<Any?> = arrayOfNulls(1)
+    val moved: @Unique Array<Any?> = arr
+    val last = <!INVALID_MOVED_ACCESS!>arr<!>.lastIndex
+    moved[0] = null
 }
 
 fun <!VIPER_TEXT!>storeOwned<!>(arr: @Unique @Borrowed Array<Token?>) {

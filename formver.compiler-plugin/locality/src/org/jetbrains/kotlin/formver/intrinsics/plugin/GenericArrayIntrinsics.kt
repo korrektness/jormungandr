@@ -43,6 +43,14 @@ fun FirCallableSymbol<*>.genericArrayBulk(): GenericArrayBulk? {
 val FirReceiverParameterSymbol.isGenericArrayBulkReceiver: Boolean
     get() = (containingDeclarationSymbol as? FirCallableSymbol<*>)?.genericArrayBulk() != null
 
+/** Array.lastIndex reads the immutable length without retaining its receiver. */
+val FirReceiverParameterSymbol.isGenericArrayLastIndexReceiver: Boolean
+    get() {
+        val symbol = containingDeclarationSymbol as? FirCallableSymbol<*> ?: return false
+        return symbol.callableId == CallableId(FqName("kotlin.collections"), Name.identifier("lastIndex")) &&
+                symbol.resolvedReceiverTypeRef?.coneType?.classId == arrayClassId
+    }
+
 val FirValueParameterSymbol.isArrayCopyDestination: Boolean
     get() = name.asString() == "destination" &&
             (containingDeclarationSymbol as? FirCallableSymbol<*>)?.genericArrayBulk() == GenericArrayBulk.CopyInto
