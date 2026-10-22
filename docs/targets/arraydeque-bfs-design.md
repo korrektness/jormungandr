@@ -34,7 +34,9 @@ Nothing is claimed for an exceptional exit, and the claims hold on normal return
 
 - `offsets.size >= 1` and `n < 715827882`, the bound of `addLast`'s precondition in the bundled model.
 - `parent.size == n` and `rank.size == n`.
-- Valid offsets: `0 <= offsets[i] <= targets.size` for every `i`, and `offsets[i] <= offsets[i + 1]` for `i < n`.
+- Valid offsets: `0 <= offsets[i] <= targets.size` for every `i`. Monotonicity is not assumed: the range of a vertex with
+  `offsets[v + 1] < offsets[v]` is empty, so the claims hold without it. A monotonicity quantifier triggered on
+  `offsets[i]` creates `offsets[i + 1]` and matches itself without end, and verification of the loop then does not finish.
 - Bounded targets: `0 <= targets[j] < n` for every `j`.
 - `0 <= start < n`.
 
@@ -111,7 +113,7 @@ instantiation does not derive. The same step bounds `found` before `f++`. Two de
 | Extra arrays | `order` | none |
 | Claim | `bfs` never throws | `bfs` may throw `IllegalStateException` at the check, as far as the proof knows; the claims hold on normal return |
 | Real behaviour | identical | identical: there are at most `n` discoveries, so the check never fails |
-| Measured | times out in spikes (below) | main loop verifies; scan helper times out at 300 s (below) |
+| Measured | times out in spikes (below) | verifies; times in "Budget and stop rule" |
 
 The closure fallback is decided under "Budget and stop rule". (B) does not claim that `bfs` does not throw. The check does
 not add an assumption: a failed check is an exceptional exit, and nothing is claimed for it.
@@ -186,8 +188,12 @@ it lands. Estimated size: 150–300 lines with tests and goldens.
 Positive file `external_specs/arraydeque_bfs.kt` (`// TRUST_REPORT`), verifying through the bundled model:
 
 - `bfs` and `scanSuccessors` as above, with every quantifier over array reads carrying an explicit trigger on its
-  innermost read of the bound variable: `offsets[i]`, `targets[j]`, `rank[v]`, `queue[q]`.
-- `enqueueOnce`. `enqueueOnce` and `enqueueOnceFalseGrowth` live in the consumer files.
+  innermost read of the bound variable: `offsets[i]`, `targets[j]`, `rank[v]`, `parent[v]`, `queue[q]`. The queue window is
+  two quantifiers: bounds triggered on `queue[q]`, and ranks triggered on the nested read `rank[queue[q]]`. A single
+  quantifier triggered on `queue[q]` whose body reads `rank[queue[q]]`, next to the inverse clause
+  `queue[rank[v] - p] == v` triggered on `rank[v]`, matches itself without end. The inverse clause makes rank
+  injective on the frontier, which closure needs: the vertex of rank `processed` is `u`. Guards state the offset and
+  target bounds that an index read needs, since the well-formedness check of a contract does not use the other clauses.
 - `parentCycleExcluded`: given claim 3's clause as a precondition, `verify(!(parent[a] == b && parent[b] == a))` for
   discovered `a`, `b` of positive rank. It verifies.
 
@@ -196,20 +202,20 @@ Negative file `external_specs/arraydeque_bfs_negative.kt`:
 - `scanSkipLast`: `scanSuccessors` with the loop bound `offsets[u + 1] - 1` and the same contract and invariants. It
   fails the closure postcondition and nothing else. A timeout does not count as that failure.
 - `parentCycleWithoutRanks`: `parentCycleExcluded` without the rank clause. Its `verify` fails.
-- `bfsWithoutVertexBound`: `bfs` without `n < 715827882`. It fails the `addLast` precondition in the scan and
-  nothing else.
-- `enqueueOnceFalseGrowth`.
+- `bfsWithoutVertexBound`: `bfs` without `n < 715827882`, calling `scanSkipLast`. It fails the scan's precondition at
+  the call, which carries the bound for `addLast`, and nothing else.
 
-The trust golden lists `ArrayDeque()`, `addLast`, `removeFirst`, `isEmpty` and `contains` as bundled specs.
+`enqueueOnce` and `enqueueOnceFalseGrowth` stay in `external_specs/arraydeque_binding.kt`. The trust golden of the
+positive file lists `ArrayDeque()`, `addLast`, `get`, `isEmpty`, `removeFirst` and `size` as bundled specs.
 
 ## Budget and stop rule
 
 Every declaration of the consumer verifies in under 150 s, the budget of `docs/targets/arraydeque-proof-barrier.md`,
-measured in a scratch file per declaration when the file takes over 150 s wall. Spike evidence: with G13 emulated,
-the (B) main loop verifies in 23 s, and in 124 s without explicit triggers; the (B) scan
-helper times out at 300 s in four variants. The scan helper is the open feasibility risk of (B).
+measured in a scratch file per declaration when the file takes over 150 s wall. Cold measurements of the landed
+fixture: `bfs` 5 s, `scanSuccessors` 75 s, `parentCycleExcluded` 0.3 s, `scanSkipLast` 101 s,
+`bfsWithoutVertexBound` 9 s, `parentCycleWithoutRanks` 3 s.
 
-If the scan helper or its mutant does not meet the budget after G13, split the scan body further: a per-edge helper
+If the scan helper or its mutant stops meeting the budget, split the scan body further: a per-edge helper
 `visitSuccessor(w)` with a frame contract (old discovered ranks and parents unchanged, a newly discovered `w` with
 rank `f` and parent `u`), so that the loop invariant restates only the partial closure and the queue window. If that
 also misses the budget, stop and report the timings. The fallback that drops closure (restricted minimum 3 of the

@@ -165,6 +165,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("arraydeque_bfs.kt")
+    public void testArraydeque_bfs() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/arraydeque_bfs.kt");
+    }
+
+    @Test
+    @TestMetadata("arraydeque_bfs_negative.kt")
+    public void testArraydeque_bfs_negative() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/arraydeque_bfs_negative.kt");
+    }
+
+    @Test
     @TestMetadata("arraydeque_binding.kt")
     public void testArraydeque_binding() {
       runTest("formver.compiler-plugin/testData/diagnostics/external_specs/arraydeque_binding.kt");
