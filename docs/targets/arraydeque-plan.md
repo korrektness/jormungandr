@@ -323,6 +323,35 @@ ending at the minimum target plus the S10 patch. Prove it only if all of these h
 If any fails, the target ends at the minimum plus the patch, and F3 is recorded as not justified with the measured
 numbers.
 
+### Decision: F3 is not justified
+
+The target ends at the minimum plus the S10 patch. F3, V6 and V8 are not planned. The measurements are in
+`docs/targets/arraydeque-results.md`; the patch and its tests are in `docs/upstream/arraydeque-removeall/`.
+
+| Criterion | Status | Evidence |
+|---|---|---|
+| 1. Headroom | Not established | `ArrayDeque.kt` takes 306.6 s and 325.8 s of JUnit wall time per file in the two recorded `--verify` runs; `indexOfPre80390.kt` takes 94.7–150.0 s and `lastIndexOfPre80661.kt` 77.6–165.2 s. The harness discards per-declaration times, so no run shows every declaration under 150 s, half the default 300 s. |
+| 2. Churn | Not measured | No cheap measurement exists. Outside a `try`, a call has no exceptional edge (`docs/soundness.md`, "Unreachable points"), so a churn branch must first add an exceptional edge to every call in a borrowing member and then assert the class laws there. That is the V6 implementation itself, estimated in the note at an opus design and 2–4 sol changes, and the full suite then needs a `--verify` run. Criteria 3 and 4 fail regardless of the result. |
+| 3. Second customer | Fails | ArrayDeque is the only selected target. Persistent collections is not selected, and the Ktor ranges deviations need no exceptional-exit reasoning. |
+| 4. Marginal value over S10 | Fails | The S10 tests run upstream's own `ArrayDequeTest` layout enumeration (capacities 2, 8 and 15, every head, tail and size, every throw position) against the shipped source at v2.3.0 and at master, and reject the unpatched build. No reviewer has asked for a capacity-independent claim. A proof would cover a patched port of a fix that is not submitted, under the port's residual trust (D0 and the D-labels); it would not prove the shipped class or the shipped patch. |
+| 5. Feasibility | Not run | V8 does not exist, so the P6(b) spike has nothing to run on. |
+
+Costs that weigh against F3 as well:
+
+- Solver time: P6 adds an exceptional-exit obligation at every call inside the three scan loops of
+  `filterInPlace`, each with a subsequence witness over a wrapping buffer. The port file without these already
+  takes longer than one default declaration timeout in total.
+- Soundness: V6 adds obligations and no assumption. P6 for `filterInPlace` additionally rests on the callback not
+  reaching the deque, which is the registered "Unique borrows" entry. The soundness cost is low; the cost is churn
+  and solver time.
+
+What would reopen the decision: a selected second target that needs V6, or a request for a capacity-independent
+claim about the fix. Either one reopens criteria 1, 2 and 5, which then need per-declaration timings, a churn branch
+and the V8 spike.
+
+The minimum target is not met yet: items 1, 6 and 8 are open (`docs/targets/arraydeque-results.md`, "Acceptance
+audit"). That work is independent of exceptional exits.
+
 ## What stays trusted
 
 At the end of the minimum target:
