@@ -33,6 +33,10 @@ Residual syntactic trust includes aliasing, other receivers, name resolution
 flow and reachability within a declaration, and the specification-erasure rules.
 Approval of a diff does not establish that those changes preserve behaviour.
 
+The generic search contracts use the scoped element-equality trust of
+`docs/targets/arraydeque-plan.md`, “D4 and V5: element equality”. That section owns
+the assumption on executed equals and the element types with no residual equality trust.
+
 The proof is of the port, not of the shipped class.
 The committed ArrayDeque.port.diff is the deviation list; this file labels its
 residual trust. See docs/targets/arraydeque-plan.md, “D2, D-6 and residual trust:

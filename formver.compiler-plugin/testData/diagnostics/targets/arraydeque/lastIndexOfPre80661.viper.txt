@@ -1,0 +1,2523 @@
+/lastIndexOfPre80661.kt: info: Generated Viper text for elementAt:
+function elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/lastIndexOfPre80661.kt: info: Generated Viper text for SearchDeque:
+field count: Ref
+
+field elementData: Ref
+
+field head: Ref
+
+field referenceContents: Seq[Ref]
+
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SearchDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(SearchDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_13_0 ==
+    ((unfolding acc(SearchDeque_unique(this), write) in this.head)) in
+    (unfolding acc(SearchDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_13_0, par_index))) in
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_14_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_14_0), write) in
+              anon_14_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function SearchDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(SearchDeque_unique(this), write) in this.count)
+}
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(SearchDeque_unique(this), write) in
+    (let anon_17_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_17_0) ?
+        (let anon_19_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_19_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), SearchDeque())
+  ensures isSubtype(typeOf(v_ret_0), SearchDeque()) &&
+    acc(v_ret_0.head, write) &&
+    isSubtype(typeOf(v_ret_0.head), intType()) &&
+    acc(v_ret_0.count, write) &&
+    isSubtype(typeOf(v_ret_0.count), intType()) &&
+    acc(v_ret_0.elementData, write) &&
+    isSubtype(typeOf(v_ret_0.elementData), Array()) &&
+    acc(Array_unique(v_ret_0.elementData), write) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef((let anon_2_0 ==
+        (this.count) in
+        (let anon_3_0 ==
+          ((0 <= intFromRef(anon_2_0) ? this.count : null)) in
+          (let anon_4_0 ==
+            ((0 <= intFromRef(anon_2_0) ? this.elementData : null)) in
+            (let anon_5_0 ==
+              ((0 <= intFromRef(anon_2_0) &&
+              intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) ?
+                this.elementData :
+                null)) in
+              (let anon_6_0 ==
+                ((0 <= intFromRef(anon_2_0) &&
+                intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
+                !(referenceArraySize(anon_5_0) == 0) ?
+                  this.head :
+                  null)) in
+                (let anon_7_0 ==
+                  ((0 <= intFromRef(anon_2_0) &&
+                  intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
+                  !(referenceArraySize(anon_5_0) == 0) &&
+                  0 <= intFromRef(anon_6_0) ?
+                    this.head :
+                    null)) in
+                  (let anon_8_0 ==
+                    ((0 <= intFromRef(anon_2_0) &&
+                    intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
+                    !(referenceArraySize(anon_5_0) == 0) &&
+                    0 <= intFromRef(anon_6_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_9_0 ==
+                      ((0 <= intFromRef(anon_2_0) &&
+                      intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
+                      (referenceArraySize(anon_5_0) == 0 ||
+                      0 <= intFromRef(anon_6_0) &&
+                      intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_10_0 ==
+                        ((0 <= intFromRef(anon_2_0) &&
+                        intFromRef(anon_3_0) <=
+                        referenceArraySize(anon_4_0) &&
+                        (referenceArraySize(anon_5_0) == 0 ||
+                        0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
+                        !!(referenceArraySize(anon_9_0) == 0) ?
+                          this.head :
+                          null)) in
+                        boolToRef(0 <= intFromRef(anon_2_0) &&
+                        intFromRef(anon_3_0) <=
+                        referenceArraySize(anon_4_0) &&
+                        (referenceArraySize(anon_5_0) == 0 ||
+                        0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
+                        (!(referenceArraySize(anon_9_0) == 0) ||
+                        intFromRef(anon_10_0) == 0) &&
+                        (let anon_11_0 ==
+                          (this.elementData) in
+                          referenceArraySize(anon_11_0) <= 1073741824)))))))))))))
+  ensures intFromRef(v_ret_0.head) == 0
+  ensures intFromRef(v_ret_0.count) == 0
+{
+  var anon_21: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new(head, count, elementData)
+  inhale typeOf(v_ret_0) == SearchDeque()
+  v_ret_0.head := intToRef(0)
+  v_ret_0.count := intToRef(0)
+  anon_0 := intToRef(0)
+  assert intFromRef(anon_0) >= 0
+  anon_1 := new()
+  inhale acc(Array_unique(anon_1), write)
+  inhale referenceArraySize(anon_1) == intFromRef(anon_0) &&
+    (unfolding acc(Array_unique(anon_1), write) in
+      (forall j: Int ::
+        { anon_1.referenceContents[j] }
+        j >= 0 && j < referenceArraySize(anon_1) ==>
+        anon_1.referenceContents[j] == nullValue()))
+  anon_21 := anon_1
+  v_ret_0.elementData := anon_21
+  assert (let this ==
+      (v_ret_0) in
+      boolFromRef((let anon_2_0 ==
+        (this.count) in
+        (let anon_3_0 ==
+          ((0 <= intFromRef(anon_2_0) ? this.count : null)) in
+          (let anon_4_0 ==
+            ((0 <= intFromRef(anon_2_0) ? this.elementData : null)) in
+            (let anon_5_0 ==
+              ((0 <= intFromRef(anon_2_0) &&
+              intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) ?
+                this.elementData :
+                null)) in
+              (let anon_6_0 ==
+                ((0 <= intFromRef(anon_2_0) &&
+                intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
+                !(referenceArraySize(anon_5_0) == 0) ?
+                  this.head :
+                  null)) in
+                (let anon_7_0 ==
+                  ((0 <= intFromRef(anon_2_0) &&
+                  intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
+                  !(referenceArraySize(anon_5_0) == 0) &&
+                  0 <= intFromRef(anon_6_0) ?
+                    this.head :
+                    null)) in
+                  (let anon_8_0 ==
+                    ((0 <= intFromRef(anon_2_0) &&
+                    intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
+                    !(referenceArraySize(anon_5_0) == 0) &&
+                    0 <= intFromRef(anon_6_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_9_0 ==
+                      ((0 <= intFromRef(anon_2_0) &&
+                      intFromRef(anon_3_0) <= referenceArraySize(anon_4_0) &&
+                      (referenceArraySize(anon_5_0) == 0 ||
+                      0 <= intFromRef(anon_6_0) &&
+                      intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_10_0 ==
+                        ((0 <= intFromRef(anon_2_0) &&
+                        intFromRef(anon_3_0) <=
+                        referenceArraySize(anon_4_0) &&
+                        (referenceArraySize(anon_5_0) == 0 ||
+                        0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
+                        !!(referenceArraySize(anon_9_0) == 0) ?
+                          this.head :
+                          null)) in
+                        boolToRef(0 <= intFromRef(anon_2_0) &&
+                        intFromRef(anon_3_0) <=
+                        referenceArraySize(anon_4_0) &&
+                        (referenceArraySize(anon_5_0) == 0 ||
+                        0 <= intFromRef(anon_6_0) &&
+                        intFromRef(anon_7_0) < referenceArraySize(anon_8_0)) &&
+                        (!(referenceArraySize(anon_9_0) == 0) ||
+                        intFromRef(anon_10_0) == 0) &&
+                        (let anon_11_0 ==
+                          (this.elementData) in
+                          referenceArraySize(anon_11_0) <= 1073741824)))))))))))))
+  fold acc(SearchDeque_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(SearchDeque_unique(v_ret_0), write)
+}
+
+/lastIndexOfPre80661.kt: info: Generated Viper text for size:
+field count: Ref
+
+field elementData: Ref
+
+field head: Ref
+
+field referenceContents: Seq[Ref]
+
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SearchDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(SearchDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_11_0 ==
+    ((unfolding acc(SearchDeque_unique(this), write) in this.head)) in
+    (unfolding acc(SearchDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_11_0, par_index))) in
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_12_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_12_0), write) in
+              anon_12_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function SearchDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(SearchDeque_unique(this), write) in this.count)
+}
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(SearchDeque_unique(this), write) in
+    (let anon_15_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_15_0) ?
+        (let anon_17_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_17_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/lastIndexOfPre80661.kt: info: Generated Viper text for isNotEmpty:
+field count: Ref
+
+field elementData: Ref
+
+field head: Ref
+
+field referenceContents: Seq[Ref]
+
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SearchDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(SearchDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_11_0 ==
+    ((unfolding acc(SearchDeque_unique(this), write) in this.head)) in
+    (unfolding acc(SearchDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_11_0, par_index))) in
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_12_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_12_0), write) in
+              anon_12_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function SearchDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(SearchDeque_unique(this), write) in this.count)
+}
+
+function isNotEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), boolType())
+{
+  notBool(boolToRef(intFromRef(SearchDeque_g_size(this)) == 0))
+}
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(SearchDeque_unique(this), write) in
+    (let anon_15_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_15_0) ?
+        (let anon_17_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_17_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/lastIndexOfPre80661.kt: info: Generated Viper text for positiveMod:
+field count: Ref
+
+field elementData: Ref
+
+field head: Ref
+
+field referenceContents: Seq[Ref]
+
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SearchDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(SearchDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_16_0 ==
+    ((unfolding acc(SearchDeque_unique(this), write) in this.head)) in
+    (unfolding acc(SearchDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_16_0, par_index))) in
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_17_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_17_0), write) in
+              anon_17_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function SearchDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(SearchDeque_unique(this), write) in this.count)
+}
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(SearchDeque_unique(this), write) in
+    (let anon_12_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_12_0) ?
+        (let anon_14_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_14_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/lastIndexOfPre80661.kt: info: Generated Viper text for internalIndex:
+field count: Ref
+
+field elementData: Ref
+
+field head: Ref
+
+field referenceContents: Seq[Ref]
+
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SearchDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(SearchDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_17_0 ==
+    ((unfolding acc(SearchDeque_unique(this), write) in this.head)) in
+    (unfolding acc(SearchDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_17_0, par_index))) in
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_18_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_18_0), write) in
+              anon_18_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function SearchDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(SearchDeque_unique(this), write) in this.count)
+}
+
+function internalIndex(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) <= intFromRef(SearchDeque_g_size(this)) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      referenceArraySize(this.elementData) == 0 ||
+      (let anon_builtin ==
+        (minusInts(plusInts(this.head, par_index), intToRef(referenceArraySize(this.elementData)))) in
+        intFromRef(plusInts(this.head, par_index)) -
+        intFromRef(intToRef(referenceArraySize(this.elementData)))) <
+      referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef(((let anon_builtin ==
+        (plusInts(this.head, par_index)) in
+        intFromRef(this.head) + intFromRef(par_index)) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(plusInts(this.head, par_index), intToRef(referenceArraySize(this.elementData))) :
+        plusInts(this.head, par_index))))
+{
+  (let anon_11_0 ==
+    ((unfolding acc(SearchDeque_unique(this), write) in this.head)) in
+    positiveMod(this, plusInts(anon_11_0, par_index)))
+}
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(SearchDeque_unique(this), write) in
+    (let anon_13_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_13_0) ?
+        (let anon_15_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_15_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/lastIndexOfPre80661.kt: info: Generated Viper text for elementAt:
+field count: Ref
+
+field elementData: Ref
+
+field head: Ref
+
+field referenceContents: Seq[Ref]
+
+function SearchDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(SearchDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_11_0 ==
+    ((unfolding acc(SearchDeque_unique(this), write) in this.head)) in
+    (unfolding acc(SearchDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_11_0, par_index))) in
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_12_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_12_0), write) in
+              anon_12_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function SearchDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(SearchDeque_unique(this), write) in this.count)
+}
+
+function c_DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), c_DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(c_DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function c_DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(SearchDeque_unique(this), write) in
+    (let anon_15_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_15_0) ?
+        (let anon_17_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_17_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method SearchDeque_c_DequeSpec_restore(this: Ref)
+  requires acc(c_DequeSpec_unique(this), write)
+  requires isSubtype(typeOf(this), SearchDeque())
+  ensures acc(SearchDeque_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_DequeSpec())) && true ==>
+    SearchDeque_g_size(this) ==
+    old((unfolding acc(c_DequeSpec_unique(this), wildcard) in
+      c_DequeSpec_g_size(this)))
+  ensures (forall par_index: Ref ::
+      { SearchDeque_f_elementAt(this, par_index) }
+      true && old(isSubtype(typeOf(this), c_DequeSpec())) && true &&
+      old(isSubtype(typeOf(par_index), intType())) &&
+      old(0 <= intFromRef(par_index) &&
+      (unfolding acc(c_DequeSpec_unique(this), wildcard) in
+        intFromRef(par_index) < intFromRef(c_DequeSpec_g_size(this)))) ==>
+      SearchDeque_f_elementAt(this, par_index) ==
+      old((unfolding acc(c_DequeSpec_unique(this), wildcard) in
+        c_DequeSpec_f_elementAt(this, par_index))))
+
+
+method SearchDeque_c_DequeSpec_upcast(this: Ref)
+  requires acc(SearchDeque_unique(this), write)
+  ensures acc(c_DequeSpec_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), SearchDeque())) && true ==>
+    (unfolding acc(c_DequeSpec_unique(this), wildcard) in
+      c_DequeSpec_g_size(this)) ==
+    old(SearchDeque_g_size(this))
+  ensures (forall par_index: Ref ::
+      { c_DequeSpec_f_elementAt(this, par_index) }
+      true && old(isSubtype(typeOf(this), SearchDeque())) && true &&
+      old(isSubtype(typeOf(par_index), intType())) &&
+      old(0 <= intFromRef(par_index) &&
+      intFromRef(par_index) < intFromRef(SearchDeque_g_size(this))) &&
+      old(0 <= intFromRef(par_index) &&
+      intFromRef(par_index) < intFromRef(SearchDeque_g_size(this))) ==>
+      (unfolding acc(c_DequeSpec_unique(this), wildcard) in
+        c_DequeSpec_f_elementAt(this, par_index)) ==
+      old(SearchDeque_f_elementAt(this, par_index)))
+
+
+method refines_c_DequeSpec_f_elementAt(this: Ref, par_index: Ref)
+  returns (ret: Ref)
+  requires isSubtype(typeOf(this), c_DequeSpec())
+  requires acc(c_DequeSpec_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(c_DequeSpec_unique(this), wildcard) in
+      intFromRef(par_index) < intFromRef(c_DequeSpec_g_size(this)))
+  requires isSubtype(typeOf(this), SearchDeque())
+{
+  SearchDeque_c_DequeSpec_restore(this)
+  ret := SearchDeque_f_elementAt(this, par_index)
+  SearchDeque_c_DequeSpec_upcast(this)
+  assert isSubtype(typeOf(ret), nullable(anyType()))
+}
+
+/lastIndexOfPre80661.kt: info: Generated Viper text for lastIndexOfPre80661:
+field bf_head: Ref
+
+field count: Ref
+
+field elementData: Ref
+
+field referenceContents: Seq[Ref]
+
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function SearchDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(SearchDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_35_0 ==
+    ((unfolding acc(SearchDeque_unique(this), write) in this.bf_head)) in
+    (unfolding acc(SearchDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_35_0, par_index))) in
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_36_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_36_0), write) in
+              anon_36_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function SearchDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(SearchDeque_unique(this), write) in this.count)
+}
+
+function internalIndex(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) <= intFromRef(SearchDeque_g_size(this)) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      referenceArraySize(this.elementData) == 0 ||
+      (let anon_builtin_neg1 ==
+        (minusInts(plusInts(this.bf_head, par_index), intToRef(referenceArraySize(this.elementData)))) in
+        intFromRef(plusInts(this.bf_head, par_index)) -
+        intFromRef(intToRef(referenceArraySize(this.elementData)))) <
+      referenceArraySize(this.elementData))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef(((let anon_builtin_neg1 ==
+        (plusInts(this.bf_head, par_index)) in
+        intFromRef(this.bf_head) + intFromRef(par_index)) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(plusInts(this.bf_head, par_index), intToRef(referenceArraySize(this.elementData))) :
+        plusInts(this.bf_head, par_index))))
+{
+  (let anon_43_0 ==
+    ((unfolding acc(SearchDeque_unique(this), write) in this.bf_head)) in
+    positiveMod(this, plusInts(anon_43_0, par_index)))
+}
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(SearchDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(SearchDeque_unique(this), write) in
+    (let anon_39_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_39_0) ?
+        (let anon_41_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_41_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method lastIndexOfPre80661(this: Ref, element: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), SearchDeque())
+  requires acc(SearchDeque_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures acc(SearchDeque_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= -1 &&
+    intFromRef(v_ret_0) < intFromRef(SearchDeque_g_size(this))
+  ensures (intFromRef(v_ret_0) == -1) ==
+    !(exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (0 <= anon_builtin_0 &&
+      anon_builtin_0 < intFromRef(SearchDeque_g_size(this)) &&
+      equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_0)))))
+  ensures intFromRef(v_ret_0) >= 0 ==>
+    equalsRelation(element, SearchDeque_f_elementAt(this, v_ret_0))
+  ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) < anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(SearchDeque_g_size(this)) ==>
+      !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_1))))
+  ensures intFromRef(SearchDeque_g_size(this)) ==
+    old(intFromRef(SearchDeque_g_size(this)))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        referenceArraySize(this.elementData))))
+  ensures (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(this.bf_head) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        intFromRef(this.bf_head))))
+  ensures (forall anon_builtin_2: Int ::
+      { SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
+      { old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 < intFromRef(SearchDeque_g_size(this)) ==>
+      SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
+      old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))))
+{
+  var anon_builtin_9: Int
+  var tail: Ref
+  var v_ret_6: Ref
+  var anon_6: Ref
+  var anon_44: Ref
+  var anon_45: Ref
+  var anon_46: Ref
+  var anon_47: Ref
+  anon_44 := SearchDeque_g_size(this)
+  anon_6 := anon_44
+  unfold acc(SearchDeque_unique(this), write)
+  anon_45 := this.bf_head
+  assert (let this ==
+      (this) in
+      boolFromRef((let anon_24_0 ==
+        (this.count) in
+        (let anon_25_0 ==
+          ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+          (let anon_26_0 ==
+            ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+            (let anon_27_0 ==
+              ((0 <= intFromRef(anon_24_0) &&
+              intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) ?
+                this.elementData :
+                null)) in
+              (let anon_28_0 ==
+                ((0 <= intFromRef(anon_24_0) &&
+                intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                !(referenceArraySize(anon_27_0) == 0) ?
+                  this.bf_head :
+                  null)) in
+                (let anon_29_0 ==
+                  ((0 <= intFromRef(anon_24_0) &&
+                  intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                  !(referenceArraySize(anon_27_0) == 0) &&
+                  0 <= intFromRef(anon_28_0) ?
+                    this.bf_head :
+                    null)) in
+                  (let anon_30_0 ==
+                    ((0 <= intFromRef(anon_24_0) &&
+                    intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                    !(referenceArraySize(anon_27_0) == 0) &&
+                    0 <= intFromRef(anon_28_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_31_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) &&
+                      (referenceArraySize(anon_27_0) == 0 ||
+                      0 <= intFromRef(anon_28_0) &&
+                      intFromRef(anon_29_0) < referenceArraySize(anon_30_0)) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_32_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        (referenceArraySize(anon_27_0) == 0 ||
+                        0 <= intFromRef(anon_28_0) &&
+                        intFromRef(anon_29_0) <
+                        referenceArraySize(anon_30_0)) &&
+                        !!(referenceArraySize(anon_31_0) == 0) ?
+                          this.bf_head :
+                          null)) in
+                        boolToRef(0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        (referenceArraySize(anon_27_0) == 0 ||
+                        0 <= intFromRef(anon_28_0) &&
+                        intFromRef(anon_29_0) <
+                        referenceArraySize(anon_30_0)) &&
+                        (!(referenceArraySize(anon_31_0) == 0) ||
+                        intFromRef(anon_32_0) == 0) &&
+                        (let anon_33_0 ==
+                          (this.elementData) in
+                          referenceArraySize(anon_33_0) <= 1073741824)))))))))))))
+  fold acc(SearchDeque_unique(this), write)
+  anon_46 := positiveMod(this, plusInts(anon_45, anon_6))
+  v_ret_6 := anon_46
+  goto lbl_ret_6
+  label lbl_ret_6
+  tail := v_ret_6
+  unfold acc(SearchDeque_unique(this), write)
+  anon_47 := this.bf_head
+  assert (let this ==
+      (this) in
+      boolFromRef((let anon_24_0 ==
+        (this.count) in
+        (let anon_25_0 ==
+          ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+          (let anon_26_0 ==
+            ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+            (let anon_27_0 ==
+              ((0 <= intFromRef(anon_24_0) &&
+              intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) ?
+                this.elementData :
+                null)) in
+              (let anon_28_0 ==
+                ((0 <= intFromRef(anon_24_0) &&
+                intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                !(referenceArraySize(anon_27_0) == 0) ?
+                  this.bf_head :
+                  null)) in
+                (let anon_29_0 ==
+                  ((0 <= intFromRef(anon_24_0) &&
+                  intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                  !(referenceArraySize(anon_27_0) == 0) &&
+                  0 <= intFromRef(anon_28_0) ?
+                    this.bf_head :
+                    null)) in
+                  (let anon_30_0 ==
+                    ((0 <= intFromRef(anon_24_0) &&
+                    intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                    !(referenceArraySize(anon_27_0) == 0) &&
+                    0 <= intFromRef(anon_28_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_31_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) &&
+                      (referenceArraySize(anon_27_0) == 0 ||
+                      0 <= intFromRef(anon_28_0) &&
+                      intFromRef(anon_29_0) < referenceArraySize(anon_30_0)) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_32_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        (referenceArraySize(anon_27_0) == 0 ||
+                        0 <= intFromRef(anon_28_0) &&
+                        intFromRef(anon_29_0) <
+                        referenceArraySize(anon_30_0)) &&
+                        !!(referenceArraySize(anon_31_0) == 0) ?
+                          this.bf_head :
+                          null)) in
+                        boolToRef(0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        (referenceArraySize(anon_27_0) == 0 ||
+                        0 <= intFromRef(anon_28_0) &&
+                        intFromRef(anon_29_0) <
+                        referenceArraySize(anon_30_0)) &&
+                        (!(referenceArraySize(anon_31_0) == 0) ||
+                        intFromRef(anon_32_0) == 0) &&
+                        (let anon_33_0 ==
+                          (this.elementData) in
+                          referenceArraySize(anon_33_0) <= 1073741824)))))))))))))
+  fold acc(SearchDeque_unique(this), write)
+  if (intFromRef(anon_47) < intFromRef(tail)) {
+    var anon_7: Ref
+    var anon_8: Ref
+    var l26_index: Ref
+    var anon_48: Ref
+    anon_7 := minusInts(tail, intToRef(1))
+    unfold acc(SearchDeque_unique(this), write)
+    anon_8 := this.bf_head
+    l26_index := anon_7
+    assert (let this ==
+        (this) in
+        boolFromRef((let anon_24_0 ==
+          (this.count) in
+          (let anon_25_0 ==
+            ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+            (let anon_26_0 ==
+              ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+              (let anon_27_0 ==
+                ((0 <= intFromRef(anon_24_0) &&
+                intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) ?
+                  this.elementData :
+                  null)) in
+                (let anon_28_0 ==
+                  ((0 <= intFromRef(anon_24_0) &&
+                  intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                  !(referenceArraySize(anon_27_0) == 0) ?
+                    this.bf_head :
+                    null)) in
+                  (let anon_29_0 ==
+                    ((0 <= intFromRef(anon_24_0) &&
+                    intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                    !(referenceArraySize(anon_27_0) == 0) &&
+                    0 <= intFromRef(anon_28_0) ?
+                      this.bf_head :
+                      null)) in
+                    (let anon_30_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) &&
+                      !(referenceArraySize(anon_27_0) == 0) &&
+                      0 <= intFromRef(anon_28_0) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_31_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        (referenceArraySize(anon_27_0) == 0 ||
+                        0 <= intFromRef(anon_28_0) &&
+                        intFromRef(anon_29_0) <
+                        referenceArraySize(anon_30_0)) ?
+                          this.elementData :
+                          null)) in
+                        (let anon_32_0 ==
+                          ((0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          (referenceArraySize(anon_27_0) == 0 ||
+                          0 <= intFromRef(anon_28_0) &&
+                          intFromRef(anon_29_0) <
+                          referenceArraySize(anon_30_0)) &&
+                          !!(referenceArraySize(anon_31_0) == 0) ?
+                            this.bf_head :
+                            null)) in
+                          boolToRef(0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          (referenceArraySize(anon_27_0) == 0 ||
+                          0 <= intFromRef(anon_28_0) &&
+                          intFromRef(anon_29_0) <
+                          referenceArraySize(anon_30_0)) &&
+                          (!(referenceArraySize(anon_31_0) == 0) ||
+                          intFromRef(anon_32_0) == 0) &&
+                          (let anon_33_0 ==
+                            (this.elementData) in
+                            referenceArraySize(anon_33_0) <= 1073741824)))))))))))))
+    fold acc(SearchDeque_unique(this), write)
+    label head_0
+      invariant acc(SearchDeque_unique(this), write)
+      invariant isSubtype(typeOf(l26_index), intType())
+      invariant isSubtype(typeOf(tail), intType())
+      invariant isSubtype(typeOf(element), nullable(anyType()))
+      invariant isSubtype(typeOf(this), SearchDeque())
+      invariant intFromRef(l26_index) <= intFromRef(anon_7) &&
+        (intFromRef(anon_8) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1))) ||
+        intFromRef(l26_index) >=
+        (let anon_builtin_neg1 ==
+          (minusInts(anon_8, intToRef(1))) in
+          intFromRef(anon_8) - intFromRef(intToRef(1))) ||
+        intFromRef(l26_index) == intFromRef(anon_7))
+      invariant intFromRef(SearchDeque_g_size(this)) ==
+        old(intFromRef(SearchDeque_g_size(this))) &&
+        (unfolding acc(SearchDeque_unique(this), write) in
+          intFromRef(this.bf_head) ==
+          old((unfolding acc(SearchDeque_unique(this), write) in
+            intFromRef(this.bf_head)))) &&
+        (unfolding acc(SearchDeque_unique(this), write) in
+          referenceArraySize(this.elementData) ==
+          old((unfolding acc(SearchDeque_unique(this), write) in
+            referenceArraySize(this.elementData))))
+      invariant (forall anon_builtin_3: Int ::
+          { this.elementData.referenceContents[anon_builtin_3] }
+          anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+          0 <= anon_builtin_3 &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            anon_builtin_3 < referenceArraySize(this.elementData)) ==>
+          (unfolding acc(SearchDeque_unique(this), write) in
+            (unfolding acc(Array_unique(this.elementData), write) in
+              this.elementData.referenceContents[anon_builtin_3] ==
+              old((unfolding acc(SearchDeque_unique(this), write) in
+                (unfolding acc(Array_unique(this.elementData), write) in
+                  this.elementData.referenceContents[anon_builtin_3]))))))
+      invariant (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_builtin_neg1 ==
+            (minusInts(this.bf_head, intToRef(1))) in
+            intFromRef(this.bf_head) - intFromRef(intToRef(1))) <=
+          intFromRef(l26_index)) &&
+        intFromRef(l26_index) < intFromRef(tail)
+      invariant (forall anon_builtin_4: Int ::
+          { equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_4))) }
+          anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+          0 <= anon_builtin_4 &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            (let anon_builtin_neg1 ==
+              (minusInts(l26_index, this.bf_head)) in
+              intFromRef(l26_index) - intFromRef(this.bf_head)) <
+            anon_builtin_4) &&
+          anon_builtin_4 < intFromRef(SearchDeque_g_size(this)) ==>
+          !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_4))))
+    anon_48 := geInts(l26_index, anon_8)
+    if (boolFromRef(anon_48)) {
+      var anon_49: Ref
+      var anon_11: Ref
+      var anon_12: Ref
+      var anon_50: Ref
+      var anon_51: Ref
+      anon_11 := element
+      unfold acc(SearchDeque_unique(this), write)
+      anon_50 := this.elementData
+      assert intFromRef(l26_index) >= 0
+      assert intFromRef(l26_index) < referenceArraySize(anon_50)
+      unfold acc(Array_unique(this.elementData), write)
+      anon_51 := anon_50.referenceContents[intFromRef(l26_index)]
+      anon_12 := anon_51
+      inhale isSubtype(typeOf(anon_12), nullable(anyType()))
+      anon_49 := boolToRef(equalsRelation(anon_11, anon_12))
+      fold acc(Array_unique(this.elementData), write)
+      assert (let this ==
+          (this) in
+          boolFromRef((let anon_24_0 ==
+            (this.count) in
+            (let anon_25_0 ==
+              ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+              (let anon_26_0 ==
+                ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+                (let anon_27_0 ==
+                  ((0 <= intFromRef(anon_24_0) &&
+                  intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) ?
+                    this.elementData :
+                    null)) in
+                  (let anon_28_0 ==
+                    ((0 <= intFromRef(anon_24_0) &&
+                    intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                    !(referenceArraySize(anon_27_0) == 0) ?
+                      this.bf_head :
+                      null)) in
+                    (let anon_29_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) &&
+                      !(referenceArraySize(anon_27_0) == 0) &&
+                      0 <= intFromRef(anon_28_0) ?
+                        this.bf_head :
+                        null)) in
+                      (let anon_30_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        !(referenceArraySize(anon_27_0) == 0) &&
+                        0 <= intFromRef(anon_28_0) ?
+                          this.elementData :
+                          null)) in
+                        (let anon_31_0 ==
+                          ((0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          (referenceArraySize(anon_27_0) == 0 ||
+                          0 <= intFromRef(anon_28_0) &&
+                          intFromRef(anon_29_0) <
+                          referenceArraySize(anon_30_0)) ?
+                            this.elementData :
+                            null)) in
+                          (let anon_32_0 ==
+                            ((0 <= intFromRef(anon_24_0) &&
+                            intFromRef(anon_25_0) <=
+                            referenceArraySize(anon_26_0) &&
+                            (referenceArraySize(anon_27_0) == 0 ||
+                            0 <= intFromRef(anon_28_0) &&
+                            intFromRef(anon_29_0) <
+                            referenceArraySize(anon_30_0)) &&
+                            !!(referenceArraySize(anon_31_0) == 0) ?
+                              this.bf_head :
+                              null)) in
+                            boolToRef(0 <= intFromRef(anon_24_0) &&
+                            intFromRef(anon_25_0) <=
+                            referenceArraySize(anon_26_0) &&
+                            (referenceArraySize(anon_27_0) == 0 ||
+                            0 <= intFromRef(anon_28_0) &&
+                            intFromRef(anon_29_0) <
+                            referenceArraySize(anon_30_0)) &&
+                            (!(referenceArraySize(anon_31_0) == 0) ||
+                            intFromRef(anon_32_0) == 0) &&
+                            (let anon_33_0 ==
+                              (this.elementData) in
+                              referenceArraySize(anon_33_0) <= 1073741824)))))))))))))
+      fold acc(SearchDeque_unique(this), write)
+      if (boolFromRef(anon_49)) {
+        var anon_52: Ref
+        unfold acc(SearchDeque_unique(this), write)
+        anon_52 := this.bf_head
+        v_ret_0 := minusInts(l26_index, anon_52)
+        anon_builtin_9 := 0
+        assert (let this ==
+            (this) in
+            boolFromRef((let anon_24_0 ==
+              (this.count) in
+              (let anon_25_0 ==
+                ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+                (let anon_26_0 ==
+                  ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+                  (let anon_27_0 ==
+                    ((0 <= intFromRef(anon_24_0) &&
+                    intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_28_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) &&
+                      !(referenceArraySize(anon_27_0) == 0) ?
+                        this.bf_head :
+                        null)) in
+                      (let anon_29_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        !(referenceArraySize(anon_27_0) == 0) &&
+                        0 <= intFromRef(anon_28_0) ?
+                          this.bf_head :
+                          null)) in
+                        (let anon_30_0 ==
+                          ((0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          !(referenceArraySize(anon_27_0) == 0) &&
+                          0 <= intFromRef(anon_28_0) ?
+                            this.elementData :
+                            null)) in
+                          (let anon_31_0 ==
+                            ((0 <= intFromRef(anon_24_0) &&
+                            intFromRef(anon_25_0) <=
+                            referenceArraySize(anon_26_0) &&
+                            (referenceArraySize(anon_27_0) == 0 ||
+                            0 <= intFromRef(anon_28_0) &&
+                            intFromRef(anon_29_0) <
+                            referenceArraySize(anon_30_0)) ?
+                              this.elementData :
+                              null)) in
+                            (let anon_32_0 ==
+                              ((0 <= intFromRef(anon_24_0) &&
+                              intFromRef(anon_25_0) <=
+                              referenceArraySize(anon_26_0) &&
+                              (referenceArraySize(anon_27_0) == 0 ||
+                              0 <= intFromRef(anon_28_0) &&
+                              intFromRef(anon_29_0) <
+                              referenceArraySize(anon_30_0)) &&
+                              !!(referenceArraySize(anon_31_0) == 0) ?
+                                this.bf_head :
+                                null)) in
+                              boolToRef(0 <= intFromRef(anon_24_0) &&
+                              intFromRef(anon_25_0) <=
+                              referenceArraySize(anon_26_0) &&
+                              (referenceArraySize(anon_27_0) == 0 ||
+                              0 <= intFromRef(anon_28_0) &&
+                              intFromRef(anon_29_0) <
+                              referenceArraySize(anon_30_0)) &&
+                              (!(referenceArraySize(anon_31_0) == 0) ||
+                              intFromRef(anon_32_0) == 0) &&
+                              (let anon_33_0 ==
+                                (this.elementData) in
+                                referenceArraySize(anon_33_0) <= 1073741824)))))))))))))
+        fold acc(SearchDeque_unique(this), write)
+        goto lbl_ret_0
+      }
+      label cont_0
+      if (intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) {
+        goto break_0
+      } else {
+        l26_index := minusInts(l26_index, intToRef(1))}
+      goto head_0
+    }
+    label break_0
+    assert !(intFromRef(l26_index) >= intFromRef(anon_8) &&
+      intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+      isSubtype(typeOf(l26_index), intType())
+    assert !(intFromRef(l26_index) >= intFromRef(anon_8) &&
+      intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+      isSubtype(typeOf(tail), intType())
+    assert !(intFromRef(l26_index) >= intFromRef(anon_8) &&
+      intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+      isSubtype(typeOf(element), nullable(anyType()))
+    assert !(intFromRef(l26_index) >= intFromRef(anon_8) &&
+      intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+      isSubtype(typeOf(this), SearchDeque())
+    assert !(intFromRef(l26_index) >= intFromRef(anon_8) &&
+      intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+      intFromRef(l26_index) <= intFromRef(anon_7) &&
+      (intFromRef(anon_8) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1))) ||
+      intFromRef(l26_index) >=
+      (let anon_builtin_neg1 ==
+        (minusInts(anon_8, intToRef(1))) in
+        intFromRef(anon_8) - intFromRef(intToRef(1))) ||
+      intFromRef(l26_index) == intFromRef(anon_7))
+    assert !(intFromRef(l26_index) >= intFromRef(anon_8) &&
+      intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+      intFromRef(SearchDeque_g_size(this)) ==
+      old(intFromRef(SearchDeque_g_size(this))) &&
+      (unfolding acc(SearchDeque_unique(this), write) in
+        intFromRef(this.bf_head) ==
+        old((unfolding acc(SearchDeque_unique(this), write) in
+          intFromRef(this.bf_head)))) &&
+      (unfolding acc(SearchDeque_unique(this), write) in
+        referenceArraySize(this.elementData) ==
+        old((unfolding acc(SearchDeque_unique(this), write) in
+          referenceArraySize(this.elementData))))
+    assert !(intFromRef(l26_index) >= intFromRef(anon_8) &&
+      intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+      (forall anon_builtin_3: Int ::
+        { this.elementData.referenceContents[anon_builtin_3] }
+        anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+        0 <= anon_builtin_3 &&
+        (unfolding acc(SearchDeque_unique(this), write) in
+          anon_builtin_3 < referenceArraySize(this.elementData)) ==>
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (unfolding acc(Array_unique(this.elementData), write) in
+            this.elementData.referenceContents[anon_builtin_3] ==
+            old((unfolding acc(SearchDeque_unique(this), write) in
+              (unfolding acc(Array_unique(this.elementData), write) in
+                this.elementData.referenceContents[anon_builtin_3]))))))
+    assert !(intFromRef(l26_index) >= intFromRef(anon_8) &&
+      intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+      (unfolding acc(SearchDeque_unique(this), write) in
+        (let anon_builtin_neg1 ==
+          (minusInts(this.bf_head, intToRef(1))) in
+          intFromRef(this.bf_head) - intFromRef(intToRef(1))) <=
+        intFromRef(l26_index)) &&
+      intFromRef(l26_index) < intFromRef(tail)
+    assert !(intFromRef(l26_index) >= intFromRef(anon_8) &&
+      intFromRef(l26_index) <
+      (let anon_builtin_neg1 ==
+        (plusInts(intToRef(-2147483648), intToRef(1))) in
+        intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+      (forall anon_builtin_4: Int ::
+        { equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_4))) }
+        anon_builtin_4 >= -2147483648 && anon_builtin_4 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_4)), intType()) ==>
+        0 <= anon_builtin_4 &&
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_builtin_neg1 ==
+            (minusInts(l26_index, this.bf_head)) in
+            intFromRef(l26_index) - intFromRef(this.bf_head)) <
+          anon_builtin_4) &&
+        anon_builtin_4 < intFromRef(SearchDeque_g_size(this)) ==>
+        !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_4))))
+  } else {
+    var anon_53: Ref
+    unfold acc(SearchDeque_unique(this), write)
+    anon_53 := this.bf_head
+    assert (let this ==
+        (this) in
+        boolFromRef((let anon_24_0 ==
+          (this.count) in
+          (let anon_25_0 ==
+            ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+            (let anon_26_0 ==
+              ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+              (let anon_27_0 ==
+                ((0 <= intFromRef(anon_24_0) &&
+                intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) ?
+                  this.elementData :
+                  null)) in
+                (let anon_28_0 ==
+                  ((0 <= intFromRef(anon_24_0) &&
+                  intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                  !(referenceArraySize(anon_27_0) == 0) ?
+                    this.bf_head :
+                    null)) in
+                  (let anon_29_0 ==
+                    ((0 <= intFromRef(anon_24_0) &&
+                    intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                    !(referenceArraySize(anon_27_0) == 0) &&
+                    0 <= intFromRef(anon_28_0) ?
+                      this.bf_head :
+                      null)) in
+                    (let anon_30_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) &&
+                      !(referenceArraySize(anon_27_0) == 0) &&
+                      0 <= intFromRef(anon_28_0) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_31_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        (referenceArraySize(anon_27_0) == 0 ||
+                        0 <= intFromRef(anon_28_0) &&
+                        intFromRef(anon_29_0) <
+                        referenceArraySize(anon_30_0)) ?
+                          this.elementData :
+                          null)) in
+                        (let anon_32_0 ==
+                          ((0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          (referenceArraySize(anon_27_0) == 0 ||
+                          0 <= intFromRef(anon_28_0) &&
+                          intFromRef(anon_29_0) <
+                          referenceArraySize(anon_30_0)) &&
+                          !!(referenceArraySize(anon_31_0) == 0) ?
+                            this.bf_head :
+                            null)) in
+                          boolToRef(0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          (referenceArraySize(anon_27_0) == 0 ||
+                          0 <= intFromRef(anon_28_0) &&
+                          intFromRef(anon_29_0) <
+                          referenceArraySize(anon_30_0)) &&
+                          (!(referenceArraySize(anon_31_0) == 0) ||
+                          intFromRef(anon_32_0) == 0) &&
+                          (let anon_33_0 ==
+                            (this.elementData) in
+                            referenceArraySize(anon_33_0) <= 1073741824)))))))))))))
+    fold acc(SearchDeque_unique(this), write)
+    if (intFromRef(anon_53) > intFromRef(tail)) {
+      var anon_13: Ref
+      var l33_index: Ref
+      var anon_54: Ref
+      var anon_18: Ref
+      var anon_60: Ref
+      var anon_19: Ref
+      var l37_index: Ref
+      var anon_61: Ref
+      anon_13 := minusInts(tail, intToRef(1))
+      l33_index := anon_13
+      label head_1
+        invariant acc(SearchDeque_unique(this), write)
+        invariant isSubtype(typeOf(l33_index), intType())
+        invariant isSubtype(typeOf(tail), intType())
+        invariant isSubtype(typeOf(element), nullable(anyType()))
+        invariant isSubtype(typeOf(this), SearchDeque())
+        invariant intFromRef(l33_index) <= intFromRef(anon_13) &&
+          (0 <
+          (let anon_builtin_neg1 ==
+            (plusInts(intToRef(-2147483648), intToRef(1))) in
+            intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1))) ||
+          intFromRef(l33_index) >=
+          (let anon_builtin_neg1 ==
+            (minusInts(intToRef(0), intToRef(1))) in
+            intFromRef(intToRef(0)) - intFromRef(intToRef(1))) ||
+          intFromRef(l33_index) == intFromRef(anon_13))
+        invariant intFromRef(SearchDeque_g_size(this)) ==
+          old(intFromRef(SearchDeque_g_size(this))) &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            intFromRef(this.bf_head) ==
+            old((unfolding acc(SearchDeque_unique(this), write) in
+              intFromRef(this.bf_head)))) &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            referenceArraySize(this.elementData) ==
+            old((unfolding acc(SearchDeque_unique(this), write) in
+              referenceArraySize(this.elementData))))
+        invariant (forall anon_builtin_5: Int ::
+            { this.elementData.referenceContents[anon_builtin_5] }
+            anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+            0 <= anon_builtin_5 &&
+            (unfolding acc(SearchDeque_unique(this), write) in
+              anon_builtin_5 < referenceArraySize(this.elementData)) ==>
+            (unfolding acc(SearchDeque_unique(this), write) in
+              (unfolding acc(Array_unique(this.elementData), write) in
+                this.elementData.referenceContents[anon_builtin_5] ==
+                old((unfolding acc(SearchDeque_unique(this), write) in
+                  (unfolding acc(Array_unique(this.elementData), write) in
+                    this.elementData.referenceContents[anon_builtin_5]))))))
+        invariant -1 <= intFromRef(l33_index) &&
+          intFromRef(l33_index) < intFromRef(tail)
+        invariant (forall anon_builtin_6: Int ::
+            { equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_6))) }
+            anon_builtin_6 >= -2147483648 && anon_builtin_6 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+            0 <= anon_builtin_6 &&
+            (unfolding acc(SearchDeque_unique(this), write) in
+              (let anon_builtin_neg1 ==
+                (minusInts(plusInts(l33_index, intToRef(referenceArraySize(this.elementData))),
+                this.bf_head)) in
+                intFromRef(plusInts(l33_index, intToRef(referenceArraySize(this.elementData)))) -
+                intFromRef(this.bf_head)) <
+              anon_builtin_6) &&
+            anon_builtin_6 < intFromRef(SearchDeque_g_size(this)) ==>
+            !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_6))))
+      anon_54 := geInts(l33_index, intToRef(0))
+      if (boolFromRef(anon_54)) {
+        var anon_55: Ref
+        var anon_16: Ref
+        var anon_17: Ref
+        var anon_56: Ref
+        var anon_57: Ref
+        anon_16 := element
+        unfold acc(SearchDeque_unique(this), write)
+        anon_56 := this.elementData
+        assert intFromRef(l33_index) >= 0
+        assert intFromRef(l33_index) < referenceArraySize(anon_56)
+        unfold acc(Array_unique(this.elementData), write)
+        anon_57 := anon_56.referenceContents[intFromRef(l33_index)]
+        anon_17 := anon_57
+        inhale isSubtype(typeOf(anon_17), nullable(anyType()))
+        anon_55 := boolToRef(equalsRelation(anon_16, anon_17))
+        fold acc(Array_unique(this.elementData), write)
+        assert (let this ==
+            (this) in
+            boolFromRef((let anon_24_0 ==
+              (this.count) in
+              (let anon_25_0 ==
+                ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+                (let anon_26_0 ==
+                  ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+                  (let anon_27_0 ==
+                    ((0 <= intFromRef(anon_24_0) &&
+                    intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_28_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) &&
+                      !(referenceArraySize(anon_27_0) == 0) ?
+                        this.bf_head :
+                        null)) in
+                      (let anon_29_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        !(referenceArraySize(anon_27_0) == 0) &&
+                        0 <= intFromRef(anon_28_0) ?
+                          this.bf_head :
+                          null)) in
+                        (let anon_30_0 ==
+                          ((0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          !(referenceArraySize(anon_27_0) == 0) &&
+                          0 <= intFromRef(anon_28_0) ?
+                            this.elementData :
+                            null)) in
+                          (let anon_31_0 ==
+                            ((0 <= intFromRef(anon_24_0) &&
+                            intFromRef(anon_25_0) <=
+                            referenceArraySize(anon_26_0) &&
+                            (referenceArraySize(anon_27_0) == 0 ||
+                            0 <= intFromRef(anon_28_0) &&
+                            intFromRef(anon_29_0) <
+                            referenceArraySize(anon_30_0)) ?
+                              this.elementData :
+                              null)) in
+                            (let anon_32_0 ==
+                              ((0 <= intFromRef(anon_24_0) &&
+                              intFromRef(anon_25_0) <=
+                              referenceArraySize(anon_26_0) &&
+                              (referenceArraySize(anon_27_0) == 0 ||
+                              0 <= intFromRef(anon_28_0) &&
+                              intFromRef(anon_29_0) <
+                              referenceArraySize(anon_30_0)) &&
+                              !!(referenceArraySize(anon_31_0) == 0) ?
+                                this.bf_head :
+                                null)) in
+                              boolToRef(0 <= intFromRef(anon_24_0) &&
+                              intFromRef(anon_25_0) <=
+                              referenceArraySize(anon_26_0) &&
+                              (referenceArraySize(anon_27_0) == 0 ||
+                              0 <= intFromRef(anon_28_0) &&
+                              intFromRef(anon_29_0) <
+                              referenceArraySize(anon_30_0)) &&
+                              (!(referenceArraySize(anon_31_0) == 0) ||
+                              intFromRef(anon_32_0) == 0) &&
+                              (let anon_33_0 ==
+                                (this.elementData) in
+                                referenceArraySize(anon_33_0) <= 1073741824)))))))))))))
+        fold acc(SearchDeque_unique(this), write)
+        if (boolFromRef(anon_55)) {
+          var anon_58: Ref
+          var anon_59: Ref
+          unfold acc(SearchDeque_unique(this), write)
+          anon_58 := this.elementData
+          anon_59 := this.bf_head
+          v_ret_0 := minusInts(plusInts(l33_index, intToRef(referenceArraySize(anon_58))),
+            anon_59)
+          anon_builtin_9 := 1
+          assert (let this ==
+              (this) in
+              boolFromRef((let anon_24_0 ==
+                (this.count) in
+                (let anon_25_0 ==
+                  ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+                  (let anon_26_0 ==
+                    ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+                    (let anon_27_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_28_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        !(referenceArraySize(anon_27_0) == 0) ?
+                          this.bf_head :
+                          null)) in
+                        (let anon_29_0 ==
+                          ((0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          !(referenceArraySize(anon_27_0) == 0) &&
+                          0 <= intFromRef(anon_28_0) ?
+                            this.bf_head :
+                            null)) in
+                          (let anon_30_0 ==
+                            ((0 <= intFromRef(anon_24_0) &&
+                            intFromRef(anon_25_0) <=
+                            referenceArraySize(anon_26_0) &&
+                            !(referenceArraySize(anon_27_0) == 0) &&
+                            0 <= intFromRef(anon_28_0) ?
+                              this.elementData :
+                              null)) in
+                            (let anon_31_0 ==
+                              ((0 <= intFromRef(anon_24_0) &&
+                              intFromRef(anon_25_0) <=
+                              referenceArraySize(anon_26_0) &&
+                              (referenceArraySize(anon_27_0) == 0 ||
+                              0 <= intFromRef(anon_28_0) &&
+                              intFromRef(anon_29_0) <
+                              referenceArraySize(anon_30_0)) ?
+                                this.elementData :
+                                null)) in
+                              (let anon_32_0 ==
+                                ((0 <= intFromRef(anon_24_0) &&
+                                intFromRef(anon_25_0) <=
+                                referenceArraySize(anon_26_0) &&
+                                (referenceArraySize(anon_27_0) == 0 ||
+                                0 <= intFromRef(anon_28_0) &&
+                                intFromRef(anon_29_0) <
+                                referenceArraySize(anon_30_0)) &&
+                                !!(referenceArraySize(anon_31_0) == 0) ?
+                                  this.bf_head :
+                                  null)) in
+                                boolToRef(0 <= intFromRef(anon_24_0) &&
+                                intFromRef(anon_25_0) <=
+                                referenceArraySize(anon_26_0) &&
+                                (referenceArraySize(anon_27_0) == 0 ||
+                                0 <= intFromRef(anon_28_0) &&
+                                intFromRef(anon_29_0) <
+                                referenceArraySize(anon_30_0)) &&
+                                (!(referenceArraySize(anon_31_0) == 0) ||
+                                intFromRef(anon_32_0) == 0) &&
+                                (let anon_33_0 ==
+                                  (this.elementData) in
+                                  referenceArraySize(anon_33_0) <=
+                                  1073741824)))))))))))))
+          fold acc(SearchDeque_unique(this), write)
+          goto lbl_ret_0
+        }
+        label cont_1
+        if (intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) {
+          goto break_1
+        } else {
+          l33_index := minusInts(l33_index, intToRef(1))}
+        goto head_1
+      }
+      label break_1
+      assert !(intFromRef(l33_index) >= 0 &&
+        intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        isSubtype(typeOf(l33_index), intType())
+      assert !(intFromRef(l33_index) >= 0 &&
+        intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        isSubtype(typeOf(tail), intType())
+      assert !(intFromRef(l33_index) >= 0 &&
+        intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        isSubtype(typeOf(element), nullable(anyType()))
+      assert !(intFromRef(l33_index) >= 0 &&
+        intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        isSubtype(typeOf(this), SearchDeque())
+      assert !(intFromRef(l33_index) >= 0 &&
+        intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        intFromRef(l33_index) <= intFromRef(anon_13) &&
+        (0 <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1))) ||
+        intFromRef(l33_index) >=
+        (let anon_builtin_neg1 ==
+          (minusInts(intToRef(0), intToRef(1))) in
+          intFromRef(intToRef(0)) - intFromRef(intToRef(1))) ||
+        intFromRef(l33_index) == intFromRef(anon_13))
+      assert !(intFromRef(l33_index) >= 0 &&
+        intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        intFromRef(SearchDeque_g_size(this)) ==
+        old(intFromRef(SearchDeque_g_size(this))) &&
+        (unfolding acc(SearchDeque_unique(this), write) in
+          intFromRef(this.bf_head) ==
+          old((unfolding acc(SearchDeque_unique(this), write) in
+            intFromRef(this.bf_head)))) &&
+        (unfolding acc(SearchDeque_unique(this), write) in
+          referenceArraySize(this.elementData) ==
+          old((unfolding acc(SearchDeque_unique(this), write) in
+            referenceArraySize(this.elementData))))
+      assert !(intFromRef(l33_index) >= 0 &&
+        intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        (forall anon_builtin_5: Int ::
+          { this.elementData.referenceContents[anon_builtin_5] }
+          anon_builtin_5 >= -2147483648 && anon_builtin_5 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_5)), intType()) ==>
+          0 <= anon_builtin_5 &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            anon_builtin_5 < referenceArraySize(this.elementData)) ==>
+          (unfolding acc(SearchDeque_unique(this), write) in
+            (unfolding acc(Array_unique(this.elementData), write) in
+              this.elementData.referenceContents[anon_builtin_5] ==
+              old((unfolding acc(SearchDeque_unique(this), write) in
+                (unfolding acc(Array_unique(this.elementData), write) in
+                  this.elementData.referenceContents[anon_builtin_5]))))))
+      assert !(intFromRef(l33_index) >= 0 &&
+        intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        -1 <= intFromRef(l33_index) &&
+        intFromRef(l33_index) < intFromRef(tail)
+      assert !(intFromRef(l33_index) >= 0 &&
+        intFromRef(l33_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        (forall anon_builtin_6: Int ::
+          { equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_6))) }
+          anon_builtin_6 >= -2147483648 && anon_builtin_6 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_6)), intType()) ==>
+          0 <= anon_builtin_6 &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            (let anon_builtin_neg1 ==
+              (minusInts(plusInts(l33_index, intToRef(referenceArraySize(this.elementData))),
+              this.bf_head)) in
+              intFromRef(plusInts(l33_index, intToRef(referenceArraySize(this.elementData)))) -
+              intFromRef(this.bf_head)) <
+            anon_builtin_6) &&
+          anon_builtin_6 < intFromRef(SearchDeque_g_size(this)) ==>
+          !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_6))))
+      unfold acc(SearchDeque_unique(this), write)
+      anon_60 := this.elementData
+      anon_18 := minusInts(intToRef(referenceArraySize(anon_60)), intToRef(1))
+      anon_19 := this.bf_head
+      l37_index := anon_18
+      assert (let this ==
+          (this) in
+          boolFromRef((let anon_24_0 ==
+            (this.count) in
+            (let anon_25_0 ==
+              ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+              (let anon_26_0 ==
+                ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+                (let anon_27_0 ==
+                  ((0 <= intFromRef(anon_24_0) &&
+                  intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) ?
+                    this.elementData :
+                    null)) in
+                  (let anon_28_0 ==
+                    ((0 <= intFromRef(anon_24_0) &&
+                    intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) &&
+                    !(referenceArraySize(anon_27_0) == 0) ?
+                      this.bf_head :
+                      null)) in
+                    (let anon_29_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) &&
+                      !(referenceArraySize(anon_27_0) == 0) &&
+                      0 <= intFromRef(anon_28_0) ?
+                        this.bf_head :
+                        null)) in
+                      (let anon_30_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        !(referenceArraySize(anon_27_0) == 0) &&
+                        0 <= intFromRef(anon_28_0) ?
+                          this.elementData :
+                          null)) in
+                        (let anon_31_0 ==
+                          ((0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          (referenceArraySize(anon_27_0) == 0 ||
+                          0 <= intFromRef(anon_28_0) &&
+                          intFromRef(anon_29_0) <
+                          referenceArraySize(anon_30_0)) ?
+                            this.elementData :
+                            null)) in
+                          (let anon_32_0 ==
+                            ((0 <= intFromRef(anon_24_0) &&
+                            intFromRef(anon_25_0) <=
+                            referenceArraySize(anon_26_0) &&
+                            (referenceArraySize(anon_27_0) == 0 ||
+                            0 <= intFromRef(anon_28_0) &&
+                            intFromRef(anon_29_0) <
+                            referenceArraySize(anon_30_0)) &&
+                            !!(referenceArraySize(anon_31_0) == 0) ?
+                              this.bf_head :
+                              null)) in
+                            boolToRef(0 <= intFromRef(anon_24_0) &&
+                            intFromRef(anon_25_0) <=
+                            referenceArraySize(anon_26_0) &&
+                            (referenceArraySize(anon_27_0) == 0 ||
+                            0 <= intFromRef(anon_28_0) &&
+                            intFromRef(anon_29_0) <
+                            referenceArraySize(anon_30_0)) &&
+                            (!(referenceArraySize(anon_31_0) == 0) ||
+                            intFromRef(anon_32_0) == 0) &&
+                            (let anon_33_0 ==
+                              (this.elementData) in
+                              referenceArraySize(anon_33_0) <= 1073741824)))))))))))))
+      fold acc(SearchDeque_unique(this), write)
+      label head_2
+        invariant acc(SearchDeque_unique(this), write)
+        invariant isSubtype(typeOf(l37_index), intType())
+        invariant isSubtype(typeOf(tail), intType())
+        invariant isSubtype(typeOf(element), nullable(anyType()))
+        invariant isSubtype(typeOf(this), SearchDeque())
+        invariant intFromRef(l37_index) <= intFromRef(anon_18) &&
+          (intFromRef(anon_19) <
+          (let anon_builtin_neg1 ==
+            (plusInts(intToRef(-2147483648), intToRef(1))) in
+            intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1))) ||
+          intFromRef(l37_index) >=
+          (let anon_builtin_neg1 ==
+            (minusInts(anon_19, intToRef(1))) in
+            intFromRef(anon_19) - intFromRef(intToRef(1))) ||
+          intFromRef(l37_index) == intFromRef(anon_18))
+        invariant intFromRef(SearchDeque_g_size(this)) ==
+          old(intFromRef(SearchDeque_g_size(this))) &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            intFromRef(this.bf_head) ==
+            old((unfolding acc(SearchDeque_unique(this), write) in
+              intFromRef(this.bf_head)))) &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            referenceArraySize(this.elementData) ==
+            old((unfolding acc(SearchDeque_unique(this), write) in
+              referenceArraySize(this.elementData))))
+        invariant (forall anon_builtin_7: Int ::
+            { this.elementData.referenceContents[anon_builtin_7] }
+            anon_builtin_7 >= -2147483648 && anon_builtin_7 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+            0 <= anon_builtin_7 &&
+            (unfolding acc(SearchDeque_unique(this), write) in
+              anon_builtin_7 < referenceArraySize(this.elementData)) ==>
+            (unfolding acc(SearchDeque_unique(this), write) in
+              (unfolding acc(Array_unique(this.elementData), write) in
+                this.elementData.referenceContents[anon_builtin_7] ==
+                old((unfolding acc(SearchDeque_unique(this), write) in
+                  (unfolding acc(Array_unique(this.elementData), write) in
+                    this.elementData.referenceContents[anon_builtin_7]))))))
+        invariant (unfolding acc(SearchDeque_unique(this), write) in
+            (let anon_builtin_neg1 ==
+              (minusInts(this.bf_head, intToRef(1))) in
+              intFromRef(this.bf_head) - intFromRef(intToRef(1))) <=
+            intFromRef(l37_index)) &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            intFromRef(l37_index) < referenceArraySize(this.elementData))
+        invariant (forall anon_builtin_8: Int ::
+            { equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_8))) }
+            anon_builtin_8 >= -2147483648 && anon_builtin_8 <= 2147483647 &&
+            isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+            0 <= anon_builtin_8 &&
+            (unfolding acc(SearchDeque_unique(this), write) in
+              (let anon_builtin_neg1 ==
+                (minusInts(l37_index, this.bf_head)) in
+                intFromRef(l37_index) - intFromRef(this.bf_head)) <
+              anon_builtin_8) &&
+            anon_builtin_8 < intFromRef(SearchDeque_g_size(this)) ==>
+            !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_8))))
+      anon_61 := geInts(l37_index, anon_19)
+      if (boolFromRef(anon_61)) {
+        var anon_62: Ref
+        var anon_22: Ref
+        var anon_23: Ref
+        var anon_63: Ref
+        var anon_64: Ref
+        anon_22 := element
+        unfold acc(SearchDeque_unique(this), write)
+        anon_63 := this.elementData
+        assert intFromRef(l37_index) >= 0
+        assert intFromRef(l37_index) < referenceArraySize(anon_63)
+        unfold acc(Array_unique(this.elementData), write)
+        anon_64 := anon_63.referenceContents[intFromRef(l37_index)]
+        anon_23 := anon_64
+        inhale isSubtype(typeOf(anon_23), nullable(anyType()))
+        anon_62 := boolToRef(equalsRelation(anon_22, anon_23))
+        fold acc(Array_unique(this.elementData), write)
+        assert (let this ==
+            (this) in
+            boolFromRef((let anon_24_0 ==
+              (this.count) in
+              (let anon_25_0 ==
+                ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+                (let anon_26_0 ==
+                  ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+                  (let anon_27_0 ==
+                    ((0 <= intFromRef(anon_24_0) &&
+                    intFromRef(anon_25_0) <= referenceArraySize(anon_26_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_28_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) &&
+                      !(referenceArraySize(anon_27_0) == 0) ?
+                        this.bf_head :
+                        null)) in
+                      (let anon_29_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        !(referenceArraySize(anon_27_0) == 0) &&
+                        0 <= intFromRef(anon_28_0) ?
+                          this.bf_head :
+                          null)) in
+                        (let anon_30_0 ==
+                          ((0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          !(referenceArraySize(anon_27_0) == 0) &&
+                          0 <= intFromRef(anon_28_0) ?
+                            this.elementData :
+                            null)) in
+                          (let anon_31_0 ==
+                            ((0 <= intFromRef(anon_24_0) &&
+                            intFromRef(anon_25_0) <=
+                            referenceArraySize(anon_26_0) &&
+                            (referenceArraySize(anon_27_0) == 0 ||
+                            0 <= intFromRef(anon_28_0) &&
+                            intFromRef(anon_29_0) <
+                            referenceArraySize(anon_30_0)) ?
+                              this.elementData :
+                              null)) in
+                            (let anon_32_0 ==
+                              ((0 <= intFromRef(anon_24_0) &&
+                              intFromRef(anon_25_0) <=
+                              referenceArraySize(anon_26_0) &&
+                              (referenceArraySize(anon_27_0) == 0 ||
+                              0 <= intFromRef(anon_28_0) &&
+                              intFromRef(anon_29_0) <
+                              referenceArraySize(anon_30_0)) &&
+                              !!(referenceArraySize(anon_31_0) == 0) ?
+                                this.bf_head :
+                                null)) in
+                              boolToRef(0 <= intFromRef(anon_24_0) &&
+                              intFromRef(anon_25_0) <=
+                              referenceArraySize(anon_26_0) &&
+                              (referenceArraySize(anon_27_0) == 0 ||
+                              0 <= intFromRef(anon_28_0) &&
+                              intFromRef(anon_29_0) <
+                              referenceArraySize(anon_30_0)) &&
+                              (!(referenceArraySize(anon_31_0) == 0) ||
+                              intFromRef(anon_32_0) == 0) &&
+                              (let anon_33_0 ==
+                                (this.elementData) in
+                                referenceArraySize(anon_33_0) <= 1073741824)))))))))))))
+        fold acc(SearchDeque_unique(this), write)
+        if (boolFromRef(anon_62)) {
+          var anon_65: Ref
+          unfold acc(SearchDeque_unique(this), write)
+          anon_65 := this.bf_head
+          v_ret_0 := minusInts(l37_index, anon_65)
+          anon_builtin_9 := 2
+          assert (let this ==
+              (this) in
+              boolFromRef((let anon_24_0 ==
+                (this.count) in
+                (let anon_25_0 ==
+                  ((0 <= intFromRef(anon_24_0) ? this.count : null)) in
+                  (let anon_26_0 ==
+                    ((0 <= intFromRef(anon_24_0) ? this.elementData : null)) in
+                    (let anon_27_0 ==
+                      ((0 <= intFromRef(anon_24_0) &&
+                      intFromRef(anon_25_0) <=
+                      referenceArraySize(anon_26_0) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_28_0 ==
+                        ((0 <= intFromRef(anon_24_0) &&
+                        intFromRef(anon_25_0) <=
+                        referenceArraySize(anon_26_0) &&
+                        !(referenceArraySize(anon_27_0) == 0) ?
+                          this.bf_head :
+                          null)) in
+                        (let anon_29_0 ==
+                          ((0 <= intFromRef(anon_24_0) &&
+                          intFromRef(anon_25_0) <=
+                          referenceArraySize(anon_26_0) &&
+                          !(referenceArraySize(anon_27_0) == 0) &&
+                          0 <= intFromRef(anon_28_0) ?
+                            this.bf_head :
+                            null)) in
+                          (let anon_30_0 ==
+                            ((0 <= intFromRef(anon_24_0) &&
+                            intFromRef(anon_25_0) <=
+                            referenceArraySize(anon_26_0) &&
+                            !(referenceArraySize(anon_27_0) == 0) &&
+                            0 <= intFromRef(anon_28_0) ?
+                              this.elementData :
+                              null)) in
+                            (let anon_31_0 ==
+                              ((0 <= intFromRef(anon_24_0) &&
+                              intFromRef(anon_25_0) <=
+                              referenceArraySize(anon_26_0) &&
+                              (referenceArraySize(anon_27_0) == 0 ||
+                              0 <= intFromRef(anon_28_0) &&
+                              intFromRef(anon_29_0) <
+                              referenceArraySize(anon_30_0)) ?
+                                this.elementData :
+                                null)) in
+                              (let anon_32_0 ==
+                                ((0 <= intFromRef(anon_24_0) &&
+                                intFromRef(anon_25_0) <=
+                                referenceArraySize(anon_26_0) &&
+                                (referenceArraySize(anon_27_0) == 0 ||
+                                0 <= intFromRef(anon_28_0) &&
+                                intFromRef(anon_29_0) <
+                                referenceArraySize(anon_30_0)) &&
+                                !!(referenceArraySize(anon_31_0) == 0) ?
+                                  this.bf_head :
+                                  null)) in
+                                boolToRef(0 <= intFromRef(anon_24_0) &&
+                                intFromRef(anon_25_0) <=
+                                referenceArraySize(anon_26_0) &&
+                                (referenceArraySize(anon_27_0) == 0 ||
+                                0 <= intFromRef(anon_28_0) &&
+                                intFromRef(anon_29_0) <
+                                referenceArraySize(anon_30_0)) &&
+                                (!(referenceArraySize(anon_31_0) == 0) ||
+                                intFromRef(anon_32_0) == 0) &&
+                                (let anon_33_0 ==
+                                  (this.elementData) in
+                                  referenceArraySize(anon_33_0) <=
+                                  1073741824)))))))))))))
+          fold acc(SearchDeque_unique(this), write)
+          goto lbl_ret_0
+        }
+        label cont_2
+        if (intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) {
+          goto break_2
+        } else {
+          l37_index := minusInts(l37_index, intToRef(1))}
+        goto head_2
+      }
+      label break_2
+      assert !(intFromRef(l37_index) >= intFromRef(anon_19) &&
+        intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        isSubtype(typeOf(l37_index), intType())
+      assert !(intFromRef(l37_index) >= intFromRef(anon_19) &&
+        intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        isSubtype(typeOf(tail), intType())
+      assert !(intFromRef(l37_index) >= intFromRef(anon_19) &&
+        intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        isSubtype(typeOf(element), nullable(anyType()))
+      assert !(intFromRef(l37_index) >= intFromRef(anon_19) &&
+        intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        isSubtype(typeOf(this), SearchDeque())
+      assert !(intFromRef(l37_index) >= intFromRef(anon_19) &&
+        intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        intFromRef(l37_index) <= intFromRef(anon_18) &&
+        (intFromRef(anon_19) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1))) ||
+        intFromRef(l37_index) >=
+        (let anon_builtin_neg1 ==
+          (minusInts(anon_19, intToRef(1))) in
+          intFromRef(anon_19) - intFromRef(intToRef(1))) ||
+        intFromRef(l37_index) == intFromRef(anon_18))
+      assert !(intFromRef(l37_index) >= intFromRef(anon_19) &&
+        intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        intFromRef(SearchDeque_g_size(this)) ==
+        old(intFromRef(SearchDeque_g_size(this))) &&
+        (unfolding acc(SearchDeque_unique(this), write) in
+          intFromRef(this.bf_head) ==
+          old((unfolding acc(SearchDeque_unique(this), write) in
+            intFromRef(this.bf_head)))) &&
+        (unfolding acc(SearchDeque_unique(this), write) in
+          referenceArraySize(this.elementData) ==
+          old((unfolding acc(SearchDeque_unique(this), write) in
+            referenceArraySize(this.elementData))))
+      assert !(intFromRef(l37_index) >= intFromRef(anon_19) &&
+        intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        (forall anon_builtin_7: Int ::
+          { this.elementData.referenceContents[anon_builtin_7] }
+          anon_builtin_7 >= -2147483648 && anon_builtin_7 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_7)), intType()) ==>
+          0 <= anon_builtin_7 &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            anon_builtin_7 < referenceArraySize(this.elementData)) ==>
+          (unfolding acc(SearchDeque_unique(this), write) in
+            (unfolding acc(Array_unique(this.elementData), write) in
+              this.elementData.referenceContents[anon_builtin_7] ==
+              old((unfolding acc(SearchDeque_unique(this), write) in
+                (unfolding acc(Array_unique(this.elementData), write) in
+                  this.elementData.referenceContents[anon_builtin_7]))))))
+      assert !(intFromRef(l37_index) >= intFromRef(anon_19) &&
+        intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        (unfolding acc(SearchDeque_unique(this), write) in
+          (let anon_builtin_neg1 ==
+            (minusInts(this.bf_head, intToRef(1))) in
+            intFromRef(this.bf_head) - intFromRef(intToRef(1))) <=
+          intFromRef(l37_index)) &&
+        (unfolding acc(SearchDeque_unique(this), write) in
+          intFromRef(l37_index) < referenceArraySize(this.elementData))
+      assert !(intFromRef(l37_index) >= intFromRef(anon_19) &&
+        intFromRef(l37_index) <
+        (let anon_builtin_neg1 ==
+          (plusInts(intToRef(-2147483648), intToRef(1))) in
+          intFromRef(intToRef(-2147483648)) + intFromRef(intToRef(1)))) ==>
+        (forall anon_builtin_8: Int ::
+          { equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_8))) }
+          anon_builtin_8 >= -2147483648 && anon_builtin_8 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_8)), intType()) ==>
+          0 <= anon_builtin_8 &&
+          (unfolding acc(SearchDeque_unique(this), write) in
+            (let anon_builtin_neg1 ==
+              (minusInts(l37_index, this.bf_head)) in
+              intFromRef(l37_index) - intFromRef(this.bf_head)) <
+            anon_builtin_8) &&
+          anon_builtin_8 < intFromRef(SearchDeque_g_size(this)) ==>
+          !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_8))))
+    }
+  }
+  v_ret_0 := intToRef(-1)
+  anon_builtin_9 := 3
+  goto lbl_ret_0
+  label lbl_ret_0
+  assert anon_builtin_9 == 0 ==>
+    intFromRef(v_ret_0) >= -1 &&
+    intFromRef(v_ret_0) < intFromRef(SearchDeque_g_size(this))
+  assert anon_builtin_9 == 1 ==>
+    intFromRef(v_ret_0) >= -1 &&
+    intFromRef(v_ret_0) < intFromRef(SearchDeque_g_size(this))
+  assert anon_builtin_9 == 2 ==>
+    intFromRef(v_ret_0) >= -1 &&
+    intFromRef(v_ret_0) < intFromRef(SearchDeque_g_size(this))
+  assert anon_builtin_9 == 3 ==>
+    intFromRef(v_ret_0) >= -1 &&
+    intFromRef(v_ret_0) < intFromRef(SearchDeque_g_size(this))
+  assert anon_builtin_9 == 0 ==>
+    intFromRef(v_ret_0) >= 0 ==>
+    equalsRelation(element, SearchDeque_f_elementAt(this, v_ret_0))
+  assert anon_builtin_9 == 1 ==>
+    intFromRef(v_ret_0) >= 0 ==>
+    equalsRelation(element, SearchDeque_f_elementAt(this, v_ret_0))
+  assert anon_builtin_9 == 2 ==>
+    intFromRef(v_ret_0) >= 0 ==>
+    equalsRelation(element, SearchDeque_f_elementAt(this, v_ret_0))
+  assert anon_builtin_9 == 3 ==>
+    intFromRef(v_ret_0) >= 0 ==>
+    equalsRelation(element, SearchDeque_f_elementAt(this, v_ret_0))
+  assert anon_builtin_9 == 0 ==>
+    (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) < anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(SearchDeque_g_size(this)) ==>
+      !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_1))))
+  assert anon_builtin_9 == 1 ==>
+    (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) < anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(SearchDeque_g_size(this)) ==>
+      !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_1))))
+  assert anon_builtin_9 == 2 ==>
+    (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) < anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(SearchDeque_g_size(this)) ==>
+      !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_1))))
+  assert anon_builtin_9 == 3 ==>
+    (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) < anon_builtin_1 &&
+      anon_builtin_1 < intFromRef(SearchDeque_g_size(this)) ==>
+      !equalsRelation(element, SearchDeque_f_elementAt(this, intToRef(anon_builtin_1))))
+  assert anon_builtin_9 == 0 ==>
+    intFromRef(SearchDeque_g_size(this)) ==
+    old(intFromRef(SearchDeque_g_size(this)))
+  assert anon_builtin_9 == 1 ==>
+    intFromRef(SearchDeque_g_size(this)) ==
+    old(intFromRef(SearchDeque_g_size(this)))
+  assert anon_builtin_9 == 2 ==>
+    intFromRef(SearchDeque_g_size(this)) ==
+    old(intFromRef(SearchDeque_g_size(this)))
+  assert anon_builtin_9 == 3 ==>
+    intFromRef(SearchDeque_g_size(this)) ==
+    old(intFromRef(SearchDeque_g_size(this)))
+  assert anon_builtin_9 == 0 ==>
+    (unfolding acc(SearchDeque_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        referenceArraySize(this.elementData))))
+  assert anon_builtin_9 == 1 ==>
+    (unfolding acc(SearchDeque_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        referenceArraySize(this.elementData))))
+  assert anon_builtin_9 == 2 ==>
+    (unfolding acc(SearchDeque_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        referenceArraySize(this.elementData))))
+  assert anon_builtin_9 == 3 ==>
+    (unfolding acc(SearchDeque_unique(this), write) in
+      referenceArraySize(this.elementData) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        referenceArraySize(this.elementData))))
+  assert anon_builtin_9 == 0 ==>
+    (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(this.bf_head) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        intFromRef(this.bf_head))))
+  assert anon_builtin_9 == 1 ==>
+    (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(this.bf_head) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        intFromRef(this.bf_head))))
+  assert anon_builtin_9 == 2 ==>
+    (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(this.bf_head) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        intFromRef(this.bf_head))))
+  assert anon_builtin_9 == 3 ==>
+    (unfolding acc(SearchDeque_unique(this), write) in
+      intFromRef(this.bf_head) ==
+      old((unfolding acc(SearchDeque_unique(this), write) in
+        intFromRef(this.bf_head))))
+  assert anon_builtin_9 == 0 ==>
+    (forall anon_builtin_2: Int ::
+      { SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
+      { old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 < intFromRef(SearchDeque_g_size(this)) ==>
+      SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
+      old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))))
+  assert anon_builtin_9 == 1 ==>
+    (forall anon_builtin_2: Int ::
+      { SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
+      { old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 < intFromRef(SearchDeque_g_size(this)) ==>
+      SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
+      old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))))
+  assert anon_builtin_9 == 2 ==>
+    (forall anon_builtin_2: Int ::
+      { SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
+      { old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 < intFromRef(SearchDeque_g_size(this)) ==>
+      SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
+      old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))))
+  assert anon_builtin_9 == 3 ==>
+    (forall anon_builtin_2: Int ::
+      { SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) }
+      { old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 < intFromRef(SearchDeque_g_size(this)) ==>
+      SearchDeque_f_elementAt(this, intToRef(anon_builtin_2)) ==
+      old(SearchDeque_f_elementAt(this, intToRef(anon_builtin_2))))
+}

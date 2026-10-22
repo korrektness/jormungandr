@@ -92,6 +92,24 @@ class PortDeviationChecker : Closeable {
         }
     }
 
+    /** Normalize regression names, retaining annotations, parameter/return types and the body. */
+    fun normalizedFunction(source: String, name: String): String {
+        val function = PsiTreeUtil.collectElementsOfType(parse(portSource(source)), KtNamedFunction::class.java)
+            .single { it.name == name }
+        val keyword = checkNotNull(function.funKeyword).textRange.startOffset
+        val identifier = checkNotNull(function.nameIdentifier).textRange
+        val declaration = function.text.substring(keyword - function.textRange.startOffset)
+            .replaceRange(identifier.startOffset - keyword, identifier.endOffset - keyword, "search")
+        return function.annotationEntries.joinToString("\n") { it.text } + "\n" + declaration
+    }
+
+    fun functionLines(marked: String, name: String): IntRange {
+        val source = portSource(marked)
+        val function = PsiTreeUtil.collectElementsOfType(parse(source), KtNamedFunction::class.java).single { it.name == name }
+        fun line(offset: Int) = 1 + source.take(offset).count { it == '\n' }
+        return line(function.textRange.startOffset)..line(function.textRange.endOffset)
+    }
+
     /** Zero-context unified hunks, deterministic even when several LCS alignments exist. */
     fun strippedDiff(upstream: String, port: String): String {
         fun lines(text: String) = text.split('\n')
@@ -388,6 +406,49 @@ class PortDeviationTest {
             listOf("constructor()", "constructor(Collection<E>)", "constructor(Collection<E>)", "constructor(Int)", "fun copyElements(Int)", "fun ensureCapacity(Int)")
                 .map { "class(ArrayDeque) / $it" },
             sites.map { it.owner },
+        )
+    }
+
+    @Test
+    fun `search mutants change only their wrapped guards and fail the intended clauses`() = checker { checker ->
+        val directory = data.resolve("diagnostics/targets/arraydeque")
+        val port = directory.resolve("ArrayDeque.kt").readText()
+        val cases = listOf(
+            Triple("indexOf", "indexOfPre80390", "head >= tail"),
+            Triple("lastIndexOf", "lastIndexOfPre80661", "head > tail"),
+        )
+        for ((original, mutant, guard) in cases) {
+            val source = directory.resolve("$mutant.kt").readText()
+            val function = checker.normalizedFunction(source, mutant)
+            assertTrue(function.contains("@TrustedElementEquality"), mutant)
+            val changes = checker.strippedDiff(checker.normalizedFunction(port, original), function)
+                .lines().filter { it.startsWith("-") || it.startsWith("+") }
+            assertEquals(
+                listOf("-        } else if (isNotEmpty() && head >= tail) {", "+        } else if ($guard) {"),
+                changes, mutant,
+            )
+            val diagnostics = directory.resolve("$mutant.viper.diag.txt").readText()
+            val clauses = Regex("(?m)^Failing clause: `([^`]+)`").findAll(diagnostics).map { it.groupValues[1] }.toSet()
+            val intended = if (original == "indexOf") "result < size" else
+                "(result == -1) == !exists<Int> { i -> (0 <= i && i < size) && element == element..."
+            assertEquals(setOf(intended), clauses, mutant)
+            val errors = diagnostics.lineSequence().count { it.contains(": error:") }
+            val failures = Regex("(?m)^Failing clause:").findAll(diagnostics).count()
+            assertEquals(failures, errors, mutant)
+        }
+        val untrusted = checker.normalizedFunction(port, "indexOfUntrusted")
+        assertFalse(untrusted.contains("@TrustedElementEquality"))
+        assertEquals("", checker.strippedDiff(checker.normalizedFunction(port, "indexOf"), untrusted))
+        val untrustedLines = checker.functionLines(port, "indexOfUntrusted")
+        val clauses = Regex("(?m)^Failing clause: `([^`]+)` \\((\\d+):\\d+\\)")
+            .findAll(directory.resolve("ArrayDeque.viper.diag.txt").readText())
+            .filter { it.groupValues[2].toInt() in untrustedLines }.map { it.groupValues[1] }.toSet()
+        assertEquals(
+            setOf(
+                "(result == -1) == !exists<Int> { i -> (0 <= i && i < size) && element == element...",
+                "(result >= 0) implies (element == elementAt(result))",
+                "forAll<Int> { i -> (0 <= i && i < result) implies (element != elementAt(i)) }",
+            ), clauses,
         )
     }
 

@@ -1,12 +1,13 @@
 # D-1: Test-source relocation and compilation directives.
-@@ -6,1 +6,4 @@
+@@ -6,1 +6,5 @@
 -package kotlin.collections
 +// FULL_JDK
++// TRUST_REPORT
 +// RETURN_VALUE_CHECKER_MODE: CHECKER
 +@file:Suppress("RETURN_VALUE_NOT_USED", "NOTHING_TO_INLINE")
 +import org.jetbrains.kotlin.formver.plugin.*
 # D-8: Declare the abstract observers for the source port.
-@@ -8,8 +11,7 @@
+@@ -8,8 +12,7 @@
 -/**
 - * Resizable-array implementation of the deque data structure.
 - *
@@ -22,19 +23,19 @@
 +}
 +
 +// D-1: The source port has no AbstractMutableList supertype.
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -17,1 +19,1 @@
+# D-1: The port implements its observer interface without the collection superclass.
+@@ -17,1 +20,1 @@
 -public class ArrayDeque<E> : AbstractMutableList<E> {
 +public class ArrayDeque<E> : DequeSpec<E> {
 # D-2: Use private count storage for the size observer.
-@@ -21,2 +23,3 @@
+@@ -21,2 +24,3 @@
 -    override var size: Int = 0
 -        private set
 +    // D-2: The size observer reads private mutable storage.
 +    private var count: Int = 0
 +    override val size: Int get() = count
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -24,10 +26,0 @@
+@@ -24,10 +27,0 @@
 -    /**
 -     * Constructs an empty deque with specified [initialCapacity], or throws [IllegalArgumentException] if [initialCapacity] is negative.
 -     */
@@ -46,15 +47,15 @@
 -        }
 -    }
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -34,0 +28,1 @@
+@@ -34,0 +29,1 @@
 +    // D-7: The capacity constructor is outside the proved claim; see docs/targets/arraydeque-gaps-design.md (G12).
 # D-6: Represent the shared empty sentinel by unique size-zero storage.
-@@ -39,1 +33,2 @@
+@@ -39,1 +34,2 @@
 -        elementData = emptyElementData
 +        // D-6: Unique empty storage substitutes for the shared sentinel.
 +        elementData = arrayOfNulls(0)
 # D-3: Supply modification tracking as a field and private helper.
-@@ -42,7 +37,6 @@
+@@ -42,7 +38,6 @@
 -    /**
 -     * Constructs a deque that contains the same elements as the specified [elements] collection in the same order.
 -     */
@@ -69,7 +70,7 @@
 +    private fun registerModification() {
 +        modCount += 1
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -51,6 +44,0 @@
+@@ -51,6 +45,0 @@
 -    /**
 -     * Ensures that the capacity of this deque is at least equal to the specified [minCapacity].
 -     *
@@ -77,31 +78,31 @@
 -     * Otherwise, this method takes no action and simply returns.
 -     */
 # D-6: Represent the shared empty sentinel by unique size-zero storage.
-@@ -60,1 +48,2 @@
+@@ -60,1 +49,2 @@
 -        if (elementData === emptyElementData) {
 +        // D-6: The sentinel identity test is represented by its size characterization.
 +        if (elementData.size == 0) {
 # D-4: Supply private copies of AbstractList helpers.
-@@ -65,1 +54,2 @@
+@@ -65,1 +55,2 @@
 -        val newCapacity = AbstractList.newCapacity(elementData.size, minCapacity)
 +        // D-4: The AbstractList capacity helper is a private copy.
 +        val newCapacity = newCapacity(elementData.size, minCapacity)
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -69,3 +58,0 @@
+@@ -69,3 +59,0 @@
 -    /**
 -     * Creates a new array with the specified [newCapacity] size and copies elements in the [elementData] array to it.
 -     */
 # D-5: Omit InlineOnly from source helpers.
-@@ -80,1 +67,2 @@
+@@ -80,1 +68,2 @@
 -    @kotlin.internal.InlineOnly
 +    // D-7: Members outside the partial port are omitted.
 +    // D-5: InlineOnly is omitted from source helpers.
 # D-5: Omit InlineOnly from source helpers.
-@@ -90,1 +78,1 @@
+@@ -90,1 +79,1 @@
 -    @kotlin.internal.InlineOnly
 +    // D-5: InlineOnly is omitted from source helpers.
 # D-8: Supply proof observers or public-entry fixtures.
-@@ -97,1 +85,6 @@
+@@ -97,1 +86,6 @@
 -    override fun isEmpty(): Boolean = size == 0
 +    // D-8: A non-throwing observer for logical window offsets.
 +    override fun elementAt(index: Int): E {
@@ -110,7 +111,7 @@
 +        return elementData[physical] as E
 +    }
 # D-1: The source port has no collection superclass.
-@@ -98,0 +92,7 @@
+@@ -98,0 +93,7 @@
 +    // D-1: isEmpty has no inherited declaration to override.
 +    fun isEmpty(): Boolean = size == 0
 +
@@ -119,65 +120,65 @@
 +    private val lastIndex: Int get() = count - 1
 +
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -119,3 +118,0 @@
+@@ -119,3 +119,0 @@
 -    /**
 -     * Prepends the specified [element] to this deque.
 -     */
 # D-2: Use private count storage for the size observer.
-@@ -128,1 +125,2 @@
+@@ -128,1 +126,2 @@
 -        size += 1
 +        // D-2: count stores the mutable size.
 +        count += 1
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -131,3 +128,0 @@
+@@ -131,3 +129,0 @@
 -    /**
 -     * Appends the specified [element] to this deque.
 -     */
 # D-2: Use private count storage for the size observer.
-@@ -139,1 +134,2 @@
+@@ -139,1 +135,2 @@
 -        size += 1
 +        // D-2: count stores the mutable size.
 +        count += 1
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -142,3 +137,0 @@
+@@ -142,3 +138,0 @@
 -    /**
 -     * Removes the first element from this deque and returns that removed element, or throws [NoSuchElementException] if this deque is empty.
 -     */
 # D-2: Use private count storage for the size observer.
-@@ -153,1 +146,2 @@
+@@ -153,1 +147,2 @@
 -        size -= 1
 +        // D-2: count stores the mutable size.
 +        count -= 1
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -157,3 +150,0 @@
+@@ -157,3 +151,0 @@
 -    /**
 -     * Removes the first element from this deque and returns that removed element, or returns `null` if this deque is empty.
 -     */
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -163,3 +153,0 @@
+@@ -163,3 +154,0 @@
 -    /**
 -     * Removes the last element from this deque and returns that removed element, or throws [NoSuchElementException] if this deque is empty.
 -     */
 # D-2: Use private count storage for the size observer.
-@@ -174,1 +162,2 @@
+@@ -174,1 +163,2 @@
 -        size -= 1
 +        // D-2: count stores the mutable size.
 +        count -= 1
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -178,3 +166,0 @@
+@@ -178,3 +167,0 @@
 -    /**
 -     * Removes the last element from this deque and returns that removed element, or returns `null` if this deque is empty.
 -     */
 # D-7: Omit declarations or documentation outside the partial source port.
-@@ -184,1 +170,1 @@
+@@ -184,1 +171,1 @@
 -    // MutableList, MutableCollection
 +    // D-1: add has no inherited declaration to override.
 # D-1: The source port has no collection superclass.
-@@ -186,1 +172,1 @@
+@@ -186,1 +173,1 @@
 -    public override fun add(element: E): Boolean {
 +    public fun add(element: E): Boolean {
-# D-8: Supply negative-member fixtures among D-7 omitted list operations.
-@@ -191,11 +177,3 @@
+# D-7: Indexed insertion and bulk members are omitted; D-1 removes the contains override.
+@@ -191,197 +178,2 @@
 -    public override fun add(index: Int, element: E) {
 -        AbstractList.checkPositionIndex(index, size)
 -
@@ -189,14 +190,9 @@
 -            return
 -        }
 -
-+    // D-8: P2 negative: the vacating write is absent from this removeFirst sibling.
-+    fun removeKeepsSlot(): E {
-+        if (isEmpty()) throw NoSuchElementException("ArrayDeque is empty.")
-# D-8: Supply negative-member fixtures among D-7 omitted list operations.
-@@ -203,1 +180,0 @@
+-        registerModification()
 -        ensureCapacity(size + 1)
-# D-8: Supply negative-member fixtures among D-7 omitted list operations.
-@@ -205,83 +182,4 @@
+-
 -        // Elements in circular array lay in 2 ways:
 -        //   1. `head` is less than `tail`:       [#, #, e1, e2, e3, #]
 -        //   2. `head` is greater than `tail`:    [e3, #, #, #, e1, e2]
@@ -280,12 +276,8 @@
 -        ensureCapacity(this.size + elements.size)
 -        copyCollectionElements(internalIndex(size), elements)
 -        return true
-+        val element = internalGet(head)
-+        head = incremented(head)
-+        count -= 1
-+        return element
-# D-8: Supply negative-member fixtures among D-7 omitted list operations.
-@@ -290,10 +188,2 @@
+-    }
+-
 -    @IgnorableReturnValue
 -    public override fun addAll(index: Int, elements: Collection<E>): Boolean {
 -        AbstractList.checkPositionIndex(index, size)
@@ -296,10 +288,7 @@
 -            return addAll(elements)
 -        }
 -
-+    // D-8: This addLast sibling omits the capacity precondition on its contract.
-+    fun addLastWithoutCapacity(element: E) {
-# D-8: Supply negative-member fixtures among D-7 omitted list operations.
-@@ -301,65 +191,1 @@
+-        registerModification()
 -        ensureCapacity(this.size + elements.size)
 -
 -        val tail = internalIndex(size)
@@ -365,70 +354,42 @@
 -            }
 -            copyCollectionElements(internalIndex, elements)
 -        }
-+        ensureCapacity(size + 1)
-# D-8: Supply negative-member fixtures among D-7 omitted list operations.
-@@ -367,1 +193,2 @@
+-
 -        return true
-+        elementData[internalIndex(size)] = element
-+        count += 1
-# D-8: Supply negative-member fixtures among D-7 omitted list operations.
-@@ -370,2 +197,4 @@
+-    }
+-
 -    public override fun get(index: Int): E {
 -        AbstractList.checkElementIndex(index, size)
-+    // D-1: List operations have no inherited declaration to override.
-+    public operator fun get(index: Int): E {
-+        // D-4: The index check is a private copy.
-+        checkElementIndex(index, size)
-# D-4: Supply private copies of AbstractList helpers.
-@@ -377,2 +206,3 @@
+-
+-        return internalGet(internalIndex(index))
+-    }
+-
+-    @IgnorableReturnValue
 -    public override fun set(index: Int, element: E): E {
 -        AbstractList.checkElementIndex(index, size)
-+    public operator fun set(index: Int, element: E): E {
-+        // D-4: The index check is a private copy.
-+        checkElementIndex(index, size)
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -386,167 +216,1 @@
+-
+-        val internalIndex = internalIndex(index)
+-        val oldElement = internalGet(internalIndex)
+-        elementData[internalIndex] = element
+-
+-        return oldElement
+-    }
 -
 -    public override fun contains(element: E): Boolean = indexOf(element) != -1
--
++    // D-1: Search members have no inherited declarations to override.
++    public fun contains(element: E): Boolean = indexOf(element) != -1
+# D-1: indexOf has no inherited declaration to override; D-8 notes its search contract.
+@@ -389,1 +181,3 @@
 -    public override fun indexOf(element: E): Int {
--        val tail = internalIndex(size)
--
--        if (head < tail) {
--            for (index in head until tail) {
--                if (element == elementData[index]) return index - head
--            }
--        } else if (isNotEmpty() && head >= tail) {
--            for (index in head until elementData.size) {
--                if (element == elementData[index]) return index - head
--            }
--            for (index in 0 until tail) {
--                if (element == elementData[index]) return index + elementData.size - head
--            }
--        }
--
--        return -1
--    }
--
++    // D-8: Membership clauses expand containsSpec's relation inside specifications.
++    // D4 trust is scoped to executed equality on E; see upstream/kotlin-v2.3.0/PROVENANCE.md.
++    public fun indexOf(element: E): Int {
+# D-1: lastIndexOf has no inherited declaration to override.
+@@ -408,1 +202,1 @@
 -    public override fun lastIndexOf(element: E): Int {
--        val tail = internalIndex(size)
--
--        if (head < tail) {
--            for (index in tail - 1 downTo head) {
--                if (element == elementData[index]) return index - head
--            }
--        } else if (isNotEmpty() && head >= tail) {
--            for (index in tail - 1 downTo 0) {
--                if (element == elementData[index]) return index + elementData.size - head
--            }
--            for (index in elementData.lastIndex downTo head) {
--                if (element == elementData[index]) return index - head
--            }
--        }
--
--        return -1
--    }
--
++    public fun lastIndexOf(element: E): Int {
+# D-7: Removal and filtering are omitted; D-8 adds the unannotated search negative.
+@@ -427,64 +221,2 @@
 -    @IgnorableReturnValue
 -    public override fun remove(element: E): Boolean {
 -        val index = indexOf(element)
@@ -493,12 +454,14 @@
 -        if (this.isEmpty() || elementData.isEmpty())
 -            return false
 -
--        val tail = internalIndex(size)
++    // D-8: Unannotated search separates bounds from the equality-dependent postconditions.
++    public fun indexOfUntrusted(element: E): Int {
+# D-7: Removal and filtering are omitted; D-8 adds the unannotated search negative.
+@@ -492,2 +223,0 @@
 -        var newTail = head
 -        var modified = false
--
--        if (head < tail) {
--            for (index in head until tail) {
+# D-7: Removal and filtering are omitted; D-8 adds the unannotated search negative.
+@@ -497,7 +227,1 @@
 -                val element = elementData[index]
 -
 -                @Suppress("UNCHECKED_CAST")
@@ -506,12 +469,16 @@
 -                    elementData[newTail++] = element
 -                else
 -                    modified = true
--            }
++                if (element == elementData[index]) return index - head
+# D-7: Removal and filtering are omitted; D-8 adds the unannotated search negative.
+@@ -505,4 +229,1 @@
 -
 -            elementData.fill(null, newTail, tail)
 -
 -        } else {
--            for (index in head until elementData.size) {
++        } else if (isNotEmpty() && head >= tail) {
+# D-7: Removal and filtering are omitted; D-8 adds the unannotated search negative.
+@@ -510,8 +231,1 @@
 -                val element = elementData[index]
 -                elementData[index] = null
 -
@@ -520,11 +487,14 @@
 -                    elementData[newTail++] = element
 -                else
 -                    modified = true
--            }
++                if (element == elementData[index]) return index - head
+# D-7: Removal and filtering are omitted; D-8 adds the unannotated search negative.
+@@ -519,3 +232,0 @@
 -
 -            newTail = positiveMod(newTail)
 -
--            for (index in 0 until tail) {
+# D-7: Removal and filtering are omitted; D-8 adds the unannotated search negative.
+@@ -523,10 +234,1 @@
 -                val element = elementData[index]
 -                elementData[index] = null
 -
@@ -535,78 +505,66 @@
 -                } else {
 -                    modified = true
 -                }
--            }
--        }
++                if (element == elementData[index]) return index + elementData.size - head
+# D-7: Removal and filtering are omitted; D-8 adds the unannotated search negative.
+@@ -535,4 +236,0 @@
 -        if (modified) {
 -            registerModification()
 -            size = negativeMod(newTail - head)
 -        }
--
+# D-7: Removal and filtering are omitted; D-8 adds the unannotated search negative.
+@@ -540,1 +238,1 @@
 -        return modified
--    }
--
++        return -1
+# D-1: clear has no inherited declaration to override.
+@@ -543,1 +241,1 @@
 -    public override fun clear() {
--        if (isNotEmpty()) {
--            registerModification()
--
--            val tail = internalIndex(size)
--            nullifyNonEmpty(head, tail)
--        }
--        head = 0
++    public fun clear() {
+# D-2: count stores the mutable size.
+@@ -551,1 +249,2 @@
 -        size = 0
--    }
-+}
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -554,4 +218,3 @@
++        // D-2: count stores the mutable size.
++        count = 0
+# D-7: Array conversion is omitted; nullifyNonEmpty occupies this helper position.
+@@ -554,11 +253,7 @@
 -    @Suppress("NOTHING_TO_OVERRIDE", "NO_EXPLICIT_VISIBILITY_IN_API_MODE") // different visibility inherited from the base class
 -    override fun <T> toArray(array: Array<T>): Array<T> {
 -        @Suppress("UNCHECKED_CAST")
 -        val dest = (if (array.size >= size) array else arrayOfNulls(array, size)) as Array<Any?>
-+// D-4: Private copies of AbstractList capacity and index helpers.
-+private const val defaultMinCapacity = 10
-+private const val maxArraySize = Int.MAX_VALUE - 8
-# D-4: Supply private copies of AbstractList helpers.
-@@ -559,7 +222,9 @@
+-
 -        val tail = internalIndex(size)
 -        if (head < tail) {
 -            elementData.copyInto(dest, startIndex = head, endIndex = tail)
 -        } else if (isNotEmpty()) {
 -            elementData.copyInto(dest, destinationOffset = 0, startIndex = head, endIndex = elementData.size)
 -            elementData.copyInto(dest, destinationOffset = elementData.size - head, startIndex = 0, endIndex = tail)
--        }
-+private fun newCapacity(oldCapacity: Int, minCapacity: Int): Int {
-+    // overflow-conscious
-+    var newCapacity = oldCapacity + (oldCapacity shr 1)
-+    if (newCapacity - minCapacity < 0)
-+        newCapacity = minCapacity
-+    if (newCapacity - maxArraySize > 0)
-+        newCapacity = if (minCapacity > maxArraySize) Int.MAX_VALUE else maxArraySize
-+    return newCapacity
-+}
-# D-4: Supply private copies of AbstractList helpers.
-@@ -567,2 +232,3 @@
++    /** If `internalFromIndex == internalToIndex`, the buffer is considered full and all elements are nullified. */
++    private fun nullifyNonEmpty(internalFromIndex: Int, internalToIndex: Int) {
++        if (internalFromIndex < internalToIndex) {
++            elementData.fill(null, internalFromIndex, internalToIndex)
++        } else {
++            elementData.fill(null, internalFromIndex, elementData.size)
++            elementData.fill(null, 0, internalToIndex)
+# D-7: Array conversion is omitted.
+@@ -566,3 +260,0 @@
+-
 -        @Suppress("UNCHECKED_CAST")
 -        return terminateCollectionToArray(size, dest) as Array<T>
-+private fun checkElementIndex(index: Int, size: Int) {
-+    if (index < 0 || index >= size) {
-+        throw IndexOutOfBoundsException("index: $index, size: $size")
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -569,0 +236,1 @@
-+}
-# D-4: Supply private copies of AbstractList helpers.
-@@ -571,3 +238,3 @@
+# D-7: Array conversion and range removal are omitted; D-8 adds the null-hygiene negative.
+@@ -571,7 +263,4 @@
 -    @Suppress("NOTHING_TO_OVERRIDE", "NO_EXPLICIT_VISIBILITY_IN_API_MODE") // different visibility inherited from the base class
 -    override fun toArray(): Array<Any?> {
 -        return toArray(arrayOfNulls<Any?>(size))
-+private fun checkPositionIndex(index: Int, size: Int) {
-+    if (index < 0 || index > size) {
-+        throw IndexOutOfBoundsException("index: $index, size: $size")
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -575,29 +242,1 @@
+-    }
 -
 -    override fun removeRange(fromIndex: Int, toIndex: Int) {
 -        AbstractList.checkRangeIndexes(fromIndex, toIndex, size)
--
++    // D-8: P2 negative: the vacating write is absent from this removeFirst sibling.
++    fun removeKeepsSlot(): E {
++        if (isEmpty()) throw NoSuchElementException("ArrayDeque is empty.")
++        registerModification()
+# D-7: Range removal is omitted; D-8 adds the null-hygiene negative.
+@@ -579,12 +268,5 @@
 -        val length = toIndex - fromIndex
 -        when (length) {
 -            0 -> return
@@ -619,41 +577,148 @@
 -                return
 -            }
 -        }
--
--        registerModification()
++        val element = internalGet(head)
++        head = incremented(head)
++        count -= 1
++        return element
++    }
+# D-8: Add the capacity-precondition negative sibling.
+@@ -591,0 +274,2 @@
++    // D-8: This addLast sibling omits the capacity precondition on its contract.
++    fun addLastWithoutCapacity(element: E) {
+# D-7: Range removal is omitted; D-8 adds the capacity-precondition negative.
+@@ -593,4 +277,1 @@
 -
 -        if (fromIndex < size - toIndex) {
 -            // closer to the first element -> shift preceding elements
 -            removeRangeShiftPreceding(fromIndex, toIndex)
--
++        ensureCapacity(size + 1)
+# D-7: Range removal is omitted; D-8 adds the capacity-precondition negative.
+@@ -598,6 +279,3 @@
 -            val newHead = positiveMod(head + length)
 -            nullifyNonEmpty(head, newHead)
 -            head = newHead
 -        } else {
 -            // closer to the last element -> shift succeeding elements
 -            removeRangeShiftSucceeding(fromIndex, toIndex)
-+}
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -605,3 +244,1 @@
++        elementData[internalIndex(size)] = element
++        count += 1
++    }
+# D-7: Range removal is omitted; D-1 and D-4 provide the port get and index check.
+@@ -605,3 +283,4 @@
 -            val tail = internalIndex(size)
 -            nullifyNonEmpty(negativeMod(tail - length), tail)
 -        }
-+// D-8: Public-entry proofs and negative siblings for the partial source port.
-# D-8: Supply proof observers or public-entry fixtures.
-@@ -609,2 +246,5 @@
++    // D-1: List operations have no inherited declaration to override.
++    public operator fun get(index: Int): E {
++        // D-4: The index check is a private copy.
++        checkElementIndex(index, size)
+# D-7: Range removal is omitted; the port get occupies this position.
+@@ -609,1 +288,1 @@
 -        size -= length
++        return internalGet(internalIndex(index))
+# D-7: Range shifting is omitted; D-1 and D-4 provide the port set and index check.
+@@ -612,4 +291,4 @@
+-    private fun removeRangeShiftPreceding(fromIndex: Int, toIndex: Int) {
+-        var copyFromIndex = internalIndex(fromIndex - 1)    // upper bound of range, inclusive
+-        var copyToIndex = internalIndex(toIndex - 1)        // upper bound of range, inclusive
+-        var copyCount = fromIndex
++    @IgnorableReturnValue
++    public operator fun set(index: Int, element: E): E {
++        // D-4: The index check is a private copy.
++        checkElementIndex(index, size)
+# D-7: Range shifting is omitted; the port set occupies this position.
+@@ -617,3 +296,3 @@
+-        while (copyCount > 0) { // maximum 3 iterations
+-            val segmentLength = minOf(copyCount, copyFromIndex + 1, copyToIndex + 1)
+-            elementData.copyInto(elementData, copyToIndex - segmentLength + 1, copyFromIndex - segmentLength + 1, copyFromIndex + 1)
++        val internalIndex = internalIndex(index)
++        val oldElement = internalGet(internalIndex)
++        elementData[internalIndex] = element
+# D-7: Range shifting is omitted; the port set occupies this position.
+@@ -621,4 +300,1 @@
+-            copyFromIndex = negativeMod(copyFromIndex - segmentLength)
+-            copyToIndex = negativeMod(copyToIndex - segmentLength)
+-            copyCount -= segmentLength
+-        }
++        return oldElement
+# D-7: Omit declarations or documentation outside the partial source port.
+@@ -625,0 +302,1 @@
++}
+# D-7: Range shifting is omitted; D-4 provides private AbstractList helpers.
+@@ -627,4 +304,3 @@
+-    private fun removeRangeShiftSucceeding(fromIndex: Int, toIndex: Int) {
+-        var copyFromIndex = internalIndex(toIndex) // lower bound of range, inclusive
+-        var copyToIndex = internalIndex(fromIndex) // lower bound of range, inclusive
+-        var copyCount = size - toIndex
++// D-4: Private copies of AbstractList capacity and index helpers.
++private const val defaultMinCapacity = 10
++private const val maxArraySize = Int.MAX_VALUE - 8
+# D-7: Range shifting is omitted; D-4 provides the capacity helper.
+@@ -632,3 +308,9 @@
+-        while (copyCount > 0) { // maximum 3 iterations
+-            val segmentLength = minOf(copyCount, elementData.size - copyFromIndex, elementData.size - copyToIndex)
+-            elementData.copyInto(elementData, copyToIndex, copyFromIndex, copyFromIndex + segmentLength)
++private fun newCapacity(oldCapacity: Int, minCapacity: Int): Int {
++    // overflow-conscious
++    var newCapacity = oldCapacity + (oldCapacity shr 1)
++    if (newCapacity - minCapacity < 0)
++        newCapacity = minCapacity
++    if (newCapacity - maxArraySize > 0)
++        newCapacity = if (minCapacity > maxArraySize) Int.MAX_VALUE else maxArraySize
++    return newCapacity
++}
+# D-7: Range shifting is omitted; D-4 provides the index helper.
+@@ -636,4 +318,3 @@
+-            copyFromIndex = positiveMod(copyFromIndex + segmentLength)
+-            copyToIndex = positiveMod(copyToIndex + segmentLength)
+-            copyCount -= segmentLength
+-        }
++private fun checkElementIndex(index: Int, size: Int) {
++    if (index < 0 || index >= size) {
++        throw IndexOutOfBoundsException("index: $index, size: $size")
+# D-7: Omit declarations or documentation outside the partial source port.
+@@ -640,0 +322,1 @@
++}
+# D-4: The private index helper occupies this position; nullifyNonEmpty is beside clear.
+@@ -642,8 +324,3 @@
+-    /** If `internalFromIndex == internalToIndex`, the buffer is considered full and all elements are nullified. */
+-    private fun nullifyNonEmpty(internalFromIndex: Int, internalToIndex: Int) {
+-        if (internalFromIndex < internalToIndex) {
+-            elementData.fill(null, internalFromIndex, internalToIndex)
+-        } else {
+-            elementData.fill(null, internalFromIndex, elementData.size)
+-            elementData.fill(null, 0, internalToIndex)
+-        }
++private fun checkPositionIndex(index: Int, size: Int) {
++    if (index < 0 || index > size) {
++        throw IndexOutOfBoundsException("index: $index, size: $size")
+# D-7: Omit declarations or documentation outside the partial source port.
+@@ -650,0 +328,1 @@
++}
+# D-3: registerModification is beside its counter; D-8 public-entry tests follow.
+@@ -652,3 +330,1 @@
+-    private fun registerModification() {
+-        modCount += 1
 -    }
++// D-8: Public-entry proofs and negative siblings for the partial source port.
+# D-7: Upstream test hooks are omitted; D-8 public-entry proofs occupy this position.
+@@ -656,4 +332,5 @@
+-    // for testing
+-    internal fun <T> testToArray(array: Array<T>): Array<T> = toArray(array)
+-    internal fun testToArray(): Array<Any?> = toArray()
+-    internal fun testRemoveRange(fromIndex: Int, toIndex: Int) = removeRange(fromIndex, toIndex)
 +fun emptyDeque() {
 +    val d: ArrayDeque<Any?> = ArrayDeque()
 +    val a = d.firstOrNull()
 +    val b = d.lastOrNull()
 +}
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -612,4 +252,12 @@
--    private fun removeRangeShiftPreceding(fromIndex: Int, toIndex: Int) {
--        var copyFromIndex = internalIndex(fromIndex - 1)    // upper bound of range, inclusive
--        var copyToIndex = internalIndex(toIndex - 1)        // upper bound of range, inclusive
--        var copyCount = fromIndex
+# D-7: Sentinel and capacity constants are represented by D-6 and D-4; D-8 adds public-entry proofs.
+@@ -661,4 +338,12 @@
+-    internal companion object {
+-        private val emptyElementData = emptyArray<Any?>()
+-        private const val defaultMinCapacity = 10
+-    }
 +fun <E> access(d: ArrayDeque<E>, index: Int, other: Int, value: E) {
 +    val n = d.size
 +    val before = d[index]
@@ -666,64 +731,36 @@
 +    val firstNullable = d.firstOrNull()
 +    val lastNullable = d.lastOrNull()
 +}
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -617,3 +265,3 @@
--        while (copyCount > 0) { // maximum 3 iterations
--            val segmentLength = minOf(copyCount, copyFromIndex + 1, copyToIndex + 1)
--            elementData.copyInto(elementData, copyToIndex - segmentLength + 1, copyFromIndex - segmentLength + 1, copyFromIndex + 1)
+# D-7: The upstream structure hook is omitted; D-8 adds a public-entry negative.
+@@ -666,6 +351,2 @@
+-    // For testing only
+-    internal fun internalStructure(structure: (head: Int, elements: Array<Any?>) -> Unit) {
+-        val tail = internalIndex(size)
+-        val head = if (isEmpty() || head < tail) head else head - elementData.size
+-        structure(head, toArray())
+-    }
 +fun <E> firstOnEmpty(d: ArrayDeque<E>) {
 +    val first = d.firstOrNull()
-+}
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -621,5 +269,4 @@
--            copyFromIndex = negativeMod(copyFromIndex - segmentLength)
--            copyToIndex = negativeMod(copyToIndex - segmentLength)
--            copyCount -= segmentLength
--        }
--    }
+# D-8: Public-entry proofs and negative siblings exercise the source port.
+@@ -673,0 +355,74 @@
 +fun <E> rotateLeft(d: ArrayDeque<E>) {
 +    val first = d.removeFirst()
 +    d.addLast(first)
 +}
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -627,4 +274,4 @@
--    private fun removeRangeShiftSucceeding(fromIndex: Int, toIndex: Int) {
--        var copyFromIndex = internalIndex(toIndex) // lower bound of range, inclusive
--        var copyToIndex = internalIndex(fromIndex) // lower bound of range, inclusive
--        var copyCount = size - toIndex
++
 +fun <E> rotateRight(d: ArrayDeque<E>) {
 +    val last = d.removeLast()
 +    d.addFirst(last)
 +}
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -632,3 +279,3 @@
--        while (copyCount > 0) { // maximum 3 iterations
--            val segmentLength = minOf(copyCount, elementData.size - copyFromIndex, elementData.size - copyToIndex)
--            elementData.copyInto(elementData, copyToIndex, copyFromIndex, copyFromIndex + segmentLength)
++
 +fun <E> rotateLeftUnchanged(d: ArrayDeque<E>) {
 +    rotateLeft(d)
 +}
-# D-7: Omit declarations or documentation outside the partial source port.
-@@ -636,5 +283,3 @@
--            copyFromIndex = positiveMod(copyFromIndex + segmentLength)
--            copyToIndex = positiveMod(copyToIndex + segmentLength)
--            copyCount -= segmentLength
--        }
--    }
++
 +fun <E> rotateRightUnchanged(d: ArrayDeque<E>) {
 +    rotateRight(d)
 +}
-# D-8: Supply public-entry proofs and negative siblings among D-7 omitted helpers.
-@@ -642,9 +287,9 @@
--    /** If `internalFromIndex == internalToIndex`, the buffer is considered full and all elements are nullified. */
--    private fun nullifyNonEmpty(internalFromIndex: Int, internalToIndex: Int) {
--        if (internalFromIndex < internalToIndex) {
--            elementData.fill(null, internalFromIndex, internalToIndex)
--        } else {
--            elementData.fill(null, internalFromIndex, elementData.size)
--            elementData.fill(null, 0, internalToIndex)
--        }
--    }
++
 +fun <E> endOperations(first: E, last: E) {
 +    val d: ArrayDeque<E> = ArrayDeque()
 +    d.addFirst(first)
@@ -733,23 +770,14 @@
 +    val emptyBack = d.removeLastOrNull()
 +    val emptyFront = d.removeFirstOrNull()
 +}
-# D-8: Supply public-entry proofs and negative siblings among D-7 omitted helpers.
-@@ -652,3 +297,6 @@
--    private fun registerModification() {
--        modCount += 1
--    }
++
 +// D-8: Bounds negative for the second disjoint copy in copyElements.
 +fun copyElementsPastEnd(data: Array<Any?>, head: Int, newCapacity: Int) {
 +    val newElements = arrayOfNulls<Any?>(newCapacity)
 +    data.copyInto(newElements, 0, head, data.size)
 +    data.copyInto(newElements, data.size - head, 0, data.size + 1)
 +}
-# D-8: Supply public-entry proofs and negative siblings among D-7 omitted helpers.
-@@ -656,4 +304,10 @@
--    // for testing
--    internal fun <T> testToArray(array: Array<T>): Array<T> = toArray(array)
--    internal fun testToArray(): Array<Any?> = toArray()
--    internal fun testRemoveRange(fromIndex: Int, toIndex: Int) = removeRange(fromIndex, toIndex)
++
 +// D-8: The AbstractList capacity body with checked arithmetic.
 +private fun checkedCapacity(oldCapacity: Int, minCapacity: Int): Int {
 +    // overflow-conscious
@@ -760,25 +788,32 @@
 +        newCapacity = if (minCapacity > maxArraySize) Int.MAX_VALUE else maxArraySize
 +    return newCapacity
 +}
-# D-8: Supply public-entry proofs and negative siblings among D-7 omitted helpers.
-@@ -661,4 +315,5 @@
--    internal companion object {
--        private val emptyElementData = emptyArray<Any?>()
--        private const val defaultMinCapacity = 10
--    }
++
++fun <E> untrustedSearchBounds(d: ArrayDeque<E>, element: E) {
++    val index = d.indexOfUntrusted(element)
++}
++
++fun searchAndClear(d: ArrayDeque<Int>, element: Int) {
++    val first = d.indexOf(element)
++    val last = d.lastIndexOf(element)
++    val present = d.contains(element)
++    d.clear()
++    val after = d.contains(element)
++}
++
++fun clearKeepsElement(d: ArrayDeque<Int>, element: Int) {
++    d.clear()
++    val after = d.contains(element)
++}
++
 +// The control wraps offsets crossing the physical end of the backing array.
 +fun <E> getCircular(data: Array<E>, head: Int, index: Int): E {
 +    val physical = head + index
 +    return data[if (physical >= data.size) physical - data.size else physical]
 +}
-# D-8: Supply public-entry proofs and negative siblings among D-7 omitted helpers.
-@@ -666,6 +321,3 @@
--    // For testing only
--    internal fun internalStructure(structure: (head: Int, elements: Array<Any?>) -> Unit) {
--        val tail = internalIndex(size)
--        val head = if (isEmpty() || head < tail) head else head - elementData.size
--        structure(head, toArray())
--    }
++
 +// Omitting positiveMod leaves a wrapped logical offset past the physical end.
 +fun <E> getWrapped(data: Array<E>, head: Int, index: Int): E {
 +    return data[head + index]
++}
++

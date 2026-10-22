@@ -434,6 +434,18 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       public void testArrayDeque() {
         runTest("formver.compiler-plugin/testData/diagnostics/targets/arraydeque/ArrayDeque.kt");
       }
+
+      @Test
+      @TestMetadata("indexOfPre80390.kt")
+      public void testIndexOfPre80390() {
+        runTest("formver.compiler-plugin/testData/diagnostics/targets/arraydeque/indexOfPre80390.kt");
+      }
+
+      @Test
+      @TestMetadata("lastIndexOfPre80661.kt")
+      public void testLastIndexOfPre80661() {
+        runTest("formver.compiler-plugin/testData/diagnostics/targets/arraydeque/lastIndexOfPre80661.kt");
+      }
     }
   }
 

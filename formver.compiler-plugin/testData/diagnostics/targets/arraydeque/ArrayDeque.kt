@@ -4,6 +4,7 @@
  */
 
 // FULL_JDK
+// TRUST_REPORT
 // RETURN_VALUE_CHECKER_MODE: CHECKER
 @file:Suppress("RETURN_VALUE_NOT_USED", "NOTHING_TO_INLINE")
 import org.jetbrains.kotlin.formver.plugin.*
@@ -103,9 +104,9 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
     }
 
     @SpecOf("positiveMod") @Unique private fun positiveModSpec(index: Int) {
-        preconditions { elementData.size > 0 && 0 <= index && index - elementData.size < elementData.size }
+        preconditions { 0 <= index && (if (elementData.size == 0) index == 0 else index - elementData.size < elementData.size) }
         postconditions<Int> { r ->
-            0 <= r && r < elementData.size
+            0 <= r && (if (elementData.size == 0) r == 0 else r < elementData.size)
             r == (if (index >= elementData.size) index - elementData.size else index)
         }
     }
@@ -121,9 +122,9 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
     @Pure @Unique private fun <!VIPER_TEXT!>negativeMod<!>(index: Int): Int = if (index < 0) index + elementData.size else index
 
     @SpecOf("internalIndex") @Unique private fun internalIndexSpec(index: Int) {
-        preconditions { elementData.size > 0 && 0 <= index && index <= size && head + index - elementData.size < elementData.size }
+        preconditions { 0 <= index && index <= size && (elementData.size == 0 || head + index - elementData.size < elementData.size) }
         postconditions<Int> { r ->
-            0 <= r && r < elementData.size
+            0 <= r && (if (elementData.size == 0) r == 0 else r < elementData.size)
             r == (if (head + index >= elementData.size) head + index - elementData.size else head + index)
         }
     }
@@ -338,6 +339,191 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
         return true
     }
 
+    @SpecOf("contains") @Unique @Borrowed fun containsSpec(element: E) {
+        postconditions<Boolean> { r ->
+            r == exists<Int> { i -> (0 <= i && i < size) && element == elementAt(i) }
+            size == old(size)
+            elementData.size == old(elementData.size)
+            head == old(head)
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+        }
+    }
+    // D-1: Search members have no inherited declarations to override.
+    @Unique @Borrowed public fun <!VIPER_TEXT!>contains<!>(element: E): Boolean = indexOf(element) != -1
+
+    // D-8: Membership clauses expand containsSpec's relation inside specifications.
+    // D4 trust is scoped to executed equality on E; see upstream/kotlin-v2.3.0/PROVENANCE.md.
+    @TrustedElementEquality @Unique @Borrowed public fun <!VIPER_TEXT!>indexOf<!>(element: E): Int {
+        postconditions<Int> { result ->
+            result >= -1
+            result < size
+            (result == -1) == !exists<Int> { i -> (0 <= i && i < size) && element == elementAt(i) }
+            (result >= 0) implies (element == elementAt(result))
+            forAll<Int> { i -> (0 <= i && i < result) implies (element != elementAt(i)) }
+            size == old(size)
+            elementData.size == old(elementData.size)
+            head == old(head)
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+        }
+        val tail = internalIndex(size)
+
+        if (head < tail) {
+            for (index in head until tail) {
+                loopInvariants {
+                    size == old(size) && head == old(head) && elementData.size == old(elementData.size)
+                    forAll<Int> { k -> (0 <= k && k < elementData.size) implies (elementData[k] === old(elementData[k])) }
+                    head <= index && index <= tail
+                    forAll<Int> { k -> (0 <= k && k < size && k < index - head) implies (element != elementAt(k)) }
+                }
+                if (element == elementData[index]) return index - head
+            }
+        } else if (isNotEmpty() && head >= tail) {
+            for (index in head until elementData.size) {
+                loopInvariants {
+                    size == old(size) && head == old(head) && elementData.size == old(elementData.size)
+                    forAll<Int> { k -> (0 <= k && k < elementData.size) implies (elementData[k] === old(elementData[k])) }
+                    head <= index && index <= elementData.size
+                    forAll<Int> { k -> (0 <= k && k < size && k < index - head) implies (element != elementAt(k)) }
+                }
+                if (element == elementData[index]) return index - head
+            }
+            for (index in 0 until tail) {
+                loopInvariants {
+                    size == old(size) && head == old(head) && elementData.size == old(elementData.size)
+                    forAll<Int> { k -> (0 <= k && k < elementData.size) implies (elementData[k] === old(elementData[k])) }
+                    0 <= index && index <= tail
+                    forAll<Int> { k -> (0 <= k && k < size && k < index + elementData.size - head) implies (element != elementAt(k)) }
+                }
+                if (element == elementData[index]) return index + elementData.size - head
+            }
+        }
+
+        return -1
+    }
+
+    @TrustedElementEquality @Unique @Borrowed public fun <!VIPER_TEXT!>lastIndexOf<!>(element: E): Int {
+        postconditions<Int> { result ->
+            result >= -1 && result < size
+            (result == -1) == !exists<Int> { i -> (0 <= i && i < size) && element == elementAt(i) }
+            (result >= 0) implies (element == elementAt(result))
+            forAll<Int> { i -> (0 <= result && result < i && i < size) implies (element != elementAt(i)) }
+            size == old(size)
+            elementData.size == old(elementData.size)
+            head == old(head)
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+        }
+        val tail = internalIndex(size)
+
+        if (head < tail) {
+            for (index in tail - 1 downTo head) {
+                loopInvariants {
+                    size == old(size) && head == old(head) && elementData.size == old(elementData.size)
+                    forAll<Int> { k -> (0 <= k && k < elementData.size) implies (elementData[k] === old(elementData[k])) }
+                    head - 1 <= index && index < tail
+                    forAll<Int> { k -> (0 <= k && index - head < k && k < size) implies (element != elementAt(k)) }
+                }
+                if (element == elementData[index]) return index - head
+            }
+        } else if (isNotEmpty() && head >= tail) {
+            for (index in tail - 1 downTo 0) {
+                loopInvariants {
+                    size == old(size) && head == old(head) && elementData.size == old(elementData.size)
+                    forAll<Int> { k -> (0 <= k && k < elementData.size) implies (elementData[k] === old(elementData[k])) }
+                    -1 <= index && index < tail
+                    forAll<Int> { k -> (0 <= k && index + elementData.size - head < k && k < size) implies (element != elementAt(k)) }
+                }
+                if (element == elementData[index]) return index + elementData.size - head
+            }
+            for (index in elementData.lastIndex downTo head) {
+                loopInvariants {
+                    size == old(size) && head == old(head) && elementData.size == old(elementData.size)
+                    forAll<Int> { k -> (0 <= k && k < elementData.size) implies (elementData[k] === old(elementData[k])) }
+                    head - 1 <= index && index < elementData.size
+                    forAll<Int> { k -> (0 <= k && index - head < k && k < size) implies (element != elementAt(k)) }
+                }
+                if (element == elementData[index]) return index - head
+            }
+        }
+
+        return -1
+    }
+
+    // D-8: Unannotated search separates bounds from the equality-dependent postconditions.
+    <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>@Unique @Borrowed public fun <!VIPER_TEXT!>indexOfUntrusted<!>(element: E): Int {
+        postconditions<Int> { result ->
+            result >= -1 && result < size
+            (result == -1) == !exists<Int> { i -> (0 <= i && i < size) && element == elementAt(i) }
+            (result >= 0) implies (element == elementAt(result))
+            forAll<Int> { i -> (0 <= i && i < result) implies (element != elementAt(i)) }
+        }
+        val tail = internalIndex(size)
+
+        if (head < tail) {
+            for (index in head until tail) {
+                loopInvariants {
+                    size == old(size) && head == old(head) && elementData.size == old(elementData.size)
+                    forAll<Int> { k -> (0 <= k && k < elementData.size) implies (elementData[k] === old(elementData[k])) }
+                    head <= index && index <= tail
+                }
+                if (element == elementData[index]) <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>return index - head<!>
+            }
+        } else if (isNotEmpty() && head >= tail) {
+            for (index in head until elementData.size) {
+                loopInvariants {
+                    size == old(size) && head == old(head) && elementData.size == old(elementData.size)
+                    forAll<Int> { k -> (0 <= k && k < elementData.size) implies (elementData[k] === old(elementData[k])) }
+                    head <= index && index <= elementData.size
+                }
+                if (element == elementData[index]) <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>return index - head<!>
+            }
+            for (index in 0 until tail) {
+                loopInvariants {
+                    size == old(size) && head == old(head) && elementData.size == old(elementData.size)
+                    forAll<Int> { k -> (0 <= k && k < elementData.size) implies (elementData[k] === old(elementData[k])) }
+                    0 <= index && index <= tail
+                }
+                if (element == elementData[index]) <!VERIFICATION_CONDITION_NOT_ESTABLISHED, VERIFICATION_CONDITION_NOT_ESTABLISHED!>return index + elementData.size - head<!>
+            }
+        }
+
+        return -1
+    }<!>
+
+    @Unique @Borrowed public fun <!VIPER_TEXT!>clear<!>() {
+        postconditions<Unit> {
+            size == 0
+            elementData.size == old(elementData.size)
+            forAll<Int> { i -> triggers(old(internalIndex(i))); (0 <= i && i < old(size)) implies (elementData[old(internalIndex(i))] === null) }
+        }
+        if (isNotEmpty()) {
+            registerModification()
+
+            val tail = internalIndex(size)
+            nullifyNonEmpty(head, tail)
+        }
+        head = 0
+        // D-2: count stores the mutable size.
+        count = 0
+    }
+
+    /** If `internalFromIndex == internalToIndex`, the buffer is considered full and all elements are nullified. */
+    @Unique @Borrowed private fun <!VIPER_TEXT!>nullifyNonEmpty<!>(internalFromIndex: Int, internalToIndex: Int) {
+        preconditions { 0 <= internalFromIndex && internalFromIndex < elementData.size && 0 <= internalToIndex && internalToIndex < elementData.size }
+        postconditions<Unit> {
+            size == old(size)
+            head == old(head)
+            elementData.size == old(elementData.size)
+            forAll<Int> { i -> (0 <= i && i < elementData.size &&
+                (if (internalFromIndex < internalToIndex) internalFromIndex <= i && i < internalToIndex else internalFromIndex <= i || i < internalToIndex)) implies (elementData[i] === null) }
+        }
+        if (internalFromIndex < internalToIndex) {
+            elementData.fill(null, internalFromIndex, internalToIndex)
+        } else {
+            elementData.fill(null, internalFromIndex, elementData.size)
+            elementData.fill(null, 0, internalToIndex)
+        }
+    }
+
     // D-8: P2 negative: the vacating write is absent from this removeFirst sibling.
     @Unique @Borrowed fun <!VIPER_TEXT!>removeKeepsSlot<!>(): E {
         postconditions<E> { elementData[old(head)] === null }
@@ -536,6 +722,28 @@ private fun <!VIPER_TEXT!>checkedCapacity<!>(oldCapacity: Int, minCapacity: Int)
     if (newCapacity - maxArraySize > 0)
         newCapacity = if (minCapacity > maxArraySize) Int.MAX_VALUE else maxArraySize
     return newCapacity
+}
+
+fun <E> <!VIPER_TEXT!>untrustedSearchBounds<!>(d: @Unique @Borrowed ArrayDeque<E>, element: E) {
+    val index = d.indexOfUntrusted(element)
+    verify(index >= -1 && index < d.size)
+}
+
+fun <!VIPER_TEXT!>searchAndClear<!>(d: @Unique @Borrowed ArrayDeque<Int>, element: Int) {
+    val first = d.indexOf(element)
+    val last = d.lastIndexOf(element)
+    val present = d.contains(element)
+    verify((first == -1) == !present && (last == -1) == !present)
+    verify((first >= 0) implies (first <= last))
+    d.clear()
+    val after = d.contains(element)
+    verify(d.size == 0 && !after)
+}
+
+fun <!VIPER_TEXT!>clearKeepsElement<!>(d: @Unique @Borrowed ArrayDeque<Int>, element: Int) {
+    d.clear()
+    val after = d.contains(element)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>after<!>)
 }
 
 // The control wraps offsets crossing the physical end of the backing array.
