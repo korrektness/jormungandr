@@ -45,6 +45,9 @@ function's verification outcome is refused unless
 `-Pformver.recordOutcomes=true` is passed as well; docs/agents-dev.md, under
 Regenerating, says what counts as one.
 
+For shared verification caching and cold runs, see
+[the agent script cache controls](agents-dev.md#verification-cache).
+
 ### Verification timeout
 
 The test facade verifies each declaration with the plugin's default verification

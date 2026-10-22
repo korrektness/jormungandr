@@ -86,6 +86,7 @@ class SiliconFrontend(
     cacheDirectory: Path? = null,
     pluginOptions: List<String> = emptyList(),
     counterexamples: Boolean = false,
+    cacheReportDirectory: Path? = null,
 ) : Closeable {
     private val args = buildList {
         addAll(commandLineArgs)
@@ -109,8 +110,8 @@ class SiliconFrontend(
             add(timeoutSeconds.toString())
         }
     }
-    private val cache = cacheDirectory?.let { VerificationResultCache(it) }
-    private val cacheOptions = args + pluginOptions + listOf(
+    private val cache = cacheDirectory?.let { VerificationResultCache(it, cacheReportDirectory) }
+    private val cacheOptions = args.chunked(2).filter { it[0] != "--z3Exe" }.flatten() + pluginOptions + listOf(
         System.getProperty("java.runtime.version"), System.getProperty("os.name"), System.getProperty("os.arch"),
     )
     private val cacheVersion = cacheDirectory?.let {
@@ -145,18 +146,18 @@ class SiliconFrontend(
             "--timeout", "--assertTimeout", "--proverSaturationTimeout", "--randomizeSeeds",
         )
 
-        /** The loaded Silicon and Silver classes cannot change within a JVM, so their artifacts are hashed once. */
+        /** Loaded verifier classes cannot change within a JVM, so their artifacts are hashed once. */
         private val backendDigests: List<String> by lazy {
             listOf(
                 artifactDigest(viper.silicon.SiliconFrontendAPI::class.java),
                 artifactDigest(viper.silver.ast.Program::class.java),
+                artifactDigest(SiliconFrontend::class.java),
             )
         }
 
         private fun artifactDigest(type: Class<*>): String {
             val path = Path.of(type.protectionDomain.codeSource.location.toURI())
-            require(path.toFile().isFile) { "Verification caching requires a packaged Silicon/Silver artifact: $path" }
-            return VerificationResultCache.fileDigest(path)
+            return VerificationResultCache.artifactDigest(path)
         }
 
         /**

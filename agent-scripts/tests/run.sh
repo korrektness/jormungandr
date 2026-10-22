@@ -146,4 +146,5 @@ if [[ "$failures" -gt 0 ]]; then
     echo "$failures assertion(s) failed"
     exit 1
 fi
+python3 "$TESTS_DIR/verification_cache_test.py"
 echo "all assertions passed"

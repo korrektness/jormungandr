@@ -29,6 +29,15 @@ them.
 the test results they report from are XML; `check-testdata.sh` needs nothing but
 a checkout.
 
+## Verification cache
+
+Verification modes in `test.sh` use the shared success cache. Conversion-only
+runs do not use it. See the outcome cache note for
+[store selection](targets/viper-outcome-cache.md#store),
+[cold-run controls](targets/viper-outcome-cache.md#forcing-a-cold-run),
+[reporting](targets/viper-outcome-cache.md#reporting) and
+[key inputs](targets/viper-outcome-cache.md#key). Goldens are checked on hits too.
+
 ## Exit codes
 
 `check-all.sh` reports each of its four checks as passed, failed or skipped. A

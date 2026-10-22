@@ -20,6 +20,9 @@ Usage:
   ./agent-scripts/test.sh --vacuity [pattern]        # full pipeline, probing each verified method
                                                      # with refute(false) at entry and exit
 
+--cold disables verification cache reads and writes.
+SNAKT_VERIFICATION_CACHE selects the store directory; 'off' disables caching.
+
 --vacuity lists every probe that failed in a declaration that otherwise
 verifies: the verifier's facts there are contradictory.
 
@@ -30,6 +33,7 @@ EOF
 
 MODE=conversion
 RECORD_OUTCOMES=0
+COLD=0
 set_mode() {
     if [[ "$MODE" != conversion && "$MODE" != "$1" ]]; then
         echo "--verify, --verify-changed, --update-goldens and --vacuity select different runs; pass one." >&2
@@ -40,6 +44,7 @@ set_mode() {
 
 while [[ "${1:-}" == -* ]]; do
     case "$1" in
+        --cold) COLD=1 ;;
         --verify) set_mode verify ;;
         --verify-changed) set_mode verify-changed ;;
         --update-goldens) set_mode update ;;
@@ -84,6 +89,18 @@ if [[ "$MODE" == vacuity ]]; then
 fi
 if [[ -n "$PATTERN" ]]; then
     args+=(--tests "*$(gradle_filter "$PATTERN")*")
+fi
+
+CACHE_REPORT=""
+if [[ "$MODE" != conversion ]]; then
+    CACHE_STORE="${SNAKT_VERIFICATION_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/snakt/verification}"
+    if [[ "$COLD" -eq 0 && "$CACHE_STORE" != off ]]; then
+        python3 "$SCRIPT_DIR/verification_cache.py" prune "$CACHE_STORE"
+        CACHE_REPORT="$(mktemp -d)"
+        trap 'rm -rf "$CACHE_REPORT"' EXIT
+        args+=(-Pformver.verificationCacheDirectory="$CACHE_STORE"
+               -Pformver.verificationCacheReport="$CACHE_REPORT")
+    fi
 fi
 
 # DumpAssertionDiffExtension only fires when this is set (see docs/agents-dev.md).
@@ -239,6 +256,13 @@ summary() {
 
 echo
 summary
+if [[ "$MODE" != conversion ]]; then
+    if [[ -n "$CACHE_REPORT" ]]; then
+        python3 "$SCRIPT_DIR/verification_cache.py" summary "$CACHE_REPORT"
+    else
+        echo "Verification: cache off"
+    fi
+fi
 
 if [[ "$MODE" == vacuity ]]; then
     if compgen -G "$VACUITY_DIR/*.tsv" >/dev/null; then

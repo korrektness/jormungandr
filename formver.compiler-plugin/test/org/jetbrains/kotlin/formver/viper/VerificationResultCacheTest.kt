@@ -3,6 +3,10 @@ package org.jetbrains.kotlin.formver.viper
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.attribute.FileTime
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -40,29 +44,34 @@ class VerificationResultCacheTest {
     fun `failed and exceptional verification is never stored`() {
         val cache = VerificationResultCache(directory)
         repeat(2) { assertFalse(cache.verify("program", "version", emptyList()) { false }) }
-        assertFailsWith<IllegalStateException> {
-            cache.verify("program", "version", emptyList()) { error("backend failure") }
+        assertFailsWith<VerificationTimeoutException> {
+            cache.verify("program", "version", emptyList()) { throw VerificationTimeoutException(1) }
         }
-        Files.list(directory).use { assertEquals(0L, it.count()) }
+        assertTrue(entries().isEmpty())
         assertTrue(cache.verify("program", "version", emptyList()) { true })
     }
 
     @Test
-    fun `corrupt and misplaced entries are reported before verification`() {
-        val cache = VerificationResultCache(directory)
+    fun `corrupt and misplaced entries reverify and report`() {
+        val reports = directory.resolve("reports")
+        val cache = VerificationResultCache(directory, reports)
         cache.verify("program", "version", emptyList()) { true }
-        val entry = Files.list(directory).use { it.findFirst().orElseThrow() }
+        val entry = entries().single()
+        assertEquals(entry.fileName.toString().take(2), entry.parent.fileName.toString())
         val valid = Files.readAllBytes(entry)
         Files.write(entry, byteArrayOf(0, 1, 2))
-        assertFailsWith<CorruptVerificationCacheException> {
-            cache.verify("program", "version", emptyList()) { error("Corruption must surface before proof search") }
-        }
+        var calls = 0
+        assertTrue(cache.verify("program", "version", emptyList()) { calls++; true })
+        assertEquals(1, calls)
         Files.write(entry, valid)
         cache.verify("other program", "version", emptyList()) { true }
-        val other = Files.list(directory).use { stream -> stream.filter { it != entry }.findFirst().orElseThrow() }
+        val other = entries().single { it != entry }
         Files.write(other, valid)
-        assertFailsWith<CorruptVerificationCacheException> {
-            cache.verify("other program", "version", emptyList()) { error("Wrong-key entry must not be trusted") }
+        assertFalse(cache.verify("other program", "version", emptyList()) { calls++; false })
+        assertEquals(2, calls)
+        assertFalse(Files.exists(other))
+        Files.list(reports).use { files ->
+            assertEquals(2L, files.filter { Files.readString(it).contains("\tcorrupt\t") }.count())
         }
     }
 
@@ -78,7 +87,58 @@ class VerificationResultCacheTest {
             })
         }
         assertTrue(VerificationResultCache(directory).verify("program", "version", emptyList()) { error("Expected hit") })
-        Files.list(directory).use { assertEquals(1L, it.count()) }
+        assertEquals(1, entries().size)
+    }
+
+    private fun entries(): List<Path> = Files.walk(directory).use { files ->
+        files.filter { it.toString().endsWith(".success") }.toList()
+    }
+
+    @Test
+    fun `hit refreshes old entry but leaves recent entry untouched`() {
+        val now = Instant.parse("2026-01-03T00:00:00Z")
+        val cache = VerificationResultCache(directory, clock = Clock.fixed(now, ZoneOffset.UTC))
+        cache.verify("program", "version", emptyList()) { true }
+        val entry = entries().single()
+        val recent = FileTime.from(now.minusSeconds(60))
+        Files.setLastModifiedTime(entry, recent)
+        cache.verify("program", "version", emptyList()) { error("Expected hit") }
+        assertEquals(recent, Files.getLastModifiedTime(entry))
+        Files.setLastModifiedTime(entry, FileTime.from(now.minusSeconds(2 * 86400)))
+        cache.verify("program", "version", emptyList()) { error("Expected hit") }
+        assertEquals(FileTime.from(now), Files.getLastModifiedTime(entry))
+        Files.setLastModifiedTime(entry, FileTime.from(now.minusSeconds(2 * 86400)))
+        val pruningClock = object : Clock() {
+            override fun getZone() = ZoneOffset.UTC
+            override fun withZone(zone: java.time.ZoneId): Clock = this
+            override fun instant(): Instant {
+                Files.deleteIfExists(entry)
+                return now
+            }
+        }
+        assertTrue(VerificationResultCache(directory, clock = pruningClock).verify("program", "version", emptyList()) {
+            error("Pruning after read must not discard the hit")
+        })
+        assertFalse(Files.exists(entry))
+    }
+
+    @Test
+    fun `module content and relative class names invalidate cached success`() {
+        val classes = directory.resolve("classes")
+        Files.createDirectories(classes)
+        val type = classes.resolve("Verifier.class")
+        Files.write(type, byteArrayOf(1))
+        val cache = VerificationResultCache(directory)
+        var calls = 0
+        fun verify() = cache.verify("program", VerificationResultCache.artifactDigest(classes), emptyList()) { calls++; true }
+        verify()
+        verify()
+        assertEquals(1, calls)
+        Files.write(type, byteArrayOf(2))
+        verify()
+        Files.move(type, classes.resolve("Renamed.class"))
+        verify()
+        assertEquals(3, calls)
     }
 
     @Test

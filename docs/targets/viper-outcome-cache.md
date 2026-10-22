@@ -9,21 +9,18 @@ hypotheses that an implementation stage has to confirm.
 
 - `VerificationResultCache` (`formver.compiler-plugin/viper/src/.../VerificationResultCache.kt`) stores successful
   outcomes only. One file per key, written to a temporary file and renamed into place, so concurrent writers race to
-  identical content. An entry whose bytes differ from the expected record throws
-  `CorruptVerificationCacheException`. **[E]**
-- `SiliconFrontend.verify` consults it when constructed with a `cacheDirectory`. The key is a length-prefixed
-  SHA-256 over: the printed program (`Program.toString()`), the bytes of the Silicon and Silver artifacts, the bytes
-  of the Z3 binary, the effective Silicon arguments (timeouts, `--numberOfErrorsToReport 0`,
-  `--numberOfParallelVerifiers`, `--counterexample`, and `--z3Exe` with its absolute path), the plugin options, and
-  the JVM version, OS and architecture. Caching refuses to start when the Silicon arguments include anything other
-  than numeric timeout and seed options. Consistency checking runs on hits too. **[E]**
+  identical content. An entry whose bytes differ from the expected record is deleted, reported and
+  re-verified. **[E]**
+- `SiliconFrontend.verify` consults it when constructed with a `cacheDirectory`, using the [key inputs](#key).
+  Caching refuses to start when the custom Silicon arguments include anything other than numeric timeout and seed
+  options. Consistency checking runs on hits too. **[E]**
 - The printed program is close to a faithful rendering of the AST: Silver prints a domain function application
   with an explicit result type whenever it has type arguments, and prints `@` annotations. Positions and other
   `Info` nodes are not printed; they do not change whether a program verifies. **[E]**
   (`silver/.../ast/pretty/PrettyPrinter.scala`, `showAnnotation` and the `DomainFuncApp` case.)
 - Users enable it with the `verification_cache_directory` plugin option (README.md). The test fixtures enable it
-  with `-Pformver.verificationCacheDirectory=<dir>`. Neither `test.sh` nor `land-gate.yaml` passes that property,
-  so every test run and every gate run verifies everything cold. **[E]**
+  with `-Pformver.verificationCacheDirectory=<dir>`. `test.sh` passes that property in verification modes.
+  `land-gate.yaml` verifies cold. **[E]**
 - `test.sh --verify-changed` runs the `update` task: it verifies a test file only when its conversion output
   differs from the committed golden. It skips per file rather than per program, and it does not notice a change of
   Silicon, Z3 or the encoding that leaves the golden text alone. **[E]**
@@ -65,14 +62,16 @@ these rows.
 
 ### Key
 
-The key stays the existing one with three changes:
+The success key is a length-prefixed SHA-256 over the printed program (`Program.toString()`), the bytes of the
+Silicon and Silver artifacts, the effective Silicon arguments (timeouts, `--numberOfErrorsToReport 0`,
+`--numberOfParallelVerifiers` and `--counterexample`), plugin options, JVM version, OS and architecture, plus:
 
-1. Add a digest of the `formver.compiler-plugin/viper` module's class files (the jar, or every class file under
+1. A digest of the `formver.compiler-plugin/viper` module's class files (the jar, or every class file under
    the class directory when tests run from `build/classes`). This module decides what counts as a success and
    writes the entry, so a work-in-progress change to it cannot write entries that unmodified code then trusts.
-2. Drop the `--z3Exe` path from the key; the Z3 bytes are already in it. Worktrees and the gate then share entries
+2. The Z3 bytes, excluding the `--z3Exe` path from the key. Worktrees and the gate then share entries
    whenever they run the same Z3.
-3. Add a format version string per entry kind, so a change to the record layout starts a disjoint key space.
+3. A format version string per entry kind, so a change to the record layout starts a disjoint key space.
 
 The Viper prelude and the built-in helper functions are part of the printed program, so they are covered by the
 text. Test-mode inputs that change verification (vacuity probes, counterexample mode) change either the text or the

@@ -182,6 +182,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
     private class TestVerifier(z3: String, cache: Path?, private val counterexamples: Boolean) : Closeable {
         private val verifier = SiliconFrontend(
             z3, timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS, cacheDirectory = cache, counterexamples = counterexamples,
+            cacheReportDirectory = System.getProperty("formver.verificationCacheReport")?.let { Path.of(it) },
         )
         private val ordinary = if (counterexamples) {
             SiliconFrontend(z3, timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS, counterexamples = false)

@@ -92,8 +92,8 @@ fun Test.configureFormverTest() {
 
     systemProperty("idea.ignore.disabled.plugins", "true")
     systemProperty("formver.testRun", "true")
-    project.findProperty("formver.verificationCacheDirectory")?.let {
-        systemProperty("formver.verificationCacheDirectory", it)
+    listOf("formver.verificationCacheDirectory", "formver.verificationCacheReport").forEach { property ->
+        project.findProperty(property)?.let { systemProperty(property, it) }
     }
     project.findProperty("formver.verificationJobs")?.let {
         systemProperty("formver.verificationJobs", it)
