@@ -174,6 +174,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             ExternalSpecRule.OUTSIDE_SPECIFICATION_INPUTS -> "External model outside loaded specification inputs: $target"
             ExternalSpecRule.MODEL_NOT_TOP_LEVEL -> "An external function or property model must be top-level."
             ExternalSpecRule.MEMBER_OUTSIDE_CLASS_MODEL -> "@ExternalMember outside an external class model."
+            ExternalSpecRule.CONSTRUCTOR_RESULT -> "Incompatible constructor model result: $target"
             ExternalSpecRule.CLASS_MODEL_NOT_INTERFACE -> "An external class model must be an interface."
             ExternalSpecRule.AMBIGUOUS_CLASS -> "Ambiguous external class: $target"
             ExternalSpecRule.UNRESOLVED_CLASS -> "Unresolved external class: $target"

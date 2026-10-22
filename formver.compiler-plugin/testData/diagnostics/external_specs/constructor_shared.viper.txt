@@ -1,0 +1,52 @@
+/constructor_shared.kt: info: Generated Viper text for sharedConstructor:
+function get(this: Ref): Ref
+  requires isSubtype(typeOf(this), CellModel())
+  requires acc(CellModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method sharedCell(initial: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(initial), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), CellModel())
+
+
+method sharedConstructor() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var cell: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  cell := sharedCell(intToRef(13))
+  inhale isSubtype(typeOf(anon_0), unitType())
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := anon_1
+  assert intFromRef(anon_2) == 14
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/constructor_shared.kt: info: Generated Viper text for ownedConstructor:
+function get(this: Ref): Ref
+  requires isSubtype(typeOf(this), CellModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method ownedConstructor() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), CellModel())
+  ensures acc(CellModel_unique(v_ret_0), write)
+{
+  v_ret_0 := sharedCell(intToRef(13))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method sharedCell(initial: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(initial), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), CellModel())

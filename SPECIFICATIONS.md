@@ -229,6 +229,11 @@ ordinary Kotlin files as external specification inputs. `@ExternalSpec("package.
 its members to that dependency type. `@ExternalMember("name")` selects a different target member name.
 `@ExternalFunction("package.function")` binds a top-level model function, including an extension function.
 `@ExternalProperty("package.property")` binds a top-level model property, including an extension property.
+`@ExternalConstructor("package.Type")` binds a top-level, non-extension model function to one public constructor.
+Its type parameters and bounds match the dependency class's in order. Its non-null result is that class's bound
+model applied to the function's own type parameters in order, without projections or additional nullability.
+Its value parameters match the constructor by count, type and vararg status. The result's `@Unique` annotation is
+the model's ownership claim; a result without it is shared. Its contracts use the function-model machinery below.
 
 ```kotlin
 package models
@@ -264,7 +269,8 @@ reported as `UNCHECKED_LIBRARY_CALL`, and a specification cannot contain one. A 
 accepts only a unique one.
 
 Bindings match callable kind, parameter and result types, generic parameters and bounds, extension receivers,
-varargs, property mutability and suspend status. Model-interface types stand for their bound dependency types.
+varargs, property mutability and suspend status. A `val` model may also bind a `var` with a private setter; only
+its getter is bound. Model-interface types stand for their bound dependency types.
 A model interface declares only functions and properties, and `@ExternalMember` appears only inside one.
 Unresolved, incompatible, ambiguous and duplicate bindings are errors, each reported as `INVALID_EXTERNAL_SPEC` on
 the model declaration; a module with any of them is not verified. Bundled and user specifications share this check. Source subtypes of externally modeled dependency types are rejected because this boundary has no

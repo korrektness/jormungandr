@@ -36,6 +36,7 @@ import org.jetbrains.kotlin.name.Name
 private fun annotationId(name: String) = ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.$name"))
 val externalSpecId = annotationId("ExternalSpec")
 val externalFunctionId = annotationId("ExternalFunction")
+val externalConstructorId = annotationId("ExternalConstructor")
 val externalPropertyId = annotationId("ExternalProperty")
 val externalMemberId = annotationId("ExternalMember")
 
@@ -52,7 +53,8 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
 
     private val predicate = LookupPredicate.create {
         annotated(externalSpecId.asSingleFqName()) or annotated(externalFunctionId.asSingleFqName()) or
-            annotated(externalPropertyId.asSingleFqName()) or annotated(externalMemberId.asSingleFqName())
+            annotated(externalPropertyId.asSingleFqName()) or annotated(externalMemberId.asSingleFqName()) or
+            annotated(externalConstructorId.asSingleFqName())
     }
 
     override fun FirDeclarationPredicateRegistrar.registerPredicates() {
@@ -125,8 +127,8 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
     }
 
     /**
-     * The model bound to [symbol], or null when [symbol] is not bound. Binding matches callable kind, parameter count
-     * and receiver presence, so a model has the same symbol kind as its target.
+     * The model bound to [symbol], or null when [symbol] is not bound. A constructor binds to a top-level function;
+     * other bindings preserve symbol kind.
      */
     fun modelSymbol(symbol: FirBasedSymbol<*>): FirBasedSymbol<*>? {
         initialize()
@@ -219,6 +221,10 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
                 .filter { matches(model, it) }
             bind(model, candidates, name)
         }
+        for (model in declarations.filterIsInstance<FirNamedFunctionSymbol>()) {
+            val name = model.bindingName(externalConstructorId) ?: continue
+            bindConstructor(model, name)
+        }
         for (model in declarations.filterIsInstance<FirPropertySymbol>()) {
             val name = model.bindingName(externalPropertyId) ?: continue
             if (model.dispatchReceiverType != null) {
@@ -278,6 +284,48 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
         }
     }
 
+    private fun bindConstructor(model: FirNamedFunctionSymbol, name: String) {
+        if (model.dispatchReceiverType != null || model.resolvedReceiverTypeRef != null) {
+            fail(model, ExternalSpecRule.MODEL_NOT_TOP_LEVEL)
+            return
+        }
+        val targets = resolveClasses(name)
+        val target = targets.singleOrNull()
+        if (target == null) {
+            fail(model, if (targets.isEmpty()) ExternalSpecRule.UNRESOLVED_CLASS else ExternalSpecRule.AMBIGUOUS_CLASS, name)
+            return
+        }
+        val classModel = classes[target]
+        if (classModel == null || !constructorResultMatches(model, classModel)) {
+            fail(model, ExternalSpecRule.CONSTRUCTOR_RESULT, "$name -> ${model.resolvedReturnType.renderReadable()}")
+            return
+        }
+        if (!sameTypeParameters(model.typeParameterSymbols, target.typeParameterSymbols)) {
+            fail(model, ExternalSpecRule.TYPE_PARAMETER_BOUNDS, name)
+            return
+        }
+        val params = model.typeParameterSymbols.zip(target.typeParameterSymbols).toMap()
+        val candidates = target.declarationSymbols.filterIsInstance<FirConstructorSymbol>().filter { constructor ->
+            constructor.resolvedStatus.visibility == org.jetbrains.kotlin.descriptors.Visibilities.Public &&
+                constructor.contextParameterSymbols.isEmpty() && model.contextParameterSymbols.isEmpty() && !model.resolvedStatus.isSuspend &&
+                model.valueParameterSymbols.size == constructor.valueParameterSymbols.size &&
+                model.valueParameterSymbols.zip(constructor.valueParameterSymbols).all { (own, theirs) ->
+                    own.isVararg == theirs.isVararg && sameType(own.resolvedReturnType, theirs.resolvedReturnType, params)
+                }
+        }
+        bind(model, candidates, name)
+    }
+
+    private fun constructorResultMatches(model: FirNamedFunctionSymbol, classModel: FirRegularClassSymbol): Boolean {
+        val result = model.resolvedReturnType
+        return !result.isMarkedNullable && result.classId == classModel.classId &&
+            result.typeArguments.size == model.typeParameterSymbols.size &&
+            result.typeArguments.zip(model.typeParameterSymbols).all { (argument, parameter) ->
+                argument.kind == ProjectionKind.INVARIANT && argument.type?.isMarkedNullable == false &&
+                    (argument.type as? ConeTypeParameterType)?.lookupTag?.typeParameterSymbol == parameter
+            }
+    }
+
     private fun resolveClasses(name: String): List<FirRegularClassSymbol> {
         val candidates = mutableListOf<FirRegularClassSymbol>()
         val parts = name.split('.')
@@ -332,7 +380,7 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
                         callables[getter] = sourceGetter
                         models += sourceGetter
                     }
-                    target.setterSymbol?.let { setter ->
+                    target.setterSymbol?.takeIf { model.isVar }?.let { setter ->
                         val sourceSetter = checkNotNull(model.setterSymbol)
                         callables[setter] = sourceSetter
                         models += sourceSetter
@@ -361,9 +409,10 @@ class ExternalSpecificationRegistry(session: FirSession, private val sources: Ex
                         a.isVararg == b.isVararg && sameType(a.resolvedReturnType, b.resolvedReturnType, params)
                     }
             model is FirPropertySymbol && target is FirPropertySymbol ->
-                model.isVar == target.isVar &&
+                (model.isVar == target.isVar || !model.isVar &&
+                    target.setterSymbol?.resolvedStatus?.visibility == org.jetbrains.kotlin.descriptors.Visibilities.Private) &&
                     sameAccessorKind(model.getterSymbol, target.getterSymbol) &&
-                    sameAccessorKind(model.setterSymbol, target.setterSymbol)
+                    (!model.isVar || sameAccessorKind(model.setterSymbol, target.setterSymbol))
             else -> false
         }
     }
@@ -410,12 +459,25 @@ val FirSession.externalSpecifications: ExternalSpecificationRegistry? by externa
 /** Loaded specification bodies describe trusted contracts and carry no implementation-checking obligations. */
 fun FirSession.isExternalSpecificationFile(path: String?): Boolean = externalSpecifications?.isSpecificationFile(path) == true
 
-/** The source declaration whose verification metadata applies to this dependency symbol; it has the same kind. */
-fun <S : FirBasedSymbol<*>> S.externalSpecificationSymbol(session: FirSession): S {
-    val model = session.externalSpecifications?.modelSymbol(this) ?: return this
-    check(model::class == this::class) { "External model $model bound to $this is a different kind of declaration." }
-    return this::class.java.cast(model)
-}
+/** The source declaration whose verification metadata applies to this dependency symbol. */
+fun FirBasedSymbol<*>.externalSpecificationSymbol(session: FirSession): FirBasedSymbol<*> =
+    session.externalSpecifications?.modelSymbol(this) ?: this
+
+/** Constructor models are functions; callers consume their function metadata rather than construction facts. */
+fun FirFunctionSymbol<*>.externalSpecificationSymbol(session: FirSession): FirFunctionSymbol<*> =
+    (this as FirBasedSymbol<*>).externalSpecificationSymbol(session) as FirFunctionSymbol<*>
+
+fun FirCallableSymbol<*>.externalSpecificationSymbol(session: FirSession): FirCallableSymbol<*> =
+    (this as FirBasedSymbol<*>).externalSpecificationSymbol(session) as FirCallableSymbol<*>
+
+fun FirVariableSymbol<*>.externalSpecificationSymbol(session: FirSession): FirVariableSymbol<*> =
+    (this as FirBasedSymbol<*>).externalSpecificationSymbol(session) as FirVariableSymbol<*>
+
+fun FirPropertySymbol.externalSpecificationSymbol(session: FirSession): FirPropertySymbol =
+    (this as FirBasedSymbol<*>).externalSpecificationSymbol(session) as FirPropertySymbol
+
+fun FirReceiverParameterSymbol.externalSpecificationSymbol(session: FirSession): FirReceiverParameterSymbol =
+    (this as FirBasedSymbol<*>).externalSpecificationSymbol(session) as FirReceiverParameterSymbol
 
 /** How the trust report names a callable: its id, parameter types and result type, with an extension receiver as `this`. */
 val FirCallableSymbol<*>.trustName: String

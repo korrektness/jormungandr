@@ -59,8 +59,11 @@ fun FirFunctionSymbol<*>.resolveResultUniqueness(): Uniqueness =
     else externalSpecificationSymbol(context.session).resolvedReturnType.scopeUniqueness
 
 context(context: CheckerContext)
-fun FirConstructorSymbol.resolveConstructorResultUniqueness(): Uniqueness =
-    if (resolveConstructionEscape(context.session) == null) Uniqueness.Unique else Uniqueness.Shared
+fun FirConstructorSymbol.resolveConstructorResultUniqueness(): Uniqueness {
+    val model = externalSpecificationSymbol(context.session)
+    return if (model != this) model.resolvedReturnType.scopeUniqueness
+    else if (resolveConstructionEscape(context.session) == null) Uniqueness.Unique else Uniqueness.Shared
+}
 
 context(context: CheckerContext)
 fun FirVariableSymbol<*>.resolveUniqueness(): Uniqueness {

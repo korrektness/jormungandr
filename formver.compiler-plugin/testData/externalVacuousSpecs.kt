@@ -31,6 +31,15 @@ interface ConsistentGaugeModel {
     @Law @Pure @Unique fun nonnegative(): Boolean = read() >= 0
 }
 
+@ExternalSpec("external.library.DefaultGauge")
+interface DefaultGaugeModel { @Pure @Unique fun read(): Int }
+
+@ExternalConstructor("external.library.DefaultGauge")
+fun gauge(): @Unique DefaultGaugeModel = TODO()
+@SpecOf("gauge") fun gaugeSpec() {
+    postconditions<@Unique DefaultGaugeModel> { false }
+}
+
 @ExternalFunction("external.library.twice")
 @Pure fun twiceModel(x: Int): Int = 0
 

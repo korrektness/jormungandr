@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.resolve.providers.firProvider
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.formver.common.externalFunctionId
+import org.jetbrains.kotlin.formver.common.externalConstructorId
 import org.jetbrains.kotlin.formver.common.externalPropertyId
 import org.jetbrains.kotlin.fir.resolve.substitution.substitutorByMap
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
@@ -82,14 +83,17 @@ fun FirNamedFunctionSymbol.functionsDeclaredBeside(session: FirSession): List<Fi
     val targetName = specOfTargetName(session)
     if (targetName != null) return session.symbolProvider
         .getTopLevelFunctionSymbols(callableId.packageName, Name.identifier(targetName))
-        .filter { it != this && it.getAnnotationByClassId(externalFunctionId, session) != null }
-    if (getAnnotationByClassId(externalFunctionId, session) == null) return emptyList()
+        .filter { it != this && it.isExternalFunctionModel(session) }
+    if (!isExternalFunctionModel(session)) return emptyList()
     // In a multiplatform compilation the model can sit in a fragment this session depends on.
     val file = checkNotNull(moduleData.session.firProvider.getFirCallableContainerFile(this)) {
         "A source external function model must have a containing file."
     }
     return file.declarations.filterIsInstance<FirSimpleFunction>().map { it.symbol }.filter { it != this }
 }
+
+private fun FirNamedFunctionSymbol.isExternalFunctionModel(session: FirSession): Boolean =
+    getAnnotationByClassId(externalFunctionId, session) != null || getAnnotationByClassId(externalConstructorId, session) != null
 
 /**
  * Whether this function has the type parameters of [target] and, with its type parameters read as those of

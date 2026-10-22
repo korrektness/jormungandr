@@ -74,6 +74,10 @@ annotation class ExternalSpec(val target: String)
 @Target(AnnotationTarget.FUNCTION)
 annotation class ExternalFunction(val target: String)
 
+/** Binds a top-level model function to a dependency constructor; see "External specifications" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.FUNCTION)
+annotation class ExternalConstructor(val target: String)
+
 /** Binds a top-level model property to a dependency property, including extensions. */
 @Target(AnnotationTarget.PROPERTY)
 annotation class ExternalProperty(val target: String)

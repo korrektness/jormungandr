@@ -30,15 +30,8 @@ internal fun <E> arrayDequeModel(): @Unique ArrayDequeModel<E> = TODO()
 }
 ```
 
-Binding rules:
-
-- The model is a top-level function. Its type parameters match the class's type parameters and bounds, in order.
-- Its result type is the class model applied to its own type parameters, in order, and is not nullable. `@Unique` on the
-  result is the model's ownership claim, as for a factory model.
-- Its value parameters match one public constructor of the class by count, type and vararg status.
-- The class's model is bound. A constructor model of an unbound or rejected class is `INVALID_EXTERNAL_SPEC`.
-- Failures reuse the existing rules (`MODEL_NOT_TOP_LEVEL`, `UNRESOLVED_CLASS`, `NO_COMPATIBLE_TARGET`,
-  `DUPLICATE_MEMBER`) plus one new rule, `CONSTRUCTOR_RESULT`, for a result type that is not the bound class's model.
+SPECIFICATIONS.md, "External specifications", owns the binding rules. Binding diagnostics reuse the registry's
+rules, with `CONSTRUCTOR_RESULT` for a result type that does not name the bound class model.
 
 Contracts attach exactly as for an `@ExternalFunction` model: from leading specification blocks or a `@SpecOf`
 holder. The model is a `FirSimpleFunction`, so `ProgramConverter.embedFormverContract`, `SpecVacuityProbes`
@@ -80,7 +73,7 @@ constructor.
 
 ## Trust report
 
-A verified caller of `ArrayDeque()` lists `bundled spec kotlin.collections.ArrayDeque.<init>(): kotlin.collections.ArrayDeque<E>`
+A verified caller of `ArrayDeque()` lists `bundled spec: kotlin.collections.ArrayDeque.ArrayDeque(): ArrayDeque<E>`
 (`trustName` of the constructor), next to the member bindings it uses. A user-supplied constructor model lists as
 `user spec`; a binding of a constructor that SnaKt verified in the dependency lists as `rebinds verified`.
 
@@ -106,7 +99,7 @@ S9a tests, with user specs over `formver.compiler-plugin/testData/externalLibrar
   constructor are `DUPLICATE_MEMBER`; a constructor model of a class without a class model is
   `INVALID_EXTERNAL_SPEC`.
 - A constructor model whose postcondition is `false` is `EXTERNAL_SPEC_VACUOUS`.
-- The trust report of the positive caller lists `user spec external.library.Counter.<init>(kotlin.Int): external.library.Counter`.
+- The trust report of the positive caller lists `user spec: external.library.Counter.Counter(Int): Counter`.
 - A model result without `@Unique` gives a shared object: a write through it is dropped and a claim about it after
   the write fails.
 - The supertype-presentation test above, with a class model that does not extend a bound supertype model.

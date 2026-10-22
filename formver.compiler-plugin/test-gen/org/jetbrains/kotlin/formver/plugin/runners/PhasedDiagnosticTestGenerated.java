@@ -171,6 +171,24 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("constructor_binding.kt")
+    public void testConstructor_binding() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/constructor_binding.kt");
+    }
+
+    @Test
+    @TestMetadata("constructor_invalid.kt")
+    public void testConstructor_invalid() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/constructor_invalid.kt");
+    }
+
+    @Test
+    @TestMetadata("constructor_shared.kt")
+    public void testConstructor_shared() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/constructor_shared.kt");
+    }
+
+    @Test
     @TestMetadata("external_spec_loading.kt")
     public void testExternal_spec_loading() {
       runTest("formver.compiler-plugin/testData/diagnostics/external_specs/external_spec_loading.kt");
