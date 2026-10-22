@@ -293,6 +293,15 @@ method con() returns (v_ret_0: Ref)
   unfold acc(ArrayDeque_unique(v_ret_0), write)
 }
 
+method laws(this: Ref)
+  requires acc(ArrayDeque_unique(this), write)
+{
+  unfold acc(ArrayDeque_unique(this), write)
+  fold acc(ArrayDeque_unique(this), write)
+  assert boolFromRef(boolToRef(0 <= intFromRef(ArrayDeque_g_size(this)) &&
+    intFromRef(ArrayDeque_g_size(this)) <= 1073741824))
+}
+
 /ArrayDeque.kt: info: Generated Viper text for size:
 field count: Ref
 
@@ -2403,6 +2412,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -2514,6 +2524,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -2752,6 +2763,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -3092,6 +3104,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -3442,6 +3455,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -3828,6 +3842,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -4981,6 +4996,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -5479,6 +5495,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -5716,6 +5733,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -6192,6 +6210,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -6767,6 +6786,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -8454,6 +8474,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -10200,6 +10221,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -11691,6 +11713,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -12511,6 +12534,7 @@ function isEmpty(this: Ref): Ref
   requires isSubtype(typeOf(this), ArrayDeque())
   requires acc(ArrayDeque_unique(this), write)
   ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(ArrayDeque_g_size(this)) == 0)
 {
   boolToRef(intFromRef(ArrayDeque_g_size(this)) == 0)
 }
@@ -14314,6 +14338,201 @@ method plus(this: Ref, other: Ref) returns (ret_5: Ref)
   requires isSubtype(typeOf(other), nullable(anyType()))
   ensures isSubtype(typeOf(ret_5), stringType())
 
+
+/ArrayDeque.kt: info: Generated Viper text for newDeque:
+field count: Ref
+
+field elementData: Ref
+
+field head: Ref
+
+field modCount: Ref
+
+field referenceContents: Seq[Ref]
+
+function ArrayDeque_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDeque_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (let anon_12_0 ==
+    ((unfolding acc(ArrayDeque_unique(this), write) in this.head)) in
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      (let physical_0 ==
+        (positiveMod(this, plusInts(anon_12_0, par_index))) in
+        (unfolding acc(ArrayDeque_unique(this), write) in
+          (let anon_13_0 ==
+            (this.elementData) in
+            (unfolding acc(Array_unique(anon_13_0), write) in
+              anon_13_0.referenceContents[intFromRef(physical_0)]))))))
+}
+
+function ArrayDeque_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayDeque_unique(this), write) in this.count)
+}
+
+function DequeSpec_f_elementAt(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(DequeSpec_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function DequeSpec_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), DequeSpec())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function lastIndex(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(ArrayDeque_unique(this), write) in
+    (let anon_11_0 ==
+      (this.count) in
+      minusInts(anon_11_0, intToRef(1))))
+}
+
+function positiveMod(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDeque())
+  requires acc(ArrayDeque_unique(this), write)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(par_index) == 0) :
+        ltInts(minusInts(par_index, intToRef(referenceArraySize(this.elementData))),
+        intToRef(referenceArraySize(this.elementData))))))
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) &&
+    (unfolding acc(ArrayDeque_unique(this), write) in
+      boolFromRef((referenceArraySize(this.elementData) == 0 ?
+        boolToRef(intFromRef(result) == 0) :
+        ltInts(result, intToRef(referenceArraySize(this.elementData))))))
+  ensures (unfolding acc(ArrayDeque_unique(this), write) in
+      intFromRef(result) ==
+      intFromRef((intFromRef(par_index) >=
+      referenceArraySize(this.elementData) ?
+        minusInts(par_index, intToRef(referenceArraySize(this.elementData))) :
+        par_index)))
+{
+  (unfolding acc(ArrayDeque_unique(this), write) in
+    (let anon_16_0 ==
+      (this.elementData) in
+      (intFromRef(par_index) >= referenceArraySize(anon_16_0) ?
+        (let anon_18_0 ==
+          (this.elementData) in
+          minusInts(par_index, intToRef(referenceArraySize(anon_18_0)))) :
+        par_index)))
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method con() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), ArrayDeque())
+  ensures isSubtype(typeOf(ret_2), ArrayDeque()) && acc(ret_2.head, write) &&
+    isSubtype(typeOf(ret_2.head), intType()) &&
+    acc(ret_2.elementData, write) &&
+    isSubtype(typeOf(ret_2.elementData), Array()) &&
+    acc(Array_unique(ret_2.elementData), write) &&
+    acc(ret_2.count, write) &&
+    isSubtype(typeOf(ret_2.count), intType()) &&
+    acc(ret_2.modCount, write) &&
+    isSubtype(typeOf(ret_2.modCount), intType()) &&
+    (let this ==
+      (ret_2) in
+      true &&
+      boolFromRef((let anon_0_0 ==
+        (this.count) in
+        (let anon_1_0 ==
+          ((0 <= intFromRef(anon_0_0) ? this.count : null)) in
+          (let anon_2_0 ==
+            ((0 <= intFromRef(anon_0_0) ? this.elementData : null)) in
+            (let anon_3_0 ==
+              ((0 <= intFromRef(anon_0_0) &&
+              intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) ?
+                this.elementData :
+                null)) in
+              (let anon_4_0 ==
+                ((0 <= intFromRef(anon_0_0) &&
+                intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                !(referenceArraySize(anon_3_0) == 0) ?
+                  this.head :
+                  null)) in
+                (let anon_5_0 ==
+                  ((0 <= intFromRef(anon_0_0) &&
+                  intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                  !(referenceArraySize(anon_3_0) == 0) &&
+                  0 <= intFromRef(anon_4_0) ?
+                    this.head :
+                    null)) in
+                  (let anon_6_0 ==
+                    ((0 <= intFromRef(anon_0_0) &&
+                    intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                    !(referenceArraySize(anon_3_0) == 0) &&
+                    0 <= intFromRef(anon_4_0) ?
+                      this.elementData :
+                      null)) in
+                    (let anon_7_0 ==
+                      ((0 <= intFromRef(anon_0_0) &&
+                      intFromRef(anon_1_0) <= referenceArraySize(anon_2_0) &&
+                      (referenceArraySize(anon_3_0) == 0 ||
+                      0 <= intFromRef(anon_4_0) &&
+                      intFromRef(anon_5_0) < referenceArraySize(anon_6_0)) ?
+                        this.elementData :
+                        null)) in
+                      (let anon_8_0 ==
+                        ((0 <= intFromRef(anon_0_0) &&
+                        intFromRef(anon_1_0) <=
+                        referenceArraySize(anon_2_0) &&
+                        (referenceArraySize(anon_3_0) == 0 ||
+                        0 <= intFromRef(anon_4_0) &&
+                        intFromRef(anon_5_0) < referenceArraySize(anon_6_0)) &&
+                        !!(referenceArraySize(anon_7_0) == 0) ?
+                          this.head :
+                          null)) in
+                        boolToRef(0 <= intFromRef(anon_0_0) &&
+                        intFromRef(anon_1_0) <=
+                        referenceArraySize(anon_2_0) &&
+                        (referenceArraySize(anon_3_0) == 0 ||
+                        0 <= intFromRef(anon_4_0) &&
+                        intFromRef(anon_5_0) < referenceArraySize(anon_6_0)) &&
+                        (!(referenceArraySize(anon_7_0) == 0) ||
+                        intFromRef(anon_8_0) == 0) &&
+                        (let anon_9_0 ==
+                          (this.elementData) in
+                          referenceArraySize(anon_9_0) <= 1073741824)))))))))))))
+  ensures intFromRef(ret_2.head) == 0
+  ensures intFromRef(ret_2.count) == 0
+  ensures intFromRef(ret_2.modCount) == 0
+
+
+method newDeque() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), ArrayDeque())
+  ensures acc(ArrayDeque_unique(v_ret_0), write)
+  ensures intFromRef(ArrayDeque_g_size(v_ret_0)) == 0
+{
+  var l2_result: Ref
+  l2_result := con()
+  fold acc(ArrayDeque_unique(l2_result), write)
+  v_ret_0 := l2_result
+  goto lbl_ret_0
+  label lbl_ret_0
+}
 
 /ArrayDeque.kt: info: Generated Viper text for emptyDeque:
 field count: Ref

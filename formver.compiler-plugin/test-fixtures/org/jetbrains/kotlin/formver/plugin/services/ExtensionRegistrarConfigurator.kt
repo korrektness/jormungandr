@@ -208,7 +208,10 @@ class ExternalSpecProvider(testServices: TestServices) : AdditionalSourceProvide
         globalDirectives: RegisteredDirectives,
         module: TestModule,
         testModuleStructure: TestModuleStructure,
-    ): List<TestFile> = specsFor(module, globalDirectives[EXTERNAL_SPEC] + module.directives[EXTERNAL_SPEC]).map { it.toTestFile() }
+    ): List<TestFile> = specsFor(module, globalDirectives[EXTERNAL_SPEC] + module.directives[EXTERNAL_SPEC]).mapIndexed { index, spec ->
+        // Additional sources must not overwrite a test source with the same filename.
+        spec.toTestFile(if (module.files.any { it.relativePath == spec.name }) "external-spec-$index" else null)
+    }
 
     companion object {
         private val bundled: List<File> by lazy {

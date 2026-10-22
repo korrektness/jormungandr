@@ -118,15 +118,39 @@ method invalidInitial() returns (v_ret_0: Ref)
 }
 
 /constructor_binding.kt: info: Generated Viper text for constructDeque:
+function ArrayDequeModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function BooleanArray_g_size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
 
 
-function DequeModel_g_size(this: Ref): Ref
-  requires isSubtype(typeOf(this), DequeModel())
-  requires acc(DequeModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDequeModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ArrayDequeModel_g_size(this)) == 0)
+
+
+method arrayDequeModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ArrayDequeModel())
+  ensures acc(ArrayDequeModel_unique(ret_1), write)
+  ensures (unfolding acc(ArrayDequeModel_unique(ret_1), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(ret_1)) == 0)
 
 
 method constructDeque() returns (v_ret_0: Ref)
@@ -134,20 +158,13 @@ method constructDeque() returns (v_ret_0: Ref)
 {
   var queue: Ref
   var anon: Ref
-  queue := deque()
-  anon := (unfolding acc(DequeModel_unique(queue), wildcard) in
-      DequeModel_g_size(queue))
+  queue := arrayDequeModel()
+  anon := (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      ArrayDequeModel_g_size(queue))
   assert intFromRef(anon) == 0
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
-
-method deque() returns (ret_1: Ref)
-  ensures isSubtype(typeOf(ret_1), DequeModel())
-  ensures acc(DequeModel_unique(ret_1), write)
-  ensures (unfolding acc(DequeModel_unique(ret_1), wildcard) in
-      intFromRef(DequeModel_g_size(ret_1)) == 0)
-
 
 /constructor_binding.kt: info: Generated Viper text for listPresentation:
 function BooleanArray_g_size(this: Ref): Ref
@@ -263,6 +280,29 @@ method listPresentation(list: Ref) returns (v_ret_0: Ref)
 }
 
 /constructor_binding.kt: info: Generated Viper text for invalidPresentation:
+function ArrayDequeModel_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDequeModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function ArrayDequeModel_f_isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ArrayDequeModel_g_size(this)) == 0)
+
+
+function ArrayDequeModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function CollectionModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(CollectionModel_footprint(this), wildcard)
@@ -283,16 +323,19 @@ function CollectionModel_g_size(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function DequeModel_g_size(this: Ref): Ref
-  requires isSubtype(typeOf(this), DequeModel())
-  requires acc(DequeModel_footprint(this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
 function ListModel_c_IterableModel_f_iterationSequence(this: Ref): Ref
   requires isSubtype(typeOf(this), c_IterableModel())
   requires acc(ListModel_footprint(this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ListModel())
+  requires acc(ListModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
 function ListModel_f_isEmpty(this: Ref): Ref
@@ -325,23 +368,14 @@ function contains(this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 &&
       anon_builtin_0 < intFromRef(ListModel_g_size(this)) &&
-      equalsRelation(element, get(this, intToRef(anon_builtin_0)))))
+      equalsRelation(element, ListModel_f_get(this, intToRef(anon_builtin_0)))))
   ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
       anon_builtin_1 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       anon_builtin_1 >= 0 &&
       anon_builtin_1 < intFromRef(ListModel_g_size(this)) &&
-      get(this, intToRef(anon_builtin_1)) == element ==>
+      ListModel_f_get(this, intToRef(anon_builtin_1)) == element ==>
       boolFromRef(result))
-
-
-function get(this: Ref, par_index: Ref): Ref
-  requires isSubtype(typeOf(this), ListModel())
-  requires acc(ListModel_footprint(this), wildcard)
-  requires isSubtype(typeOf(par_index), intType())
-  requires intFromRef(par_index) >= 0 &&
-    intFromRef(par_index) < intFromRef(ListModel_g_size(this))
-  ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
 function indexOf(this: Ref, element: Ref): Ref
@@ -354,18 +388,18 @@ function indexOf(this: Ref, element: Ref): Ref
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(this, element))
   ensures intFromRef(result) >= 0 ==>
-    equalsRelation(element, get(this, result))
+    equalsRelation(element, ListModel_f_get(this, result))
   ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
       anon_builtin_2 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
       anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
-      !equalsRelation(element, get(this, intToRef(anon_builtin_2))))
+      !equalsRelation(element, ListModel_f_get(this, intToRef(anon_builtin_2))))
 
 
 method invalidPresentation(queue: Ref) returns (ret_0: Ref)
-  requires isSubtype(typeOf(queue), DequeModel())
-  requires acc(DequeModel_unique(queue), write)
-  ensures acc(DequeModel_unique(queue), write)
+  requires isSubtype(typeOf(queue), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(queue), write)
+  ensures acc(ArrayDequeModel_unique(queue), write)
   ensures isSubtype(typeOf(ret_0), unitType())
 
 
@@ -377,6 +411,29 @@ method listPresentation(list: Ref) returns (ret_1: Ref)
 
 
 /constructor_binding.kt: info: Generated Viper text for invalidExtensionPresentation:
+function ArrayDequeModel_f_get(v_this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(v_this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDequeModel_g_size(v_this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function ArrayDequeModel_f_isEmpty(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ArrayDequeModel_g_size(v_this)) == 0)
+
+
+function ArrayDequeModel_g_size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(v_this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
 function CollectionModel_c_IterableModel_f_iterationSequence(v_this: Ref): Ref
   requires isSubtype(typeOf(v_this), c_IterableModel())
   requires acc(CollectionModel_footprint(v_this), wildcard)
@@ -397,16 +454,19 @@ function CollectionModel_g_size(v_this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
-function DequeModel_g_size(v_this: Ref): Ref
-  requires isSubtype(typeOf(v_this), DequeModel())
-  requires acc(DequeModel_footprint(v_this), wildcard)
-  ensures isSubtype(typeOf(result), intType())
-
-
 function ListModel_c_IterableModel_f_iterationSequence(v_this: Ref): Ref
   requires isSubtype(typeOf(v_this), c_IterableModel())
   requires acc(ListModel_footprint(v_this), wildcard)
   ensures isSubtype(typeOf(result), iterationSequenceType())
+
+
+function ListModel_f_get(v_this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(v_this), ListModel())
+  requires acc(ListModel_footprint(v_this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires intFromRef(par_index) >= 0 &&
+    intFromRef(par_index) < intFromRef(ListModel_g_size(v_this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
 function ListModel_f_isEmpty(v_this: Ref): Ref
@@ -440,23 +500,14 @@ function contains(v_this: Ref, element: Ref): Ref
       isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
       (anon_builtin_0 >= 0 &&
       anon_builtin_0 < intFromRef(ListModel_g_size(v_this)) &&
-      equalsRelation(element, get(v_this, intToRef(anon_builtin_0)))))
+      equalsRelation(element, ListModel_f_get(v_this, intToRef(anon_builtin_0)))))
   ensures (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
       anon_builtin_1 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
       anon_builtin_1 >= 0 &&
       anon_builtin_1 < intFromRef(ListModel_g_size(v_this)) &&
-      get(v_this, intToRef(anon_builtin_1)) == element ==>
+      ListModel_f_get(v_this, intToRef(anon_builtin_1)) == element ==>
       boolFromRef(result))
-
-
-function get(v_this: Ref, par_index: Ref): Ref
-  requires isSubtype(typeOf(v_this), ListModel())
-  requires acc(ListModel_footprint(v_this), wildcard)
-  requires isSubtype(typeOf(par_index), intType())
-  requires intFromRef(par_index) >= 0 &&
-    intFromRef(par_index) < intFromRef(ListModel_g_size(v_this))
-  ensures isSubtype(typeOf(result), nullable(anyType()))
 
 
 function indexOf(v_this: Ref, element: Ref): Ref
@@ -469,12 +520,12 @@ function indexOf(v_this: Ref, element: Ref): Ref
   ensures (intFromRef(result) == -1) ==
     !boolFromRef(contains(v_this, element))
   ensures intFromRef(result) >= 0 ==>
-    equalsRelation(element, get(v_this, result))
+    equalsRelation(element, ListModel_f_get(v_this, result))
   ensures (forall anon_builtin_2: Int ::anon_builtin_2 >= -2147483648 &&
       anon_builtin_2 <= 2147483647 &&
       isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
       anon_builtin_2 >= 0 && anon_builtin_2 < intFromRef(result) ==>
-      !equalsRelation(element, get(v_this, intToRef(anon_builtin_2))))
+      !equalsRelation(element, ListModel_f_get(v_this, intToRef(anon_builtin_2))))
 
 
 function lastIndexModel(v_this_extension: Ref): Ref
@@ -491,9 +542,9 @@ function lastIndexModel(v_this_extension: Ref): Ref
 
 
 method invalidExtensionPresentation(queue: Ref) returns (ret: Ref)
-  requires isSubtype(typeOf(queue), DequeModel())
-  requires acc(DequeModel_unique(queue), write)
-  ensures acc(DequeModel_unique(queue), write)
+  requires isSubtype(typeOf(queue), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(queue), write)
+  ensures acc(ArrayDequeModel_unique(queue), write)
   ensures isSubtype(typeOf(ret), unitType())
 
 

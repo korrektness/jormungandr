@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 // D-8: Source-port specifications; residual trust: upstream/kotlin-v2.3.0/PROVENANCE.md.
 interface DequeSpec<E> {
     @Pure @get:Unique val size: Int
+    @Law @Pure @Unique fun sizeBounds(): Boolean = 0 <= size && size <= 1073741824
     @Pure @Unique fun <!VIPER_TEXT!>elementAt<!>(index: Int): E
     @SpecOf("elementAt") @Unique fun elementAtSpec(index: Int) {
         preconditions { 0 <= index && index < size }
@@ -160,6 +161,9 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
     // D-1: isEmpty has no inherited declaration to override.
     @Pure @Unique fun <!VIPER_TEXT!>isEmpty<!>(): Boolean = size == 0
 
+    @SpecOf("isEmpty") @Unique fun emptySpec() {
+        postconditions<Boolean> { result -> result == (size == 0) }
+    }
     // D-4: Private copies of collection observers; count is the D-2 storage for size.
     @Pure @Unique private fun <!VIPER_TEXT!>isNotEmpty<!>(): Boolean = !isEmpty()
     @Pure @get:Unique private val lastIndex: Int <!VIPER_TEXT!>get<!>() = count - 1
@@ -619,6 +623,12 @@ private fun <!VIPER_TEXT!>checkPositionIndex<!>(index: Int, size: Int) {
 }
 
 // D-8: Public-entry proofs and negative siblings for the partial source port.
+
+fun <E> <!VIPER_TEXT!>newDeque<!>(): @Unique ArrayDeque<E> {
+    postconditions<ArrayDeque<E>> { result -> result.size == 0 }
+    val result: @Unique ArrayDeque<E> = ArrayDeque<E>()
+    return result
+}
 
 fun <!VIPER_TEXT!>emptyDeque<!>() {
     val d: @Unique ArrayDeque<Any?> = ArrayDeque()

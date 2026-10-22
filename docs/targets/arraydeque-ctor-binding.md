@@ -9,10 +9,10 @@ claims; SPECIFICATIONS.md, "External specifications", owns the binding rules onc
 
 The S9 consumer constructs its worklist with `ArrayDeque<Int>()`. The external-specification registry
 (`formver.common/src/org/jetbrains/kotlin/formver/common/ExternalSpecifications.kt`) binds class models, which are
-interfaces and so declare no constructors, and top-level functions and properties. A library constructor has no
-binding form. Once `ArrayDequeModel` binds the class, `rejectUnsupportedStdlibMember` in
+interfaces and so declare no constructors, and top-level functions and properties. Constructor bindings use the
+form below. Once `ArrayDequeModel` binds the class, `rejectUnsupportedStdlibMember` in
 `conversion/StdlibExternalMembers.kt` rejects every unbound callable of `kotlin.collections` whose receiver or
-result type has a class model. `ArrayDeque()` returns such a type, so it is rejected with `UNSUPPORTED_FEATURE`.
+result type has a class model.
 
 The stdlib has no ArrayDeque factory function, so an `@ExternalFunction` model has nothing to bind to.
 

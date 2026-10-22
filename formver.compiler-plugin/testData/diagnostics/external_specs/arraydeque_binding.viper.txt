@@ -1,0 +1,543 @@
+/arraydeque_binding.kt: info: Generated Viper text for emptyWorklist:
+function ArrayDequeModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDequeModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ArrayDequeModel_g_size(this)) == 0)
+
+
+method arrayDequeModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ArrayDequeModel())
+  ensures acc(ArrayDequeModel_unique(ret_1), write)
+  ensures (unfolding acc(ArrayDequeModel_unique(ret_1), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(ret_1)) == 0)
+
+
+method emptyWorklist() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var queue: Ref
+  var anon: Ref
+  queue := arrayDequeModel()
+  anon := (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      ArrayDequeModel_g_size(queue))
+  assert intFromRef(anon) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/arraydeque_binding.kt: info: Generated Viper text for wrongEmptyWorklist:
+function ArrayDequeModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDequeModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ArrayDequeModel_g_size(this)) == 0)
+
+
+method arrayDequeModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ArrayDequeModel())
+  ensures acc(ArrayDequeModel_unique(ret_1), write)
+  ensures (unfolding acc(ArrayDequeModel_unique(ret_1), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(ret_1)) == 0)
+
+
+method wrongEmptyWorklist() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var queue: Ref
+  var anon: Ref
+  queue := arrayDequeModel()
+  anon := (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      ArrayDequeModel_g_size(queue))
+  assert intFromRef(anon) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/arraydeque_binding.kt: info: Generated Viper text for peekEmpty:
+function ArrayDequeModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDequeModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ArrayDequeModel_g_size(this)) == 0)
+
+
+method arrayDequeModel() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), ArrayDequeModel())
+  ensures acc(ArrayDequeModel_unique(ret_1), write)
+  ensures (unfolding acc(ArrayDequeModel_unique(ret_1), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(ret_1)) == 0)
+
+
+method peekEmpty() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var queue: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  queue := arrayDequeModel()
+  anon_1 := (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      get(queue, intToRef(0)))
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), intType())
+  assert intFromRef(anon_0) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/arraydeque_binding.kt: info: Generated Viper text for enqueueOnce:
+function ArrayDequeModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDequeModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ArrayDequeModel_g_size(this)) == 0)
+
+
+method addLast(this: Ref, element: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  requires (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this)) < 715827882)
+  ensures acc(ArrayDequeModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this))) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        ArrayDequeModel_g_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        ArrayDequeModel_g_size(this)))) +
+      intFromRef(intToRef(1)))
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this)) > 0) ==>
+    (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      get(this, (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        minusInts(ArrayDequeModel_g_size(this), intToRef(1)))) ==
+      element)
+  ensures (forall anon_builtin_2: Int ::
+      { get(this, intToRef(anon_builtin_2)) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 <
+      old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        intFromRef(ArrayDequeModel_g_size(this)))) ==>
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_2))) ==
+      old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_2)))))
+
+
+method contains(this: Ref, element: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures acc(ArrayDequeModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), boolType())
+  ensures boolFromRef(ret_2) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (0 <= anon_builtin_0 &&
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        anon_builtin_0 < intFromRef(ArrayDequeModel_g_size(this))) &&
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        equalsRelation(element, get(this, intToRef(anon_builtin_0))))))
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this))) ==
+    old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this))))
+  ensures (forall anon_builtin_1: Int ::
+      { get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 &&
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        anon_builtin_1 < intFromRef(ArrayDequeModel_g_size(this))) ==>
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_1))) ==
+      old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_1)))))
+
+
+method enqueueOnce(queue: Ref, vertex: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(queue), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(queue), write)
+  requires isSubtype(typeOf(vertex), intType())
+  requires (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(queue)) < 715827882)
+  ensures acc(ArrayDequeModel_unique(queue), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_3: Ref
+  anon_3 := contains(queue, vertex)
+  if (!boolFromRef(anon_3)) {
+    var anon_4: Ref
+    var l2_last: Ref
+    var anon_5: Ref
+    anon_4 := addLast(queue, vertex)
+    anon_5 := f_last(queue)
+    l2_last := anon_5
+    inhale isSubtype(typeOf(l2_last), intType())
+    assert intFromRef(l2_last) == intFromRef(vertex)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method f_last(this: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(this), write)
+  ensures acc(ArrayDequeModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_7), nullable(anyType()))
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this))) ==
+    old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this))))
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this)) > 0) ==>
+    (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      ret_7 ==
+      get(this, (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        minusInts(ArrayDequeModel_g_size(this), intToRef(1)))))
+  ensures (forall anon_builtin_3: Int ::
+      { get(this, intToRef(anon_builtin_3)) }
+      anon_builtin_3 >= -2147483648 && anon_builtin_3 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_3)), intType()) ==>
+      0 <= anon_builtin_3 &&
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        anon_builtin_3 < intFromRef(ArrayDequeModel_g_size(this))) ==>
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_3))) ==
+      old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_3)))))
+
+
+/arraydeque_binding.kt: info: Generated Viper text for enqueueWithoutBound:
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) == (intFromRef(size(this)) == 0)
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method addLast(this: Ref, element: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  requires (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(size(this)) < 715827882)
+  ensures acc(ArrayDequeModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(size(this))) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        size(this)))) +
+      intFromRef(intToRef(1)))
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(size(this)) > 0) ==>
+    (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      get(this, (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        minusInts(size(this), intToRef(1)))) ==
+      element)
+  ensures (forall anon_builtin_0: Int ::
+      { get(this, intToRef(anon_builtin_0)) }
+      anon_builtin_0 >= -2147483648 && anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
+      old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        intFromRef(size(this)))) ==>
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_0))) ==
+      old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_0)))))
+
+
+method enqueueWithoutBound(queue: Ref, vertex: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(queue), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(queue), write)
+  requires isSubtype(typeOf(vertex), intType())
+  ensures acc(ArrayDequeModel_unique(queue), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  anon_0 := addLast(queue, vertex)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/arraydeque_binding.kt: info: Generated Viper text for borrowedSizeBound:
+function ArrayDequeModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDequeModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ArrayDequeModel_g_size(this)) == 0)
+
+
+method borrowedSizeBound(queue: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(queue), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(queue), write)
+  ensures acc(ArrayDequeModel_unique(queue), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      ArrayDequeModel_g_size(queue))
+  assert intFromRef(anon) <= 1073741824
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/arraydeque_binding.kt: info: Generated Viper text for enqueueOnceFalseGrowth:
+function ArrayDequeModel_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function BooleanArray_g_size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function get(this: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) &&
+    intFromRef(par_index) < intFromRef(ArrayDequeModel_g_size(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function isEmpty(this: Ref): Ref
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) ==
+    (intFromRef(ArrayDequeModel_g_size(this)) == 0)
+
+
+method addLast(this: Ref, element: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  requires (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this)) < 715827882)
+  ensures acc(ArrayDequeModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_5), unitType())
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this))) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        ArrayDequeModel_g_size(this))), intToRef(1))) in
+      intFromRef(old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        ArrayDequeModel_g_size(this)))) +
+      intFromRef(intToRef(1)))
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this)) > 0) ==>
+    (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      get(this, (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        minusInts(ArrayDequeModel_g_size(this), intToRef(1)))) ==
+      element)
+  ensures (forall anon_builtin_2: Int ::
+      { get(this, intToRef(anon_builtin_2)) }
+      anon_builtin_2 >= -2147483648 && anon_builtin_2 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_2)), intType()) ==>
+      0 <= anon_builtin_2 &&
+      anon_builtin_2 <
+      old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        intFromRef(ArrayDequeModel_g_size(this)))) ==>
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_2))) ==
+      old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_2)))))
+
+
+method contains(this: Ref, element: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(this), write)
+  requires isSubtype(typeOf(element), nullable(anyType()))
+  ensures acc(ArrayDequeModel_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), boolType())
+  ensures boolFromRef(ret_2) ==
+    (exists anon_builtin_0: Int :: anon_builtin_0 >= -2147483648 &&
+      anon_builtin_0 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) &&
+      (0 <= anon_builtin_0 &&
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        anon_builtin_0 < intFromRef(ArrayDequeModel_g_size(this))) &&
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        equalsRelation(element, get(this, intToRef(anon_builtin_0))))))
+  ensures (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this))) ==
+    old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(this))))
+  ensures (forall anon_builtin_1: Int ::
+      { get(this, intToRef(anon_builtin_1)) }
+      anon_builtin_1 >= -2147483648 && anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 &&
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        anon_builtin_1 < intFromRef(ArrayDequeModel_g_size(this))) ==>
+      (unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_1))) ==
+      old((unfolding acc(ArrayDequeModel_unique(this), wildcard) in
+        get(this, intToRef(anon_builtin_1)))))
+
+
+method enqueueOnceFalseGrowth(queue: Ref, vertex: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(queue), ArrayDequeModel())
+  requires acc(ArrayDequeModel_unique(queue), write)
+  requires isSubtype(typeOf(vertex), intType())
+  requires (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      intFromRef(ArrayDequeModel_g_size(queue)) < 715827882)
+  ensures acc(ArrayDequeModel_unique(queue), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var before: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  var anon_6: Ref
+  anon_3 := (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      ArrayDequeModel_g_size(queue))
+  before := anon_3
+  anon_4 := contains(queue, vertex)
+  if (!boolFromRef(anon_4)) {
+    var anon_5: Ref
+    anon_5 := addLast(queue, vertex)
+  }
+  anon_6 := (unfolding acc(ArrayDequeModel_unique(queue), wildcard) in
+      ArrayDequeModel_g_size(queue))
+  assert intFromRef(anon_6) ==
+    (let anon_builtin_neg1 ==
+      (plusInts(before, intToRef(1))) in
+      intFromRef(before) + intFromRef(intToRef(1)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

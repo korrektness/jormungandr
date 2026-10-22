@@ -28,17 +28,6 @@ interface CellModel<T> {
     }
 }
 
-@ExternalSpec("kotlin.collections.ArrayDeque")
-interface DequeModel<T> {
-    @Pure @get:Unique val size: Int
-}
-
-@ExternalConstructor("kotlin.collections.ArrayDeque")
-fun <T> deque(): @Unique DequeModel<T> = TODO()
-@SpecOf("deque") fun <T> dequeSpec() {
-    postconditions<@Unique DequeModel<T>> { result -> result.size == 0 }
-}
-
 @ExternalConstructor("external.library.Cell")
 fun <T> cell(initial: T): @Unique CellModel<T> = TODO()
 @SpecOf("cell") fun <T> cellSpec(initial: T) {

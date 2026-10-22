@@ -703,21 +703,33 @@
 -    }
 +// D-8: Public-entry proofs and negative siblings for the partial source port.
 # D-7: Upstream test hooks are omitted; D-8 public-entry proofs occupy this position.
-@@ -656,4 +332,5 @@
+@@ -656,4 +332,4 @@
 -    // for testing
 -    internal fun <T> testToArray(array: Array<T>): Array<T> = toArray(array)
 -    internal fun testToArray(): Array<Any?> = toArray()
 -    internal fun testRemoveRange(fromIndex: Int, toIndex: Int) = removeRange(fromIndex, toIndex)
++fun <E> newDeque(): ArrayDeque<E> {
++    val result: ArrayDeque<E> = ArrayDeque<E>()
++    return result
++}
+# D-7: Sentinel and capacity constants are represented by D-6 and D-4; D-8 adds public-entry proofs.
+@@ -661,4 +337,5 @@
+-    internal companion object {
+-        private val emptyElementData = emptyArray<Any?>()
+-        private const val defaultMinCapacity = 10
+-    }
 +fun emptyDeque() {
 +    val d: ArrayDeque<Any?> = ArrayDeque()
 +    val a = d.firstOrNull()
 +    val b = d.lastOrNull()
 +}
-# D-7: Sentinel and capacity constants are represented by D-6 and D-4; D-8 adds public-entry proofs.
-@@ -661,4 +338,12 @@
--    internal companion object {
--        private val emptyElementData = emptyArray<Any?>()
--        private const val defaultMinCapacity = 10
+# D-7: The upstream structure hook is omitted; D-8 adds public-entry proofs.
+@@ -666,6 +343,11 @@
+-    // For testing only
+-    internal fun internalStructure(structure: (head: Int, elements: Array<Any?>) -> Unit) {
+-        val tail = internalIndex(size)
+-        val head = if (isEmpty() || head < tail) head else head - elementData.size
+-        structure(head, toArray())
 -    }
 +fun <E> access(d: ArrayDeque<E>, index: Int, other: Int, value: E) {
 +    val n = d.size
@@ -730,19 +742,12 @@
 +    val last = d.last()
 +    val firstNullable = d.firstOrNull()
 +    val lastNullable = d.lastOrNull()
-+}
-# D-7: The upstream structure hook is omitted; D-8 adds a public-entry negative.
-@@ -666,6 +351,2 @@
--    // For testing only
--    internal fun internalStructure(structure: (head: Int, elements: Array<Any?>) -> Unit) {
--        val tail = internalIndex(size)
--        val head = if (isEmpty() || head < tail) head else head - elementData.size
--        structure(head, toArray())
--    }
+# D-8: Public-entry proofs and negative siblings exercise the source port.
+@@ -673,0 +356,78 @@
 +fun <E> firstOnEmpty(d: ArrayDeque<E>) {
 +    val first = d.firstOrNull()
-# D-8: Public-entry proofs and negative siblings exercise the source port.
-@@ -673,0 +355,74 @@
++}
++
 +fun <E> rotateLeft(d: ArrayDeque<E>) {
 +    val first = d.removeFirst()
 +    d.addLast(first)

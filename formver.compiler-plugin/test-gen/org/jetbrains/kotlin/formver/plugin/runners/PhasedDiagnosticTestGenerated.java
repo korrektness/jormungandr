@@ -165,6 +165,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("arraydeque_binding.kt")
+    public void testArraydeque_binding() {
+      runTest("formver.compiler-plugin/testData/diagnostics/external_specs/arraydeque_binding.kt");
+    }
+
+    @Test
     @TestMetadata("bundled_spec_vacuity.kt")
     public void testBundled_spec_vacuity() {
       runTest("formver.compiler-plugin/testData/diagnostics/external_specs/bundled_spec_vacuity.kt");

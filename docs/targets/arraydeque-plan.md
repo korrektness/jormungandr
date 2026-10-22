@@ -31,8 +31,8 @@ The minimum target is reached when all of the following hold on `main`:
    verify. The deviation checker of S5 shows that each mutant differs from the port only in the guard of its wrapped branch.
 3. `./agent-scripts/test.sh --vacuity` lists nothing for the port's file or the consumer's file.
 4. The deviation check passes. The committed diff is the only list of deviations; each hunk carries its D-label.
-5. The bundled model `external-specs/ArrayDeque.kt` has contracts equal to the port's interface `DequeSpec`, checked
-   by a test.
+5. The bundled model `external-specs/ArrayDeque.kt` matches the public contract projection of `DequeSpec` defined
+   under ‘Bundled model shape’, checked by a test.
 6. A real consumer verifies through the bundled model, both in testData and in the client project of
    `./agent-scripts/check-gradle-consumer.sh`, whose trust report lists the binding as a bundled spec.
 7. A provenance file next to the vendored source records the note's "Pin" (tag, commit, file hash, license), with
@@ -193,9 +193,8 @@ still carry the annotation, so that they differ from the upstream body only in t
 
 ### Bundled model shape
 
-Concrete library classes have no bundled model yet; only interfaces are bound. Decision: `ArrayDequeModel<E>`
-declares only the in-scope members and does not extend `MutableListModel`, so an out-of-scope member called on an
-`ArrayDeque` receiver is rejected, not given a contract the port never proved. `ArrayDeque()` binds through a
+`ArrayDequeModel<E>` declares only the in-scope members and does not extend `MutableListModel`, so an
+out-of-scope member called on an `ArrayDeque` receiver is rejected, not given a contract the port never proved. `ArrayDeque()` binds through a
 constructor model (S9a); `docs/targets/arraydeque-ctor-binding.md` owns the constructor binding, the unbound-member
 policy and their fallbacks.
 
@@ -204,7 +203,7 @@ policy and their fallbacks.
 so it cannot be a `@Pure` observer in the port; the port proves that `get(i)` returns `elementAt(i)` and changes
 nothing. The model declares `get` as the observer, as `ListModel` does, and the spec-equality test of S9 compares
 the model's `get` with the port's `elementAt` under that mapping, and the model's mutator contracts with the
-port's.
+port's. The law projection retains nonnegative size; the port's upper size invariant is excluded.
 
 ## Feasibility
 
@@ -252,8 +251,9 @@ Claim restrictions:
   exceeds `Int.MAX_VALUE` once the capacity is above 2^30. The port carries a law `elementData.size <= 2^30`, a
   precondition `initialCapacity <= 2^30` on the `(Int)` constructor, and `size < 715827882` on `addFirst`,
   `addLast` and `add` (growth from a full buffer of that size stays at or below 2^30). `DequeSpec` and the model carry the
-  preconditions. Nothing is claimed for larger deques. Upstream at such sizes is not reproduced and not claimed to
-  be defective.
+  preconditions as caller obligations, not library-wide laws. Clients verified through this model make claims
+  about deques under these growth bounds. Nothing is claimed for larger deques. Upstream at such sizes is not
+  reproduced and not claimed to be defective.
 - Element equality: element-preservation clauses state reference identity (G1); search clauses state
   `EqualsRelation` (D4).
 - P2 per operation, not as a law (G6).
@@ -328,6 +328,6 @@ numbers.
 At the end of the minimum target:
 
 For port correspondence, see ‘D2, D-6 and residual trust: port correspondence’; for array and cast assumptions, see V1 and V2; for equality assumptions, see D4.
-- The bundled ArrayDeque model, as for any external spec, except that a test checks it equals the proved
-  `DequeSpec` contracts.
+- The bundled ArrayDeque model, as for any external spec, with contract correspondence checked by
+  `ArrayDequeSpecEqualityTest` under the projection in ‘Bundled model shape’.
 - Nothing on exceptional exits.

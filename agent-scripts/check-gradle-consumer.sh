@@ -319,6 +319,16 @@ fun stdlibModels(element: Element) {
     verify(text.length == 3 && text[0] == 'e')
 }
 
+fun enqueueOnce(vertex: Int) {
+    val queue: @Unique ArrayDeque<Int> = ArrayDeque<Int>()
+    verify(queue.size == 0)
+    if (!queue.contains(vertex)) {
+        queue.addLast(vertex)
+        val last = queue.last()
+        verify(last == vertex)
+    }
+}
+
 fun halving(box: @Unique @Borrowed stand.vlib.Box) {
     verify(stand.vlib.half(8) <= 8 && box.size == 1)
 }
@@ -393,6 +403,8 @@ if ! grep -q "^SnaKt verified .* Details: $report$" "$log"; then
     exit 1
 fi
 for entry in "user spec: stand.lib.twice(Int): Int" "bundled spec: kotlin.math.abs(Int): Int" \
+    "bundled spec: kotlin.collections.ArrayDeque.ArrayDeque(): ArrayDeque<E>" \
+    "bundled spec: kotlin.collections.ArrayDeque.addLast(E): Unit" \
     "rebinds verified: stand.vlib.half(Int): Int" "rebinds verified: stand.vlib.Box"; do
     if ! grep -qF "    $entry" "$report"; then
         cat "$report" >&2
