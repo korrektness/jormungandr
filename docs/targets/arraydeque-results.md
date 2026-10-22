@@ -151,7 +151,7 @@ The exceptional-exit decision's other criteria remain separate.
 |---|---|
 | 1: M coverage and clean in-scope diagnostics | Partial: the retained members verify; the capacity constructor is absent. |
 | 2: mutants and upstream searches | Pass, including intended clauses and guard-only comparison. |
-| 3: vacuity | Clean for both relevant files in the scoped run; unfiltered run unmeasured. |
+| 3: vacuity | Clean for both relevant files in the scoped run; see [full-run evidence](arraydeque-final.md#commands-and-outcomes). |
 | 4: labelled deviation check | Pass. |
 | 5: bundled-model contract projection | Pass. |
 | 6: BFS consumers and bundled binding | Not met: the bundled binding works for conditional insertion; both BFS consumers and the skipped-successor negative are absent. |
