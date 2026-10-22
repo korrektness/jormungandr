@@ -8,10 +8,10 @@ Default timeouts are unchanged. Measured `./agent-scripts/test.sh --verify <file
 
 | File | Seconds |
 | --- | ---: |
-| `targets/arraydeque/ArrayDeque.kt` | 114.270 |
-| `targets/arraydeque/indexOfPre80390.kt` | 53.177 |
-| `targets/arraydeque/lastIndexOfPre80661.kt` | 50.867 |
-| `stdlib/array/generic_array_elements.kt` | 14.922 |
+| `targets/arraydeque/ArrayDeque.kt` | 112.547 |
+| `targets/arraydeque/indexOfPre80390.kt` | 48.172 |
+| `targets/arraydeque/lastIndexOfPre80661.kt` | 46.251 |
+| `stdlib/array/generic_array_elements.kt` | 11.870 |
 
 Every file is below the 150-second per-declaration budget, including conversion and Gradle overhead.
 
@@ -45,6 +45,6 @@ The diagnostic tests require these clauses and reject additional unclassified er
 
 ## Scope and trust
 
-See docs/targets/arraydeque-plan.md, ‘D4 and V5: element equality’, for the equality trust policy.
+Exactly the port's two scans carry `@TrustedElementEquality`; `contains` calls `indexOf` without that annotation. The trust golden records their scoped assumptions. See docs/targets/arraydeque-plan.md, ‘D4 and V5: element equality’, for the equality trust policy.
 
 The proof targets the port. Correspondence to the vendored source is checked mechanically through `ArrayDeque.port.diff`; it is not proof of the shipped class. Provenance points to D4's owning trust policy.
