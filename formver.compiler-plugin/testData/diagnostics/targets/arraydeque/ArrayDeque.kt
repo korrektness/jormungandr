@@ -43,7 +43,58 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
         verify(elementData.size == 0)
     }
 
-    // D-7: This partial port contains the skeleton members.
+    // D-3: The inherited modification counter is a private field in the port.
+    private var modCount: Int = 0
+
+    @WrappingIntArithmetic @Unique @Borrowed
+    private fun <!VIPER_TEXT!>registerModification<!>() {
+        postconditions<Unit> {
+            size == old(size)
+            elementData.size == old(elementData.size)
+            head == old(head)
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+        }
+        modCount += 1
+    }
+
+    @Unique @Borrowed private fun <!VIPER_TEXT!>ensureCapacity<!>(minCapacity: Int) {
+        preconditions { 0 <= minCapacity && minCapacity <= 715827882 }
+        postconditions<Unit> {
+            size == old(size)
+            elementData.size >= minCapacity
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+        }
+        if (minCapacity < 0) throw IllegalStateException("Deque is too big.")    // overflow
+        if (minCapacity <= elementData.size) return
+        // D-6: The sentinel identity test is represented by its size characterization.
+        if (elementData.size == 0) {
+            elementData = arrayOfNulls(minCapacity.coerceAtLeast(defaultMinCapacity))
+            verify(elementData.size > 0)
+            return
+        }
+
+        // D-4: The AbstractList capacity helper is a private copy.
+        val newCapacity = newCapacity(elementData.size, minCapacity)
+        copyElements(newCapacity)
+    }
+
+    @Unique @Borrowed private fun <!VIPER_TEXT!>copyElements<!>(newCapacity: Int) {
+        preconditions { elementData.size < newCapacity && newCapacity <= 1073741824 }
+        postconditions<Unit> {
+            size == old(size)
+            elementData.size == newCapacity
+            head == 0
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+        }
+        val newElements = arrayOfNulls<Any?>(newCapacity)
+        elementData.copyInto(newElements, 0, head, elementData.size)
+        elementData.copyInto(newElements, elementData.size - head, 0, head)
+        head = 0
+        elementData = newElements
+        verify(elementData.size > 0)
+    }
+
+    // D-7: Members outside the partial port are omitted.
     // D-5: InlineOnly is omitted from source helpers.
     @Pure @Unique private inline fun <!VIPER_TEXT!>internalGet<!>(internalIndex: Int): E {
         preconditions { 0 <= internalIndex && internalIndex < elementData.size }
@@ -117,7 +168,7 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
             size == old(size)
             elementData.size == old(elementData.size)
             (size > 0) implies (r === elementAt(0))
-            forAll<Int> { i -> (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
         }
     }
     /**
@@ -131,7 +182,7 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
             elementData.size == old(elementData.size)
             (size == 0) implies (r === null)
             (size > 0) implies (r === elementAt(0))
-            forAll<Int> { i -> (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
         }
     }
     /**
@@ -144,7 +195,7 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
             size == old(size)
             elementData.size == old(elementData.size)
             (size > 0) implies (r === elementAt(size - 1))
-            forAll<Int> { i -> (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
         }
     }
     /**
@@ -158,7 +209,7 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
             elementData.size == old(elementData.size)
             (size == 0) implies (r === null)
             (size > 0) implies (r === elementAt(size - 1))
-            forAll<Int> { i -> (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
         }
     }
     /**
@@ -166,12 +217,155 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
      */
     @Unique @Borrowed public fun <!VIPER_TEXT!>lastOrNull<!>(): E? = if (isEmpty()) null else internalGet(internalIndex(lastIndex))
 
+    @SpecOf("addFirst") @Unique @Borrowed fun addFirstSpec(element: E) {
+        preconditions { size < 715827882 }
+        postconditions<Unit> {
+            size == old(size) + 1
+            (size > 0) implies (elementAt(0) === element)
+            forAll<Int> { i -> (0 <= i && i < old(size)) implies (elementAt(i + 1) === old(elementAt(i))) }
+        }
+    }
+    @Unique @Borrowed public fun <!VIPER_TEXT!>addFirst<!>(element: E) {
+        registerModification()
+        ensureCapacity(size + 1)
+
+        head = decremented(head)
+        elementData[head] = element
+        // D-2: count stores the mutable size.
+        count += 1
+    }
+
+    @SpecOf("addLast") @Unique @Borrowed fun addLastSpec(element: E) {
+        preconditions { size < 715827882 }
+        postconditions<Unit> {
+            size == old(size) + 1
+            (size > 0) implies (elementAt(size - 1) === element)
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < old(size)) implies (elementAt(i) === old(elementAt(i))) }
+        }
+    }
+    @Unique @Borrowed public fun <!VIPER_TEXT!>addLast<!>(element: E) {
+        registerModification()
+        ensureCapacity(size + 1)
+
+        elementData[internalIndex(size)] = element
+        // D-2: count stores the mutable size.
+        count += 1
+    }
+
+    @SpecOf("removeFirst") @Unique @Borrowed fun removeFirstSpec() {
+        postconditions<E> { r ->
+            old(size) > 0
+            (old(size) > 0) implies (size == old(size) - 1 && r === old(elementAt(0)))
+            elementData.size == old(elementData.size)
+            elementData[old(head)] === null
+            forAll<Int> { i -> (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i + 1))) }
+        }
+    }
+    @IgnorableReturnValue
+    @Unique @Borrowed public fun <!VIPER_TEXT!>removeFirst<!>(): E {
+        if (isEmpty()) throw NoSuchElementException("ArrayDeque is empty.")
+        registerModification()
+
+        val element = internalGet(head)
+        elementData[head] = null
+        head = incremented(head)
+        // D-2: count stores the mutable size.
+        count -= 1
+        return element
+    }
+
+    @SpecOf("removeFirstOrNull") @Unique @Borrowed fun removeFirstOrNullSpec() {
+        postconditions<E?> { r ->
+            (old(size) == 0) implies (size == 0)
+            (old(size) > 0) implies (size == old(size) - 1)
+            elementData.size == old(elementData.size)
+            (old(size) == 0) implies (r === null)
+            (old(size) > 0) implies (r === old(elementAt(0)) && elementData[old(head)] === null)
+            forAll<Int> { i -> (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i + 1))) }
+        }
+    }
+    @IgnorableReturnValue
+    @Unique @Borrowed public fun <!VIPER_TEXT!>removeFirstOrNull<!>(): E? = if (isEmpty()) null else removeFirst()
+
+    @SpecOf("removeLast") @Unique @Borrowed fun removeLastSpec() {
+        postconditions<E> { r ->
+            old(size) > 0
+            (old(size) > 0) implies (size == old(size) - 1 && r === old(elementAt(size - 1)))
+            elementData.size == old(elementData.size)
+            elementData[old(internalIndex(lastIndex))] === null
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+        }
+    }
+    @IgnorableReturnValue
+    @Unique @Borrowed public fun <!VIPER_TEXT!>removeLast<!>(): E {
+        if (isEmpty()) throw NoSuchElementException("ArrayDeque is empty.")
+        registerModification()
+
+        val internalLastIndex = internalIndex(lastIndex)
+        val element = internalGet(internalLastIndex)
+        elementData[internalLastIndex] = null
+        // D-2: count stores the mutable size.
+        count -= 1
+        return element
+    }
+
+    @SpecOf("removeLastOrNull") @Unique @Borrowed fun removeLastOrNullSpec() {
+        postconditions<E?> { r ->
+            (old(size) == 0) implies (size == 0)
+            (old(size) > 0) implies (size == old(size) - 1)
+            elementData.size == old(elementData.size)
+            (old(size) == 0) implies (r === null)
+            (old(size) > 0) implies (r === old(elementAt(size - 1)) && elementData[old(internalIndex(lastIndex))] === null)
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+        }
+    }
+    @IgnorableReturnValue
+    @Unique @Borrowed public fun <!VIPER_TEXT!>removeLastOrNull<!>(): E? = if (isEmpty()) null else removeLast()
+
+    @SpecOf("add") @Unique @Borrowed fun addSpec(element: E) {
+        preconditions { size < 715827882 }
+        postconditions<Boolean> { r ->
+            r
+            size == old(size) + 1
+            (size > 0) implies (elementAt(size - 1) === element)
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < old(size)) implies (elementAt(i) === old(elementAt(i))) }
+        }
+    }
+    // D-1: add has no inherited declaration to override.
+    @IgnorableReturnValue
+    @Unique @Borrowed public fun <!VIPER_TEXT!>add<!>(element: E): Boolean {
+        addLast(element)
+        return true
+    }
+
+    // D-8: P2 negative: the vacating write is absent from this removeFirst sibling.
+    @Unique @Borrowed fun <!VIPER_TEXT!>removeKeepsSlot<!>(): E {
+        postconditions<E> { elementData[old(head)] === null }
+        if (isEmpty()) throw NoSuchElementException("ArrayDeque is empty.")
+        registerModification()
+
+        val element = internalGet(head)
+        head = incremented(head)
+        count -= 1
+        <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return element<!>
+    }
+
+    // D-8: This addLast sibling omits the capacity precondition on its contract.
+    @Unique @Borrowed fun <!VIPER_TEXT!>addLastWithoutCapacity<!>(element: E) {
+        postconditions<Unit> { size == <!INTEGER_OVERFLOW!>old(size) + 1<!> }
+        registerModification()
+        ensureCapacity(size + 1)
+
+        elementData[internalIndex(size)] = element
+        count += 1
+    }
+
     @SpecOf("get") @Unique @Borrowed fun getSpec(index: Int) {
         postconditions<E> { r ->
             size == old(size)
             elementData.size == old(elementData.size)
             (0 <= index && index < size) implies (r === elementAt(index))
-            forAll<Int> { i -> (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size) implies (elementAt(i) === old(elementAt(i))) }
         }
     }
     // D-1: List operations have no inherited declaration to override.
@@ -187,7 +381,7 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
             size == old(size)
             elementData.size == old(elementData.size)
             (0 <= index && index < size) implies (r === old(elementAt(index)) && elementAt(index) === element)
-            forAll<Int> { i -> (0 <= i && i < size && i != index) implies (elementAt(i) === old(elementAt(i))) }
+            forAll<Int> { i -> triggers(elementAt(i), old(elementAt(i))); (0 <= i && i < size && i != index) implies (elementAt(i) === old(elementAt(i))) }
         }
     }
     @IgnorableReturnValue
@@ -203,7 +397,27 @@ public <!VIPER_TEXT!>class ArrayDeque<!><E> : DequeSpec<E> {
     }
 }
 
-// D-4: Private copies of AbstractList index checks.
+// D-4: Private copies of AbstractList capacity and index helpers.
+private const val defaultMinCapacity = 10
+private const val maxArraySize = Int.MAX_VALUE - 8
+
+@WrappingIntArithmetic
+private fun <!VIPER_TEXT!>newCapacity<!>(oldCapacity: Int, minCapacity: Int): Int {
+    preconditions { oldCapacity >= 0; minCapacity >= 0 }
+    postconditions<Int> {
+        it >= minCapacity
+        (oldCapacity < minCapacity && minCapacity <= 715827882) implies (it <= 1073741824)
+        (oldCapacity < minCapacity) implies (it > oldCapacity)
+    }
+    // overflow-conscious
+    var newCapacity = oldCapacity + (oldCapacity shr 1)
+    if (newCapacity - minCapacity < 0)
+        newCapacity = minCapacity
+    if (newCapacity - maxArraySize > 0)
+        newCapacity = if (minCapacity > maxArraySize) Int.MAX_VALUE else maxArraySize
+    return newCapacity
+}
+
 private fun <!VIPER_TEXT!>checkElementIndex<!>(index: Int, size: Int) {
     postconditions<Unit> { 0 <= index && index < size }
     if (index < 0 || index >= size) {
@@ -250,6 +464,78 @@ fun <E> <!VIPER_TEXT!>firstOnEmpty<!>(d: @Unique @Borrowed ArrayDeque<E>) {
     preconditions { d.size == 0 }
     val first = d.firstOrNull()
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>first !== null<!>)
+}
+
+fun <E> <!VIPER_TEXT!>rotateLeft<!>(d: @Unique @Borrowed ArrayDeque<E>) {
+    preconditions { 0 < d.size && d.size < 715827882 }
+    postconditions<Unit> {
+        d.size == old(d.size)
+        (d.size > 0) implies (d.elementAt(d.size - 1) === old(d.elementAt(0)))
+        forAll<Int> { i -> (0 <= i && i < d.size - 1) implies (d.elementAt(i) === old(d.elementAt(i + 1))) }
+    }
+    val first = d.removeFirst()
+    d.addLast(first)
+}
+
+fun <E> <!VIPER_TEXT!>rotateRight<!>(d: @Unique @Borrowed ArrayDeque<E>) {
+    preconditions { 0 < d.size && d.size < 715827882 }
+    postconditions<Unit> {
+        d.size == old(d.size)
+        (d.size > 0) implies (d.elementAt(0) === old(d.elementAt(d.size - 1)))
+        forAll<Int> { i -> (0 <= i && i < d.size - 1) implies (d.elementAt(i + 1) === old(d.elementAt(i))) }
+    }
+    val last = d.removeLast()
+    d.addFirst(last)
+}
+
+fun <E> <!VIPER_TEXT!>rotateLeftUnchanged<!>(d: @Unique @Borrowed ArrayDeque<E>) <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    preconditions { 1 < d.size && d.size < 715827882 }
+    postconditions<Unit> {
+        forAll<Int> { i -> (0 <= i && i < d.size && i < old(d.size)) implies (d.elementAt(i) === old(d.elementAt(i))) }
+    }
+    rotateLeft(d)
+}<!>
+
+fun <E> <!VIPER_TEXT!>rotateRightUnchanged<!>(d: @Unique @Borrowed ArrayDeque<E>) <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    preconditions { d.size == 2 && d.elementAt(0) !== d.elementAt(1) }
+    postconditions<Unit> {
+        forAll<Int> { i -> (0 <= i && i < d.size && i < old(d.size)) implies (d.elementAt(i) === old(d.elementAt(i))) }
+    }
+    rotateRight(d)
+}<!>
+
+fun <E> <!VIPER_TEXT!>endOperations<!>(first: E, last: E) {
+    val d: @Unique ArrayDeque<E> = ArrayDeque()
+    d.addFirst(first)
+    val added = d.add(last)
+    verify(added && d.size == 2)
+    val back = d.removeLastOrNull()
+    val front = d.removeFirstOrNull()
+    verify(back === last && front === first && d.size == 0)
+    val emptyBack = d.removeLastOrNull()
+    val emptyFront = d.removeFirstOrNull()
+    verify(emptyBack === null && emptyFront === null)
+}
+
+// D-8: Bounds negative for the second disjoint copy in copyElements.
+<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>fun <!VIPER_TEXT!>copyElementsPastEnd<!>(data: @Unique @Borrowed Array<Any?>, head: Int, newCapacity: Int) {
+    preconditions { data.size > 0 && data.size < newCapacity && newCapacity <= 1073741824 && 0 <= head && head < data.size }
+    val newElements = arrayOfNulls<Any?>(newCapacity)
+    data.copyInto(newElements, 0, head, data.size)
+    data.copyInto(newElements, data.size - head, 0, data.size + 1)
+}<!>
+
+// D-8: The AbstractList capacity body with checked arithmetic.
+private fun <!VIPER_TEXT!>checkedCapacity<!>(oldCapacity: Int, minCapacity: Int): Int {
+    preconditions { oldCapacity >= 0; minCapacity >= 0 }
+    postconditions<Int> { it >= minCapacity }
+    // overflow-conscious
+    var newCapacity = <!INTEGER_OVERFLOW!>oldCapacity + (oldCapacity shr 1)<!>
+    if (newCapacity - minCapacity < 0)
+        newCapacity = minCapacity
+    if (newCapacity - maxArraySize > 0)
+        newCapacity = if (minCapacity > maxArraySize) Int.MAX_VALUE else maxArraySize
+    return newCapacity
 }
 
 // The control wraps offsets crossing the physical end of the backing array.
