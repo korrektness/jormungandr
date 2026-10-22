@@ -2278,6 +2278,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("observer_frame_triggers.kt")
+      public void testObserver_frame_triggers() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/user_invariants/observer_frame_triggers.kt");
+      }
+
+      @Test
       @TestMetadata("simple_forall.kt")
       public void testSimple_forall() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/user_invariants/simple_forall.kt");

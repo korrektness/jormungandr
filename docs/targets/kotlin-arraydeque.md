@@ -235,8 +235,8 @@ sibling in the same file (docs/developing.md, "Negative tests").
 
 - The proof covers a port. The deviation check reduces the risk, and V9 removes it. Without V9, the deliverable
   does not prove that the shipped class meets its contracts.
-- Quantifier instability across the wrap-around case split **[H]**. Mitigation: state the wrapped and unwrapped
-  windows as separate lemma functions with explicit triggers.
+- Quantifier instability across the wrap-around case split **[H]**. Mitigation: frame triggers on the entry
+  observer (`docs/targets/arraydeque-proof-barrier.md`), under which the mutators need no case split.
 - F3–F5 are research. F may stop at F2.
 - Maintainers may close finding 2 "As Designed", the state of KT-55285.
 

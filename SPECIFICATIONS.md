@@ -576,6 +576,16 @@ cannot be a trigger, so `forAll<Int> { k -> arr[k + 1] == old(arr[k]) }` has no
 current-state trigger to derive and keeps the inferred `old` one; write
 `triggers(...)` for it when a caller needs it.
 
+A derived trigger fires only where a caller names the current term. A caller
+that makes two calls in a row, or compares the entry value with a direct read of
+the storage, names only the entry value, so a frame over a `@Pure` observer that
+such callers use lists both terms: `triggers(elementAt(i), old(elementAt(i)))`.
+`verification/user_invariants/observer_frame_triggers.kt` shows the difference.
+Triggers matter only where a quantifier is assumed; on a quantifier that is being
+proved, in a `verify` or in the function's own postcondition, they have no effect.
+A trigger never changes what a quantifier states: a poor choice makes a proof fail
+or time out, and cannot make a false claim verify.
+
 You can specify triggers explicitly; explicit triggers replace both the derived
 and the inferred ones:
 
