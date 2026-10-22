@@ -20,6 +20,7 @@ Usage:
   ./agent-scripts/test.sh --vacuity [pattern]        # full pipeline, probing each verified method
                                                      # with refute(false) at entry and exit
 
+--timings <directory> writes per-declaration verification TSV reports outside goldens.
 --cold disables verification cache reads and writes.
 SNAKT_VERIFICATION_CACHE selects the store directory; 'off' disables caching.
 
@@ -45,6 +46,14 @@ set_mode() {
 while [[ "${1:-}" == -* ]]; do
     case "$1" in
         --cold) COLD=1 ;;
+        --timings)
+            if [[ -z "${2:-}" || "$2" == -* ]]; then
+                echo "Missing directory for --timings" >&2
+                exit 1
+            fi
+            export SNAKT_VERIFICATION_TIMINGS="$2"
+            shift
+            ;;
         --verify) set_mode verify ;;
         --verify-changed) set_mode verify-changed ;;
         --update-goldens) set_mode update ;;

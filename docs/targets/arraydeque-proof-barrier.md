@@ -78,11 +78,11 @@ and each `override` would be a further port hunk.
 
 ## Timing budget
 
-Every in-scope declaration of S7–S9 verifies in under 150 seconds, half the default timeout: the headroom
-condition of the plan's "Deciding on exceptional exits". The wall time of `./agent-scripts/test.sh --verify` on a
-test file covers Gradle start-up, conversion and every declaration, so it bounds each declaration. A stage whose
-file takes over 150 seconds wall measures its slowest declaration in a scratch file before it lands; a declaration
-over 150 seconds stops the stage.
+The budget for every in-scope declaration of S7–S9 is under 150 seconds, half the default timeout: the headroom
+condition of the plan's "Deciding on exceptional exits". Measure cold declaration groups in their complete test
+files with the harness's [timing reports](../agents-dev.md#declaration-timings); a declaration over 150 seconds
+stops the stage. [Fresh measurements](arraydeque-results.md#cold-per-declaration-measurements) record the
+observed status against this budget.
 | Stage | File | Estimated wall | Budget |
 |---|---|---:|---:|
 | S7 | `targets/arraydeque/ArrayDeque.kt` | 70–90 s | 150 s |

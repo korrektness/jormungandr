@@ -128,6 +128,30 @@ class SiliconFrontendTest {
     }
 
     @Test
+    fun `cache status distinguishes cold verification misses and hits without caching failures`() {
+        val directory = java.nio.file.Files.createTempDirectory("silicon-status-")
+        try {
+            val success = Program(emptySeq(), emptySeq(), emptySeq(), emptySeq(), emptySeq(), emptySeq(), pos, info, trafos)
+            val statuses = mutableListOf<String>()
+            val failures = mutableListOf<VerifierError>()
+            SiliconFrontend(SiliconFrontend.locateZ3()).use {
+                it.verify(success, statuses::add) { failure -> failures.add(failure) }
+            }
+            SiliconFrontend(SiliconFrontend.locateZ3(), cacheDirectory = directory).use {
+                it.verify(success, statuses::add) { failure -> failures.add(failure) }
+                it.verify(success, statuses::add) { failure -> failures.add(failure) }
+                repeat(2) { _ ->
+                    it.verify(hiddenTriggerFailureProgram, statuses::add) { failure -> failures.add(failure) }
+                }
+            }
+            assertEquals(listOf("off", "miss", "hit", "miss", "miss"), statuses)
+            assertEquals(2, failures.count { (it as? VerificationError)?.result?.offendingNode() is Assert })
+        } finally {
+            directory.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
     fun `threads started under a stopped mark stop logging and other threads keep logging`() {
         // SiliconThreads initializes logback, which a direct call to getLogger may race with in a parallel test.
         val stopped = SiliconThreads()

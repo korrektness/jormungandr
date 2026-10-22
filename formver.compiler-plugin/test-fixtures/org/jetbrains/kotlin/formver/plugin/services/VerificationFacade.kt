@@ -131,6 +131,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                 }
                 val cacheDirectory = System.getProperty("formver.verificationCacheDirectory")?.let { Path.of(it) }
                 val progress = VerificationProgress(MessageCollector.NONE)
+                val timingReport = DeclarationVerificationReport.fromEnvironment()
                 val attempts = OrderedVerificationExecutor.shared.mapWithResource(
                     toVerify.zip(programs),
                     { TestVerifier(z3, cacheDirectory, FormVerDirectives.COUNTEREXAMPLES in module.directives) },
@@ -138,13 +139,26 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                     val errors = mutableListOf<VerifierError>()
                     var invalid: InvalidViperProgramException? = null
                     var timeout: Failure? = null
-                    try {
-                        timeout = progress.run(owner.second.verificationLabel, owner.second.source) {
-                            group.forEach { verifier.verify(it) { error -> errors.add(error) } }
+                    val verify: ((String) -> Unit) -> String = { onCacheStatus ->
+                        try {
+                            timeout = progress.run(owner.second.verificationLabel, owner.second.source) {
+                                group.forEach { verifier.verify(it, onCacheStatus) { error -> errors.add(error) } }
+                            }
+                        } catch (error: InvalidViperProgramException) {
+                            invalid = error
                         }
-                    } catch (error: InvalidViperProgramException) {
-                        invalid = error
+                        when {
+                            timeout != null -> "timeout"
+                            invalid != null -> "invalid"
+                            errors.isNotEmpty() -> "failed"
+                            else -> "verified"
+                        }
                     }
+                    if (timingReport == null) verify({})
+                    else timingReport.run(
+                        owner.first.originalFile.path, owner.second.verificationLabel, owner.second.source?.startOffset,
+                        DEFAULT_VERIFICATION_TIMEOUT_SECONDS, verify,
+                    )
                     VerificationAttempt(errors, invalid, timeout)
                 }
                 toVerify.zip(attempts).zip(programs).forEach { (verified, group) ->
@@ -188,11 +202,11 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
             SiliconFrontend(z3, timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS, counterexamples = false)
         } else null
 
-        fun verify(program: viper.silver.ast.Program, onFailure: (VerifierError) -> Unit) {
+        fun verify(program: viper.silver.ast.Program, onCacheStatus: (String) -> Unit, onFailure: (VerifierError) -> Unit) {
             fun hasModel(error: VerifierError): Boolean = error is VerificationError &&
                 CollectionConverters.asJava(error.result.failureContexts()).any { it.counterExample().isDefined }
             ordinary?.verify(program) { check(!hasModel(it)) }
-            verifier.verify(program) {
+            verifier.verify(program, onCacheStatus) {
                 if (counterexamples) check(hasModel(it))
                 onFailure(it)
             }

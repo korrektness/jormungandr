@@ -80,10 +80,8 @@ exclude driver overhead and overlap because tests run concurrently:
 | `targets/arraydeque/lastIndexOfPre80661.kt` | 77.585 |
 | `external_specs/arraydeque_binding.kt` | 9.493 |
 
-No timeout override is used in the recorded runs.
-The diagnostics harness discards declaration progress messages. Whole-file
-measurements do not establish that every declaration is well under the default limit;
-that timing criterion is unmeasured.
+No timeout override is used in the recorded runs. These whole-file measurements
+are separate from the cold declaration measurements below.
 
 The mutant test outcomes match their expected failures. `indexOfPre80390` has
 two diagnostics, both on `result < size`. `lastIndexOfPre80661` has one, on
@@ -105,6 +103,47 @@ The published-consumer script passes its trust-report assertions for
 `bundled spec: kotlin.collections.ArrayDeque.addLast(E): Unit`. The script's
 successful stdout does not print the report itself. Its consumer constructs a
 queue and runs conditional insertion; it does not implement BFS.
+
+## Cold per-declaration measurements
+
+Command, from the repository root:
+
+```sh
+./agent-scripts/test.sh --verify --cold --timings /tmp/close-timing-scratch/reports arraydeque
+```
+
+The report directory is empty at launch. The command exits 0: 5 tests pass,
+including the generated file-presence test. Bash wall time is 519.489 seconds.
+[All 79 attempt rows](arraydeque-declaration-times.tsv) retain declaration names,
+source offsets, outcomes, elapsed seconds, effective timeouts and cache status.
+The [report format](../agents-dev.md#declaration-timings) defines the measured interval.
+The complete port, both complete mutant fixtures and the bundled-binding consumer
+file run in their existing proof contexts; no declaration is extracted.
+
+Paths in this table are under `formver.compiler-plugin/testData/diagnostics/`.
+JUnit file times overlap because verification runs concurrently.
+
+| File | Attempts (verified / expected failure) | JUnit seconds | Slowest declaration | Declaration seconds |
+|---|---:|---:|---|---:|
+| `targets/arraydeque/ArrayDeque.kt` | 46 / 10 | 482.580 | `ArrayDeque.lastIndexOf` | 106.908 |
+| `targets/arraydeque/indexOfPre80390.kt` | 7 / 1 | 136.081 | `SearchDeque.indexOfPre80390` | 85.950 |
+| `targets/arraydeque/lastIndexOfPre80661.kt` | 7 / 1 | 231.002 | `SearchDeque.lastIndexOfPre80661` | 87.407 |
+| `external_specs/arraydeque_binding.kt` | 2 / 5 | 37.763 | `enqueueOnce` | 15.100 |
+
+Every row reports an effective timeout of 300 seconds and cache status `off`.
+There are no timeout, invalid-program or unexpected-error outcomes. The port's
+`indexOf` verifies in 105.869 seconds; `lastIndexOf` is the slowest attempt across
+all four files. Its margin is 193.092 seconds to the 300-second limit and 43.092
+seconds to the strict 150-second headroom criterion. Every selected declaration,
+including negative siblings, is under both thresholds in this run. This establishes
+the headroom criterion for the retained port in this run; it is not a guarantee
+about future solver runs or a proof of absent members. The two explicitly
+skipped API-rejection consumers produce no attempt rows.
+
+Historical per-stage timings are uncertified. These fresh measurements do not
+certify the per-file `--verify` wall time of any separate verifying stage's
+landing. They also do not supply the missing capacity constructor or BFS consumers.
+The exceptional-exit decision's other criteria remain separate.
 
 ## Acceptance audit
 

@@ -202,14 +202,24 @@ class SiliconFrontend(
      * Throws [VerificationTimeoutException] when Silicon runs out of time, and [InvalidViperProgramException] when
      * Viper reports anything else that is not a verification error.
      */
-    fun verify(viperProgram: viper.silver.ast.Program, onFailure: (VerifierError) -> Unit) {
+    fun verify(viperProgram: viper.silver.ast.Program, onFailure: (VerifierError) -> Unit) =
+        verify(viperProgram, {}, onFailure)
+
+    /** Reports whether this invocation uses the outcome cache: off, miss or hit. */
+    fun verify(
+        viperProgram: viper.silver.ast.Program,
+        onCacheStatus: (String) -> Unit,
+        onFailure: (VerifierError) -> Unit,
+    ) {
         // The AST API starts in the state after the consistency check, so its ConsistencyCheck phase does nothing.
         // Silicon does not check the AST itself either: an undeclared variable makes it abort with an exception,
         // which the result reports as an error that is not a verification error.
         checkConsistency(viperProgram)
         // SilFrontend.verification invokes the default plugins' beforeVerify and mapVerificationResult hooks,
         // including RefutePlugin. Its isolated assertion branch leaves the continuation available for further checks.
+        var executed = false
         val verify = {
+            executed = true
             val threads = siliconThreads
             val api = siliconApi ?: configurationGate.withExclusiveConfiguration(args) { threads.run { backend() } }
             val result = configurationGate.withConfiguration(args) {
@@ -244,8 +254,19 @@ class SiliconFrontend(
                 else -> error("Unexpected Silicon verification result: $result")
             }
         }
-        if (cache == null) verify()
-        else cache.verify(viperProgram.toString(), cacheVersion!!, cacheOptions, verify)
+        var completed = false
+        try {
+            if (cache == null) verify()
+            else cache.verify(viperProgram.toString(), cacheVersion!!, cacheOptions, verify)
+            completed = true
+        } finally {
+            onCacheStatus(when {
+                cache == null -> "off"
+                executed -> "miss"
+                completed -> "hit"
+                else -> "unavailable"
+            })
+        }
     }
 
     private fun viper.silver.verifier.VerificationResult.timedOut(): Boolean =

@@ -38,6 +38,25 @@ runs do not use it. See the outcome cache note for
 [reporting](targets/viper-outcome-cache.md#reporting) and
 [key inputs](targets/viper-outcome-cache.md#key). Goldens are checked on hits too.
 
+## Declaration timings
+
+`./agent-scripts/test.sh --verify --cold --timings /absolute/report/directory <pattern>`
+records verification attempts outside goldens. Use an empty directory for each run.
+Each attempt writes a separate TSV with source file, declaration label, source
+start offset, outcome, elapsed seconds, effective timeout seconds and cache status.
+The offset distinguishes overloads. Outcomes are `verified`, `failed`, `timeout`,
+`invalid` or `error`; a failed negative fixture still passes its golden test.
+Cache status is `off`, `miss`, `hit` or `unavailable`, listed in program order.
+
+The elapsed interval encloses the same declaration group as `VerificationProgress`:
+its main program and any selected lambda programs, including frontend work and
+cache lookup. Queue wait and verifier construction are outside the interval.
+Groups retain their full proof context. Counterexample fixtures include their
+ordinary-mode checks in elapsed time; cache statuses describe the main passes.
+A group's timeout applies separately to each program. Only declarations selected for verification produce rows;
+conversion-only and skipped declarations produce none. The environment variable
+`SNAKT_VERIFICATION_TIMINGS` also enables reporting directly from Gradle.
+
 ## Exit codes
 
 `check-all.sh` reports each of its four checks as passed, failed or skipped. A
