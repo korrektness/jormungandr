@@ -1,0 +1,158 @@
+ArrayDeque verification command transcript
+Wall times use Bash TIMEFORMAT="real %3R". Trailing output spaces use \x20.
+
+$ git fetch && git rebase origin/main
+Current branch workflow-run/run-1792596981-012fb8-build_m--verify-results-1 is up to date.
+
+$ ./agent-scripts/test.sh --verify arraydeque
+
+Ran 5 tests, 5 passed, 0 failed.
+exit: 0
+real 322.841
+
+$ ./agent-scripts/test.sh PortDeviationTest
+
+Ran 12 tests, 12 passed, 0 failed.
+exit: 0
+real 11.961
+
+$ ./agent-scripts/test.sh ArrayDequeSpecEqualityTest
+
+Ran 2 tests, 2 passed, 0 failed.
+exit: 0
+real 9.221
+
+$ ./agent-scripts/test.sh --vacuity arraydeque
+
+Ran 5 tests, 5 passed, 0 failed.
+No probe found a contradictory context.
+exit: 0
+real 425.279
+
+$ ./agent-scripts/check-gradle-consumer.sh
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon JVM discovery is an incubating feature.
+Daemon will be stopped at the end of the build\x20
+Reusing configuration cache.
+> Task :formver.compiler-plugin:cli:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.compiler-plugin:generateBuildConfig SKIPPED
+> Task :formver.common:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.annotations:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.compiler-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.compiler-plugin:locality:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.compiler-plugin:locality:generateBuildConfig SKIPPED
+> Task :formver.compiler-plugin:uniqueness:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.compiler-plugin:plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.compiler-plugin:viper:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.compiler-plugin:core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :formver.common:processResources NO-SOURCE
+> Task :formver.annotations:processResources NO-SOURCE
+> Task :formver.compiler-plugin:locality:processResources NO-SOURCE
+> Task :formver.compiler-plugin:core:processResources NO-SOURCE
+> Task :formver.compiler-plugin:uniqueness:processResources NO-SOURCE
+> Task :formver.compiler-plugin:viper:processResources NO-SOURCE
+> Task :formver.compiler-plugin:processResources NO-SOURCE
+> Task :formver.gradle-plugin:generateBuildConfig UP-TO-DATE
+> Task :formver.compiler-plugin:cli:processResources UP-TO-DATE
+> Task :formver.gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :formver.compiler-plugin:plugin:processResources UP-TO-DATE
+> Task :formver.gradle-plugin:processResources UP-TO-DATE
+> Task :formver.gradle-plugin:sourcesJar UP-TO-DATE
+> Task :formver.compiler-plugin:generatePomFileForMavenPublication
+> Task :formver.annotations:generatePomFileForMavenPublication
+> Task :formver.common:generatePomFileForMavenPublication
+> Task :formver.gradle-plugin:generatePomFileForPluginMavenPublication
+> Task :formver.gradle-plugin:generatePomFileForSnaKtFormverPluginPluginMarkerMavenPublication
+> Task :formver.compiler-plugin:viper:compileKotlin UP-TO-DATE
+> Task :formver.common:compileKotlin UP-TO-DATE
+> Task :formver.annotations:compileKotlin UP-TO-DATE
+> Task :formver.annotations:compileJava NO-SOURCE
+> Task :formver.compiler-plugin:viper:compileJava NO-SOURCE
+> Task :formver.annotations:classes UP-TO-DATE
+> Task :formver.compiler-plugin:viper:classes UP-TO-DATE
+> Task :formver.common:compileJava NO-SOURCE
+> Task :formver.gradle-plugin:publishSnaKtFormverPluginPluginMarkerMavenPublicationToMavenLocal
+> Task :formver.compiler-plugin:viper:jar UP-TO-DATE
+> Task :formver.annotations:jar UP-TO-DATE
+> Task :formver.common:classes UP-TO-DATE
+> Task :formver.common:jar UP-TO-DATE
+> Task :formver.annotations:generateMetadataFileForMavenPublication
+> Task :formver.common:generateMetadataFileForMavenPublication
+> Task :formver.common:publishMavenPublicationToMavenLocal
+> Task :formver.common:publishToMavenLocal
+> Task :formver.annotations:publishMavenPublicationToMavenLocal
+> Task :formver.annotations:publishToMavenLocal
+> Task :formver.gradle-plugin:compileKotlin UP-TO-DATE
+> Task :formver.gradle-plugin:compileJava NO-SOURCE
+> Task :formver.gradle-plugin:classes UP-TO-DATE
+> Task :formver.compiler-plugin:locality:compileKotlin UP-TO-DATE
+> Task :formver.gradle-plugin:jar UP-TO-DATE
+> Task :formver.compiler-plugin:locality:compileJava NO-SOURCE
+> Task :formver.compiler-plugin:locality:classes UP-TO-DATE
+> Task :formver.compiler-plugin:locality:jar UP-TO-DATE
+> Task :formver.gradle-plugin:javadoc NO-SOURCE
+> Task :formver.gradle-plugin:javadocJar UP-TO-DATE
+> Task :formver.gradle-plugin:generateMetadataFileForPluginMavenPublication
+> Task :formver.gradle-plugin:publishPluginMavenPublicationToMavenLocal
+> Task :formver.gradle-plugin:publishToMavenLocal
+> Task :formver.compiler-plugin:uniqueness:compileKotlin UP-TO-DATE
+> Task :formver.compiler-plugin:uniqueness:compileJava NO-SOURCE
+> Task :formver.compiler-plugin:uniqueness:classes UP-TO-DATE
+> Task :formver.compiler-plugin:uniqueness:jar UP-TO-DATE
+> Task :formver.compiler-plugin:core:compileKotlin UP-TO-DATE
+> Task :formver.compiler-plugin:core:compileJava NO-SOURCE
+> Task :formver.compiler-plugin:core:classes UP-TO-DATE
+> Task :formver.compiler-plugin:core:jar UP-TO-DATE
+> Task :formver.compiler-plugin:plugin:compileKotlin UP-TO-DATE
+> Task :formver.compiler-plugin:plugin:compileJava NO-SOURCE
+> Task :formver.compiler-plugin:plugin:classes UP-TO-DATE
+> Task :formver.compiler-plugin:plugin:jar UP-TO-DATE
+> Task :formver.compiler-plugin:cli:compileKotlin UP-TO-DATE
+> Task :formver.compiler-plugin:cli:compileJava NO-SOURCE
+> Task :formver.compiler-plugin:cli:classes UP-TO-DATE
+> Task :formver.compiler-plugin:cli:jar UP-TO-DATE
+> Task :formver.compiler-plugin:compileKotlin NO-SOURCE
+> Task :formver.compiler-plugin:compileJava NO-SOURCE
+> Task :formver.compiler-plugin:classes UP-TO-DATE
+> Task :formver.compiler-plugin:shadowJar
+> Task :formver.compiler-plugin:publishMavenPublicationToMavenLocal
+> Task :formver.compiler-plugin:publishToMavenLocal
+
+BUILD SUCCESSFUL in 11s
+39 actionable tasks: 14 executed, 25 up-to-date
+Configuration cache entry reused.
+check-gradle-consumer.sh: consumer build passed
+exit: 0
+real 260.328
+
+$ python3 - <<'AUDIT'
+from pathlib import Path
+import hashlib, subprocess
+root = Path('formver.compiler-plugin/testData/upstream/kotlin-v2.3.0')
+upstream = '/home/kameliya/dev/kotlin/master'
+print('tag commit:', subprocess.check_output(['git', '-C', upstream, 'rev-parse', 'v2.3.0'], text=True).strip())
+for local, source in [('ArrayDeque.kt', 'libraries/stdlib/src/kotlin/collections/ArrayDeque.kt'), ('LICENSE.txt', 'license/LICENSE.txt'), ('NOTICE.txt', 'license/NOTICE.txt')]:
+    content = subprocess.check_output(['git', '-C', upstream, 'show', 'v2.3.0:' + source])
+    print(local, 'matches tag:', content == (root / local).read_bytes(), 'sha256:', hashlib.sha256(content).hexdigest())
+for source in ['targets/arraydeque/ArrayDeque.kt', 'external_specs/arraydeque_binding.kt']:
+    path = Path('formver.compiler-plugin/testData/diagnostics') / source
+    print('SCAN', path)
+    matches = [line for line in path.read_text().splitlines() if any(x in line for x in ['VERIFICATION_SKIPPED', 'UNSUPPORTED_FEATURE', 'INTERNAL_ERROR', 'UNTRACKED_WRITE', 'EXCLUDE', 'IGNORE', 'SKIP'])]
+    print('\n'.join(matches) if matches else '(none)')
+print('vacuity TSV entries:', list(Path('formver.compiler-plugin/build/vacuity-probes').glob('*.tsv')))
+AUDIT
+tag commit: f95cb2f7693a15966fd8fd9b1d78d440545e7b66
+ArrayDeque.kt matches tag: True sha256: 1369874f80ec51c6c484276aacc53fe4a401870b1de0e907cc1217278d6c40ae
+LICENSE.txt matches tag: True sha256: cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
+NOTICE.txt matches tag: True sha256: 0b09a83d3ef7795c7dec65e815866597c066c53898f2852a76599b8f5552941a
+SCAN formver.compiler-plugin/testData/diagnostics/targets/arraydeque/ArrayDeque.kt
+(none)
+SCAN formver.compiler-plugin/testData/diagnostics/external_specs/arraydeque_binding.kt
+fun <!VERIFICATION_SKIPPED!>unboundCapacity<!>() {
+    <!UNSUPPORTED_FEATURE!>ArrayDeque<Int>(4)<!>
+fun <!VERIFICATION_SKIPPED!>unboundMember<!>(queue: @Unique ArrayDeque<Int>) {
+    <!UNSUPPORTED_FEATURE!>queue.removeAt(0)<!>
+vacuity TSV entries: []
+exit: 0
+real 0.060
