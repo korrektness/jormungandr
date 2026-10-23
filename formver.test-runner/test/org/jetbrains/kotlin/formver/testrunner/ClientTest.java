@@ -80,7 +80,38 @@ class ClientTest {
         assertEquals(first.pid, second.pid);
         assertEquals(1, first.sharedCalls);
         assertEquals(2, second.sharedCalls);
-        assertEquals(1, second.testRuns);
+    }
+
+    @Test
+    void unchangedRequestsShareOneLoaderAndItsResources() throws Exception {
+        assertEquals(0, run(spec("a", "x")));
+        assertEquals(0, run(spec("a", "x")));
+        assertEquals(2, Record.read(record).testRuns);
+        assertEquals(List.of("opened"), resourceEvents());
+    }
+
+    @Test
+    void aChangedRequestClosesTheLoadersResourcesBeforeLoadingAnother() throws Exception {
+        assertEquals(0, run(spec("a", "x")));
+        writeTest("v2", "");
+        assertEquals(0, run(spec("a", "x")));
+        assertEquals(1, Record.read(record).testRuns);
+        assertEquals(List.of("opened", "closed", "opened"), resourceEvents());
+        assertEquals(0, run(spec("b", "x")));
+        assertEquals(List.of("opened", "closed", "opened", "closed", "opened"), resourceEvents());
+    }
+
+    @Test
+    void stopClosesTheLoadersResources() throws Exception {
+        assertEquals(0, run(spec("a", "x")));
+        assertEquals(0, Client.execute(
+            new String[]{"stop", "--working-dir", workingDir.toString(), "--state-root", stateRoot.toString()},
+            capture()));
+        assertEquals(List.of("opened", "closed"), resourceEvents());
+    }
+
+    private List<String> resourceEvents() throws IOException {
+        return Files.readAllLines(Path.of(record + ".resources"));
     }
 
     @Test
@@ -345,6 +376,7 @@ class ClientTest {
     private void writeTest(String version, String extraMethod) throws IOException {
         List<String> classpath = new ArrayList<>(JUNIT);
         classpath.add(sharedJar.toString());
+        classpath.add(System.getProperty("testRunner.bridgeClasspath"));
         compile(testClasses, classpath, "fixture/SampleTest.java", """
             package fixture;
             import org.junit.jupiter.api.Test;
@@ -353,8 +385,17 @@ class ClientTest {
             import static org.junit.jupiter.api.Assertions.assertEquals;
             public class SampleTest {
                 private static int runs;
+                private static boolean registered;
                 @Test void records() throws Exception {
                     runs++;
+                    Path events = Path.of(System.getProperty("fixture.record") + ".resources");
+                    if (!registered) {
+                        registered = true;
+                        Files.writeString(events, "opened\\n", java.nio.file.StandardOpenOption.CREATE,
+                            java.nio.file.StandardOpenOption.APPEND);
+                        org.jetbrains.kotlin.formver.testrunner.Lifetime.register(() ->
+                            Files.writeString(events, "closed\\n", java.nio.file.StandardOpenOption.APPEND));
+                    }
                     Files.writeString(Path.of(System.getProperty("fixture.record")), ProcessHandle.current().pid() + " " +
                         Shared.calls() + " " + runs + " " + System.getProperty("fixture.mode") + " %s");
                 }

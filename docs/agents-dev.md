@@ -83,9 +83,12 @@ folded into either 0 or 1.
 `test.sh` does not run the Gradle test tasks. Gradle compiles and, through each
 task's `RunnerSpec` task, writes what the task would run; the persistent runner
 of `formver.test-runner` then runs it in a JVM that the next run reuses. The
-compiler libraries and Silicon stay loaded between runs; the project's classes
-and the tests load anew each run, so a run sees what Gradle just compiled. The
-mode properties, such as the test mode and `--update-goldens`, are set per run.
+compiler libraries and Silicon stay loaded between runs. The project's classes
+and the tests stay loaded, with the verifier pool and its Z3 processes, while
+their content and the mode properties, such as the test mode and
+`--update-goldens`, are unchanged. A change to either closes what the loader
+registered with `Lifetime` (in the bridge) and loads anew, so a run always sees
+what Gradle just compiled.
 Anything else the JVM was started with, changed, starts a new one and says what
 changed; `Client` in `formver.test-runner` lists what that covers. The server
 gets only the environment variables `testRunnerEnvironment` in `buildSrc` names.

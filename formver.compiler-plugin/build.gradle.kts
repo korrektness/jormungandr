@@ -42,6 +42,7 @@ dependencies {
     testFixturesApi(kotlin("compiler-internal-test-framework"))
     testFixturesApi(kotlin("compiler"))
     testFixturesImplementation(project(":formver.common"))
+    testFixturesImplementation(project(mapOf("path" to ":formver.test-runner", "configuration" to "bridgeElements")))
     testFixturesImplementation(project(":formver.compiler-plugin:plugin"))
     testFixturesApi(project(":formver.compiler-plugin:viper"))
     testFixturesApi(libs.viper.silicon)

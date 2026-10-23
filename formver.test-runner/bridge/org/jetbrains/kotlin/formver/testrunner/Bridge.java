@@ -75,6 +75,11 @@ public final class Bridge {
         return result;
     }
 
+    /** Closes what the request's classes registered with {@link Lifetime}. */
+    public static void close() throws IOException {
+        Lifetime.closeAll();
+    }
+
     private static List<String> lines(String value) {
         List<String> result = new ArrayList<>();
         if (value == null) return result;

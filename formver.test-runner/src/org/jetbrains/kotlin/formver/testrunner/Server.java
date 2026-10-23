@@ -28,8 +28,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The persistent test JVM. It keeps one class loader over the shared classpath for its whole life, and runs each
- * request in a new class loader over the request classpath, parented to the shared one. It serves one request at a
+ * The persistent test JVM. It keeps one class loader over the shared classpath for its whole life, and runs requests
+ * in a class loader over the request classpath, parented to the shared one. That loader serves the next request too
+ * while the content of the request classpath and the request properties are unchanged; otherwise its registered
+ * resources are closed ({@code Lifetime} in the bridge) and a new one replaces it. It serves one request at a
  * time on a Unix domain socket and exits when it has been idle for the given time, when it is told to stop, when a
  * request carries a different key, or after a request that left metaspace nearly full.
  *
@@ -49,6 +51,9 @@ public final class Server {
         return thread;
     });
     private ScheduledFuture<?> idleExit;
+    /** The loader that serves the next request when its key matches; guarded by {@code this}. */
+    private URLClassLoader retained;
+    private String retainedKey;
 
     private Server(Path socket, String key, ClassLoader shared, long idleSeconds) {
         this.socket = socket;
@@ -139,6 +144,7 @@ public final class Server {
                     System.out.println("Could not answer a client: " + e);
                 }
                 if (exit) {
+                    closeRetained();
                     Files.deleteIfExists(socket);
                     return;
                 }
@@ -150,6 +156,7 @@ public final class Server {
         idleExit = idleTimer.schedule(() -> {
             System.out.println("Idle for " + idleSeconds + "s; exiting.");
             try {
+                closeRetained();
                 Files.deleteIfExists(socket);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -164,11 +171,11 @@ public final class Server {
 
     /** Runs one request; returns whether the server should exit after answering it. */
     private boolean run(Properties request, Properties response) throws IOException {
-        List<String> requestClasspath = Protocol.list(request.getProperty("requestClasspath"));
         Properties savedProperties = (Properties) System.getProperties().clone();
         ClassLoader savedContext = Thread.currentThread().getContextClassLoader();
         boolean exit = false;
-        try (URLClassLoader loader = new URLClassLoader(urls(requestClasspath), shared)) {
+        try {
+            URLClassLoader loader = loaderFor(request);
             for (String name : Protocol.list(request.getProperty("requestPropertyNames"))) {
                 String value = request.getProperty("property." + name);
                 if (value == null) System.clearProperty(name);
@@ -182,7 +189,7 @@ public final class Server {
             }
             @SuppressWarnings("unchecked")
             Map<String, String> result = (Map<String, String>) loader
-                .loadClass("org.jetbrains.kotlin.formver.testrunner.Bridge")
+                .loadClass(BRIDGE)
                 .getMethod("run", Map.class)
                 .invoke(null, bridgeRequest);
             response.putAll(result);
@@ -191,7 +198,7 @@ public final class Server {
             fail(response, e.getCause());
             // After an Error the JVM's state cannot be trusted for another request.
             exit = e.getCause() instanceof Error;
-        } catch (ReflectiveOperationException | RuntimeException e) {
+        } catch (ReflectiveOperationException | IOException | RuntimeException e) {
             fail(response, e);
         } finally {
             Thread.currentThread().setContextClassLoader(savedContext);
@@ -203,6 +210,60 @@ public final class Server {
             exit = true;
         }
         return exit;
+    }
+
+    private static final String BRIDGE = "org.jetbrains.kotlin.formver.testrunner.Bridge";
+
+    /**
+     * The retained loader when the request's content and properties match the one it was made for; otherwise a new
+     * one, after the retained one has closed its resources.
+     */
+    private synchronized URLClassLoader loaderFor(Properties request) throws IOException {
+        List<String> classpath = Protocol.list(request.getProperty("requestClasspath"));
+        StringBuilder key = new StringBuilder();
+        part(key, request.getProperty("fullClasspath", ""));
+        for (String entry : classpath) {
+            part(key, entry);
+            part(key, Spec.fingerprint(Path.of(entry)));
+        }
+        for (String name : Protocol.list(request.getProperty("requestPropertyNames"))) {
+            part(key, name);
+            String value = request.getProperty("property." + name);
+            // An absent property is not the same request as one whose value is the text "null".
+            part(key, value == null ? "absent" : "present");
+            if (value != null) part(key, value);
+        }
+        String requestKey = key.toString();
+        if (retained != null && retainedKey.equals(requestKey)) return retained;
+        closeRetained();
+        retained = new URLClassLoader(urls(classpath), shared);
+        retainedKey = requestKey;
+        return retained;
+    }
+
+    /** Appends {@code text} length-prefixed, so no sequence of parts reads as another. */
+    private static void part(StringBuilder key, String text) {
+        key.append(text.length()).append(':').append(text);
+    }
+
+    /**
+     * Closes what the retained loader's classes registered, then the loader, so no pool, process or hook of an
+     * earlier request outlives it. A failure to close is reported after the loader is closed anyway.
+     */
+    private synchronized void closeRetained() throws IOException {
+        if (retained == null) return;
+        URLClassLoader loader = retained;
+        retained = null;
+        retainedKey = null;
+        try (loader) {
+            try {
+                loader.loadClass(BRIDGE).getMethod("close").invoke(null);
+            } catch (InvocationTargetException e) {
+                throw new IOException("Closing the request's resources failed", e.getCause());
+            } catch (ReflectiveOperationException e) {
+                throw new IOException("Closing the request's resources failed", e);
+            }
+        }
     }
 
     private static void fail(Properties response, Throwable failure) {

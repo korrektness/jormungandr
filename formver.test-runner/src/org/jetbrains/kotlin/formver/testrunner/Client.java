@@ -43,7 +43,7 @@ import java.util.concurrent.TimeoutException;
  * {@code workingDir} start the server, with {@code serverClasspath} holding this class's own jar. Of the
  * {@code -D} JVM arguments, those named in {@code requestProperties} are set for each request instead. The
  * {@code sharedClasspath} stays loaded for the server's life; the {@code requestClasspath}, followed by
- * {@code bridgeClasspath}, is loaded anew for each request. {@code testClassesDirs} are scanned for tests, and the
+ * {@code bridgeClasspath}, is loaded anew when its content or the request properties change, and otherwise kept. {@code testClassesDirs} are scanned for tests, and the
  * JUnit XML goes to {@code resultsDir}. {@code idleSeconds} is how long the server waits for a request before it
  * exits. {@code startSeconds} bounds how long a new server may take to report ready; one that takes longer is ended.
  * {@code answerSeconds} bounds how long an existing server may take to answer a ping or a stop; one that takes longer
