@@ -483,6 +483,22 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         runTest("formver.compiler-plugin/testData/diagnostics/targets/arraydeque/lastIndexOfPre80661.kt");
       }
     }
+
+    @Nested
+    @TestMetadata("formver.compiler-plugin/testData/diagnostics/targets/datetime")
+    @TestDataPath("$PROJECT_ROOT")
+    public class Datetime {
+      @Test
+      public void testAllFilesPresentInDatetime() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/diagnostics/targets/datetime"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      }
+
+      @Test
+      @TestMetadata("LongClamp.kt")
+      public void testLongClamp() {
+        runTest("formver.compiler-plugin/testData/diagnostics/targets/datetime/LongClamp.kt");
+      }
+    }
   }
 
   @Nested

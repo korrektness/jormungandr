@@ -24,7 +24,7 @@ class PortDeviationChecker : Closeable {
         disposable, CompilerConfiguration(), EnvironmentConfigFiles.JVM_CONFIG_FILES,
     )
     private val factory = KtPsiFactory(environment.project, false)
-    private val erasedAnnotations = setOf("Pure", "Unique", "Borrowed", "WrappingIntArithmetic", "TrustedElementEquality")
+    private val erasedAnnotations = setOf("Pure", "Unique", "Borrowed", "WrappingIntArithmetic", "WrappingLongArithmetic", "TrustedElementEquality")
 
     override fun close() = Disposer.dispose(disposable)
 
@@ -91,6 +91,9 @@ class PortDeviationChecker : Closeable {
             append(source, cursor, source.length)
         }
     }
+
+    fun declarations(source: String): List<Pair<String?, String>> =
+        parse(portSource(source)).declarations.map { (it as? KtNamedDeclaration)?.name to it.text }
 
     /** Normalize regression names, retaining annotations, parameter/return types and the body. */
     fun normalizedFunction(source: String, name: String): String {
