@@ -129,37 +129,46 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
                         decl.lambdaPrograms.orEmpty().filter { it.shouldVerify }.map { it.program }
                     if (vacuityReport == null) group else group.map(VacuityProbe::probe)
                 }
-                val cacheDirectory = System.getProperty("formver.verificationCacheDirectory")?.let { Path.of(it) }
+                val configuration = TestVerifierConfiguration(
+                    z3 = z3,
+                    counterexamples = FormVerDirectives.COUNTEREXAMPLES in module.directives,
+                    timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS,
+                    cacheDirectory = System.getProperty("formver.verificationCacheDirectory")?.let { Path.of(it) },
+                    cacheReportDirectory = System.getProperty("formver.verificationCacheReport")?.let { Path.of(it) },
+                    cacheRefresh = java.lang.Boolean.getBoolean("formver.verificationCacheRefresh"),
+                    cacheColdSample = System.getProperty("formver.verificationColdSample"),
+                )
                 val progress = VerificationProgress(MessageCollector.NONE)
                 val timingReport = DeclarationVerificationReport.fromEnvironment()
-                val attempts = OrderedVerificationExecutor.shared.mapWithResource(
-                    toVerify.zip(programs),
-                    { TestVerifier(z3, cacheDirectory, FormVerDirectives.COUNTEREXAMPLES in module.directives) },
-                ) { verifier, (owner, group) ->
-                    val errors = mutableListOf<VerifierError>()
-                    var invalid: InvalidViperProgramException? = null
-                    var timeout: Failure? = null
-                    val verify: ((String) -> Unit) -> String = { onCacheStatus ->
-                        try {
-                            timeout = progress.run(owner.second.verificationLabel, owner.second.source) {
-                                group.forEach { verifier.verify(it, onCacheStatus) { error -> errors.add(error) } }
+                val attempts = OrderedVerificationExecutor.shared.map(toVerify.zip(programs)) { (owner, group) ->
+                    verifierPool.checkout(configuration).use { lease ->
+                        val errors = mutableListOf<VerifierError>()
+                        var invalid: InvalidViperProgramException? = null
+                        var timeout: Failure? = null
+                        val verify: ((String) -> Unit) -> String = { onCacheStatus ->
+                            try {
+                                timeout = progress.run(owner.second.verificationLabel, owner.second.source) {
+                                    lease.run { verifier ->
+                                        group.forEach { verifier.verify(it, onCacheStatus) { error -> errors.add(error) } }
+                                    }
+                                }
+                            } catch (error: InvalidViperProgramException) {
+                                invalid = error
                             }
-                        } catch (error: InvalidViperProgramException) {
-                            invalid = error
+                            when {
+                                timeout != null -> "timeout"
+                                invalid != null -> "invalid"
+                                errors.isNotEmpty() -> "failed"
+                                else -> "verified"
+                            }
                         }
-                        when {
-                            timeout != null -> "timeout"
-                            invalid != null -> "invalid"
-                            errors.isNotEmpty() -> "failed"
-                            else -> "verified"
-                        }
+                        if (timingReport == null) verify({})
+                        else timingReport.run(
+                            owner.first.originalFile.path, owner.second.verificationLabel, owner.second.source?.startOffset,
+                            DEFAULT_VERIFICATION_TIMEOUT_SECONDS, verify,
+                        )
+                        VerificationAttempt(errors, invalid, timeout)
                     }
-                    if (timingReport == null) verify({})
-                    else timingReport.run(
-                        owner.first.originalFile.path, owner.second.verificationLabel, owner.second.source?.startOffset,
-                        DEFAULT_VERIFICATION_TIMEOUT_SECONDS, verify,
-                    )
-                    VerificationAttempt(errors, invalid, timeout)
                 }
                 toVerify.zip(attempts).zip(programs).forEach { (verified, group) ->
                     val (owner, probedAttempt) = verified
@@ -192,16 +201,24 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
         }
     }
 
+    companion object {
+        private val verifierPool = TestVerifierPool(4, create = ::TestVerifier).also { pool ->
+            Runtime.getRuntime().addShutdownHook(Thread({ pool.close() }, "formver-test-verifiers-shutdown"))
+        }
+    }
+
     /** Opt-in fixtures also exercise frontend reuse across Silicon's global configuration changes. */
-    private class TestVerifier(z3: String, cache: Path?, private val counterexamples: Boolean) : Closeable {
+    private class TestVerifier(configuration: TestVerifierConfiguration) : Closeable {
+        private val counterexamples = configuration.counterexamples
         private val verifier = SiliconFrontend(
-            z3, timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS, cacheDirectory = cache, counterexamples = counterexamples,
-            cacheReportDirectory = System.getProperty("formver.verificationCacheReport")?.let { Path.of(it) },
-            cacheRefresh = java.lang.Boolean.getBoolean("formver.verificationCacheRefresh"),
-            cacheColdSample = System.getProperty("formver.verificationColdSample"),
+            configuration.z3, timeoutSeconds = configuration.timeoutSeconds,
+            cacheDirectory = configuration.cacheDirectory, counterexamples = counterexamples,
+            cacheReportDirectory = configuration.cacheReportDirectory,
+            cacheRefresh = configuration.cacheRefresh,
+            cacheColdSample = configuration.cacheColdSample,
         )
         private val ordinary = if (counterexamples) {
-            SiliconFrontend(z3, timeoutSeconds = DEFAULT_VERIFICATION_TIMEOUT_SECONDS, counterexamples = false)
+            SiliconFrontend(configuration.z3, timeoutSeconds = configuration.timeoutSeconds, counterexamples = false)
         } else null
 
         fun verify(program: viper.silver.ast.Program, onCacheStatus: (String) -> Unit, onFailure: (VerifierError) -> Unit) {
