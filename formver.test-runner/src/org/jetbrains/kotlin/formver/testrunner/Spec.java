@@ -18,8 +18,10 @@ import java.util.stream.Stream;
 
 /** A run's spec file; {@link Client} documents its keys. */
 final class Spec {
-    /** How long an existing server may take to answer a ping or a stop when the spec sets no {@code answerSeconds}. */
+    /** The {@code answerSeconds} of a spec that sets none; {@link Client} documents what it bounds. */
     static final long DEFAULT_ANSWER_SECONDS = 30;
+    /** The {@code startSeconds} of a spec that sets none; {@link Client} documents what it bounds. */
+    static final long DEFAULT_START_SECONDS = 120;
 
     final String slot;
     final String java;
@@ -35,6 +37,7 @@ final class Spec {
     final Path resultsDir;
     final long idleSeconds;
     final Duration answerBound;
+    final Duration startBound;
 
     /** Relative paths in the spec are relative to {@code workingDir}, where the server runs. */
     private Spec(Properties properties, Path file) {
@@ -55,11 +58,16 @@ final class Spec {
         }
         resultsDir = workingDir.resolve(required(properties, "resultsDir", file)).normalize();
         idleSeconds = Long.parseLong(required(properties, "idleSeconds", file));
-        answerBound = Duration.ofSeconds(Long.parseLong(properties.getProperty("answerSeconds", Long.toString(DEFAULT_ANSWER_SECONDS))));
+        answerBound = seconds(properties, "answerSeconds", DEFAULT_ANSWER_SECONDS);
+        startBound = seconds(properties, "startSeconds", DEFAULT_START_SECONDS);
         // A slot names a directory beside the other slots, so "." and ".." are not slots.
         if (!slot.matches("[A-Za-z0-9._-]+") || slot.equals(".") || slot.equals("..")) {
             throw new Client.UsageException(file + ": slot '" + slot + "' is not a plain name.");
         }
+    }
+
+    private static Duration seconds(Properties properties, String name, long fallback) {
+        return Duration.ofSeconds(Long.parseLong(properties.getProperty(name, Long.toString(fallback))));
     }
 
     private List<String> paths(String value) {
@@ -89,6 +97,23 @@ final class Spec {
         return eq < 0 ? arg.substring(2) : arg.substring(2, eq);
     }
 
+    /** The paths a JVM argument may name: a {@code -D} value, an argument file, an agent or a boot classpath. */
+    private static List<String> namedFiles(String arg) {
+        if (arg.startsWith("@")) return List.of(arg.substring(1));
+        String value = null;
+        if (propertyName(arg) != null) {
+            int eq = arg.indexOf('=');
+            if (eq >= 0) value = arg.substring(eq + 1);
+        } else if (arg.startsWith("-javaagent:") || arg.startsWith("-agentpath:")) {
+            String agent = arg.substring(arg.indexOf(':') + 1);
+            int eq = agent.indexOf('=');
+            return List.of(eq < 0 ? agent : agent.substring(0, eq));
+        } else if (arg.startsWith("-Xbootclasspath/a:")) {
+            value = arg.substring("-Xbootclasspath/a:".length());
+        }
+        return value == null ? List.of() : List.of(value.split(File.pathSeparator));
+    }
+
     List<String> fixedJvmArgs() {
         List<String> fixed = new ArrayList<>();
         for (String arg : jvmArgs) {
@@ -105,6 +130,11 @@ final class Spec {
         StringBuilder text = new StringBuilder();
         text.append("protocol ").append(protocolVersion).append('\n');
         text.append("java ").append(java).append(' ').append(fingerprint(Path.of(java))).append('\n');
+        // The launcher can stay put while the runtime beside it is replaced.
+        Path home = Path.of(java).toRealPath().getParent().getParent();
+        for (String file : List.of("release", "lib/modules")) {
+            text.append("java-runtime:").append(file).append(' ').append(fingerprint(home.resolve(file))).append('\n');
+        }
         for (String entry : serverClasspath) {
             text.append("server-classpath:").append(entry).append(' ').append(fingerprint(Path.of(entry))).append('\n');
         }
@@ -118,16 +148,14 @@ final class Spec {
         for (String entry : sharedClasspath) {
             text.append("shared-classpath:").append(entry).append(' ').append(fingerprint(Path.of(entry))).append('\n');
         }
-        // A fixed property can name a file the tests read, such as a jar handed to the compiler under test. The
-        // server resolves a relative name against its working directory.
-        for (String arg : fixedJvmArgs()) {
-            int eq = arg.indexOf('=');
-            if (propertyName(arg) == null || eq < 0) continue;
-            for (String part : arg.substring(eq + 1).split(File.pathSeparator)) {
+        // A fixed argument can name a file the JVM or the tests read, such as an agent or a jar handed to the
+        // compiler under test. The server resolves a relative name against its working directory.
+        for (String arg : fixed) {
+            for (String part : namedFiles(arg)) {
                 if (part.isEmpty()) continue;
                 Path named = workingDir.resolve(part);
                 if (Files.isRegularFile(named)) {
-                    text.append("property-file:").append(named).append(' ').append(fingerprint(named)).append('\n');
+                    text.append("jvm-arg-file:").append(named).append(' ').append(fingerprint(named)).append('\n');
                 }
             }
         }

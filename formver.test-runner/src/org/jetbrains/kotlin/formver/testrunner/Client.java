@@ -45,13 +45,14 @@ import java.util.concurrent.TimeoutException;
  * {@code sharedClasspath} stays loaded for the server's life; the {@code requestClasspath}, followed by
  * {@code bridgeClasspath}, is loaded anew for each request. {@code testClassesDirs} are scanned for tests, and the
  * JUnit XML goes to {@code resultsDir}. {@code idleSeconds} is how long the server waits for a request before it
- * exits. {@code answerSeconds} bounds how long an existing server may take to answer a ping or a stop;
- * one that does not answer in time is replaced.
+ * exits. {@code startSeconds} bounds how long a new server may take to report ready; one that takes longer is ended.
+ * {@code answerSeconds} bounds how long an existing server may take to answer a ping or a stop; one that takes longer
+ * is replaced.
  *
- * <p>A server is reused only when its key matches: the Java executable, the server classpath, the JVM arguments
- * other than request properties, the environment, the working directory, and the content of the shared classpath
- * and of every file a fixed {@code -D} value names. File content is identified by size, modification time and file
- * key, as Gradle identifies unchanged files.
+ * <p>A server is reused only when its key matches: the Java executable and runtime, the server classpath, the JVM
+ * arguments other than request properties, the environment, the working directory, the idle timeout, and the
+ * content of the shared classpath and of every file a fixed JVM argument names. File content is identified by size,
+ * modification time and file key, as Gradle identifies unchanged files.
  *
  * <p>Exit status: 0 when every test passed, 1 when a test failed or no test matched a pattern, 2 when the server
  * could not run the request.
@@ -347,7 +348,12 @@ public final class Client {
             process.getOutputStream().close();
             String ready;
             try (Reader reader = new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8)) {
-                ready = new BufferedReader(reader).readLine();
+                ready = Protocol.within(spec.startBound, () -> new BufferedReader(reader).readLine(),
+                    process::destroyForcibly);
+            } catch (TimeoutException e) {
+                process.onExit().join();
+                throw new RunnerException("the server did not report ready within " + spec.startBound.toSeconds() +
+                    "s. Its log ends:\n" + logTail());
             }
             if (ready == null || !ready.startsWith("ready ")) {
                 int status;

@@ -156,6 +156,17 @@ class ClientTest {
     }
 
     @Test
+    void aChangedArgumentFileStartsANewJvm() throws Exception {
+        Files.writeString(workingDir.resolve("jvm.args"), "-Dfixture.fixed=x");
+        assertEquals(0, run(spec("a", List.of("@jvm.args"))));
+        Record first = Record.read(record);
+        Files.writeString(workingDir.resolve("jvm.args"), "-Dfixture.fixed=yy");
+        assertEquals(0, run(spec("a", List.of("@jvm.args"))));
+        Record second = Record.read(record);
+        assertNotEquals(first.pid, second.pid);
+    }
+
+    @Test
     void eachWorkingDirectoryHasItsOwnJvm() throws Exception {
         assertEquals(0, run(spec("a", "x")));
         Record first = Record.read(record);

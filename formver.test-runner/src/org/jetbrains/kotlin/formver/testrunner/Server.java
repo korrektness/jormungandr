@@ -57,7 +57,24 @@ public final class Server {
         this.idleSeconds = idleSeconds;
     }
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * Ends the JVM however serving ends: a thread a test left running would keep it alive, and the client waits for
+     * the server to exit.
+     */
+    public static void main(String[] args) {
+        int status = 0;
+        try {
+            start(args);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            status = 1;
+        }
+        System.out.flush();
+        System.err.flush();
+        Runtime.getRuntime().halt(status);
+    }
+
+    private static void start(String[] args) throws IOException {
         Path socket = Path.of(args[0]);
         String key = args[1];
         List<String> sharedEntries = Files.readAllLines(Path.of(args[2]));
@@ -80,9 +97,6 @@ public final class Server {
             System.setErr(logStream);
             new Server(socket, key, shared, idleSeconds).serve(server);
         }
-        // A thread a test left running would keep the JVM alive, and the client waits for it to exit.
-        System.out.flush();
-        Runtime.getRuntime().halt(0);
     }
 
     private static URL[] urls(List<String> entries) throws IOException {
