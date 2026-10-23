@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.formver.locality.plugin.ConstructionPhases
+import org.jetbrains.kotlin.formver.common.SemanticOptIn
 
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PropertyAccessEmbedding
@@ -44,11 +45,17 @@ class MethodConverter(
     override val wrapsIntArithmetic: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.wrapsIntArithmetic(session) == true
 
+    override val wrapsLongArithmetic: Boolean =
+        (signature as? NamedFunctionSignature)?.symbol?.wrapsLongArithmetic(session) == true
+
     override val trustsElementEquality: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.trustsElementEquality(session) == true
 
     init {
-        if (wrapsIntArithmetic) (signature as? NamedFunctionSignature)?.symbol?.let { trust.recordWrappingArithmetic(it) }
+        (signature as? NamedFunctionSignature)?.symbol?.let {
+            if (wrapsIntArithmetic) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_INT)
+            if (wrapsLongArithmetic) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_LONG)
+        }
         if (trustsElementEquality) (signature as? NamedFunctionSignature)?.symbol?.let { trust.recordElementEquality(it) }
     }
 

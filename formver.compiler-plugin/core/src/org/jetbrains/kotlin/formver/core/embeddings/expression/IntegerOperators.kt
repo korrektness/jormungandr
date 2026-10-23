@@ -112,6 +112,27 @@ object IntegerOperators {
         }
     }
 
+    fun wrapLong(value: Exp, pos: Position = Position.NoPosition, info: Info = Info.NoInfo): Exp {
+        // These are mathematical integers: H and 2*H exceed the host Long range.
+        val half = Exp.Minus(Exp.IntLit(kotlin.Long.MIN_VALUE))
+        val modulus = Exp.Mul(2.toExp(), half)
+        return Exp.Sub(value, Exp.Mul(modulus, Exp.Div(Exp.Add(value, half), modulus)), pos, info)
+    }
+
+    val wrappingLongBinary: Map<Binary, BinaryOperatorExpEmbeddingTemplate> = binary.keys.filter {
+        it.result == IntegerKind.Long && it.operation in listOf("plus", "minus", "times")
+    }.associateWith { op ->
+        buildBinaryOperator {
+            setName("wrapping${op.operation}${op.receiver.name}${op.argument.name}")
+            withSignature {
+                withParam { existing(op.receiver.pretype) }
+                withParam { existing(op.argument.pretype) }
+                withReturnType { existing(IntegerKind.Long.pretype) }
+            }
+            viperImplementation { wrapLong(binaryValue(op.operation, args[0], args[1]), pos, info) }
+        }
+    }
+
     val unary: Map<Unary, UnaryOperatorExpEmbeddingTemplate> = buildMap {
         for (a in IntegerKind.entries) {
             val operations = if (a == IntegerKind.Char) listOf("inc", "dec")
@@ -152,5 +173,5 @@ object IntegerOperators {
         })
     }
 
-    val templates get() = binary.values + wrappingBinary.values + unary.values
+    val templates get() = binary.values + wrappingBinary.values + wrappingLongBinary.values + unary.values
 }

@@ -62,9 +62,9 @@ SnaKt lists the trusted pieces that each verified declaration's program uses:
 - `library contract`: a contract that `conversion/StdLibConverter.kt` gives a
   library function by name.
 
-The report also lists the `@WrappingIntArithmetic` semantic opt-in described in
+The report also lists the arithmetic semantic opt-ins described in
 SPECIFICATIONS.md, "Integer arithmetic". Semantic opt-ins are separate from trusted
-assumptions and excluded from trust counts. It introduces no trust-register entry.
+assumptions and excluded from trust counts. They introduce no trust-register entry.
 
 The report's first line counts the verified declarations, those that rely on a
 trusted piece, and the distinct trusted pieces they rely on, in total and by kind.
@@ -224,8 +224,19 @@ types ranges over the same values. The injection into `Ref` is one-to-one, so
 equal values are equal references; "Boxed identity" says why `===` cannot
 observe that.
 
+`embeddings/expression/IntegerOperators.kt::wrapLong` normalizes a mathematical
+result `p` before injection: with `H = 2^63` and `M = 2^64`, it returns
+`p - M * floor((p + H) / M)`. Viper division by positive `M` is floor division.
+The floor inequality places the result in `[-H, H)`, and its difference from `p`
+is a multiple of `M`; these uniquely determine the signed 64-bit result even for
+full-range products. The constants are mathematical AST expressions. Injection
+therefore asserts bounds on the normalized value, rather than the raw product.
+The mode selection rules live in SPECIFICATIONS.md, "Integer arithmetic".
+
 Tests: `verification/checked_integer.kt::addOverflow,constantOverflow`,
-`verification/string_domain.kt::overlongPureResult`.
+`verification/wrapping_arithmetic.kt`, `verification/wrapping_long_arithmetic.kt`
+(endpoint products, signed negative products, checked isolation and branch-local
+nonvacuity probes), `verification/string_domain.kt::overlongPureResult`.
 
 ### String literals
 

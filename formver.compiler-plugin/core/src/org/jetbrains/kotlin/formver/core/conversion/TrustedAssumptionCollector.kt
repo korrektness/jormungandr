@@ -47,8 +47,8 @@ class TrustedAssumptionCollector(
     val semanticOptIns = sortedSetOf<SemanticOptIn>()
 
     /** Records an exact arithmetic mode so the report exposes where overflow obligations are disabled. */
-    fun recordWrappingArithmetic(symbol: FirCallableSymbol<*>) {
-        semanticOptIns += SemanticOptIn(symbol.trustName)
+    fun recordWrappingArithmetic(symbol: FirCallableSymbol<*>, kind: SemanticOptIn.Kind) {
+        semanticOptIns += SemanticOptIn(kind, symbol.trustName)
     }
 
     /** Records the executed element equality assumption of [symbol]. */

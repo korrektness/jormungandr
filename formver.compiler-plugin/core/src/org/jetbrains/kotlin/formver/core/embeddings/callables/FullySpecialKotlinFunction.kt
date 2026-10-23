@@ -99,7 +99,9 @@ object SpecialKotlinFunctions {
                 withReturnType { existing(op.result.pretype) }
             }
             addFunction(signature, SpecialPackages.kotlin, className = op.receiver.name, name = op.operation) { args, ctx ->
-                val operation = if (ctx.wrapsIntArithmetic) IntegerOperators.wrappingBinary[op] ?: template else template
+                val operation = (if (ctx.wrapsLongArithmetic) IntegerOperators.wrappingLongBinary[op] else null)
+                    ?: (if (ctx.wrapsIntArithmetic) IntegerOperators.wrappingBinary[op] else null)
+                    ?: template
                 operation(args[0], args[1])
             }
         }

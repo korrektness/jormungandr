@@ -1,0 +1,1149 @@
+/wrapping_long_arithmetic.kt: info: Generated Viper text for longBoundaries:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method longBoundaries(max: Ref, min: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(max), longType())
+  requires isSubtype(typeOf(min), longType())
+  requires longFromRef(max) == 9223372036854775807
+  requires longFromRef(min) == -9223372036854775808
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  assert longFromRef(max) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    longFromRef(min)
+  assert longFromRef(min) - 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(min) - 1 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    longFromRef(max)
+  assert longFromRef(max) + longFromRef(max) -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) + longFromRef(max) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(2))) in
+      -longFromRef(longToRef(2)))
+  assert longFromRef(min) + longFromRef(min) -
+    2 * --9223372036854775808 *
+    ((longFromRef(min) + longFromRef(min) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    0
+  assert longFromRef(max) - longFromRef(min) -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) - longFromRef(min) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1)))
+  assert 9223372036854775807 + 1 -
+    2 * --9223372036854775808 *
+    ((9223372036854775807 + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    -9223372036854775808
+  assert longFromRef(min) *
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1))) -
+    2 * --9223372036854775808 *
+    ((longFromRef(min) *
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1))) +
+    --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    longFromRef(min)
+  assert longFromRef(max) * 2 -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) * 2 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(2))) in
+      -longFromRef(longToRef(2)))
+  assert longFromRef(min) * 2 -
+    2 * --9223372036854775808 *
+    ((longFromRef(min) * 2 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    0
+  assert longFromRef(max) * longFromRef(max) -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) * longFromRef(max) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    1
+  assert longFromRef(min) * longFromRef(min) -
+    2 * --9223372036854775808 *
+    ((longFromRef(min) * longFromRef(min) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    0
+  refute false
+  n := max
+  n := wrappingplusLongLong(n, longToRef(1))
+  assert longFromRef(n) == longFromRef(min)
+  n := wrappingminusLongLong(n, longToRef(1))
+  assert longFromRef(n) == longFromRef(max)
+  n := wrappingtimesLongLong(n, longToRef(2))
+  assert longFromRef(n) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(2))) in
+      -longFromRef(longToRef(2)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for wrongSignedResults:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongSignedResults(max: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(max), longType())
+  requires longFromRef(max) == 9223372036854775807
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (longFromRef(max) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808)) <
+    longFromRef(max) ?
+      -1 :
+      (longFromRef(max) + 1 -
+      2 * --9223372036854775808 *
+      ((longFromRef(max) + 1 + --9223372036854775808) \
+      (2 * --9223372036854775808)) >
+      longFromRef(max) ?
+        1 :
+        0)) >
+    0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for wrongSignedProduct:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongSignedProduct(min: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(min), longType())
+  requires longFromRef(min) == -9223372036854775808
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert longFromRef(min) *
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1))) -
+    2 * --9223372036854775808 *
+    ((longFromRef(min) *
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1))) +
+    --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    9223372036854775807
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for longExactAndNegative:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method longExactAndNegative(x: Ref, y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires isSubtype(typeOf(y), longType())
+  requires longFromRef(x) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(7))) in
+      -longFromRef(longToRef(7)))
+  requires longFromRef(y) == 3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert longFromRef(x) + longFromRef(y) -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) + longFromRef(y) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(4))) in
+      -longFromRef(longToRef(4)))
+  assert longFromRef(x) - longFromRef(y) -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) - longFromRef(y) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(10))) in
+      -longFromRef(longToRef(10)))
+  assert longFromRef(x) * longFromRef(y) -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) * longFromRef(y) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(21))) in
+      -longFromRef(longToRef(21)))
+  assert longFromRef(x) *
+    (let anon ==
+      (unaryMinusLong(y)) in
+      -longFromRef(y)) -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) * (let anon == (unaryMinusLong(y)) in -longFromRef(y)) +
+    --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    21
+  assert longFromRef(x) * 0 -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) * 0 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    0
+  assert longFromRef(x) * 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) * 1 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    longFromRef(x)
+  assert longFromRef(x) + 0 -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) + 0 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    longFromRef(x)
+  assert longFromRef(x) - 0 -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) - 0 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    longFromRef(x)
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for longMixedOperands:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method longMixedOperands(max: Ref, one: Ref, two: Ref, three: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(max), longType())
+  requires isSubtype(typeOf(one), byteType())
+  requires isSubtype(typeOf(two), shortType())
+  requires isSubtype(typeOf(three), intType())
+  requires longFromRef(max) == 9223372036854775807
+  requires byteFromRef(one) ==
+    (let anon ==
+      (convertIntToByte(intToRef(1))) in
+      intFromRef(intToRef(1)))
+  requires shortFromRef(two) ==
+    (let anon ==
+      (convertIntToShort(intToRef(2))) in
+      intFromRef(intToRef(2)))
+  requires intFromRef(three) == 3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert longFromRef(max) + byteFromRef(one) -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) + byteFromRef(one) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    -9223372036854775808
+  assert byteFromRef(one) + longFromRef(max) -
+    2 * --9223372036854775808 *
+    ((byteFromRef(one) + longFromRef(max) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    -9223372036854775808
+  assert longFromRef(max) - shortFromRef(two) -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) - shortFromRef(two) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    9223372036854775807 - 2 -
+    2 * --9223372036854775808 *
+    ((9223372036854775807 - 2 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+  assert shortFromRef(two) - longFromRef(max) -
+    2 * --9223372036854775808 *
+    ((shortFromRef(two) - longFromRef(max) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    -9223372036854775808 + 3 -
+    2 * --9223372036854775808 *
+    ((-9223372036854775808 + 3 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+  assert longFromRef(max) * intFromRef(three) -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) * intFromRef(three) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    9223372036854775807 - 2 -
+    2 * --9223372036854775808 *
+    ((9223372036854775807 - 2 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+  assert intFromRef(three) * longFromRef(max) -
+    2 * --9223372036854775808 *
+    ((intFromRef(three) * longFromRef(max) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    9223372036854775807 - 2 -
+    2 * --9223372036854775808 *
+    ((9223372036854775807 - 2 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+  assert longFromRef(max) * shortFromRef(two) -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) * shortFromRef(two) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(2))) in
+      -longFromRef(longToRef(2)))
+  assert shortFromRef(two) * longFromRef(max) -
+    2 * --9223372036854775808 *
+    ((shortFromRef(two) * longFromRef(max) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(2))) in
+      -longFromRef(longToRef(2)))
+  assert longFromRef(max) - byteFromRef(one) -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) - byteFromRef(one) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    9223372036854775807 - 1 -
+    2 * --9223372036854775808 *
+    ((9223372036854775807 - 1 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+  assert byteFromRef(one) - longFromRef(max) -
+    2 * --9223372036854775808 *
+    ((byteFromRef(one) - longFromRef(max) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    -9223372036854775808 + 2 -
+    2 * --9223372036854775808 *
+    ((-9223372036854775808 + 2 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+  assert longFromRef(max) + intFromRef(three) -
+    2 * --9223372036854775808 *
+    ((longFromRef(max) + intFromRef(three) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    -9223372036854775808 + 2 -
+    2 * --9223372036854775808 *
+    ((-9223372036854775808 + 2 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+  assert intFromRef(three) + longFromRef(max) -
+    2 * --9223372036854775808 *
+    ((intFromRef(three) + longFromRef(max) + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    -9223372036854775808 + 2 -
+    2 * --9223372036854775808 *
+    ((-9223372036854775808 + 2 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for longSuccessor:
+function longSuccessor(x: Ref): Ref
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(x) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+{
+  wrappingplusLongInt(x, intToRef(1))
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for longProduct:
+function longProduct(x: Ref, y: Ref): Ref
+  requires isSubtype(typeOf(x), longType())
+  requires isSubtype(typeOf(y), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(x) * longFromRef(y) -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) * longFromRef(y) + --9223372036854775808) \
+    (2 * --9223372036854775808))
+{
+  wrappingtimesLongLong(x, y)
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for specificationOnly:
+function specificationOnly(x: Ref): Ref
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) == 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(x) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+{
+  longToRef(-9223372036854775808)
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for checkedLongCaller:
+function longProduct(x: Ref, y: Ref): Ref
+  requires isSubtype(typeOf(x), longType())
+  requires isSubtype(typeOf(y), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(x) * longFromRef(y) -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) * longFromRef(y) + --9223372036854775808) \
+    (2 * --9223372036854775808))
+{
+  wrappingtimesLongLong(x, y)
+}
+
+function longSuccessor(x: Ref): Ref
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(x) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+{
+  wrappingplusLongInt(x, intToRef(1))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function specificationOnly(x: Ref): Ref
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) == 9223372036854775807
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) ==
+    longFromRef(x) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(x) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808))
+{
+  longToRef(-9223372036854775808)
+}
+
+method checkedLongCaller(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires longFromRef(x) == 9223372036854775807
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  var v_ret_6: Ref
+  assert longFromRef(longSuccessor(x)) == -9223372036854775808
+  assert longFromRef(specificationOnly(x)) == -9223372036854775808
+  v_ret_6 := wrappingplusLongInt(x, intToRef(1))
+  goto lbl_ret_6
+  label lbl_ret_6
+  anon := v_ret_6
+  assert longFromRef(anon) == -9223372036854775808
+  assert longFromRef(longProduct(x, x)) == 1
+  assert plusLongInt(x, intToRef(1)) == plusLongInt(x, intToRef(1))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method longWrappingInline(x: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(ret_5), longType())
+
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for longWrappingInline:
+method longWrappingInline(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := wrappingplusLongInt(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for longCheckedInline:
+method longCheckedInline(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  v_ret_0 := plusLongInt(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for wrappingLongCaller:
+method longCheckedInline(x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(ret_1), longType())
+
+
+method wrappingLongCaller(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(v_ret_0), longType())
+{
+  var v_ret_2: Ref
+  v_ret_2 := plusLongInt(x, intToRef(1))
+  goto lbl_ret_2
+  label lbl_ret_2
+  v_ret_0 := v_ret_2
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for checkedLongOperations:
+method checkedLongOperations(x: Ref, choice: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires isSubtype(typeOf(choice), intType())
+  requires longFromRef(x) == 9223372036854775807
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := choice
+  if (intFromRef(anon) == 0) {
+    assert plusLongInt(x, intToRef(1)) == plusLongInt(x, intToRef(1))
+  } elseif (intFromRef(anon) == 1) {
+    assert minusLongInt(minusLongInt(unaryMinusLong(x), intToRef(1)), intToRef(1)) ==
+      minusLongInt(minusLongInt(unaryMinusLong(x), intToRef(1)), intToRef(1))
+  } else {
+    assert timesLongInt(x, intToRef(2)) == timesLongInt(x, intToRef(2))}
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for intModeLeavesLongChecked:
+method intModeLeavesLongChecked(x: Ref, choice: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires isSubtype(typeOf(choice), intType())
+  requires longFromRef(x) == 9223372036854775807
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := choice
+  if (intFromRef(anon) == 0) {
+    assert plusLongInt(x, intToRef(1)) == plusLongInt(x, intToRef(1))
+  } elseif (intFromRef(anon) == 1) {
+    assert minusLongInt(minusLongInt(unaryMinusLong(x), intToRef(1)), intToRef(1)) ==
+      minusLongInt(minusLongInt(unaryMinusLong(x), intToRef(1)), intToRef(1))
+  } else {
+    assert timesLongInt(x, intToRef(2)) == timesLongInt(x, intToRef(2))}
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for longModeLeavesIntChecked:
+method longModeLeavesIntChecked(x: Ref, choice: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(choice), intType())
+  requires intFromRef(x) == 2147483647
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := choice
+  if (intFromRef(anon) == 0) {
+    assert plusInts(x, intToRef(1)) == plusInts(x, intToRef(1))
+  } elseif (intFromRef(anon) == 1) {
+    assert minusInts(minusInts(negInt(x), intToRef(1)), intToRef(1)) ==
+      minusInts(minusInts(negInt(x), intToRef(1)), intToRef(1))
+  } else {
+    assert timesInts(x, intToRef(2)) == timesInts(x, intToRef(2))}
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for bothWidths:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method bothWidths(i: Ref, l: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(i), intType())
+  requires isSubtype(typeOf(l), longType())
+  requires intFromRef(i) == 2147483647
+  requires longFromRef(l) == 9223372036854775807
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (intFromRef(i) + 1 > 2147483647 ?
+      intFromRef(i) + 1 - 4294967296 :
+      (intFromRef(i) + 1 < -2147483648 ?
+        intFromRef(i) + 1 + 4294967296 :
+        intFromRef(i) + 1)) ==
+    -2147483648
+  assert longFromRef(l) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(l) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    -9223372036854775808
+  assert ((intFromRef(i) + 1 > 2147483647 ?
+      intFromRef(i) + 1 - 4294967296 :
+      (intFromRef(i) + 1 < -2147483648 ?
+        intFromRef(i) + 1 + 4294967296 :
+        intFromRef(i) + 1)) -
+    1 >
+    2147483647 ?
+      (intFromRef(i) + 1 > 2147483647 ?
+        intFromRef(i) + 1 - 4294967296 :
+        (intFromRef(i) + 1 < -2147483648 ?
+          intFromRef(i) + 1 + 4294967296 :
+          intFromRef(i) + 1)) -
+      1 -
+      4294967296 :
+      ((intFromRef(i) + 1 > 2147483647 ?
+        intFromRef(i) + 1 - 4294967296 :
+        (intFromRef(i) + 1 < -2147483648 ?
+          intFromRef(i) + 1 + 4294967296 :
+          intFromRef(i) + 1)) -
+      1 <
+      -2147483648 ?
+        (intFromRef(i) + 1 > 2147483647 ?
+          intFromRef(i) + 1 - 4294967296 :
+          (intFromRef(i) + 1 < -2147483648 ?
+            intFromRef(i) + 1 + 4294967296 :
+            intFromRef(i) + 1)) -
+        1 +
+        4294967296 :
+        (intFromRef(i) + 1 > 2147483647 ?
+          intFromRef(i) + 1 - 4294967296 :
+          (intFromRef(i) + 1 < -2147483648 ?
+            intFromRef(i) + 1 + 4294967296 :
+            intFromRef(i) + 1)) -
+        1)) ==
+    intFromRef(i)
+  assert longFromRef(l) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(l) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808)) -
+    1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(l) + 1 -
+    2 * --9223372036854775808 *
+    ((longFromRef(l) + 1 + --9223372036854775808) \
+    (2 * --9223372036854775808)) -
+    1 +
+    --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    longFromRef(l)
+  assert longFromRef(l) * 2 -
+    2 * --9223372036854775808 *
+    ((longFromRef(l) * 2 + --9223372036854775808) \
+    (2 * --9223372036854775808)) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(2))) in
+      -longFromRef(longToRef(2)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for otherLongOperationsStayChecked:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method otherLongOperationsStayChecked(x: Ref, choice: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  requires isSubtype(typeOf(choice), intType())
+  requires longFromRef(x) == -9223372036854775808
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  anon_0 := choice
+  if (intFromRef(anon_0) == 0) {
+    assert unaryMinusLong(x) == unaryMinusLong(x)
+  } elseif (intFromRef(anon_0) == 1) {
+    assert divLongInt(x, intToRef(-1)) == divLongInt(x, intToRef(-1))
+  } elseif (intFromRef(anon_0) == 2) {
+    assert divLongInt(x, intToRef(0)) == divLongInt(x, intToRef(0))
+  } elseif (intFromRef(anon_0) == 3) {
+    assert remLongInt(x, intToRef(0)) == remLongInt(x, intToRef(0))
+  } elseif (intFromRef(anon_0) == 4) {
+    assert convertLongToInt(x) == convertLongToInt(x)
+  } elseif (intFromRef(anon_0) == 5) {
+    var l7_n: Ref
+    var anon_1: Ref
+    l7_n := x
+    anon_1 := l7_n
+    l7_n := decLong(anon_1)
+  } elseif (intFromRef(anon_0) == 6) {
+    var l8_n: Ref
+    var anon_2: Ref
+    l8_n := longToRef(9223372036854775807)
+    anon_2 := l8_n
+    l8_n := incLong(anon_2)
+  } else {
+    assert (let anon_builtin ==
+        (remLongInt(x, intToRef(-1))) in
+        longFromRef(x) -
+        (longFromRef(x) < 0 != intFromRef(intToRef(-1)) < 0 ?
+          -((longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+          (intFromRef(intToRef(-1)) < 0 ?
+            -intFromRef(intToRef(-1)) :
+            intFromRef(intToRef(-1)))) :
+          (longFromRef(x) < 0 ? -longFromRef(x) : longFromRef(x)) \
+          (intFromRef(intToRef(-1)) < 0 ?
+            -intFromRef(intToRef(-1)) :
+            intFromRef(intToRef(-1)))) *
+        intFromRef(intToRef(-1))) ==
+      0}
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for invoke:
+function state(this: Ref): Ref
+  requires isSubtype(typeOf(this), LongLambda())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke(this: Ref, y: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), LongLambda())
+  requires acc(LongLambda_unique(this), write)
+  requires isSubtype(typeOf(y), longType())
+  ensures acc(LongLambda_unique(this), write)
+  ensures isSubtype(typeOf(ret), longType())
+
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for state:
+function state(this: Ref): Ref
+  requires isSubtype(typeOf(this), LongLambda())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for lambdaMode:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_LongLambda_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_LongLambda())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_c_LongLambda_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_LongLambda_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_LongLambda_unique(this), wildcard) in
+      c_LongLambda_f_state(this)) ==
+    old(Lambda0_f_state(this))
+
+
+method create() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+
+
+method lambdaMode() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_LongLambda())
+  ensures acc(c_LongLambda_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := create()
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_LongLambda())
+  Lambda0_c_LongLambda_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+lambdaMode.lambda0.invoke:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function LongLambda_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), LongLambda())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_invoke(this: Ref, y: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  requires isSubtype(typeOf(y), longType())
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_3), longType())
+{
+  v_ret_3 := timesLongInt(y, intToRef(2))
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref, y: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), LongLambda())
+  requires acc(LongLambda_unique(this), write)
+  requires isSubtype(typeOf(y), longType())
+  ensures acc(LongLambda_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), longType())
+
+
+method lambdaMode() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), LongLambda())
+  ensures acc(LongLambda_unique(ret_1), write)
+
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for LongOperator:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), LongOperator())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == LongOperator()
+  fold acc(LongOperator_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(LongOperator_unique(v_ret_0), write)
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for times:
+function times(this: Ref, other: Ref): Ref
+  requires isSubtype(typeOf(this), LongOperator())
+  requires isSubtype(typeOf(other), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == 17
+{
+  longToRef(17)
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for userOperator:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function times(this: Ref, other: Ref): Ref
+  requires isSubtype(typeOf(this), LongOperator())
+  requires isSubtype(typeOf(other), longType())
+  ensures isSubtype(typeOf(result), longType())
+  ensures longFromRef(result) == 17
+{
+  longToRef(17)
+}
+
+method userOperator(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), LongOperator())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert longFromRef(times(x, longToRef(9223372036854775807))) == 17
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for detectProductOverflow:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method detectProductOverflow(a: Ref, b: Ref, choice: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), longType())
+  requires isSubtype(typeOf(b), longType())
+  requires isSubtype(typeOf(choice), intType())
+  requires longFromRef(b) == 2
+  requires boolFromRef((intFromRef(choice) == 0 ?
+      boolToRef(longFromRef(a) == 9223372036854775807) :
+      (intFromRef(choice) == 1 ?
+        boolToRef(longFromRef(a) == -9223372036854775808) :
+        (intFromRef(choice) == 2 ?
+          boolToRef(longFromRef(a) ==
+          (let anon_builtin ==
+            (divLongLong(longToRef(-9223372036854775808), longToRef(2))) in
+            (longFromRef(longToRef(-9223372036854775808)) < 0 !=
+            longFromRef(longToRef(2)) < 0 ?
+              -((longFromRef(longToRef(-9223372036854775808)) < 0 ?
+                -longFromRef(longToRef(-9223372036854775808)) :
+                longFromRef(longToRef(-9223372036854775808))) \
+              (longFromRef(longToRef(2)) < 0 ?
+                -longFromRef(longToRef(2)) :
+                longFromRef(longToRef(2)))) :
+              (longFromRef(longToRef(-9223372036854775808)) < 0 ?
+                -longFromRef(longToRef(-9223372036854775808)) :
+                longFromRef(longToRef(-9223372036854775808))) \
+              (longFromRef(longToRef(2)) < 0 ?
+                -longFromRef(longToRef(2)) :
+                longFromRef(longToRef(2)))))) :
+          (intFromRef(choice) == 3 ?
+            boolToRef(longFromRef(a) == 0) :
+            (intFromRef(choice) == 4 ?
+              boolToRef(longFromRef(a) ==
+              (let anon_builtin ==
+                (divLongLong(longToRef(9223372036854775807), longToRef(2))) in
+                (longFromRef(longToRef(9223372036854775807)) < 0 !=
+                longFromRef(longToRef(2)) < 0 ?
+                  -((longFromRef(longToRef(9223372036854775807)) < 0 ?
+                    -longFromRef(longToRef(9223372036854775807)) :
+                    longFromRef(longToRef(9223372036854775807))) \
+                  (longFromRef(longToRef(2)) < 0 ?
+                    -longFromRef(longToRef(2)) :
+                    longFromRef(longToRef(2)))) :
+                  (longFromRef(longToRef(9223372036854775807)) < 0 ?
+                    -longFromRef(longToRef(9223372036854775807)) :
+                    longFromRef(longToRef(9223372036854775807))) \
+                  (longFromRef(longToRef(2)) < 0 ?
+                    -longFromRef(longToRef(2)) :
+                    longFromRef(longToRef(2)))))) :
+              (intFromRef(choice) == 5 ?
+                boolToRef(longFromRef(a) ==
+                (let anon_builtin ==
+                  (divLongLong(longToRef(9223372036854775807), longToRef(2))) in
+                  (longFromRef(longToRef(9223372036854775807)) < 0 !=
+                  longFromRef(longToRef(2)) < 0 ?
+                    -((longFromRef(longToRef(9223372036854775807)) < 0 ?
+                      -longFromRef(longToRef(9223372036854775807)) :
+                      longFromRef(longToRef(9223372036854775807))) \
+                    (longFromRef(longToRef(2)) < 0 ?
+                      -longFromRef(longToRef(2)) :
+                      longFromRef(longToRef(2)))) :
+                    (longFromRef(longToRef(9223372036854775807)) < 0 ?
+                      -longFromRef(longToRef(9223372036854775807)) :
+                      longFromRef(longToRef(9223372036854775807))) \
+                    (longFromRef(longToRef(2)) < 0 ?
+                      -longFromRef(longToRef(2)) :
+                      longFromRef(longToRef(2))))) +
+                1 -
+                2 * --9223372036854775808 *
+                (((let anon_builtin ==
+                  (divLongLong(longToRef(9223372036854775807), longToRef(2))) in
+                  (longFromRef(longToRef(9223372036854775807)) < 0 !=
+                  longFromRef(longToRef(2)) < 0 ?
+                    -((longFromRef(longToRef(9223372036854775807)) < 0 ?
+                      -longFromRef(longToRef(9223372036854775807)) :
+                      longFromRef(longToRef(9223372036854775807))) \
+                    (longFromRef(longToRef(2)) < 0 ?
+                      -longFromRef(longToRef(2)) :
+                      longFromRef(longToRef(2)))) :
+                    (longFromRef(longToRef(9223372036854775807)) < 0 ?
+                      -longFromRef(longToRef(9223372036854775807)) :
+                      longFromRef(longToRef(9223372036854775807))) \
+                    (longFromRef(longToRef(2)) < 0 ?
+                      -longFromRef(longToRef(2)) :
+                      longFromRef(longToRef(2))))) +
+                1 +
+                --9223372036854775808) \
+                (2 * --9223372036854775808))) :
+                (intFromRef(choice) == 6 ?
+                  boolToRef(longFromRef(a) ==
+                  (let anon_builtin ==
+                    (divLongLong(longToRef(-9223372036854775808), longToRef(2))) in
+                    (longFromRef(longToRef(-9223372036854775808)) < 0 !=
+                    longFromRef(longToRef(2)) < 0 ?
+                      -((longFromRef(longToRef(-9223372036854775808)) < 0 ?
+                        -longFromRef(longToRef(-9223372036854775808)) :
+                        longFromRef(longToRef(-9223372036854775808))) \
+                      (longFromRef(longToRef(2)) < 0 ?
+                        -longFromRef(longToRef(2)) :
+                        longFromRef(longToRef(2)))) :
+                      (longFromRef(longToRef(-9223372036854775808)) < 0 ?
+                        -longFromRef(longToRef(-9223372036854775808)) :
+                        longFromRef(longToRef(-9223372036854775808))) \
+                      (longFromRef(longToRef(2)) < 0 ?
+                        -longFromRef(longToRef(2)) :
+                        longFromRef(longToRef(2))))) -
+                  1 -
+                  2 * --9223372036854775808 *
+                  (((let anon_builtin ==
+                    (divLongLong(longToRef(-9223372036854775808), longToRef(2))) in
+                    (longFromRef(longToRef(-9223372036854775808)) < 0 !=
+                    longFromRef(longToRef(2)) < 0 ?
+                      -((longFromRef(longToRef(-9223372036854775808)) < 0 ?
+                        -longFromRef(longToRef(-9223372036854775808)) :
+                        longFromRef(longToRef(-9223372036854775808))) \
+                      (longFromRef(longToRef(2)) < 0 ?
+                        -longFromRef(longToRef(2)) :
+                        longFromRef(longToRef(2)))) :
+                      (longFromRef(longToRef(-9223372036854775808)) < 0 ?
+                        -longFromRef(longToRef(-9223372036854775808)) :
+                        longFromRef(longToRef(-9223372036854775808))) \
+                      (longFromRef(longToRef(2)) < 0 ?
+                        -longFromRef(longToRef(2)) :
+                        longFromRef(longToRef(2))))) -
+                  1 +
+                  --9223372036854775808) \
+                  (2 * --9223372036854775808))) :
+                  boolToRef(longFromRef(a) ==
+                  (let anon_builtin ==
+                    (unaryMinusLong(longToRef(7))) in
+                    -longFromRef(longToRef(7))))))))))))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var total: Ref
+  var anon_0: Ref
+  total := wrappingtimesLongLong(a, b)
+  anon_0 := choice
+  if (intFromRef(anon_0) == 0) {
+    assert longFromRef(total) ==
+      (let anon_builtin ==
+        (unaryMinusLong(longToRef(2))) in
+        -longFromRef(longToRef(2)))
+    assert !((let anon_builtin ==
+        (divLongLong(total, b)) in
+        (longFromRef(total) < 0 != longFromRef(b) < 0 ?
+          -((longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b))) :
+          (longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b)))) ==
+      longFromRef(a))
+    refute false
+  } elseif (intFromRef(anon_0) == 1) {
+    assert longFromRef(total) == 0
+    assert !((let anon_builtin ==
+        (divLongLong(total, b)) in
+        (longFromRef(total) < 0 != longFromRef(b) < 0 ?
+          -((longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b))) :
+          (longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b)))) ==
+      longFromRef(a))
+    refute false
+  } elseif (intFromRef(anon_0) == 2) {
+    assert longFromRef(total) == -9223372036854775808
+    assert (let anon_builtin ==
+        (divLongLong(total, b)) in
+        (longFromRef(total) < 0 != longFromRef(b) < 0 ?
+          -((longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b))) :
+          (longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b)))) ==
+      longFromRef(a)
+    refute false
+  } elseif (intFromRef(anon_0) == 3) {
+    assert longFromRef(total) == 0
+    assert (let anon_builtin ==
+        (divLongLong(total, b)) in
+        (longFromRef(total) < 0 != longFromRef(b) < 0 ?
+          -((longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b))) :
+          (longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b)))) ==
+      longFromRef(a)
+    refute false
+  } elseif (intFromRef(anon_0) == 4) {
+    assert longFromRef(total) ==
+      9223372036854775807 - 1 -
+      2 * --9223372036854775808 *
+      ((9223372036854775807 - 1 + --9223372036854775808) \
+      (2 * --9223372036854775808))
+    assert (let anon_builtin ==
+        (divLongLong(total, b)) in
+        (longFromRef(total) < 0 != longFromRef(b) < 0 ?
+          -((longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b))) :
+          (longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b)))) ==
+      longFromRef(a)
+    refute false
+  } elseif (intFromRef(anon_0) == 5) {
+    assert longFromRef(total) == -9223372036854775808
+    assert !((let anon_builtin ==
+        (divLongLong(total, b)) in
+        (longFromRef(total) < 0 != longFromRef(b) < 0 ?
+          -((longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b))) :
+          (longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b)))) ==
+      longFromRef(a))
+    refute false
+  } elseif (intFromRef(anon_0) == 6) {
+    assert longFromRef(total) ==
+      9223372036854775807 - 1 -
+      2 * --9223372036854775808 *
+      ((9223372036854775807 - 1 + --9223372036854775808) \
+      (2 * --9223372036854775808))
+    assert !((let anon_builtin ==
+        (divLongLong(total, b)) in
+        (longFromRef(total) < 0 != longFromRef(b) < 0 ?
+          -((longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b))) :
+          (longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b)))) ==
+      longFromRef(a))
+    refute false
+  } else {
+    assert longFromRef(total) ==
+      (let anon_builtin ==
+        (unaryMinusLong(longToRef(14))) in
+        -longFromRef(longToRef(14)))
+    assert (let anon_builtin ==
+        (divLongLong(total, b)) in
+        (longFromRef(total) < 0 != longFromRef(b) < 0 ?
+          -((longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b))) :
+          (longFromRef(total) < 0 ?
+            -longFromRef(total) :
+            longFromRef(total)) \
+          (longFromRef(b) < 0 ? -longFromRef(b) : longFromRef(b)))) ==
+      longFromRef(a)
+    refute false
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_long_arithmetic.kt: info: Generated Viper text for negativeMultiplierDetection:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method negativeMultiplierDetection(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), longType())
+  requires isSubtype(typeOf(b), longType())
+  requires longFromRef(a) == -9223372036854775808
+  requires longFromRef(b) ==
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1)))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var total: Ref
+  total := wrappingtimesLongLong(a, b)
+  assert longFromRef(total) == -9223372036854775808
+  refute false
+  assert divLongLong(total, b) == divLongLong(total, b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

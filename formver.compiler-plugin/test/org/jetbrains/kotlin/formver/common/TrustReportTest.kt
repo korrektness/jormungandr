@@ -41,14 +41,15 @@ class TrustReportTest {
 
     @Test
     fun `semantic opt-ins survive report updates without counting as trust`() {
-        val mode = SemanticOptIn("capacity(Int, Int): Int")
+        val mode = SemanticOptIn(SemanticOptIn.Kind.WRAPPING_INT, "capacity(Int, Int): Int")
+        val longMode = SemanticOptIn(SemanticOptIn.Kind.WRAPPING_LONG, mode.name)
         val ledger = TrustLedger()
-        ledger.record("kept.kt", "capacity", { setOf(mode) }) { emptySet() }
+        ledger.record("kept.kt", "capacity", { setOf(longMode, mode) }) { emptySet() }
         val clean = ledger.snapshot()
         assertEquals(TrustReport(mapOf("kept.kt" to mapOf("capacity" to emptySet()))).summary, clean.summary)
         val mixed = clean.updatedWith(TrustReport(mapOf("other.kt" to mapOf("caller" to setOf(abs)))), emptySet()) { true }
         val parsed = TrustReport.parse(mixed.renamed { "src/$it" }.render())
-        assertEquals(mapOf("src/kept.kt" to mapOf("capacity" to listOf(mode))), parsed.semanticOptIns)
+        assertEquals(mapOf("src/kept.kt" to mapOf("capacity" to listOf(mode, longMode))), parsed.semanticOptIns)
         assertEquals(
             TrustReport(mapOf("kept.kt" to mapOf("capacity" to emptySet()), "other.kt" to mapOf("caller" to setOf(abs)))).summary,
             parsed.summary,
@@ -58,6 +59,16 @@ class TrustReportTest {
         ) { true }
         assertEquals(emptyMap(), replaced.semanticOptIns)
         assertEquals(emptyMap(), parsed.updatedWith(TrustReport(emptyMap()), emptySet()) { false }.semanticOptIns)
+    }
+
+    @Test
+    fun `Int semantic report serialization remains readable`() {
+        val text = "SnaKt verified 1 declaration; none relies on trusted assumptions.\n\na.kt\n  f\n    @WrappingIntArithmetic: f(Int): Int\n"
+        val parsed = TrustReport.parse(text)
+        assertEquals(
+            listOf(SemanticOptIn(SemanticOptIn.Kind.WRAPPING_INT, "f(Int): Int")),
+            parsed.semanticOptIns.getValue("a.kt").getValue("f"),
+        )
     }
 
     @Test

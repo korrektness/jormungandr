@@ -26,8 +26,13 @@ data class TrustedAssumption(val kind: Kind, val name: String) : Comparable<Trus
 }
 
 /** An exact semantic mode selected by a source annotation, independent of trusted assumptions. */
-data class SemanticOptIn(val name: String) : Comparable<SemanticOptIn> {
-    override fun compareTo(other: SemanticOptIn): Int = name.compareTo(other.name)
+data class SemanticOptIn(val kind: Kind, val name: String) : Comparable<SemanticOptIn> {
+    enum class Kind(val label: String) {
+        WRAPPING_INT("@WrappingIntArithmetic"),
+        WRAPPING_LONG("@WrappingLongArithmetic"),
+    }
+
+    override fun compareTo(other: SemanticOptIn): Int = compareValuesBy(this, other, { it.kind }, { it.name })
 }
 
 /**
@@ -73,7 +78,7 @@ class TrustReport(
                 appendLine("$DECLARATION_INDENT$label")
                 for (assumption in assumptions) appendLine("$ASSUMPTION_INDENT${assumption.kind.label}: ${assumption.name}")
                 for (mode in semanticOptIns[file]?.get(label).orEmpty()) {
-                    appendLine("${ASSUMPTION_INDENT}$WRAPPING_LABEL: ${mode.name}")
+                    appendLine("${ASSUMPTION_INDENT}${mode.kind.label}: ${mode.name}")
                 }
             }
         }
@@ -101,7 +106,7 @@ class TrustReport(
     companion object {
         private const val DECLARATION_INDENT = "  "
         private const val ASSUMPTION_INDENT = "    "
-        private const val WRAPPING_LABEL = "@WrappingIntArithmetic"
+        private val modesByLabel = SemanticOptIn.Kind.entries.associateBy { it.label }
         private val kindsByLabel = TrustedAssumption.Kind.entries.associateBy { it.label }
 
         /** Reads a report that [render] wrote; any other text throws [IllegalArgumentException]. */
@@ -134,11 +139,12 @@ class TrustReport(
                     line.startsWith(ASSUMPTION_INDENT) -> {
                         val (label, name) = line.removePrefix(ASSUMPTION_INDENT).split(": ", limit = 2)
                             .takeIf { it.size == 2 } ?: malformed()
-                        if (label == WRAPPING_LABEL) {
+                        val modeKind = modesByLabel[label]
+                        if (modeKind != null) {
                             val currentFile = file ?: malformed()
                             val currentDeclaration = declaration ?: malformed()
                             modes.getOrPut(currentFile) { linkedMapOf() }
-                                .getOrPut(currentDeclaration) { mutableSetOf() } += SemanticOptIn(name)
+                                .getOrPut(currentDeclaration) { mutableSetOf() } += SemanticOptIn(modeKind, name)
                         } else {
                             val kind = kindsByLabel[label] ?: malformed()
                             (assumptions ?: malformed()) += TrustedAssumption(kind, name)

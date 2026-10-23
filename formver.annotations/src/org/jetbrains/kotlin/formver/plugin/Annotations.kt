@@ -34,6 +34,11 @@ annotation class Pure
 @Retention(AnnotationRetention.BINARY)
 annotation class WrappingIntArithmetic
 
+/** Selects wrapping Long arithmetic; see "Integer arithmetic" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class WrappingLongArithmetic
+
 /** Selects trusted executed element equality; see "Equality" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)

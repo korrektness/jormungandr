@@ -1026,6 +1026,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       runTest("formver.compiler-plugin/testData/diagnostics/verification/wrapping_arithmetic.kt");
     }
 
+    @Test
+    @TestMetadata("wrapping_long_arithmetic.kt")
+    public void testWrapping_long_arithmetic() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/wrapping_long_arithmetic.kt");
+    }
+
     @Nested
     @TestMetadata("formver.compiler-plugin/testData/diagnostics/verification/classes")
     @TestDataPath("$PROJECT_ROOT")
