@@ -16,4 +16,5 @@ if [[ "$store" != off ]]; then
            -Pformver.verificationColdSample="$(git rev-parse HEAD)")
 fi
 ./gradlew --no-daemon detekt apiCheck :formver.compiler-plugin:locality:test \
-    :formver.compiler-plugin:untilConversion :formver.compiler-plugin:test "${args[@]}"
+    :formver.compiler-plugin:untilConversion :formver.compiler-plugin:test \
+    :formver.test-runner:test "${args[@]}"
