@@ -87,7 +87,9 @@ esac
 LOCALITY_TASK=:formver.compiler-plugin:locality:test
 
 # --rerun: an UP-TO-DATE task is green without executing anything.
-args=(--rerun --no-daemon -q)
+# --daemon: a Gradle daemon serves the next run too, and exits after idling for
+# Gradle's idle timeout, three hours by default.
+args=(--rerun --daemon -q)
 if [[ "$MODE" == update ]]; then
     args+=(-Pkotlin.test.update.test.data=true)
 fi
