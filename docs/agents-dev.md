@@ -57,6 +57,20 @@ A group's timeout applies separately to each program. Only declarations selected
 conversion-only and skipped declarations produce none. The environment variable
 `SNAKT_VERIFICATION_TIMINGS` also enables reporting directly from Gradle.
 
+## Gate measurements
+
+`gate-test.sh` prints its fresh external artifact directory. Set
+`SNAKT_GATE_ARTIFACTS` to an existing external parent directory to choose its location.
+`gate_measure.py` emits command, cwd, monotonic elapsed nanoseconds and shell exit
+status as JSON on stderr and in per-boundary JSON files. Gate totals enclose the
+checks; individual consumer Gradle boundaries include expected failures.
+Provenance files record candidate, dirty state, tool versions, build configuration
+and relevant environment. `cache/` holds the existing raw verification cache reports;
+`declarations/` holds [declaration timings](#declaration-timings), unless
+`SNAKT_VERIFICATION_TIMINGS` selects another location. These reports come from the
+test harness; consumer compilation does not emit them. Up-to-date tasks produce
+no verification attempts. Gradle command records carry cache sampling and daemon flags.
+
 ## Exit codes
 
 `check-all.sh` reports each of its four checks as passed, failed or skipped. A

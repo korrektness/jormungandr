@@ -28,6 +28,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+measure=(python3 "$ROOT/agent-scripts/gate_measure.py")
 
 z3="${Z3_EXE:-}"
 if [[ -z "$z3" ]]; then
@@ -48,7 +49,7 @@ repo="$work/repo"
 consumer="$work/consumer"
 
 # A private repository keeps the shared ~/.m2 untouched.
-./gradlew --no-daemon -Dmaven.repo.local="$repo" \
+"${measure[@]}" consumer.publish ./gradlew --no-daemon -Dmaven.repo.local="$repo" \
     :formver.gradle-plugin:publishToMavenLocal \
     :formver.compiler-plugin:publishToMavenLocal \
     :formver.annotations:publishToMavenLocal \
@@ -381,11 +382,13 @@ fi
 # The consumer is not part of this build, so the repository's own gradle
 # invocation does not apply; the wrapper is reused for its Gradle version.
 build_consumer() {
-    "$ROOT/gradlew" --no-daemon -p "$consumer" -Dformver.repo="file://$repo" "$@" compileKotlin
+    local stage="$1"
+    shift
+    "${measure[@]}" "consumer.$stage" "$ROOT/gradlew" --no-daemon -p "$consumer" -Dformver.repo="file://$repo" "$@" compileKotlin
 }
 
 log="$work/consumer.log"
-if ! build_consumer >"$log" 2>&1; then
+if ! build_consumer initial >"$log" 2>&1; then
     cat "$log" >&2
     echo "check-gradle-consumer.sh: consumer build failed" >&2
     exit 1
@@ -447,7 +450,7 @@ done
 # The spec was analysed: the reference resolves and is then rejected, rather
 # than failing to resolve.
 bad_log="$work/consumer-bad-reference.log"
-if build_consumer -PbadReference >"$bad_log" 2>&1; then
+if build_consumer bad-reference -PbadReference >"$bad_log" 2>&1; then
     echo "check-gradle-consumer.sh: a reference to the external spec compiled" >&2
     exit 1
 fi
@@ -459,7 +462,7 @@ fi
 
 # Each binding to a missing library declaration is an error on its model.
 binding_log="$work/consumer-bad-binding.log"
-if build_consumer -PbadBinding >"$binding_log" 2>&1; then
+if build_consumer bad-binding -PbadBinding >"$binding_log" 2>&1; then
     echo "check-gradle-consumer.sh: a spec binding to a missing library declaration compiled" >&2
     exit 1
 fi
@@ -473,7 +476,7 @@ done
 
 # A contradictory spec is an error on its model, though no code calls it.
 vacuous_log="$work/consumer-vacuous-spec.log"
-if build_consumer -PvacuousSpec >"$vacuous_log" 2>&1; then
+if build_consumer vacuous-spec -PvacuousSpec >"$vacuous_log" 2>&1; then
     echo "check-gradle-consumer.sh: a contradictory spec compiled" >&2
     exit 1
 fi
@@ -487,7 +490,7 @@ fi
 # postcondition, the bundled precondition of abs, and a stand-in library
 # precondition.
 claim_log="$work/consumer-bad-claim.log"
-if build_consumer -PbadClaim >"$claim_log" 2>&1; then
+if build_consumer bad-claim -PbadClaim >"$claim_log" 2>&1; then
     echo "check-gradle-consumer.sh: the consumer with false claims compiled" >&2
     exit 1
 fi
@@ -574,7 +577,7 @@ fun jvmTestFiltered(values: @Unique @Borrowed List<Int>) {
 }
 SRC
 kmp_log="$work/kmp.log"
-if ! "$ROOT/gradlew" --no-daemon -p "$kmp" -Dformver.repo="file://$repo" \
+if ! "${measure[@]}" consumer.multiplatform "$ROOT/gradlew" --no-daemon -p "$kmp" -Dformver.repo="file://$repo" \
     compileKotlinJvm compileTestKotlinJvm >"$kmp_log" 2>&1; then
     cat "$kmp_log" >&2
     echo "check-gradle-consumer.sh: multiplatform consumer build failed" >&2
@@ -595,7 +598,7 @@ fi
 # Editing a spec re-verifies its callers: the consumer builds clean, then the
 # spec of twice changes so that Main.kt's claim about it no longer holds.
 rebuild_log="$work/consumer-rebuild.log"
-if ! build_consumer >"$rebuild_log" 2>&1; then
+if ! build_consumer rebuild >"$rebuild_log" 2>&1; then
     cat "$rebuild_log" >&2
     echo "check-gradle-consumer.sh: the consumer did not build again" >&2
     exit 1
@@ -606,7 +609,7 @@ if ! grep -q 'result == x \* 2 + 1' "$consumer/specs/CounterSpecs.kt"; then
     exit 1
 fi
 edited_log="$work/consumer-edited-spec.log"
-if build_consumer >"$edited_log" 2>&1; then
+if build_consumer edited-spec >"$edited_log" 2>&1; then
     echo "check-gradle-consumer.sh: the consumer stayed verified after its spec changed" >&2
     exit 1
 fi

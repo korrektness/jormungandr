@@ -19,7 +19,7 @@ spec.loader.exec_module(cache)
 
 class VerificationCacheTest(unittest.TestCase):
     def test_driver_cache_switches(self):
-        with tempfile.TemporaryDirectory() as temporary:
+        with tempfile.TemporaryDirectory() as temporary, tempfile.TemporaryDirectory() as artifacts:
             root = pathlib.Path(temporary)
             scripts = root / 'agent-scripts'
             shutil.copytree(SCRIPTS, scripts)
@@ -57,10 +57,18 @@ class VerificationCacheTest(unittest.TestCase):
             git = binaries / 'git'
             git.write_text('#!/bin/sh\necho candidate-sha\n')
             git.chmod(0o755)
-            gate_env = dict(env, PATH=str(binaries) + os.pathsep + env['PATH'])
+            for tool in ('java', 'z3'):
+                binary = binaries / tool
+                binary.write_text('#!/bin/sh\necho fixture-version\n')
+                binary.chmod(0o755)
+            gate_env = dict(env, PATH=str(binaries) + os.pathsep + env['PATH'],
+                            SNAKT_GATE_ARTIFACTS=artifacts)
             gate = run(driver='gate-test.sh', environment=gate_env)
             self.assertIn('-Pformver.verificationColdSample=candidate-sha', gate)
             self.assertIn(f'-Pformver.verificationCacheDirectory={root / "cache"}', gate)
+            reports = list(pathlib.Path(artifacts).glob('*/gate.total.json'))
+            self.assertEqual(1, len(reports))
+            self.assertIn(f'-Pformver.verificationCacheReport={reports[0].parent / "cache"}', gate)
             cold_gate = run(driver='gate-test.sh', environment=dict(gate_env, SNAKT_VERIFICATION_CACHE='off'))
             self.assertFalse(any(arg.startswith('-Pformver.verification') for arg in cold_gate))
 

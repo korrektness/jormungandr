@@ -147,4 +147,5 @@ if [[ "$failures" -gt 0 ]]; then
     exit 1
 fi
 python3 "$TESTS_DIR/verification_cache_test.py"
+python3 "$TESTS_DIR/gate_measure_test.py"
 echo "all assertions passed"
