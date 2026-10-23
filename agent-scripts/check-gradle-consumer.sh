@@ -55,7 +55,7 @@ consumer="$work/consumer"
     :formver.annotations:publishToMavenLocal \
     :formver.common:publishToMavenLocal
 
-mkdir -p "$consumer/src/main/kotlin" "$consumer/src/badReference/kotlin" \
+mkdir -p "$consumer/src/main/kotlin" "$consumer/src/bfs/kotlin" "$consumer/src/badReference/kotlin" \
     "$consumer/src/badClaim/kotlin" "$consumer/specs" "$consumer/gradle" \
     "$consumer/lib/src/main/kotlin" "$consumer/vlib/src/main/kotlin"
 # The same daemon JVM as this build: the newest JDKs cannot run Gradle's script
@@ -247,7 +247,7 @@ dependencies {
     implementation project(":vlib")
 }
 
-for (extra in ["badReference", "badClaim"]) {
+for (extra in ["bfs", "badReference", "badClaim"]) {
     if (hasProperty(extra)) {
         sourceSets.main.kotlin.srcDir("src/$extra/kotlin")
     }
@@ -362,11 +362,12 @@ fun retired(): Int = 0
 fun callsRetired(): Int = retired()
 SRC
 
-# The breadth-first search that the diagnostics tests verify, compiled from the
-# same source with the diagnostic markup stripped. scanSkipLast, the one
-# declaration of the negative file that this consumer needs, is the false claim.
+# The full positive BFS runs only in the initial published-plugin build, whose
+# trust report checks its bundled dependencies. Other variants keep the small
+# callers in Main.kt. scanSkipLast runs only in the badClaim build.
+# Both BFS fixtures have their diagnostic markup stripped.
 bfs_tests="$ROOT/formver.compiler-plugin/testData/diagnostics/external_specs"
-sed -E 's/<!([A-Z_]*!)?>//g' "$bfs_tests/arraydeque_bfs.kt" >"$consumer/src/main/kotlin/Bfs.kt"
+sed -E 's/<!([A-Z_]*!)?>//g' "$bfs_tests/arraydeque_bfs.kt" >"$consumer/src/bfs/kotlin/Bfs.kt"
 {
     echo 'import org.jetbrains.kotlin.formver.plugin.*'
     echo
@@ -388,7 +389,7 @@ build_consumer() {
 }
 
 log="$work/consumer.log"
-if ! build_consumer initial >"$log" 2>&1; then
+if ! build_consumer initial -Pbfs >"$log" 2>&1; then
     cat "$log" >&2
     echo "check-gradle-consumer.sh: consumer build failed" >&2
     exit 1
@@ -400,10 +401,12 @@ if grep -q "^w: .*\(Main\|Bfs\).kt" "$log"; then
 fi
 
 classes="$consumer/build/classes/kotlin/main"
-if [[ ! -f "$classes/MainKt.class" ]]; then
-    echo "check-gradle-consumer.sh: consumer build produced no MainKt.class" >&2
-    exit 1
-fi
+for file in MainKt.class BfsKt.class; do
+    if [[ ! -f "$classes/$file" ]]; then
+        echo "check-gradle-consumer.sh: consumer build produced no $file" >&2
+        exit 1
+    fi
+done
 # Spec packages, files and declarations, both the consumer's and the bundled.
 spec_names=(-e stand/specs -e stand.specs -e CounterSpecs -e CounterModel
     -e createModel -e createSpec -e twiceModel -e twiceSpec -e formver/external -e IntAbs -e absModel -e absSpecification
@@ -595,12 +598,18 @@ if [[ -n "$kmp_leaked" ]]; then
     exit 1
 fi
 
-# Editing a spec re-verifies its callers: the consumer builds clean, then the
-# spec of twice changes so that Main.kt's claim about it no longer holds.
+# Editing a spec re-verifies its callers: the small consumer builds clean, then
+# only the spec of twice changes so that Main.kt's claim about it fails.
+# Caller sources and source-set selection stay unchanged across these builds.
 rebuild_log="$work/consumer-rebuild.log"
 if ! build_consumer rebuild >"$rebuild_log" 2>&1; then
     cat "$rebuild_log" >&2
     echo "check-gradle-consumer.sh: the consumer did not build again" >&2
+    exit 1
+fi
+if grep -q "^w: .*Main.kt" "$rebuild_log"; then
+    cat "$rebuild_log" >&2
+    echo "check-gradle-consumer.sh: the rebuilt consumer's claims did not verify" >&2
     exit 1
 fi
 sed -i 's/result -> result == x \* 2 }/result -> result == x * 2 + 1 }/' "$consumer/specs/CounterSpecs.kt"
