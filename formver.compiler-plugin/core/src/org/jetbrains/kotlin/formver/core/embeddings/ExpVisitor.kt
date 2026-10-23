@@ -49,6 +49,7 @@ interface ExpVisitor<R> {
     fun visitExistsEmbedding(e: ExistsEmbedding): R
     fun visitPredicateAccessPermissions(e: PredicateAccessPermissions): R
     fun visitCast(e: Cast): R
+    fun visitCheckedCast(e: CheckedCast): R
     fun visitIs(e: Is): R
     fun visitOld(e: Old): R
     fun visitPrimitiveFieldAccess(e: PrimitiveFieldAccess): R
@@ -143,6 +144,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitExistsEmbedding(e: ExistsEmbedding): R = visitDefault(e)
     override fun visitPredicateAccessPermissions(e: PredicateAccessPermissions): R = visitDefault(e)
     override fun visitCast(e: Cast): R = visitDefault(e)
+    override fun visitCheckedCast(e: CheckedCast): R = visitDefault(e)
     override fun visitIs(e: Is): R = visitDefault(e)
     override fun visitOld(e: Old): R = visitDefault(e)
     override fun visitPrimitiveFieldAccess(e: PrimitiveFieldAccess): R = visitDefault(e)

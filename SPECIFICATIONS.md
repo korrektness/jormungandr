@@ -845,7 +845,8 @@ return. `throw`, failed `require` and `check`, `error`, `!!` on null,
 failed `as` casts, a read of an unassigned `lateinit` property, and a null
 platform-typed value assigned to a declared non-null type leave abnormally.
 Their operands are evaluated first.
-Runtime casts and `!!` in specifications and `@Pure` bodies are unsupported.
+Casts and `!!` in specifications and `@Pure` bodies follow
+[Pure functions and specifications](#pure-functions-and-specifications).
 
 A `when` that Kotlin accepts as exhaustive without an `else` branch throws when no branch matches. SnaKt proves
 instead that a branch matches, from the branch conditions and the subject's type: a value of an enum class is one of
@@ -1001,6 +1002,16 @@ that branch. A law `size <= 0 || at(0) != null` needs the precondition of `at`
 only when `size > 0`. The infix `and` and `or` evaluate both operands, so
 `(b != 0) and (a / b > 0)` needs `b != 0` for its division.
 
+In specifications, laws and `@Pure` bodies, `x as T` requires proof of its runtime
+type check, and `x!!` requires proof that `x` is non-null. Failures report
+`CAST_NOT_ESTABLISHED` and `NULL_ASSERTION_NOT_ESTABLISHED`. An earlier guard may
+establish these obligations. `as?` returns the operand on a successful runtime
+check and null otherwise. These operations supply no permissions or generic-argument
+facts; type-parameter casts check the erased bound. Casts do not provide subtype
+footprints or borrowed-view locals. Reference-array casts requiring runtime
+component checks, including `as?`, are unsupported; a compiler-proven redundant
+component check is permitted. Primitive-array casts use their nominal runtime type.
+
 A specification may index a unique array with a `@Pure` call that borrows the
 array's owner, as in `elementData[positiveMod(head + i)]`, also inside `forAll`.
 The call's preconditions must hold in the state the specification reads: in a
@@ -1030,7 +1041,7 @@ class Ring(var elementData: @Unique Array<Any?>) {
 A `@Pure` function cannot return an alias into data its caller still owns. Its
 result cannot be `@Unique`. A function with a `@Unique` parameter must return a
 value type, with an exception for direct element reads of a unique `Array<T>`,
-optionally wrapped in an unchecked cast whose erased type needs no runtime check.
+optionally wrapped in an `as` cast.
 Array elements are shared values (see [Array<T>](#arrayt)); returning one transfers
 no ownership. Pure observers may also return shared observations. Returning an
 owned path from a unique receiver or parameter reports `PURITY_VIOLATION` during

@@ -1208,6 +1208,21 @@ function discardedPureIndex(a: Ref): Ref
       intToRef(0)))
 }
 
+/exception_sites.kt: info: Generated Viper text for specificationCast:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function specificationCast(a: Ref): Ref
+  requires isSubtype(typeOf(a), anyType())
+  ensures isSubtype(typeOf(result), stringType())
+{
+  checkedType(a, stringType())
+}
+
 /exception_sites.kt: info: Generated Viper text for ThrowingAccess:
 method con() returns (v_ret_2: Ref)
   ensures isSubtype(typeOf(v_ret_2), ThrowingAccess())

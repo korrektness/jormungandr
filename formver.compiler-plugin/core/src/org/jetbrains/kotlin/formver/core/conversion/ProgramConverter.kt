@@ -208,7 +208,7 @@ class ProgramConverter(
             SpecialFunctions.all + SpecialFunctions.multiset.takeIf { typeResolver.usesMultiset }.orEmpty() +
                     SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
                 linearizedBodyResolver.functions + typeResolver.observerViewFunctions() + typeResolver.stringLiteralFunctions +
-                typeResolver.unmatchedWhenFunctions +
+                typeResolver.unmatchedWhenFunctions + typeResolver.castDefinednessFunctions +
                 listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray },
                     GenericArrayEmbedding.arraySizeFunction.takeIf { usesGenericArray })
         ),

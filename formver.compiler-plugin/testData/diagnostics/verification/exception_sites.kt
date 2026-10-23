@@ -199,7 +199,7 @@ fun <!VIPER_TEXT!>overflowStaysError<!>(x: Int): Int {
     return 0
 }<!>
 
-<!PURITY_VIOLATION!>@Pure fun <!VERIFICATION_SKIPPED!>specificationCast<!>(a: Any): String = a as String<!>
+@Pure fun <!VIPER_TEXT!>specificationCast<!>(a: Any): String = <!CAST_NOT_ESTABLISHED!>a as String<!>
 
 <!VIPER_TEXT!>class ThrowingAccess<!> {
     var value: Int

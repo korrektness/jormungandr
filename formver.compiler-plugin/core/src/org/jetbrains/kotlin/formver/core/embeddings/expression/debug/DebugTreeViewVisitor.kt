@@ -219,6 +219,10 @@ class DebugTreeViewVisitor(private val nameResolver: NameResolver) : DefaultingE
         )
     }
 
+    override fun visitCheckedCast(e: CheckedCast): TreeView = with(nameResolver) {
+        defaultTree("CheckedCast", listOf(e.inner), extraSubtrees = listOf(e.type.debugTreeView.withDesignation("target")))
+    }
+
     override fun visitSafeCast(e: SafeCast): TreeView = with(nameResolver) {
         defaultTree(
             "SafeCast",

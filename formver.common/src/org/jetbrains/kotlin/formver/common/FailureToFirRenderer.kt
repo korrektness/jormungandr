@@ -201,6 +201,8 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is KotlinCondition.IntegerOverflow ->
                 "Could not establish that ${operator(condition.operation)} stays within the ${condition.resultType} range [${condition.lower}, ${condition.upper}]."
             is KotlinCondition.DivisionByZero -> "Could not establish a nonzero divisor for ${operator(condition.operation)}."
+            is KotlinCondition.CastFailure -> "Could not establish that the cast operand has runtime type ${condition.target}."
+            KotlinCondition.NullAssertion -> "Could not establish that the operand of !! is non-null."
             is KotlinCondition.Proof -> proofMessage(condition)
             is PurityCondition -> when (condition.rule) {
                 PurityRule.FUNCTION_BODY -> "Impure function body detected in pure function"
@@ -217,13 +219,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
                 val value = if (condition.effect == KotlinCondition.ReturnValue.ANY) "" else " ${returnValue(condition.effect)}"
                 "Could not establish `${predicate(condition.predicate)}` when the function returns$value."
             }
-            is KotlinCondition.Index -> {
-                val bound = when (condition.bound) {
-                    KotlinCondition.Bound.NEGATIVE -> "is not negative"
-                    KotlinCondition.Bound.NOT_BELOW_SIZE, KotlinCondition.Bound.ABOVE_SIZE -> "is less than its size"
-                }
-                "Could not establish that the index into ${collection(condition.collection, condition.symbol)} $bound."
-            }
+            is KotlinCondition.Index -> indexMessage(condition)
             is KotlinCondition.SubList -> {
                 val bound = if (condition.negative) "has no negative index" else "ends within its size"
                 "Could not establish that the sub-list range of ${collection(KotlinCondition.Collection.LIST, condition.symbol)} $bound."
@@ -251,6 +247,14 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             is KotlinCondition.SpecOf, is KotlinCondition.Law, is KotlinCondition.Observer, is KotlinCondition.Exposes,
             is KotlinCondition.ExternalSpec ->
                 error("Specification conditions must use their specification renderer")
+    }
+
+    private fun indexMessage(condition: KotlinCondition.Index): String {
+        val bound = when (condition.bound) {
+            KotlinCondition.Bound.NEGATIVE -> "is not negative"
+            KotlinCondition.Bound.NOT_BELOW_SIZE, KotlinCondition.Bound.ABOVE_SIZE -> "is less than its size"
+        }
+        return "Could not establish that the index into ${collection(condition.collection, condition.symbol)} $bound."
     }
 
     private fun proofMessage(condition: KotlinCondition.Proof): String {

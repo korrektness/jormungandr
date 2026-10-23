@@ -24,7 +24,7 @@ interface Elements {
 
     <!VIPER_VERIFICATION_ERROR!>@Pure @Unique fun <!VIPER_TEXT!>pastEnd<!>(): Any? = elementData[elementData.size]<!>
 
-    <!PURITY_VIOLATION!>@Pure @Unique fun <!VERIFICATION_SKIPPED!>checkedElement<!>(): String = elementData[0] as String<!>
+    <!VIPER_VERIFICATION_ERROR!>@Pure @Unique fun <!VIPER_TEXT!>checkedElement<!>(): String = <!CAST_NOT_ESTABLISHED!>elementData[0] as String<!><!>
 }
 
 @Pure fun <!VIPER_TEXT!>fromParameter<!>(a: @Unique Array<Any?>, i: Int): Any? {

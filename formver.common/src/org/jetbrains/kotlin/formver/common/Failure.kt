@@ -50,6 +50,8 @@ enum class FailureKind(
     POSSIBLE_INDEX_OUT_OF_BOUND,
     INTEGER_OVERFLOW,
     DIVISION_BY_ZERO,
+    CAST_NOT_ESTABLISHED,
+    NULL_ASSERTION_NOT_ESTABLISHED,
     UNEXPECTED_RETURNED_VALUE,
     INVALID_SUBLIST_RANGE,
     OWNERSHIP_NOT_ESTABLISHED,
@@ -121,6 +123,8 @@ sealed interface KotlinCondition {
     ) : KotlinCondition
     data class IntegerOverflow(val operation: String, val resultType: String, val lower: String, val upper: String) : KotlinCondition
     data class DivisionByZero(val operation: String) : KotlinCondition
+    data class CastFailure(val target: String) : KotlinCondition
+    data object NullAssertion : KotlinCondition
     enum class ReturnValue { TRUE, FALSE, NULL, NON_NULL, ANY }
     data class Returns(val effect: ReturnValue) : KotlinCondition
     data class Conditional(val effect: ReturnValue, val predicate: KotlinPredicate) : KotlinCondition

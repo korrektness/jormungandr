@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isChar
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.fir.types.resolvedType
+import org.jetbrains.kotlin.fir.types.renderReadable
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
@@ -658,13 +659,21 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data: StmtConversionContext,
     ): ExpEmbedding {
         val argument = data.convert(typeOperatorCall.arguments[0])
-        val conversionType = data.embedType(typeOperatorCall.conversionTypeRef.coneType)
+        val target = typeOperatorCall.conversionTypeRef.coneType
+        val conversionType = data.embedType(target)
         return when (typeOperatorCall.operation) {
             FirOperation.IS -> Is(argument, conversionType)
             FirOperation.NOT_IS -> Not(Is(argument, conversionType))
-            FirOperation.AS -> data.checkedCast(argument, conversionType)
+            FirOperation.AS -> data.checkedCast(
+                argument, conversionType, data.embedType(data.erasedCastTarget(target)),
+                targetName = target.renderReadable(),
+                componentSensitive = data.componentSensitiveCast(typeOperatorCall.arguments[0].resolvedType, target),
+            )
 
-            FirOperation.SAFE_AS -> SafeCast(argument, conversionType).withInvariants(data.typeResolver) {
+            FirOperation.SAFE_AS -> SafeCast(
+                argument, conversionType, data.embedType(data.erasedCastTarget(target)),
+                data.componentSensitiveCast(typeOperatorCall.arguments[0].resolvedType, target),
+            ).withInvariants(data.typeResolver) {
                 proven = true
                 access = true
             }
@@ -677,7 +686,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     override fun visitCheckNotNullCall(checkNotNullCall: FirCheckNotNullCall, data: StmtConversionContext): ExpEmbedding {
         val argument = data.convert(checkNotNullCall.arguments.single())
-        return data.checkedCast(argument, data.embedType(checkNotNullCall.resolvedType))
+        return data.checkedCast(argument, data.embedType(checkNotNullCall.resolvedType), nonNull = true)
     }
 
     override fun visitAnonymousFunctionExpression(

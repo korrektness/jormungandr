@@ -124,6 +124,19 @@ recursive `@Pure` function without a measure is rejected.
 
 Test: `verification/pure_functions/termination.kt::growing,loopyFalse`.
 
+### Pure cast definedness
+
+`domains/CastDefinedness.kt` supplies body-verified identity functions. Their
+application preconditions check runtime subtype membership or non-nullness in
+pure bodies and specifications; their postconditions prove operand identity.
+Pure lowering inhales no cast invariants and acquires no ownership. Statement
+casts retain exceptional-exit lowering. The supported targets and footprint
+limits are specified in SPECIFICATIONS.md, "Pure functions and specifications".
+Generic reads retain the assumption in [Type invariants](#type-invariants).
+
+Tests: `verification/pure_functions/pure_casts.kt`, including a failing pure
+callee checked in its caller's verification program.
+
 ### Shared writes to law-bound fields
 
 After a call that borrows an object through a shared path, the caller assumes the

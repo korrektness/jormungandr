@@ -1629,6 +1629,13 @@ function c_BindingView_f_value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
@@ -1891,12 +1898,11 @@ method inheritedBinding() returns (v_ret_0: Ref)
   unfold acc(InheritedBindingCell_unique(cell), write)
   unfold acc(BindingCell_unique(cell), write)
   cell.bf_contents := intToRef(6)
-  inhale isSubtype(typeOf(cell), c_BindingView())
   fold acc(BindingCell_unique(cell), write)
   fold acc(InheritedBindingCell_unique(cell), write)
   InheritedBindingCell_c_BindingView_upcast(cell)
-  anon_4 := (unfolding acc(c_BindingView_unique(cell), wildcard) in
-      c_BindingView_f_scaled(cell, intToRef(2)))
+  anon_4 := (unfolding acc(c_BindingView_unique(checkedType(cell, c_BindingView())), wildcard) in
+      c_BindingView_f_scaled(checkedType(cell, c_BindingView()), intToRef(2)))
   InheritedBindingCell_c_BindingView_restore(cell)
   assert intFromRef(anon_4) == 12
   unfold acc(InheritedBindingCell_unique(cell), write)
@@ -2393,6 +2399,13 @@ function c_BindingView_f_value(this: Ref): Ref
   ensures isSubtype(typeOf(result), intType())
 
 
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
 function size(this: Ref): Ref
   requires isSubtype(typeOf(this), BooleanArray())
   ensures isSubtype(typeOf(result), intType())
@@ -2621,17 +2634,15 @@ method borrowBinding() returns (v_ret_0: Ref)
   fold acc(BindingCell_unique(cell), write)
   unfold acc(BindingCell_unique(cell), write)
   cell.bf_contents := intToRef(9)
-  inhale isSubtype(typeOf(cell), c_BindingView())
   fold acc(BindingCell_unique(cell), write)
   BindingCell_c_BindingView_upcast(cell)
-  anon_4 := (unfolding acc(c_BindingView_unique(cell), wildcard) in
-      c_BindingView_f_value(cell))
+  anon_4 := (unfolding acc(c_BindingView_unique(checkedType(cell, c_BindingView())), wildcard) in
+      c_BindingView_f_value(checkedType(cell, c_BindingView())))
   BindingCell_c_BindingView_restore(cell)
   assert intFromRef(anon_4) == 9
-  inhale isSubtype(typeOf(cell), c_BindingView())
   BindingCell_c_BindingView_upcast(cell)
-  anon_5 := (unfolding acc(c_BindingView_unique(cell), wildcard) in
-      c_BindingView_f_scaled(cell, intToRef(2)))
+  anon_5 := (unfolding acc(c_BindingView_unique(checkedType(cell, c_BindingView())), wildcard) in
+      c_BindingView_f_scaled(checkedType(cell, c_BindingView()), intToRef(2)))
   BindingCell_c_BindingView_restore(cell)
   assert intFromRef(anon_5) == 18
   unfold acc(BindingCell_unique(cell), write)

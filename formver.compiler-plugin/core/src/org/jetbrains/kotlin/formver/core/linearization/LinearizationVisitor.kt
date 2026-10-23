@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.formver.core.conversion.constructedOpen
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
+import org.jetbrains.kotlin.formver.core.domains.CastDefinedness
 import org.jetbrains.kotlin.formver.core.domains.InjectionImageFunction
 import org.jetbrains.kotlin.formver.core.domains.IntegerBounds
 import org.jetbrains.kotlin.formver.core.embeddings.types.StringTypeEmbedding
@@ -559,6 +560,8 @@ data class LinearizationVisitor(
 
     // region Type Operations
 
+    private fun LinearizationContext.isPureCastContext() = equalityEvaluation != EqualityEvaluation.EXECUTED
+
     override fun visitIs(e: Is): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp =
             RuntimeTypeDomain.boolInjection.toRef(
@@ -582,6 +585,40 @@ data class LinearizationVisitor(
             e.inner.linearize().toViperInBuiltinForm(e.inner.type, type, ctx)
     }
 
+    override fun visitCheckedCast(e: CheckedCast): Linearizable {
+        val imperative = e.imperative.linearize()
+        val pure = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+            override fun toViper(ctx: LinearizationContext): Exp {
+                if (e.componentSensitive) throw UnsupportedFeatureException(
+                    ctx.source, "runtime component-sensitive reference-array casts",
+                )
+                val helper = if (e.nonNull) CastDefinedness.nonNull else CastDefinedness.checkedType
+                ctx.typeResolver.castDefinednessFunctions.add(helper)
+                val value = e.inner.linearize().toViper(ctx)
+                val args = if (e.nonNull) listOf(value) else listOf(value, e.checkedType.runtimeType)
+                val condition = if (e.nonNull) KotlinCondition.NullAssertion else KotlinCondition.CastFailure(e.targetName)
+                return helper.toFuncApp(args, ctx.source.asPosition, SourceRole.CastCheck(condition).asInfo)
+            }
+
+            override fun toViperUnusedResult(ctx: LinearizationContext) {
+                if (ctx is PureFunBodyLinearizer) ctx.store(ctx.freshAnonVar(e.type), this)
+                else ctx.evaluateUnused(toViper(ctx))
+            }
+        }
+        fun chosen(ctx: LinearizationContext) = if (ctx.isPureCastContext()) pure else imperative
+        return object : Linearizable {
+            override fun toViper(ctx: LinearizationContext) = chosen(ctx).toViper(ctx)
+            override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) =
+                chosen(ctx).toViperStoringIn(result, ctx)
+            override fun toViperMaybeStoringIn(result: VariableEmbedding?, ctx: LinearizationContext) =
+                chosen(ctx).toViperMaybeStoringIn(result, ctx)
+            override fun toViperBuiltinType(ctx: LinearizationContext) = chosen(ctx).toViperBuiltinType(ctx)
+            override fun toViperBuiltinTypeAs(type: TypeEmbedding, ctx: LinearizationContext) =
+                chosen(ctx).toViperBuiltinTypeAs(type, ctx)
+            override fun toViperUnusedResult(ctx: LinearizationContext) = chosen(ctx).toViperUnusedResult(ctx)
+        }
+    }
+
     override fun visitSafeCast(e: SafeCast): Linearizable = object : StoredResultLinearizable(e) {
         override fun toViperStoringIn(result: VariableEmbedding, ctx: LinearizationContext) {
             conditional(ctx).toViperStoringIn(result, ctx)
@@ -589,18 +626,36 @@ data class LinearizationVisitor(
 
         override fun toViper(ctx: LinearizationContext): Exp = conditional(ctx).toViper(ctx)
 
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            when {
+                ctx is PureFunBodyLinearizer -> ctx.store(ctx.freshAnonVar(e.type), this)
+                ctx.isPureCastContext() -> ctx.evaluateUnused(toViper(ctx))
+                else -> super.toViperUnusedResult(ctx)
+            }
+        }
+
         private fun conditional(ctx: LinearizationContext): Linearizable {
+            if (ctx.isPureCastContext() && e.componentSensitive) {
+                throw UnsupportedFeatureException(
+                    ctx.source, "runtime component-sensitive reference-array casts",
+                )
+            }
             val expWrapped = ExpWrapper(e.exp.linearize().toViper(ctx), e.exp.type)
-            return If(Is(expWrapped, e.targetType), expWrapped.withType(e.type), NullLit.withType(e.type), e.type).linearize()
+            val target = if (ctx.isPureCastContext()) e.checkedType else e.targetType
+            return If(Is(expWrapped, target), expWrapped.withType(e.type), NullLit.withType(e.type), e.type).linearize()
         }
     }
 
     override fun visitInhaleInvariants(e: InhaleInvariants): Linearizable {
         val inhaling = inhalingInvariants(e)
         val value = e.exp.linearize()
-        // A pure element read supplies its value without assuming the conversion's result invariants.
-        fun LinearizationContext.chosen() =
-            if (inhalesInvariants && !(this is PureFunBodyLinearizer && e.exp.isSharedArrayElement())) inhaling else value
+        // Pure cast views and element reads supply values without assuming result invariants.
+        fun LinearizationContext.chosen() = when {
+            !inhalesInvariants -> value
+            isPureCastContext() && e.exp is SafeCast -> value
+            this is PureFunBodyLinearizer && e.exp.isSharedArrayElement() -> value
+            else -> inhaling
+        }
         return object : Linearizable {
             override fun toViper(ctx: LinearizationContext): Exp = ctx.chosen().toViper(ctx)
 

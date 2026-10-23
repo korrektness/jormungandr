@@ -161,7 +161,16 @@ function castElementAt(this: Ref, i: Ref): Ref
     (let anon_0_0 ==
       (elementData(this)) in
       (unfolding acc(Array_unique(anon_0_0), write) in
-        anon_0_0.referenceContents[intFromRef(i)])))
+        (let anon_1_0 ==
+          (anon_0_0.referenceContents[intFromRef(i)]) in
+          checkedType(anon_1_0, nullable(anyType()))))))
+}
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
 }
 
 function elementData(this: Ref): Ref
@@ -223,6 +232,67 @@ function pastEnd(this: Ref): Ref
           (unfolding acc(ElementBuffer_unique(this), write) in
             anon_0_0.referenceContents[referenceArraySize(anon_1_0)])))))
 }
+
+function payload(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Payload())
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/array_element_readers.kt: info: Generated Viper text for checkedElement:
+field referenceContents: Seq[Ref]
+
+function ElementBuffer_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  requires acc(ElementBuffer_unique(this), write)
+  requires isSubtype(typeOf(i), intType())
+  requires intFromRef(i) >= 0 &&
+    intFromRef(i) < referenceArraySize(elementData(this))
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+{
+  (unfolding acc(ElementBuffer_unique(this), write) in
+    (let anon_3_0 ==
+      (elementData(this)) in
+      (unfolding acc(Array_unique(anon_3_0), write) in
+        anon_3_0.referenceContents[intFromRef(i)])))
+}
+
+function Elements_f_elementAt(this: Ref, i: Ref): Ref
+  requires isSubtype(typeOf(this), Elements())
+  requires acc(footprint(this), wildcard)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+function checkedElement(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  requires acc(ElementBuffer_unique(this), write)
+  ensures isSubtype(typeOf(result), stringType())
+{
+  (unfolding acc(ElementBuffer_unique(this), write) in
+    (let anon_1_0 ==
+      (elementData(this)) in
+      (unfolding acc(Array_unique(anon_1_0), write) in
+        (let anon_2_0 ==
+          (anon_1_0.referenceContents[0]) in
+          checkedType(anon_2_0, stringType())))))
+}
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function elementData(this: Ref): Ref
+  requires isSubtype(typeOf(this), ElementBuffer())
+  ensures isSubtype(typeOf(result), Array())
+
 
 function payload(this: Ref): Ref
   requires isSubtype(typeOf(this), ElementBuffer())

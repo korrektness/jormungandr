@@ -62,6 +62,7 @@ internal class ExprPurityVisitor(
     override fun visitPrimitiveFieldAccess(e: PrimitiveFieldAccess): Boolean = e.allChildrenPure(this)
     override fun visitIs(e: Is) = e.allChildrenPure(this)
     override fun visitCast(e: Cast): Boolean = e.allChildrenPure(this)
+    override fun visitCheckedCast(e: CheckedCast): Boolean = e.allChildrenPure(this)
     override fun visitShared(e: Shared) = e.allChildrenPure(this)
     override fun visitForAllEmbedding(e: ForAllEmbedding) = e.allChildrenPure(this)
     override fun visitExistsEmbedding(e: ExistsEmbedding) = e.allChildrenPure(this)
@@ -84,7 +85,7 @@ internal class ExprPurityVisitor(
     override fun visitStringBuilderToString(e: StringBuilderToString) = e.allChildrenPure(this)
 
     /* ————— impure nodes ————— */
-    override fun visitSafeCast(e: SafeCast) = admitsInlinedCalls && e.allChildrenPure(this)
+    override fun visitSafeCast(e: SafeCast) = e.allChildrenPure(this)
     override fun visitMethodCall(e: MethodCall) = false
     override fun visitFunctionExp(e: FunctionExp): Boolean {
         if (!admitsInlinedCalls || e.signature != null) return false
@@ -112,7 +113,7 @@ internal class ExprPurityVisitor(
     override fun visitWhile(e: While): Boolean = false
     override fun visitNonDeterministically(e: NonDeterministically): Boolean = false
     override fun visitInhaleInvariants(e: InhaleInvariants): Boolean =
-        (admitsInlinedCalls || e.exp.isSharedArrayElement()) && e.exp.accept(this)
+        (admitsInlinedCalls || e.exp is SafeCast || e.exp.isSharedArrayElement()) && e.exp.accept(this)
     override fun visitFieldAccessPermissions(e: FieldAccessPermissions): Boolean = false
     override fun visitPredicateAccessPermissions(e: PredicateAccessPermissions): Boolean = false
     override fun visitLabelExp(e: LabelExp): Boolean = false

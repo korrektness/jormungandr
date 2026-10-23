@@ -34,6 +34,22 @@ data class Cast(val inner: ExpEmbedding, override val type: TypeEmbedding) : Exp
     override fun children(): Sequence<ExpEmbedding> = sequenceOf(inner)
 }
 
+/** A runtime check with statement and resource-neutral expression lowerings. */
+data class CheckedCast(
+    val inner: ExpEmbedding,
+    override val type: TypeEmbedding,
+    val checkedType: TypeEmbedding,
+    val nonNull: Boolean,
+    val targetName: String,
+    val imperative: ExpEmbedding,
+    val componentSensitive: Boolean = false,
+) : ExpEmbedding {
+    override fun ignoringCasts(): ExpEmbedding = inner.ignoringCasts()
+    override fun ignoringCastsAndMetaNodes(): ExpEmbedding = inner.ignoringCastsAndMetaNodes()
+    override fun children(): Sequence<ExpEmbedding> = sequenceOf(inner)
+    override fun <R> accept(v: ExpVisitor<R>): R = v.visitCheckedCast(this)
+}
+
 fun ExpEmbedding.withType(newType: TypeEmbedding): ExpEmbedding = if (type == newType) this else Cast(this, newType)
 
 fun ExpEmbedding.withType(init: TypeBuilder.() -> PretypeBuilder): ExpEmbedding = withType(buildType(init))
@@ -45,7 +61,12 @@ fun ExpEmbedding.withType(init: TypeBuilder.() -> PretypeBuilder): ExpEmbedding 
  * We do some special-purpose logic here depending on whether the receiver is nullable or not, hence we cannot use `InhaleProven` directly.
  * This is also why we insist the result is stored; this is a little stronger than necessary, but that does not harm correctness.
  */
-data class SafeCast(val exp: ExpEmbedding, val targetType: TypeEmbedding) : ExpEmbedding {
+data class SafeCast(
+    val exp: ExpEmbedding,
+    val targetType: TypeEmbedding,
+    val checkedType: TypeEmbedding = targetType,
+    val componentSensitive: Boolean = false,
+) : ExpEmbedding {
     override val type: TypeEmbedding
         get() = targetType.getNullable()
 

@@ -20,7 +20,7 @@ fun <!VIPER_TEXT!>upcastMove<!>(sub: @Unique Sub): @Unique Base {
 }
 
 // A downcast move would need Sub's fields, which a Base path does not hold.
-<!UNSUPPORTED_OWNERSHIP!>fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>downcastMove<!>(base: @Unique Base): @Unique Sub {
-    val s: @Unique Sub = base as Sub
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>downcastMove<!>(base: @Unique Base): @Unique Sub {
+    <!UNSUPPORTED_OWNERSHIP!>val s: @Unique Sub = base as Sub<!>
     return s
-}<!>
+}

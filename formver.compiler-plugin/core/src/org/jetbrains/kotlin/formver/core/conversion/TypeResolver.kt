@@ -86,6 +86,8 @@ class TypeResolver {
     fun equalsRelationDomain(): EqualsRelationDomain? =
         EqualsRelationDomain(identityEqualityClasses.map { it.runtimeType }).takeIf { usesEqualsRelation }
 
+    val castDefinednessFunctions = linkedSetOf<Function>()
+
     private val unmatchedWhens = linkedMapOf<TypeEmbedding, Function>()
 
     /** The value of an exhaustive `when` of [type] where no branch matches; `when`s of one type share it. */

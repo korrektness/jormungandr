@@ -2062,6 +2062,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("pure_casts.kt")
+      public void testPure_casts() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/pure_casts.kt");
+      }
+
+      @Test
       @TestMetadata("pure_contract_calls.kt")
       public void testPure_contract_calls() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/pure_contract_calls.kt");

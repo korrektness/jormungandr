@@ -1,0 +1,627 @@
+/pure_casts.kt: info: Generated Viper text for checkedInt:
+function checkedInt(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  checkedType(x, intType())
+}
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+/pure_casts.kt: info: Generated Viper text for checkedNonNull:
+function checkedNonNull(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(intType()))
+  requires !(x == nullValue())
+  ensures isSubtype(typeOf(result), intType())
+{
+  nonNull(x)
+}
+
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+/pure_casts.kt: info: Generated Viper text for nullableTarget:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function nullableTarget(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(anyType()))
+  requires x == nullValue() || isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), nullable(intType()))
+{
+  checkedType(x, nullable(intType()))
+}
+
+/pure_casts.kt: info: Generated Viper text for safeInt:
+function safeInt(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((isSubtype(typeOf(x), intType()) ? x : nullValue())) in
+    (anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1)))
+}
+
+/pure_casts.kt: info: Generated Viper text for castControls:
+function checkedInt(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  checkedType(x, intType())
+}
+
+function checkedNonNull(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(intType()))
+  requires !(x == nullValue())
+  ensures isSubtype(typeOf(result), intType())
+{
+  nonNull(x)
+}
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+function nullBranch(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(intType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (x == nullValue() ? intToRef(0) : nonNull(x))
+}
+
+function nullableTarget(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(anyType()))
+  requires x == nullValue() || isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), nullable(intType()))
+{
+  checkedType(x, nullable(intType()))
+}
+
+function safeInt(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_3_0 ==
+    ((isSubtype(typeOf(x), intType()) ? x : nullValue())) in
+    (anon_3_0 != nullValue() ? anon_3_0 : intToRef(-1)))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method castControls() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(checkedInt(intToRef(4))) == 4
+  assert intFromRef(checkedNonNull(intToRef(5))) == 5
+  assert nullableTarget(nullValue()) == nullValue()
+  assert intFromRef(safeInt(nullValue())) == -1
+  assert intFromRef(safeInt(intToRef(6))) == 6
+  assert intFromRef(nullBranch(nullValue())) == 0
+  assert intFromRef(nullBranch(intToRef(7))) == 7
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for castValueControl:
+function safeInt(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((isSubtype(typeOf(x), intType()) ? x : nullValue())) in
+    (anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1)))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method castValueControl() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(safeInt(nullValue())) == 6
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for safeFailureBranch:
+function safeInt(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((isSubtype(typeOf(x), intType()) ? x : nullValue())) in
+    (anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1)))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method safeFailureBranch(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  requires !isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(safeInt(x)) == -1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for safeFailureControl:
+function safeInt(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(anyType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_0_0 ==
+    ((isSubtype(typeOf(x), intType()) ? x : nullValue())) in
+    (anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1)))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method safeFailureControl(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  requires !isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(safeInt(x)) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for nullBranch:
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+function nullBranch(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(intType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (x == nullValue() ? intToRef(0) : nonNull(x))
+}
+
+/pure_casts.kt: info: Generated Viper text for badCast:
+function badCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  requires !isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  checkedType(x, intType())
+}
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+/pure_casts.kt: info: Generated Viper text for badBang:
+function badBang(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(intType()))
+  requires x == nullValue()
+  ensures isSubtype(typeOf(result), intType())
+{
+  nonNull(x)
+}
+
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+/pure_casts.kt: info: Generated Viper text for discardedCast:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function discardedCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    (checkedType(x, intType())) in
+    intToRef(0))
+}
+
+/pure_casts.kt: info: Generated Viper text for discardedSafeOperand:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function discardedSafeOperand(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_2_0 ==
+    ((isSubtype(typeOf(checkedType(x, intType())), anyType()) ?
+      checkedType(x, intType()) :
+      nullValue())) in
+    intToRef(0))
+}
+
+/pure_casts.kt: info: Generated Viper text for guardedDiscard:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function guardedDiscard(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    ((isSubtype(typeOf(x), intType()) ?
+      (isSubtype(typeOf(checkedType(x, intType())), anyType()) ?
+        checkedType(x, intType()) :
+        nullValue()) :
+      null)) in
+    intToRef(0))
+}
+
+/pure_casts.kt: info: Generated Viper text for badPureCaller:
+function badCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  requires !isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  checkedType(x, intType())
+}
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method badPureCaller(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  requires !isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_result: Ref
+  l0_result := badCast(x)
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for contractCasts:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method contractCasts(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  requires isSubtype(typeOf(x), intType()) &&
+    intFromRef(checkedType(x, intType())) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(checkedType(x, intType()))
+{
+  assert intFromRef(checkedType(x, intType())) >= 0
+  inhale isSubtype(typeOf(x), intType())
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/pure_casts.kt: info: Generated Viper text for unguardedContract:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+method unguardedContract(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  requires intFromRef(checkedType(x, intType())) >= 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for specificationFailure:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method specificationFailure(x: Ref, n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  requires isSubtype(typeOf(n), nullable(intType()))
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(checkedType(x, intType())) >= 0
+  assert intFromRef(nonNull(n)) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for loopCast:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+method loopCast(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), anyType())
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var done: Ref
+  var anon: Ref
+  done := boolToRef(false)
+  label cont
+    invariant isSubtype(typeOf(done), boolType())
+    invariant isSubtype(typeOf(x), anyType())
+    invariant intFromRef(checkedType(x, intType())) ==
+      intFromRef(checkedType(x, intType()))
+  anon := notBool(done)
+  if (boolFromRef(anon)) {
+    done := boolToRef(true)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(done), boolType())
+  assert isSubtype(typeOf(x), anyType())
+  assert intFromRef(checkedType(x, intType())) ==
+    intFromRef(checkedType(x, intType()))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for CastLaw:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), CastLaw())
+  ensures isSubtype(typeOf(result), nullable(anyType()))
+
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_0), CastLaw())
+  ensures isSubtype(typeOf(v_ret_0), CastLaw()) &&
+    (let this ==
+      (v_ret_0) in
+      true &&
+      boolFromRef(boolToRef(!isSubtype(typeOf(g_value(this)), intType()) ||
+      intFromRef(checkedType(g_value(this), intType())) >= -2147483648)))
+  ensures g_value(v_ret_0) == par_value
+  ensures g_value(v_ret_0) == par_value
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CastLaw()
+  anon := par_value
+  inhale g_value(v_ret_0) == anon
+  assert (let this ==
+      (v_ret_0) in
+      boolFromRef(boolToRef(!isSubtype(typeOf(g_value(this)), intType()) ||
+      intFromRef(checkedType(g_value(this), intType())) >= -2147483648)))
+  fold acc(CastLaw_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CastLaw_unique(v_ret_0), write)
+}
+
+/pure_casts.kt: info: Generated Viper text for CastBound:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), CastBound())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CastBound()
+  fold acc(CastBound_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CastBound_unique(v_ret_0), write)
+}
+
+/pure_casts.kt: info: Generated Viper text for CastBox:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), CastBox())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CastBox()
+  fold acc(CastBox_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CastBox_unique(v_ret_0), write)
+}
+
+/pure_casts.kt: info: Generated Viper text for boundedCast:
+function boundedCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  requires isSubtype(typeOf(x), CastBound())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(checkedType(x, CastBound()) == x)
+}
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+/pure_casts.kt: info: Generated Viper text for badBoundedCast:
+function badBoundedCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(checkedType(x, CastBound()) == x)
+}
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+/pure_casts.kt: info: Generated Viper text for parameterizedCast:
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function parameterizedCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  requires isSubtype(typeOf(x), CastBox())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(checkedType(x, CastBox()) == x)
+}
+
+/pure_casts.kt: info: Generated Viper text for primitiveArrayCast:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function primitiveArrayCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), anyType())
+  requires isSubtype(typeOf(x), IntArray())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(checkedType(x, IntArray()) == x)
+}
+
+/pure_casts.kt: info: Generated Viper text for redundantArrayCast:
+field referenceContents: Seq[Ref]
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function redundantArrayCast(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(Array()))
+  requires !(x == nullValue())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(checkedType(x, Array()) == x)
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+/pure_casts.kt: info: Generated Viper text for arrayBang:
+field referenceContents: Seq[Ref]
+
+function arrayBang(x: Ref): Ref
+  requires isSubtype(typeOf(x), nullable(Array()))
+  requires !(x == nullValue())
+  ensures isSubtype(typeOf(result), boolType())
+{
+  boolToRef(nonNull(x) == x)
+}
+
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
