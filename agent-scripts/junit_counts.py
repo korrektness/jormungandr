@@ -3,6 +3,7 @@ import xml.etree.ElementTree as ET
 
 ASSERTION_TYPES = ("org.opentest4j.AssertionFailedError",)
 ASSERTION_SUFFIX = "ComparisonFailure"
+MULTIPLE_FAILURE_SUFFIXES = ("MultiCauseException", "MultipleFailuresError")
 
 
 def is_assertion_type(failure_type):
@@ -13,13 +14,14 @@ def is_golden_mismatch(node):
     """Whether a <failure> or <error> node is golden-file mismatches only.
 
     A test that fails several golden assertions reaches the XML as one
-    DefaultMultiCauseException whose message lists each cause as "type: message"
-    on its own line after a header line.
+    exception whose message lists each cause as "type: message" on its own line
+    after a header line: Gradle's DefaultMultiCauseException, or JUnit's
+    MultipleFailuresError from the persistent test runner.
     """
     failure_type = node.get("type", "")
     if is_assertion_type(failure_type):
         return True
-    if not failure_type.endswith("MultiCauseException"):
+    if not failure_type.endswith(MULTIPLE_FAILURE_SUFFIXES):
         return False
     causes = [line.strip() for line in (node.get("message") or "").splitlines()[1:] if line.strip()]
     return bool(causes) and all(is_assertion_type(cause.split(":", 1)[0]) for cause in causes)

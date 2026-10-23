@@ -28,7 +28,8 @@ class VerificationCacheTest(unittest.TestCase):
             gradle.chmod(0o755)
             temporary_outputs = root / 'tmp'
             temporary_outputs.mkdir()
-            env = dict(os.environ, SNAKT_VERIFICATION_CACHE=str(root / 'cache'),
+            # The fake gradlew writes no runner spec, so the driver runs Gradle's test tasks.
+            env = dict(os.environ, SNAKT_TEST_RUNNER='off', SNAKT_VERIFICATION_CACHE=str(root / 'cache'),
                        SNAKT_TEST_DUMP_DIR=str(root / 'dumps'), TMPDIR=str(temporary_outputs),
                        SNAKT_VERIFICATION_TIMINGS=str(root / 'timings'))
 

@@ -82,6 +82,17 @@ tasks.test {
     configureFormverTest()
 }
 
+registerTestRunnerSpec(
+    tasks.test,
+    sourceSets.test.get().runtimeClasspath,
+    sourceSets.test.get().output.classesDirs,
+    slot = "locality",
+    requestProperties = listOf("kotlin.test.update.test.data"),
+    sharedLibraries = testRunnerSharedLibraries,
+    environment = testRunnerEnvironment(providers),
+    provideZ3 = false,
+)
+
 fun Test.setLibraryProperty(propName: String, jarName: String) {
     val path = project.configurations
         .testRuntimeClasspath.get()

@@ -44,6 +44,13 @@ val bridgeJar by tasks.registering(Jar::class) {
     from(sourceSets["bridge"].output)
 }
 
+// The bridge jar, for the builds that write runner specs.
+val bridgeElements: Configuration by configurations.creating {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+}
+artifacts.add(bridgeElements.name, bridgeJar)
+
 tasks.test {
     useJUnitPlatform()
     val serverClasspath = sourceSets.main.get().output.classesDirs

@@ -74,6 +74,14 @@ buildConfig {
     packageName(group.toString())
 }
 
+// Gradle properties passed on to the tests as system properties of the same name. They select what a run does, so
+// the persistent test runner sets them per request, as it does the test mode.
+val forwardedProperties = listOf(
+    "kotlin.test.update.test.data", "formver.recordOutcomes", "formver.vacuityReport",
+    "formver.verificationCacheDirectory", "formver.verificationCacheReport",
+    "formver.verificationCacheRefresh", "formver.verificationColdSample", "formver.verificationJobs",
+)
+
 fun Test.configureFormverTest() {
     dependsOn(annotationsRuntimeClasspath)
 
@@ -92,26 +100,10 @@ fun Test.configureFormverTest() {
 
     systemProperty("idea.ignore.disabled.plugins", "true")
     systemProperty("formver.testRun", "true")
-    listOf(
-        "formver.verificationCacheDirectory", "formver.verificationCacheReport",
-        "formver.verificationCacheRefresh", "formver.verificationColdSample",
-    ).forEach { property ->
+    forwardedProperties.forEach { property ->
         project.findProperty(property)?.let { systemProperty(property, it) }
     }
-    project.findProperty("formver.verificationJobs")?.let {
-        systemProperty("formver.verificationJobs", it)
-    }
     systemProperty("idea.home.path", rootDir)
-
-    project.findProperty("kotlin.test.update.test.data")?.let {
-        systemProperty("kotlin.test.update.test.data", it)
-    }
-    project.findProperty("formver.vacuityReport")?.let {
-        systemProperty("formver.vacuityReport", it)
-    }
-    project.findProperty("formver.recordOutcomes")?.let {
-        systemProperty("formver.recordOutcomes", it)
-    }
 
     jvmArgs = listOf("-Xss30M", "-Xmx3g", "-XX:MaxMetaspaceSize=512m")
 }
@@ -127,10 +119,10 @@ fun Test.provideZ3() {
 
 // Each declaration worker has two method provers and a main prover. The shared declaration executor bounds jobs
 // across parallel tests. SILICON_PARALLEL_VERIFIERS overrides the per-job method worker count.
+val siliconParallelVerifiers = providers.environmentVariable("SILICON_PARALLEL_VERIFIERS").orNull ?: "2"
+
 fun Test.limitSiliconParallelism() {
-    if (providers.environmentVariable("SILICON_PARALLEL_VERIFIERS").orNull == null) {
-        environment("SILICON_PARALLEL_VERIFIERS", "2")
-    }
+    environment("SILICON_PARALLEL_VERIFIERS", siliconParallelVerifiers)
 }
 
 // ./gradlew test — normal mode (full verification)
@@ -162,6 +154,21 @@ tasks.register<Test>("update") {
     provideZ3()
     limitSiliconParallelism()
     systemProperty("formver.testMode", "UPDATE")
+}
+
+// One runner JVM serves all three tasks: they differ only in the test mode, which is set per request. Each spec
+// provides Z3, so a conversion run and a verification run can share the JVM.
+listOf(tasks.test, tasks.named<Test>("untilConversion"), tasks.named<Test>("update")).forEach { test ->
+    registerTestRunnerSpec(
+        test,
+        sourceSets.test.get().runtimeClasspath,
+        sourceSets.test.get().output.classesDirs,
+        slot = "compiler",
+        requestProperties = listOf("formver.testMode") + forwardedProperties,
+        sharedLibraries = testRunnerSharedLibraries,
+        environment = testRunnerEnvironment(providers) + ("SILICON_PARALLEL_VERIFIERS" to siliconParallelVerifiers),
+        provideZ3 = true,
+    )
 }
 
 kotlin {

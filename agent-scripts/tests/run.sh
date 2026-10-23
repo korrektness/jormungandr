@@ -86,8 +86,8 @@ assert_eq "counts: a golden mismatch is counted apart from a thrown exception" \
     "2 1 1 0 0" 0 \
     -- python3 "$LIB_DIR/junit_counts.py" "$FIXTURES/failure.xml" "$FIXTURES/error.xml"
 
-assert_eq "counts: several golden mismatches in one test are one mismatch; a mix is not" \
-    "2 1 1 0 0" 0 \
+assert_eq "counts: several golden mismatches in one test are one mismatch, under Gradle or the runner; a mix is not" \
+    "3 2 1 0 0" 0 \
     -- python3 "$LIB_DIR/junit_counts.py" "$FIXTURES/multi-failure.xml"
 
 assert_eq "counts: a skipped test is neither passed nor failed" \

@@ -78,6 +78,23 @@ skip means the run covered less than the command promises, and the gap is in the
 setup rather than in the code, so it gets its own exit code rather than being
 folded into either 0 or 1.
 
+## The kept test JVM
+
+`test.sh` does not run the Gradle test tasks. Gradle compiles and, through each
+task's `RunnerSpec` task, writes what the task would run; the persistent runner
+of `formver.test-runner` then runs it in a JVM that the next run reuses. The
+compiler libraries and Silicon stay loaded between runs; the project's classes
+and the tests load anew each run, so a run sees what Gradle just compiled. The
+mode properties, such as the test mode and `--update-goldens`, are set per run.
+Anything else the JVM was started with, changed, starts a new one and says what
+changed; `Client` in `formver.test-runner` lists what that covers. The server
+gets only the environment variables `testRunnerEnvironment` in `buildSrc` names.
+
+There is one JVM per module per checkout, and it exits after idling for the
+time `registerTestRunnerSpec` in `buildSrc` gives it. `--fresh-jvm` starts a new
+one for a run, `--stop` stops this checkout's, and `SNAKT_TEST_RUNNER=off` runs
+the Gradle test tasks instead.
+
 ## Recovering the diff
 
 Gradle's cross-JVM result serialization strips the expected/actual values off a
@@ -86,7 +103,8 @@ golden-file assertion before they reach the console.
 by `formver.compiler-plugin/test-resources/`, catches them inside the test JVM
 instead. It is registered for every run and stays inert unless
 `SNAKT_TEST_DUMP_DIR` is set, which `test.sh` does. The locality module has no
-test fixtures on its classpath, so its failures go to the HTML report instead.
+test fixtures on its classpath, so `test.sh` prints its first failure from the
+JUnit XML instead.
 
 Only golden-file assertions carry values to recover. For a thrown exception
 `test.sh` prints the failure from the JUnit XML.
