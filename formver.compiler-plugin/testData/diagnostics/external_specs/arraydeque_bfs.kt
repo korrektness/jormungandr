@@ -53,8 +53,6 @@ fun <!VIPER_TEXT!>scanSuccessors<!>(offsets: @Unique @Borrowed IntArray, targets
             parent.size == offsets.size - 1
             rank.size == offsets.size - 1
             0 <= start && start < offsets.size - 1
-            forAll<Int> { i -> triggers(offsets[i]); (0 <= i && i < offsets.size) implies (0 <= offsets[i] && offsets[i] <= targets.size) }
-            forAll<Int> { j -> triggers(targets[j]); (0 <= j && j < targets.size) implies (0 <= targets[j] && targets[j] < offsets.size - 1) }
             0 <= u && u < offsets.size - 1
             0 <= processed && processed < f
             rank[u] == processed
