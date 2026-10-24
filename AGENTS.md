@@ -18,9 +18,14 @@ name. A failing run prints the expected/actual diff.
 
 Verification is slow. Stay on the fast loop while developing.
 
-Before pushing:
+The land gate verifies only the tests whose testData a change touches; the
+nightly run verifies everything (docs/agents-dev.md, "Landing and nightly").
+Before landing a change that can alter verification without changing a golden
+(the `viper` module, `formver.compiler-plugin/test-fixtures`, Silicon or Z3, the
+Gradle plugin or packaging), run what it affects:
 
-    ./agent-scripts/check-all.sh
+    ./agent-scripts/test.sh --verify [pattern]
+    ./agent-scripts/check-all.sh                       # everything the nightly runs
 
 Exit 1 is a real failure. Exit 2 means a check did not run: install what it
 needs and run again, rather than reading 2 as a pass.

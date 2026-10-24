@@ -16,15 +16,27 @@ fi
 export SNAKT_VERIFICATION_TIMINGS="${SNAKT_VERIFICATION_TIMINGS:-$SNAKT_GATE_ARTIFACTS/declarations}"
 measure=(python3 "$SCRIPT_DIR/gate_measure.py")
 "${measure[@]}" gate.testdata ./agent-scripts/check-testdata.sh
-"${measure[@]}" gate.consumer ./agent-scripts/check-gradle-consumer.sh
-store="$(verification_cache_store)"
-args=()
-if [[ "$store" != off ]]; then
-    "${measure[@]}" gate.cache-prune python3 "$SCRIPT_DIR/verification_cache.py" prune "$store"
-    args+=(-Pformver.verificationCacheDirectory="$store"
-           -Pformver.verificationColdSample="$(git rev-parse HEAD)"
-           -Pformver.verificationCacheReport="$SNAKT_GATE_ARTIFACTS/cache")
+
+# Every test runs in conversion mode. Verification runs only for the tests whose
+# testData differs from the target branch; the nightly test.sh verifies the rest.
+base="$(git merge-base HEAD origin/HEAD)"
+# A substitution, not <( ), so that a failing git stops the gate.
+stems="$(git diff --name-only --diff-filter=d "$base" HEAD -- formver.compiler-plugin/testData/diagnostics \
+    | sed -E 's#.*/##; s#\..*##' | tr '-' '_' | sort -u)"
+verify=()
+for stem in $stems; do
+    verify+=(--tests "*.test$(printf '%s' "${stem:0:1}" | tr '[:lower:]' '[:upper:]')${stem:1}")
+done
+if [[ "${#verify[@]}" -gt 0 ]]; then
+    store="$(verification_cache_store)"
+    if [[ "$store" != off ]]; then
+        "${measure[@]}" gate.cache-prune python3 "$SCRIPT_DIR/verification_cache.py" prune "$store"
+        verify+=(-Pformver.verificationCacheDirectory="$store"
+                 -Pformver.verificationColdSample="$(git rev-parse HEAD)"
+                 -Pformver.verificationCacheReport="$SNAKT_GATE_ARTIFACTS/cache")
+    fi
+    verify=(:formver.compiler-plugin:test "${verify[@]}")
 fi
 "${measure[@]}" gate.gradle ./gradlew --no-daemon detekt apiCheck :formver.compiler-plugin:locality:test \
-    :formver.compiler-plugin:untilConversion :formver.compiler-plugin:test \
-    :formver.test-runner:test "${args[@]}"
+    :formver.compiler-plugin:core:test :formver.compiler-plugin:uniqueness:test \
+    :formver.compiler-plugin:untilConversion :formver.test-runner:test "${verify[@]+"${verify[@]}"}"

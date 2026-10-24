@@ -2,13 +2,15 @@
 # The gate runs test_cmd on each rebased candidate and lands it only if
 # that passes. See `request-land init` and
 # /opt/bots/docs/bots-host/landing.md.
-# Mirrors the Gradle CI workflow. The test tasks provide Z3 (see README.md).
-# check-testdata.sh runs first; it needs no build.
+# gate-test.sh runs the unit tests, every test in conversion mode and
+# verification of the tests whose testData changed; the nightly run (the root
+# test.sh) runs everything CI enforces.
 test_cmd: ["bash", "agent-scripts/gate-test.sh"]
-# The suite takes about nine minutes unloaded and longer under load.
 tests:
   timeout_secs: 2400
 # target_branch: main          # default: origin/HEAD
-# review:
-#   extra_standards: |
-#     - <repo-specific review rules, appended to the packaged brief>
+review:
+  extra_standards: |
+    - The gate checks every golden in conversion mode and verifies only the tests whose testData the change touches; everything else is verified nightly. Reject a change that can alter verification outcomes without changing a golden (the viper module, the compiler-plugin test fixtures, the Silicon or Z3 version, the outcome cache, the Gradle plugin, publishing or shading) when its commit message names no verification run covering what it affects, such as `agent-scripts/test.sh --verify <pattern>` or `agent-scripts/check-all.sh`, together with that run's result.
+    - Keep `agent-scripts/gate-test.sh` to unit tests, conversion-mode tests and verification of changed testData. Reject a diff that adds whole-suite verification, the published-plugin consumer check or another end-to-end run to it; those belong in `agent-scripts/check-all.sh`, which the nightly runs.
+    - Reject a new JUnit test outside testData that runs Silicon on a whole algorithm or fixture. Such a check belongs in testData, where the gate verifies it when it changes and the nightly verifies it always.

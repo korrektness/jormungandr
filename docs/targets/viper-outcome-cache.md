@@ -127,20 +127,20 @@ with no cache prints `Verification: cache off`.
 
 ### The land gate
 
-The gate's `test_cmd` passes `-Pformver.verificationCacheDirectory=<store>` and
-`-Pformver.verificationColdSample=<commit sha>`. With a cold sample set, every hit whose key, hashed with the sample
-value, falls into the first 1/20 of the hash range is verified anyway and compared with the stored outcome. A
-disagreement fails the gate run with the program and both outcomes. The sample changes with every candidate, so
-over 20 gate runs each stored outcome is re-checked with probability 64 %. At measured rates the sample costs
-about 5 % of the cold Silicon time, about 20 s of wall time.
+The gate verifies only the tests whose testData the candidate changes
+([Landing and nightly](../agents-dev.md#landing-and-nightly)). For those it passes
+`-Pformver.verificationCacheDirectory=<store>` and `-Pformver.verificationColdSample=<commit sha>`. With a cold
+sample set, every hit whose key, hashed with the sample value, falls into the first 1/20 of the hash range is
+verified anyway and compared with the stored outcome. A disagreement fails the gate run with the program and both
+outcomes.
 
 A cached outcome can hide a regression only if the key misses an input or Silicon's outcome on a program is not a
 function of its inputs. The first is bounded by the tool digests in the key; the second is what the cold sample
-catches. A flaky program that once verified stays verified in the cache until sampled; uncached, it would have
-failed the gate at random.
+catches, and what the nightly run, which verifies every program without the cache, checks in full. A flaky program
+that once verified stays verified in the cache until sampled; uncached, it would have failed the gate at random.
 
-`check-gradle-consumer.sh` keeps verifying cold: it checks the published plugin, and the caller-stays-verified
-check edits a spec and needs fresh verification.
+`check-gradle-consumer.sh` runs nightly and verifies cold: it checks the published plugin, and the
+caller-stays-verified check edits a spec and needs fresh verification.
 
 ### `--verify-changed`
 
@@ -152,8 +152,7 @@ savings), and it checks every program against the current tools. `--verify-chang
 | Use | With success cache | With failure cache |
 |---|---|---|
 | Full verify / `--update-goldens`, nothing changed | about half of the cold run | most of the remaining gap to the conversion floor **[H]** |
-| Land gate verify step, candidate that changes a few goldens | about half of the cold run, plus the cold sample | most of the remaining gap, plus the cold sample **[H]** |
 | Pattern run of one test | small | small |
 
-Developers mostly run the conversion loop, which never calls Silicon; the savings land on `--verify`,
-`--update-goldens` and every gate run.
+Developers mostly run the conversion loop, which never calls Silicon; the savings land on `--verify`
+and `--update-goldens`.

@@ -13,7 +13,9 @@ them.
   goldens and report what they now say, `--vacuity` for the vacuity check of
   `docs/soundness.md`.
 - `check-all.sh` — `check`, the Gradle consumer check, `pre-commit` and the testData checks together.
-  `--rerun` re-executes tests Gradle considers current.
+  `--rerun` re-executes tests Gradle considers current. The nightly run is this script, through the
+  repository's root `test.sh`.
+- `gate-test.sh` — what the land gate runs on each candidate; see [Landing and nightly](#landing-and-nightly).
 - `check-gradle-consumer.sh` — publishes the plugin to a private Maven repository and
   compiles a tiny Gradle project with it, so a defect that only the shadow jar has
   (an unrelocated dependency) fails. The project also verifies calls through an
@@ -57,13 +59,23 @@ A group's timeout applies separately to each program. Only declarations selected
 conversion-only and skipped declarations produce none. The environment variable
 `SNAKT_VERIFICATION_TIMINGS` also enables reporting directly from Gradle.
 
+## Landing and nightly
+
+`gate-test.sh` runs `check-testdata.sh`, detekt, `apiCheck`, the unit tests of each module and
+`untilConversion`. It verifies a test only when a file under `testData/diagnostics` with that test's
+stem differs from `origin/HEAD`'s merge base, using the shared outcome cache with the cold sample. A
+change whose goldens do not move is checked in conversion mode alone. The consumer check and the
+verification of everything else run nightly: the host's nightly-tests runner runs the root `test.sh`,
+which is `check-all.sh --rerun` without the outcome cache, and pages the operator when it fails.
+
 ## Gate measurements
 
 `gate-test.sh` prints its fresh external artifact directory. Set
 `SNAKT_GATE_ARTIFACTS` to an existing external parent directory to choose its location.
 `gate_measure.py` emits command, cwd, monotonic elapsed nanoseconds and shell exit
 status as JSON on stderr and in per-boundary JSON files. Gate totals enclose the
-checks; individual consumer Gradle boundaries include expected failures.
+checks. `check-gradle-consumer.sh` records each of its Gradle boundaries the same way,
+expected failures included, into `SNAKT_GATE_ARTIFACTS` when that is set.
 Provenance files record candidate, dirty state, tool versions, build configuration
 and relevant environment. `cache/` holds the existing raw verification cache reports;
 `declarations/` holds [declaration timings](#declaration-timings), unless

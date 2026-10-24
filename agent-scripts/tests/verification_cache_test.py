@@ -56,8 +56,13 @@ class VerificationCacheTest(unittest.TestCase):
             binaries = root / 'bin'
             binaries.mkdir()
             git = binaries / 'git'
-            git.write_text('#!/bin/sh\necho candidate-sha\n')
+            diff = root / 'diff'
+            git.write_text('#!/bin/sh\ncase "$1" in\n    merge-base) echo base-sha ;;\n'
+                           f'    diff) cat {diff} ;;\n    *) echo candidate-sha ;;\nesac\n')
             git.chmod(0o755)
+            golden = 'formver.compiler-plugin/testData/diagnostics/'
+            diff.write_text(f'{golden}nested/non-local-returns.kt\n{golden}nested/non-local-returns.viper.txt\n'
+                            f'{golden}assign_local.fir.diag.txt\n')
             for tool in ('java', 'z3'):
                 binary = binaries / tool
                 binary.write_text('#!/bin/sh\necho fixture-version\n')
@@ -65,6 +70,9 @@ class VerificationCacheTest(unittest.TestCase):
             gate_env = dict(env, PATH=str(binaries) + os.pathsep + env['PATH'],
                             SNAKT_GATE_ARTIFACTS=artifacts)
             gate = run(driver='gate-test.sh', environment=gate_env)
+            verified = gate[gate.index(':formver.compiler-plugin:test') + 1:]
+            self.assertEqual(['*.testAssign_local', '*.testNon_local_returns'],
+                             [verified[i + 1] for i, arg in enumerate(verified) if arg == '--tests'])
             self.assertIn('-Pformver.verificationColdSample=candidate-sha', gate)
             self.assertIn(f'-Pformver.verificationCacheDirectory={root / "cache"}', gate)
             reports = list(pathlib.Path(artifacts).glob('*/gate.total.json'))
@@ -72,6 +80,19 @@ class VerificationCacheTest(unittest.TestCase):
             self.assertIn(f'-Pformver.verificationCacheReport={reports[0].parent / "cache"}', gate)
             cold_gate = run(driver='gate-test.sh', environment=dict(gate_env, SNAKT_VERIFICATION_CACHE='off'))
             self.assertFalse(any(arg.startswith('-Pformver.verification') for arg in cold_gate))
+            self.assertIn(':formver.compiler-plugin:test', cold_gate)
+
+            diff.write_text('')
+            unchanged = run(driver='gate-test.sh', environment=gate_env)
+            self.assertIn(':formver.compiler-plugin:untilConversion', unchanged)
+            self.assertNotIn(':formver.compiler-plugin:test', unchanged)
+            self.assertFalse(any(arg.startswith('-Pformver.verification') for arg in unchanged))
+
+            diff.unlink()
+            (root / 'args').unlink()
+            failed = subprocess.run(['bash', str(scripts / 'gate-test.sh')], env=gate_env, capture_output=True)
+            self.assertNotEqual(0, failed.returncode)
+            self.assertFalse((root / 'args').exists())
 
     def test_prune_preserves_active_entries_and_batches_maintenance(self):
         with tempfile.TemporaryDirectory() as temporary:
