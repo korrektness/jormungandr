@@ -47,8 +47,6 @@ class OrderedVerificationExecutor(private val parallelism: Int) : Closeable {
     }
 
     companion object {
-        val shared = OrderedVerificationExecutor(
-            (System.getProperty("formver.verificationJobs")?.toInt() ?: 4).also { require(it in 1..4) }
-        )
+        val shared = OrderedVerificationExecutor(VerificationConcurrency.jobs)
     }
 }

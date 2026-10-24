@@ -9,19 +9,31 @@ import kotlin.test.assertFailsWith
 class OrderedVerificationExecutorTest {
     @Test
     fun `jobs run concurrently within the budget and results retain input order`() {
-        OrderedVerificationExecutor(2).use { executor ->
-            val active = AtomicInteger()
-            val maximum = AtomicInteger()
-            val barrier = CyclicBarrier(2)
-            val results = executor.map(listOf(4, 3, 2, 1)) { value ->
-                val count = active.incrementAndGet()
-                maximum.accumulateAndGet(count, ::maxOf)
-                barrier.await()
-                active.decrementAndGet()
-                value * 10
+        for (jobs in listOf(1, 4, 8, 16)) {
+            val configured = VerificationConcurrency.parseJobs(jobs.toString())
+            assertEquals(jobs, configured)
+            OrderedVerificationExecutor(configured).use { executor ->
+                val active = AtomicInteger()
+                val maximum = AtomicInteger()
+                val barrier = CyclicBarrier(jobs)
+                val inputs = (jobs * 2 downTo 1).toList()
+                val results = executor.map(inputs) { input ->
+                    val count = active.incrementAndGet()
+                    maximum.accumulateAndGet(count, ::maxOf)
+                    barrier.await()
+                    active.decrementAndGet()
+                    input * 10
+                }
+                assertEquals(jobs, maximum.get())
+                assertEquals(inputs.map { it * 10 }, results)
             }
-            assertEquals(2, maximum.get())
-            assertEquals(listOf(40, 30, 20, 10), results)
+        }
+    }
+
+    @Test
+    fun `invalid job settings are rejected`() {
+        for (value in listOf("", "garbage", "1.5", "0", "-1", "17", "2147483648")) {
+            assertFailsWith<IllegalArgumentException> { VerificationConcurrency.parseJobs(value) }
         }
     }
 

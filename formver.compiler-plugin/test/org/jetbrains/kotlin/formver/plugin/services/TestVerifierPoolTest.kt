@@ -1,5 +1,6 @@
 package org.jetbrains.kotlin.formver.plugin.services
 
+import org.jetbrains.kotlin.formver.viper.VerificationConcurrency
 import java.io.Closeable
 import java.nio.file.Path
 import java.util.concurrent.CountDownLatch
@@ -64,6 +65,11 @@ class TestVerifierPoolTest {
 
     @Test
     fun `capacity includes exclusive checkouts and idle resources across keys`() {
+        for (capacity in listOf(1, 4, 8, 16)) assertCapacity(capacity)
+    }
+
+    private fun assertCapacity(capacity: Int) {
+        val configured = VerificationConcurrency.parseJobs(capacity.toString())
         val waiting = CountDownLatch(1)
         val alive = AtomicInteger()
         val maximum = AtomicInteger()
@@ -73,28 +79,26 @@ class TestVerifierPoolTest {
         }
         val executor = Executors.newSingleThreadExecutor()
         try {
-            TestVerifierPool<String, TrackedResource>(2, awaitAvailable = {
+            TestVerifierPool<String, TrackedResource>(configured, awaitAvailable = {
                 waiting.countDown()
                 it.await()
             }) { TrackedResource() }.use { pool ->
-                val first = pool.checkout("same")
-                val second = pool.checkout("same")
+                val leases = List(capacity) { pool.checkout("same") }
                 try {
-                    assertNotSame(first.run { it }, second.run { it })
+                    assertEquals(capacity, leases.map { lease -> lease.run { it } }.toSet().size)
                     val pending = executor.submit<TrackedResource> { checkoutIdentity(pool, "different") }
                     waiting.await()
-                    first.close()
+                    leases.first().close()
                     val replacement = pending.get()
-                    assertNotSame(second.run { it }, replacement)
-                    assertEquals(2, maximum.get())
-                    assertEquals(2, alive.get())
+                    leases.drop(1).forEach { lease -> assertNotSame(lease.run { it }, replacement) }
+                    assertEquals(capacity, maximum.get())
+                    assertEquals(capacity, alive.get())
                 } finally {
-                    first.close()
-                    second.close()
+                    leases.forEach { it.close() }
                 }
-                // Both slots are idle; a new key must evict rather than expand ownership.
-                pool.checkout("third").use { it.run { assertEquals(2, alive.get()) } }
-                assertEquals(2, maximum.get())
+                // All slots are idle; a new key must evict rather than expand ownership.
+                pool.checkout("third").use { it.run { assertEquals(capacity, alive.get()) } }
+                assertEquals(capacity, maximum.get())
             }
             assertEquals(0, alive.get())
         } finally {

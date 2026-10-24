@@ -32,6 +32,7 @@ import org.jetbrains.kotlin.formver.testrunner.Lifetime
 import org.jetbrains.kotlin.formver.viper.InvalidViperProgramException
 import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.OrderedVerificationExecutor
+import org.jetbrains.kotlin.formver.viper.VerificationConcurrency
 import java.nio.file.Path
 import java.io.Closeable
 import scala.jdk.javaapi.CollectionConverters
@@ -204,7 +205,7 @@ class ViperProgramVerificationFacade(val testServices: TestServices) :
 
     companion object {
         // Closed by Lifetime when the class loader holding this pool is dropped, or at JVM exit.
-        private val verifierPool = TestVerifierPool(4, create = ::TestVerifier).also(Lifetime::register)
+        private val verifierPool = TestVerifierPool(VerificationConcurrency.jobs, create = ::TestVerifier).also(Lifetime::register)
     }
 
     /** Opt-in fixtures also exercise frontend reuse across Silicon's global configuration changes. */
