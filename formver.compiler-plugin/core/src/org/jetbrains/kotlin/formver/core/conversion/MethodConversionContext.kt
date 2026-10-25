@@ -63,7 +63,7 @@ interface MethodConversionContext : ProgramConversionContext {
 
     fun resolveParameter(symbol: FirValueParameterSymbol): ExpEmbedding
     fun resolveLocal(symbol: FirVariableSymbol<*>): VariableEmbedding
-    fun registerLocalProperty(symbol: FirPropertySymbol)
+    fun registerLocalProperty(symbol: FirPropertySymbol, viewOf: org.jetbrains.kotlin.formver.core.linearization.OwnedPath? = null)
     fun registerLocalVariable(symbol: FirVariableSymbol<*>)
     fun resolveDispatchReceiver(): ExpEmbedding?
     fun resolveExtensionReceiver(labelName: String): ExpEmbedding?

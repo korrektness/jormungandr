@@ -52,6 +52,7 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
                 UntrustedDeclarationChecker(FunctionEscapeUniquenessConsistencyChecker),
                 UntrustedDeclarationChecker(FunctionExitUniquenessConsistencyChecker),
                 UntrustedDeclarationChecker(FunctionUseAfterMoveChecker),
+                UntrustedDeclarationChecker(BorrowedViewEscapeChecker),
                 PureFunctionResultChecker,
                 DispatchReceiverAnnotationPlacementChecker(defaultUniquenessAnnotationId, INVALID_UNIQUENESS_TYPE_TARGET),
             )

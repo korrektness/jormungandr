@@ -138,12 +138,22 @@ class ConversionFailureReportingTest {
             FoldOwnershipCondition(FoldOwnershipRule.UNTRACKED_WRITE_RECEIVER),
             FoldOwnershipCondition(FoldOwnershipRule.BORROWED_ASSIGNMENT, path),
             FoldOwnershipCondition(FoldOwnershipRule.DOWNCAST),
+            FoldOwnershipCondition(FoldOwnershipRule.BORROWED_VIEW_ESCAPE,
+                path.copy(members = listOf(ConversionOwnershipPath.Member(property, "member")))),
         )
         assertEquals(FoldOwnershipRule.entries.toSet(), conditions.map { it.rule }.toSet())
+        val current = source(0)
         conditions.forEach { condition ->
-            val problem = unsupportedOwnershipFailure(source(0), condition)
+            val problem = unsupportedOwnershipFailure(current, condition)
+            assertSame(current, problem.primary)
             assertSame(condition, problem.condition)
             assertDiagnostic(problem, FailureKind.UNSUPPORTED_OWNERSHIP)
+            if (condition.rule == FoldOwnershipRule.BORROWED_VIEW_ESCAPE) {
+                val evidence = assertNotNull(assertIs<FoldOwnershipCondition>(problem.condition).path)
+                assertSame(symbol, evidence.root.symbol)
+                assertSame(property, evidence.members.single().symbol)
+                assertContains(FailureToFirRenderer.message(problem), "root.member")
+            }
         }
     }
 

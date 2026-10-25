@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.purity
 
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.formver.core.linearization.toConversionPath
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipPath
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
@@ -92,7 +93,7 @@ fun ExpEmbedding.checkSpecificationVarReads(source: KtSourceElement, errors: Err
 }
 
 internal fun ExpEmbedding.conversionOwnershipPath(): ConversionOwnershipPath? = when (val exp = ignoringCastsAndMetaNodes()) {
-    is VariableEmbedding -> ConversionOwnershipPath(ConversionOwnershipPath.Root(
+    is VariableEmbedding -> exp.viewOf?.toConversionPath() ?: ConversionOwnershipPath(ConversionOwnershipPath.Root(
         kind = when (exp.name) {
             DispatchReceiverName -> ConversionOwnershipPath.Kind.DISPATCH_RECEIVER
             is ReturnVariableName, FunctionResultVariableName -> ConversionOwnershipPath.Kind.RESULT
@@ -114,7 +115,7 @@ internal fun ExpEmbedding.conversionOwnershipPath(): ConversionOwnershipPath? = 
 }
 
 private fun ExpEmbedding.pathRoot(): VariableEmbedding? = when (val exp = ignoringCastsAndMetaNodes()) {
-    is VariableEmbedding -> exp
+    is VariableEmbedding -> if (exp.viewSource != null) exp.viewOf?.root else exp
     is FieldAccess -> exp.receiver.pathRoot()
     is UniqueValAccess -> exp.receiver.pathRoot()
     else -> null

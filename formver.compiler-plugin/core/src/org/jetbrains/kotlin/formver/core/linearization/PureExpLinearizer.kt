@@ -54,6 +54,7 @@ data class PureExpLinearizer(
     val functionResult: Exp? = null,
     val variableNames: Map<SymbolicName, SymbolicName> = emptyMap(),
     override val isTrigger: Boolean = false,
+    val oldViewSources: Set<OwnedPath> = emptySet(),
 ) : LinearizationContext {
 
     override val logicOperatorPolicy: LogicOperatorPolicy
@@ -182,16 +183,31 @@ data class PureExpLinearizer(
     ): Exp {
         val receiverViper = receiver.toViper(this)
         val primitiveAccess: Exp = Exp.FieldAccess(receiverViper, field.toViper(), source.asPosition)
-        return hierarchyPredicateAccesses(receiverViper, receiverPath?.presentationType ?: receiverType, field).toList()
+        val read = hierarchyPredicateAccesses(receiverViper, receiverPath?.presentationType ?: receiverType, field).toList()
             .foldRight(primitiveAccess) { predicateAccess, acc -> Exp.Unfolding(predicateAccess, acc) }
+        return openOldSource(receiverPath, read)
     }
 
     override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean, receiverPath: OwnedPath?): Exp {
         val receiverViper = receiver.toViper(this)
         val value = step.valueOf(receiverViper, source.asPosition)
         if (!owned) return value
-        return hierarchyPredicateAccesses(receiverViper, receiverPath?.presentationType ?: receiverType, step).toList()
+        val read = hierarchyPredicateAccesses(receiverViper, receiverPath?.presentationType ?: receiverType, step).toList()
             .foldRight(value) { predicateAccess, acc -> Exp.Unfolding(predicateAccess, acc) }
+        return openOldSource(receiverPath, read)
+    }
+
+    private fun openOldSource(path: OwnedPath?, read: Exp): Exp {
+        if (path == null || path !in oldViewSources) return read
+        var value = path.root.toViperExp(this)
+        var type = path.root.type
+        val ancestors = path.fields.flatMap { step ->
+            val predicates = hierarchyPredicateAccesses(value, type, step).toList()
+            value = step.valueOf(value, source.asPosition)
+            type = step.type
+            predicates
+        }
+        return ancestors.foldRight(read) { predicate, body -> Exp.Unfolding(predicate, body) }
     }
 
     /**

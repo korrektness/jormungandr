@@ -63,10 +63,13 @@ object FunctionCaptureUniquenessChecker : FirFunctionChecker(MppCheckerKind.Comm
 
         for (separateGraph in separateGraphs) {
             for (symbol in separateGraph.resolveCapturedSymbols() + separateGraph.capturedReceivers()) {
-                if (symbol !in ownedRoots) continue
+                val source = symbol.borrowedViewSource()
+                if (source != null && source.resolveDeclaredUniqueness() != Uniqueness.Unique) continue
+                val root = source?.firstOrNull() ?: symbol
+                if (root !in ownedRoots) continue
 
                 val boundary = separateGraph.declaration?.source ?: declaration.source
-                reporter.reportFailure(uniqueCaptureFailure(boundary, listOf(symbol), boundary))
+                reporter.reportFailure(uniqueCaptureFailure(boundary, listOf(root), boundary))
             }
         }
     }

@@ -904,11 +904,19 @@ data class LinearizationVisitor(
     // region Invariant
 
     override fun visitOld(e: Old): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        private fun viewSources(exp: ExpEmbedding): List<OwnedPath> =
+            listOfNotNull((exp as? VariableEmbedding)?.takeIf { it.viewSource != null }?.viewOf) +
+                    exp.children().flatMap { viewSources(it) }
+
+        private fun oldContext(ctx: LinearizationContext): LinearizationContext = ctx.forSpecification().let {
+            if (it is PureExpLinearizer) it.copy(oldViewSources = it.oldViewSources + viewSources(e.inner)) else it
+        }
+
         override fun toViper(ctx: LinearizationContext): Exp =
-            Exp.Old(e.inner.linearize().toViper(ctx.forSpecification()), ctx.source.asPosition)
+            Exp.Old(e.inner.linearize().toViper(oldContext(ctx)), ctx.source.asPosition)
 
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
-            Exp.Old(e.inner.linearize().toViperBuiltinType(ctx.forSpecification()), ctx.source.asPosition)
+            Exp.Old(e.inner.linearize().toViperBuiltinType(oldContext(ctx)), ctx.source.asPosition)
     }
 
     // endregion

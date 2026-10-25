@@ -49,7 +49,7 @@ typealias OwnedShape = RootShape<VariableEmbedding, PathStep>
  * and an [InlineCall] whose callee returns `@Unique` reads its return variable.
  */
 fun ExpEmbedding.ownedPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaNodes()) {
-    is VariableEmbedding -> OwnedPath(exp)
+    is VariableEmbedding -> if (exp.viewSource != null) exp.viewOf else OwnedPath(exp)
     is StringBuilderUpdate -> exp.builder.ownedPath()
     is GenericArrayBulkUpdate -> if (exp.kind == GenericArrayBulk.CopyInto) exp.destination.ownedPath() else null
     is IntArrayInit -> exp.array.ownedPath()

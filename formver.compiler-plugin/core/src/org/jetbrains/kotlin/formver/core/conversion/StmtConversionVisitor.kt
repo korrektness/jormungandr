@@ -508,7 +508,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             data.platformNullCheck(it, data.convertReportingUnsupported(it), symbol.resolvedReturnType)
         })
         val frame = data.ownershipFrame
-        if (frame.analysis == null) return declaration
+        if (declaration.variable.viewSource != null || frame.analysis == null) return declaration
         return declaration.copy(targetOwned = frame.ownsAfter(property, listOf(symbol)))
     }
 

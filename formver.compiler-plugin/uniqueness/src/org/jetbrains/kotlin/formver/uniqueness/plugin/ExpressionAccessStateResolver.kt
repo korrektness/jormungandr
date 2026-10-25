@@ -43,6 +43,9 @@ fun FirExpression.resolveTerminalAccessState(): AccessState {
                     else EmptyAccessState.putChild(symbol, AccessState(Access.Terminal))
                 is FirVariableSymbol<*> -> {
                     symbol.receiverTemporaryInitializer?.let { return it.resolveAccessState() }
+                    symbol.borrowedViewSource()?.let { path ->
+                        return path.asReversed().fold(AccessState(Access.Terminal)) { state, step -> EmptyAccessState.putChild(step, state) }
+                    }
                     val receiverState = pathReceiver
                         ?.resolveAccessState()
                         ?: EmptyAccessState

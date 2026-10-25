@@ -107,7 +107,7 @@ interface StmtConversionContext : MethodConversionContext {
 }
 
 fun StmtConversionContext.declareLocalProperty(symbol: FirPropertySymbol, initializer: ExpEmbedding?): Declare {
-    registerLocalProperty(symbol)
+    registerLocalProperty(symbol, initializer?.pureReadPath())
     val variable = embedLocalProperty(symbol)
     return Declare(variable, initializer?.withType(variable.type))
 }
@@ -322,7 +322,16 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAcce
 private fun StmtConversionContext.ownsFor(element: FirElement, receiver: FirExpression, property: PropertyEmbedding): Boolean {
     if (!ownsBefore(element, receiver)) return false
     val step = (property.getter as? BackingFieldGetter)?.field ?: property.ownedStep ?: return true
-    val static = embedType(receiver.withoutCasts().resolvedType).pretype as? ClassTypeEmbedding ?: return true
+    val uncast = receiver.withoutCasts()
+    val source = (uncast as? FirQualifiedAccessExpression)?.calleeReference?.symbol
+        ?.let { ownershipFrame.analysis?.borrowedSource(it) }?.lastOrNull()
+    val heldType = when (source) {
+        is FirVariableSymbol<*> -> source.resolvedReturnType
+        is FirReceiverParameterSymbol -> source.resolvedType
+        is FirClassSymbol<*> -> source.defaultType()
+        else -> uncast.resolvedType
+    }
+    val static = embedType(heldType).pretype as? ClassTypeEmbedding ?: return true
     return typeResolver.declaresOnChain(static, step)
 }
 
@@ -594,7 +603,20 @@ fun StmtConversionContext.collectInvariants(block: FirBlock, statements: List<Fi
     if (block.isEmptyLambdaBody()) {
         return@buildList
     }
-    statements.forEach { stmt ->
+    if (statements.any { it is org.jetbrains.kotlin.fir.declarations.FirProperty }) {
+        val converted = statements.map { stmt ->
+            if (stmt is org.jetbrains.kotlin.fir.declarations.FirProperty && ownershipFrame.analysis?.borrowedSource(stmt.symbol) != null)
+                convert(stmt)
+            else {
+                stmt.requireInvariant()
+                convert(stmt).withPosition(stmt.source)
+            }
+        }
+        val expression = converted.dropLast(1).asReversed().fold(converted.last()) { tail, head ->
+            if (head.ignoringMetaNodes() is Declare) blockOf(head, tail) else OperatorExpEmbeddings.And(head, tail)
+        }
+        add(expression)
+    } else statements.forEach { stmt ->
         stmt.requireInvariant()
         add(stmt.accept(StmtConversionVisitor, this@collectInvariants).withPosition(stmt.source))
     }

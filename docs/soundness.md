@@ -43,6 +43,17 @@ three things part of every result:
   captures a parameter or local of its enclosing function is skipped
   (`verification/classes/law_bound_local_function.kt`).
 
+## Non-view owned aliases
+
+In read-only code, an uncast local alias outside the
+[stable view grammar](../SPECIFICATIONS.md#read-only-view-locals), such as an
+alias of a mutable owned field, receives a separate uniqueness root. The
+checker can therefore track two roots for one object. Viper permission
+accounting and pure-result restrictions still apply, but this is a limitation
+of the uniqueness analysis. `verification/pure_functions/pure_casts.kt::plainMutableAlias`
+exercises this boundary; the cast-bearing laundering controls in that fixture
+must be rejected.
+
 ## The trust report
 
 SnaKt lists the trusted pieces that each verified declaration's program uses:

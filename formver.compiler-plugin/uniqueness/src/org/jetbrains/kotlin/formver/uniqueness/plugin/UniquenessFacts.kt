@@ -70,6 +70,8 @@ class FunctionUniquenessAnalysis internal constructor(
      */
     fun stateInsideCall(call: FirElement): UniquenessState = statesInsideCalls[call] ?: stateBefore(call)
 
+    fun borrowedSource(symbol: FirBasedSymbol<*>): Path? = context(context) { symbol.borrowedViewSource() }
+
     fun declaredUniqueness(symbol: FirBasedSymbol<*>): Uniqueness =
         context(context) { symbol.resolveDeclaredUniqueness() }
 

@@ -1019,7 +1019,37 @@ held. For `b: @Unique Base`, `(b as? Sub)?.count` can read `Base.count`, while
 foundation does not support subtype-only mutable-field reads. An interface
 presentation supplies no concrete class ownership after a downcast. Shared sources
 remain shared, and the pure result restrictions below apply through these views.
-Cast-bound `val` locals have no borrowed-view provenance support.
+
+### Read-only view locals
+
+In specifications, laws and `@Pure` bodies, a reference-valued local `val` is a
+view when its initializer is a parameter, receiver or `this`, followed by final,
+non-overriding backing `val` fields, optionally refined by `as`, `as?`, `!!` or
+smart casts. Views of views compose. The initializer is evaluated once; every
+ownership check and read uses the source path and its presentation. A view
+creates no owned root, permission or invariant assumption. A nullable view has
+no ownership on either branch.
+
+Owned-source views may be observed by field reads, type and equality tests,
+passed to non-inline `@Pure` calls or specification builtins, and used to
+initialize another view. Duplicate and overlapping unique arguments are checked
+against the source paths. Returning, forwarding through a non-view initializer,
+assigning, storing or capturing an owned-source view is rejected with
+`UNSUPPORTED_OWNERSHIP` (`BORROWED_VIEW_ESCAPE`). Shared-source flows retain the
+ordinary shared-value rules.
+
+An owned-source view cannot cross an inline actual-to-formal value, receiver or
+context binding, including template and annotated inline callees. Lexical
+reads inside an inline lambda are supported only when every expanded use obeys
+the view rules; returning, forwarding or capturing the view is rejected. There
+is no inline view propagation or general borrowing across writes or moves.
+
+A stable view in `old(...)` denotes its evaluated object and requires the
+source's old-state permissions. Specification clauses may declare views;
+quantifier and trigger blocks reject local declarations with
+`UNSUPPORTED_FEATURE`. Uncast aliases outside the stable view grammar retain
+the limitation recorded in [Soundness](docs/soundness.md#non-view-owned-aliases).
+Cast-bearing non-view aliases and refinements of their local lineage are rejected.
 
 A specification may index a unique array with a `@Pure` call that borrows the
 array's owner, as in `elementData[positiveMod(head + i)]`, also inside `forAll`.

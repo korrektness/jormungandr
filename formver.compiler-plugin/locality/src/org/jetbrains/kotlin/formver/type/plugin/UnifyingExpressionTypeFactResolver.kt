@@ -26,6 +26,8 @@ import org.jetbrains.kotlin.utils.yieldIfNotNull
  */
 fun FirExpression.removeCast(): FirExpression =
     when (this) {
+        is org.jetbrains.kotlin.fir.expressions.FirCheckNotNullCall ->
+            argumentList.arguments.single().unwrapExpression().removeCast()
         is FirTypeOperatorCall -> when (operation) {
             FirOperation.AS, FirOperation.SAFE_AS ->
                 argument.unwrapExpression().removeCast()

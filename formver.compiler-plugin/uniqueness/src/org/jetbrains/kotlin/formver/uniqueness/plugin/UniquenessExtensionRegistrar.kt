@@ -22,6 +22,7 @@ val uniquenessCheckerFactories: List<FirAdditionalCheckersExtension.Factory> = l
 class UniquenessExtensionRegistrar : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
         registerDiagnosticContainers(org.jetbrains.kotlin.formver.common.FailureDiagnostics)
+        +BorrowedViewsResolver.getFactory()
         +ExpressionAccessStateResolver.getFactory()
         +ExpressionUniquenessResolver.getFactory()
         +ConstructionEscapeResolver.getFactory()

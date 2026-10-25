@@ -1,4 +1,5 @@
 // FULL_JDK
+// REPLACE_STDLIB_EXTENSIONS
 
 import org.jetbrains.kotlin.formver.plugin.*
 
@@ -172,7 +173,12 @@ fun <!VIPER_TEXT!>arrayBang<!>(x: Array<String>?): Boolean {
 
 open <!VIPER_TEXT!>class CastBase<!>(var count: Int)
 <!VIPER_TEXT!>class CastSub<!>(count: Int) : CastBase(count) { var extra: Int = 0 }
-<!VIPER_TEXT!>class CastHolder<!>(val base: @Unique CastBase?)
+<!VIPER_TEXT!>class CastHolder<!>(val base: @Unique CastBase?) {
+    @Pure @Unique fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>receiverViewResult<!>(): CastBase? {
+        val y = this <!USELESS_CAST!>as? CastHolder<!>
+        <!EXIT_UNIQUENESS_INCONSISTENCY!>return <!UNSUPPORTED_OWNERSHIP!>y?.base<!><!>
+    }
+}
 
 @Pure
 fun <!VIPER_TEXT!>heldSafeCount<!>(b: @Unique CastBase?): Int = (b as? CastSub)?.count ?: -1
@@ -219,10 +225,12 @@ fun <!VIPER_TEXT!>heldCastControls<!>() {
     val s: @Unique CastSub = CastSub(3)
     verify(heldSafeCount(s) == 3)
     verify(heldCheckedCount(s) == 3)
+    verify(recursiveView(s) == 3)
     verify(heldNonNullCount(s) == 3)
     verify(heldUpcastCount(s) == 3)
     val h: @Unique CastHolder = CastHolder(s)
     verify(heldNestedCount(h) == 3)
+    verify(nestedViewCount(h) == 3)
     verify((h.base as? CastSub)?.count == 3)
     verify(heldSafeCount(null) == -1)
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>(h.base as? CastSub)?.count == 4<!>)
@@ -247,7 +255,252 @@ fun <!VERIFICATION_SKIPPED!>subtypeOnlyRead<!>(b: @Unique CastBase): Int {
 }
 
 @Pure
-fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>borrowedCastResult<!>(b: @Unique CastBase): <!INVALID_PURE_REFERENCE_RESULT!>CastSub?<!> = <!EXIT_UNIQUENESS_INCONSISTENCY, LOCALITY_MISMATCH!>b as? CastSub<!>
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>borrowedCastResult<!>(b: @Unique CastBase): <!INVALID_PURE_REFERENCE_RESULT!>CastSub?<!> = <!EXIT_UNIQUENESS_INCONSISTENCY, LOCALITY_MISMATCH, UNSUPPORTED_OWNERSHIP!>b as? CastSub<!>
+
+@Pure
+fun <!VIPER_TEXT!>viewCount<!>(b: @Unique CastBase?): Int {
+    postconditions<Int> { r -> r == heldSafeCount(b) }
+    val t = b
+    val y = t as? CastSub
+    return y?.count ?: -1
+}
+
+@Pure
+fun <!VIPER_TEXT!>viewPureArgument<!>(b: @Unique CastBase?): Int {
+    val y = b as? CastSub
+    return heldSafeCount(y)
+}
+
+@Pure
+fun (@Unique CastBase).<!VIPER_TEXT!>receiverViewCount<!>(): Int {
+    val y = this as? CastSub
+    return y?.count ?: -1
+}
+
+@Pure
+fun <!VIPER_TEXT!>nestedViewCount<!>(h: @Unique CastHolder): Int {
+    preconditions { h.base != null }
+    val t = h.base
+    val y = t!!
+    return y.count
+}
+
+fun <!VIPER_TEXT!>viewControls<!>(b: @Unique @Borrowed CastBase) {
+    verify(viewCount(b) == heldSafeCount(b))
+    val first = viewCount(b)
+    val second = viewCount(b)
+    verify(first == second)
+    verify(viewPureArgument(b) == heldSafeCount(b))
+    verify(b.receiverViewCount() == heldSafeCount(b))
+    b.count = 7
+    verify(viewCount(b) == (if (b is CastSub) 7 else -1))
+    keepCastBase(b)
+}
+
+@Pure
+fun <!VIPER_TEXT!>viewFailureBranch<!>(b: @Unique CastBase?): Boolean {
+    val y = b as? CastSub
+    return if (y == null) b !is CastSub else y === b
+}
+
+fun <!VIPER_TEXT!>viewNullControl<!>() {
+    verify(viewCount(null) == -1)
+    verify(viewFailureBranch(null))
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>viewCount(null) == 0<!>)
+}
+
+@Pure
+fun <!VIPER_TEXT!>recursiveView<!>(b: @Unique CastBase): Int {
+    preconditions { b is CastSub }
+    val y = (b as? CastSub)!!
+    return y.count
+}
+
+@Pure
+fun <!VIPER_TEXT!>badViewCast<!>(b: @Unique CastBase): Int {
+    val y = <!CAST_NOT_ESTABLISHED!>b as CastSub<!>
+    return y.count
+}
+
+@Pure
+fun <!VIPER_TEXT!>badViewBang<!>(b: @Unique CastBase?): Int {
+    val y = <!NULL_ASSERTION_NOT_ESTABLISHED!>b!!<!>
+    return y.count
+}
+
+@Pure
+fun <!VIPER_TEXT!>sharedViewResult<!>(b: CastBase): CastSub? {
+    val y = b as? CastSub
+    var z: CastSub? = null
+    z = y
+    return z
+}
+
+fun <!VIPER_TEXT!>sharedViewControl<!>(b: CastBase) {
+    verify(sharedViewResult(b) === (b as? CastSub))
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED!>viewSubtypeRead<!>(b: @Unique CastBase): Int {
+    preconditions { b is CastSub }
+    val y = b as CastSub
+    return <!UNSUPPORTED_OWNERSHIP!>y.extra<!>
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED!>sharedViewRead<!>(b: CastBase): Int {
+    val y = b as? CastSub
+    return <!UNSUPPORTED_OWNERSHIP!>y?.count<!> ?: 0
+}
+
+@Pure
+fun <!VIPER_TEXT!>viewPair<!>(a: @Unique CastBase?, b: @Unique CastBase?): Boolean = a === b
+
+@Pure
+fun <!VIPER_TEXT!>holderPair<!>(h: @Unique CastHolder, b: @Unique CastBase?): Boolean = h.base === b
+
+@Pure
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>viewDuplicate<!>(b: @Unique CastBase): Boolean {
+    val t = b
+    val y = t as? CastSub
+    return viewPair(<!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>b<!>, <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>y<!>)
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>viewOverlap<!>(h: @Unique CastHolder): Boolean {
+    val y = h.base as? CastSub
+    return holderPair(<!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>h<!>, <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>y<!>)
+}
+
+<!VIPER_TEXT!>class MutableCastHolder<!>(var base: @Unique CastBase?)
+
+@Pure
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>mutableView<!>(h: @Unique MutableCastHolder): Int {
+    val y = <!UNSUPPORTED_OWNERSHIP!>h.base as? CastSub<!>
+    return y?.count ?: 0
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>mutableLocalView<!>(h: @Unique MutableCastHolder): Int {
+    val t = h.base
+    val y = <!UNSUPPORTED_OWNERSHIP!>t as? CastSub<!>
+    return y?.count ?: 0
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>multiSourceView<!>(a: @Unique CastBase?, b: @Unique CastBase?, c: Boolean): Int {
+    val t = if (c) a else b
+    val y = <!UNSUPPORTED_OWNERSHIP!>t!!<!>
+    return y.count
+}
+
+@Pure
+fun <!VIPER_TEXT!>plainMutableAlias<!>(h: @Unique MutableCastHolder): Int {
+    val t = h.base
+    return t?.count ?: 0
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>viewAssignment<!>(b: @Unique CastBase): Boolean {
+    val y = b as? CastSub
+    var z: CastBase? = null
+    z = <!LOCALITY_MISMATCH, UNSUPPORTED_OWNERSHIP!>y<!>
+    <!EXIT_UNIQUENESS_INCONSISTENCY!>return z == null<!>
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>viewConditional<!>(b: @Unique CastBase, c: Boolean): Boolean {
+    val y = b as? CastSub
+    val z = if (c) <!UNSUPPORTED_OWNERSHIP!>y<!> else b
+    return z != null
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>viewResult<!>(b: @Unique CastBase): <!INVALID_PURE_REFERENCE_RESULT!>CastSub?<!> {
+    val y = b as? CastSub
+    <!EXIT_UNIQUENESS_INCONSISTENCY!>return <!LOCALITY_MISMATCH, UNSUPPORTED_OWNERSHIP!>y<!><!>
+}
+
+@Pure
+@Suppress("NOTHING_TO_INLINE")
+inline fun <!VIPER_TEXT!>readViewInline<!>(b: @Borrowed CastBase?): Boolean = b == null
+
+fun <!VERIFICATION_SKIPPED!>viewInline<!>(b: @Unique @Borrowed CastBase) {
+    postconditions<Unit> { <!UNSUPPORTED_FEATURE!>val y = b as? CastSub<!>; readViewInline(<!UNSUPPORTED_OWNERSHIP!>y<!>) }
+}
+
+fun <!VERIFICATION_SKIPPED!>viewInlineReceiver<!>(b: @Unique @Borrowed CastBase) {
+    postconditions<Unit> { <!UNSUPPORTED_FEATURE!>val y = b as? CastSub<!>; <!UNSUPPORTED_OWNERSHIP!>y<!>.let { it?.count ?: 0 } == 0 }
+}
+
+fun <!VERIFICATION_SKIPPED!>viewInlineIdentity<!>(b: @Unique @Borrowed CastBase) {
+    postconditions<Unit> { <!UNSUPPORTED_FEATURE!>val y = b as? CastSub<!>; val z = <!UNSUPPORTED_OWNERSHIP!>y<!>.let { it }; z == null }
+}
+
+fun <!VIPER_TEXT!>sharedInlineView<!>(b: CastBase): Boolean {
+    postconditions<Boolean> { r -> val y = b as? CastSub; r == y.let { it === b } }
+    return b is CastSub
+}
+
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>inlineRootLaundering<!>(b: @Unique @Borrowed CastBase, c: Boolean): Boolean {
+    postconditions<Boolean> { r ->
+        r == b.let {
+            val y = it as? CastSub
+            val z = if (c) <!UNSUPPORTED_OWNERSHIP!>y<!> else null
+            z == null
+        }
+    }
+    return !c || b !is CastSub
+}
+
+fun <!VIPER_TEXT!>lexicalInlineView<!>(b: @Unique @Borrowed CastBase): Int {
+    postconditions<Int> { r -> val y = b as? CastSub; r == run { y?.count ?: -1 } }
+    return heldSafeCount(b)
+}
+
+fun <!VERIFICATION_SKIPPED!>lexicalInlineEscape<!>(b: @Unique @Borrowed CastBase) {
+    postconditions<Unit> {
+        <!UNSUPPORTED_FEATURE!>val y = b as? CastSub<!>
+        val z = run { <!UNSUPPORTED_OWNERSHIP!>y<!> }
+        z == null
+    }
+}
+
+fun <!VERIFICATION_SKIPPED!>quantifiedViewLocal<!>(b: @Unique @Borrowed CastBase) {
+    preconditions {
+        forAll<Int> { i ->
+            <!UNSUPPORTED_FEATURE!>val y = b as? CastSub<!>
+            i != 0 || y == null || y.count >= 0
+        }
+    }
+}
+
+fun <!VIPER_TEXT!>guardedViewClause<!>(b: @Unique @Borrowed CastBase?) {
+    preconditions { b != null; val y = b!!; y.count == 0 }
+    postconditions<Unit> { b != null; val y = b!!; y.count == old(y.count) }
+}
+
+fun <!VIPER_TEXT!>stableViewOld<!>(h: @Unique @Borrowed CastHolder) {
+    preconditions { h.base == null || h.base.count <= 0 }
+    postconditions<Unit> {
+        val y = h.base as? CastSub
+        y == null || y.count == old(y.count) + 1
+    }
+    if (h.base is CastSub) h.base.count = h.base.count + 1
+}
+
+fun <!VIPER_TEXT!>stableViewOldControl<!>(h: @Unique @Borrowed CastHolder) <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>{
+    preconditions { h.base == null || h.base.count <= 0 }
+    postconditions<Unit> {
+        val y = h.base as? CastSub
+        y == null || y.count == old(y.count) + 2
+    }
+    if (h.base is CastSub) h.base.count = h.base.count + 1
+}<!>
+
+fun <!VERIFICATION_SKIPPED!>viewCapture<!>(b: @Unique @Borrowed CastBase) {
+    postconditions<Unit> { <!UNSUPPORTED_FEATURE!>val y = b as? CastSub<!>; val f = { <!UNSUPPORTED_OWNERSHIP!>y<!> }; f() == null }
+}
 
 interface CastFace
 <!VIPER_TEXT!>class CastConcrete<!>(var count: Int) : CastFace

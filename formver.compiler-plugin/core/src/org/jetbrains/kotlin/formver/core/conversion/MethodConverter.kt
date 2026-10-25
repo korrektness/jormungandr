@@ -82,11 +82,15 @@ class MethodConverter(
         propertyResolver.tryResolveLocalProperty(symbol) ?: parent?.resolveLocal(symbol)
         ?: throw IllegalArgumentException("Property ${symbol.name} not found in scope.")
 
-    override fun registerLocalProperty(symbol: FirPropertySymbol) {
+    override fun registerLocalProperty(symbol: FirPropertySymbol, viewOf: org.jetbrains.kotlin.formver.core.linearization.OwnedPath?) {
         if (symbol.name.isSpecial)
             propertyResolver.registerSpecialProperty(symbol, freshAnonVar(embedType(symbol.resolvedReturnType)))
         else
             propertyResolver.registerLocalProperty(symbol, embedType(symbol.resolvedReturnType))
+        ownershipFrame.analysis?.borrowedSource(symbol)?.let { source ->
+            val variable = resolveLocal(symbol) as org.jetbrains.kotlin.formver.core.embeddings.expression.FirVariableEmbedding
+            propertyResolver.registerSpecialProperty(symbol, variable.copy(viewOf = viewOf, viewSource = source))
+        }
     }
 
     override fun registerLocalVariable(symbol: FirVariableSymbol<*>) {

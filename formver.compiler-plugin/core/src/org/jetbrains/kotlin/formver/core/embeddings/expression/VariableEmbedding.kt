@@ -36,6 +36,8 @@ import org.jetbrains.kotlin.formver.viper.ast.*
 sealed interface VariableEmbedding : ExpEmbedding, PropertyAccessEmbedding {
     val name: SymbolicName
     override val type: TypeEmbedding
+    val viewOf: org.jetbrains.kotlin.formver.core.linearization.OwnedPath? get() = null
+    val viewSource: org.jetbrains.kotlin.formver.uniqueness.plugin.Path? get() = null
     val isUnique: Boolean
         get() = false
     val isBorrowed: Boolean
@@ -132,6 +134,8 @@ data class FirVariableEmbedding(
     val symbol: FirBasedSymbol<*>,
     override val isUnique: Boolean = false,
     override val isBorrowed: Boolean = false,
+    override val viewOf: org.jetbrains.kotlin.formver.core.linearization.OwnedPath? = null,
+    override val viewSource: org.jetbrains.kotlin.formver.uniqueness.plugin.Path? = null,
 ) : VariableEmbedding {
     override val sourceRole: SourceRole
         get() = SourceRole.FirSymbolHolder(symbol, type.modelOrigin(

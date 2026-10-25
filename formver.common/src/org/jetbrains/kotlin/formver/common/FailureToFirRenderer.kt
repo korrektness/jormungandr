@@ -407,6 +407,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             }
             FoldOwnershipRule.BORROWED_ASSIGNMENT -> "${path()} is assigned while an inline function borrows it, so the borrowed value cannot be handed back."
             FoldOwnershipRule.DOWNCAST -> "Ownership cannot be downcast to `${type()}`."
+            FoldOwnershipRule.BORROWED_VIEW_ESCAPE -> "An owned-source view of ${path()} occurs in an unsupported flow."
         }
         return "$message [${value.rule.name}]"
     }

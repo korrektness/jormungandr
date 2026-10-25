@@ -203,7 +203,8 @@ class GraphUniquenessStatesAnalyzer(
         data: PathAwareUniquenessStateFlow
     ): PathAwareUniquenessStateFlow {
         val declaration = node.fir
-        if (declaration.symbol.receiverTemporaryInitializer != null) return visitNode(node, data)
+        if (declaration.symbol.receiverTemporaryInitializer != null ||
+            context(context) { declaration.symbol.borrowedViewSource() != null }) return visitNode(node, data)
         val initializer = declaration.initializer
         val leftSymbol = declaration.symbol
         val leftAccessState = EmptyAccessState.putChild(
