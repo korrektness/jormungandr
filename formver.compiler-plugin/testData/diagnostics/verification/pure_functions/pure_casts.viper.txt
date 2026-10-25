@@ -625,3 +625,594 @@ function nonNull(castValue: Ref): Ref
 function referenceArraySize(this: Ref): Int
   ensures result >= 0
   ensures result <= 2147483647
+
+
+/pure_casts.kt: info: Generated Viper text for CastBase:
+field bf_count: Ref
+
+method con(par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), CastBase())
+  ensures isSubtype(typeOf(v_ret_0), CastBase()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType())
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  v_ret_0 := new(bf_count)
+  inhale typeOf(v_ret_0) == CastBase()
+  v_ret_0.bf_count := par_count
+  fold acc(CastBase_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CastBase_unique(v_ret_0), write)
+}
+
+/pure_casts.kt: info: Generated Viper text for CastSub:
+field bf_count: Ref
+
+field extra: Ref
+
+method con(par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), CastSub())
+  ensures isSubtype(typeOf(v_ret_0), CastSub()) &&
+    acc(v_ret_0.extra, write) &&
+    isSubtype(typeOf(v_ret_0.extra), intType()) &&
+    (isSubtype(typeOf(v_ret_0), CastBase()) && acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType()))
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.extra) == 0
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  var anon: Ref
+  v_ret_0 := new(bf_count, extra)
+  inhale typeOf(v_ret_0) == CastSub()
+  anon := par_count
+  v_ret_0.bf_count := anon
+  fold acc(CastBase_unique(v_ret_0), write)
+  v_ret_0.extra := intToRef(0)
+  fold acc(CastSub_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CastSub_unique(v_ret_0), write)
+  unfold acc(CastBase_unique(v_ret_0), write)
+}
+
+/pure_casts.kt: info: Generated Viper text for CastHolder:
+field count: Ref
+
+function g_base(this: Ref): Ref
+  requires isSubtype(typeOf(this), CastHolder())
+  ensures isSubtype(typeOf(result), nullable(CastBase()))
+
+
+method con(par_base: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_base), nullable(CastBase()))
+  requires par_base != nullValue() ==>
+    acc(CastBase_unique(par_base), write)
+  ensures isSubtype(typeOf(v_ret_0), CastHolder())
+  ensures isSubtype(typeOf(v_ret_0), CastHolder()) &&
+    (g_base(v_ret_0) != nullValue() ==>
+    acc(CastBase_unique(g_base(v_ret_0)), write))
+  ensures g_base(v_ret_0) == par_base
+  ensures g_base(v_ret_0) == par_base
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == CastHolder()
+  anon := par_base
+  inhale g_base(v_ret_0) == anon
+  fold acc(CastHolder_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CastHolder_unique(v_ret_0), write)
+}
+
+/pure_casts.kt: info: Generated Viper text for heldSafeCount:
+field count: Ref
+
+field extra: Ref
+
+function heldSafeCount(b: Ref): Ref
+  requires isSubtype(typeOf(b), nullable(CastBase()))
+  requires b != nullValue() ==> acc(CastBase_unique(b), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    ((isSubtype(typeOf(b), CastSub()) ? b : nullValue())) in
+    (let anon_0_0 ==
+      ((anon_1_0 != nullValue() ?
+        (unfolding acc(CastBase_unique(anon_1_0), write) in anon_1_0.count) :
+        nullValue())) in
+      (anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1))))
+}
+
+/pure_casts.kt: info: Generated Viper text for heldCheckedCount:
+field count: Ref
+
+field extra: Ref
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function heldCheckedCount(b: Ref): Ref
+  requires isSubtype(typeOf(b), CastBase())
+  requires acc(CastBase_unique(b), write)
+  requires isSubtype(typeOf(b), CastSub())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_2_0 ==
+    (checkedType(b, CastSub())) in
+    (unfolding acc(CastBase_unique(anon_2_0), write) in anon_2_0.count))
+}
+
+/pure_casts.kt: info: Generated Viper text for heldUpcastCount:
+field count: Ref
+
+field extra: Ref
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function heldUpcastCount(s: Ref): Ref
+  requires isSubtype(typeOf(s), CastSub())
+  requires acc(CastSub_unique(s), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef((unfolding acc(CastSub_unique(checkedType(s, CastBase())), write) in
+      (unfolding acc(CastBase_unique(checkedType(s, CastBase())), write) in
+        checkedType(s, CastBase()).count)))
+{
+  (let anon_1_0 ==
+    (checkedType(s, CastBase())) in
+    (unfolding acc(CastSub_unique(anon_1_0), write) in
+      (unfolding acc(CastBase_unique(anon_1_0), write) in anon_1_0.count)))
+}
+
+/pure_casts.kt: info: Generated Viper text for badHeldCount:
+field count: Ref
+
+field extra: Ref
+
+function badHeldCount(b: Ref): Ref
+  requires isSubtype(typeOf(b), CastBase())
+  requires acc(CastBase_unique(b), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_2_0 ==
+    (checkedType(b, CastSub())) in
+    (unfolding acc(CastBase_unique(anon_2_0), write) in anon_2_0.count))
+}
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+/pure_casts.kt: info: Generated Viper text for heldNestedCount:
+field count: Ref
+
+field extra: Ref
+
+function base(this: Ref): Ref
+  requires isSubtype(typeOf(this), CastHolder())
+  ensures isSubtype(typeOf(result), nullable(CastBase()))
+
+
+function heldNestedCount(h: Ref): Ref
+  requires isSubtype(typeOf(h), CastHolder())
+  requires acc(CastHolder_unique(h), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(CastHolder_unique(h), write) in
+    (let anon_1_0 ==
+      (base(h)) in
+      (let anon_2_0 ==
+        ((isSubtype(typeOf(anon_1_0), CastSub()) ? anon_1_0 : nullValue())) in
+        (let anon_0_0 ==
+          ((anon_2_0 != nullValue() ?
+            (unfolding acc(CastBase_unique(anon_2_0), write) in
+              anon_2_0.count) :
+            nullValue())) in
+          (anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1))))))
+}
+
+/pure_casts.kt: info: Generated Viper text for heldNonNullCount:
+field count: Ref
+
+function heldNonNullCount(b: Ref): Ref
+  requires isSubtype(typeOf(b), nullable(CastBase()))
+  requires b != nullValue() ==> acc(CastBase_unique(b), write)
+  requires !(b == nullValue())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_2_0 ==
+    (nonNull(b)) in
+    (unfolding acc(CastBase_unique(anon_2_0), write) in anon_2_0.count))
+}
+
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+/pure_casts.kt: info: Generated Viper text for heldCastObservations:
+field count: Ref
+
+field extra: Ref
+
+function heldSafeCount(b: Ref): Ref
+  requires isSubtype(typeOf(b), nullable(CastBase()))
+  requires b != nullValue() ==> acc(CastBase_unique(b), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    ((isSubtype(typeOf(b), CastSub()) ? b : nullValue())) in
+    (let anon_0_0 ==
+      ((anon_1_0 != nullValue() ?
+        (unfolding acc(CastBase_unique(anon_1_0), write) in anon_1_0.count) :
+        nullValue())) in
+      (anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1))))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method heldCastObservations(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), CastBase())
+  requires acc(CastBase_unique(b), write)
+  ensures acc(CastBase_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures intFromRef(heldSafeCount(b)) == old(intFromRef(heldSafeCount(b)))
+{
+  var first: Ref
+  var anon_4: Ref
+  var second: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_11: Ref
+  var anon_12: Ref
+  anon_4 := heldSafeCount(b)
+  first := anon_4
+  anon_5 := heldSafeCount(b)
+  second := anon_5
+  assert intFromRef(first) == intFromRef(second)
+  if (!isSubtype(typeOf(b), CastSub())) {
+    anon_6 := boolToRef(true)
+  } else {
+    var anon_7: Ref
+    var anon_8: Ref
+    var anon_10: Ref
+    if (isSubtype(typeOf(b), CastSub())) {
+      anon_8 := b
+    } else {
+      anon_8 := nullValue()}
+    if (anon_8 != nullValue()) {
+      var anon_9: Ref
+      unfold acc(CastBase_unique(b), write)
+      anon_9 := anon_8.count
+      anon_7 := anon_9
+      fold acc(CastBase_unique(b), write)
+    } else {
+      anon_7 := nullValue()}
+    unfold acc(CastBase_unique(b), write)
+    anon_10 := b.count
+    anon_6 := boolToRef(anon_7 == anon_10)
+    fold acc(CastBase_unique(b), write)
+  }
+  assert boolFromRef(anon_6)
+  unfold acc(CastBase_unique(b), write)
+  anon_11 := b.count
+  b.count := anon_11
+  fold acc(CastBase_unique(b), write)
+  anon_12 := keepCastBase(b)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method keepCastBase(b: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(b), CastBase())
+  requires acc(CastBase_unique(b), write)
+  ensures acc(CastBase_unique(b), write)
+  ensures isSubtype(typeOf(ret_2), unitType())
+  ensures (unfolding acc(CastBase_unique(b), write) in
+      intFromRef(b.count) ==
+      old((unfolding acc(CastBase_unique(b), write) in intFromRef(b.count))))
+
+
+/pure_casts.kt: info: Generated Viper text for keepCastBase:
+field count: Ref
+
+method keepCastBase(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), CastBase())
+  requires acc(CastBase_unique(b), write)
+  ensures acc(CastBase_unique(b), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(CastBase_unique(b), write) in
+      intFromRef(b.count) ==
+      old((unfolding acc(CastBase_unique(b), write) in intFromRef(b.count))))
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for heldCastControls:
+field bf_count: Ref
+
+field extra: Ref
+
+function checkedType(castValue: Ref, castTarget: rt): Ref
+  requires isSubtype(typeOf(castValue), castTarget)
+  ensures result == castValue
+{
+  castValue
+}
+
+function g_base(this: Ref): Ref
+  requires isSubtype(typeOf(this), CastHolder())
+  ensures isSubtype(typeOf(result), nullable(CastBase()))
+
+
+function heldCheckedCount(b: Ref): Ref
+  requires isSubtype(typeOf(b), CastBase())
+  requires acc(CastBase_unique(b), write)
+  requires isSubtype(typeOf(b), CastSub())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_7_0 ==
+    (checkedType(b, CastSub())) in
+    (unfolding acc(CastBase_unique(anon_7_0), write) in anon_7_0.bf_count))
+}
+
+function heldNestedCount(par_h: Ref): Ref
+  requires isSubtype(typeOf(par_h), CastHolder())
+  requires acc(CastHolder_unique(par_h), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (unfolding acc(CastHolder_unique(par_h), write) in
+    (let anon_13_0 ==
+      (g_base(par_h)) in
+      (let anon_14_0 ==
+        ((isSubtype(typeOf(anon_13_0), CastSub()) ?
+          anon_13_0 :
+          nullValue())) in
+        (let anon_12_0 ==
+          ((anon_14_0 != nullValue() ?
+            (unfolding acc(CastBase_unique(anon_14_0), write) in
+              anon_14_0.bf_count) :
+            nullValue())) in
+          (anon_12_0 != nullValue() ? anon_12_0 : intToRef(-1))))))
+}
+
+function heldNonNullCount(b: Ref): Ref
+  requires isSubtype(typeOf(b), nullable(CastBase()))
+  requires b != nullValue() ==> acc(CastBase_unique(b), write)
+  requires !(b == nullValue())
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_9_0 ==
+    (nonNull(b)) in
+    (unfolding acc(CastBase_unique(anon_9_0), write) in anon_9_0.bf_count))
+}
+
+function heldSafeCount(b: Ref): Ref
+  requires isSubtype(typeOf(b), nullable(CastBase()))
+  requires b != nullValue() ==> acc(CastBase_unique(b), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_3_0 ==
+    ((isSubtype(typeOf(b), CastSub()) ? b : nullValue())) in
+    (let anon_2_0 ==
+      ((anon_3_0 != nullValue() ?
+        (unfolding acc(CastBase_unique(anon_3_0), write) in
+          anon_3_0.bf_count) :
+        nullValue())) in
+      (anon_2_0 != nullValue() ? anon_2_0 : intToRef(-1))))
+}
+
+function heldUpcastCount(par_s: Ref): Ref
+  requires isSubtype(typeOf(par_s), CastSub())
+  requires acc(CastSub_unique(par_s), write)
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) ==
+    intFromRef((unfolding acc(CastSub_unique(checkedType(par_s, CastBase())), write) in
+      (unfolding acc(CastBase_unique(checkedType(par_s, CastBase())), write) in
+        checkedType(par_s, CastBase()).bf_count)))
+{
+  (let anon_11_0 ==
+    (checkedType(par_s, CastBase())) in
+    (unfolding acc(CastSub_unique(anon_11_0), write) in
+      (unfolding acc(CastBase_unique(anon_11_0), write) in
+        anon_11_0.bf_count)))
+}
+
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con_CastHolder(par_base: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(par_base), nullable(CastBase()))
+  ensures isSubtype(typeOf(ret_7), CastHolder())
+  ensures g_base(ret_7) == par_base
+  ensures g_base(ret_7) == par_base
+
+
+method con_CastSub(par_count: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(ret_1), CastSub())
+  ensures isSubtype(typeOf(ret_1), CastSub()) && acc(ret_1.extra, write) &&
+    isSubtype(typeOf(ret_1.extra), intType()) &&
+    (isSubtype(typeOf(ret_1), CastBase()) && acc(ret_1.bf_count, write) &&
+    isSubtype(typeOf(ret_1.bf_count), intType()))
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+  ensures intFromRef(ret_1.extra) == 0
+  ensures intFromRef(ret_1.bf_count) == intFromRef(par_count)
+
+
+method heldCastControls() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_s: Ref
+  var anon_17: Ref
+  var anon_18: Ref
+  var anon_19: Ref
+  var anon_20: Ref
+  var l0_h: Ref
+  var anon_21: Ref
+  var anon_22: Ref
+  var anon_23: Ref
+  var anon_25: Ref
+  var anon_26: Ref
+  l0_s := con_CastSub(intToRef(3))
+  fold acc(CastBase_unique(l0_s), write)
+  fold acc(CastSub_unique(l0_s), write)
+  unfold acc(CastSub_unique(l0_s), write)
+  anon_17 := heldSafeCount(l0_s)
+  assert intFromRef(anon_17) == 3
+  anon_18 := heldCheckedCount(l0_s)
+  assert intFromRef(anon_18) == 3
+  anon_19 := heldNonNullCount(l0_s)
+  assert intFromRef(anon_19) == 3
+  fold acc(CastSub_unique(l0_s), write)
+  anon_20 := heldUpcastCount(l0_s)
+  assert intFromRef(anon_20) == 3
+  unfold acc(CastSub_unique(l0_s), write)
+  l0_h := con_CastHolder(l0_s)
+  fold acc(CastHolder_unique(l0_h), write)
+  anon_21 := heldNestedCount(l0_h)
+  assert intFromRef(anon_21) == 3
+  if (isSubtype(typeOf(g_base(l0_h)), CastSub())) {
+    anon_23 := g_base(l0_h)
+  } else {
+    anon_23 := nullValue()}
+  if (anon_23 != nullValue()) {
+    var anon_24: Ref
+    unfold acc(CastHolder_unique(l0_h), write)
+    if (g_base(l0_h) != nullValue()) {
+      unfold acc(CastBase_unique(g_base(l0_h)), write)
+    }
+    anon_24 := anon_23.bf_count
+    anon_22 := anon_24
+    if (g_base(l0_h) != nullValue()) {
+      fold acc(CastBase_unique(g_base(l0_h)), write)
+    }
+    fold acc(CastHolder_unique(l0_h), write)
+  } else {
+    anon_22 := nullValue()}
+  assert anon_22 == intToRef(3)
+  assert intFromRef(heldSafeCount(nullValue())) == -1
+  if (isSubtype(typeOf(g_base(l0_h)), CastSub())) {
+    anon_26 := g_base(l0_h)
+  } else {
+    anon_26 := nullValue()}
+  if (anon_26 != nullValue()) {
+    var anon_27: Ref
+    unfold acc(CastHolder_unique(l0_h), write)
+    if (g_base(l0_h) != nullValue()) {
+      unfold acc(CastBase_unique(g_base(l0_h)), write)
+    }
+    anon_27 := anon_26.bf_count
+    anon_25 := anon_27
+    if (g_base(l0_h) != nullValue()) {
+      fold acc(CastBase_unique(g_base(l0_h)), write)
+    }
+    fold acc(CastHolder_unique(l0_h), write)
+  } else {
+    anon_25 := nullValue()}
+  assert anon_25 == intToRef(4)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for heldCastFailure:
+field count: Ref
+
+field extra: Ref
+
+function heldSafeCount(b: Ref): Ref
+  requires isSubtype(typeOf(b), nullable(CastBase()))
+  requires b != nullValue() ==> acc(CastBase_unique(b), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  (let anon_1_0 ==
+    ((isSubtype(typeOf(b), CastSub()) ? b : nullValue())) in
+    (let anon_0_0 ==
+      ((anon_1_0 != nullValue() ?
+        (unfolding acc(CastBase_unique(anon_1_0), write) in anon_1_0.count) :
+        nullValue())) in
+      (anon_0_0 != nullValue() ? anon_0_0 : intToRef(-1))))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method heldCastFailure(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), nullable(CastBase()))
+  requires b != nullValue() ==> acc(CastBase_unique(b), write)
+  requires !isSubtype(typeOf(b), CastSub())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_4: Ref
+  var anon_5: Ref
+  anon_4 := heldSafeCount(b)
+  assert intFromRef(anon_4) == -1
+  anon_5 := heldSafeCount(b)
+  assert intFromRef(anon_5) == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/pure_casts.kt: info: Generated Viper text for borrowedCastResult:
+field count: Ref
+
+field extra: Ref
+
+function borrowedCastResult(b: Ref): Ref
+  requires isSubtype(typeOf(b), CastBase())
+  requires acc(CastBase_unique(b), write)
+  ensures isSubtype(typeOf(result), nullable(CastSub()))
+{
+  (isSubtype(typeOf(b), CastSub()) ? b : nullValue())
+}
+
+/pure_casts.kt: info: Generated Viper text for CastConcrete:
+field bf_count: Ref
+
+method con(par_count: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_count), intType())
+  ensures isSubtype(typeOf(v_ret_0), CastConcrete())
+  ensures isSubtype(typeOf(v_ret_0), CastConcrete()) &&
+    acc(v_ret_0.bf_count, write) &&
+    isSubtype(typeOf(v_ret_0.bf_count), intType())
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+  ensures intFromRef(v_ret_0.bf_count) == intFromRef(par_count)
+{
+  v_ret_0 := new(bf_count)
+  inhale typeOf(v_ret_0) == CastConcrete()
+  v_ret_0.bf_count := par_count
+  fold acc(CastConcrete_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(CastConcrete_unique(v_ret_0), write)
+}

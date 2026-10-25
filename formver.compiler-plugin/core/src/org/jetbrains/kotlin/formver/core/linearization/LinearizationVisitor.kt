@@ -950,7 +950,8 @@ data class LinearizationVisitor(
 
     override fun visitUniqueValAccess(e: UniqueValAccess): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp =
-            ctx.addUniqueValAccess(e.receiver.linearize(), e.receiver.type, e.step, e.receiverOwned)
+            ctx.addUniqueValAccess(e.receiver.linearize(), e.receiver.type, e.step, e.receiverOwned,
+                ctx.ownedReceiverPath(e.receiver, e.receiverOwned, isWrite = false))
     }
 
     override fun visitFieldModification(e: FieldModification): Linearizable = object : UnitResultLinearizable(e) {
@@ -1627,8 +1628,10 @@ private fun LinearizationContext.ownedReceiverPath(
     receiverOwned: Boolean,
     isWrite: Boolean,
 ): OwnedPath? {
-    if (!receiverOwned || foldState == null) return null
-    if (with(typeResolver) { (receiver.type.pretype as? ClassTypeEmbedding)?.isManual } != false) return null
+    if (!receiverOwned) return null
+    if (foldState != null && with(typeResolver) { (receiver.type.pretype as? ClassTypeEmbedding)?.isManual } != false) return null
+    if (!isWrite && equalityEvaluation != EqualityEvaluation.EXECUTED) return receiver.pureReadPath()
+    if (foldState == null) return null
     val path = receiver.ownedPath()
     if (path == null && isWrite) {
         throw FoldStateException(source,

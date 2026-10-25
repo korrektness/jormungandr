@@ -169,3 +169,91 @@ fun <!VIPER_TEXT!>arrayBang<!>(x: Array<String>?): Boolean {
     preconditions { x != null }
     return x!! === x
 }
+
+open <!VIPER_TEXT!>class CastBase<!>(var count: Int)
+<!VIPER_TEXT!>class CastSub<!>(count: Int) : CastBase(count) { var extra: Int = 0 }
+<!VIPER_TEXT!>class CastHolder<!>(val base: @Unique CastBase?)
+
+@Pure
+fun <!VIPER_TEXT!>heldSafeCount<!>(b: @Unique CastBase?): Int = (b as? CastSub)?.count ?: -1
+
+@Pure
+fun <!VIPER_TEXT!>heldCheckedCount<!>(b: @Unique CastBase): Int {
+    preconditions { b is CastSub }
+    return (b as CastSub).count
+}
+
+@Pure
+fun <!VIPER_TEXT!>heldUpcastCount<!>(s: @Unique CastSub): Int {
+    postconditions<Int> { r -> r == (s as CastBase).count }
+    return (s as CastBase).count
+}
+
+@Pure
+fun <!VIPER_TEXT!>badHeldCount<!>(b: @Unique CastBase): Int = (<!CAST_NOT_ESTABLISHED!>b as CastSub<!>).count
+
+@Pure
+fun <!VIPER_TEXT!>heldNestedCount<!>(h: @Unique CastHolder): Int = (h.base as? CastSub)?.count ?: -1
+
+@Pure
+fun <!VIPER_TEXT!>heldNonNullCount<!>(b: @Unique CastBase?): Int {
+    preconditions { b != null }
+    return b!!.count
+}
+
+fun <!VIPER_TEXT!>heldCastObservations<!>(b: @Unique @Borrowed CastBase) {
+    postconditions<Unit> { heldSafeCount(b) == old(heldSafeCount(b)) }
+    val first = heldSafeCount(b)
+    val second = heldSafeCount(b)
+    verify(first == second)
+    verify(b !is CastSub || (b <!USELESS_CAST!>as? CastSub<!>)?.count == b.count)
+    b.count = b.count
+    keepCastBase(b)
+}
+
+fun <!VIPER_TEXT!>keepCastBase<!>(b: @Unique @Borrowed CastBase) {
+    postconditions<Unit> { b.count == old(b.count) }
+}
+
+fun <!VIPER_TEXT!>heldCastControls<!>() {
+    val s: @Unique CastSub = CastSub(3)
+    verify(heldSafeCount(s) == 3)
+    verify(heldCheckedCount(s) == 3)
+    verify(heldNonNullCount(s) == 3)
+    verify(heldUpcastCount(s) == 3)
+    val h: @Unique CastHolder = CastHolder(s)
+    verify(heldNestedCount(h) == 3)
+    verify((h.base as? CastSub)?.count == 3)
+    verify(heldSafeCount(null) == -1)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>(h.base as? CastSub)?.count == 4<!>)
+}
+
+fun <!VIPER_TEXT!>heldCastFailure<!>(b: @Unique CastBase?) {
+    preconditions { b !is CastSub }
+    verify(heldSafeCount(b) == -1)
+    verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>heldSafeCount(b) == 0<!>)
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED!>sharedCastRead<!>(b: CastBase): Int {
+    preconditions { b is CastSub }
+    return <!UNSUPPORTED_OWNERSHIP!>(b as CastSub).count<!>
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED!>subtypeOnlyRead<!>(b: @Unique CastBase): Int {
+    preconditions { b is CastSub }
+    return <!UNSUPPORTED_OWNERSHIP!>(b as CastSub).extra<!>
+}
+
+@Pure
+fun <!VERIFICATION_SKIPPED, VIPER_TEXT!>borrowedCastResult<!>(b: @Unique CastBase): <!INVALID_PURE_REFERENCE_RESULT!>CastSub?<!> = <!EXIT_UNIQUENESS_INCONSISTENCY, LOCALITY_MISMATCH!>b as? CastSub<!>
+
+interface CastFace
+<!VIPER_TEXT!>class CastConcrete<!>(var count: Int) : CastFace
+
+@Pure
+fun <!VERIFICATION_SKIPPED!>interfaceCastRead<!>(b: @Unique CastFace): Int {
+    preconditions { b is CastConcrete }
+    return <!UNSUPPORTED_OWNERSHIP!>(b as CastConcrete).count<!>
+}

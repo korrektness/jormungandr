@@ -182,15 +182,15 @@ data class PureExpLinearizer(
     ): Exp {
         val receiverViper = receiver.toViper(this)
         val primitiveAccess: Exp = Exp.FieldAccess(receiverViper, field.toViper(), source.asPosition)
-        return hierarchyPredicateAccesses(receiverViper, receiverType, field).toList()
+        return hierarchyPredicateAccesses(receiverViper, receiverPath?.presentationType ?: receiverType, field).toList()
             .foldRight(primitiveAccess) { predicateAccess, acc -> Exp.Unfolding(predicateAccess, acc) }
     }
 
-    override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean): Exp {
+    override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean, receiverPath: OwnedPath?): Exp {
         val receiverViper = receiver.toViper(this)
         val value = step.valueOf(receiverViper, source.asPosition)
         if (!owned) return value
-        return hierarchyPredicateAccesses(receiverViper, receiverType, step).toList()
+        return hierarchyPredicateAccesses(receiverViper, receiverPath?.presentationType ?: receiverType, step).toList()
             .foldRight(value) { predicateAccess, acc -> Exp.Unfolding(predicateAccess, acc) }
     }
 

@@ -121,8 +121,8 @@ data class PureFunBodyLinearizer(
         result: VariableEmbedding,
         receiverPath: OwnedPath?,
     ) {
-        val viperReceiver = localReceiver(receiver)
-        val accessInvariants = if (representationLaw) emptyList() else hierarchyPredicateAccesses(viperReceiver, receiverType, field).toList()
+        val viperReceiver = localReceiver(receiver, receiverType)
+        val accessInvariants = if (representationLaw) emptyList() else hierarchyPredicateAccesses(viperReceiver, receiverPath?.presentationType ?: receiverType, field).toList()
         val primitiveAccess: Exp = Exp.FieldAccess(viperReceiver, field.toViper(), source.asPosition)
         ssaConverter.addAssignment(result.name, primitiveAccess, accessInvariants)
     }
@@ -134,7 +134,7 @@ data class PureFunBodyLinearizer(
         receiverPath: OwnedPath?,
     ): Exp {
         val result = freshAnonVar(field.type)
-        addFieldAccessStoringIn(receiver, receiverType, field, result)
+        addFieldAccessStoringIn(receiver, receiverType, field, result, receiverPath)
         return result.toViperExp(this)
     }
 
@@ -143,10 +143,10 @@ data class PureFunBodyLinearizer(
      * receiver is owned, the binding carries the unfoldings down to the class declaring the getter, which reads
      * below it need to reach the value's own predicate.
      */
-    override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean): Exp {
-        val viperReceiver = localReceiver(receiver)
+    override fun addUniqueValAccess(receiver: Linearizable, receiverType: TypeEmbedding, step: UniqueValStep, owned: Boolean, receiverPath: OwnedPath?): Exp {
+        val viperReceiver = localReceiver(receiver, receiverType)
         val accessInvariants =
-            if (owned) hierarchyPredicateAccesses(viperReceiver, receiverType, step).toList() else emptyList()
+            if (owned) hierarchyPredicateAccesses(viperReceiver, receiverPath?.presentationType ?: receiverType, step).toList() else emptyList()
         val result = freshAnonVar(step.type)
         ssaConverter.addAssignment(result.name, step.valueOf(viperReceiver, source.asPosition), accessInvariants)
         return result.toViperExp(this)
@@ -163,9 +163,13 @@ data class PureFunBodyLinearizer(
         return result.toViperExp(this)
     }
 
-    private fun localReceiver(receiver: Linearizable): Exp.LocalVar =
-        receiver.toViper(this) as? Exp.LocalVar
-            ?: throw SnaktInternalException(source, "Invalid receiver encountered in pure function")
+    private fun localReceiver(receiver: Linearizable, type: TypeEmbedding): Exp.LocalVar {
+        val value = receiver.toViper(this)
+        if (value is Exp.LocalVar) return value
+        val result = freshAnonVar(type)
+        ssaConverter.addAssignment(result.name, value)
+        return result.toLocalVarUse().copy(name = resolveVariableName(result.name))
+    }
 
     override fun addModifier(mod: StmtModifier) {
         throw PureFunBodyLinearizerMisuseException("addModifier")

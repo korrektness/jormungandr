@@ -7,12 +7,30 @@ package org.jetbrains.kotlin.formver.core.linearization
 
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.core.asPosition
+import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
+import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveFieldAccess
+import org.jetbrains.kotlin.formver.core.embeddings.expression.SafeCast
+import org.jetbrains.kotlin.formver.core.embeddings.expression.UniqueValAccess
 import org.jetbrains.kotlin.formver.core.embeddings.properties.PathStep
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.viper.ast.Exp
 import org.jetbrains.kotlin.formver.viper.ast.Info
 import org.jetbrains.kotlin.formver.viper.ast.PermExp
+
+/** Source provenance for expression-only reads, including the successful branch of a safe cast. */
+fun ExpEmbedding.pureReadPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaNodes()) {
+    is SafeCast -> exp.exp.pureReadPath()
+    is FieldAccess -> if (exp.field.isUnique) exp.receiver.pureReadPath()?.plus(exp.field) else null
+    is PrimitiveFieldAccess -> if (exp.field.isUnique) exp.inner.pureReadPath()?.plus(exp.field) else null
+    is UniqueValAccess -> exp.receiver.pureReadPath()?.plus(exp.step)
+    else -> exp.ownedPath()
+}
+
+/** The type whose predicate the source path holds, independent of a cast's target type. */
+val OwnedPath.presentationType: TypeEmbedding
+    get() = fields.lastOrNull()?.type ?: root.type
 
 /**
  * The unique-predicate access on [classOnPath] that must be unfolded to reach a field on a superclass

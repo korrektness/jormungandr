@@ -1007,10 +1007,19 @@ type check, and `x!!` requires proof that `x` is non-null. Failures report
 `CAST_NOT_ESTABLISHED` and `NULL_ASSERTION_NOT_ESTABLISHED`. An earlier guard may
 establish these obligations. `as?` returns the operand on a successful runtime
 check and null otherwise. These operations supply no permissions or generic-argument
-facts; type-parameter casts check the erased bound. Casts do not provide subtype
-footprints or borrowed-view locals. Reference-array casts requiring runtime
+facts; type-parameter casts check the erased bound. Reference-array casts requiring runtime
 component checks, including `as?`, are unsupported; a compiler-proven redundant
 component check is permitted. Primitive-array casts use their nominal runtime type.
+
+A read through a cast, smart cast, `!!` or safe-call subject uses the source
+owned path's presentation: its root's declared type, or its last owned field's
+declared type. Only mutable fields on that presentation's base-class chain are
+held. For `b: @Unique Base`, `(b as? Sub)?.count` can read `Base.count`, while
+`(b as Sub).extra` cannot read a mutable field declared only by `Sub`. Thus this
+foundation does not support subtype-only mutable-field reads. An interface
+presentation supplies no concrete class ownership after a downcast. Shared sources
+remain shared, and the pure result restrictions below apply through these views.
+Cast-bound `val` locals have no borrowed-view provenance support.
 
 A specification may index a unique array with a `@Pure` call that borrows the
 array's owner, as in `elementData[positiveMod(head + i)]`, also inside `forAll`.
