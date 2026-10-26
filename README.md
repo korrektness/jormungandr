@@ -7,6 +7,11 @@ that performs formal verification of Kotlin code by translating it to
 The plugin is still in early development and large parts of Kotlin
 syntax are not supported.
 
+- [Writing specifications](SPECIFICATIONS.md): contracts, ownership and supported Kotlin constructs.
+- [Configuration reference](docs/configuration.md): Gradle settings, compiler options and conversion-only runs.
+- [Soundness and trust](docs/soundness.md): what a successful verification establishes.
+- [Development](docs/developing.md): tests and repository checks.
+
 ## Structure
 
 This repository consists of three published parts:
@@ -77,8 +82,8 @@ formver {
 }
 ```
 
-However, keep in mind that the Viper dump is provided as an info message: this message will not be shown
-unless you run `gradle` with the `--info` flag.
+See the [configuration reference](docs/configuration.md) for every option,
+selection of checks and diagnostic visibility.
 
 ### Annotations
 
@@ -87,47 +92,20 @@ Applying the Gradle plugin automatically adds a dependency on `formver.annotatio
 
 ### Running from the command line
 
-To execute the plugin directly, build the plugin and then
-specify the plugin `.jar` with `-Xplugin=`:
+Use a `kotlinc` version matching the build's Kotlin version in
+[`gradle/libs.versions.toml`](gradle/libs.versions.toml). Build the shaded compiler
+plugin with `./gradlew :formver.compiler-plugin:shadowJar` and the annotation
+library with `./gradlew :formver.annotations:jar`. Load the compiler plugin with
+`-Xplugin` and put the annotation library on the source classpath:
 
 ```sh
-kotlinc -language-version 2.0 -Xplugin=path-to-plugin.jar myfile.kt
+kotlinc -Xplugin=path-to-plugin.jar \
+    -classpath path-to-annotations.jar \
+    -Xreport-all-warnings myfile.kt
 ```
 
-The compiler drops warnings from a compilation that has errors, including the warnings that name declarations which
-were not verified. Pass `-Xreport-all-warnings` to keep them; the Gradle plugin passes it.
-
-The plugin accepts a number of command line options which can be passed via
-`-P plugin:org.jetbrains.kotlin.formver:OPTION=SETTING`:
-
-- Option `log_level`: permitted values `only_warnings`, `short_viper_dump`, `full_viper_dump` (default:
-  `only_warnings`).
-- Option `error_style`: permitted values `user_friendly`, `original_viper` and `both` (default: `user_friendly`).
-- Options `conversion_targets_selection` and `verification_targets_selection`: permitted values `no_targets`
-  and `all_targets` (default: `all_targets`).
-- Option `verification_cache_directory`: enables persistent successful verification results in the given
-  directory. In Gradle, use `formver { verificationCacheDirectory("build/verification-cache") }`.
-  Omit the option to bypass the cache. The key covers the complete dependency-closed Viper text,
-  Silicon/Silver artifact bytes, Z3 executable bytes, effective verifier arguments and plugin settings.
-  Consistency checks run on hits. Failures are verified again to produce current-source diagnostics;
-  malformed entries and cache I/O errors surface as errors. Treat the directory as trusted build state.
-  Custom Silicon plugins and obligation filters require bypassing the cache.
-- Option `verification_timeout`: the time in seconds that Silicon may spend verifying each declaration, counted
-  separately for each specified lambda (default: `300`; `0` disables the limit). In Gradle, use
-  `formver { verificationTimeout(60) }`. A declaration that runs out of time gets a `VERIFICATION_TIMEOUT`
-  error that names it, and verification goes on with the next declaration. The limit covers a single SMT
-  query: Silicon stops waiting, and the plugin then stops Silicon, which kills its Z3 processes.
-
-- Option `trust_report`: a file that lists each verified declaration with the trusted assumptions it relies on;
-  docs/soundness.md, "The trust report", says what it lists. Its first line summarises the module, and the
-  compiler reports that line at INFO. A compilation replaces the entries of the files it compiles and keeps the
-  others, so the report stays complete under incremental compilation. The Gradle plugin writes it for each
-  platform compile task, not for metadata compilations, to `build/formver/<task>/trust-report.txt` and prints its summary line, which a default build
-  shows. Without the option the compiler reports the summary of the declarations it verified at INFO.
-
-The plugin logs the start and the duration of each declaration's verification at the compiler's INFO
-level, which Gradle shows with `--info`. The compiler holds these messages back until it reports its
-diagnostics, so they show which declarations were slow but not which one is running.
+The [configuration reference](docs/configuration.md) maps Gradle settings to
+`-P plugin:org.jetbrains.kotlin.formver:OPTION=VALUE` arguments.
 
 ### Z3
 
@@ -147,7 +125,7 @@ its `bin/z3` on `PATH` or point `Z3_EXE` at it.
 
 ## Contributing
 
-See docs/developing.md for testing and the checks CI runs.
+See [Developing the plugin](docs/developing.md) for testing and the checks CI runs.
 
 ## Contact
 

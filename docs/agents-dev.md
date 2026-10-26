@@ -136,9 +136,14 @@ Gradle's `--tests` filter is case-sensitive, and the scripts convert for you.
 
 ## Regenerating
 
-`--update-goldens` regenerates and then prints what each golden now says.
-Regeneration records whatever the run produced, except a change in a function's
-verification outcome.
+`--update-goldens` runs the full pipeline, including Silicon, regenerates, and
+then prints what each golden now says. It is a separate mode, mutually exclusive
+with `--verify`, `--verify-changed` and `--vacuity`; it does not modify the default
+conversion-only mode. See the mode-to-task mapping in
+[`agent-scripts/test.sh`](../agent-scripts/test.sh).
+
+Full-pipeline regeneration records whatever the run produced, except a change in
+a function's verification outcome.
 
 A function's outcome is failed when a verifier diagnostic lies inside it,
 skipped when it carries `VERIFICATION_SKIPPED`, `UNSUPPORTED_FEATURE` or

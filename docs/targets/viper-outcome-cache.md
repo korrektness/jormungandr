@@ -18,7 +18,7 @@ hypotheses that an implementation stage has to confirm.
   with an explicit result type whenever it has type arguments, and prints `@` annotations. Positions and other
   `Info` nodes are not printed; they do not change whether a program verifies. **[E]**
   (`silver/.../ast/pretty/PrettyPrinter.scala`, `showAnnotation` and the `DomainFuncApp` case.)
-- Users enable it with the `verification_cache_directory` plugin option (README.md). The test fixtures enable it
+- Users enable it with the [verification cache option](../configuration.md#verification-cache). The test fixtures enable it
   with `-Pformver.verificationCacheDirectory=<dir>`. `test.sh` passes that property in verification modes.
   `land-gate.yaml` uses `agent-scripts/gate-test.sh` with the [cold sample](#the-land-gate). **[E]**
 - `test.sh --verify-changed` runs the `update` task: it verifies a test file only when its conversion output

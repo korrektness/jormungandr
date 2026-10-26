@@ -37,13 +37,10 @@ checking, Viper consistency checking) and verification:
 Use `untilConversion` as much as possible while developing, and `test` last,
 before opening a PR.
 
-All three only check the goldens. Regenerating them is a separate thing, run by
-passing `-Pkotlin.test.update.test.data=true` to `test`: it rewrites the golden
-files and writes the diagnostic markers into the `.kt`, which a new test needs.
-Verification runs, because the goldens include its output. A change in a
-function's verification outcome is refused unless
-`-Pformver.recordOutcomes=true` is passed as well; docs/agents-dev.md, under
-Regenerating, says what counts as one.
+All three only check the goldens. For regeneration, see
+[Regenerating](agents-dev.md#regenerating).
+Regeneration writes golden files and diagnostic markers into the `.kt`, which a
+new test needs.
 
 For shared verification caching and cold runs, see
 [the agent script cache controls](agents-dev.md#verification-cache).
@@ -51,7 +48,7 @@ For shared verification caching and cold runs, see
 ### Verification timeout
 
 The test facade verifies each declaration with the plugin's default verification
-timeout, which README.md describes under `verification_timeout`. A test that runs
+timeout, described in [Timeouts](configuration.md#timeouts). A test that runs
 out of time reports `VERIFICATION_TIMEOUT`, which counts as a failed outcome when
 goldens are regenerated.
 

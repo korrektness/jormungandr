@@ -39,14 +39,8 @@ the construction unconvertible, and a `lateinit` property that construction leav
 A function that uses a construct SnaKt does not translate gets an `UNSUPPORTED_FEATURE` warning at the construct and a
 `VERIFICATION_SKIPPED` warning at its name, and is not verified. Compilation continues.
 
-**Plugin configuration** (in `build.gradle.kts`):
-```kotlin
-formver {
-    verificationTargetsSelection("no_targets")  // Convert, but verify nothing
-    // or "all_targets" (default) — verify every function
-    externalSpec("specs/Library.kt")  // Analyse as a specification of external code, but do not compile it
-}
-```
+Select compilation checks and external specification inputs through the
+[configuration reference](docs/configuration.md).
 
 ## Diagnostics
 
@@ -323,7 +317,7 @@ class Refining : Base() {
     override fun positive(x: Int): Int {
         preconditions { x >= 0 }                       // weaker: accepted
         postconditions<Int> { result -> result > 1 }   // stronger: accepted
-        return x + 2
+        return 2
     }
 }
 ```
@@ -355,7 +349,7 @@ interface Measure {
 }
 
 class Fixed : Measure {
-    @Pure override val size: Int get() = 2
+    @Pure override val size: Int get() = 1
     @Pure override fun scaled(factor: Int): Int = factor * size
 }
 ```
@@ -705,6 +699,7 @@ may hold the same object.
 class Counter(var n: Int)
 
 fun bump(c: @Unique @Borrowed Counter) {
+    preconditions { c.n < Int.MAX_VALUE }
     postconditions<Unit> { c.n == old(c.n) + 1 }
     c.n = c.n + 1                 // verifies
 }
@@ -1102,30 +1097,13 @@ properties. Its default `val` properties and its identity remain readable.
 
 The verifier expands a recursive `@Pure` function's definition one level at
 each application it sees. When a proof needs a deeper level, the body must
-mention that application itself. Here `size(r) == old(size(t))` verifies only
-because the body names `size(right)` before the move and `size(t)` after it:
-
-```kotlin
-@Pure
-fun size(t: @Unique Tree?): Int {
-    preconditions { decreases(t) }
-    return if (t == null) 0 else 1 + size(t.l) + size(t.r)
-}
-
-fun rotateLeft(t: @Unique Tree): @Unique Tree {
-    postconditions<Tree> { r -> size(r) == old(size(t)) }
-    val right: @Unique Tree? = t.r
-    if (right == null) {
-        t.r = right
-        return t
-    }
-    val sr = size(right)
-    t.r = right.l
-    val st = size(t)
-    right.l = t
-    return right
-}
-```
+mention that application itself. The
+[`unique_tree_recursion.kt`](formver.compiler-plugin/testData/diagnostics/verification/pure_functions/unique_tree_recursion.kt)
+fixture demonstrates this in `rotateLeft`: assertions expose `cappedSize(right)`
+before the move and `cappedSize(t)` after it. The size observer saturates at a cap
+so its arithmetic remains within `Int`. An unrestricted recursive node count
+can overflow even when its recursion terminates; the same fixture includes that
+negative case.
 
 ### Termination of pure functions
 
@@ -1138,15 +1116,23 @@ predicate it unfolds. Non-recursive functions need no measure.
 
 ```kotlin
 @Pure
-fun ackermann(m: Int, n: Int): Int {
+fun smallAckermann(m: Int, n: Int): Int {
     preconditions {
-        m >= 0
-        n >= 0
+        0 <= m && m <= 1
+        0 <= n && n <= 2147483646 - m
         decreases(m, n)
     }
-    return if (m == 0) n + 1 else if (n == 0) ackermann(m - 1, 1) else ackermann(m - 1, ackermann(m, n - 1))
+    postconditions<Int> { r -> r == m + n + 1 }
+    return if (m == 0) n + 1
+    else if (n == 0) smallAckermann(m - 1, 1)
+    else smallAckermann(m - 1, smallAckermann(m, n - 1))
 }
 ```
+
+The input bounds and result contract also establish arithmetic safety; a
+termination measure alone does not prevent overflow. This example and its
+unbounded overflow-negative counterpart are in
+[`termination.kt`](formver.compiler-plugin/testData/diagnostics/verification/pure_functions/termination.kt).
 
 Each argument of `decreases` is a measure, and several measures are compared
 lexicographically. A measure is one of:
@@ -1168,6 +1154,11 @@ one function, and a measure of any other type.
 
 Recursion over shared objects has no measure: a shared node can reach itself
 through its `next` chain, so `length(n.next)` need not be smaller.
+
+A measure can decrease through arithmetic rather than subtraction. The
+[`remainder_decreases.kt`](formver.compiler-plugin/testData/diagnostics/verification/pure_functions/remainder_decreases.kt)
+fixture encodes Euclid's recursion with measure `n`: when `m >= 0` and `n > 0`,
+`m % n` is nonnegative and strictly smaller than `n`.
 
 ### Rejected constructs
 
@@ -1212,9 +1203,5 @@ Resource exhaustion is outside the verification safety claim. String values have
 
 ## Additional Plugin Options
 
-```kotlin
-formver {
-    errorStyle("user_friendly")  // or "original_viper", "both"
-    logLevel("only_warnings")    // or "short_viper_dump", "full_viper_dump"
-}
-```
+See the [configuration reference](docs/configuration.md) for Gradle and compiler
+options.

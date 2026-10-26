@@ -8,7 +8,7 @@ verifies, fails or is skipped: that fails the test and writes nothing. Read what
     ./agent-scripts/test.sh [pattern]                  # conversion only — the fast loop
     ./agent-scripts/test.sh --verify [pattern]         # full pipeline, including verification
     ./agent-scripts/test.sh --verify-changed [pattern] # verify only where conversion output changed
-    ./agent-scripts/test.sh --update-goldens [pattern] # regenerate goldens, then report what changed
+    ./agent-scripts/test.sh --update-goldens [pattern] # full pipeline + regeneration; see docs/agents-dev.md
     ./agent-scripts/test.sh --update-goldens --record-outcomes <pattern>
                                                        # also record verification outcome changes
     ./agent-scripts/test.sh --vacuity [pattern]        # list verified methods whose context is contradictory

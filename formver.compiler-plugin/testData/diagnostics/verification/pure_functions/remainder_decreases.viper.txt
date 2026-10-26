@@ -1,0 +1,42 @@
+/remainder_decreases.kt: info: Generated Viper text for gcd:
+function gcd(m: Ref, n: Ref): Ref
+  requires isSubtype(typeOf(m), intType())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(m) >= 0
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  decreases intFromRef(n)
+{
+  (intFromRef(n) == 0 ? m : gcd(n, remInts(m, n)))
+}
+
+/remainder_decreases.kt: info: Generated Viper text for gcdBaseCase:
+function gcd(m: Ref, n: Ref): Ref
+  requires isSubtype(typeOf(m), intType())
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(m) >= 0
+  requires intFromRef(n) >= 0
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) >= 0
+  decreases intFromRef(n)
+{
+  (intFromRef(n) == 0 ? m : gcd(n, remInts(m, n)))
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+  decreases _
+
+
+method gcdBaseCase(m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(m), intType())
+  requires intFromRef(m) >= 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  refute false
+  assert intFromRef(gcd(m, intToRef(0))) == intFromRef(m)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

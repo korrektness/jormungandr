@@ -229,7 +229,7 @@ sibling in the same file (docs/developing.md, "Negative tests").
 - Golden churn: V1–V5 add tests and should change few goldens **[H]**. V6 can change many outcomes across the
   suite **[H]**.
 - Solver time: sequence updates, modular index arithmetic and two-segment quantifiers under Z3 4.8.7 **[H]**.
-  The repo's default per-declaration timeout is the budget (README.md, `verification_timeout`).
+  The repo's default per-declaration timeout is the budget ([Timeouts](../configuration.md#timeouts)).
 
 ## Risks
 

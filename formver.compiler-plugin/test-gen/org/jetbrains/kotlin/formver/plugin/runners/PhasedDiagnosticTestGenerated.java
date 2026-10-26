@@ -2098,6 +2098,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       }
 
       @Test
+      @TestMetadata("remainder_decreases.kt")
+      public void testRemainder_decreases() {
+        runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/remainder_decreases.kt");
+      }
+
+      @Test
       @TestMetadata("termination.kt")
       public void testTermination() {
         runTest("formver.compiler-plugin/testData/diagnostics/verification/pure_functions/termination.kt");

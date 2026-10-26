@@ -84,9 +84,9 @@ A call to another declaration of the module that SnaKt does not skip is not
 listed: SnaKt verifies that declaration on its own. `verification_targets_selection`
 applies to the whole module, so a declaration it leaves out has no verified
 caller. A declaration is listed once its verification succeeds,
-whether the verifier ran or the verification cache held the result. README.md,
-under `trust_report`, says where the report goes
-(`verification/trust_report.kt`).
+whether the verifier ran or the verification cache held the result.
+[Trust reports](configuration.md#trust-reports) describes output configuration;
+`verification/trust_report.kt` exercises the report.
 
 ## The vacuity check
 
