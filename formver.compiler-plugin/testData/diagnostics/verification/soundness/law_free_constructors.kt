@@ -13,7 +13,7 @@ class CtorWriter<!VERIFICATION_SKIPPED!>(c: @Borrowed Law1)<!> {
 }
 
 <!VERIFICATION_SKIPPED!>class InitializerWriter<!>(c: @Borrowed Law1) {
-    val x: Int = run <!LOCALITY_MISMATCH!>{ <!INVALID_LOCALITY_CAPTURE!>c<!>.f = 0; 1 }<!>
+    val x: Int = run { <!INVALID_LOCALITY_CAPTURE!>c<!>.f = 0; 1 }
 }
 
 fun <!VIPER_TEXT!>ctorClient<!>(c: @Unique Law1) {

@@ -1,4 +1,5 @@
 // LOCALITY_CHECK_ONLY
+// FULL_JDK
 
 import org.jetbrains.kotlin.formver.plugin.Borrowed
 
@@ -25,6 +26,18 @@ fun writeHeader(buffer: @Borrowed Buffer) {
 fun writeFooter(buffer: @Borrowed Buffer) {
     buffer.append("footer")
 }
+
+fun `safe append retains borrowed builder`(builder: @Borrowed StringBuilder?) {
+    val escaped: StringBuilder? = <!LOCALITY_MISMATCH!>builder?.append("text")<!>
+    val borrowed: @Borrowed StringBuilder? = builder?.append("text")
+    val text: String? = builder?.toString()
+}
+
+fun `safe append chain retains borrowed builder`(builder: @Borrowed StringBuilder?): StringBuilder? =
+    <!LOCALITY_MISMATCH!>builder?.append('x')?.append("text")<!>
+
+fun `safe append may return global builder`(builder: StringBuilder?): StringBuilder? =
+    builder?.append("text")
 
 var savedBuffer: Buffer? = null
 

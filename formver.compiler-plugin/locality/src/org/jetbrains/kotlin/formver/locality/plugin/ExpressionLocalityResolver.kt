@@ -12,15 +12,18 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
 import org.jetbrains.kotlin.fir.expressions.FirCallableReferenceAccess
+import org.jetbrains.kotlin.fir.expressions.FirCheckedSafeCallSubject
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
+import org.jetbrains.kotlin.fir.expressions.FirSafeCallExpression
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.fir.expressions.FirThrowExpression
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
@@ -43,12 +46,26 @@ private object TerminalLocalityResolver : ExpressionTypeFactResolver<Locality> {
                 val graph = expression.anonymousFunction.controlFlowGraphReference?.controlFlowGraph
                     ?: return Locality.Global
 
-                graph.resolveScopeLocality()
+                // Called-in-place lambdas keep their captures in the enclosing flow.
+                if (graph.kind == ControlFlowGraph.Kind.AnonymousFunctionCalledInPlace) Locality.Global
+                else graph.resolveScopeLocality()
+            }
+
+            is FirCheckedSafeCallSubject -> expression.originalReceiverRef.value.resolveLocality()
+
+            is FirSafeCallExpression -> (expression.selector as? FirExpression)?.resolveLocality() ?: Locality.Global
+
+            is FirCallableReferenceAccess -> {
+                // A bound reference retains its receiver as well as the callable's lexical captures.
+                val callableLocality = (expression.calleeReference.symbol as? FirCallableSymbol<*>)
+                    ?.resolveLocality() ?: Locality.Global
+                listOfNotNull(expression.dispatchReceiver, expression.extensionReceiver)
+                    .fold(callableLocality) { locality, receiver -> locality.join(receiver.resolveLocality()) }
             }
 
             is FirQualifiedAccessExpression ->
                 when (expression) {
-                    is FirPropertyAccessExpression, is FirThisReceiverExpression, is FirCallableReferenceAccess ->
+                    is FirPropertyAccessExpression, is FirThisReceiverExpression ->
                         when (val symbol = expression.calleeReference.symbol) {
                             is FirCallableSymbol<*> -> symbol.resolveLocality()
                             is FirReceiverParameterSymbol -> symbol.resolveLocality()

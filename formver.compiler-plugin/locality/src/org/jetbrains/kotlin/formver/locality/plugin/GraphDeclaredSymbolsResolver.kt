@@ -9,6 +9,8 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.resolve.toSymbol
+import org.jetbrains.kotlin.fir.types.classLikeLookupTagIfAny
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.LocalClassExitNode
@@ -37,6 +39,7 @@ class GraphDeclaredSymbolsResolver(session: FirSession) : FirExtensionSessionCom
             is FirFunction -> {
                 declarations.add(declaration.symbol)
                 declarations.addIfNotNull(declaration.receiverParameter?.symbol)
+                declarations.addIfNotNull(declaration.dispatchReceiverType?.classLikeLookupTagIfAny?.toSymbol(session))
                 declaration.contextParameters.mapTo(declarations) { it.symbol }
                 declaration.valueParameters.mapTo(declarations) { it.symbol }
             }

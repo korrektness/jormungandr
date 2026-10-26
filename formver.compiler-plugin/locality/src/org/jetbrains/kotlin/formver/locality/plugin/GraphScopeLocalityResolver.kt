@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
 
 class GraphScopeLocalityResolver(session: FirSession) : FirExtensionSessionComponent(session) {
@@ -45,6 +46,7 @@ class GraphScopeLocalityResolver(session: FirSession) : FirExtensionSessionCompo
         when (symbol) {
             is FirCallableSymbol<*> -> symbol.resolveLocality()
             is FirReceiverParameterSymbol -> symbol.resolveLocality()
+            is FirClassSymbol<*> -> symbol.resolveReceiverLocality()
             else -> Locality.Global
         }
 }

@@ -10,9 +10,11 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.expressions.FirAnonymousFunctionExpression
 import org.jetbrains.kotlin.fir.expressions.FirCallableReferenceAccess
+import org.jetbrains.kotlin.fir.expressions.FirCheckedSafeCallSubject
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
+import org.jetbrains.kotlin.fir.expressions.FirSafeCallExpression
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
@@ -24,6 +26,7 @@ import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.locality.plugin.Locality
 import org.jetbrains.kotlin.formver.locality.plugin.locality
+import org.jetbrains.kotlin.formver.locality.plugin.resolveLocality
 import org.jetbrains.kotlin.formver.type.contract.plugin.FunctionTypeFact
 import org.jetbrains.kotlin.formver.type.plugin.CallArgumentTypeFactsMapper
 import org.jetbrains.kotlin.formver.type.plugin.ExpressionTypeFactResolver
@@ -36,9 +39,12 @@ private object TerminalLocalityContractResolver : ExpressionTypeFactResolver<Loc
     context(context: CheckerContext)
     override fun resolveTypeFactOf(expression: FirExpression): LocalityContract? =
         when (expression) {
+            is FirCheckedSafeCallSubject -> expression.originalReceiverRef.value.resolveLocalityContract()
+            is FirSafeCallExpression -> (expression.selector as? FirExpression)?.resolveLocalityContract()
             is FirCallableReferenceAccess ->
                 when (val symbol = expression.calleeReference.symbol) {
                     is FirVariableSymbol<*> -> symbol.resolveReferenceLocalityContract(expression.resolvedType)
+                    is FirFunctionSymbol<*> -> symbol.resolveReferenceLocalityContract(expression)
                     else -> expression.resolvedType.resolveLocalityContract(context.session)
                 }
             is FirQualifiedAccessExpression ->
@@ -52,6 +58,19 @@ private object TerminalLocalityContractResolver : ExpressionTypeFactResolver<Loc
                 expression.resolvedType.resolveLocalityContract(context.session)
             else -> null
         }
+}
+
+context(context: CheckerContext)
+private fun FirFunctionSymbol<*>.resolveReferenceLocalityContract(reference: FirCallableReferenceAccess): LocalityContract? {
+    val contract = reference.resolvedType.resolveLocalityContract(context.session) ?: return null
+    val receiver = receiverParameterSymbol ?: return contract
+    if (reference.extensionReceiver != null) return contract
+
+    // The unbound receiver's type comes from the reference's LHS, but the callee supplies its borrowing requirement.
+    // Keep the other slots from the adapted reference type, which accounts for default and vararg arguments.
+    val parameters = contract.parameterTypeFacts.toMutableList()
+    parameters[0] = parameters.first().copy(typeFact = receiver.resolveLocality())
+    return contract.copy(parameterTypeFacts = parameters)
 }
 
 /**

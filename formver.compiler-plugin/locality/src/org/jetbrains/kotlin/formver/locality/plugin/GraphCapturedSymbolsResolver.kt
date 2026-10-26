@@ -9,11 +9,16 @@ import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
+import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
+import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
+import org.jetbrains.kotlin.fir.expressions.unwrapExpression
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CallableReferenceNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallExitNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.utils.addIfNotNull
 
 /**
@@ -42,11 +47,22 @@ class GraphCapturedSymbolsResolver(session: FirSession) : FirExtensionSessionCom
 
         for (node in graph.nodes) {
             when (node) {
-                is QualifiedAccessNode ->
+                is QualifiedAccessNode -> {
                     capturedSymbols.addIfNotNull(node.fir.calleeReference.symbol)
+                    node.fir.collectReceiverSymbolsTo(capturedSymbols)
+                }
 
-                is CallableReferenceNode ->
+                is CallableReferenceNode -> {
                     capturedSymbols.addIfNotNull(node.fir.calleeReference.symbol)
+                    node.fir.collectReceiverSymbolsTo(capturedSymbols)
+                }
+
+                is FunctionCallExitNode -> {
+                    node.fir.collectReceiverSymbolsTo(capturedSymbols)
+                    val callee = node.fir.calleeReference.symbol as? FirNamedFunctionSymbol
+                    // A call to a local function retains that function's lexical captures.
+                    if (callee?.callableId?.isLocal == true) capturedSymbols.add(callee)
+                }
 
                 else -> { }
             }
@@ -56,6 +72,14 @@ class GraphCapturedSymbolsResolver(session: FirSession) : FirExtensionSessionCom
         val declaredSymbols = graph.resolveDeclaredSymbols()
 
         return capturedSymbols - declaredSymbols
+    }
+
+    private fun FirQualifiedAccessExpression.collectReceiverSymbolsTo(symbols: MutableSet<FirBasedSymbol<*>>) {
+        // Implicit `this` receivers need not have their own access node in the control-flow graph.
+        for (receiver in listOfNotNull(dispatchReceiver, extensionReceiver)) {
+            val thisReceiver = receiver.unwrapExpression() as? FirThisReceiverExpression ?: continue
+            symbols.addIfNotNull(thisReceiver.calleeReference.symbol)
+        }
     }
 }
 

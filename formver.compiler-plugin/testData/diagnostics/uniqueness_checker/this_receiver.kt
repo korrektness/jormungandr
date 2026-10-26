@@ -109,7 +109,7 @@ open class Counter(var count: Int, var node: @Unique Node) {
 
     @Unique @Borrowed
     fun `captures this`(): () -> Int {
-        return <!INVALID_UNIQUENESS_CAPTURE!>{ count }<!>
+        return <!INVALID_UNIQUENESS_CAPTURE, LOCALITY_MISMATCH!>{ count }<!>
     }
 
     @Unique @Borrowed

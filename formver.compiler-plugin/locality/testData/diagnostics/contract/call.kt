@@ -27,6 +27,21 @@ fun produceGlobalLocalFunction(): (Any, @Borrowed Any) -> Unit =
 fun produceGlobalReceiverFunction(): (Any).() -> Unit =
     { Unit }
 
+fun Any.localCallback(): (@Borrowed Any) -> Unit = produceLocalFunction()
+
+fun Any.globalCallback(): (Any) -> Unit = produceGlobalFunction()
+
+fun `safe calls preserve callback contracts`(receiver: Any?, value: @Borrowed Any) {
+    val local: ((@Borrowed Any) -> Unit)? = receiver?.localCallback()
+    val global: ((@Borrowed Any) -> Unit)? = <!LOCALITY_CONTRACT_MISMATCH!>receiver?.globalCallback()<!>
+    local?.invoke(value)
+}
+
+fun `safe call with fallback preserves callback contract`(receiver: Any?) {
+    val local: (@Borrowed Any) -> Unit = receiver?.localCallback() ?: produceLocalFunction()
+    val global: (@Borrowed Any) -> Unit = <!LOCALITY_CONTRACT_MISMATCH!>receiver?.globalCallback() ?: produceLocalFunction()<!>
+}
+
 fun `pass global function as local function argument`() {
     requireLocalFunction(<!LOCALITY_CONTRACT_MISMATCH!>produceGlobalFunction()<!>)
 }

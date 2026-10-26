@@ -18,6 +18,36 @@ fun localBinaryFunction(x: @Borrowed Any, y: @Borrowed Any) {}
 
 fun requireLocalBinaryFunction(f: (@Borrowed Any, @Borrowed Any) -> Unit) {}
 
+fun @Borrowed Any.borrowReceiver() {}
+
+fun Any.shareReceiver() {}
+
+fun @Borrowed Any.borrowReceiverWithArgument(value: Any) {}
+
+fun @Borrowed Any.borrowReceiverWithDefault(value: Any = Any()) {}
+
+fun `unbound extension reference preserves borrowed receiver`(value: @Borrowed Any) {
+    requireLocalFunction(Any::borrowReceiver)
+    requireLocalFunction(<!LOCALITY_CONTRACT_MISMATCH!>Any::shareReceiver<!>)
+
+    val reference = Any::borrowReceiver
+    reference(value)
+}
+
+fun `unbound extension reference keeps value argument contract`() {
+    val reference: (@Borrowed Any, Any) -> Unit = Any::borrowReceiverWithArgument
+    val invalid: (@Borrowed Any, @Borrowed Any) -> Unit = <!LOCALITY_CONTRACT_MISMATCH!>Any::borrowReceiverWithArgument<!>
+}
+
+fun `bound extension reference does not change value argument contract`(receiver: Any) {
+    val reference: (Any) -> Unit = receiver::borrowReceiverWithArgument
+    val invalid: (@Borrowed Any) -> Unit = <!LOCALITY_CONTRACT_MISMATCH!>receiver::borrowReceiverWithArgument<!>
+}
+
+fun `adapted extension reference preserves borrowed receiver`() {
+    requireLocalFunction(Any::borrowReceiverWithDefault)
+}
+
 fun `pass globalFunction to requireGlobalFunction`() {
     requireGlobalFunction(::globalFunction)
 }

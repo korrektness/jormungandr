@@ -60,6 +60,15 @@ fun `pass local twice as named borrowed arguments`(x: @Borrowed A) {
     borrowBoth(y=x, x=x)
 }
 
+fun `safe call cannot share borrowed receiver`(x: @Borrowed A?) {
+    <!LOCALITY_MISMATCH!>x<!>?.shareTarget()
+    x?.borrowTarget()
+}
+
+fun `safe call may share global receiver`(x: A?) {
+    x?.shareTarget()
+}
+
 fun `pass local as explicit shared target`(x: @Borrowed A) {
     <!LOCALITY_MISMATCH!>x<!>.shareTarget()
 }

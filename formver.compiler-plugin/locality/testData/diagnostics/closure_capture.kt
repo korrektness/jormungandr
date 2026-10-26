@@ -3,7 +3,14 @@
 
 import org.jetbrains.kotlin.formver.plugin.Borrowed
 
-class A
+class A {
+    @Borrowed
+    fun inspect() {}
+
+    val value: Any = Any()
+}
+
+fun @Borrowed A.inspectExtension() {}
 
 fun nondet(): Boolean = false
 
@@ -36,6 +43,39 @@ context(c: @Borrowed () -> Unit)
 fun runFromContext() {
     c()
 }
+
+fun `bound references retain borrowed receivers`(x: @Borrowed A) {
+    val member: () -> Unit = <!LOCALITY_MISMATCH!>x::inspect<!>
+    val extension: () -> Unit = <!LOCALITY_MISMATCH!>x::inspectExtension<!>
+    val property: Any = <!LOCALITY_MISMATCH!>x::value<!>
+
+    val borrowedMember: @Borrowed () -> Unit = x::inspect
+    val borrowedExtension: @Borrowed () -> Unit = x::inspectExtension
+    val borrowedProperty: @Borrowed Any = x::value
+    borrowedMember()
+    borrowedExtension()
+}
+
+fun `bound references to global receivers may escape`(x: A) {
+    val member: () -> Unit = x::inspect
+    val extension: () -> Unit = x::inspectExtension
+    val property: Any = x::value
+}
+
+fun `unbound references do not capture receivers`() {
+    val member: (A) -> Unit = A::inspect
+    val extension: (A) -> Unit = A::inspectExtension
+    val property: Any = A::value
+}
+
+fun `inferred reference retains borrowed receiver`(x: @Borrowed A) {
+    val reference = x::inspect
+    useBorrowed(reference)
+    val escaped: () -> Unit = <!LOCALITY_MISMATCH!>reference<!>
+}
+
+fun `return bound reference retains borrowed receiver`(x: @Borrowed A): () -> Unit =
+    <!LOCALITY_MISMATCH!>x::inspect<!>
 
 fun `capture local from global lambda capturing`(x: @Borrowed Any) {
     {
@@ -230,9 +270,9 @@ fun `provide capturing lambda as borrowed context via with`(x: @Borrowed A) {
 fun `resolve captured local owner from nested lambda`(x: @Borrowed A) {
     val x: @Borrowed A = x
 
-    run <!LOCALITY_MISMATCH!>{
+    run {
         borrow(x)
-    }<!>
+    }
 
     borrow(x)
 }
@@ -316,15 +356,15 @@ fun `pass outer local as local argument in lambda`(x: @Borrowed A) {
 }
 
 fun `return local value from lambda body`(x: @Borrowed Any) {
-    run<Any> <!LOCALITY_MISMATCH!>{
+    run<Any> {
         <!LOCALITY_MISMATCH!>x<!>
-    }<!>
+    }
 }
 
 fun `throw local value from lambda`(x: @Borrowed Throwable) {
-    run <!LOCALITY_MISMATCH!>{
+    run {
         throw <!LOCALITY_MISMATCH!>x<!>
-    }<!>
+    }
 }
 
 fun `capture local in inner class property`(x: @Borrowed Any) {
