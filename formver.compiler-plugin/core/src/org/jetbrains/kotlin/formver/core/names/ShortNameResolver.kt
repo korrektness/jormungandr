@@ -87,6 +87,9 @@ class ShortNameResolver : NameResolver {
      */
     private val currentCandidate = mutableMapOf<AnyName, Int>()
 
+    /** Final spellings for names whose candidate lists cannot separate them. */
+    private val disambiguated = mutableMapOf<AnyName, String>()
+
     /**
      * Stores all the names that exist in the system.
      */
@@ -118,7 +121,7 @@ class ShortNameResolver : NameResolver {
     }
 
     internal fun current(entity: AnyName): String {
-        return currentCandidate(entity).name()
+        return disambiguated[entity] ?: currentCandidate(entity).name()
     }
 
     private fun currentCandidate(name: AnyName): CandidateName {
@@ -217,9 +220,11 @@ class ShortNameResolver : NameResolver {
             val allToMove = currentCollisions.flatMap { it.value }.mapNotNull { findMoveableName(it)?.second }.toSet()
 
             val toMove = removeNonLeaves(allToMove)
-            assert(toMove.isNotEmpty()) { "No moveable names found, unable to resolve collisions" }
-
-            toMove.forEach(::move)
+            if (toMove.isEmpty()) {
+                disambiguate(currentCollisions)
+            } else {
+                toMove.forEach(::move)
+            }
 
             currentCollisions = collisions()
 
@@ -227,6 +232,27 @@ class ShortNameResolver : NameResolver {
 
         // Fix the names
         mangledNames = viperElements().associateWith { current(it) }
+    }
+
+    /**
+     * Candidate parts are separated by `_`, which can also occur inside a source identifier. Even fully qualified
+     * candidates can therefore coincide. Give exhausted names fresh suffixes, preserving names looked up verbatim
+     * by Viper. Recompute collisions afterwards because a renamed name can occur in another name's candidates.
+     */
+    private fun disambiguate(collisions: Map<String, Set<AnyName>>) {
+        val occupied = viperElements().mapTo(mutableSetOf()) { current(it) }
+        for ((spelling, names) in collisions) {
+            val fixed = names.filter { it is ViperKeyword || it is FixedViperName }
+            check(fixed.size <= 1) { "Conflicting fixed Viper names for '$spelling': $fixed" }
+            var suffix = 0
+            for (name in names - fixed.toSet()) {
+                var candidate: String
+                do {
+                    candidate = "$spelling\$${suffix++}"
+                } while (!occupied.add(candidate))
+                disambiguated[name] = candidate
+            }
+        }
     }
 
     /**

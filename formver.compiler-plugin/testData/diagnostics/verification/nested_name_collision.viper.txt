@@ -1,0 +1,80 @@
+/nested_name_collision.kt: info: Generated Viper text for Collision:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Collision())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Collision()
+  fold acc(Collision_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Collision_unique(v_ret_0), write)
+}
+
+/nested_name_collision.kt: info: Generated Viper text for Part:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Collision_Part())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Collision_Part())
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Collision_Part()
+  anon := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
+  fold acc(Collision_Part_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Collision_Part_unique(v_ret_0), write)
+}
+
+/nested_name_collision.kt: info: Generated Viper text for Collision_Part:
+function g_value(this: Ref): Ref
+  requires isSubtype(typeOf(this), Collision_Part())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), Collision_Part())
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+  ensures intFromRef(g_value(v_ret_0)) == intFromRef(par_value)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Collision_Part()
+  anon := par_value
+  inhale intFromRef(g_value(v_ret_0)) == intFromRef(anon)
+  fold acc(Collision_Part_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Collision_Part_unique(v_ret_0), write)
+}
+
+/nested_name_collision.kt: info: Generated Viper text for distinctClassNames:
+function pkg_c_Collision_Part_g_value$0(this: Ref): Ref
+  requires isSubtype(typeOf(this), df_d_rt_pkg_c_Collision_Part$0())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function pkg_c_Collision_Part_g_value$1(this: Ref): Ref
+  requires isSubtype(typeOf(this), df_d_rt_pkg_c_Collision_Part$1())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method distinctClassNames(nested: Ref, underscore: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(nested), df_d_rt_pkg_c_Collision_Part$0())
+  requires isSubtype(typeOf(underscore), df_d_rt_pkg_c_Collision_Part$1())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0) ==
+    (intFromRef(pkg_c_Collision_Part_g_value$0(nested)) ==
+    intFromRef(pkg_c_Collision_Part_g_value$1(underscore)))
+{
+  v_ret_0 := boolToRef(intFromRef(pkg_c_Collision_Part_g_value$0(nested)) ==
+    intFromRef(pkg_c_Collision_Part_g_value$1(underscore)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}

@@ -881,6 +881,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     }
 
     @Test
+    @TestMetadata("guarded_unfolding_repro.kt")
+    public void testGuarded_unfolding_repro() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/guarded_unfolding_repro.kt");
+    }
+
+    @Test
     @TestMetadata("havoc.kt")
     public void testHavoc() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/havoc.kt");
@@ -950,6 +956,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
     @TestMetadata("multiple_receivers.kt")
     public void testMultiple_receivers() {
       runTest("formver.compiler-plugin/testData/diagnostics/verification/multiple_receivers.kt");
+    }
+
+    @Test
+    @TestMetadata("nested_name_collision.kt")
+    public void testNested_name_collision() {
+      runTest("formver.compiler-plugin/testData/diagnostics/verification/nested_name_collision.kt");
     }
 
     @Test

@@ -13,8 +13,11 @@ dependencies {
     // TODO: figure out how to avoid this dependency
     compileOnly(libs.viper.silicon)
 
+    testImplementation(project(":formver.compiler-plugin:viper"))
+    testImplementation(kotlin("compiler"))
     testImplementation(kotlin("test"))
     testImplementation(libs.jqwik)
+    testRuntimeOnly(project(":formver.common"))
     testRuntimeOnly(libs.junit.platform.launcher)
 }
 

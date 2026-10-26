@@ -1,0 +1,72 @@
+/guarded_unfolding_repro.kt: info: Generated Viper text for GuardedCell:
+field bf_value: Ref
+
+method con(par_value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_value), intType())
+  ensures isSubtype(typeOf(v_ret_0), GuardedCell())
+  ensures isSubtype(typeOf(v_ret_0), GuardedCell()) &&
+    acc(v_ret_0.bf_value, write) &&
+    isSubtype(typeOf(v_ret_0.bf_value), intType())
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+  ensures intFromRef(v_ret_0.bf_value) == intFromRef(par_value)
+{
+  v_ret_0 := new(bf_value)
+  inhale typeOf(v_ret_0) == GuardedCell()
+  v_ret_0.bf_value := par_value
+  fold acc(GuardedCell_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(GuardedCell_unique(v_ret_0), write)
+}
+
+/guarded_unfolding_repro.kt: info: Generated Viper text for guardedObservation:
+field value: Ref
+
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+method guardedObservation(enabled: Ref, cell: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(enabled), boolType())
+  requires isSubtype(typeOf(cell), nullable(GuardedCell()))
+  requires cell != nullValue() ==> acc(GuardedCell_unique(cell), write)
+  requires boolFromRef(enabled) == !(cell == nullValue())
+  requires (unfolding acc(GuardedCell_unique(nonNull(cell)), write) in
+      !boolFromRef(enabled) || intFromRef(nonNull(cell).value) >= 0)
+  ensures cell != nullValue() ==> acc(GuardedCell_unique(cell), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/guarded_unfolding_repro.kt: info: Generated Viper text for absentCell:
+field value: Ref
+
+function nonNull(castValue: Ref): Ref
+  requires castValue != nullValue()
+  ensures result == castValue
+{
+  castValue
+}
+
+method absentCell() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  anon := guardedObservation(boolToRef(false), nullValue())
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method guardedObservation(enabled: Ref, cell: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(enabled), boolType())
+  requires isSubtype(typeOf(cell), nullable(GuardedCell()))
+  requires cell != nullValue() ==> acc(GuardedCell_unique(cell), write)
+  requires boolFromRef(enabled) == !(cell == nullValue())
+  requires (unfolding acc(GuardedCell_unique(nonNull(cell)), write) in
+      !boolFromRef(enabled) || intFromRef(nonNull(cell).value) >= 0)
+  ensures cell != nullValue() ==> acc(GuardedCell_unique(cell), write)
+  ensures isSubtype(typeOf(ret_1), unitType())
