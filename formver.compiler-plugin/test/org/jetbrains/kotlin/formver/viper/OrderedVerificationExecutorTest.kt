@@ -1,10 +1,15 @@
 package org.jetbrains.kotlin.formver.viper
 
+import java.util.concurrent.CancellationException
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CyclicBarrier
+import java.util.concurrent.FutureTask
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 
 class OrderedVerificationExecutorTest {
     @Test
@@ -73,10 +78,83 @@ class OrderedVerificationExecutorTest {
     }
 
     @Test
-    fun `worker exceptions propagate to the caller`() {
+    fun `closing cancels queued jobs and wakes their caller`() {
+        val submitted = CountDownLatch(1)
+        val started = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val stopped = CountDownLatch(1)
+        val calls = AtomicInteger()
+        val executor = OrderedVerificationExecutor(1)
+        val close = FutureTask {
+            submitted.await()
+            started.await()
+            executor.close()
+        }
+        val closer = Thread(close).apply { start() }
+        try {
+            assertFailsWith<CancellationException> {
+                executor.map(notifyingList(listOf(1, 2), submitted)) {
+                    calls.incrementAndGet()
+                    started.countDown()
+                    try {
+                        release.await()
+                    } catch (_: InterruptedException) {
+                        // A worker can complete normally after shutdown interrupts it.
+                    } finally {
+                        stopped.countDown()
+                    }
+                }
+            }
+            close.get()
+            stopped.await()
+            assertEquals(1, calls.get())
+            assertFailsWith<RejectedExecutionException> { executor.map(listOf(3)) { it } }
+        } finally {
+            submitted.countDown()
+            started.countDown()
+            release.countDown()
+            executor.close()
+            closer.join()
+        }
+    }
+
+    /** Signals after the caller has submitted every element, while a worker can still be blocked. */
+    private fun <T> notifyingList(values: List<T>, exhausted: CountDownLatch): List<T> = object : List<T> by values {
+        override fun iterator(): Iterator<T> {
+            val delegate = values.iterator()
+            return object : Iterator<T> by delegate {
+                override fun hasNext(): Boolean = delegate.hasNext().also { if (!it) exhausted.countDown() }
+            }
+        }
+    }
+
+    @Test
+    fun `a later worker failure interrupts an earlier blocked job and propagates to the caller`() {
+        val started = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val stopped = CountDownLatch(1)
+        val failure = IllegalArgumentException("second job failed")
         OrderedVerificationExecutor(2).use { executor ->
-            assertFailsWith<IllegalArgumentException> {
-                executor.map(listOf(1)) { throw IllegalArgumentException() }
+            try {
+                val thrown = assertFailsWith<IllegalArgumentException> {
+                    executor.map(listOf(1, 2)) { input ->
+                        if (input == 1) {
+                            started.countDown()
+                            try {
+                                release.await()
+                            } finally {
+                                stopped.countDown()
+                            }
+                        } else {
+                            started.await()
+                            throw failure
+                        }
+                    }
+                }
+                assertSame(failure, thrown)
+                stopped.await()
+            } finally {
+                release.countDown()
             }
         }
     }

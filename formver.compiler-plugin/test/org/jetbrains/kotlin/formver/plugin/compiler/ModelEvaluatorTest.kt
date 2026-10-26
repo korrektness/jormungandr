@@ -85,6 +85,62 @@ class ModelEvaluatorTest {
     }
 
     @Test
+    fun `a result projection does not establish reference identity`() {
+        val evaluator = evaluator(7)
+        fun difference(a: Long, b: Long) = FuncApp("minusInts", seqOf(toRef(literal(a)), toRef(literal(b))), pos, info, ref, trafos)
+        val first = difference(7, 3)
+        val second = difference(8, 4)
+        assertEquals(ModelValue.Bool(true), evaluator.evaluate(EqCmp(fromRef(first), fromRef(second), pos, info, trafos)))
+        // The left inverse axiom permits multiple references with the same decoded integer.
+        assertNull(evaluator.evaluate(EqCmp(first, second, pos, info, trafos)))
+        assertNull(evaluator.evaluate(EqCmp(first, toRef(literal(4)), pos, info, trafos)))
+    }
+
+    private fun recursiveEvaluator(branching: Boolean): ModelEvaluator {
+        val n = variable("n", int)
+        val next = FuncApp("count", seqOf(Sub(n, literal(1), pos, info, trafos)), pos, info, int, trafos)
+        val body = CondExp(
+            EqCmp(n, literal(0), pos, info, trafos), literal(1),
+            if (branching) Add(next, next, pos, info, trafos) else next, pos, info, trafos,
+        )
+        val function = Function("count", seqOf(LocalVarDecl("n", int, pos, info, trafos)), int,
+            emptySeq(), emptySeq(), Option.apply<Exp>(body), pos, info, trafos)
+        val recursiveProgram = Program(emptySeq(), emptySeq(), seqOf(function), emptySeq(), emptySeq(), emptySeq(), pos, info, trafos)
+        return ModelEvaluator(Model.apply(scalaMap()), emptyMap(), recursiveProgram)
+    }
+
+    private fun count(n: Long) = FuncApp("count", seqOf(literal(n)), pos, info, int, trafos)
+
+    @Test
+    fun `recursive evaluation is depth bounded and the budget resets for each check`() {
+        val evaluator = recursiveEvaluator(branching = false)
+        // Negative arguments recurse indefinitely with distinct argument values.
+        assertNull(evaluator.evaluate(count(-1)))
+        assertEquals(ModelValue.Integer(1.toBigInteger()), evaluator.evaluate(count(5)))
+    }
+
+    @Test
+    fun `branching evaluation is work bounded even at shallow depth`() {
+        val evaluator = recursiveEvaluator(branching = true)
+        assertNull(evaluator.evaluate(count(20)))
+        assertEquals(ModelValue.Integer(32.toBigInteger()), evaluator.evaluate(count(5)))
+    }
+
+    @Test
+    fun `arithmetic growth is bounded independently of expression depth`() {
+        val x = variable("x", int)
+        val square = Function("square", seqOf(LocalVarDecl("x", int, pos, info, trafos)), int,
+            emptySeq(), emptySeq(), Option.apply<Exp>(Mul(x, x, pos, info, trafos)), pos, info, trafos)
+        val squareProgram = Program(emptySeq(), emptySeq(), seqOf(square), emptySeq(), emptySeq(), emptySeq(), pos, info, trafos)
+        val evaluator = ModelEvaluator(Model.apply(scalaMap()), emptyMap(), squareProgram)
+        fun squares(count: Int): Exp = (0 until count).fold(literal(2) as Exp) { value, _ ->
+            FuncApp("square", seqOf(value), pos, info, int, trafos)
+        }
+        assertNull(evaluator.evaluate(squares(20)))
+        assertEquals(ModelValue.Integer(4294967296L.toBigInteger()), evaluator.evaluate(squares(5)))
+    }
+
+    @Test
     fun `division and modulo leave a nonnegative remainder`() {
         val evaluator = evaluator(0)
         assertEquals(ModelValue.Integer((-4).toBigInteger()), evaluator.evaluate(Div(literal(-7), literal(2), pos, info, trafos)))

@@ -167,16 +167,18 @@ class SiliconFrontend(
         /**
          * Returns the absolute path of the Z3 binary named by the environment, or throws [VerifierUnavailableException].
          */
-        fun locateZ3(): String = resolveZ3Exe(System.getenv("Z3_EXE"), System.getenv("PATH"))
+        fun locateZ3(): String = locateZ3(System.getenv("Z3_EXE"), System.getenv("PATH"))
 
         /**
          * Returns the absolute path of the Z3 binary. Silicon takes `Z3_EXE` as a literal file path, so a bare
          * command name (or the default `z3` when `Z3_EXE` is unset) is looked up on [path] here.
          */
-        private fun resolveZ3Exe(z3Exe: String?, path: String?): String {
+        fun locateZ3(z3Exe: String?, path: String?): String {
             val name = z3Exe?.takeIf { it.isNotEmpty() } ?: defaultZ3Name()
             if (File(name).isAbsolute) {
-                if (!File(name).isFile) throw VerifierUnavailableException("Z3_EXE is set to '$name', which is not a file.")
+                val file = File(name)
+                if (!file.isFile) throw VerifierUnavailableException("Z3_EXE is set to '$name', which is not a file.")
+                if (!file.canExecute()) throw VerifierUnavailableException("Z3_EXE is set to '$name', which is not executable.")
                 return name
             }
             if (File(name).parent != null) throw VerifierUnavailableException("Z3_EXE is the relative path '$name'.")
