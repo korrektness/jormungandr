@@ -67,7 +67,7 @@ fun `pass global function as unified local function argument`(
 ) {
     val h = if (false) { f } else { g }
 
-    h({x: Any -> Unit})
+    h(<!LOCALITY_CONTRACT_MISMATCH!>{x: Any -> Unit}<!>)
 }
 
 fun `pass global function as unified global function argument`(
@@ -82,7 +82,7 @@ fun `pass global function as unified global function argument`(
 fun `pass global nested function as local higher-order function argument`(
     f: (((@Borrowed Any) -> Unit) -> Unit) -> Unit
 ) {
-    f(<!LOCALITY_CONTRACT_MISMATCH!>fun(g: (Any) -> Unit) { g(Any()) }<!>)
+    f(fun(g: (Any) -> Unit) { g(Any()) })
 }
 
 fun `pass global nested function as unified local higher-order function argument`(
@@ -107,11 +107,11 @@ fun `explicitly invoke unified local-function argument with global function`(
 ) {
     val h = if (false) { f } else { g }
 
-    h.invoke({x: Any -> Unit})
+    h.invoke(<!LOCALITY_CONTRACT_MISMATCH!>{x: Any -> Unit}<!>)
 }
 
 fun `explicitly invoke local higher-order function argument with global nested function`(
     f: (((@Borrowed Any) -> Unit) -> Unit) -> Unit
 ) {
-    f.invoke(<!LOCALITY_CONTRACT_MISMATCH!>fun(g: (Any) -> Unit) { g(Any()) }<!>)
+    f.invoke(fun(g: (Any) -> Unit) { g(Any()) })
 }

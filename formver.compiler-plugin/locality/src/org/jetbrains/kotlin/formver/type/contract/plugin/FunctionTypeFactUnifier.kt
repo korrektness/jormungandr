@@ -12,28 +12,26 @@ import org.jetbrains.kotlin.formver.type.plugin.TypeFactUnifier
  * Implementation of a [TypeFactUnifier] for a nullable [FunctionTypeFact].
  *
  * @param TypeFact the type-fact class of the elements of the contract.
- * @param typeIntersector the type intersector to use for intersecting the input types of the elements.
+ * @param typeIntersector intersects parameter facts when joining contracts.
+ * @param typeUnifier joins parameter facts when intersecting nested input contracts.
  *
- * If both contracts are non-null, this unifier intersects the type-facts of the parameters between the unified
- * contracts, while also joining the type-fact contract of the results.
- *
- * If contracts have mismatched arities, the resulting contract will not specify parameter type-facts, but only the
- * result type-fact. For example:
- *
- * c1 = (t1, t2, t3) -> (t4)
- * c2 = (d1, d2) -> (d3)
- * c1.join(c2) = (t1.meet(d1), t2.meet(d2)) -> (t4.join(d3))
- *
- * This is consistent with the behavior of Kotlin's function-type unification.
- *
- * `val f: Function<Char> = if (false) { x: Int -> 'a' } else { x: Int, y: Int -> 'b'}`
+ * Joining contracts intersects their parameter facts and nested parameter contracts, and joins result contracts.
+ * Intersecting contracts reverses these operations recursively. A null contract carries no function structure.
+ * Mismatched arities produce an empty parameter list and combine only the result contracts.
  */
 class FunctionTypeFactUnifier<TypeFact>(
     private val typeIntersector: TypeFactIntersector<TypeFact>,
+    private val typeUnifier: TypeFactUnifier<TypeFact>,
 ) : TypeFactUnifier<FunctionTypeFact<TypeFact>?> {
     override fun join(
         left: FunctionTypeFact<TypeFact>?,
         right: FunctionTypeFact<TypeFact>?
+    ): FunctionTypeFact<TypeFact>? = combine(left, right, intersect = false)
+
+    private fun combine(
+        left: FunctionTypeFact<TypeFact>?,
+        right: FunctionTypeFact<TypeFact>?,
+        intersect: Boolean,
     ): FunctionTypeFact<TypeFact>? =
         when {
             left == null -> right
@@ -44,12 +42,13 @@ class FunctionTypeFactUnifier<TypeFact>(
                 } else {
                     left.parameterTypeFacts.zip(right.parameterTypeFacts).map { (leftElement, rightElement) ->
                         FunctionTypeFact.ParameterTypeFact(
-                            typeIntersector.meet(leftElement.typeFact, rightElement.typeFact),
-                            join(leftElement.functionTypeFact, rightElement.functionTypeFact)
+                            if (intersect) typeUnifier.join(leftElement.typeFact, rightElement.typeFact)
+                            else typeIntersector.meet(leftElement.typeFact, rightElement.typeFact),
+                            combine(leftElement.functionTypeFact, rightElement.functionTypeFact, !intersect)
                         )
                     }
                 },
-                join(left.resultFunctionTypeFact, right.resultFunctionTypeFact)
+                combine(left.resultFunctionTypeFact, right.resultFunctionTypeFact, intersect)
             )
         }
 }

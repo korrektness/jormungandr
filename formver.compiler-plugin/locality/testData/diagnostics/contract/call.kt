@@ -69,3 +69,17 @@ fun `pass global receiver function as local receiver function`() {
 fun `pass global function as local function receiver`() {
     <!LOCALITY_CONTRACT_MISMATCH!>produceGlobalFunction()<!>.requireLocalFunctionReceiver()
 }
+
+fun consumeBorrowingCallback(callback: (@Borrowed Any) -> Unit) {}
+fun consumeSharingCallback(callback: (Any) -> Unit) {}
+
+fun `nested callback parameters are contravariant`() {
+    val unsafe: ((Any) -> Unit) -> Unit = <!LOCALITY_CONTRACT_MISMATCH!>::consumeBorrowingCallback<!>
+    val safe: ((@Borrowed Any) -> Unit) -> Unit = ::consumeSharingCallback
+}
+
+fun `joining consumers intersects their callback contracts`(flag: Boolean) {
+    val consumer = if (flag) ::consumeBorrowingCallback else ::consumeSharingCallback
+    val unsafe: ((Any) -> Unit) -> Unit = <!LOCALITY_CONTRACT_MISMATCH!>consumer<!>
+    val safe: ((@Borrowed Any) -> Unit) -> Unit = consumer
+}

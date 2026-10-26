@@ -17,12 +17,11 @@ import org.jetbrains.kotlin.formver.type.plugin.TypeFactJudgment
  * If the required and actual contracts are non-null, and have the same arity, we pairwise check the type-facts of the
  * parameters:
  * - The actual parameter [TypeFact] satisfies the required one according to [typeFactJudgment].
- * - The nested required [FunctionTypeFact] recursively satisfies its actual counterpart through this same judgment.
- * Finally, this judgment checks that the actual result [TypeFact] satisfies the required one according to
- * [typeFactJudgment].
+ * - When the required parameter has a nested contract, its actual nested contract is checked contravariantly.
+ *   A required parameter without function structure imposes no nested requirement.
+ * Finally, this judgment checks the result function type-facts covariantly.
  *
- * Note that this function type-fact judgment is contravariant with respect to the parameter type-facts and covariant
- * with respect to the parameter and result function type-facts. For example:
+ * Parameter type-facts and nested parameter contracts are contravariant; result contracts are covariant. For example:
  *
  * required = ((global) -> ()) -> () // Function taking a function taking a global
  * actual = ((local) -> ()) -> () // Function taking a function taking a local
@@ -53,10 +52,10 @@ class FunctionTypeFactJudgment<TypeFact>(
                     typeFactJudgment.satisfies(
                         actualElement.typeFact,
                         requiredElement.typeFact
-                    ) && satisfies(
-                        requiredElement.functionTypeFact,
-                        actualElement.functionTypeFact
-                    )
+                    ) && (requiredElement.functionTypeFact == null || satisfies(
+                        actualElement.functionTypeFact,
+                        requiredElement.functionTypeFact
+                    ))
                 } && satisfies(requiredTypeFact.resultFunctionTypeFact, actualTypeFact.resultFunctionTypeFact)
         }
 }

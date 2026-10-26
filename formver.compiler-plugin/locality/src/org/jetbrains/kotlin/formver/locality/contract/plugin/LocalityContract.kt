@@ -8,12 +8,13 @@ package org.jetbrains.kotlin.formver.locality.contract.plugin
 import org.jetbrains.kotlin.formver.locality.plugin.Locality
 import org.jetbrains.kotlin.formver.locality.plugin.LocalityIntersector
 import org.jetbrains.kotlin.formver.locality.plugin.LocalityJudgment
+import org.jetbrains.kotlin.formver.locality.plugin.LocalityUnifier
 import org.jetbrains.kotlin.formver.type.contract.plugin.FunctionTypeFactJudgment
 import org.jetbrains.kotlin.formver.type.contract.plugin.FunctionTypeFactUnifier
 import org.jetbrains.kotlin.formver.type.contract.plugin.FunctionTypeFact
 
 typealias LocalityContract = FunctionTypeFact<Locality>
 
-val LocalityContractUnifier = FunctionTypeFactUnifier(LocalityIntersector)
+val LocalityContractUnifier = FunctionTypeFactUnifier(LocalityIntersector, LocalityUnifier)
 
 val LocalityContractJudgment = FunctionTypeFactJudgment(LocalityJudgment)
