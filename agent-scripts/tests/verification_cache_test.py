@@ -24,7 +24,19 @@ class VerificationCacheTest(unittest.TestCase):
             scripts = root / 'agent-scripts'
             shutil.copytree(SCRIPTS, scripts)
             gradle = root / 'gradlew'
-            gradle.write_text('#!/bin/sh\nprintf "%s\\n" "$@" >> args\nprintf "timings=%s\\n" "$SNAKT_VERIFICATION_TIMINGS" >> args\n')
+            gradle.write_text('''#!/bin/sh
+printf "%s\\n" "$@" >> args
+printf "timings=%s\\n" "$SNAKT_VERIFICATION_TIMINGS" >> args
+case "$1" in
+    :formver.compiler-plugin:locality:*) module=formver.compiler-plugin/locality ;;
+    *) module=formver.compiler-plugin ;;
+esac
+results="$module/build/test-results/test"
+mkdir -p "$results"
+find "$TMPDIR" -maxdepth 1 -type f -name 'tmp.*' -exec touch -d @1 {} +
+printf '<testsuite><testcase classname="Fixture" name="passes"/></testsuite>' > "$results/TEST-Fixture.xml"
+touch -d @2 "$results/TEST-Fixture.xml"
+''')
             gradle.chmod(0o755)
             temporary_outputs = root / 'tmp'
             temporary_outputs.mkdir()

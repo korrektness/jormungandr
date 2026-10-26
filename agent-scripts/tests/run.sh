@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Exercises the JUnit XML parsers against the fixture XML in fixtures/, the way
-# lib.sh invokes it: python3 <script> <xml files...>. Needs no build, so
-# pre-commit runs it as a hook; also runnable by hand.
+# Exercises the script helpers and test driver without a build or verifier.
+# The XML parser fixtures use the same invocation as lib.sh.
+# Pre-commit runs this as a hook; it is also runnable by hand.
 set -euo pipefail
 
 TESTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -55,7 +55,7 @@ assert_eq "first_failure: passing run reports nothing" \
 assert_eq "first_failure: <failure> is reported" \
     "$(printf '%s\n%s\n%s' \
         "golden" \
-        "verification.BasicTest.testAssign_local: expected: <1> but was: <2>" \
+        "verification.BasicTest.testAssign_local: Actual data differs from file content: assign_local.kt" \
         "    at verification.BasicTest.testAssign_local(BasicTest.java:10)")" 0 \
     -- python3 "$LIB_DIR/junit_first_failure.py" "$FIXTURES/failure.xml"
 
@@ -69,13 +69,17 @@ assert_eq "first_failure: <error> is reported" \
 assert_eq "first_failure: malformed XML is skipped, real failure still found" \
     "$(printf '%s\n%s\n%s' \
         "golden" \
-        "verification.BasicTest.testAssign_local: expected: <1> but was: <2>" \
+        "verification.BasicTest.testAssign_local: Actual data differs from file content: assign_local.kt" \
         "    at verification.BasicTest.testAssign_local(BasicTest.java:10)")" 0 \
     -- python3 "$LIB_DIR/junit_first_failure.py" "$FIXTURES/malformed.xml" "$FIXTURES/failure.xml"
 
 assert_eq "first_failure: only malformed XML reports nothing" \
     "" 1 \
     -- python3 "$LIB_DIR/junit_first_failure.py" "$FIXTURES/malformed.xml"
+
+assert_eq "first_failure: a generic assertion is not a golden mismatch" \
+    "other" 0 \
+    -- sh -c 'python3 "$1" "$2" | head -1' sh "$LIB_DIR/junit_first_failure.py" "$FIXTURES/generic-assertions.xml"
 
 # counts are "total assertion_failed other_failed skipped unreadable".
 assert_eq "counts: a passing run" \
@@ -90,6 +94,10 @@ assert_eq "counts: several golden mismatches in one test are one mismatch, under
     "3 2 1 0 0" 0 \
     -- python3 "$LIB_DIR/junit_counts.py" "$FIXTURES/multi-failure.xml"
 
+assert_eq "counts: generic assertions and mixed aggregates are ordinary failures" \
+    "3 0 3 0 0" 0 \
+    -- python3 "$LIB_DIR/junit_counts.py" "$FIXTURES/generic-assertions.xml"
+
 assert_eq "counts: a skipped test is neither passed nor failed" \
     "2 0 0 1 0" 0 \
     -- python3 "$LIB_DIR/junit_counts.py" "$FIXTURES/skipped.xml"
@@ -101,6 +109,10 @@ assert_eq "counts: malformed XML is reported, not silently dropped" \
 assert_eq "other_failures: golden mismatches are left out, other failures listed" \
     "verification.BasicTest.testNon_local_returns: boom" 0 \
     -- python3 "$LIB_DIR/junit_other_failures.py" "$FIXTURES/failure.xml" "$FIXTURES/error.xml"
+
+assert_eq "other_failures: ordinary assertions remain visible" \
+    "AssertionTest.ordinary: expected: <1> but was: <2>" 0 \
+    -- sh -c 'python3 "$1" "$2" | head -1' sh "$LIB_DIR/junit_other_failures.py" "$FIXTURES/generic-assertions.xml"
 
 assert_eq "other_failures: a run with only golden mismatches reports nothing" \
     "" 1 \
@@ -148,4 +160,5 @@ if [[ "$failures" -gt 0 ]]; then
 fi
 python3 "$TESTS_DIR/verification_cache_test.py"
 python3 "$TESTS_DIR/gate_measure_test.py"
+python3 "$TESTS_DIR/test_driver_test.py"
 echo "all assertions passed"

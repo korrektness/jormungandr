@@ -231,7 +231,8 @@ tally() {
     counts="$(count_xml_results "$2" "$MARKER")" && status=0 || status=$?
     case "$status" in
         1) no_results+=("$module"); return 1 ;;
-        2) unreadable_results+=("$module"); return 1 ;;
+        0) ;;
+        *) unreadable_results+=("$module"); return 1 ;;
     esac
     read -r ran rewritten failed skipped unreadable <<<"$counts"
     total_tests=$((total_tests + ran))
@@ -239,6 +240,15 @@ tally() {
     total_failed=$((total_failed + failed))
     total_skipped=$((total_skipped + skipped))
     total_unreadable=$((total_unreadable + unreadable))
+    MODULE_REWRITTEN="$rewritten"
+    MODULE_FAILED="$failed"
+    if [[ "$unreadable" -gt 0 ]]; then
+        return 1
+    fi
+    if [[ "$ran" -eq 0 ]]; then
+        no_results+=("$module")
+        return 1
+    fi
 }
 
 # Gradle's closing advice is about Gradle, not about the failure.
@@ -246,27 +256,38 @@ print_task_output() {
     echo "$TASK_OUT" | grep -v '^\* Try:\|^> Run with \|^> Get more help ' || true
 }
 
-# In --update-goldens mode a matching test is expected to fail: assertEqualsToFile
-# writes the golden and then fails. Only "no tests found" means anything there,
-# and a failed task that left no results, which is a build failure.
+# A matching module needs readable, nonempty results as well as a successful
+# task. In update mode golden mismatches can account for a test-task failure;
+# missing results and runner infrastructure failures cannot.
 run_module() {
     local module="$1" task="$2" runner="$3" results_dir="$4" on_failure="$5"
     run_task "$task" "$runner"
-    if [[ -n "$PATTERN" && "$TASK_OUT" == *"No tests found for given includes"* ]]; then
-        return
+    if [[ -n "$PATTERN" && "$TASK_STATUS" -eq 1 && "$TASK_OUT" == *"No tests found for given includes"* ]]; then
+        # Test output can contain this phrase too. A filter miss has no cases.
+        local counts count_status
+        counts="$(count_xml_results "$results_dir" "$MARKER")" && count_status=0 || count_status=$?
+        if [[ "$count_status" -eq 1 || ( "$count_status" -eq 0 && "$counts" == "0 0 0 0 0" ) ]]; then
+            return
+        fi
     fi
     matched=1
     local tallied=0
     tally "$module" "$results_dir" || tallied=1
+    if [[ "$tallied" -ne 0 ]]; then
+        overall_status=1
+        print_task_output
+        return
+    fi
     if [[ "$MODE" == update ]]; then
-        if [[ "$TASK_STATUS" -ne 0 && "$tallied" -eq 1 ]]; then
+        if [[ "$MODULE_FAILED" -gt 0 || "$TASK_STATUS" -gt 1 ||
+              ( "$TASK_STATUS" -ne 0 && "$MODULE_REWRITTEN" -eq 0 ) ]]; then
             overall_status=1
-            echo
             print_task_output
+            "$on_failure"
         fi
         return
     fi
-    if [[ "$TASK_STATUS" -eq 0 ]]; then
+    if [[ "$TASK_STATUS" -eq 0 && "$MODULE_REWRITTEN" -eq 0 && "$MODULE_FAILED" -eq 0 ]]; then
         return
     fi
     overall_status=1
@@ -327,7 +348,7 @@ summary() {
     fi
     local module
     for module in "${no_results[@]+"${no_results[@]}"}"; do
-        echo "The $module module produced no test results; see its output above."
+        echo "The $module module produced no test cases in fresh results."
     done
     for module in "${unreadable_results[@]+"${unreadable_results[@]}"}"; do
         echo "The $module module's test results could not be read; it is not counted above."
@@ -359,7 +380,7 @@ if [[ "$MODE" == vacuity ]]; then
     fi
 fi
 
-if [[ "$MODE" != update || "$overall_status" -ne 0 ]]; then
+if [[ "$MODE" != update ]]; then
     exit "$overall_status"
 fi
 
@@ -472,3 +493,4 @@ if [[ -n "$UNWRITTEN" ]]; then
     echo "$UNWRITTEN"
     exit 1
 fi
+exit "$overall_status"

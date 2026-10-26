@@ -10,6 +10,18 @@ def is_assertion_type(failure_type):
     return failure_type in ASSERTION_TYPES or failure_type.endswith(ASSERTION_SUFFIX)
 
 
+def is_golden_assertion(failure_type, message):
+    if not is_assertion_type(failure_type):
+        return False
+    # Gradle and the runner can include Throwable.toString() in the message.
+    message = message.removeprefix(failure_type + ": ")
+    # Kotlin's file assertions use these messages for a mismatch or a newly
+    # generated file. Unknown assertion messages fail closed as ordinary failures.
+    prefixes = ("Actual data differs from file content: ",
+                "Expected data file did not exist. Generating: ")
+    return any(message.startswith(prefix) and message[len(prefix):].strip() for prefix in prefixes)
+
+
 def is_golden_mismatch(node):
     """Whether a <failure> or <error> node is golden-file mismatches only.
 
@@ -19,12 +31,15 @@ def is_golden_mismatch(node):
     MultipleFailuresError from the persistent test runner.
     """
     failure_type = node.get("type", "")
-    if is_assertion_type(failure_type):
+    if is_golden_assertion(failure_type, node.get("message") or ""):
         return True
     if not failure_type.endswith(MULTIPLE_FAILURE_SUFFIXES):
         return False
     causes = [line.strip() for line in (node.get("message") or "").splitlines()[1:] if line.strip()]
-    return bool(causes) and all(is_assertion_type(cause.split(":", 1)[0]) for cause in causes)
+    return bool(causes) and all(
+        is_golden_assertion(failure_type, message.lstrip())
+        for failure_type, _, message in (cause.partition(":") for cause in causes)
+    )
 
 
 def main(paths):
