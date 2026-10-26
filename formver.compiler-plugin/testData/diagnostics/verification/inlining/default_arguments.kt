@@ -99,3 +99,33 @@ fun <!VIPER_TEXT!>defaultReadsUniqueField<!>(c: @Unique Counter): Int {
     c.x = 4
     return counterPlus(c)
 }
+
+fun <!VIPER_TEXT!>namedArgumentCapturesMutableLocal<!>(): Int {
+    postconditions<Int> { r -> r == 3 }
+    var x = 1
+    return difference(b = x, a = run { x = 9; 4 })
+}
+
+@NeverConvert
+inline fun <T> retained(n: T, unused: Int = 0, mutate: () -> Unit): T {
+    mutate()
+    return n
+}
+
+fun <!VIPER_TEXT!>inlineArgumentCapturesMutableLocal<!>(): Int {
+    postconditions<Int> { r -> r == 1 }
+    var x = 1
+    return retained(x, 0) { x = 2 }
+}
+
+fun <!VIPER_TEXT!>defaultCallCapturesMutableLocal<!>(): Int {
+    postconditions<Int> { r -> r == 1 }
+    var x = 1
+    return retained(x) { x = 2 }
+}
+
+fun <!VIPER_TEXT!>inlineArgumentCapturesNullableLocal<!>(): Int? {
+    postconditions<Int?> { r -> r == 1 }
+    var x: Int? = 1
+    return retained(x, 0) { x = null }
+}

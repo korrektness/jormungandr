@@ -317,17 +317,6 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         data: StmtConversionContext,
     ): ExpEmbedding {
 
-        val dispatchReceiver: FirExpression =
-            comparisonExpression.compareToCall.dispatchReceiver ?: throw SnaktInternalException(
-                comparisonExpression.compareToCall.source, "found 'compareTo' call with null receiver"
-            )
-        val arg =
-            comparisonExpression.compareToCall.argumentList.arguments.firstOrNull() ?: throw SnaktInternalException(
-                comparisonExpression.compareToCall.source, "found `compareTo` call with no argument at position 0"
-            )
-        val left = data.convert(dispatchReceiver)
-        val right = data.convert(arg)
-
         val functionSymbol = comparisonExpression.compareToCall.toResolvedCallableSymbol()
 
         val functionType = data.embedFunctionPretype(functionSymbol as FirFunctionSymbol)
@@ -340,6 +329,12 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 return IntComparisonExpEmbeddingsTemplate.retrieve(comparisonExpression.operation)(result, IntLit(0))
             }
         }
+        val arguments = comparisonExpression.compareToCall.functionCallArguments
+        if (arguments.size != 2) {
+            throw SnaktInternalException(comparisonExpression.source, "Comparison has ${arguments.size} operands.")
+        }
+        val left = data.convert(arguments[0])
+        val right = data.convert(arguments[1])
         return comparisonTemplate.retrieve(comparisonExpression.operation)(left, right)
     }
 

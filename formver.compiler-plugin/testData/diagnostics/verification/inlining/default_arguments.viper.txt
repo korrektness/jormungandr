@@ -476,3 +476,141 @@ method defaultReadsUniqueField(c: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/default_arguments.kt: info: Generated Viper text for namedArgumentCapturesMutableLocal:
+method difference(a: Ref, b: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires -1000 <= intFromRef(a) && intFromRef(a) <= 1000 &&
+    -1000 <= intFromRef(b) &&
+    intFromRef(b) <= 1000
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) ==
+    (let anon_builtin ==
+      (minusInts(a, b)) in
+      intFromRef(a) - intFromRef(b))
+
+
+method namedArgumentCapturesMutableLocal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 3
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var v_ret_4: Ref
+  x := intToRef(1)
+  anon_0 := x
+  x := intToRef(9)
+  v_ret_4 := intToRef(4)
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon_1 := v_ret_4
+  v_ret_0 := difference(anon_1, anon_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/default_arguments.kt: info: Generated Viper text for inlineArgumentCapturesMutableLocal:
+method inlineArgumentCapturesMutableLocal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var x: Ref
+  var anon_2: Ref
+  var v_ret_4: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var v_ret_5: Ref
+  x := intToRef(1)
+  inhale isSubtype(typeOf(x), nullable(anyType()))
+  anon_0 := x
+  anon_1 := intToRef(0)
+  x := intToRef(2)
+  label lbl_ret_5
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+  v_ret_4 := anon_0
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon_2 := v_ret_4
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method retained(n: Ref, unused: Ref, mutate: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), nullable(anyType()))
+  requires isSubtype(typeOf(unused), intType())
+  requires isSubtype(typeOf(mutate), functionType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/default_arguments.kt: info: Generated Viper text for defaultCallCapturesMutableLocal:
+method defaultCallCapturesMutableLocal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 1
+{
+  var x: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var v_ret_4: Ref
+  var v_ret_5: Ref
+  x := intToRef(1)
+  inhale isSubtype(typeOf(x), nullable(anyType()))
+  anon_0 := x
+  anon_1 := intToRef(0)
+  x := intToRef(2)
+  label lbl_ret_5
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+  v_ret_4 := anon_0
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon_2 := v_ret_4
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), intType())
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method retained(n: Ref, unused: Ref, mutate: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), nullable(anyType()))
+  requires isSubtype(typeOf(unused), intType())
+  requires isSubtype(typeOf(mutate), functionType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))
+
+
+/default_arguments.kt: info: Generated Viper text for inlineArgumentCapturesNullableLocal:
+method inlineArgumentCapturesNullableLocal() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), nullable(intType()))
+  ensures v_ret_0 == intToRef(1)
+{
+  var x: Ref
+  var anon_2: Ref
+  var v_ret_4: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var v_ret_5: Ref
+  x := intToRef(1)
+  inhale isSubtype(typeOf(x), nullable(anyType()))
+  anon_0 := x
+  anon_1 := intToRef(0)
+  x := nullValue()
+  label lbl_ret_5
+  inhale isSubtype(typeOf(v_ret_5), unitType())
+  v_ret_4 := anon_0
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon_2 := v_ret_4
+  v_ret_0 := anon_2
+  inhale isSubtype(typeOf(v_ret_0), nullable(intType()))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method retained(n: Ref, unused: Ref, mutate: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(n), nullable(anyType()))
+  requires isSubtype(typeOf(unused), intType())
+  requires isSubtype(typeOf(mutate), functionType())
+  ensures isSubtype(typeOf(ret_2), nullable(anyType()))

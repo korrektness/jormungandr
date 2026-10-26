@@ -37,6 +37,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.properties.asPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
+import org.jetbrains.kotlin.formver.core.embeddings.types.injectionOrNull
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
 import org.jetbrains.kotlin.formver.locality.plugin.specifiesOwnedReceiver
 import org.jetbrains.kotlin.formver.common.externalSpecificationSymbol
@@ -382,11 +383,12 @@ fun StmtConversionContext.argumentDeclaration(
                 proven = true
                 access = true
             }
-            // If `argWithInvariants` is `Cast(...(Cast(someVariable))...)` it is fine to use it
-            // since in Viper it will always be translated to `someVariable`.
-            // On other hand, `TypeEmbedding` and invariants in Viper are guaranteed
-            // via previous line.
-            if (argWithInvariants.underlyingVariable != null) null to argWithInvariants
+            // Capture mutable value locals before later arguments or the inlined body can assign them.
+            // Reference locals retain their roots for ownership binding and borrowed-predicate restoration.
+            val variable = argWithInvariants.underlyingVariable
+            val mutableValue = ((variable as? FirVariableEmbedding)?.symbol as? FirPropertySymbol)?.isVar == true &&
+                    variable.type.getNonNullable().injectionOrNull != null
+            if (variable != null && !mutableValue) null to argWithInvariants
             else declareAnonVar(callType, argWithInvariants).let {
                 it to it.variable
             }
@@ -454,7 +456,7 @@ fun StmtConversionContext.insertInlineFunctionCall(
 }
 
 /**
- * The temporary that stores [arg] for a parameter of type [formalType] bound in [mode], when [arg] is not a variable,
+ * The temporary that stores [arg] for a parameter of type [formalType] bound in [mode], when [arg] needs a snapshot,
  * and the expression the inlined body reads for the parameter. A temporary for a parameter that holds its argument
  * takes the argument's predicate, or the predicate of a fresh value. A path is stored at its own type, so that the
  * temporary takes its predicate whole, including what belongs to a subclass of [formalType].

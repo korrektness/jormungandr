@@ -66,3 +66,101 @@ method compareExtremes(a: Ref, b: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }
+
+/compare_to.kt: info: Generated Viper text for compareTo:
+function compareTo(this: Ref, other: Ref): Ref
+  requires isSubtype(typeOf(this), nullable(intType()))
+  requires isSubtype(typeOf(other), nullable(intType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (this == nullValue() ?
+    (other == nullValue() ? intToRef(0) : intToRef(-1)) :
+    (other == nullValue() ? intToRef(1) : compareInts(this, other)))
+}
+
+/compare_to.kt: info: Generated Viper text for nullableExtensionComparison:
+function compareTo(v_this_extension: Ref, other: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), nullable(intType()))
+  requires isSubtype(typeOf(other), nullable(intType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (v_this_extension == nullValue() ?
+    (other == nullValue() ? intToRef(0) : intToRef(-1)) :
+    (other == nullValue() ?
+      intToRef(1) :
+      compareInts(v_this_extension, other)))
+}
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method nullableExtensionComparison(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), nullable(intType()))
+  requires isSubtype(typeOf(b), nullable(intType()))
+  requires a == nullValue()
+  requires b == intToRef(1)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(compareTo(a, b)) < 0
+  assert intFromRef(compareTo(a, b)) <= 0
+  assert intFromRef(compareTo(b, a)) > 0
+  assert intFromRef(compareTo(b, a)) >= 0
+  assert intFromRef(compareTo(a, a)) <= 0
+  assert intFromRef(compareTo(b, b)) >= 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/compare_to.kt: info: Generated Viper text for extensionComparisonEvaluatesArgumentsOnce:
+function compareTo(v_this_extension: Ref, other: Ref): Ref
+  requires isSubtype(typeOf(v_this_extension), nullable(intType()))
+  requires isSubtype(typeOf(other), nullable(intType()))
+  ensures isSubtype(typeOf(result), intType())
+{
+  (v_this_extension == nullValue() ?
+    (other == nullValue() ? intToRef(0) : intToRef(-1)) :
+    (other == nullValue() ?
+      intToRef(1) :
+      compareInts(v_this_extension, other)))
+}
+
+function size(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method extensionComparisonEvaluatesArgumentsOnce() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var count: Ref
+  var less: Ref
+  var anon_8: Ref
+  var v_ret_2: Ref
+  var anon_0: Ref
+  var anon_9: Ref
+  var v_ret_4: Ref
+  count := intToRef(0)
+  count := plusInts(count, intToRef(1))
+  anon_0 := nullValue()
+  if (isSubtype(typeOf(anon_0), nullable(intType()))) {
+    inhale isSubtype(typeOf(anon_0), nullable(intType()))
+    v_ret_2 := anon_0
+  } else {
+    inhale false}
+  goto lbl_ret_2
+  label lbl_ret_2
+  anon_8 := v_ret_2
+  count := plusInts(count, intToRef(1))
+  v_ret_4 := intToRef(1)
+  inhale isSubtype(typeOf(v_ret_4), nullable(intType()))
+  goto lbl_ret_4
+  label lbl_ret_4
+  anon_9 := v_ret_4
+  less := ltInts(compareTo(anon_8, anon_9), intToRef(0))
+  assert boolFromRef(less)
+  assert intFromRef(count) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

@@ -480,7 +480,7 @@ method scopeFunctionsInLoopInvariant(b: Ref, n: Ref) returns (v_ret_0: Ref)
   ensures intFromRef(v_ret_0) == intFromRef(n)
 {
   var i: Ref
-  var anon: Ref
+  var anon_5: Ref
   i := intToRef(0)
   label cont
     invariant isSubtype(typeOf(i), intType())
@@ -490,21 +490,25 @@ method scopeFunctionsInLoopInvariant(b: Ref, n: Ref) returns (v_ret_0: Ref)
     invariant intFromRef(i) >= 0
     invariant intFromRef(g_v(b)) >= 0
     invariant intFromRef(g_v(b)) >= 0
-    invariant (let ret_22 ==
-        (unitValue()) in
-        intFromRef(i)) <=
+    invariant (let anon_1 ==
+        (i) in
+        (let ret_22 ==
+          (unitValue()) in
+          intFromRef(anon_1))) <=
       intFromRef(n)
     invariant intFromRef(g_v((let ret_26 == (unitValue()) in b))) >= 0
-    invariant intFromRef(((intFromRef(i) <= intFromRef(n) ?
-        i :
-        nullValue()) !=
+    invariant intFromRef(((let anon_2 ==
+        (i) in
+        (intFromRef(anon_2) <= intFromRef(n) ? anon_2 : nullValue())) !=
       nullValue() ?
-        (intFromRef(i) <= intFromRef(n) ? i : nullValue()) :
+        (let anon_2 ==
+          (i) in
+          (intFromRef(anon_2) <= intFromRef(n) ? anon_2 : nullValue())) :
         intToRef(0))) ==
       intFromRef(i)
     invariant intFromRef(i) <= intFromRef(n)
-  anon := ltInts(i, n)
-  if (boolFromRef(anon)) {
+  anon_5 := ltInts(i, n)
+  if (boolFromRef(anon_5)) {
     i := plusInts(i, intToRef(1))
     goto cont
   }
@@ -516,11 +520,20 @@ method scopeFunctionsInLoopInvariant(b: Ref, n: Ref) returns (v_ret_0: Ref)
   assert intFromRef(i) >= 0
   assert intFromRef(g_v(b)) >= 0
   assert intFromRef(g_v(b)) >= 0
-  assert (let ret_22 == (unitValue()) in intFromRef(i)) <= intFromRef(n)
+  assert (let anon_1 ==
+      (i) in
+      (let ret_22 ==
+        (unitValue()) in
+        intFromRef(anon_1))) <=
+    intFromRef(n)
   assert intFromRef(g_v((let ret_26 == (unitValue()) in b))) >= 0
-  assert intFromRef(((intFromRef(i) <= intFromRef(n) ? i : nullValue()) !=
+  assert intFromRef(((let anon_2 ==
+      (i) in
+      (intFromRef(anon_2) <= intFromRef(n) ? anon_2 : nullValue())) !=
     nullValue() ?
-      (intFromRef(i) <= intFromRef(n) ? i : nullValue()) :
+      (let anon_2 ==
+        (i) in
+        (intFromRef(anon_2) <= intFromRef(n) ? anon_2 : nullValue())) :
       intToRef(0))) ==
     intFromRef(i)
   assert intFromRef(i) <= intFromRef(n)
