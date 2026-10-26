@@ -3,15 +3,19 @@ package org.jetbrains.kotlin.formver.uniqueness.plugin
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirConstructor
+import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirExpressionChecker
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirStatement
+import org.jetbrains.kotlin.fir.expressions.FirVariableAssignment
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_DUPLICATE_UNIQUE_ARGUMENT
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.INVALID_OVERLAPPING_UNIQUE_ARGUMENTS
 
@@ -149,6 +153,27 @@ val QualifiedAccessArgumentUniquenessCollisionChecker =
         { statement -> statement !is FirFunctionCall }
     )
 
+/** Checks the value passed to a setter against its receivers and context arguments. */
+object SetterArgumentUniquenessCollisionChecker : FirExpressionChecker<FirVariableAssignment>(MppCheckerKind.Common) {
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    override fun check(expression: FirVariableAssignment) {
+        val access = expression.lValue as? FirQualifiedAccessExpression ?: return
+        val property = access.accessorCallProperty(context.session) ?: return
+        val valueUniqueness = property.resolveUniqueness()
+        for ((argument, uniqueness) in QualifiedAccessArgumentUniquenessMapper.mapArgumentTypeFactsOf(access)) {
+            if (valueUniqueness != Uniqueness.Unique && uniqueness != Uniqueness.Unique) continue
+            checkPathCollision(
+                argument.accessedPaths(),
+                if (argument.source?.kind is KtFakeSourceElementKind.ImplicitContextParameterArgument) expression.source
+                else argument.source ?: access.source,
+                expression.rValue.accessedPaths(),
+                expression.rValue.source ?: expression.source,
+                reportLeft = true,
+            )
+        }
+    }
+}
+
 /**
  * Checks that no default value of a parameter of a [FirFunction] collides with another parameter or another default
  * value when at least one of them is unique. A call that evaluates the default passes the object it reads in both
@@ -162,6 +187,11 @@ object DefaultArgumentUniquenessCollisionChecker : FirFunctionChecker(MppChecker
         if (declaration.valueParameters.none { it.defaultValue != null }) return
 
         val operands = buildList {
+            val dispatchClass = declaration.dispatchReceiverType?.toClassSymbol(context.session)
+            val dispatchUniqueness = declaration.symbol.resolveDispatchReceiverUniqueness()
+            if (dispatchClass != null && declaration !is FirConstructor && dispatchUniqueness != Uniqueness.Shared) {
+                add(Operand(listOf(listOf(dispatchClass)), declaration.source, dispatchUniqueness, isDefault = false))
+            }
             declaration.receiverParameter?.let {
                 add(Operand(listOf(listOf(it.symbol)), it.source, it.symbol.resolveUniqueness(), isDefault = false))
             }

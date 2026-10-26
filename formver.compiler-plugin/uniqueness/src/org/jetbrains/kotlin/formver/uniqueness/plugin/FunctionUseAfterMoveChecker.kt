@@ -1,5 +1,7 @@
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
+import org.jetbrains.kotlin.KtFakeSourceElementKind
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -12,6 +14,7 @@ import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.AnonymousFunctionCaptureNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ExitSafeCallNode
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallEnterNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableAssignmentNode
 import org.jetbrains.kotlin.fir.resolve.dfa.controlFlowGraph
@@ -27,6 +30,21 @@ private fun CFGNode<*>.resolveAccess(): FirExpression? =
         is VariableAssignmentNode -> fir.lValue
         else -> null
     }
+
+private data class NodeAccess(val node: CFGNode<*>, val expression: FirExpression, val source: KtSourceElement?)
+
+/** Implicit context arguments have no access node of their own in the CFG. */
+private fun CFGNode<*>.resolveAccesses(): Sequence<NodeAccess> = sequence {
+    val access = resolveAccess()
+    if (access != null) yield(NodeAccess(this@resolveAccesses, access, access.source))
+    val qualified = (if (this@resolveAccesses is FunctionCallEnterNode) fir else access) as? FirQualifiedAccessExpression
+        ?: return@sequence
+    for (argument in qualified.contextArguments) {
+        if (argument.source?.kind is KtFakeSourceElementKind.ImplicitContextParameterArgument) {
+            yield(NodeAccess(this@resolveAccesses, argument, qualified.source))
+        }
+    }
+}
 
 private fun UniquenessState?.isMovedAt(path: Path): Boolean =
     this?.find(path)?.data == Uniqueness.Moved
@@ -53,10 +71,10 @@ object FunctionUseAfterMoveChecker : FirFunctionChecker(MppCheckerKind.Common) {
 
         val accesses = graph.uniquenessAnalysisTargetNodes
             .filterNot { it.isDead }
-            .mapNotNull { node -> node.resolveAccess()?.let { node to it } }
-            .sortedBy { (_, accessExpression) -> accessExpression.source?.startOffset }
+            .flatMap { it.resolveAccesses() }
+            .sortedBy { it.source?.startOffset }
 
-        for ((node, accessExpression) in accesses) {
+        for ((node, accessExpression, source) in accesses) {
             val accessState = accessExpression.resolveAccessState()
             val uniquenessState = uniquenessStateFlows.readInputUniquenessStateOf(node)
 
@@ -65,9 +83,10 @@ object FunctionUseAfterMoveChecker : FirFunctionChecker(MppCheckerKind.Common) {
                     ?: accessedPath.take(1).takeIf { accessExpression.hasImplicitThisReceiver && uniquenessState.isMovedAt(it) }
                     ?: continue
                 val sites = moveSites.readInputMoveSitesOf(node, path)
-                if (node is VariableAssignmentNode && sites.none { it is AnonymousFunctionCaptureNode }) continue
+                if (node is VariableAssignmentNode && accessExpression === node.fir.lValue &&
+                    sites.none { it is AnonymousFunctionCaptureNode }) continue
                 if (reported.add(path to sites)) {
-                    reporter.reportFailure(movedAccessFailure(accessExpression.source, path, sites.mapNotNull { it.fir.source }))
+                    reporter.reportFailure(movedAccessFailure(source, path, sites.mapNotNull { it.fir.source }))
                 }
             }
         }

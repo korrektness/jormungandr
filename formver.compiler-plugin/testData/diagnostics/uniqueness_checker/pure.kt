@@ -5,6 +5,9 @@ import org.jetbrains.kotlin.formver.plugin.Unique
 
 class Node(val value: Int) {
     var next: @Unique Node? = null
+    val longValue: Long = 0L
+    val shortValue: Short = 0
+    val byteValue: Byte = 0
 }
 
 @Pure
@@ -39,3 +42,12 @@ fun describe(n: @Unique Node): String = "node"
 
 @Pure
 fun shareNext(n: Node): Node? = n.next
+
+@Pure
+fun longValue(n: @Unique Node): Long = n.longValue
+
+@Pure
+fun shortValue(n: @Unique Node): Short = n.shortValue
+
+@Pure
+fun byteValue(n: @Unique Node): Byte = n.byteValue

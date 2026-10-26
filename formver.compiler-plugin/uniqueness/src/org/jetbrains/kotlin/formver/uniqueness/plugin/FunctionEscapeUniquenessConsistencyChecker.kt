@@ -10,11 +10,14 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
+import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.allReceiverExpressions
 import org.jetbrains.kotlin.fir.expressions.arguments
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.FunctionCallEnterNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.JumpNode
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.QualifiedAccessNode
+import org.jetbrains.kotlin.fir.resolve.dfa.cfg.VariableAssignmentNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ThrowExceptionNode
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.ESCAPE_UNIQUENESS_INCONSISTENCY
@@ -23,6 +26,7 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.UniquenessErrors.CONTEXT_E
 /**
  * Resolves expressions that leave the current function state through this CFG node.
  */
+context(context: CheckerContext)
 fun CFGNode<*>.resolveEscapes(): Sequence<FirExpression> =
     when (this) {
         is ThrowExceptionNode -> sequenceOf(fir.exception)
@@ -34,8 +38,15 @@ fun CFGNode<*>.resolveEscapes(): Sequence<FirExpression> =
 
         is FunctionCallEnterNode -> fir.allReceiverExpressions.asSequence() + fir.arguments
 
+        is QualifiedAccessNode -> fir.accessorEscapes()
+        is VariableAssignmentNode -> (fir.lValue as? FirQualifiedAccessExpression)?.accessorEscapes() ?: emptySequence()
+
         else -> emptySequence()
     }
+
+context(context: CheckerContext)
+private fun FirQualifiedAccessExpression.accessorEscapes(): Sequence<FirExpression> =
+    if (accessorCallProperty(context.session) != null) allReceiverExpressions.asSequence() else emptySequence()
 
 context(context: CheckerContext, reporter: DiagnosticReporter)
 private fun reportEscapeUniquenessInconsistency(

@@ -31,7 +31,7 @@ The checker tracks two kinds of uniqueness:
 - `UniquenessAttributeExtension.kt` maps the `@Unique` annotation to `UniquenessAttribute`.
 - `Uniqueness.kt` defines the actual uniqueness lattice:
   - `Unique < Unknown < Shared < Moved`
-- `TypeRefUniquenessAttributeChecker.kt` restricts valid annotation targets to local variables and function parameters.
+- `TypeRefUniquenessAttributeChecker.kt` checks which type references can carry uniqueness annotations.
 - On a function, `@Unique` and `@Borrowed` describe its dispatch receiver; `DispatchReceiverAnnotationPlacementChecker`
   rejects them on a function that has none.
 
@@ -69,8 +69,12 @@ The checker tracks two kinds of uniqueness:
   - Calls to `@Pure` functions and calls in a read-only context move nothing.
 
 - **Function-call exit**
-  - Re-initialize arguments/receiver whose required locality is local (`@Borrowed`), and the dispatch receiver of a
-    callee annotated `@Borrowed` or `@Unique @Pure`.
+  - Re-initialize value arguments, extension receivers and context arguments whose required locality is local
+    (`@Borrowed`), and the dispatch receiver of a callee annotated `@Borrowed` or `@Unique @Pure`.
+
+- **Accessor calls**
+  - A property access through a custom or overridable accessor moves its receivers and context arguments, then
+    restores borrowed ones. Default field accesses do not call this transfer.
 
 - **Return / throw**
   - Move the escaped expression paths.
@@ -97,12 +101,14 @@ Checkers consume the above analyses:
   - a mismatch at a constructor call whose construction lets `this` escape names how it escapes
     (`ConstructionEscape.kt`)
 - `FunctionUseAfterMoveChecker.kt`
-  - reports `INVALID_MOVED_ACCESS`
+  - reports `INVALID_MOVED_ACCESS`, including implicit context arguments at calls and property accesses
 - `FunctionEscapeUniquenessConsistencyChecker.kt`
-  - reports moved subpaths on escaping values
+  - reports moved subpaths on escaping values, including receivers and context arguments passed to accessors
 - `FunctionExitUniquenessConsistencyChecker.kt`
   - reports moved subpaths left in borrowed locals at function exit
-  - also checks the parameters of `@Pure` functions, as its KDoc describes
+- `FunctionCaptureUniquenessChecker.kt`
+  - rejects unique or borrowed captures by declarations that are not called in place, including context parameters
+  - specified lambdas transfer their owned captures through `GraphUniquenessStatesAnalyzer.kt`
 - `PureFunctionResultChecker.kt`
   - reports a `@Unique` result on a `@Pure` function, and a result that is not a value type on a `@Pure` function
     with a `@Unique` parameter
@@ -110,6 +116,7 @@ Checkers consume the above analyses:
   - reports a `UniquePred` constructed outside the arguments of a specification builtin
 - `ExpressionArgumentUniquenessCollisionChecker.kt`
   - reports equal or overlapping arguments of one call when one of their parameters is unique
+  - checks setter values against receivers and context arguments, and default values against parameters and receivers
 
 ### Facade for the converter
 
@@ -153,8 +160,3 @@ Known limitations in current code/tests:
 
 - **Property path receiver support**
   - `QualifiedAccessPathReceiverResolver.kt` currently handles only property accesses with backing fields through dispatch receiver.
-
-- **Interaction with closures**
-  - A lambda that is not called in place is analyzed as a separate function in which captured roots have no entry,
-    so they count as `Unique`. Capturing and moving a unique root there is not reported.
-  

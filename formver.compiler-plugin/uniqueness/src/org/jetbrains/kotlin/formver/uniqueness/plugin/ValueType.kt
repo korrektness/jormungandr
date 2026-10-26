@@ -20,6 +20,9 @@ val multisetClassId = ClassId(FqName("org.jetbrains.kotlin.formver.plugin"), Nam
 
 private val valueTypeClassIds = setOf(
     StandardClassIds.Int,
+    StandardClassIds.Long,
+    StandardClassIds.Short,
+    StandardClassIds.Byte,
     StandardClassIds.Boolean,
     StandardClassIds.Char,
     StandardClassIds.String,

@@ -124,3 +124,23 @@ fun `share shared parameter as default argument`(
 fun @Unique Node.`share unique field of unique receiver as default argument`(
     c: Any = <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>child<!>,
 ) {}
+
+class DispatchDefaults {
+    var child: @Unique Any = Any()
+    var count: Int = 0
+
+    @Unique
+    fun `default aliases owned dispatch receiver`(
+        value: Any = <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>this<!>,
+    ) {}
+
+    @Unique
+    fun `default overlaps owned dispatch receiver`(
+        value: Any = <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>child<!>,
+    ) {}
+
+    @Unique
+    fun `value field default does not overlap dispatch receiver`(
+        value: Int = count,
+    ) {}
+}

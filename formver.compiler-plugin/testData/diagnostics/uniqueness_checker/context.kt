@@ -51,6 +51,16 @@ context(box1: @Unique Box)
 val @Unique Any.contextAndItemReceiverProperty: Any
     get() = Any()
 
+context(box: @Unique Box)
+var uniqueContextMutableProperty: Any
+    get() = Any()
+    set(value) {}
+
+context(box: @Borrowed Box)
+var borrowedContextUniqueProperty: @Unique Any
+    get() = Any()
+    set(value) {}
+
 fun consume(a: @Unique Any) {}
 
 fun borrow(a: @Borrowed Any) {}
@@ -112,6 +122,100 @@ context(box: @Unique Box)
 fun `consume context child then restore`() {
     consume(box.item)
     box.item = Any()
+}
+
+// Context ownership across calls and accessors.
+
+context(box: @Unique Box)
+fun `borrow context then consume`() {
+    borrowContext()
+    consume(box)
+}
+
+context(box: @Unique Box)
+fun `borrow context property then consume`() {
+    val x = borrowedContextProperty
+    consume(box)
+}
+
+context(box: @Unique Box)
+fun `context property consumes its argument`() {
+    val x = uniqueContextProperty
+    consume(<!INVALID_MOVED_ACCESS!>box<!>)
+}
+
+context(box: @Unique Box)
+fun `context setter consumes its argument`() {
+    uniqueContextMutableProperty = Any()
+    consume(<!INVALID_MOVED_ACCESS!>box<!>)
+}
+
+context(box: @Unique Box)
+fun `context calls reject moved implicit argument`() {
+    consumeContext()
+    <!INVALID_MOVED_ACCESS!>consumeContext()<!>
+}
+
+context(box: @Unique Box)
+fun `context properties reject moved implicit argument`() {
+    val x = uniqueContextProperty
+    val y = <!INVALID_MOVED_ACCESS!>uniqueContextProperty<!>
+}
+
+context(box: @Unique Box)
+fun `context setter rejects moved implicit argument`() {
+    consume(box)
+    <!INVALID_MOVED_ACCESS!>uniqueContextMutableProperty<!> = Any()
+}
+
+context(box: @Unique Box)
+fun `context getter rejects inconsistent argument`() {
+    consume(box.item)
+    val x = <!CONTEXT_ESCAPE_UNIQUENESS_INCONSISTENCY!>uniqueContextProperty<!>
+}
+
+context(box: @Unique Box)
+fun `context setter rejects inconsistent argument`() {
+    consume(box.item)
+    <!CONTEXT_ESCAPE_UNIQUENESS_INCONSISTENCY!>uniqueContextMutableProperty = Any()<!>
+}
+
+context(box: @Unique Box)
+fun `context setter value aliases context argument`() {
+    <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>uniqueContextMutableProperty = <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>box<!><!>
+}
+
+context(box: @Unique Box)
+fun `context setter value overlaps context argument`() {
+    <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>uniqueContextMutableProperty = <!INVALID_OVERLAPPING_UNIQUE_ARGUMENTS!>box.item<!><!>
+}
+
+context(box: @Unique Box)
+fun `unique setter value aliases borrowed context`() {
+    <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>borrowedContextUniqueProperty = <!INVALID_DUPLICATE_UNIQUE_ARGUMENT!>box<!><!>
+}
+
+context(box: @Unique Box)
+fun `unique setter value is distinct from borrowed context`() {
+    borrowedContextUniqueProperty = Any()
+    consume(box)
+}
+
+fun later(block: () -> Unit) {}
+
+context(box: @Unique Box)
+fun `escaping lambda captures unique context`() {
+    later <!INVALID_UNIQUENESS_CAPTURE!>{ borrow(box) }<!>
+}
+
+context(box: @Borrowed Box)
+fun `escaping lambda captures borrowed context`() {
+    later <!INVALID_UNIQUENESS_CAPTURE, LOCALITY_MISMATCH!>{ borrow(box) }<!>
+}
+
+context(box: Box)
+fun `escaping lambda captures shared context`() {
+    later { borrow(box) }
 }
 
 // Context parameter collisions

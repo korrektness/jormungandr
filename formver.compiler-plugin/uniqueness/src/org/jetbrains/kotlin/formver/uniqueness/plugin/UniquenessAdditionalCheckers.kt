@@ -63,7 +63,10 @@ class UniquenessAdditionalCheckers(session: FirSession) : FirAdditionalCheckersE
 
     override val expressionCheckers: ExpressionCheckers = object : ExpressionCheckers() {
         override val variableAssignmentCheckers: Set<FirVariableAssignmentChecker> =
-            setOf(UntrustedExpressionChecker(AssignmentUniquenessChecker))
+            setOf(
+                UntrustedExpressionChecker(AssignmentUniquenessChecker),
+                UntrustedExpressionChecker(SetterArgumentUniquenessCollisionChecker),
+            )
 
         override val callCheckers: Set<FirCallChecker> =
             setOf(UntrustedExpressionChecker(CallUniquenessChecker))

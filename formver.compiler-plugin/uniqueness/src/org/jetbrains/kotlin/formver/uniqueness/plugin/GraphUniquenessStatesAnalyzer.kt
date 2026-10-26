@@ -50,9 +50,8 @@ import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.locality.plugin.Locality
-import org.jetbrains.kotlin.formver.locality.plugin.borrowsDispatchReceiver
+import org.jetbrains.kotlin.formver.locality.plugin.QualifiedAccessArgumentLocalitiesMapper
 import org.jetbrains.kotlin.formver.locality.plugin.resolveCapturedSymbols
-import org.jetbrains.kotlin.formver.locality.plugin.resolveLocality
 import org.jetbrains.kotlin.formver.readonly.plugin.ReadOnlyContext
 import org.jetbrains.kotlin.formver.readonly.plugin.isPureCall
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure
@@ -92,8 +91,8 @@ val ControlFlowGraph.uniquenessAnalysisTargetNodes: Sequence<CFGNode<*>>
     }
 
 /**
- * Initializes the roots for the receivers and value parameters of [function] to their declared uniqueness. The root of
- * a dispatch receiver is the class, and only a receiver that is not shared is a path.
+ * Initializes the roots for the receivers, context parameters and value parameters of [function] to their declared
+ * uniqueness. The root of a dispatch receiver is the class, and only a receiver that is not shared is a path.
  */
 context(context: CheckerContext)
 fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessState {
@@ -104,7 +103,7 @@ fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessSta
         state = state.putChild(receiverClass, UniquenessState(receiverUniqueness))
     }
     function.receiverParameter?.let { state = state.putChild(it.symbol, UniquenessState(it.symbol.resolveUniqueness())) }
-    for (valueParameter in function.valueParameters) {
+    for (valueParameter in function.contextParameters + function.valueParameters) {
         state = state.putChild(valueParameter.symbol, UniquenessState(valueParameter.symbol.resolveUniqueness()))
     }
     return state
@@ -264,14 +263,21 @@ class GraphUniquenessStatesAnalyzer(
         val property = access.accessorCallProperty(context.session) ?: return this
         if (property.isPure(context.session)) return this
         var newUniquenessState = this
-        for (receiver in listOfNotNull(access.dispatchReceiver, access.extensionReceiver)) {
+        for (receiver in access.allReceiverExpressions) {
             newUniquenessState = receiver.resolveAccessState().move(newUniquenessState)
         }
-        val extensionReceiver = access.extensionReceiver
-        if (extensionReceiver != null && property.receiverParameterSymbol?.resolveLocality() == Locality.Local) {
-            newUniquenessState = extensionReceiver.resolveAccessState().initialize(newUniquenessState)
+        return newUniquenessState.restoreBorrowedReceivers(access)
+    }
+
+    context(context: CheckerContext)
+    private fun UniquenessState.restoreBorrowedReceivers(access: FirQualifiedAccessExpression): UniquenessState {
+        var state = this
+        for ((argument, locality) in QualifiedAccessArgumentLocalitiesMapper.mapArgumentTypeFactsOf(access)) {
+            if (locality == Locality.Local) {
+                state = argument.resolveAccessState().initialize(state)
+            }
         }
-        return newUniquenessState
+        return state
     }
 
     override fun visitFunctionCallEnterNode(
@@ -318,18 +324,7 @@ class GraphUniquenessStatesAnalyzer(
 
         with(context) {
             return data.transformValues { data ->
-                var newUniquenessState = data.getOrInitialize()
-                val extensionReceiver = call.extensionReceiver
-                val receiverParameterSymbol = call.toResolvedCallableSymbol()?.receiverParameterSymbol
-
-                if (receiverParameterSymbol != null && extensionReceiver != null && receiverParameterSymbol.resolveLocality() == Locality.Local) {
-                    newUniquenessState = extensionReceiver.resolveAccessState().initialize(newUniquenessState)
-                }
-
-                val dispatchReceiver = call.dispatchReceiver
-                if (dispatchReceiver != null && call.toResolvedCallableSymbol()?.borrowsDispatchReceiver(context.session) == true) {
-                    newUniquenessState = dispatchReceiver.resolveAccessState().initialize(newUniquenessState)
-                }
+                var newUniquenessState = data.getOrInitialize().restoreBorrowedReceivers(call)
 
                 for ((argument, requiredLocality) in callArgumentLocalitiesMapper.mapArgumentTypeFactsOf(call)) {
                     if (requiredLocality == Locality.Global) continue
