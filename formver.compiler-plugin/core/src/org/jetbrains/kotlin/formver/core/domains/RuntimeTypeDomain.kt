@@ -19,199 +19,7 @@ import org.jetbrains.kotlin.name.StandardClassIds
 const val RUNTIME_TYPE_DOMAIN_NAME = "rt"
 
 
-/**
- * This new domain is designed to replace `NullableDomain`, `TypeDomain` and `CastingDomain` and it is not yet integrated.
- * To enable its generation in viper output uncomment corresponding lines in
- * [ProgramConverter](jetbrains://idea/navigate/reference?project=kotlin&path=org/jetbrains/kotlin/formver/conversion/ProgramConverter.kt:70)
- * and [SpecialFunctions.kt](jetbrains://idea/navigate/reference?project=kotlin&path=org/jetbrains/kotlin/formver/embeddings/callables/SpecialFunctions.kt:58)
- *
- * Viper code:
- * ```viper
- *
- * domain RuntimeType  {
- *
- *
- *  unique function intType(): RuntimeType
- *  unique function boolType(): RuntimeType
- *  unique function unitType(): RuntimeType
- *  unique function nothingType(): RuntimeType
- *  unique function anyType(): RuntimeType
- *  unique function functionType(): RuntimeType
- *
- *  // unique *Type() : RuntimeType for each user type
- *
- *  function nullValue(): Ref
- *  function unitValue(): Ref
- *
- *  function isSubtype(t1: RuntimeType, t2: RuntimeType): Bool
- *  function typeOf(r: Ref): RuntimeType
- *  function nullable(t: RuntimeType): RuntimeType
- *
- *
- *  function intToRef(v: Int): Ref
- *  function intFromRef(r: Ref): Int
- *  function boolToRef(v: Bool): Ref
- *  function boolFromRef(r: Ref): Bool
- *
- *
- *  axiom subtype_reflexive {
- *    (forall t: RuntimeType ::isSubtype(t, t))
- *  }
- *
- *  axiom subtype_transitive {
- *    (forall t1: RuntimeType, t2: RuntimeType, t3: RuntimeType ::
- *      { isSubtype(t1, t2), isSubtype(t2, t3) }
- *      isSubtype(t1, t2) &&
- *      isSubtype(t2, t3) ==>
- *      isSubtype(t1, t3))
- *  }
- *
- *  axiom subtype_antisymmetric {
- *    (forall t1: RuntimeType, t2: RuntimeType ::
- *      { isSubtype(t1, t2), isSubtype(t2, t1) }
- *      isSubtype(t1, t2) &&
- *      isSubtype(t2, t1) ==>
- *      t1 == t2)
- *  }
- *
- *  axiom nullable_idempotent {
- *    (forall t: RuntimeType ::
- *      { nullable(nullable(t)) }
- *      nullable(nullable(t)) ==
- *      nullable(t))
- *  }
- *
- *  axiom nullable_supertype {
- *    (forall t: RuntimeType ::
- *      { nullable(t) }
- *      isSubtype(t, nullable(t)))
- *  }
- *
- *  axiom nullable_preserves_subtype {
- *    (forall t1: RuntimeType, t2: RuntimeType ::
- *      { isSubtype(nullable(t1), nullable(t2)) }
- *      isSubtype(t1, t2) ==>
- *      isSubtype(nullable(t1), nullable(t2)))
- *  }
- *
- *  axiom nullable_any_supertype {
- *    (forall t: RuntimeType ::isSubtype(t, nullable(anyType())))
- *  }
- *
- *  axiom {
- *    isSubtype(intType(), anyType())
- *  }
- *
- *  axiom {
- *    isSubtype(boolType(), anyType())
- *  }
- *
- *  axiom {
- *    isSubtype(unitType(), anyType())
- *  }
- *
- *  axiom {
- *    isSubtype(nothingType(), anyType())
- *  }
- *
- *  axiom {
- *    isSubtype(anyType(), anyType())
- *  }
- *
- *  axiom {
- *    isSubtype(functionType(), anyType())
- *  }
- *
- *  // isSubtype(*Type(), anyType()) for each user type
- *
- *  axiom supertype_of_nullable_nothing {
- *    (forall t: RuntimeType ::isSubtype(nullable(nothingType()),
- *      t))
- *  }
- *
- *  axiom any_not_nullable {
- *    (forall t: RuntimeType ::!isSubtype(nullable(t),
- *      anyType()))
- *  }
- *
- *  axiom null_smartcast_value_level {
- *    (forall r: Ref, t: RuntimeType ::
- *      { isSubtype(typeOf(r), nullable(t)) }
- *      isSubtype(typeOf(r), nullable(t)) ==>
- *      r == nullValue() ||
- *      isSubtype(typeOf(r), t))
- *  }
- *
- *  axiom nothing_empty {
- *    (forall r: Ref ::!isSubtype(typeOf(r), nothingType()))
- *  }
- *
- *  axiom null_smartcast_type_level {
- *    (forall t1: RuntimeType, t2: RuntimeType ::
- *      { isSubtype(t1, anyType()), isSubtype(t1,
- *      nullable(t2)) }
- *      isSubtype(t1, anyType()) &&
- *      isSubtype(t1, nullable(t2)) ==>
- *      isSubtype(t1, t2))
- *  }
- *
- *  axiom type_of_null {
- *    isSubtype(typeOf(nullValue()),
- *    nullable(nothingType()))
- *  }
- *
- *  axiom type_of_unit {
- *    isSubtype(typeOf(unitValue()),
- *    unitType())
- *  }
- *
- *  axiom uniqueness_of_unit {
- *    (forall r: Ref ::
- *      { isSubtype(typeOf(r), unitType()) }
- *      isSubtype(typeOf(r), unitType()) ==>
- *      r == unitValue())
- *  }
- *
- *  axiom {
- *    (forall v: Int ::
- *      { isSubtype(typeOf(intToRef(v)),
- *      intType()) }
- *      isSubtype(typeOf(intToRef(v)),
- *      intType()))
- *  }
- *
- *  axiom {
- *    (forall v: Int ::
- *      { intFromRef(intToRef(v)) }
- *      intFromRef(intToRef(v)) == v)
- *  }
- *
- *  axiom {
- *    (forall r: Ref ::
- *      { intToRef(intFromRef(r)) }
- *      isSubtype(typeOf(r), intType()) ==>
- *      intToRef(intFromRef(r)) == r)
- *  }
- *
- *  // same for bool2ref and ref2bool
- *
- *  // isSubtype(stringType(), *Type()) for CharSequence and Comparable, when they are user types
- *
- *  // isSubtype(*Type(), *Type()) for each pair of user type and its supertype()
- * }
- *
- * function addInts(arg1: Ref, arg2: Ref): Ref
- *   requires isSubtype(typeOf(arg1), intType())
- *   requires isSubtype(typeOf(arg2), intType())
- *   ensures isSubtype(typeOf(result), intType())
- *   ensures intFromRef(result) == intFromRef(arg1) + intFromRef(arg2)
- * {
- *   intToRef(intFromRef(arg1) + intFromRef(arg2))
- * }
- *
- * // same for subtraction, multiplication and so on
- * ```
- */
+/** Runtime type membership, nullability and primitive value injections. */
 class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(RUNTIME_TYPE_DOMAIN_NAME)) {
     override val typeVars: List<Type.TypeVar> = emptyList()
 
@@ -249,7 +57,6 @@ class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(R
 
         // three basic functions
         /** `isSubtype: (Type, Type) -> Bool` */
-        //val isSubtype: DomainFunc = createDomainFunc(SimpleKotlinName(Name.identifier("isSubtype")), listOf(t1.decl(), t2.decl()), Type.Bool)
         val isSubtype: DomainFunc =
             createDomainFunc(UnqualifiedDomainFuncName("isSubtype"), listOf(t1.decl(), t2.decl()), Type.Bool)
         infix fun Exp.subtype(otherType: Exp) = isSubtype(this, otherType)
@@ -291,7 +98,7 @@ class RuntimeTypeDomain(typeResolver: TypeResolver) : BuiltinDomain(DomainName(R
         val multisetInjection =
             Injection(UnqualifiedDomainFuncName("multiset"), Type.Multiset(Type.Int), multisetType)
         val iterationSequenceInjection =
-            Injection(UnqualifiedDomainFuncName("iterationSequence"), Type.Seq(Type.Ref), iterationSequenceType)
+            Injection(UnqualifiedDomainFuncName("iterationSequence"), Type.Seq(Type.Ref), iterationSequenceType, IntegerBounds::sequence)
         val primitiveTypeInjections = listOf(intInjection, longInjection, shortInjection, byteInjection, boolInjection, charInjection, stringInjection)
         // special values
         val nullValue = createDomainFunc(UnqualifiedDomainFuncName("nullValue"), emptyList(), Ref)

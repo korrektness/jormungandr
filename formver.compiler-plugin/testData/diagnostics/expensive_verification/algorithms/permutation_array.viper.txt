@@ -365,15 +365,25 @@ method multisetOperators(x: Ref, y: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(y), intType())
   ensures isSubtype(typeOf(v_ret_0), unitType())
 {
-  assert ((intFromRef(x) in
-    Multiset(intFromRef(x), intFromRef(y), intFromRef(x)))) >=
+  assert (let anon ==
+      (multisetCount(multisetToRef(Multiset(intFromRef(x), intFromRef(y), intFromRef(x))),
+      x)) in
+      (intFromRef(x) in
+      multisetFromRef(multisetToRef(Multiset(intFromRef(x), intFromRef(y), intFromRef(x)))))) >=
     2
   assert ((intFromRef(y) in Multiset(intFromRef(x), intFromRef(y)))) > 0
   assert (Multiset(intFromRef(x), intFromRef(y)) setminus
     Multiset(intFromRef(y))) ==
     Multiset(intFromRef(x))
-  assert |(Multiset(intFromRef(x)) union Multiset(intFromRef(y)))| == 2
-  assert |Multiset[Int]()| == 0
+  assert (let anon ==
+      (multisetSize(unionMultisets(multisetToRef(Multiset(intFromRef(x))), multisetToRef(Multiset(intFromRef(y)))))) in
+      |multisetFromRef(unionMultisets(multisetToRef(Multiset(intFromRef(x))),
+      multisetToRef(Multiset(intFromRef(y)))))|) ==
+    2
+  assert (let anon ==
+      (multisetSize(multisetToRef(Multiset[Int]()))) in
+      |multisetFromRef(multisetToRef(Multiset[Int]()))|) ==
+    0
   label lbl_ret_0
   inhale isSubtype(typeOf(v_ret_0), unitType())
 }

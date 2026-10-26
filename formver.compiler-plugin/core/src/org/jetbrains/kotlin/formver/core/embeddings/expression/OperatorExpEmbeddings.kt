@@ -12,6 +12,8 @@ import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.embeddings.asInfo
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.intInjection
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.longInjection
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.iterationSequenceInjection
+import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.multisetInjection
 import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain.Companion.stringInjection
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildFunctionPretype
 import org.jetbrains.kotlin.formver.viper.ast.*
@@ -380,6 +382,14 @@ object OperatorExpEmbeddings {
             withReturnType { iterationSequence() }
         }
         viperImplementation { Exp.SeqAppend(args[0], args[1], pos, info) }
+        additionalConditions {
+            precondition {
+                overflow(Exp.Add(
+                    Exp.SeqLength(iterationSequenceInjection.fromRef(args[0])),
+                    Exp.SeqLength(iterationSequenceInjection.fromRef(args[1])),
+                ), "IterationSequence.append")
+            }
+        }
     }
 
     val iterationSequenceTemplates
@@ -413,6 +423,11 @@ object OperatorExpEmbeddings {
             withReturnType { int() }
         }
         viperImplementation { Exp.MultisetCount(args[1], args[0], pos, info) }
+        additionalConditions {
+            precondition {
+                overflow(Exp.MultisetCount(intInjection.fromRef(args[1]), multisetInjection.fromRef(args[0])), "Multiset.count")
+            }
+        }
     }
 
     val MultisetContains = buildBinaryOperator {
@@ -432,6 +447,9 @@ object OperatorExpEmbeddings {
             withReturnType { int() }
         }
         viperImplementation { Exp.MultisetSize(args[0], pos, info) }
+        additionalConditions {
+            precondition { overflow(Exp.MultisetSize(multisetInjection.fromRef(args[0])), "Multiset.size") }
+        }
     }
 
     /** Declared only in programs that use `Multiset`: their signatures need its injection. */
