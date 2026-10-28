@@ -10,10 +10,7 @@ import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.*
-import org.jetbrains.kotlin.fir.resolve.toClassSymbol
-import org.jetbrains.kotlin.fir.resolve.fullyExpandedType
-import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
-import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.formver.common.erasedCastTarget
 import org.jetbrains.kotlin.formver.core.embeddings.types.GenericArrayEmbedding
 import org.jetbrains.kotlin.types.AbstractTypeChecker
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
@@ -49,24 +46,8 @@ private fun StmtConversionContext.imperativeCheckedCast(argument: ExpEmbedding, 
     return blockOf(saved, If(Is(saved.variable, targetType), cast, exceptionalExit(), targetType))
 }
 
-/** The JVM's representative bound; generic arguments supply no runtime evidence. */
-internal fun StmtConversionContext.erasedCastTarget(type: ConeKotlinType): ConeKotlinType {
-    fun erase(t: ConeKotlinType): ConeKotlinType = when (val expanded = t.fullyExpandedType(session).lowerBoundIfFlexible()) {
-        is ConeDefinitelyNotNullType -> erase(expanded.original)
-        is ConeTypeParameterType -> {
-            val bounds = expanded.lookupTag.typeParameterSymbol.resolvedBounds.map { it.coneType }
-            val erased = bounds.map(::erase)
-            erased.firstOrNull {
-                (it.toClassSymbol(session) as? FirRegularClassSymbol)?.classKind != ClassKind.INTERFACE
-            } ?: erased.first()
-        }
-        else -> expanded
-    }
-    return erase(type).withNullability(type.canBeNull(session), session.typeContext)
-}
-
 internal fun StmtConversionContext.componentSensitiveCast(from: ConeKotlinType, target: ConeKotlinType): Boolean {
-    val erased = erasedCastTarget(target)
+    val erased = target.erasedCastTarget(session)
     if (erased.classId != GenericArrayEmbedding.classId) return false
     val element = (erased as ConeClassLikeType).typeArguments.single()
     val componentChecked = element !is ConeStarProjection &&

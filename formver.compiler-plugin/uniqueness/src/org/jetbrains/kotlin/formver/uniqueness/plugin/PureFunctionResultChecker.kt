@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.FirElement
+import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirOperation
@@ -23,6 +24,10 @@ import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArrayGetId
 import org.jetbrains.kotlin.fir.types.FirTypeRef
 import org.jetbrains.kotlin.fir.types.coneType
+import org.jetbrains.kotlin.fir.types.resolvedType
+import org.jetbrains.kotlin.fir.types.typeContext
+import org.jetbrains.kotlin.types.AbstractTypeChecker
+import org.jetbrains.kotlin.formver.common.erasedCastTarget
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure
 import org.jetbrains.kotlin.formver.uniqueness.attribute.uniquenessAttribute
 import org.jetbrains.kotlin.formver.common.isExternalSpecificationFile
@@ -34,7 +39,7 @@ private val FirTypeRef.isUnique: Boolean
 
 /**
  * Checks the result of a `@Pure` function. It may not be `@Unique`, and when the function has a `@Unique` parameter,
- * receiver or context parameter its reference results must be shared array elements.
+ * receiver or context parameter its reference results must be shared array elements, optionally under an unchecked `as`.
  * Ownership and cast safety are checked during conversion.
  */
 object PureFunctionResultChecker : FirFunctionChecker(MppCheckerKind.Common) {
@@ -58,19 +63,25 @@ object PureFunctionResultChecker : FirFunctionChecker(MppCheckerKind.Common) {
                     declaration.valueParameters.map { it.returnTypeRef }
 
         if (parameterTypeRefs.any { it.isUnique } && !returnTypeRef.coneType.isValueType() &&
-            !declaration.returnsArrayElements()) {
+            !declaration.returnsArrayElements(context.session)) {
             reporter.reportAttributeFailure(source, INVALID_PURE_REFERENCE_RESULT)
         }
     }
 }
 
-private fun FirExpression.isArrayElement(): Boolean = when (this) {
+/** An element read, optionally under casts that need no runtime check: the erased target is a supertype of the operand. */
+private fun FirExpression.isArrayElement(session: FirSession): Boolean = when (this) {
     is FirFunctionCall -> toResolvedCallableSymbol()?.callableId == genericArrayGetId
-    is FirTypeOperatorCall -> operation == FirOperation.AS && arguments.single().isArrayElement()
+    is FirTypeOperatorCall -> {
+        val operand = arguments.single()
+        operation == FirOperation.AS && operand.isArrayElement(session) && AbstractTypeChecker.isSubtypeOf(
+            session.typeContext, operand.resolvedType, conversionTypeRef.coneType.erasedCastTarget(session),
+        )
+    }
     else -> false
 }
 
-private fun FirFunction.returnsArrayElements(): Boolean {
+private fun FirFunction.returnsArrayElements(session: FirSession): Boolean {
     var found = false
     var allElements = true
     body?.accept(object : FirVisitorVoid() {
@@ -78,7 +89,7 @@ private fun FirFunction.returnsArrayElements(): Boolean {
         override fun visitReturnExpression(returnExpression: FirReturnExpression) {
             if (returnExpression.target.labeledElement == this@returnsArrayElements) {
                 found = true
-                allElements = allElements && returnExpression.result.isArrayElement()
+                allElements = allElements && returnExpression.result.isArrayElement(session)
             }
             returnExpression.acceptChildren(this)
         }

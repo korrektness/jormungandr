@@ -1075,7 +1075,10 @@ class Ring(var elementData: @Unique Array<Any?>) {
 A `@Pure` function cannot return an alias into data its caller still owns. Its
 result cannot be `@Unique`. A function with a `@Unique` parameter must return a
 value type, with an exception for direct element reads of a unique `Array<T>`,
-optionally wrapped in an `as` cast.
+optionally wrapped in an `as` cast that needs no runtime check: the cast's erased
+target is a supertype of the element type, as in `a[i] as T` for a type parameter
+`T`. A checked cast such as `a[i] as Payload` is rejected even when a precondition
+establishes it.
 Array elements are shared values (see [Array<T>](#arrayt)); returning one transfers
 no ownership. Pure observers may also return shared observations. Returning an
 owned path from a unique receiver or parameter reports `PURITY_VIOLATION` during

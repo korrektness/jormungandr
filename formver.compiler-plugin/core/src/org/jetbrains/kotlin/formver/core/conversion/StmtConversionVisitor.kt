@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.fir.types.renderReadable
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
+import org.jetbrains.kotlin.formver.common.erasedCastTarget
 import org.jetbrains.kotlin.formver.core.description
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.LabelLink
@@ -660,13 +661,13 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             FirOperation.IS -> Is(argument, conversionType)
             FirOperation.NOT_IS -> Not(Is(argument, conversionType))
             FirOperation.AS -> data.checkedCast(
-                argument, conversionType, data.embedType(data.erasedCastTarget(target)),
+                argument, conversionType, data.embedType(target.erasedCastTarget(data.session)),
                 targetName = target.renderReadable(),
                 componentSensitive = data.componentSensitiveCast(typeOperatorCall.arguments[0].resolvedType, target),
             )
 
             FirOperation.SAFE_AS -> SafeCast(
-                argument, conversionType, data.embedType(data.erasedCastTarget(target)),
+                argument, conversionType, data.embedType(target.erasedCastTarget(data.session)),
                 data.componentSensitiveCast(typeOperatorCall.arguments[0].resolvedType, target),
             ).withInvariants(data.typeResolver) {
                 proven = true

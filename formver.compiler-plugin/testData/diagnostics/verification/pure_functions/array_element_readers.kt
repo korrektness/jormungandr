@@ -32,6 +32,12 @@ interface Elements {
     return a[i]
 }
 
+<!PURITY_VIOLATION!>@Pure
+fun <!VERIFICATION_SKIPPED!>guardedCheckedElement<!>(a: @Unique Array<Any?>): <!INVALID_PURE_REFERENCE_RESULT!>Payload<!> {
+    preconditions { a.size > 0 && a[0] is Payload }
+    return a[0] as Payload
+}<!>
+
 interface SizedBuffer {
     @Pure val size: Int
 }
