@@ -1,0 +1,31 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "2.3.0"
+    id "org.jetbrains.kotlin.formver" version "0.1.0-SNAPSHOT"
+}
+
+repositories {
+    mavenCentral()
+    maven { url System.getProperty("formver.repo") }
+}
+
+dependencies {
+    implementation project(":lib")
+    implementation project(":vlib")
+}
+
+for (extra in ["bfs", "badReference", "badClaim"]) {
+    if (hasProperty(extra)) {
+        sourceSets.main.kotlin.srcDir("src/$extra/kotlin")
+    }
+}
+
+formver {
+    externalSpec("specs/CounterSpecs.kt")
+    externalSpec("specs/VerifiedSpecs.kt")
+    if (project.hasProperty("badBinding")) {
+        externalSpec("specs/BadBinding.kt")
+    }
+    if (project.hasProperty("vacuousSpec")) {
+        externalSpec("specs/VacuousSpecs.kt")
+    }
+}

@@ -1,30 +1,20 @@
 # The agent scripts
 
-Depth behind AGENTS.md, which has the commands themselves.
+Use this reference for script controls, regeneration, persistent runners and
+landing coverage. [Developing the plugin](developing.md#tests) owns test tiers,
+fixture modes, source paths and local task selection.
 
 `agent-scripts/` wraps the Gradle test tasks so the loop does not have to be
 rediscovered from the build files each time. Nothing in the build depends on
 them.
 
-- `test.sh` — the generated compiler/locality fixture driver. Conversion only by default (`untilConversion`
-  plus the locality tests, which have no verification stage), `--verify` for the
-  full pipeline, `--verify-changed` for `./gradlew update` (convert everything,
-  verify only where conversion output changed), `--update-goldens` to regenerate
-  goldens and report what they now say, `--vacuity` for the vacuity check of
-  `docs/soundness.md`.
-- `check-all.sh` — `check`, the Gradle consumer check, `pre-commit` and the testData checks together.
-  `--rerun` re-executes tests Gradle considers current. The nightly run is this script, through the
-  repository's root `test.sh`.
+- `test.sh` — the generated compiler/locality fixture driver; see
+  [fixture modes](developing.md#fixture-modes), [regeneration](#regenerating),
+  and the `--vacuity` check in [soundness](soundness.md).
+- `check-all.sh` — aggregate coverage; see [Landing and nightly](#landing-and-nightly).
+  `--rerun` re-executes tests Gradle considers current.
 - `gate-test.sh` — what the land gate runs on each candidate; see [Landing and nightly](#landing-and-nightly).
-- `check-gradle-consumer.sh` — publishes the plugin to a private Maven repository and
-  compiles a tiny Gradle project with it, so a defect that only the shadow jar has
-  (an unrelocated dependency) fails. The project also verifies calls through an
-  external spec and the bundled specs, and fails if a spec reaches the compiled
-  output, if a contradictory spec is accepted, if a default build does not show
-  the trust summary, if a spec binding to a declaration that another module
-  verified is not reported, or if a caller stays verified after its spec is
-  edited. A multiplatform project builds the
-  bundled specs under explicit API mode and warnings as errors. Needs network access and Z3; exits 2 without Z3.
+- `check-gradle-consumer.sh` — the [published-plugin consumer driver](developing.md#published-plugin-consumers).
 - `check-testdata.sh` — missing runnable roots, golden files outside discovery,
   golden files with no source, empty goldens and unstable identity hashes.
 
@@ -34,28 +24,8 @@ a checkout.
 
 ## Handwritten tiers
 
-The compiler module's handwritten source sets are `unit` (`test/unit`), `integration`
-(`test/integration`) and `programs` (`test/programs`). Run them with:
-
-```
-./gradlew :formver.compiler-plugin:unitTest
-./gradlew :formver.compiler-plugin:integrationTest
-./gradlew :formver.compiler-plugin:programTest
-```
-
-Each accepts `--tests '<class or method pattern>'`, `--test-dry-run` for discovery,
-and `--rerun`. Integration provisions Z3 for the Silicon backend checks. Programs
-runs the auxiliary correspondence and compiled arithmetic checks; its classpath
-includes integration output for `PortDeviationChecker`, but discovery uses only
-programs output. The generated fixture runners stay in `sourceSets.test` at
-`test-gen`, selected by `:test`, `:untilConversion` and `:update`.
-
-Core and uniqueness expose `:formver.compiler-plugin:core:unitTest` and
-`:formver.compiler-plugin:uniqueness:unitTest`. The runner exposes
-`:formver.test-runner:integrationTest`. Their `:test` tasks execute the same
-complete tier, preserving their existing `check` coverage. Compiler `check`
-aggregates all three handwritten tiers, full fixture verification and conversion.
-`check-all.sh` uses `check` and also runs the published-plugin consumer checks.
+See [Tiers and local selection](developing.md#tiers-and-local-selection) for
+source sets and task commands.
 
 Compiler handwritten tasks also expose `<task>RunnerSpec`. Run the generated
 `build/test-runner/<task>/client run --spec build/test-runner/<task>/spec.properties`
@@ -97,9 +67,25 @@ conversion-only and skipped declarations produce none. The environment variable
 integration tiers, compiler `untilConversion` and locality fixture tests. It verifies a
 compiler fixture only when a file under `testData/diagnostics` or
 `testData/programs` with that test's stem differs from `origin/HEAD`'s merge base, using the shared outcome cache with the cold sample. A
-change whose goldens do not move gets no additional fixture verification. Auxiliary program
-checks, the consumer check and verification of everything else run nightly: the host's nightly-tests runner runs the root `test.sh`,
-which is `check-all.sh --rerun` without the outcome cache, and pages the operator when it fails.
+change whose goldens do not move gets no additional fixture verification.
+
+Before landing a change that can alter verification without changing a golden
+(the Viper module, compiler test-fixtures, Silicon or Z3 versions, outcome cache,
+Gradle plugin, publishing or shading), run verification covering the affected
+boundary and name the command and result in the commit message. Use
+`agent-scripts/test.sh --verify <pattern>` for affected fixtures,
+`agent-scripts/check-gradle-consumer.sh` for packaging, or
+`agent-scripts/check-all.sh` for comprehensive coverage.
+
+Root `./gradlew check` runs detekt, `apiCheck` and module checks. Compiler `check`
+aggregates handwritten tiers, full fixture verification and conversion.
+`check-all.sh` adds the published-plugin consumers, pre-commit and
+structural checks. Auxiliary program checks, the consumer check and verification
+of everything else run nightly: the host's nightly-tests runner runs the root
+`test.sh`, which is `check-all.sh --rerun` without the outcome cache, and pages the
+operator when it fails. Keep published-plugin and other end-to-end checks in
+`check-all.sh`; gate selection stays at unit, small integration, conversion and
+changed-fixture verification boundaries.
 
 ## Gate measurements
 
@@ -118,10 +104,10 @@ no verification attempts. Gradle command records carry cache sampling and daemon
 
 ## Exit codes
 
-`check-all.sh` reports each of its four checks as passed, failed or skipped. A
-skip means the run covered less than the command promises, and the gap is in the
-setup rather than in the code, so it gets its own exit code rather than being
-folded into either 0 or 1.
+`check-all.sh` reports each of its four checks as passed, failed or skipped.
+Exit 0 means success, 1 means failure, and 2 means a check did not run. For a
+skip, resolve the missing prerequisite and run again; the command's promised
+coverage is incomplete.
 
 ## The kept test JVM
 
