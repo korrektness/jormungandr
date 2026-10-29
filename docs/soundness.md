@@ -490,7 +490,7 @@ its callers.
 Tests: `external_spec_ownership.kt::SourceGauge`,
 `external_specs/constructor_binding.kt`, `external_specs/constructor_invalid.kt`, `external_specs/constructor_shared.kt`,
 `external_specs/spec_vacuity.kt`, `external_specs/spec_partial_vacuity.kt`, `external_specs/bundled_spec_vacuity.kt`,
-`formver.compiler-plugin/test/org/jetbrains/kotlin/formver/common/ExternalSpecSourcesTest.kt`, and
+`formver.compiler-plugin/test/unit/org/jetbrains/kotlin/formver/common/ExternalSpecSourcesTest.kt`, and
 `agent-scripts/check-gradle-consumer.sh`, which edits a specification and
 rebinds a verified declaration.
 
