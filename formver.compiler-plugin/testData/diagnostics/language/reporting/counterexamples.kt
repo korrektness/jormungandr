@@ -73,7 +73,7 @@ fun <!VIPER_TEXT!>confirmedOverflow<!>(x: Int): Int {
 }
 
 fun <!VIPER_TEXT!>confirmedDivision<!>(x: Int, y: Int): Int {
-    preconditions { y == 0 }
+    preconditions { x == 0; y == 0 }
     return <!DIVISION_BY_ZERO!>x / y<!>
 }
 

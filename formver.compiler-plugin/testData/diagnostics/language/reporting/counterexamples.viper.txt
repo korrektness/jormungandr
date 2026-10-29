@@ -358,6 +358,7 @@ method confirmedOverflow(x: Ref) returns (v_ret_0: Ref)
 method confirmedDivision(x: Ref, y: Ref) returns (v_ret_0: Ref)
   requires isSubtype(typeOf(x), intType())
   requires isSubtype(typeOf(y), intType())
+  requires intFromRef(x) == 0
   requires intFromRef(y) == 0
   ensures isSubtype(typeOf(v_ret_0), intType())
 {
