@@ -19,13 +19,15 @@ import org.jetbrains.kotlin.formver.core.names.GetterKotlinName
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 
 /** Verifies specified lambdas in top-level property initializers and accessors. */
-class ViperPoweredPropertyChecker(
+internal class ViperPoweredPropertyChecker(
     private val session: FirSession,
     private val config: PluginConfiguration,
     verifierLocator: VerifierLocator,
     reportedErrors: ReportedVerifierErrors,
+    sink: VerificationSink = ImmediateVerificationSink,
+    processedLambdas: MutableSet<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol> = mutableSetOf(),
 ) : FirPropertyChecker(MppCheckerKind.Common) {
-    private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors)
+    private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors, sink, processedLambdas)
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(declaration: FirProperty) {

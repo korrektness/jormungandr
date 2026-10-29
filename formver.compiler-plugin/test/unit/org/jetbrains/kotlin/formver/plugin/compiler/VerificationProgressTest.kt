@@ -22,6 +22,23 @@ class VerificationProgressTest {
     }
 
     @Test
+    fun `replay uses backend duration and starts before obtaining the result`() {
+        val collector = RecordingCollector()
+        val progress = VerificationProgress(collector) { 0L }
+        var elapsed: Long? = null
+        progress.run("queued", null, { elapsed }) {
+            val (severity, message) = collector.messages.single()
+            assertEquals(CompilerMessageSeverity.INFO, severity)
+            assertTrue("queued" in message)
+            elapsed = 42_000_000L
+        }
+        assertEquals(List(2) { CompilerMessageSeverity.INFO }, collector.messages.map { it.first })
+        val finished = collector.messages.last().second
+        assertTrue("queued" in finished)
+        assertTrue(Regex("\\b42\\b").containsMatchIn(finished))
+    }
+
+    @Test
     fun `a timed-out declaration yields a timeout failure naming it and the next declaration still runs`() {
         val collector = RecordingCollector()
         val ticks = listOf(0L, 1_500_000_000L, 2_000_000_000L, 2_250_000_000L).iterator()

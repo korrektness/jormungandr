@@ -54,10 +54,11 @@ import viper.silver.plugin.standard.refute.Refute
  * model.
  */
 @OptIn(DirectDeclarationsAccess::class)
-class SpecVacuityChecker(
+internal class SpecVacuityChecker(
     private val session: FirSession,
     private val config: PluginConfiguration,
     private val verifierLocator: VerifierLocator,
+    private val sink: VerificationSink = ImmediateVerificationSink,
 ) : FirFileChecker(MppCheckerKind.Common) {
     private val progress = VerificationProgress(config.messageCollector)
 
@@ -111,16 +112,15 @@ class SpecVacuityChecker(
         val z3Exe = verifierLocator.z3Exe { reason ->
             reporter.reportTool(file.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
         } ?: return
-        val errors = mutableListOf<VerifierError>()
-        val timeout = progress.run(file.verificationLabel, file.source) {
-            SiliconFrontend(
-                z3Exe, timeoutSeconds = config.verificationTimeoutSeconds,
-                cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
-                pluginOptions = config.verificationCacheOptions,
-            ).use { it.verify(program) { error -> errors += error } }
+        sink.submit(config.verificationRequest(program, z3Exe, counterexamples = false)) { obtainResult ->
+            var result = VerificationResult(emptyList())
+            val timeout = progress.run(file.verificationLabel, file.source, { result.elapsedNanos }) {
+                result = obtainResult()
+                result.throwFailure()
+            }
+            val failures = if (timeout != null) listOf(timeout) else specVacuityFailures(result.errors, file.source)
+            failures.forEach { reporter.reportFailure(it) }
         }
-        val failures = if (timeout != null) listOf(timeout) else specVacuityFailures(errors, file.source)
-        failures.forEach { reporter.reportFailure(it) }
     }
 
     private fun declarationsOf(declaration: FirDeclaration): List<FirDeclaration> = when (declaration) {

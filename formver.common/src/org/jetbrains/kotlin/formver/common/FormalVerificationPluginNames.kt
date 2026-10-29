@@ -14,6 +14,7 @@ object FormalVerificationPluginNames {
     const val COUNTEREXAMPLES_OPTION_NAME = "counterexamples"
     const val VERIFICATION_CACHE_DIRECTORY_OPTION_NAME = "verification_cache_directory"
     const val VERIFICATION_TIMEOUT_OPTION_NAME = "verification_timeout"
+    const val VERIFICATION_WORKERS_OPTION_NAME = "verification_workers"
     const val DUMP_UNIQUENESS_CFG_OPTION_NAME = "dump_uniqueness_cfg"
     const val EXTERNAL_SPEC_OPTION_NAME = "external_spec"
     const val TRUST_REPORT_OPTION_NAME = "trust_report"

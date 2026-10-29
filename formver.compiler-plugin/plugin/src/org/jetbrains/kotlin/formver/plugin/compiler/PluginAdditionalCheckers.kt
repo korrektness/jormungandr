@@ -32,7 +32,7 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
 
     override val declarationCheckers: DeclarationCheckers = object : DeclarationCheckers() {
         override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> = setOf(ExternalSpecificationBindingChecker)
-        override val functionCheckers: Set<FirFunctionChecker> = setOf(
+        override val functionCheckers: Set<FirFunctionChecker> = if (config.verificationWorkers > 0) emptySet() else setOf(
             ViperPoweredDeclarationChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
         )
         override val simpleFunctionCheckers: Set<FirSimpleFunctionChecker> = setOf(
@@ -41,15 +41,18 @@ class PluginAdditionalCheckers(session: FirSession, config: PluginConfiguration)
             LawDeclarationChecker,
             GhostObserverDeclarationChecker,
         )
-        override val propertyCheckers: Set<FirPropertyChecker> = setOf(
+        override val propertyCheckers: Set<FirPropertyChecker> = if (config.verificationWorkers > 0) emptySet() else setOf(
             ViperPoweredPropertyChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
         )
-        override val fileCheckers: Set<FirFileChecker> = setOf(SpecVacuityChecker(session, config, VerifierLocator()))
+        override val fileCheckers: Set<FirFileChecker> = if (config.verificationWorkers > 0) {
+            setOf(FullFileVerificationChecker(session, config))
+        } else setOf(SpecVacuityChecker(session, config, VerifierLocator()))
         override val callableDeclarationCheckers: Set<FirCallableDeclarationChecker> = setOf(ObserverDeclarationChecker)
         override val regularClassCheckers: Set<FirRegularClassChecker> = setOf(
             ObserverImplementationChecker,
             ExternalSpecificationImplementationChecker,
             LawImplementationChecker,
+        ) + if (config.verificationWorkers > 0) emptySet() else setOf(
             ViperPoweredClassChecker(session, config, VerifierLocator(), ReportedVerifierErrors()),
         )
     }

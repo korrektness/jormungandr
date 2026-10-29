@@ -24,6 +24,8 @@ data class PluginConfiguration(
     val trustLedger: TrustLedger? = null,
     /** Collects the declarations whose programs verified, for [VerifiedMarker]; null when nothing marks them. */
     val verifiedDeclarations: VerifiedDeclarations? = null,
+    /** File-batch worker selection; see docs/configuration.md. */
+    val verificationWorkers: Int = 0,
 ) {
     companion object {
         const val DEFAULT_VERIFICATION_TIMEOUT_SECONDS = 300
@@ -34,6 +36,7 @@ data class PluginConfiguration(
         get() = listOf(logLevel.name, errorStyle.name, conversionSelection.name, verificationSelection.name, dumpUniquenessCFG.toString())
 
     init {
+        require(verificationWorkers >= 0) { "Invalid verification worker count: $verificationWorkers" }
         require(verificationTimeoutSeconds >= 0) { "The verification timeout may not be negative." }
         require(conversionSelection >= verificationSelection) {
             "Conversion options may not be stricter than verification options; converting $conversionSelection but verifying $verificationSelection."

@@ -10,6 +10,7 @@ plugins {
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
     implementation(project(":formver.common"))
+    testImplementation(kotlin("test"))
 }
 
 buildConfig {

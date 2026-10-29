@@ -107,6 +107,10 @@ Choose handwritten tasks from [Tiers and local selection](#tiers-and-local-selec
   references, missing bindings, contradictory specs and false claims. Optional
   source sets and spec files select negative variants. A rebuild followed by a
   spec-only edit checks caller invalidation.
+- `production-batch/`: the small `language/soundness/file_batch.kt` fixture through
+  the production registrar, with positive and negative variants in declaration,
+  one-worker, two-worker and default modes. The driver compares diagnostics and
+  checks suppression, declaration ownership and independent proof contexts.
 - `bundled-specifications-multiplatform/`: common, JVM and JVM-test callers of
   bundled collection specs, compiled with explicit API mode, extra warnings and
   warnings as errors; compiled output is checked for spec leakage.

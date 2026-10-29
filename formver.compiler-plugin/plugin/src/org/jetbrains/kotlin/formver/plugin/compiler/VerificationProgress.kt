@@ -22,8 +22,8 @@ import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.Name
 
 /**
- * Logs the start and the duration of each verification to [messages] at INFO. README.md, under
- * `verification_timeout`, says when these messages appear.
+ * Logs the start and duration of each verification to [messages] at INFO.
+ * See docs/configuration.md#diagnostics-and-progress for visibility.
  */
 class VerificationProgress(
     private val messages: MessageCollector,
@@ -33,7 +33,7 @@ class VerificationProgress(
      * Runs [verify], the verification of the declaration called [name]. Returns the failure to report at [source] when
      * the verifier ran out of time, so that the caller can go on with the next declaration.
      */
-    fun run(name: String, source: KtSourceElement?, verify: () -> Unit): Failure? {
+    fun run(name: String, source: KtSourceElement?, elapsedNanos: () -> Long? = { null }, verify: () -> Unit): Failure? {
         messages.report(CompilerMessageSeverity.INFO, "Verifying $name")
         val start = nanoTime()
         try {
@@ -42,7 +42,7 @@ class VerificationProgress(
         } catch (timeout: VerificationTimeoutException) {
             return Failure(FailureKind.VERIFICATION_TIMEOUT, source, KotlinCondition.Timeout(name, timeout.seconds))
         } finally {
-            val millis = java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(nanoTime() - start)
+            val millis = java.util.concurrent.TimeUnit.NANOSECONDS.toMillis((elapsedNanos() ?: (nanoTime() - start)))
             messages.report(CompilerMessageSeverity.INFO, "Finished verifying $name in $millis ms")
         }
     }

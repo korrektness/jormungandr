@@ -88,6 +88,8 @@ class FormVerGradleSubplugin
                 options += SubpluginOption(FormalVerificationPluginNames.VERIFICATION_TIMEOUT_OPTION_NAME, it.toString())
             }
 
+            options += formVerExtension.verificationWorkersOption()
+
             formVerExtension.myLogLevel?.let {
                 options += SubpluginOption(FormalVerificationPluginNames.LOG_LEVEL_OPTION_NAME, it)
             }

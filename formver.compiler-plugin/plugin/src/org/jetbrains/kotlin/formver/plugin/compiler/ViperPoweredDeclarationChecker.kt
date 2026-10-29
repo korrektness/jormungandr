@@ -59,23 +59,20 @@ import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.Program
 import org.jetbrains.kotlin.formver.viper.ast.registerAllNames
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
-import org.jetbrains.kotlin.formver.viper.errors.VerifierError
 import org.jetbrains.kotlin.formver.viper.mangled
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
-/**
- * Converts each selected function to Viper and verifies it. One instance checks every function of a FIR session, so
- * [verifierLocator] and [reportedErrors] see all of them.
- */
-class ViperPoweredDeclarationChecker(
+/** Converts selected functions to Viper and submits their verification to [sink]. */
+internal class ViperPoweredDeclarationChecker(
     private val session: FirSession,
     private val config: PluginConfiguration,
     private val verifierLocator: VerifierLocator,
     private val reportedErrors: ReportedVerifierErrors,
+    private val sink: VerificationSink = ImmediateVerificationSink,
+    private val processedLambdas: MutableSet<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol> = mutableSetOf(),
 ) : FirFunctionChecker(MppCheckerKind.Common) {
-    private val processedLambdas = mutableSetOf<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol>()
     private val progress = VerificationProgress(config.messageCollector)
 
     context(context: CheckerContext)
@@ -189,27 +186,35 @@ class ViperPoweredDeclarationChecker(
             val z3Exe = verifierLocator.z3Exe { reason ->
                 reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
             } ?: return
-            var failed = false
-            val onFailure = { err: VerifierError ->
-                failed = true
-                val source = err.reportingPosition(declaration.source).unwrapOr { declaration.source }
-                if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
-            }
-            progress.run(name, declaration.source) {
-                SiliconFrontend(
-                    z3Exe, timeoutSeconds = config.verificationTimeoutSeconds,
-                    cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
-                    pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
-                ).use { it.verify(viperProgram, onFailure) }
-            }?.let {
-                reporter.reportFailure(it)
-                return
-            }
-            if (!failed) {
-                config.trustLedger?.record(context.containingFilePath!!, name, { programConversionContext.trust.semanticOptIns }) {
-                    programConversionContext.trust.assumptions
+            sink.submit(config.verificationRequest(viperProgram, z3Exe)) { obtainResult ->
+                try {
+                    var failed = false
+                    var elapsedNanos: Long? = null
+                    val timeout = progress.run(name, declaration.source, { elapsedNanos }) {
+                        val result = obtainResult()
+                        elapsedNanos = result.elapsedNanos
+                        result.errors.forEach { err ->
+                            failed = true
+                            val source = err.reportingPosition(declaration.source).unwrapOr { declaration.source }
+                            if (reportedErrors.add(err, source)) reporter.reportVerifierError(source, err, config.errorStyle)
+                        }
+                        result.throwFailure()
+                    }
+                    if (timeout != null) reporter.reportFailure(timeout)
+                    else if (!failed) {
+                        config.trustLedger?.record(context.containingFilePath!!, name, { programConversionContext.trust.semanticOptIns }) {
+                            programConversionContext.trust.assumptions
+                        }
+                        if (index == 0) config.verifiedDeclarations?.record(declaration.symbol)
+                    }
+                } catch (e: UnsupportedFeatureException) {
+                    reporter.reportTranslation(reportingSource(e.source, declaration), ConversionErrors.UNSUPPORTED_FEATURE, e.message, e.reason.name)
+                    programConversionContext.skips.reportConversionStopped(declaration, KotlinCondition.SkipReason.CONVERSION_ERRORS)
+                } catch (e: Exception) {
+                    reportInternalError((e as? SnaktInternalException) ?: e.asInternalErrorAt(declaration.source), declaration, programConversionContext)
+                } catch (e: NotImplementedError) {
+                    reportInternalError(e.asInternalErrorAt(declaration.source), declaration, programConversionContext)
                 }
-                if (index == 0) config.verifiedDeclarations?.record(declaration.symbol)
             }
         }
     }

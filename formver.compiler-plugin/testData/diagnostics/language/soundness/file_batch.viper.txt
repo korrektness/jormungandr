@@ -1,0 +1,670 @@
+/file_batch.kt: info: Generated Viper text for contradictory:
+function contradictory(): Ref
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) && !boolFromRef(result)
+
+
+/file_batch.kt: info: Generated Viper text for usesContradiction:
+function contradictory(): Ref
+  ensures isSubtype(typeOf(result), boolType())
+  ensures boolFromRef(result) && !boolFromRef(result)
+{
+  boolToRef(true)
+}
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method usesContradiction() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var impossible: Ref
+  var anon: Ref
+  impossible := contradictory()
+  if (boolFromRef(impossible)) {
+    anon := notBool(impossible)
+  } else {
+    anon := boolToRef(false)}
+  assert boolFromRef(anon)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/file_batch.kt: info: Generated Viper text for isolatedSibling:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method isolatedSibling() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/file_batch.kt: info: Generated Viper text for suppressedSibling:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method suppressedSibling() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 1 == 0
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/file_batch.kt: info: Generated Viper text for local:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method local() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/file_batch.kt: info: Generated Viper text for AccessorOwner:
+method con() returns (v_ret_2: Ref)
+  ensures isSubtype(typeOf(v_ret_2), AccessorOwner())
+{
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == AccessorOwner()
+  fold acc(AccessorOwner_unique(v_ret_2), write)
+  label lbl_ret_2
+  unfold acc(AccessorOwner_unique(v_ret_2), write)
+}
+
+method g_value(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_value(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/file_batch.kt: info: Generated Viper text for value:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method g_value(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(this), AccessorOwner())
+  assert false
+  anon := havoc(intType())
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method s_value(this: Ref, arg_0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/file_batch.kt: info: Generated Viper text for value:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method g_value(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+method s_value(this: Ref, arg_0: Ref) returns (v_ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  requires isSubtype(typeOf(arg_0), nullable(anyType()))
+  ensures isSubtype(typeOf(v_ret_1), nullable(anyType()))
+{
+  var par_v: Ref
+  inhale isSubtype(typeOf(this), AccessorOwner())
+  par_v := arg_0
+  inhale isSubtype(typeOf(par_v), intType())
+  assert false
+  label lbl_ret_1
+}
+
+/file_batch.kt: info: Generated Viper text for invoke:
+function state(this: Ref): Ref
+  requires isSubtype(typeOf(this), BatchAction())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method invoke(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), BatchAction())
+  requires acc(BatchAction_unique(this), write)
+  ensures acc(BatchAction_unique(this), write)
+  ensures isSubtype(typeOf(ret), intType())
+  ensures intFromRef(ret) == 1
+
+
+/file_batch.kt: info: Generated Viper text for state:
+function state(this: Ref): Ref
+  requires isSubtype(typeOf(this), BatchAction())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/file_batch.kt: info: Generated Viper text for lambdaOwner:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_BatchAction_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_c_BatchAction_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)) ==
+    old(Lambda0_f_state(this))
+
+
+method create() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+  ensures isSubtype(typeOf(ret_1), Lambda0())
+
+
+method lambdaOwner() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), c_BatchAction())
+  ensures acc(c_BatchAction_unique(v_ret_0), write)
+{
+  var anon: Ref
+  anon := create()
+  fold acc(Lambda0_unique(anon), write)
+  v_ret_0 := anon
+  inhale isSubtype(typeOf(v_ret_0), c_BatchAction())
+  Lambda0_c_BatchAction_upcast(v_ret_0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+lambdaOwner.lambda0.invoke:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_BatchAction_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_c_BatchAction_restore(this: Ref)
+  requires acc(c_BatchAction_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BatchAction())) && true ==>
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)))
+
+
+method Lambda0_c_BatchAction_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)) ==
+    old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref) returns (v_ret_3: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_3), intType())
+  ensures intFromRef(v_ret_3) == 1
+{
+  assert false
+  v_ret_3 := intToRef(1)
+  goto lbl_ret_3
+  label lbl_ret_3
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == 1
+
+
+method lambdaOwner() returns (ret_1: Ref)
+  ensures isSubtype(typeOf(ret_1), c_BatchAction())
+  ensures acc(c_BatchAction_unique(ret_1), write)
+
+
+method refines_f_invoke(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_BatchAction_restore(this)
+  ret_2 := Lambda0_invoke(this)
+  Lambda0_c_BatchAction_upcast(this)
+  assert acc(c_BatchAction_unique(this), write)
+  assert isSubtype(typeOf(ret_2), intType())
+  assert intFromRef(ret_2) == 1
+}
+
+/file_batch.kt: info: Generated Viper text for ClassOwner:
+ClassOwner.lambda0.invoke:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_BatchAction_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_c_BatchAction_restore(this: Ref)
+  requires acc(c_BatchAction_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BatchAction())) && true ==>
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)))
+
+
+method Lambda0_c_BatchAction_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)) ==
+    old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) == 1
+{
+  assert false
+  v_ret_2 := intToRef(1)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == 1
+
+
+method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_BatchAction_restore(this)
+  ret_1 := Lambda0_invoke(this)
+  Lambda0_c_BatchAction_upcast(this)
+  assert acc(c_BatchAction_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) == 1
+}
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function action(this: Ref): Ref
+  requires isSubtype(typeOf(this), ClassOwner())
+  ensures isSubtype(typeOf(result), c_BatchAction())
+
+
+function c_BatchAction_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_c_BatchAction_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)) ==
+    old(Lambda0_f_state(this))
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), ClassOwner())
+  ensures isSubtype(typeOf(v_ret_0), ClassOwner()) &&
+    acc(c_BatchAction_unique(action(v_ret_0)), write)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == ClassOwner()
+  anon_1 := create()
+  fold acc(Lambda0_unique(anon_1), write)
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), c_BatchAction())
+  Lambda0_c_BatchAction_upcast(anon_0)
+  inhale action(v_ret_0) == anon_0
+  fold acc(ClassOwner_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(ClassOwner_unique(v_ret_0), write)
+}
+
+method create() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), Lambda0())
+  ensures isSubtype(typeOf(ret_2), Lambda0())
+
+
+/file_batch.kt: info: Generated Viper text for SuppressedOwner:
+SuppressedOwner.lambda0.invoke:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_BatchAction_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_c_BatchAction_restore(this: Ref)
+  requires acc(c_BatchAction_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BatchAction())) && true ==>
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)))
+
+
+method Lambda0_c_BatchAction_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)) ==
+    old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) == 1
+{
+  assert 1 == 0
+  v_ret_2 := intToRef(1)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == 1
+
+
+method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_BatchAction_restore(this)
+  ret_1 := Lambda0_invoke(this)
+  Lambda0_c_BatchAction_upcast(this)
+  assert acc(c_BatchAction_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) == 1
+}
+
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function action(this: Ref): Ref
+  requires isSubtype(typeOf(this), SuppressedOwner())
+  ensures isSubtype(typeOf(result), c_BatchAction())
+
+
+function c_BatchAction_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_c_BatchAction_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)) ==
+    old(Lambda0_f_state(this))
+
+
+method con() returns (v_ret_1: Ref)
+  ensures isSubtype(typeOf(v_ret_1), SuppressedOwner())
+  ensures isSubtype(typeOf(v_ret_1), SuppressedOwner()) &&
+    acc(c_BatchAction_unique(action(v_ret_1)), write)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == SuppressedOwner()
+  anon_1 := create()
+  fold acc(Lambda0_unique(anon_1), write)
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), c_BatchAction())
+  Lambda0_c_BatchAction_upcast(anon_0)
+  inhale action(v_ret_1) == anon_0
+  fold acc(SuppressedOwner_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(SuppressedOwner_unique(v_ret_1), write)
+}
+
+method create() returns (ret_3: Ref)
+  ensures isSubtype(typeOf(ret_3), Lambda0())
+  ensures isSubtype(typeOf(ret_3), Lambda0())
+
+
+method value(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/file_batch.kt: info: Generated Viper text for value:
+function action(this: Ref): Ref
+  requires isSubtype(typeOf(this), SuppressedOwner())
+  ensures isSubtype(typeOf(result), BatchAction())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function state(this: Ref): Ref
+  requires isSubtype(typeOf(this), BatchAction())
+  requires acc(BatchAction_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method value(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), SuppressedOwner())
+  assert 1 == 0
+  v_ret_0 := intToRef(0)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/file_batch.kt: info: Generated Viper text for propertyOwner:
+propertyOwner.lambda0.invoke:
+function Lambda0_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(0)
+}
+
+function c_BatchAction_f_state(this: Ref): Ref
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method Lambda0_c_BatchAction_restore(this: Ref)
+  requires acc(c_BatchAction_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+  ensures acc(Lambda0_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), c_BatchAction())) && true ==>
+    Lambda0_f_state(this) ==
+    old((unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)))
+
+
+method Lambda0_c_BatchAction_upcast(this: Ref)
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures true && old(isSubtype(typeOf(this), Lambda0())) && true ==>
+    (unfolding acc(c_BatchAction_unique(this), wildcard) in
+      c_BatchAction_f_state(this)) ==
+    old(Lambda0_f_state(this))
+
+
+method Lambda0_invoke(this: Ref) returns (v_ret_2: Ref)
+  requires isSubtype(typeOf(this), Lambda0())
+  requires acc(Lambda0_unique(this), write)
+  ensures acc(Lambda0_unique(this), write)
+  ensures isSubtype(typeOf(v_ret_2), intType())
+  ensures intFromRef(v_ret_2) == 1
+{
+  assert false
+  v_ret_2 := intToRef(1)
+  goto lbl_ret_2
+  label lbl_ret_2
+}
+
+method create() returns (ret_0: Ref)
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+  ensures isSubtype(typeOf(ret_0), Lambda0())
+
+
+method f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_unique(this), write)
+  ensures acc(c_BatchAction_unique(this), write)
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == 1
+
+
+method refines_f_invoke(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), c_BatchAction())
+  requires acc(c_BatchAction_unique(this), write)
+  requires isSubtype(typeOf(this), Lambda0())
+{
+  Lambda0_c_BatchAction_restore(this)
+  ret_1 := Lambda0_invoke(this)
+  Lambda0_c_BatchAction_upcast(this)
+  assert acc(c_BatchAction_unique(this), write)
+  assert isSubtype(typeOf(ret_1), intType())
+  assert intFromRef(ret_1) == 1
+}

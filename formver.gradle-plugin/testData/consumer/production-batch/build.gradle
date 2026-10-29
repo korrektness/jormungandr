@@ -1,0 +1,15 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "2.3.0"
+    id "org.jetbrains.kotlin.formver" version "0.1.0-SNAPSHOT"
+}
+
+repositories {
+    mavenCentral()
+    maven { url System.getProperty("formver.repo") }
+}
+
+formver {
+    if (project.hasProperty("workers")) {
+        verificationWorkers(project.property("workers").toInteger())
+    }
+}

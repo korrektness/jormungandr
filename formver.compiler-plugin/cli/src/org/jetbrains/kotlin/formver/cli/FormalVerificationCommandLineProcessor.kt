@@ -28,6 +28,7 @@ object FormalVerificationConfigurationKeys {
     val COUNTEREXAMPLES: CompilerConfigurationKey<Boolean> = CompilerConfigurationKey.create("counterexamples")
     val VERIFICATION_CACHE_DIRECTORY: CompilerConfigurationKey<String> = CompilerConfigurationKey.create("verification cache directory")
     val VERIFICATION_TIMEOUT: CompilerConfigurationKey<Int> = CompilerConfigurationKey.create("verification timeout")
+    val VERIFICATION_WORKERS: CompilerConfigurationKey<Int> = CompilerConfigurationKey.create("verification workers")
     val LOG_LEVEL: CompilerConfigurationKey<LogLevel> = CompilerConfigurationKey.create("viper log level")
     val ERROR_STYLE: CompilerConfigurationKey<ErrorStyle> = CompilerConfigurationKey.create("error style")
     val CONVERSION_TARGETS_SELECTION: CompilerConfigurationKey<TargetsSelection> =
@@ -55,6 +56,10 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
         val VERIFICATION_TIMEOUT_OPTION = CliOption(
             FormalVerificationPluginNames.VERIFICATION_TIMEOUT_OPTION_NAME, "<seconds>",
             "Time limit for verifying each declaration; 0 disables it", required = false, allowMultipleOccurrences = false
+        )
+        val VERIFICATION_WORKERS_OPTION = CliOption(
+            FormalVerificationPluginNames.VERIFICATION_WORKERS_OPTION_NAME, "<count>",
+            "Number of full-file verification workers", required = false, allowMultipleOccurrences = false
         )
         val LOG_LEVEL_OPTION = CliOption(
             LOG_LEVEL_OPTION_NAME, "<log_level>", "Viper log level",
@@ -106,6 +111,7 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
         COUNTEREXAMPLES_OPTION,
         VERIFICATION_CACHE_DIRECTORY_OPTION,
         VERIFICATION_TIMEOUT_OPTION,
+        VERIFICATION_WORKERS_OPTION,
         LOG_LEVEL_OPTION,
         ERROR_STYLE_OPTION,
         CONVERSION_TARGETS_SELECTION_OPTION,
@@ -127,6 +133,11 @@ class FormalVerificationCommandLineProcessor : CommandLineProcessor {
                     val seconds = value.toInt()
                     require(seconds >= 0)
                     configuration.put(FormalVerificationConfigurationKeys.VERIFICATION_TIMEOUT, seconds)
+                }
+                VERIFICATION_WORKERS_OPTION -> {
+                    val workers = value.toInt()
+                    require(workers >= 0)
+                    configuration.put(FormalVerificationConfigurationKeys.VERIFICATION_WORKERS, workers)
                 }
                 LOG_LEVEL_OPTION -> configuration.put(LOG_LEVEL, LogLevel.valueOf(value.toUpperCaseAsciiOnly()))
                 ERROR_STYLE_OPTION ->

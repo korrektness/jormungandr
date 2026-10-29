@@ -5,6 +5,9 @@
 
 package org.jetbrains.kotlin.formver.gradle
 
+import org.jetbrains.kotlin.formver.common.FormalVerificationPluginNames
+import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
+
 
 open class FormVerExtension {
     internal var myCounterexamples: Boolean? = null
@@ -27,6 +30,17 @@ open class FormVerExtension {
         require(seconds >= 0)
         myVerificationTimeout = seconds
     }
+
+    internal var myVerificationWorkers: Int = 2
+
+    /** Selects the verification worker count; see docs/configuration.md. */
+    open fun verificationWorkers(workers: Int) {
+        require(workers >= 0)
+        myVerificationWorkers = workers
+    }
+
+    internal fun verificationWorkersOption(): SubpluginOption =
+        SubpluginOption(FormalVerificationPluginNames.VERIFICATION_WORKERS_OPTION_NAME, myVerificationWorkers.toString())
 
     internal var myLogLevel: String? = null
     internal var myErrorStyle: String? = null

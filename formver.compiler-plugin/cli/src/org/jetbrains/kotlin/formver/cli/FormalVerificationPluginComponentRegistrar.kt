@@ -65,6 +65,7 @@ class FormalVerificationPluginComponentRegistrar : CompilerPluginRegistrar() {
             verificationTimeoutSeconds = configuration.get(
                 FormalVerificationConfigurationKeys.VERIFICATION_TIMEOUT, PluginConfiguration.DEFAULT_VERIFICATION_TIMEOUT_SECONDS,
             ),
+            verificationWorkers = configuration.get(FormalVerificationConfigurationKeys.VERIFICATION_WORKERS, 0),
             trustLedger = TrustLedger(),
             verifiedDeclarations = VerifiedDeclarations(),
         )

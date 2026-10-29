@@ -29,17 +29,18 @@ import org.jetbrains.kotlin.formver.core.viperProgram
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.ReportedVerifierErrors
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportVerifierError
 import org.jetbrains.kotlin.formver.plugin.compiler.reporting.reportingPosition
-import org.jetbrains.kotlin.formver.viper.SiliconFrontend
 import org.jetbrains.kotlin.formver.viper.ast.unwrapOr
 
 /** Checks concrete classes' constructors, laws, and inherited member bodies and contracts. */
-class ViperPoweredClassChecker(
+internal class ViperPoweredClassChecker(
     private val session: FirSession,
     private val config: PluginConfiguration,
     private val verifierLocator: VerifierLocator,
     private val reportedErrors: ReportedVerifierErrors,
+    private val sink: VerificationSink = ImmediateVerificationSink,
+    processedLambdas: MutableSet<org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousFunctionSymbol> = mutableSetOf(),
 ) : FirRegularClassChecker(MppCheckerKind.Common) {
-    private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors)
+    private val lambdaChecker = ViperPoweredDeclarationChecker(session, config, verifierLocator, reportedErrors, sink, processedLambdas)
     private val programs = ClassPrograms(session, config)
     private val progress = VerificationProgress(config.messageCollector)
 
@@ -105,27 +106,33 @@ class ViperPoweredClassChecker(
         val z3 = verifierLocator.z3Exe { reason ->
             reporter.reportTool(declaration.source, PluginErrors.VERIFIER_UNAVAILABLE, "SOLVER_UNAVAILABLE", reason)
         } ?: return
-        var failed = false
-        progress.run(declaration.verificationLabel, declaration.source) {
-            SiliconFrontend(
-                z3, timeoutSeconds = config.verificationTimeoutSeconds,
-                cacheDirectory = config.verificationCacheDirectory?.let { java.nio.file.Path.of(it) },
-                pluginOptions = config.verificationCacheOptions, counterexamples = config.counterexamples,
-            ).use { verifier ->
-                verifier.verify(program.program) { error ->
-                    failed = true
-                    reportFailure(declaration, error)
+        sink.submit(config.verificationRequest(program.program, z3)) { obtainResult ->
+            try {
+                var failed = false
+                var elapsedNanos: Long? = null
+                val timeout = progress.run(declaration.verificationLabel, declaration.source, { elapsedNanos }) {
+                    val result = obtainResult()
+                    elapsedNanos = result.elapsedNanos
+                    result.errors.forEach { error ->
+                        failed = true
+                        reportFailure(declaration, error)
+                    }
+                    result.throwFailure()
                 }
+                if (timeout != null) reporter.reportFailure(timeout)
+                else if (!failed) {
+                    config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, { program.trust.semanticOptIns }) {
+                        program.trust.assumptions
+                    }
+                    config.verifiedDeclarations?.record(declaration.symbol)
+                }
+            } catch (error: UnsupportedFeatureException) {
+                reporter.reportTranslation(declaration.source, ConversionErrors.UNSUPPORTED_FEATURE, error.message, error.reason.name)
+            } catch (error: Exception) {
+                reportInternalError(declaration, error)
+            } catch (error: NotImplementedError) {
+                reportInternalError(declaration, error)
             }
-        }?.let {
-            reporter.reportFailure(it)
-            return
-        }
-        if (!failed) {
-            config.trustLedger?.record(context.containingFilePath!!, declaration.verificationLabel, { program.trust.semanticOptIns }) {
-                program.trust.assumptions
-            }
-            config.verifiedDeclarations?.record(declaration.symbol)
         }
     }
 

@@ -40,6 +40,10 @@ prepare_consumer() {
     # Use this build's daemon JVM criteria with the repository wrapper.
     cp "$ROOT/gradle/gradle-daemon-jvm.properties" "$destination/gradle/"
 }
+batch_consumer="$work/production-batch"
+prepare_consumer production-batch "$batch_consumer"
+python3 "$ROOT/agent-scripts/production_batch_consumer.py" "$ROOT" "$batch_consumer" "$repo" "$work"
+
 prepare_consumer external-specifications-jvm "$consumer"
 mkdir -p "$consumer/src/bfs/kotlin"
 

@@ -1,4 +1,5 @@
 // FULL_JDK
+// FULL_FILE_VERIFICATION
 
 import org.jetbrains.kotlin.formver.plugin.*
 

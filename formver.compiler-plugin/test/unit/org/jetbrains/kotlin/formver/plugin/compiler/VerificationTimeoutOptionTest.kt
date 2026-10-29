@@ -27,6 +27,23 @@ class VerificationTimeoutOptionTest {
     }
 
     @Test
+    fun `worker option forwards the configured count and rejects invalid values`() {
+        val workers: AbstractCliOption = FormalVerificationCommandLineProcessor.VERIFICATION_WORKERS_OPTION
+        val processor = FormalVerificationCommandLineProcessor()
+        val configuration = CompilerConfiguration()
+        assertTrue(workers in processor.pluginOptions)
+        for (value in listOf(0, 1, 4)) {
+            processor.processOption(workers, value.toString(), configuration)
+            assertEquals(value, configuration.get(FormalVerificationConfigurationKeys.VERIFICATION_WORKERS))
+        }
+        for (value in listOf("-1", "1.5", "", "2147483648")) {
+            assertFailsWith<CliOptionProcessingException>(value) {
+                processor.processOption(workers, value, CompilerConfiguration())
+            }
+        }
+    }
+
+    @Test
     fun `negative and non-numeric timeouts are rejected`() {
         for (value in listOf("-1", "5s", "")) {
             assertFailsWith<CliOptionProcessingException>(value) {

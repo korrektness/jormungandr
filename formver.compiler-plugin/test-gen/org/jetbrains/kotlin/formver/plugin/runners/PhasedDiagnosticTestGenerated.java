@@ -1522,6 +1522,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("file_batch.kt")
+        public void testFile_batch() {
+          runTest("formver.compiler-plugin/testData/diagnostics/language/soundness/file_batch.kt");
+        }
+
+        @Test
         @TestMetadata("footprints.kt")
         public void testFootprints() {
           runTest("formver.compiler-plugin/testData/diagnostics/language/soundness/footprints.kt");

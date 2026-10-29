@@ -17,6 +17,7 @@ Put Gradle settings in `formver { ... }`. With `kotlinc`, pass each setting as
 | `verificationTargetsSelection("no_targets")` | `verification_targets_selection` | `no_targets`, `all_targets`; selects backend verification. |
 | `counterexamples(true)` | `counterexamples` | `true`, `false`; requests [counterexample models](../SPECIFICATIONS.md#counterexamples). |
 | `verificationTimeout(60)` | `verification_timeout` | Nonnegative integer seconds; see [Timeouts](#timeouts). |
+| `verificationWorkers(2)` | `verification_workers` | Nonnegative integer worker count; see [File-batch verification](#file-batch-verification). |
 | `verificationCacheDirectory("build/verification-cache")` | `verification_cache_directory` | Nonblank directory path; see [Verification cache](#verification-cache). |
 | `dumpUniquenessCFG(true)` | `dump_uniqueness_cfg` | `true`, `false`; dumps the uniqueness control-flow graph with flow information. |
 | `externalSpec("specs/Library.kt")` | `external_spec` | Existing `.kt` source file; see [External specification inputs](#external-specification-inputs). |
@@ -74,6 +75,22 @@ pass it explicitly when invoking `kotlinc`.
 The plugin logs the start and duration of each declaration's verification at INFO.
 The compiler buffers these messages until it reports diagnostics, so they identify
 slow declarations after completion rather than providing live progress.
+
+## File-batch verification
+
+`verification_workers` defaults to 0 for direct compiler use and 2 in Gradle. Zero
+uses declaration-level checking. A positive count selects full-file traversal
+and bounds the number of workers per file. Use it only when the host guarantees
+that the file callback sees the complete file before descendant checks; PSI
+availability or K2 support alone does not establish that capability. In Gradle,
+set `verificationWorkers(0)` to select declaration-level checking explicitly.
+
+Each verification program retains an independent proof context, timeout and
+cache decision; batching does not combine proofs. Results and diagnostics are
+replayed on the checker thread in submission order, independently of worker
+completion order. Workers reuse compatible backends and close them on option
+changes and before the batch returns. Interruption waits for in-flight work and
+backend cleanup, so an unbounded verification may delay it indefinitely.
 
 ## Timeouts
 
