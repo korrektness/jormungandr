@@ -269,7 +269,7 @@ exceptional-exit reasoning. The note does not show that either competitor does.
 ## Staged plan
 
 Every stage adds public-entry regression tests under
-`formver.compiler-plugin/testData/diagnostics/verification/`. Each test calls the public
+`formver.compiler-plugin/testData/diagnostics/language/`. Each test calls the public
 member through an owned receiver and states its expectation in the golden.
 
 | Stage | Size | Content | Public-entry tests |

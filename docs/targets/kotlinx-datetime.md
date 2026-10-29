@@ -13,7 +13,7 @@ All source inspection uses the frozen artifacts described there.
 
 Fixture paths below are relative to `formver.compiler-plugin/testData/`:
 
-- `diagnostics/targets/datetime/LongClamp.kt`: unchanged clamp expression in a
+- `programs/ports/datetime/LongClamp.kt`: unchanged clamp expression in a
   block-body contract shell, independent threshold predicate, nine boundary
   clients, and an intentional wrong-positive-endpoint implementation.
 - `experiments/datetime/LongSaturation.kt`: both frozen bodies and complete
@@ -93,7 +93,7 @@ MIN/MIN, and neighbors of division-by-two thresholds; it is not exhaustive.
 
 Failed experiments are outside registered acceptance fixtures. To reproduce in
 a disposable worktree, copy the desired archived `.kt` to
-`testData/diagnostics/targets/datetime/`, then run
+`testData/programs/ports/datetime/`, then run
 `./agent-scripts/test.sh --update-goldens --cold <stem>`. Outcome recording is
 unnecessary: the runner refuses to write goldens for the timeout. Keep the
 300-second limit. No further multiplication run belongs to this pilot.

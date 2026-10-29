@@ -32,8 +32,9 @@ SNAKT_VERIFICATION_CACHE selects the store directory; 'off' disables caching.
 verifies: the verifier's facts there are contradictory.
 
 Handwritten tier tasks are listed in docs/agents-dev.md#handwritten-tiers.
-A pattern can be given as the testData file is named (assign_local), as the
-path to it, or as the generated test method (testAssign_local).
+Compiler fixtures cover testData/diagnostics and testData/programs; layout:
+docs/developing.md#fixture-layout. A pattern can be given as the testData file
+is named (assign_local), as its path, or as its generated method (testAssign_local).
 EOF
 }
 
@@ -474,7 +475,8 @@ else
     marker_cap=40
 fi
 report "diagnostic markers changed:" "$marker_cap" \
-    'formver.compiler-plugin/testData/*.kt' \
+    'formver.compiler-plugin/testData/diagnostics/*.kt' \
+    'formver.compiler-plugin/testData/programs/*.kt' \
     'formver.compiler-plugin/locality/testData/*.kt'
 report "regenerated test registration; commit as-is:" 0 \
     '*TestGenerated.java'

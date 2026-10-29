@@ -130,7 +130,7 @@ resolves the declared uniqueness of symbols.
 
 Uniqueness diagnostics are primarily covered by:
 
-`formver.compiler-plugin/testData/diagnostics/uniqueness_checker/`
+`formver.compiler-plugin/testData/diagnostics/ownership/`
 
 Current scenarios include:
 - annotation targeting

@@ -13,9 +13,9 @@ shared constructor result is dropped and reports `UNTRACKED_WRITE`.
 
 ## Tests
 
-We use the test framework built for kotlinc. A test is a `.kt` file under
-`formver.compiler-plugin/testData/diagnostics/` annotated with expected
-diagnostics, alongside golden files holding the diagnostic text:
+We use the test framework built for kotlinc. A runnable fixture is a `.kt`
+file in the [fixture layout](#fixture-layout), annotated with expected diagnostics,
+alongside golden files holding the diagnostic text:
 
 - `.fir.diag.txt` — the conversion diagnostics.
 - `.viper.txt` — the generated Viper code.
@@ -44,6 +44,30 @@ new test needs.
 
 For shared verification caching and cold runs, see
 [the agent script cache controls](agents-dev.md#verification-cache).
+
+### Fixture layout
+
+Under `formver.compiler-plugin/testData/`:
+
+| Path | Boundary |
+|:-----|:---------|
+| `diagnostics/language/<feature>/` | Small language/conversion examples |
+| `diagnostics/ownership/<feature>/` | Ownership checker examples |
+| `diagnostics/specifications/<feature>/` | Specification examples, including `external/` bindings and loading |
+| `diagnostics/stdlib/<API>/` | Small standard-library API examples |
+| `programs/algorithms/<algorithm>/` | Complete algorithms and their negative variants |
+| `programs/ports/<library>/` | Ported implementations and correspondence artifacts |
+| `support/libraries/` | Helper library inputs, including correspondence-check inputs |
+| `support/specifications/` | Helper external specification inputs |
+| `upstream/` | Vendored reference sources |
+| `experiments/` | Exploratory sources |
+
+`GenerateTests.kt` discovers only `diagnostics/` and `programs/`, recursively.
+Keep each runnable source and its goldens together. Keep existing subject groups
+intact; classify a fixture by its boundary as a whole. Helper inputs are resolved
+by explicit directives or auxiliary checks and have no generated fixture runner.
+The handwritten tiers and their commands are listed in
+[the agent scripts](agents-dev.md#handwritten-tiers).
 
 ### Verification timeout
 

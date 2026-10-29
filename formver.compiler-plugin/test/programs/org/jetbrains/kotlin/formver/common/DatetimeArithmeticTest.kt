@@ -15,7 +15,7 @@ import kotlin.test.*
 class DatetimeArithmeticTest {
     private val data = File("formver.compiler-plugin/testData")
     private val upstream = data.resolve("upstream/kotlinx-datetime-d79ac8a/math.kt")
-    private val target = data.resolve("diagnostics/targets/datetime")
+    private val target = data.resolve("programs/ports/datetime")
     private val archive = data.resolve("experiments/datetime")
     private val roots = listOf("clampToInt", "safeMultiplyOrClamp")
     private fun hash(text: String) = MessageDigest.getInstance("SHA-256")

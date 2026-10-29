@@ -128,7 +128,7 @@ assert_eq "other_failures: a multi-cause failure is listed only if a cause is no
 
 assert_eq "gradle_filter: a source path becomes its generated test method" \
     "Non_local_returns" 0 \
-    -- gradle_filter "diagnostics/verification/non-local-returns.kt"
+    -- gradle_filter "diagnostics/language/control_flow/non-local-returns.kt"
 
 assert_eq "gradle_filter: an existing method name remains unchanged" \
     "testNon_local_returns" 0 \
@@ -136,7 +136,7 @@ assert_eq "gradle_filter: an existing method name remains unchanged" \
 
 assert_eq "gradle_filter: source names beginning with test are not mistaken for methods" \
     "Test_helpers" 0 \
-    -- gradle_filter "diagnostics/verification/test_helpers.kt"
+    -- gradle_filter "programs/algorithms/helpers/test_helpers.kt"
 
 assert_eq "gradle_filter: bare names beginning with test are not mistaken for methods" \
     "Test_helpers" 0 \
@@ -161,4 +161,5 @@ fi
 python3 "$TESTS_DIR/verification_cache_test.py"
 python3 "$TESTS_DIR/gate_measure_test.py"
 python3 "$TESTS_DIR/test_driver_test.py"
+python3 "$TESTS_DIR/testdata_check_test.py"
 echo "all assertions passed"

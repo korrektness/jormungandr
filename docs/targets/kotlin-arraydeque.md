@@ -127,7 +127,7 @@ A YouTrack search for `project:KT ArrayDeque` (about 45 issues) has no report of
 | Class laws on exceptional exit | Not checked. Outside `try`, a call has no exceptional edge | docs/soundness.md, "Unreachable points" |
 | Iterating a `Collection` argument with `iterator()` | Unsupported; only the inline templates iterate | SPECIFICATIONS.md, "Collection iteration" |
 | Pointwise sequence contracts (`size`, `get(i)`, frame quantifiers) | Supported, in the style of `MutableListModel` | `external-specs/Collections.kt` |
-| Array-backed list refining an interface | Supported for `IntArray` | `testData/diagnostics/verification/classes/intlist_milestone.kt` |
+| Array-backed list refining an interface | Supported for `IntArray` | `testData/diagnostics/language/classes/intlist_milestone.kt` |
 | Owned `IntArray` element sequence | Supported | SPECIFICATIONS.md, "`IntArray`" |
 
 ## Proof properties

@@ -186,7 +186,7 @@ object FormVerDirectives : SimpleDirectivesContainer() {
 
 class StdlibReplacementsProvider(testServices: TestServices, baseDir: String = ".") :
     AdditionalSourceProvider(testServices) {
-    private val libraryPath = "$baseDir/formver.compiler-plugin/testData/stdlibReplacements.kt"
+    private val libraryPath = "$baseDir/formver.compiler-plugin/testData/support/libraries/stdlibReplacements.kt"
 
     override fun produceAdditionalFiles(
         globalDirectives: RegisteredDirectives,

@@ -21,7 +21,7 @@ measure=(python3 "$SCRIPT_DIR/gate_measure.py")
 # Fixture verification is selected by testData changes; check-all covers every tier.
 base="$(git merge-base HEAD origin/HEAD)"
 # A substitution, not <( ), so that a failing git stops the gate.
-stems="$(git diff --name-only --diff-filter=d "$base" HEAD -- formver.compiler-plugin/testData/diagnostics \
+stems="$(git diff --name-only --diff-filter=d "$base" HEAD -- formver.compiler-plugin/testData/diagnostics formver.compiler-plugin/testData/programs \
     | sed -E 's#.*/##; s#\..*##' | tr '-' '_' | sort -u)"
 verify=()
 for stem in $stems; do

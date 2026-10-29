@@ -223,7 +223,7 @@ missing path, rather than being treated as an empty list of deviations.
 
 ### Tests
 
-In `PortDeviationTest`, with a fixture `portcheck/marked.kt` that is `base.kt` with markup on a class, a function
+In `PortDeviationTest`, with a fixture `support/libraries/portcheck/marked.kt` that is `base.kt` with markup on a class, a function
 name and a statement:
 
 - `checkPort(base, portSource(marked), "")` passes.

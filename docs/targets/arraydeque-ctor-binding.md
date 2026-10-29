@@ -88,7 +88,7 @@ A verified caller of `ArrayDeque()` lists `bundled spec: kotlin.collections.Arra
 S9a touches only the external-specification binding and lands alone. It changes shared code, so it runs
 `check-all.sh` before landing.
 
-S9a tests, with user specs over `formver.compiler-plugin/testData/externalLibrary.kt` (`Counter(Int)`,
+S9a tests, with user specs over `formver.compiler-plugin/testData/support/libraries/externalLibrary.kt` (`Counter(Int)`,
 `Cell<T>(T)`):
 
 - `Counter(2)` through a constructor model with `result.value() == initial` verifies `value() == 2`; the same
@@ -124,6 +124,6 @@ restricted in this order:
    first, whose contract gives `size == 0`. The bundled model, the spec-equality test and the trust report are as
    in S9 without the constructor. Construction of the deque is outside the claim: a verified caller cannot create
    one, and the S9 report says so. No verifier change.
-2. Source-level claim. The consumer uses the port class from `testData/diagnostics/targets/arraydeque/` directly,
+2. Source-level claim. The consumer uses the port class from `testData/programs/ports/arraydeque/` directly,
    and its claims are labelled as claims about the port, not about the stdlib class. This drops plan target 6 and
    the bundled model, so it needs an orchestrator decision before it is taken.

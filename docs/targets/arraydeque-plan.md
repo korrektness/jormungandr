@@ -23,7 +23,7 @@ target's own merits are in the note's "Value" and "Deployment relevance". Agains
 
 The minimum target is reached when all of the following hold on `main`:
 
-1. A port of the upstream class in `testData/diagnostics/targets/arraydeque/` verifies. In scope: the members of the
+1. A port of the upstream class in `testData/programs/ports/arraydeque/` verifies. In scope: the members of the
    note's deliverable M and the private helpers they call. No in-scope declaration carries
    `VERIFICATION_SKIPPED`, `UNSUPPORTED_FEATURE`, `INTERNAL_ERROR` or
    `UNTRACKED_WRITE`, and none is excluded from verification.
@@ -172,7 +172,7 @@ still carry the annotation, so that they differ from the upstream body only in t
 ### D2, D-6 and residual trust: port correspondence
 
 - D0: the proof targets a port; conformance (V9) would also have to trust `AbstractMutableList`'s inherited bodies.
-- D1: the port lives in `testData/diagnostics/targets/arraydeque/`; the vendored file goes to `formver.compiler-plugin/testData/upstream/kotlin-v2.3.0/`,
+- D1: the port lives in `testData/programs/ports/arraydeque/`; the vendored file goes to `formver.compiler-plugin/testData/upstream/kotlin-v2.3.0/`,
   outside `diagnostics/` so that test generation does not pick it up, with `LICENSE.txt`, `NOTICE.txt` and the
   provenance file.
 - D2: the check is a JUnit test in the compiler-plugin suite, so the land gate runs it. It strips SnaKt

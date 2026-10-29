@@ -13,6 +13,7 @@ fun main() {
         testGroup(testDataRoot = "formver.compiler-plugin/testData", testsRoot = "formver.compiler-plugin/test-gen") {
             testClass<AbstractPhasedDiagnosticTest> {
                 model("diagnostics")
+                model("programs")
             }
         }
     }

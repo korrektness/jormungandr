@@ -13,12 +13,17 @@ TEST_DATA_DIRS=(
     formver.compiler-plugin/testData
     formver.compiler-plugin/locality/testData
 )
+RUNNABLE_DIRS=(
+    formver.compiler-plugin/testData/diagnostics
+    formver.compiler-plugin/testData/programs
+    formver.compiler-plugin/locality/testData/diagnostics
+)
 
 status=0
 
 # The process substitutions below discard find's status, so a missing directory
 # would silently narrow the checks. Caught here instead.
-for dir in "${TEST_DATA_DIRS[@]}"; do
+for dir in "${TEST_DATA_DIRS[@]}" "${RUNNABLE_DIRS[@]}"; do
     if [ ! -d "$dir" ]; then
         echo "testData directory is missing: $dir" >&2
         exit 1
@@ -38,6 +43,17 @@ while read -r f; do
     src="${src%.viper.txt}"
     if [ ! -f "$src.kt" ]; then
         echo "golden file with no .kt source: $f"
+        status=1
+    fi
+    runnable=0
+    for dir in "${RUNNABLE_DIRS[@]}"; do
+        if [[ "$f" == "$dir/"* ]]; then
+            runnable=1
+            break
+        fi
+    done
+    if [ "$runnable" -eq 0 ]; then
+        echo "golden file outside runnable discovery: $f"
         status=1
     fi
 done < <(golden_files)

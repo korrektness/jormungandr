@@ -24,7 +24,7 @@ class PortCorrespondenceTest {
 
     @Test
     fun `search mutants change only their wrapped guards and fail the intended clauses`() = checker { checker ->
-        val directory = data.resolve("diagnostics/targets/arraydeque")
+        val directory = data.resolve("programs/ports/arraydeque")
         val port = directory.resolve("ArrayDeque.kt").readText()
         val cases = listOf(
             Triple("indexOf", "indexOfPre80390", "head >= tail"),
@@ -67,7 +67,7 @@ class PortCorrespondenceTest {
 
     @Test
     fun `real port matches labelled deviations and retained assignment sites`() {
-        val port = data.resolve("diagnostics/targets/arraydeque/ArrayDeque.kt")
+        val port = data.resolve("programs/ports/arraydeque/ArrayDeque.kt")
         assumeTrue(port.exists(), "ArrayDeque port is absent")
         checker { checker ->
             val upstream = data.resolve("upstream/kotlin-v2.3.0/ArrayDeque.kt").readText()

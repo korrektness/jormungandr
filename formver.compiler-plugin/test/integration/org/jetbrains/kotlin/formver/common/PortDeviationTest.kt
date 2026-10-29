@@ -251,7 +251,7 @@ class PortDeviationChecker : Closeable {
 
 class PortDeviationTest {
     private val data = File("formver.compiler-plugin/testData")
-    private fun fixture(name: String) = data.resolve("portcheck/$name").readText()
+    private fun fixture(name: String) = data.resolve("support/libraries/portcheck/$name").readText()
     private fun checker(action: (PortDeviationChecker) -> Unit) = PortDeviationChecker().use(action)
 
     @Test

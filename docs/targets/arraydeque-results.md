@@ -16,7 +16,7 @@ vendored source, LICENSE.txt and NOTICE.txt. The external checkout is read-only.
 Paths below are relative to `formver.compiler-plugin/`:
 
 - Deviations D-1 through D-8:
-  `testData/diagnostics/targets/arraydeque/ArrayDeque.port.diff`.
+  `testData/programs/ports/arraydeque/ArrayDeque.port.diff`.
   This committed diff is the deviation list.
 - Correspondence and guard-only mutant checks: `PortDeviationTest`, using its
   fixed specification-stripping rule and diagnostic-markup normalization.
@@ -41,7 +41,7 @@ return, subject to the plan's [claim restrictions](arraydeque-plan.md#feasibilit
 There is no exceptional-exit proof.
 
 The port trust report is
-`testData/diagnostics/targets/arraydeque/ArrayDeque.trust.txt`. Its distinct
+`testData/programs/ports/arraydeque/ArrayDeque.trust.txt`. Its distinct
 registered dependencies are:
 
 - Bundled spec: `kotlin.ranges.coerceAtLeast(this: Int, Int): Int`.

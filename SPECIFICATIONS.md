@@ -108,7 +108,7 @@ Enable model generation with `formver { counterexamples(true) }` in Gradle, or t
 [`SiliconFrontend`](formver.compiler-plugin/viper/src/org/jetbrains/kotlin/formver/viper/SiliconFrontend.kt) controls
 the backend configuration. Golden-file tests opt in with the test-only `COUNTEREXAMPLES` directive; ordinary goldens record
 proof diagnostics independently of solver-selected values. The dedicated
-[`counterexamples.kt`](formver.compiler-plugin/testData/diagnostics/verification/counterexamples.kt) fixture constrains
+[`counterexamples.kt`](formver.compiler-plugin/testData/diagnostics/language/diagnostics/counterexamples.kt) fixture constrains
 its failing values uniquely.
 
 ## Integer arithmetic
@@ -1101,7 +1101,7 @@ properties. Its default `val` properties and its identity remain readable.
 The verifier expands a recursive `@Pure` function's definition one level at
 each application it sees. When a proof needs a deeper level, the body must
 mention that application itself. The
-[`unique_tree_recursion.kt`](formver.compiler-plugin/testData/diagnostics/verification/pure_functions/unique_tree_recursion.kt)
+[`unique_tree_recursion.kt`](formver.compiler-plugin/testData/diagnostics/language/pure_functions/unique_tree_recursion.kt)
 fixture demonstrates this in `rotateLeft`: assertions expose `cappedSize(right)`
 before the move and `cappedSize(t)` after it. The size observer saturates at a cap
 so its arithmetic remains within `Int`. An unrestricted recursive node count
@@ -1135,7 +1135,7 @@ fun smallAckermann(m: Int, n: Int): Int {
 The input bounds and result contract also establish arithmetic safety; a
 termination measure alone does not prevent overflow. This example and its
 unbounded overflow-negative counterpart are in
-[`termination.kt`](formver.compiler-plugin/testData/diagnostics/verification/pure_functions/termination.kt).
+[`termination.kt`](formver.compiler-plugin/testData/diagnostics/language/pure_functions/termination.kt).
 
 Each argument of `decreases` is a measure, and several measures are compared
 lexicographically. A measure is one of:
@@ -1159,7 +1159,7 @@ Recursion over shared objects has no measure: a shared node can reach itself
 through its `next` chain, so `length(n.next)` need not be smaller.
 
 A measure can decrease through arithmetic rather than subtraction. The
-[`remainder_decreases.kt`](formver.compiler-plugin/testData/diagnostics/verification/pure_functions/remainder_decreases.kt)
+[`remainder_decreases.kt`](formver.compiler-plugin/testData/diagnostics/language/pure_functions/remainder_decreases.kt)
 fixture encodes Euclid's recursion with measure `n`: when `m >= 0` and `n > 0`,
 `m % n` is nonnegative and strictly smaller than `n`.
 

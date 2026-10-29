@@ -25,7 +25,8 @@ them.
   verified is not reported, or if a caller stays verified after its spec is
   edited. A multiplatform project builds the
   bundled specs under explicit API mode and warnings as errors. Needs network access and Z3; exits 2 without Z3.
-- `check-testdata.sh` — golden files with no source, and empty golden files.
+- `check-testdata.sh` — missing runnable roots, golden files outside discovery,
+  golden files with no source, empty goldens and unstable identity hashes.
 
 `test.sh` and `check-all.sh` take `--help`, and need `python3` on PATH because
 the test results they report from are XML; `check-testdata.sh` needs nothing but
@@ -94,8 +95,8 @@ conversion-only and skipped declarations produce none. The environment variable
 
 `gate-test.sh` runs `check-testdata.sh`, detekt, `apiCheck`, handwritten unit and small
 integration tiers, compiler `untilConversion` and locality fixture tests. It verifies a
-compiler fixture only when a file under `testData/diagnostics` with that test's
-stem differs from `origin/HEAD`'s merge base, using the shared outcome cache with the cold sample. A
+compiler fixture only when a file under `testData/diagnostics` or
+`testData/programs` with that test's stem differs from `origin/HEAD`'s merge base, using the shared outcome cache with the cold sample. A
 change whose goldens do not move gets no additional fixture verification. Auxiliary program
 checks, the consumer check and verification of everything else run nightly: the host's nightly-tests runner runs the root `test.sh`,
 which is `check-all.sh --rerun` without the outcome cache, and pages the operator when it fails.

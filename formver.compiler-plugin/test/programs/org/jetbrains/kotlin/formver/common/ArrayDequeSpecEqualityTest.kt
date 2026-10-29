@@ -113,7 +113,7 @@ private class DequeContracts : Closeable {
 }
 
 class ArrayDequeSpecEqualityTest {
-    private val data = File("formver.compiler-plugin/testData/diagnostics/targets/arraydeque/ArrayDeque.kt")
+    private val data = File("formver.compiler-plugin/testData/programs/ports/arraydeque/ArrayDeque.kt")
     private val bundled = File("formver.compiler-plugin/plugin/resources/external-specs/ArrayDeque.kt")
 
     @Test fun `bundled contracts equal the port public projection`() {

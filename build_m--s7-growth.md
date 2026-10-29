@@ -17,7 +17,7 @@ The whole-file --verify time bounds each declaration below the 150-second budget
 
 ## Contracts and tests
 
-- Growth and end-mutation contracts: see formver.compiler-plugin/testData/diagnostics/targets/arraydeque/ArrayDeque.kt.
+- Growth and end-mutation contracts: see formver.compiler-plugin/testData/programs/ports/arraydeque/ArrayDeque.kt.
 - rotateLeft and rotateRight prove the complete rotated sequence through public port contracts. Each has an unchanged-sequence negative. rotateRightUnchanged uses two distinct elements to bound its negative fixture; the positive rotateRight proof covers arbitrary permitted sizes.
 - endOperations exercises construction, addFirst, Boolean add, and both nullable removals on nonempty and empty states.
 - removeKeepsSlot omits the null write and fails its P2 postcondition. addLastWithoutCapacity reports INTEGER_OVERFLOW on its unbounded old(size) + 1 contract expression; this is a specification arithmetic obligation, not a runtime defect claim. checkedCapacity reports INTEGER_OVERFLOW in the unannotated capacity body. copyElementsPastEnd fails the second copy's source upper bound. firstOnEmpty and getWrapped are negative fixtures.
