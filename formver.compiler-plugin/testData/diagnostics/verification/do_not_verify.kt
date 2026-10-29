@@ -1,5 +1,8 @@
+// FULL_JDK
+
 import org.jetbrains.kotlin.formver.plugin.NeverVerify
 import org.jetbrains.kotlin.formver.plugin.NeverConvert
+import org.jetbrains.kotlin.formver.plugin.verify
 import kotlin.contracts.contract
 import kotlin.contracts.ExperimentalContracts
 
@@ -25,3 +28,10 @@ fun <!VIPER_TEXT!>unsupportedBody<!>(): Int {
 // The signature is still embedded.
 @NeverVerify
 fun <!VIPER_TEXT!>unsupportedSignature<!>(): Double = 1.0
+
+@NeverConvert
+fun excludedOuter() {
+    fun <!VIPER_TEXT!>selectedInner<!>(): Unit {
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>false<!>)
+    }
+}
