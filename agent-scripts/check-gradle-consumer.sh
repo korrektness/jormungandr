@@ -46,8 +46,8 @@ mkdir -p "$consumer/src/bfs/kotlin"
 # The full positive BFS runs only in the initial published-plugin build, whose
 # trust report checks its bundled dependencies. Other variants keep the small
 # callers in Main.kt. scanSkipLast runs only in the badClaim build.
-# Both BFS fixtures have their diagnostic markup stripped.
-bfs_tests="$ROOT/formver.compiler-plugin/testData/diagnostics/specifications/external"
+# Both program fixtures have their diagnostic markup stripped.
+bfs_tests="$ROOT/formver.compiler-plugin/testData/programs/algorithms/bfs"
 sed -E 's/<!([A-Z_]*!)?>//g' "$bfs_tests/arraydeque_bfs.kt" >"$consumer/src/bfs/kotlin/Bfs.kt"
 {
     echo 'import org.jetbrains.kotlin.formver.plugin.*'

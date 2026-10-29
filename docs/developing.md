@@ -117,8 +117,8 @@ scripts read the repository from `-Dformver.repo`. The driver supplies the daemo
 JVM criteria and uses the repository wrapper. In-process Kotlin compilation in
 fixture `gradle.properties` passes this run's Z3 environment to the plugin.
 The driver derives positive BFS and negative successor-scan sources from the
-external-spec feature fixtures, strips diagnostic markup, and edits only the
-scratch copy for caller invalidation. Assertions and expected diagnostic locations
+`testData/programs/algorithms/bfs/` program fixtures, strips diagnostic markup, and
+edits only the scratch copy for caller invalidation. Assertions and expected diagnostic locations
 stay in the driver. These consumer sources have no generated fixture runners or
 goldens.
 

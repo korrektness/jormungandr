@@ -88,8 +88,8 @@ and overlap because tests run concurrently. Paths are under
 | `targets/arraydeque/indexOfPre80390.kt` | 296.776 |
 | `targets/arraydeque/lastIndexOfPre80661.kt` | 109.653 |
 | `external_specs/arraydeque_binding.kt` | 9.844 |
-| `external_specs/arraydeque_bfs.kt` | 196.934 |
-| `external_specs/arraydeque_bfs_negative.kt` | 109.652 |
+| `programs/algorithms/bfs/arraydeque_bfs.kt` | 196.934 |
+| `programs/algorithms/bfs/arraydeque_bfs_negative.kt` | 109.652 |
 
 The search mutants have exactly their expected failures: two `result < size`
 diagnostics for `indexOfPre80390`, and the contains-absence equivalence diagnostic

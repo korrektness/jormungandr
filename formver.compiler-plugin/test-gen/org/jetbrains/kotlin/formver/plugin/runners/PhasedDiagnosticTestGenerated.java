@@ -2162,18 +2162,6 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
-        @TestMetadata("arraydeque_bfs.kt")
-        public void testArraydeque_bfs() {
-          runTest("formver.compiler-plugin/testData/diagnostics/specifications/external/arraydeque_bfs.kt");
-        }
-
-        @Test
-        @TestMetadata("arraydeque_bfs_negative.kt")
-        public void testArraydeque_bfs_negative() {
-          runTest("formver.compiler-plugin/testData/diagnostics/specifications/external/arraydeque_bfs_negative.kt");
-        }
-
-        @Test
         @TestMetadata("arraydeque_binding.kt")
         public void testArraydeque_binding() {
           runTest("formver.compiler-plugin/testData/diagnostics/specifications/external/arraydeque_binding.kt");
@@ -2520,6 +2508,28 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
       @Test
       public void testAllFilesPresentInAlgorithms() {
         KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/programs/algorithms"), Pattern.compile("^(.+)\\.kt$"), null, true);
+      }
+
+      @Nested
+      @TestMetadata("formver.compiler-plugin/testData/programs/algorithms/bfs")
+      @TestDataPath("$PROJECT_ROOT")
+      public class Bfs {
+        @Test
+        public void testAllFilesPresentInBfs() {
+          KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/programs/algorithms/bfs"), Pattern.compile("^(.+)\\.kt$"), null, true);
+        }
+
+        @Test
+        @TestMetadata("arraydeque_bfs.kt")
+        public void testArraydeque_bfs() {
+          runTest("formver.compiler-plugin/testData/programs/algorithms/bfs/arraydeque_bfs.kt");
+        }
+
+        @Test
+        @TestMetadata("arraydeque_bfs_negative.kt")
+        public void testArraydeque_bfs_negative() {
+          runTest("formver.compiler-plugin/testData/programs/algorithms/bfs/arraydeque_bfs_negative.kt");
+        }
       }
 
       @Nested

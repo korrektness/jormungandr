@@ -185,7 +185,7 @@ it lands. Estimated size: 150–300 lines with tests and goldens.
 
 ## Tests of the consumer
 
-Positive file `external_specs/arraydeque_bfs.kt` (`// TRUST_REPORT`), verifying through the bundled model:
+Positive file `programs/algorithms/bfs/arraydeque_bfs.kt` (`// TRUST_REPORT`), verifying through the bundled model:
 
 - `bfs` and `scanSuccessors` as above, with every quantifier over array reads carrying an explicit trigger on its
   innermost read of the bound variable: `offsets[i]`, `targets[j]`, `rank[v]`, `parent[v]`, `queue[q]`. The queue window is
@@ -197,7 +197,7 @@ Positive file `external_specs/arraydeque_bfs.kt` (`// TRUST_REPORT`), verifying 
 - `parentCycleExcluded`: given claim 3's clause as a precondition, `verify(!(parent[a] == b && parent[b] == a))` for
   discovered `a`, `b` of positive rank. It verifies.
 
-Negative file `external_specs/arraydeque_bfs_negative.kt`:
+Negative file `programs/algorithms/bfs/arraydeque_bfs_negative.kt`:
 
 - `scanSkipLast`: `scanSuccessors` with the loop bound `offsets[u + 1] - 1` and the same contract and invariants. It
   fails the closure postcondition and nothing else. A timeout does not count as that failure.
