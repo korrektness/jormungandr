@@ -17,8 +17,8 @@ export SNAKT_VERIFICATION_TIMINGS="${SNAKT_VERIFICATION_TIMINGS:-$SNAKT_GATE_ART
 measure=(python3 "$SCRIPT_DIR/gate_measure.py")
 "${measure[@]}" gate.testdata ./agent-scripts/check-testdata.sh
 
-# Every test runs in conversion mode. Verification runs only for the tests whose
-# testData differs from the target branch; the nightly test.sh verifies the rest.
+# Fixture conversion and the handwritten unit/small integration tiers run here.
+# Fixture verification is selected by testData changes; check-all covers every tier.
 base="$(git merge-base HEAD origin/HEAD)"
 # A substitution, not <( ), so that a failing git stops the gate.
 stems="$(git diff --name-only --diff-filter=d "$base" HEAD -- formver.compiler-plugin/testData/diagnostics \
@@ -38,5 +38,6 @@ if [[ "${#verify[@]}" -gt 0 ]]; then
     verify=(:formver.compiler-plugin:test "${verify[@]}")
 fi
 "${measure[@]}" gate.gradle ./gradlew --no-daemon detekt apiCheck :formver.compiler-plugin:locality:test \
-    :formver.compiler-plugin:core:test :formver.compiler-plugin:uniqueness:test \
-    :formver.compiler-plugin:untilConversion :formver.test-runner:test "${verify[@]+"${verify[@]}"}"
+    :formver.compiler-plugin:core:unitTest :formver.compiler-plugin:uniqueness:unitTest \
+    :formver.compiler-plugin:unitTest :formver.compiler-plugin:integrationTest \
+    :formver.compiler-plugin:untilConversion :formver.test-runner:integrationTest "${verify[@]+"${verify[@]}"}"

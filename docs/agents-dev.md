@@ -6,7 +6,7 @@ Depth behind AGENTS.md, which has the commands themselves.
 rediscovered from the build files each time. Nothing in the build depends on
 them.
 
-- `test.sh` — the test driver. Conversion only by default (`untilConversion`
+- `test.sh` — the generated compiler/locality fixture driver. Conversion only by default (`untilConversion`
   plus the locality tests, which have no verification stage), `--verify` for the
   full pipeline, `--verify-changed` for `./gradlew update` (convert everything,
   verify only where conversion output changed), `--update-goldens` to regenerate
@@ -30,6 +30,37 @@ them.
 `test.sh` and `check-all.sh` take `--help`, and need `python3` on PATH because
 the test results they report from are XML; `check-testdata.sh` needs nothing but
 a checkout.
+
+## Handwritten tiers
+
+The compiler module's handwritten source sets are `unit` (`test/unit`), `integration`
+(`test/integration`) and `programs` (`test/programs`). Run them with:
+
+```
+./gradlew :formver.compiler-plugin:unitTest
+./gradlew :formver.compiler-plugin:integrationTest
+./gradlew :formver.compiler-plugin:programTest
+```
+
+Each accepts `--tests '<class or method pattern>'`, `--test-dry-run` for discovery,
+and `--rerun`. Integration provisions Z3 for the Silicon backend checks. Programs
+runs the auxiliary correspondence and compiled arithmetic checks; its classpath
+includes integration output for `PortDeviationChecker`, but discovery uses only
+programs output. The generated fixture runners stay in `sourceSets.test` at
+`test-gen`, selected by `:test`, `:untilConversion` and `:update`.
+
+Core and uniqueness expose `:formver.compiler-plugin:core:unitTest` and
+`:formver.compiler-plugin:uniqueness:unitTest`. The runner exposes
+`:formver.test-runner:integrationTest`. Their `:test` tasks execute the same
+complete tier, preserving their existing `check` coverage. Compiler `check`
+aggregates all three handwritten tiers, full fixture verification and conversion.
+`check-all.sh` uses `check` and also runs the published-plugin consumer checks.
+
+Compiler handwritten tasks also expose `<task>RunnerSpec`. Run the generated
+`build/test-runner/<task>/client run --spec build/test-runner/<task>/spec.properties`
+from the compiler module directory to use a persistent JVM. Each tier has its own
+slot; the fixture tasks share the `compiler` slot. The fixture driver selects
+only fixture specs in every mode.
 
 ## Verification cache
 
@@ -61,11 +92,12 @@ conversion-only and skipped declarations produce none. The environment variable
 
 ## Landing and nightly
 
-`gate-test.sh` runs `check-testdata.sh`, detekt, `apiCheck`, the unit tests of each module and
-`untilConversion`. It verifies a test only when a file under `testData/diagnostics` with that test's
+`gate-test.sh` runs `check-testdata.sh`, detekt, `apiCheck`, handwritten unit and small
+integration tiers, compiler `untilConversion` and locality fixture tests. It verifies a
+compiler fixture only when a file under `testData/diagnostics` with that test's
 stem differs from `origin/HEAD`'s merge base, using the shared outcome cache with the cold sample. A
-change whose goldens do not move is checked in conversion mode alone. The consumer check and the
-verification of everything else run nightly: the host's nightly-tests runner runs the root `test.sh`,
+change whose goldens do not move gets no additional fixture verification. Auxiliary program
+checks, the consumer check and verification of everything else run nightly: the host's nightly-tests runner runs the root `test.sh`,
 which is `check-all.sh --rerun` without the outcome cache, and pages the operator when it fails.
 
 ## Gate measurements
@@ -105,7 +137,7 @@ Anything else the JVM was started with, changed, starts a new one and says what
 changed; `Client` in `formver.test-runner` lists what that covers. The server
 gets only the environment variables `testRunnerEnvironment` in `buildSrc` names.
 
-There is one JVM per module per checkout, and it exits after idling for the
+There is one JVM per runner slot per checkout, and it exits after idling for the
 time `registerTestRunnerSpec` in `buildSrc` gives it. `--fresh-jvm` starts a new
 one for a run, `--stop` stops this checkout's, and `SNAKT_TEST_RUNNER=off` runs
 the Gradle test tasks instead.

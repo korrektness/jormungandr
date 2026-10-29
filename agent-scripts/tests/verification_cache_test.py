@@ -96,8 +96,17 @@ touch -d @2 "$results/TEST-Fixture.xml"
 
             diff.write_text('')
             unchanged = run(driver='gate-test.sh', environment=gate_env)
-            self.assertIn(':formver.compiler-plugin:untilConversion', unchanged)
-            self.assertNotIn(':formver.compiler-plugin:test', unchanged)
+            for task in (':formver.compiler-plugin:untilConversion',
+                         ':formver.compiler-plugin:locality:test',
+                         ':formver.compiler-plugin:unitTest',
+                         ':formver.compiler-plugin:integrationTest',
+                         ':formver.compiler-plugin:core:unitTest',
+                         ':formver.compiler-plugin:uniqueness:unitTest',
+                         ':formver.test-runner:integrationTest'):
+                self.assertIn(task, unchanged)
+            for task in (':formver.compiler-plugin:test', ':formver.compiler-plugin:programTest',
+                         'check', 'check-all', 'check-gradle-consumer'):
+                self.assertNotIn(task, unchanged)
             self.assertFalse(any(arg.startswith('-Pformver.verification') for arg in unchanged))
 
             diff.unlink()

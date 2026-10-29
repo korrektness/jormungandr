@@ -25,7 +25,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 gradle_result=passed
-# detekt, apiCheck, every module's test task and conversion-mode tests.
+# detekt, apiCheck, all handwritten tiers (including program checks), fixture
+# verification and fixture conversion, aggregated by each module's check task.
 ./gradlew check --no-daemon "${args[@]}" || gradle_result=failed
 
 consumer_result=passed

@@ -18,9 +18,28 @@ sourceSets {
         java.setSrcDirs(listOf("test-fixtures"))
     }
     test {
-        java.setSrcDirs(listOf("test", "test-gen"))
+        java.setSrcDirs(listOf("test-gen"))
         resources.setSrcDirs(listOf("testData", "test-resources"))
     }
+}
+
+// Handwritten tiers share the fixture libraries, but discovery is rooted in each tier's own output.
+val handwrittenTiers = listOf("unit", "integration", "programs").associateWith { tier ->
+    sourceSets.create(tier) {
+        java.setSrcDirs(listOf("test/$tier"))
+        resources.setSrcDirs(listOf("test-resources"))
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+    }.also { sources ->
+        configurations[sources.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
+        configurations[sources.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+        dependencies.add(sources.implementationConfigurationName, dependencies.testFixtures(project(":formver.compiler-plugin")))
+    }
+}
+// The program correspondence checks use the PSI checker compiled in integration.
+handwrittenTiers.getValue("programs").apply {
+    compileClasspath += handwrittenTiers.getValue("integration").output
+    runtimeClasspath += handwrittenTiers.getValue("integration").output
 }
 
 idea {
@@ -145,8 +164,36 @@ tasks.register<Test>("untilConversion") {
     systemProperty("formver.testMode", "CHECK_CONVERSION")
 }
 
+val handwrittenTests = handwrittenTiers.map { (tier, sources) ->
+    val taskName = if (tier == "programs") "programTest" else "${tier}Test"
+    val solver = tier == "integration"
+    val test = tasks.register<Test>(taskName) {
+        description = "Runs the $tier handwritten tests"
+        group = "verification"
+        testClassesDirs = sources.output.classesDirs
+        classpath = sources.runtimeClasspath
+        configureFormverTest()
+        if (solver) {
+            provideZ3()
+            limitSiliconParallelism()
+        }
+    }
+    registerTestRunnerSpec(
+        test,
+        sources.runtimeClasspath,
+        sources.output.classesDirs,
+        slot = "compiler-$tier",
+        requestProperties = forwardedProperties,
+        sharedLibraries = testRunnerSharedLibraries,
+        environment = testRunnerEnvironment(providers) +
+            (if (solver) mapOf("SILICON_PARALLEL_VERIFIERS" to siliconParallelVerifiers) else emptyMap()),
+        provideZ3 = solver,
+    )
+    test
+}
+
 // Conversion mode compares the re-rendered expected markers, which full mode does not.
-tasks.check { dependsOn("untilConversion") }
+tasks.check { dependsOn("untilConversion", handwrittenTests) }
 
 tasks.register<Test>("update") {
     description = "Runs conversion and verification iff conversion changed"
@@ -198,13 +245,11 @@ tasks.compileTestKotlin {
 }
 
 fun Test.setLibraryProperty(propName: String, jarName: String) {
-    val path = project.configurations
-        .testRuntimeClasspath.get()
-        .files
-        .find { """$jarName-\d.*jar""".toRegex().matches(it.name) }
-        ?.absolutePath
-        ?: return
-    systemProperty(propName, path)
+    val libraries = project.files(project.configurations.testRuntimeClasspath)
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        val path = libraries.files.find { """$jarName-\d.*jar""".toRegex().matches(it.name) }?.absolutePath
+        if (path == null) emptyList() else listOf("-D$propName=$path")
+    })
 }
 
 // The plugin code comes from subprojects. Disable this project's empty jar so it

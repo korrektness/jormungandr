@@ -51,7 +51,15 @@ val bridgeElements: Configuration by configurations.creating {
 }
 artifacts.add(bridgeElements.name, bridgeJar)
 
-tasks.test {
+tasks.register<Test>("integrationTest") {
+    description = "Runs this module's integration tests"
+    group = "verification"
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+}
+
+// Both entry points execute the complete integration tier; check retains its test dependency.
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     val serverClasspath = sourceSets.main.get().output.classesDirs
     val bridge = bridgeJar.flatMap { it.archiveFile }

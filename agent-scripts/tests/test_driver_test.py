@@ -23,6 +23,8 @@ import sys
 
 root = Path.cwd()
 args = sys.argv[1:]
+with (root / "backend-calls.jsonl").open("a") as calls:
+    calls.write(json.dumps(args) + "\\n")
 if any(arg.endswith("RunnerSpec") for arg in args):
     sys.exit(0)
 module = "locality" if any("locality" in arg for arg in args) else "compiler"
@@ -84,7 +86,7 @@ class TestDriverTest(unittest.TestCase):
                         "--allow-empty", "-m", "fixture"], check=True, env=self.environment)
         self.executable(self.root / "gradlew", BACKEND)
         for module in ("formver.compiler-plugin", "formver.compiler-plugin/locality"):
-            for task in ("test", "untilConversion"):
+            for task in ("test", "untilConversion", "update"):
                 self.executable(self.root / module / "build/test-runner" / task / "client", BACKEND)
         # The data checker is outside this driver's contract.
         self.executable(scripts / "check-testdata.sh", "#!/bin/sh\nexit 0\n")
@@ -95,7 +97,8 @@ class TestDriverTest(unittest.TestCase):
         path.write_text(text)
         path.chmod(0o755)
 
-    def run_driver(self, compiler, locality=None, *, backend="off", update=False, pattern=None):
+    def run_driver(self, compiler, locality=None, *, backend="off", update=False, pattern=None, flags=()):
+        (self.root / "backend-calls.jsonl").unlink(missing_ok=True)
         # Each invocation gets its own reports, even within a subtest matrix.
         for results in self.root.glob("**/test-results"):
             shutil.rmtree(results)
@@ -107,7 +110,7 @@ class TestDriverTest(unittest.TestCase):
                            SNAKT_VERIFICATION_CACHE="off",
                            SNAKT_TEST_DUMP_DIR=str(self.root / "dumps"),
                            TMPDIR=str(self.root / "tmp"))
-        args = [str(self.root / "agent-scripts/test.sh")]
+        args = [str(self.root / "agent-scripts/test.sh"), *flags]
         if update:
             args.append("--update-goldens")
         if pattern:
@@ -137,6 +140,30 @@ class TestDriverTest(unittest.TestCase):
                                 broken if module == "compiler" else result(PASS),
                                 broken if module == "locality" else result(PASS),
                                 backend=backend, update=update))
+
+    def test_modes_select_only_fixture_tasks_and_persistent_specs(self):
+        for backend in ("on", "off"):
+            for flags, task in (((), "untilConversion"), (("--verify",), "test"),
+                                (("--verify-changed",), "update"), (("--update-goldens",), "test")):
+                with self.subTest(backend=backend, flags=flags):
+                    self.assert_status(0, self.run_driver(result(PASS), backend=backend, flags=flags))
+                    calls = [json.loads(line) for line in
+                             (self.root / "backend-calls.jsonl").read_text().splitlines()]
+                    if backend == "on":
+                        self.assertEqual([
+                            [f":formver.compiler-plugin:{task}RunnerSpec",
+                             ":formver.compiler-plugin:locality:testRunnerSpec"],
+                        ], [[arg for arg in call if arg.endswith("RunnerSpec")]
+                            for call in calls if any(arg.endswith("RunnerSpec") for arg in call)])
+                        specs = [call[call.index("--spec") + 1] for call in calls if "--spec" in call]
+                        self.assertEqual([
+                            f"formver.compiler-plugin/build/test-runner/{task}/spec.properties",
+                            "formver.compiler-plugin/locality/build/test-runner/test/spec.properties",
+                        ], specs)
+                    else:
+                        self.assertEqual([f":formver.compiler-plugin:{task}",
+                                          ":formver.compiler-plugin:locality:test"],
+                                         [call[0] for call in calls])
 
     def test_xml_failure_cannot_be_overridden_by_successful_backend_exit(self):
         for backend in ("on", "off"):

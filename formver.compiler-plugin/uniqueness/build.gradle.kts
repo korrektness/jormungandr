@@ -16,6 +16,14 @@ dependencies {
     testRuntimeOnly(libs.junit.platform.launcher)
 }
 
-tasks.test {
+tasks.register<Test>("unitTest") {
+    description = "Runs this module's unit tests"
+    group = "verification"
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+}
+
+// Both entry points execute the complete unit tier; check retains its test dependency.
+tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# test.sh — Drive the formver test suite. --help for usage.
+# test.sh — Drive the generated compiler/locality fixture runners. --help for usage.
 
 set -euo pipefail
 
@@ -31,6 +31,7 @@ SNAKT_VERIFICATION_CACHE selects the store directory; 'off' disables caching.
 --vacuity lists every probe that failed in a declaration that otherwise
 verifies: the verifier's facts there are contradictory.
 
+Handwritten tier tasks are listed in docs/agents-dev.md#handwritten-tiers.
 A pattern can be given as the testData file is named (assign_local), as the
 path to it, or as the generated test method (testAssign_local).
 EOF
@@ -93,6 +94,7 @@ case "$MODE" in
 esac
 COMPILER_TASK=:formver.compiler-plugin:$COMPILER_TASK_NAME
 LOCALITY_TASK=:formver.compiler-plugin:locality:test
+# Only the fixture specs participate in conversion/full/update selection.
 # Where each task's RunnerSpec task writes the persistent runner's spec and client.
 COMPILER_RUNNER=formver.compiler-plugin/build/test-runner/$COMPILER_TASK_NAME
 LOCALITY_RUNNER=formver.compiler-plugin/locality/build/test-runner/test
