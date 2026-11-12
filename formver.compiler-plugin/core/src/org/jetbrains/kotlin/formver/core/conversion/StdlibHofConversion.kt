@@ -336,7 +336,7 @@ private fun StmtConversionContext.templateInvariants(
             addAll(searchFacts(lambda, elementParameter, receiver, index, found, test))
         }
         lambda.function.body?.statements?.firstOrNull()
-            ?.extractFormverFirBlock { isFormverFunctionNamed("loopInvariants") }?.let { specification ->
+            ?.let(::extractLoopInvariantsCall)?.let { specification ->
                 val prefixParameter = specification.valueParameters.singleOrNull()?.symbol
                 val prefix = prefixParameter?.let {
                     if (!call.isCollectionLoop()) {

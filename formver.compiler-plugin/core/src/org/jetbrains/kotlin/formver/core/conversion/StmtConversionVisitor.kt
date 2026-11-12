@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 
 import org.jetbrains.kotlin.formver.core.isPure
@@ -27,6 +28,7 @@ import org.jetbrains.kotlin.fir.scopes.getFunctions
 import org.jetbrains.kotlin.fir.scopes.impl.declaredMemberScope
 import org.jetbrains.kotlin.fir.references.toResolvedSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
+import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
 import org.jetbrains.kotlin.formver.core.embeddings.properties.CustomSetter
@@ -36,6 +38,8 @@ import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.types.renderReadable
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
+import org.jetbrains.kotlin.formver.common.KotlinCondition
+import org.jetbrains.kotlin.formver.core.isFormverFunctionNamed
 import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.erasedCastTarget
@@ -259,32 +263,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 } else return expansion.call(symbol, listOf(data.convert(propertyAccessExpression.dispatchReceiver!!)))
             }
         }
+        data.reportOpaqueLibraryRead(propertyAccessExpression)
         val propertyAccess = data.embedPropertyAccess(propertyAccessExpression)
         return propertyAccess.getValue(data)
-    }
-
-    /** Reads a property whose value does not depend on a receiver, or returns null for any other access. */
-    private fun StmtConversionContext.convertReceiverlessRead(access: FirPropertyAccessExpression): ExpEmbedding? {
-        val symbol = access.calleeReference.symbol
-        // A `const val`, top-level or in an object, reads as the literal of its initializer.
-        if (symbol is FirPropertySymbol && symbol.resolvedStatus.isConst) return convert(symbol.resolvedInitializer!!)
-        access.topLevelPropertySymbol()?.let { return convertTopLevelPropertyRead(it) }
-        if (symbol is FirFieldSymbol && symbol.isStatic) return unconstrainedValue(embedType(symbol.resolvedReturnType))
-        return null
-    }
-
-    private fun FirPropertyAccessExpression.topLevelPropertySymbol(): FirPropertySymbol? =
-        (calleeReference.symbol as? FirPropertySymbol)?.takeIf {
-            !it.isLocal && boundDispatchReceiver == null && extensionReceiver == null
-        }
-
-    /** A property without a receiver is read as an unconstrained value of its type. */
-    @OptIn(org.jetbrains.kotlin.fir.symbols.SymbolInternals::class)
-    private fun StmtConversionContext.convertTopLevelPropertyRead(symbol: FirPropertySymbol): ExpEmbedding {
-        if (symbol.isPure(session) && symbol.getterSymbol?.fir?.body != null) {
-            return embedAnyFunction(symbol.getterSymbol!!).insertCall(emptyList(), this)
-        }
-        return unconstrainedValue(embedType(symbol.resolvedReturnType))
     }
 
     override fun visitEqualityOperatorCall(
@@ -403,6 +384,9 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
                 return expansion.call(symbol, listOf(data.convert(functionCall.dispatchReceiver!!)) + arguments)
             }
         }
+        if (symbol.isFormverFunctionNamed("loopInvariants") && !data.isAttachedLoopInvariants(functionCall)) {
+            throw UnsupportedFeatureException(functionCall.source, "`loopInvariants` that does not lead the body of a supported loop")
+        }
         data.convertUnownedSpecifiedMember(functionCall)?.let { return it }
         if (functionCall.isGenericArrayElementAccess()) return data.convertGenericArrayElementAccess(functionCall)
         if (symbol.isGenericArrayFactory()) return data.convertGenericArrayFactory(functionCall)
@@ -447,6 +431,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             }
         }
         val callee = data.embedAnyFunction(symbol)
+        data.reportOpaqueLibraryCall(functionCall, symbol, callee)
         val returnType = data.embedType(functionCall.resolvedType)
         val mappedParameters = functionCall.resolvedArgumentMapping?.values?.map { it.symbol }
         val passedPositionally = mappedParameters == null || mappedParameters == symbol.valueParameterSymbols ||
@@ -510,7 +495,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
 
     override fun visitWhileLoop(whileLoop: FirWhileLoop, data: StmtConversionContext): ExpEmbedding {
         val condition = data.convert(whileLoop.condition).withType { boolean() }
-        return data.convertLoop(whileLoop, condition, extractLoopInvariants(whileLoop.block.statements)) {
+        return data.convertLoop(whileLoop, condition, data.extractLoopInvariants(whileLoop.block.statements)) {
             withCreationPathFact(condition) { convert(whileLoop.block) }
         }
     }

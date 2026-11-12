@@ -8,7 +8,7 @@ import loading.specs.CounterModel
 import loading.specs.incrementModel
 
 fun <!VIPER_TEXT!>useLibrary<!>(counter: Counter) {
-    increment(counter)
+    <!OPAQUE_CALL!>increment(counter)<!>
 }
 
 fun <!VIPER_TEXT!>callSpec<!>(counter: Counter) {

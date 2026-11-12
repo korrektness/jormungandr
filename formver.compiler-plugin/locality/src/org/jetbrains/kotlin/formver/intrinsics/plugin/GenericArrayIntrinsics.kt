@@ -51,6 +51,14 @@ val FirReceiverParameterSymbol.isGenericArrayLastIndexReceiver: Boolean
                 symbol.resolvedReceiverTypeRef?.coneType?.classId == arrayClassId
     }
 
+/** `indices` of an `Array` or a modelled primitive array reads the immutable size without retaining its receiver. */
+val FirReceiverParameterSymbol.isArrayIndicesReceiver: Boolean
+    get() {
+        val symbol = containingDeclarationSymbol as? FirCallableSymbol<*> ?: return false
+        return symbol.callableId == CallableId(FqName("kotlin.collections"), Name.identifier("indices")) &&
+                symbol.resolvedReceiverTypeRef?.coneType?.classId.let { it == arrayClassId || it in primitiveArrayClassIds }
+    }
+
 val FirValueParameterSymbol.isArrayCopyDestination: Boolean
     get() = name.asString() == "destination" &&
             (containingDeclarationSymbol as? FirCallableSymbol<*>)?.genericArrayBulk() == GenericArrayBulk.CopyInto

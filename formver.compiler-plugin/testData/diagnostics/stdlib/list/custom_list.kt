@@ -10,7 +10,7 @@
 
 fun <!VIPER_TEXT!>test<!>(n: Int) {
     val customList = CustomList(n, 0)
-    if (!customList.isEmpty()) {
+    if (!<!OPAQUE_CALL!>customList.isEmpty()<!>) {
         customList[<!INTEGER_OVERFLOW!>customList.size - 1<!>]
         customList[0]
     }

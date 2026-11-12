@@ -1312,3 +1312,344 @@ method lastElementVisited() returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
+
+/for_ranges.kt: info: Generated Viper text for stringIndices:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method stringIndices(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == |stringFromRef(s)|
+{
+  var n: Ref
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  n := intToRef(0)
+  anon_0 := stringLength(s)
+  i := intToRef(0)
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+    invariant intFromRef(n) == intFromRef(i)
+  anon_1 := ltInts(i, anon_0)
+  if (boolFromRef(anon_1)) {
+    var anon_2: Ref
+    var c: Ref
+    if (0 <= intFromRef(i)) {
+      anon_2 := ltInts(i, stringLength(s))
+    } else {
+      anon_2 := boolToRef(false)}
+    assert boolFromRef(anon_2)
+    c := stringGet(s, i)
+    n := plusInts(n, intToRef(1))
+    label cont
+    if (intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) {
+      goto break
+    } else {
+      i := plusInts(i, intToRef(1))}
+    goto head
+  }
+  label break
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(i), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(n), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(s), stringType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    intFromRef(n) == intFromRef(i)
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/for_ranges.kt: info: Generated Viper text for intArrayIndices:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method intArrayIndices(arr: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), IntArray())
+  requires acc(IntArray_unique(arr), write)
+  requires isSubtype(typeOf(par_v), intType())
+  ensures acc(IntArray_unique(arr), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_0: Int ::anon_builtin_0 >= -2147483648 &&
+        anon_builtin_0 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_0)), intType()) ==>
+        0 <= anon_builtin_0 && anon_builtin_0 < arraySize(arr) ==>
+        arr.contents[anon_builtin_0] == intFromRef(par_v)))
+{
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  anon_0 := intToRef(arraySize(arr))
+  i := intToRef(0)
+  label head
+    invariant acc(IntArray_unique(arr), write)
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(arr), IntArray())
+    invariant isSubtype(typeOf(par_v), intType())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+    invariant (unfolding acc(IntArray_unique(arr), write) in
+        (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+          anon_builtin_1 <= 2147483647 &&
+          isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+          0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
+          arr.contents[anon_builtin_1] == intFromRef(par_v)))
+  anon_1 := ltInts(i, anon_0)
+  if (boolFromRef(anon_1)) {
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(arr)
+    unfold acc(IntArray_unique(arr), write)
+    arr.contents := arr.contents[intFromRef(i) := intFromRef(par_v)]
+    label cont
+    fold acc(IntArray_unique(arr), write)
+    if (intFromRef(i) >
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) {
+      goto break
+    } else {
+      i := plusInts(i, intToRef(1))}
+    goto head
+  }
+  label break
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(i), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(arr), IntArray())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(par_v), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin_neg1 ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    (unfolding acc(IntArray_unique(arr), write) in
+      (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
+        arr.contents[anon_builtin_1] == intFromRef(par_v)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/for_ranges.kt: info: Generated Viper text for arrayIndices:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method arrayIndices(arr: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(arr), Array())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == referenceArraySize(arr)
+{
+  var n: Ref
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  n := intToRef(0)
+  anon_0 := intToRef(referenceArraySize(arr))
+  i := intToRef(0)
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(arr), Array())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+    invariant intFromRef(n) == intFromRef(i)
+  anon_1 := ltInts(i, anon_0)
+  if (boolFromRef(anon_1)) {
+    assert intFromRef(i) < referenceArraySize(arr)
+    n := plusInts(n, intToRef(1))
+    label cont
+    if (intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) {
+      goto break
+    } else {
+      i := plusInts(i, intToRef(1))}
+    goto head
+  }
+  label break
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(i), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(n), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(arr), Array())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    intFromRef(n) == intFromRef(i)
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/for_ranges.kt: info: Generated Viper text for stringIndicesPastEnd:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method stringIndicesPastEnd(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var n: Ref
+  var anon_0: Ref
+  var i: Ref
+  var anon_1: Ref
+  n := intToRef(0)
+  anon_0 := stringLength(s)
+  i := intToRef(0)
+  label head
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(n), intType())
+    invariant isSubtype(typeOf(s), stringType())
+    invariant 0 <= intFromRef(i) &&
+      (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+    invariant intFromRef(n) == intFromRef(i)
+  anon_1 := ltInts(i, anon_0)
+  if (boolFromRef(anon_1)) {
+    assert (let anon_builtin ==
+        (plusInts(i, intToRef(1))) in
+        intFromRef(i) + intFromRef(intToRef(1))) <
+      |stringFromRef(s)|
+    n := plusInts(n, intToRef(1))
+    label cont
+    if (intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) {
+      goto break
+    } else {
+      i := plusInts(i, intToRef(1))}
+    goto head
+  }
+  label break
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(i), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(n), intType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    isSubtype(typeOf(s), stringType())
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    0 <= intFromRef(i) &&
+    (intFromRef(i) <= intFromRef(anon_0) || intFromRef(i) == 0)
+  assert !(intFromRef(i) < intFromRef(anon_0) &&
+    intFromRef(i) >
+    (let anon_builtin ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))) ==>
+    intFromRef(n) == intFromRef(i)
+  v_ret_0 := n
+  goto lbl_ret_0
+  label lbl_ret_0
+}

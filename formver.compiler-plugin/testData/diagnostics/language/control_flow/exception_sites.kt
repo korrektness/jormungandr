@@ -63,7 +63,7 @@ fun <!VIPER_TEXT!>sharedGetCatch<!>(a: IntArray): Int {
 fun <!VIPER_TEXT!>shortArrayCatch<!>(a: ShortArray): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
-    try { x = 1; a[5]; x = 2 } catch (e: Exception) { }
+    try { x = 1; <!OPAQUE_CALL!>a[5]<!>; x = 2 } catch (e: Exception) { }
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
 }
 fun <!VIPER_TEXT!>longZeroCatch<!>(a: Long, b: Long): Int {

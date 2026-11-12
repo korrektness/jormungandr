@@ -47,7 +47,7 @@ class ConversionFailureReportingTest {
             failures += unsupportedOwnershipFailure(source, condition)
         }
         override fun reportUntrackedWrite(source: KtSourceElement?) = error("Unexpected write")
-        override fun reportUncheckedLibraryCall(source: KtSourceElement?, member: String) = error("Unexpected library call")
+        override fun reportWarning(warning: Failure) = error("Unexpected warning")
         override fun reportUnsupportedFeature(source: KtSourceElement?, msg: String, reason: UnsupportedReason) =
             error("Unexpected unsupported feature")
     }

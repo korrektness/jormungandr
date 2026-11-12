@@ -107,13 +107,13 @@ fun <!VIPER_TEXT!>sharedArrayNoFacts<!>(a: IntArray) {
 }
 
 fun <!VIPER_TEXT!>listCallsWithFunctionValues<!>(xs: List<Int>, p: (Int) -> Boolean, f: (Int) -> Unit): Int {
-    xs.forEach(f)
-    return if (xs.any(p)) xs.count(p) else 0
+    <!OPAQUE_CALL!>xs.forEach(f)<!>
+    return if (<!OPAQUE_CALL!>xs.any(p)<!>) <!OPAQUE_CALL!>xs.count(p)<!> else 0
 }
 
 fun <!VIPER_TEXT!>arrayAndStringCallsWithFunctionValues<!>(a: IntArray, s: String, p: (Int) -> Boolean, q: (Char) -> Boolean): Boolean =
-    a.any(p) && s.any(q)
+    <!OPAQUE_CALL!>a.any(p)<!> && <!OPAQUE_CALL!>s.any(q)<!>
 
-inline fun <!VIPER_TEXT!>anyOf<!>(a: IntArray, p: (Int) -> Boolean): Boolean = a.any(p)
+inline fun <!VIPER_TEXT!>anyOf<!>(a: IntArray, p: (Int) -> Boolean): Boolean = <!OPAQUE_CALL!>a.any(p)<!>
 
 fun <!VIPER_TEXT!>inlineParameterSearch<!>(a: IntArray): Boolean = anyOf(a) { it == 3 }

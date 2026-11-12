@@ -23,7 +23,7 @@ var counter: Int = 0
 
 // Two reads of a top-level property need not agree.
 fun <!VIPER_TEXT!>topLevelReadsDiffer<!>() {
-    val a = counter
-    val b = counter
+    val a = <!OPAQUE_CALL!>counter<!>
+    val b = <!OPAQUE_CALL!>counter<!>
     verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>a == b<!>)
 }

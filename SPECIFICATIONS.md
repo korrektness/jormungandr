@@ -39,6 +39,16 @@ the construction unconvertible, and a `lateinit` property that construction leav
 A function that uses a construct SnaKt does not translate gets an `UNSUPPORTED_FEATURE` warning at the construct and a
 `VERIFICATION_SKIPPED` warning at its name, and is not verified. Compilation continues.
 
+A call that SnaKt translates without knowing what it computes gets an `OPAQUE_CALL` warning, and the function is
+still verified. The call may throw, and its result is some value of its type. These are:
+- a call of a library function, or a read of a library property, that SnaKt gives no model: no built-in
+  translation, external specification, library contract or Kotlin contract. Library operators are calls too, such as
+  `and`, `or`, `shl` and `ushr` on `Int`;
+- a read of a top-level property other than a `const val` or a `@Pure` property with a getter body, and a read of a
+  Java static field.
+
+A constructor of a library class and a function returning `Nothing` get no such warning.
+
 Select compilation checks and external specification inputs through the
 [configuration reference](docs/configuration.md).
 
@@ -49,7 +59,7 @@ counterexample. `VERIFICATION_CONDITION_NOT_ESTABLISHED` identifies explicit Kot
 include backend error and reason codes. The `errorStyle` option selects Kotlin wording, backend evidence, or both
 for the same diagnostic.
 
-Warnings about unsupported conversion or skipped verification indicate incomplete coverage. `UNTRACKED_WRITE`
+Warnings about unsupported conversion, skipped verification or opaque calls indicate incomplete coverage. `UNTRACKED_WRITE`
 is a warning because the shared-local write is excluded from the translated state; it is not a proof of that write.
 `UNCHECKED_LIBRARY_CALL` marks a call that is the opaque library call because it does not own the receiver its
 external specification owns (see [External specifications](#external-specifications)).
@@ -523,7 +533,8 @@ The rules are as follows:
   holds.
 
 A `for` loop over an `Int` progression written with `until`, `..<`, `..` or `downTo`, optionally followed by
-`step`, puts its `loopInvariants` at the start of its body:
+`step`, or over `indices` of a `String`, an `Array<T>` or an `IntArray`, `ByteArray`, `CharArray` or `LongArray`, which is `0 until` its length or size,
+puts its `loopInvariants` at the start of its body:
 
 ```kotlin
 fun fill(arr: @Unique @Borrowed IntArray, v: Int) {
@@ -544,6 +555,10 @@ the coming iteration, and after the last iteration the value one step past it; i
 range is empty. When the value one step past the last element is not an `Int`, as in `for (i in 0..Int.MAX_VALUE)`,
 the loop leaves after the last iteration without stepping, as Kotlin does, and the invariants are not checked after
 it. The body may assume the variable lies within the range. A step that is not positive throws.
+
+A `loopInvariants` call that does not lead the body of a `while` loop, of a `for` loop described here or of a
+lambda passed to a collection template (Collection iteration) is an `UNSUPPORTED_FEATURE`, as in `for (c in s)` over a
+String.
 
 ## Universal Quantification
 
@@ -773,6 +788,11 @@ caller's flow.
 
 A default argument may read `var` properties through a `@Unique` parameter of
 its function, as in `fun show(c: @Unique Counter, k: Int = c.n)`.
+
+A function compiled without its source, such as a library function, keeps no
+default values. An argument omitted in a call of one is some value of the
+parameter's type: the callee's precondition must hold for every such value, and
+the caller learns its postcondition for an unknown one.
 
 ### Collection iteration
 

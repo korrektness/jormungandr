@@ -10,15 +10,25 @@ import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirLiteralExpression
+import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirStatement
 import org.jetbrains.kotlin.fir.expressions.FirWhileLoop
 import org.jetbrains.kotlin.fir.expressions.argument
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
+import org.jetbrains.kotlin.fir.types.isArrayType
 import org.jetbrains.kotlin.fir.types.isInt
+import org.jetbrains.kotlin.fir.types.classId
+import org.jetbrains.kotlin.fir.types.isPrimitiveArray
+import org.jetbrains.kotlin.fir.types.isString
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.formver.core.embeddings.LabelEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.LabelLink
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
+import org.jetbrains.kotlin.formver.core.embeddings.properties.ClassPropertyAccess
+import org.jetbrains.kotlin.formver.core.embeddings.properties.GenericArraySizeProperty
+import org.jetbrains.kotlin.formver.core.embeddings.properties.PrimitiveArraySizeProperty
+import org.jetbrains.kotlin.formver.core.embeddings.properties.SpecialProperty
+import org.jetbrains.kotlin.formver.core.embeddings.properties.StringSizeProperty
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.AddIntInt
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.And
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.GeIntInt
@@ -28,6 +38,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbedd
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Not
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Or
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.SubIntInt
+import org.jetbrains.kotlin.formver.intrinsics.plugin.primitiveArrayClassIds
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
@@ -44,12 +55,26 @@ private val stepId = CallableId(rangesPackage, Name.identifier("step"))
 private val rangeToId = CallableId(intClassId, Name.identifier("rangeTo"))
 private val rangeUntilId = CallableId(intClassId, Name.identifier("rangeUntil"))
 
+private val textIndicesId = CallableId(FqName("kotlin.text"), Name.identifier("indices"))
+private val collectionsIndicesId = CallableId(FqName("kotlin.collections"), Name.identifier("indices"))
+
 enum class IntProgressionKind { Until, RangeTo, DownTo }
 
-/** An `Int` progression written as `first until bound`, `first ..< bound`, `first .. bound` or `first downTo bound`. */
+/** A bound of an [IntProgressionCall]. */
+sealed interface ProgressionBound {
+    data class Written(val expression: FirExpression) : ProgressionBound
+    data object Zero : ProgressionBound
+    /** The length of a String or the size of an array [receiver], read through [property]. */
+    data class SizeOf(val receiver: FirExpression, val property: SpecialProperty) : ProgressionBound
+}
+
+/**
+ * An `Int` progression written as `first until bound`, `first ..< bound`, `first .. bound` or `first downTo bound`,
+ * or as `indices` of a String or a modelled array, which is `0 until` its length or size.
+ */
 data class IntProgressionCall(
-    val first: FirExpression,
-    val bound: FirExpression,
+    val first: ProgressionBound,
+    val bound: ProgressionBound,
     val kind: IntProgressionKind,
     val step: FirExpression?,
 )
@@ -78,6 +103,7 @@ fun FirBlock.asForRangeLoop(): ForRangeLoop? {
 }
 
 private fun FirExpression.intProgressionCall(): IntProgressionCall? {
+    indicesProgression()?.let { return it }
     val call = this as? FirFunctionCall ?: return null
     val receiver = call.explicitReceiver
     if (receiver == null || call.argumentList.arguments.size != 1 || !call.argument.resolvedType.isInt) return null
@@ -92,7 +118,22 @@ private fun FirExpression.intProgressionCall(): IntProgressionCall? {
         else -> null
     }
     if (kind == null || !receiver.resolvedType.isInt) return null
-    return IntProgressionCall(receiver, call.argument, kind, null)
+    return IntProgressionCall(ProgressionBound.Written(receiver), ProgressionBound.Written(call.argument), kind, null)
+}
+
+private fun FirExpression.indicesProgression(): IntProgressionCall? {
+    val access = this as? FirPropertyAccessExpression ?: return null
+    val callableId = access.toResolvedCallableSymbol()?.callableId
+    if (callableId != textIndicesId && callableId != collectionsIndicesId) return null
+    val receiver = access.extensionReceiver ?: return null
+    val type = receiver.resolvedType
+    val property = when {
+        type.isString -> StringSizeProperty
+        type.classId in primitiveArrayClassIds -> PrimitiveArraySizeProperty
+        type.isArrayType && !type.isPrimitiveArray -> GenericArraySizeProperty
+        else -> return null
+    }
+    return IntProgressionCall(ProgressionBound.Zero, ProgressionBound.SizeOf(receiver, property), IntProgressionKind.Until, null)
 }
 
 /**
@@ -104,15 +145,22 @@ fun StmtConversionContext.convertForRangeLoop(forLoop: ForRangeLoop): ExpEmbeddi
     val progression = forLoop.progression
     val prelude = mutableListOf<ExpEmbedding>()
     // The bounds and the step are evaluated once, before the loop.
-    fun evaluatedOnce(exp: FirExpression): ExpEmbedding {
-        if (exp is FirLiteralExpression) return convert(exp)
-        val declaration = declareAnonVar(buildType { int() }, convert(exp))
+    fun stored(value: ExpEmbedding): ExpEmbedding {
+        val declaration = declareAnonVar(buildType { int() }, value)
         prelude.add(declaration)
         return declaration.variable
     }
+    fun evaluatedOnce(exp: FirExpression): ExpEmbedding = if (exp is FirLiteralExpression) convert(exp) else stored(convert(exp))
+    fun boundValue(bound: ProgressionBound): ExpEmbedding = when (bound) {
+        is ProgressionBound.Written -> evaluatedOnce(bound.expression)
+        ProgressionBound.Zero -> IntLit(0)
+        is ProgressionBound.SizeOf -> stored(
+            ClassPropertyAccess(convert(bound.receiver), bound.property.property, buildType { int() }).getValue(this)
+        )
+    }
 
-    val first = evaluatedOnce(progression.first)
-    val bound = evaluatedOnce(progression.bound)
+    val first = boundValue(progression.first)
+    val bound = boundValue(progression.bound)
     val step = progression.step?.let { evaluatedOnce(it) }
     // `step` throws on a step that is not positive.
     val positiveLiteralStep = ((progression.step as? FirLiteralExpression)?.value as? Long)?.let { it > 0 } == true

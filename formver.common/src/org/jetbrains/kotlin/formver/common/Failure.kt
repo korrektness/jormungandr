@@ -70,6 +70,7 @@ enum class FailureKind(
     UNSUPPORTED_OWNERSHIP(category = FailureCategory.TRANSLATION),
     UNTRACKED_WRITE(Severity.WARNING, category = FailureCategory.TRANSLATION),
     UNCHECKED_LIBRARY_CALL(Severity.WARNING, category = FailureCategory.TRANSLATION),
+    OPAQUE_CALL(Severity.WARNING, category = FailureCategory.TRANSLATION),
     UNSUPPORTED_FEATURE(Severity.WARNING, category = FailureCategory.TRANSLATION),
     VERIFICATION_SKIPPED(Severity.WARNING, declarationName = true, category = FailureCategory.TRANSLATION),
     INTERNAL_ERROR(category = FailureCategory.TOOL),
@@ -148,6 +149,10 @@ sealed interface KotlinCondition {
     data object UntrackedWrite : KotlinCondition
     /** A call of [member], whose specification owns a receiver that the call does not own. */
     data class UncheckedLibraryCall(val member: String) : KotlinCondition
+    /** Which kind of call or read produced an [OpaqueCall]. */
+    enum class OpaqueReason { NO_MODEL, READ_NO_MODEL, TOP_LEVEL_PROPERTY }
+    /** An opaque call of [callee], or read of the property [callee] (SPECIFICATIONS.md, "Verification Control"). */
+    data class OpaqueCall(val callee: String, val reason: OpaqueReason) : KotlinCondition
     /** A recursive call that may not decrease the caller's termination measure. */
     data object Termination : KotlinCondition
     /** Backend obligations without Kotlin provenance remain explicitly unclassified. */

@@ -40,7 +40,7 @@ fun <!VIPER_TEXT!>localLateinitCatchSeen<!>(): Int {
 fun <!VIPER_TEXT!>platformAssignCatch<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
-    val p = System.getProperty("snakt.absent")
+    val p = <!OPAQUE_CALL!>System.getProperty("snakt.absent")<!>
     try { x = 1; val q: String = p; x = 2 } catch (e: Exception) { }
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
 }
@@ -49,7 +49,7 @@ fun <!VIPER_TEXT!>platformReassignCatch<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     var q: String = ""
-    val p = System.getProperty("snakt.absent")
+    val p = <!OPAQUE_CALL!>System.getProperty("snakt.absent")<!>
     try { x = 1; q = p; x = 2 } catch (e: Exception) { }
     <!VERIFICATION_CONDITION_NOT_ESTABLISHED!>return x<!>
 }
@@ -57,7 +57,7 @@ fun <!VIPER_TEXT!>platformReassignCatch<!>(): Int {
 fun <!VIPER_TEXT!>platformCheckedAssign<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
-    val p = System.getProperty("snakt.absent")
+    val p = <!OPAQUE_CALL!>System.getProperty("snakt.absent")<!>
     if (p != null) {
         try { x = 1; val q: String = p; x = 2 } catch (e: Exception) { }
     }
@@ -68,7 +68,7 @@ fun <!VIPER_TEXT!>platformCheckedAssign<!>(): Int {
 fun <!VIPER_TEXT!>platformKeptAssign<!>(): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
-    val p = System.getProperty("snakt.absent")
+    val p = <!OPAQUE_CALL!>System.getProperty("snakt.absent")<!>
     try { x = 1; val q = p; x = 2 } catch (e: Exception) { }
     return x
 }
@@ -76,7 +76,7 @@ fun <!VIPER_TEXT!>platformKeptAssign<!>(): Int {
 fun <!VIPER_TEXT!>platformAssignSeen<!>(): Int {
     postconditions<Int> { it == 1 || it == 2 }
     var x = 0
-    val p = System.getProperty("snakt.absent")
+    val p = <!OPAQUE_CALL!>System.getProperty("snakt.absent")<!>
     try { x = 1; val q: String = p; verify(q.length >= 0); x = 2 } catch (e: Exception) { }
     return x
 }

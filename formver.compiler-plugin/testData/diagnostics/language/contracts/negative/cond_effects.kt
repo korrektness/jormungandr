@@ -34,7 +34,7 @@ fun <!VIPER_TEXT!>isNullOrEmptyWrong<!>(seq: CharSequence?): Boolean {
     contract {
         <!CONDITIONAL_EFFECT_ERROR!>returns(false) implies (seq != null)<!>
     }
-    return seq != null && seq.length != 0
+    return seq != null && <!OPAQUE_CALL!>seq.length<!> != 0
 }
 
 @OptIn(ExperimentalContracts::class)

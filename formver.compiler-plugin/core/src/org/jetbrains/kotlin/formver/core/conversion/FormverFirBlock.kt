@@ -24,10 +24,32 @@ fun FirStatement.extractFormverFirBlock(predicate: FirFunctionSymbol<*>.() -> Bo
     return formverInvariantsArgument.anonymousFunction
 }
 
-fun extractLoopInvariants(loopBody: List<FirStatement>): FirBlock? {
-    val firstStmt = loopBody.firstOrNull() ?: return null
-    return firstStmt.extractFormverFirBlock { isFormverFunctionNamed("loopInvariants") }?.body
+/** The `loopInvariants` calls that lead the bodies of loops, which the loops' conversions consume. */
+interface LoopInvariantAttachments {
+    /** Marks [call], a `loopInvariants` call, as the invariants of the loop it leads. */
+    fun attachLoopInvariants(call: FirStatement)
+
+    /** Whether [attachLoopInvariants] marked [call]. */
+    fun isAttachedLoopInvariants(call: FirStatement): Boolean
 }
+
+class LoopInvariantAttachmentSet : LoopInvariantAttachments {
+    private val attached = mutableSetOf<FirStatement>()
+
+    override fun attachLoopInvariants(call: FirStatement) {
+        attached += call
+    }
+
+    override fun isAttachedLoopInvariants(call: FirStatement): Boolean = call in attached
+}
+
+/** The `loopInvariants` block that leads [loopBody], marked as attached to its loop; `null` when there is none. */
+fun ProgramConversionContext.extractLoopInvariants(loopBody: List<FirStatement>): FirBlock? =
+    loopBody.firstOrNull()?.let(::extractLoopInvariantsCall)?.body
+
+/** The `loopInvariants` lambda of [statement], marked as attached to a loop; `null` when [statement] is no such call. */
+fun ProgramConversionContext.extractLoopInvariantsCall(statement: FirStatement): FirAnonymousFunction? =
+    statement.extractFormverFirBlock { isFormverFunctionNamed("loopInvariants") }?.also { attachLoopInvariants(statement) }
 
 data class FirSpecification(val precond: FirBlock?, val postcond: FirBlock?, val returnVar: FirValueParameterSymbol?) {
     constructor() : this(null, null, null)

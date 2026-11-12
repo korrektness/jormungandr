@@ -18,4 +18,4 @@ fun <!VIPER_TEXT!>constInWhen<!>(c: Char): Int = when (c) {
     else -> 0
 }
 
-fun <!VIPER_TEXT!>nonConst<!>(): Int = NON_CONST
+fun <!VIPER_TEXT!>nonConst<!>(): Int = <!OPAQUE_CALL!>NON_CONST<!>

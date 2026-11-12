@@ -5,6 +5,9 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.common.Failure
+import org.jetbrains.kotlin.formver.common.FailureKind
+import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
@@ -304,7 +307,8 @@ fun StmtConversionContext.convertUnownedSpecifiedMember(access: FirQualifiedAcce
         else -> return null
     }
     if (ownsReceiverBefore(access, receiver)) return null
-    reportUncheckedLibraryCall(access.source, callee.callableId?.asSingleFqName()?.asString() ?: callee.name.asString())
+    val member = callee.callableId?.asSingleFqName()?.asString() ?: callee.name.asString()
+    reportWarning(Failure(FailureKind.UNCHECKED_LIBRARY_CALL, access.source, KotlinCondition.UncheckedLibraryCall(member)))
     val arguments = (access as? FirFunctionCall)?.arguments.orEmpty()
     return Block {
         add(convert(receiver))

@@ -33,7 +33,7 @@ import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
 import org.jetbrains.kotlin.formver.viper.NameResolver
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 
-interface ProgramConversionContext : ErrorCollectionContext {
+interface ProgramConversionContext : ErrorCollectionContext, LoopInvariantAttachments {
 
     val config: PluginConfiguration
 

@@ -24,8 +24,8 @@ interface ErrorCollectionContext {
     /** Warn that the write at [source] is dropped because the local it goes through is shared. */
     fun reportUntrackedWrite(source: KtSourceElement?)
 
-    /** Warn that the call of [member] at [source] is the opaque library call because it does not own its receiver. */
-    fun reportUncheckedLibraryCall(source: KtSourceElement?, member: String)
+    /** Report [warning], which leaves the declaration verified. */
+    fun reportWarning(warning: org.jetbrains.kotlin.formver.common.Failure)
 
     /** Report a construct at [source] that SnaKt does not translate. */
     fun reportUnsupportedFeature(source: KtSourceElement?, msg: String, reason: org.jetbrains.kotlin.formver.common.UnsupportedReason)

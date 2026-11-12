@@ -240,6 +240,7 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
             KotlinCondition.UntrackedWrite -> "Write is not tracked because the local it goes through is shared."
             is KotlinCondition.UncheckedLibraryCall ->
                 "Call to '${condition.member}' is not checked against its specification because its receiver is not unique. It may throw, and its result is unknown."
+            is KotlinCondition.OpaqueCall -> opaqueCallMessage(condition)
             KotlinCondition.Unclassified -> {
                 val evidence = requireNotNull(failure.backend)
                 "Could not establish a generated Kotlin obligation [${evidence.errorId}/${evidence.reasonId}]: ${evidence.detail}"
@@ -540,5 +541,14 @@ object FailureToFirRenderer : BaseDiagnosticRendererFactory() {
         val name = kind.name.lowercase()
         return symbol?.let { "$name '${FirDiagnosticRenderers.DECLARATION_NAME.render(it)}'" }
             ?: "the following $name sub-expression"
+    }
+
+    private fun opaqueCallMessage(condition: KotlinCondition.OpaqueCall): String = when (condition.reason) {
+        KotlinCondition.OpaqueReason.NO_MODEL ->
+            "Call to '${condition.callee}' has no model."
+        KotlinCondition.OpaqueReason.READ_NO_MODEL ->
+            "Read of '${condition.callee}' has no model."
+        KotlinCondition.OpaqueReason.TOP_LEVEL_PROPERTY ->
+            "Top-level property '${condition.callee}' is not converted."
     }
 }

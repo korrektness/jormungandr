@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.formver.plugin.*
 
 enum class Direction { NORTH, SOUTH }
 
-fun <!VIPER_TEXT!>isControl<!>(c: Char): Boolean = c in CharCategory.CONTROL
+fun <!VIPER_TEXT!>isControl<!>(c: Char): Boolean = <!OPAQUE_CALL!>c in CharCategory.CONTROL<!>
 
 fun <!VIPER_TEXT!>callsIsControl<!>(c: Char): Boolean = isControl(c)
 

@@ -1,0 +1,254 @@
+/opaque_calls.kt: info: Generated Viper text for lowNibble:
+method and(this: Ref, other: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), intType())
+  requires isSubtype(typeOf(other), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+method lowNibble(i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := and(i, intToRef(15))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/opaque_calls.kt: info: Generated Viper text for shiftByLiteral:
+method shiftByLiteral(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), intType())
+  requires intFromRef(c) >= 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= 0
+{
+  v_ret_0 := shiftRightInt(c, longToRef(4096))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/opaque_calls.kt: info: Generated Viper text for doubled:
+method doubled(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := shl(c, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method shl(this: Ref, bitCount: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), intType())
+  requires isSubtype(typeOf(bitCount), intType())
+  ensures isSubtype(typeOf(ret_1), intType())
+
+
+/opaque_calls.kt: info: Generated Viper text for nibbleInRange:
+method and(this: Ref, other: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), intType())
+  requires isSubtype(typeOf(other), intType())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method nibbleInRange(i: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(i), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 0 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) < 16
+{
+  v_ret_0 := and(i, intToRef(15))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/opaque_calls.kt: info: Generated Viper text for appendRange:
+field contents: Seq[Int]
+
+method append(this: Ref, p0: Ref, p1: Ref, p2: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), StringBuilder())
+  requires isSubtype(typeOf(p0), nullable(CharSequence()))
+  requires isSubtype(typeOf(p1), intType())
+  requires isSubtype(typeOf(p2), intType())
+  ensures isSubtype(typeOf(ret_4), nullable(StringBuilder()))
+
+
+method appendRange(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  requires |stringFromRef(s)| >= 2
+  ensures isSubtype(typeOf(v_ret_0), stringType())
+{
+  var sb: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  sb := con()
+  anon_0 := append(sb, s, intToRef(0), intToRef(2))
+  anon_1 := havoc(stringType())
+  v_ret_0 := anon_1
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method con() returns (ret_2: Ref)
+  ensures isSubtype(typeOf(ret_2), StringBuilder())
+  ensures acc(StringBuilder_unique(ret_2), write)
+  ensures (unfolding acc(StringBuilder_unique(ret_2), write) in
+      ret_2.contents == stringFromRef(stringLit()))
+
+
+method length(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+/opaque_calls.kt: info: Generated Viper text for tableEntry:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method tableEntry() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), nullable(stringType()))
+{
+  var table: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(anon_0), Array())
+  table := anon_0
+  assert 0 >= 0
+  assert 0 < referenceArraySize(table)
+  anon_1 := havoc(nullable(stringType()))
+  v_ret_0 := anon_1
+  inhale isSubtype(typeOf(v_ret_0), nullable(stringType()))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/opaque_calls.kt: info: Generated Viper text for firstQuote:
+method firstQuote(s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(s), stringType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon_0: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  var anon_4: Ref
+  var anon_3: Ref
+  anon_0 := charToRef(34)
+  inhale isSubtype(typeOf(anon_1), intType())
+  anon_2 := anon_1
+  inhale isSubtype(typeOf(anon_3), boolType())
+  anon_4 := anon_3
+  inhale isSubtype(typeOf(s), CharSequence())
+  v_ret_0 := indexOf(s, anon_0, anon_2, anon_4)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method indexOf(v_this_extension: Ref, char: Ref, startIndex: Ref, ignoreCase: Ref)
+  returns (ret_2: Ref)
+  requires isSubtype(typeOf(v_this_extension), CharSequence())
+  requires isSubtype(typeOf(char), charType())
+  requires isSubtype(typeOf(startIndex), intType())
+  requires isSubtype(typeOf(ignoreCase), boolType())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method length(v_this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(v_this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/opaque_calls.kt: info: Generated Viper text for codePoint:
+method codePoint(c: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(c), intType())
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+{
+  v_ret_0 := isValidCodePoint(c)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method isValidCodePoint(p0: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(p0), intType())
+  ensures isSubtype(typeOf(ret_1), boolType())
+
+
+/opaque_calls.kt: info: Generated Viper text for Point:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_x: Ref, par_y: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(v_ret_0), Point())
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_0)) == intFromRef(par_y)
+  ensures intFromRef(g_x(v_ret_0)) == intFromRef(par_x)
+  ensures intFromRef(g_y(v_ret_0)) == intFromRef(par_y)
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Point()
+  anon_0 := par_x
+  inhale intFromRef(g_x(v_ret_0)) == intFromRef(anon_0)
+  anon_1 := par_y
+  inhale intFromRef(g_y(v_ret_0)) == intFromRef(anon_1)
+  fold acc(Point_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Point_unique(v_ret_0), write)
+}
+
+/opaque_calls.kt: info: Generated Viper text for generatedMembers:
+function g_x(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function g_y(this: Ref): Ref
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method component1(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method component2(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Point())
+  ensures isSubtype(typeOf(ret_3), intType())
+
+
+method copy(this: Ref, par_x: Ref, par_y: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Point())
+  requires isSubtype(typeOf(par_x), intType())
+  requires isSubtype(typeOf(par_y), intType())
+  ensures isSubtype(typeOf(ret_1), Point())
+
+
+method generatedMembers(p: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(p), Point())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var q: Ref
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  anon_0 := intToRef(0)
+  anon_1 := g_x(p)
+  q := copy(p, anon_1, anon_0)
+  anon_2 := component1(p)
+  anon_3 := component2(q)
+  v_ret_0 := plusInts(anon_2, anon_3)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

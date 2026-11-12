@@ -1458,6 +1458,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("opaque_calls.kt")
+        public void testOpaque_calls() {
+          runTest("formver.compiler-plugin/testData/diagnostics/language/reporting/opaque_calls.kt");
+        }
+
+        @Test
         @TestMetadata("refute.kt")
         public void testRefute() {
           runTest("formver.compiler-plugin/testData/diagnostics/language/reporting/refute.kt");

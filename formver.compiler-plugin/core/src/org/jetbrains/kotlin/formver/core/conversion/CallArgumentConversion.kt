@@ -27,7 +27,8 @@ import org.jetbrains.kotlin.utils.addIfNotNull
  * The arguments are evaluated in Kotlin's order: receivers, the explicit arguments as written, then the default of each
  * omitted parameter in parameter order. A default may read the parameters before it, so it is converted with those
  * parameters bound to the arguments already evaluated, and with the callee's uniqueness facts, which own a path through
- * a `@Unique` parameter.
+ * a `@Unique` parameter. An argument omitted for a function compiled without its source follows SPECIFICATIONS.md,
+ * "Inline functions and default arguments".
  */
 @OptIn(SymbolInternals::class)
 fun StmtConversionContext.insertCallWithMappedArguments(
@@ -65,7 +66,8 @@ fun StmtConversionContext.insertCallWithMappedArguments(
         val defaultValue = parameterSymbol.fir.defaultValue
             ?: throw UnsupportedFeatureException(call.source, "omitted vararg argument")
         if (defaultValue is FirExpressionStub) {
-            throw UnsupportedFeatureException(call.source, "default argument of a function compiled without its source")
+            bind(parameter, unconstrainedValue(formalTypes.getValue(parameter)))
+            continue
         }
         val defaultCtx = MethodContextFactory(
             signature,

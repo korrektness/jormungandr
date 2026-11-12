@@ -151,3 +151,62 @@ fun <!VIPER_TEXT!>lastElementVisited<!>(): Int {
     }
     return last
 }
+
+fun <!VIPER_TEXT!>stringIndices<!>(s: String): Int {
+    postconditions<Int> { result -> result == s.length }
+    var n = 0
+    for (i in s.indices) {
+        loopInvariants { n == i }
+        verify(0 <= i && i < s.length)
+        val c = s[i]
+        n += 1
+    }
+    return n
+}
+
+fun <!VIPER_TEXT!>intArrayIndices<!>(arr: @Unique @Borrowed IntArray, v: Int) {
+    postconditions<Unit> {
+        forAll<Int> { k -> (0 <= k && k < arr.size) implies (arr[k] == v) }
+    }
+    for (i in arr.indices) {
+        loopInvariants {
+            forAll<Int> { k -> (0 <= k && k < i) implies (arr[k] == v) }
+        }
+        arr[i] = v
+    }
+}
+
+fun <!VIPER_TEXT!>arrayIndices<!>(arr: Array<String>): Int {
+    postconditions<Int> { result -> result == arr.size }
+    var n = 0
+    for (i in arr.indices) {
+        loopInvariants { n == i }
+        verify(i < arr.size)
+        n += 1
+    }
+    return n
+}
+
+fun <!VIPER_TEXT!>stringIndicesPastEnd<!>(s: String): Int {
+    var n = 0
+    for (i in s.indices) {
+        loopInvariants { n == i }
+        verify(<!VERIFICATION_CONDITION_NOT_ESTABLISHED!>i + 1 < s.length<!>)
+        n += 1
+    }
+    return n
+}
+
+fun <!VERIFICATION_SKIPPED!>invariantsOfIteratorLoop<!>(s: String): Int {
+    var n = 0
+    for (c in <!OPAQUE_CALL, OPAQUE_CALL, OPAQUE_CALL!>s<!>) {
+        <!UNSUPPORTED_FEATURE!>loopInvariants { n >= 0 }<!>
+        n += 1
+    }
+    return n
+}
+
+fun <!VERIFICATION_SKIPPED!>invariantsOutsideLoop<!>(x: Int): Int {
+    <!UNSUPPORTED_FEATURE!>loopInvariants { x >= 0 }<!>
+    return x
+}

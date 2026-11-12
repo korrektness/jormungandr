@@ -86,7 +86,7 @@ class ProgramConverter(
     override val config: PluginConfiguration,
     override val checkerContext: CheckerContext,
     private val reporter: DiagnosticReporter,
-) : ProgramConversionContext {
+) : ProgramConversionContext, LoopInvariantAttachments by LoopInvariantAttachmentSet() {
 
     /**
      * Whether any primary diagnostic has been reported during conversion.
@@ -114,9 +114,7 @@ class ProgramConverter(
         reporter.reportTranslation(source, ConversionErrors.UNTRACKED_WRITE)
     }
 
-    override fun reportUncheckedLibraryCall(source: KtSourceElement?, member: String) = context(checkerContext) {
-        reporter.reportFailure(Failure(FailureKind.UNCHECKED_LIBRARY_CALL, source, KotlinCondition.UncheckedLibraryCall(member)))
-    }
+    override fun reportWarning(warning: Failure) = context(checkerContext) { reporter.reportFailure(warning) }
 
     override fun reportUnsupportedFeature(source: KtSourceElement?, msg: String, reason: UnsupportedReason) =
         emit(Failure(ConversionErrors.UNSUPPORTED_FEATURE, source, KotlinCondition.Translation(reason.name, msg)))

@@ -17,7 +17,7 @@ fun <!VERIFICATION_SKIPPED!>sharedCallResultFilter<!>(n: Numbers) {
 }
 
 fun <!VERIFICATION_SKIPPED!>sharedAny<!>(xs: List<Int>) {
-    val found = xs.any <!UNSUPPORTED_FEATURE!>{ it > 0 }<!>
+    val found = <!OPAQUE_CALL!>xs.any <!UNSUPPORTED_FEATURE!>{ it > 0 }<!><!>
 }
 
 fun <!VIPER_TEXT!>uniqueAny<!>(xs: @Unique @Borrowed List<Int>) {

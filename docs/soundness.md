@@ -36,6 +36,9 @@ three things part of every result:
   declarations contracts, observers and laws (see "External specifications"
   below). They are trusted, and an override of a library member is trusted to
   comply with them.
+- **Opaque calls.** For a call or read reported as `OPAQUE_CALL`
+  (SPECIFICATIONS.md, "Verification Control"), the result says nothing about
+  what the call computes. Test: `language/reporting/opaque_calls.kt::nibbleInRange,tableEntry`.
 - **Skipped declarations.** A declaration that SnaKt does not verify reports
   `VERIFICATION_SKIPPED` with a reason. A body converted without that warning is
   verified, including the body of a local function, which is a declaration of
@@ -276,7 +279,8 @@ Callers use constructor headers. SnaKt verifies the constructors, property
 initializers and `init` blocks of every source class against those headers
 (SPECIFICATIONS.md, "Verification Control"). A construction it cannot convert or
 that breaks the construction discipline is skipped, and its header then states
-no field values. Top-level initializers are unconverted.
+no field values. Top-level initializers are unconverted; a read of such a
+property is an opaque call.
 
 Property accessor bodies are verified against their callers' header
 (SPECIFICATIONS.md, "Verification Control").
