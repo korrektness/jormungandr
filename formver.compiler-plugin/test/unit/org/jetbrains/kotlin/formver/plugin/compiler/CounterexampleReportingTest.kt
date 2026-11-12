@@ -20,6 +20,15 @@ import viper.silver.verifier.reasons
 import kotlin.test.*
 
 class CounterexampleReportingTest {
+    companion object {
+        init {
+            // Silicon terms read the JVM-global verifier configuration when hashed. Silicon assigns it only when a
+            // backend is constructed, and the unit tier constructs none.
+            val verifier = viper.silicon.verifier.`Verifier$`.`MODULE$`
+            if (verifier.config() == null) verifier.`config_$eq`(viper.silicon.Config(emptySeq()).apply { verify() })
+        }
+    }
+
     private val pos = `NoPosition$`.`MODULE$`
     private val info = `NoInfo$`.`MODULE$`
     private val trafos = `NoTrafos$`.`MODULE$`
