@@ -47,6 +47,7 @@ interface MethodConversionContext : ProgramConversionContext {
     val signature: FunctionSignature
     val wrapsIntArithmetic: Boolean
     val wrapsLongArithmetic: Boolean
+    val wrapsNarrowing: Boolean
     val trustsElementEquality: Boolean
     val defaultResolvedReturnTarget: ReturnTarget
     val isValidForForAllBlock: Boolean

@@ -1,0 +1,185 @@
+/wrapping_narrowing.kt: info: Generated Viper text for truncations:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method truncations() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 200 - 256 * ((200 - -128) \ 256) ==
+    -56 - 256 * ((-56 - -128) \ 256)
+  assert 255 - 256 * ((255 - -128) \ 256) == -1
+  assert 128 - 256 * ((128 - -128) \ 256) == -128
+  assert -129 - 256 * ((-129 - -128) \ 256) == 127
+  assert 127 - 256 * ((127 - -128) \ 256) == 127
+  assert 40000 - 65536 * ((40000 - -32768) \ 65536) == -25536
+  assert 4294967296 -
+    4294967296 * ((4294967296 - -2147483648) \ 4294967296) ==
+    0
+  assert 2147483648 -
+    4294967296 * ((2147483648 - -2147483648) \ 4294967296) ==
+    -2147483648
+  assert (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1))) -
+    4294967296 *
+    (((let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1))) -
+    -2147483648) \
+    4294967296) ==
+    -1
+  assert -9223372036854775808 -
+    4294967296 * ((-9223372036854775808 - -2147483648) \ 4294967296) ==
+    0
+  assert 9223372036854775807 -
+    4294967296 * ((9223372036854775807 - -2147483648) \ 4294967296) ==
+    -1
+  assert -1 - 65536 * ((-1 - 0) \ 65536) == 65535
+  refute false
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_narrowing.kt: info: Generated Viper text for storeLowByte:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method storeLowByte(out: Ref, par_v: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(out), ByteArray())
+  requires acc(ByteArray_unique(out), write)
+  requires isSubtype(typeOf(par_v), intType())
+  requires arraySize(out) > 0 && 0 <= intFromRef(par_v) &&
+    intFromRef(par_v) <= 65535
+  ensures acc(ByteArray_unique(out), write)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+  ensures (let anon ==
+      (remInts(par_v, intToRef(256))) in
+      intFromRef(par_v) -
+      (intFromRef(par_v) < 0 != intFromRef(intToRef(256)) < 0 ?
+        -((intFromRef(par_v) < 0 ? -intFromRef(par_v) : intFromRef(par_v)) \
+        (intFromRef(intToRef(256)) < 0 ?
+          -intFromRef(intToRef(256)) :
+          intFromRef(intToRef(256)))) :
+        (intFromRef(par_v) < 0 ? -intFromRef(par_v) : intFromRef(par_v)) \
+        (intFromRef(intToRef(256)) < 0 ?
+          -intFromRef(intToRef(256)) :
+          intFromRef(intToRef(256)))) *
+      intFromRef(intToRef(256))) <=
+    127 ==>
+    (unfolding acc(ByteArray_unique(out), write) in
+      out.contents[0] ==
+      (let anon ==
+        (remInts(par_v, intToRef(256))) in
+        intFromRef(par_v) -
+        (intFromRef(par_v) < 0 != intFromRef(intToRef(256)) < 0 ?
+          -((intFromRef(par_v) < 0 ?
+            -intFromRef(par_v) :
+            intFromRef(par_v)) \
+          (intFromRef(intToRef(256)) < 0 ?
+            -intFromRef(intToRef(256)) :
+            intFromRef(intToRef(256)))) :
+          (intFromRef(par_v) < 0 ? -intFromRef(par_v) : intFromRef(par_v)) \
+          (intFromRef(intToRef(256)) < 0 ?
+            -intFromRef(intToRef(256)) :
+            intFromRef(intToRef(256)))) *
+        intFromRef(intToRef(256))))
+  ensures (let anon ==
+      (remInts(par_v, intToRef(256))) in
+      intFromRef(par_v) -
+      (intFromRef(par_v) < 0 != intFromRef(intToRef(256)) < 0 ?
+        -((intFromRef(par_v) < 0 ? -intFromRef(par_v) : intFromRef(par_v)) \
+        (intFromRef(intToRef(256)) < 0 ?
+          -intFromRef(intToRef(256)) :
+          intFromRef(intToRef(256)))) :
+        (intFromRef(par_v) < 0 ? -intFromRef(par_v) : intFromRef(par_v)) \
+        (intFromRef(intToRef(256)) < 0 ?
+          -intFromRef(intToRef(256)) :
+          intFromRef(intToRef(256)))) *
+      intFromRef(intToRef(256))) >=
+    128 ==>
+    (unfolding acc(ByteArray_unique(out), write) in
+      out.contents[0] ==
+      (let anon ==
+        (minusInts(remInts(par_v, intToRef(256)), intToRef(256))) in
+        intFromRef(remInts(par_v, intToRef(256))) -
+        intFromRef(intToRef(256))))
+{
+  assert 0 >= 0
+  assert 0 < arraySize(out)
+  unfold acc(ByteArray_unique(out), write)
+  out.contents := out.contents[0 :=
+    intFromRef(par_v) - 256 * ((intFromRef(par_v) - -128) \ 256)]
+  label lbl_ret_0
+  fold acc(ByteArray_unique(out), write)
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_narrowing.kt: info: Generated Viper text for truncationIsInRange:
+method truncationIsInRange(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), longType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures -128 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) <= 127
+{
+  v_ret_0 := convertByteToInt(wrappingConvertLongToByte(x))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_narrowing.kt: info: Generated Viper text for wrongTruncation:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongTruncation(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) == 200
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(x) - 256 * ((intFromRef(x) - -128) \ 256) == 200
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/wrapping_narrowing.kt: info: Generated Viper text for wideningExact:
+method wideningExact(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), byteType())
+  ensures isSubtype(typeOf(v_ret_0), longType())
+  ensures longFromRef(v_ret_0) == byteFromRef(b) &&
+    ((let anon ==
+      (unaryMinusLong(longToRef(128))) in
+      -longFromRef(longToRef(128))) <
+    longFromRef(v_ret_0) ?
+      -1 :
+      ((let anon ==
+        (unaryMinusLong(longToRef(128))) in
+        -longFromRef(longToRef(128))) >
+      longFromRef(v_ret_0) ?
+        1 :
+        0)) <=
+    0 &&
+    (longFromRef(v_ret_0) < 127 ?
+      -1 :
+      (longFromRef(v_ret_0) > 127 ? 1 : 0)) <=
+    0
+{
+  v_ret_0 := convertByteToLong(b)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/wrapping_narrowing.kt: info: Generated Viper text for checkedNarrowing:
+method checkedNarrowing(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), byteType())
+{
+  v_ret_0 := convertIntToByte(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

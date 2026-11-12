@@ -82,6 +82,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         public void testWrapping_long_arithmetic() {
           runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/wrapping_long_arithmetic.kt");
         }
+
+        @Test
+        @TestMetadata("wrapping_narrowing.kt")
+        public void testWrapping_narrowing() {
+          runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/wrapping_narrowing.kt");
+        }
       }
 
       @Nested

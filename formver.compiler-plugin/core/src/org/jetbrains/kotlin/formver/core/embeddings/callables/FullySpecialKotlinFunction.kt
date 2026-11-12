@@ -110,8 +110,9 @@ object SpecialKotlinFunctions {
                 withDispatchReceiver { existing(op.receiver.pretype) }
                 withReturnType { existing(op.result.pretype) }
             }
-            addFunction(signature, SpecialPackages.kotlin, className = op.receiver.name, name = op.operation) { args, _ ->
-                template(args[0])
+            addFunction(signature, SpecialPackages.kotlin, className = op.receiver.name, name = op.operation) { args, ctx ->
+                val operation = (if (ctx.wrapsNarrowing) IntegerOperators.wrappingNarrowing[op] else null) ?: template
+                operation(args[0])
             }
         }
         val intIntToIntType = buildFunctionPretype {

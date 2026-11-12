@@ -22,7 +22,7 @@ class PortDeviationChecker : Closeable {
         disposable, CompilerConfiguration(), EnvironmentConfigFiles.JVM_CONFIG_FILES,
     )
     private val factory = KtPsiFactory(environment.project, false)
-    private val erasedAnnotations = setOf("Pure", "Unique", "Borrowed", "WrappingIntArithmetic", "WrappingLongArithmetic", "TrustedElementEquality")
+    private val erasedAnnotations = setOf("Pure", "Unique", "Borrowed", "WrappingIntArithmetic", "WrappingLongArithmetic", "WrappingNarrowing", "TrustedElementEquality")
 
     override fun close() = Disposer.dispose(disposable)
 

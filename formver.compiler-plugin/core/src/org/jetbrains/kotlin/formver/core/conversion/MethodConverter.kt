@@ -48,6 +48,9 @@ class MethodConverter(
     override val wrapsLongArithmetic: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.wrapsLongArithmetic(session) == true
 
+    override val wrapsNarrowing: Boolean =
+        (signature as? NamedFunctionSignature)?.symbol?.wrapsNarrowing(session) == true
+
     override val trustsElementEquality: Boolean =
         (signature as? NamedFunctionSignature)?.symbol?.trustsElementEquality(session) == true
 
@@ -55,6 +58,7 @@ class MethodConverter(
         (signature as? NamedFunctionSignature)?.symbol?.let {
             if (wrapsIntArithmetic) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_INT)
             if (wrapsLongArithmetic) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_LONG)
+            if (wrapsNarrowing) trust.recordWrappingArithmetic(it, SemanticOptIn.Kind.WRAPPING_NARROWING)
         }
         if (trustsElementEquality) (signature as? NamedFunctionSignature)?.symbol?.let { trust.recordElementEquality(it) }
     }

@@ -8,3 +8,6 @@ import org.jetbrains.kotlin.name.FqName
 
 fun FirFunctionSymbol<*>.wrapsLongArithmetic(session: FirSession): Boolean =
     hasAnnotation(ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.WrappingLongArithmetic")), session)
+
+fun FirFunctionSymbol<*>.wrapsNarrowing(session: FirSession): Boolean =
+    hasAnnotation(ClassId.topLevel(FqName("org.jetbrains.kotlin.formver.plugin.WrappingNarrowing")), session)

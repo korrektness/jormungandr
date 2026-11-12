@@ -39,6 +39,11 @@ annotation class WrappingIntArithmetic
 @Retention(AnnotationRetention.BINARY)
 annotation class WrappingLongArithmetic
 
+/** Selects truncating narrowing conversions; see "Integer arithmetic" in SPECIFICATIONS.md. */
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.BINARY)
+annotation class WrappingNarrowing
+
 /** Selects trusted executed element equality; see "Equality" in SPECIFICATIONS.md. */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)

@@ -173,5 +173,26 @@ object IntegerOperators {
         })
     }
 
-    val templates get() = binary.values + wrappingBinary.values + wrappingLongBinary.values + unary.values
+    /** [value] reduced into [target]'s range modulo its width, as a two's-complement truncation. */
+    private fun wrapInto(target: IntegerKind, value: Exp, pos: Position, info: Info): Exp {
+        // Mathematical integers: Viper division by a positive modulus rounds down.
+        val modulus = Exp.IntLit(target.upper - target.lower + 1)
+        val lower = Exp.IntLit(target.lower)
+        return Exp.Sub(value, Exp.Mul(modulus, Exp.Div(Exp.Sub(value, lower), modulus)), pos, info)
+    }
+
+    /** The narrowing `to` conversions, which truncate to the target width instead of checking its range. */
+    val wrappingNarrowing: Map<Unary, UnaryOperatorExpEmbeddingTemplate> = unary.keys.filter {
+        it.operation == "to${it.result.name}" && (it.receiver.lower < it.result.lower || it.receiver.upper > it.result.upper)
+    }.associateWith { op ->
+        buildUnaryOperator {
+            setName("wrappingConvert${op.receiver.name}To${op.result.name}")
+            withSignature {
+                withParam { existing(op.receiver.pretype) }; withReturnType { existing(op.result.pretype) }
+            }
+            viperImplementation { wrapInto(op.result, args[0], pos, info) }
+        }
+    }
+
+    val templates get() = binary.values + wrappingBinary.values + wrappingLongBinary.values + unary.values + wrappingNarrowing.values
 }

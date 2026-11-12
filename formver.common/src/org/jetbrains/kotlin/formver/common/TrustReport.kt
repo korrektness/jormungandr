@@ -30,6 +30,7 @@ data class SemanticOptIn(val kind: Kind, val name: String) : Comparable<Semantic
     enum class Kind(val label: String) {
         WRAPPING_INT("@WrappingIntArithmetic"),
         WRAPPING_LONG("@WrappingLongArithmetic"),
+        WRAPPING_NARROWING("@WrappingNarrowing"),
     }
 
     override fun compareTo(other: SemanticOptIn): Int = compareValuesBy(this, other, { it.kind }, { it.name })
