@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 
 /**
- * The `Seq[Int]` field in which a built-in owned class keeps its elements: an `IntArray`'s elements, a
+ * The `Seq[Int]` field in which a built-in owned class keeps its elements: a primitive array's elements, a
  * `StringBuilder`'s character codes.
  */
 val contentsField = Field(SpecialFieldName("contents"), Type.Seq(Type.Int), includeInShortDump = true)

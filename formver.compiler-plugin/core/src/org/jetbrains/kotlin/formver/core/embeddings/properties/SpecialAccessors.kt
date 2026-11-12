@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.formver.core.embeddings.properties
 
 import org.jetbrains.kotlin.formver.core.conversion.TypeResolver
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArraySize
+import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveArraySize
 import org.jetbrains.kotlin.formver.core.embeddings.expression.GenericArraySize
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings
 
@@ -33,8 +33,8 @@ object GenericArraySizeGetter : GetterEmbedding {
     override fun getValueSimple(receiver: ExpEmbedding, ctx: TypeResolver) = GenericArraySize(receiver)
 }
 
-object IntArraySizeGetter : GetterEmbedding {
-    override fun getValue(receiver: ExpEmbedding, ctx: TypeResolver, receiverOwned: Boolean) = IntArraySize(receiver)
+object PrimitiveArraySizeGetter : GetterEmbedding {
+    override fun getValue(receiver: ExpEmbedding, ctx: TypeResolver, receiverOwned: Boolean) = PrimitiveArraySize(receiver)
 
-    override fun getValueSimple(receiver: ExpEmbedding, ctx: TypeResolver) = IntArraySize(receiver)
+    override fun getValueSimple(receiver: ExpEmbedding, ctx: TypeResolver) = PrimitiveArraySize(receiver)
 }

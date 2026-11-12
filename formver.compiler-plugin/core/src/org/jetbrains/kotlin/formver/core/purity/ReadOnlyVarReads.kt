@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FunctionCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayContents
-import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayGet
+import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveArrayGet
 import org.jetbrains.kotlin.formver.core.embeddings.expression.GenericArrayGet
 import org.jetbrains.kotlin.formver.core.embeddings.expression.Old
 import org.jetbrains.kotlin.formver.core.embeddings.expression.StringBuilderRead
@@ -61,7 +61,7 @@ fun ExpEmbedding.checkReadOnlyVarReads(
         this is FieldAccess && field.accessPolicy == AccessPolicy.BY_RECEIVER_UNIQUENESS ->
             checkOwnedRead(receiver, receiverOwned, ConversionOwnershipCondition.ReadKind.VAR_PROPERTY, field.symbol)
         this is GenericArrayGet -> checkOwnedRead(array, receiverOwned, ConversionOwnershipCondition.ReadKind.ARRAY_ELEMENT)
-        this is IntArrayGet -> checkOwnedRead(array, receiverOwned, ConversionOwnershipCondition.ReadKind.ARRAY_ELEMENT)
+        this is PrimitiveArrayGet -> checkOwnedRead(array, receiverOwned, ConversionOwnershipCondition.ReadKind.ARRAY_ELEMENT)
         this is IntArrayContents -> checkOwnedRead(array, receiverOwned, ConversionOwnershipCondition.ReadKind.ARRAY_CONTENTS)
         this is StringBuilderRead -> checkOwnedRead(builder, receiverOwned, ConversionOwnershipCondition.ReadKind.STRING_BUILDER)
         this is FunctionCall -> function.formalArgs.zip(args)

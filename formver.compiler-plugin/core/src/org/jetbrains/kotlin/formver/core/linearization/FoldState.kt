@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.formver.core.domains.RuntimeTypeDomain
 import org.jetbrains.kotlin.formver.core.embeddings.expression.ExpEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveFieldAccess
 import org.jetbrains.kotlin.formver.core.embeddings.expression.FieldAccess
-import org.jetbrains.kotlin.formver.core.embeddings.expression.IntArrayInit
+import org.jetbrains.kotlin.formver.core.embeddings.expression.PrimitiveArrayInit
 import org.jetbrains.kotlin.formver.core.embeddings.expression.GenericArrayBulkUpdate
 import org.jetbrains.kotlin.formver.intrinsics.plugin.GenericArrayBulk
 import org.jetbrains.kotlin.formver.core.embeddings.expression.CollectionListAllocation
@@ -45,14 +45,14 @@ typealias OwnedShape = RootShape<VariableEmbedding, PathStep>
 
 /**
  * The owned path this expression reads, or `null` when it is not a variable followed by reads of `@Unique` properties.
- * A `StringBuilder` update returns its receiver, so it reads its receiver's path, an [IntArrayInit] reads its array's,
+ * A `StringBuilder` update returns its receiver, so it reads its receiver's path, an [PrimitiveArrayInit] reads its array's,
  * and an [InlineCall] whose callee returns `@Unique` reads its return variable.
  */
 fun ExpEmbedding.ownedPath(): OwnedPath? = when (val exp = ignoringCastsAndMetaNodes()) {
     is VariableEmbedding -> if (exp.viewSource != null) exp.viewOf else OwnedPath(exp)
     is StringBuilderUpdate -> exp.builder.ownedPath()
     is GenericArrayBulkUpdate -> if (exp.kind == GenericArrayBulk.CopyInto) exp.destination.ownedPath() else null
-    is IntArrayInit -> exp.array.ownedPath()
+    is PrimitiveArrayInit -> exp.array.ownedPath()
     is CollectionListAllocation -> exp.result.ownedPath()
     is InlineCall -> if (exp.returnsUnique) OwnedPath(exp.returnVariable) else null
     is PrimitiveFieldAccess -> if (exp.field.isUnique) exp.inner.ownedPath()?.plus(exp.field) else null

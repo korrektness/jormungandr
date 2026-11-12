@@ -16,16 +16,28 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
-private val intArrayClassId = ClassId.topLevel(FqName("kotlin.IntArray"))
+val intArrayClassId = ClassId.topLevel(FqName("kotlin.IntArray"))
+val byteArrayClassId = ClassId.topLevel(FqName("kotlin.ByteArray"))
+val charArrayClassId = ClassId.topLevel(FqName("kotlin.CharArray"))
+val longArrayClassId = ClassId.topLevel(FqName("kotlin.LongArray"))
 
-val intArrayGetId = CallableId(intArrayClassId, Name.identifier("get"))
-val intArraySetId = CallableId(intArrayClassId, Name.identifier("set"))
+/** The primitive array classes with an element model. */
+val primitiveArrayClassIds = setOf(intArrayClassId, byteArrayClassId, charArrayClassId, longArrayClassId)
+
+private val getName = Name.identifier("get")
+private val setName = Name.identifier("set")
+
+/** Whether [this] callable is the `get` of a modelled primitive array class. */
+fun CallableId.isPrimitiveArrayGet(): Boolean = classId in primitiveArrayClassIds && callableName == getName
 
 /**
- * Whether [this] call reads or writes an element of an `IntArray`. Such calls are intrinsic: they move nothing.
+ * Whether [this] call reads or writes an element of a modelled primitive array. Such calls are intrinsic: they move
+ * nothing.
  */
-fun FirFunctionCall.isIntArrayElementAccess(): Boolean =
-    toResolvedCallableSymbol()?.callableId.let { it == intArrayGetId || it == intArraySetId }
+fun FirFunctionCall.isPrimitiveArrayElementAccess(): Boolean =
+    toResolvedCallableSymbol()?.callableId.let {
+        it != null && it.classId in primitiveArrayClassIds && (it.callableName == getName || it.callableName == setName)
+    }
 
 /** A stdlib function that loops over the elements of its receiver, calling its last argument on each. */
 enum class ElementLoop(name: String, val arity: Int = 1, val lambdaArity: Int = 1) {
@@ -59,13 +71,13 @@ fun FirCallableSymbol<*>.isCollectionLoop(): Boolean {
     }
 }
 
-/** Whether this stdlib element loop reads an `IntArray` receiver without moving it. */
-fun FirFunctionCall.isIntArrayLoop(): Boolean = toResolvedCallableSymbol()?.isIntArrayLoop() == true
+/** Whether this stdlib element loop reads a modelled primitive array receiver without moving it. */
+fun FirFunctionCall.isPrimitiveArrayLoop(): Boolean = toResolvedCallableSymbol()?.isPrimitiveArrayLoop() == true
 
-fun FirCallableSymbol<*>.isIntArrayLoop(): Boolean {
+fun FirCallableSymbol<*>.isPrimitiveArrayLoop(): Boolean {
     val loop = collectionElementLoop() ?: return false
     return loop != ElementLoop.MapElements && loop != ElementLoop.FilterElements &&
-            resolvedReceiverTypeRef?.coneType?.classId == intArrayClassId
+            resolvedReceiverTypeRef?.coneType?.classId in primitiveArrayClassIds
 }
 
 private fun FirCallableSymbol<*>.collectionElementLoop(): ElementLoop? {

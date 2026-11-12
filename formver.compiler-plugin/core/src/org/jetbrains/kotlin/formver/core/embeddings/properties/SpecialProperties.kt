@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.formver.core.embeddings.properties
 
 
+import org.jetbrains.kotlin.formver.intrinsics.plugin.primitiveArrayClassIds
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
@@ -52,10 +53,10 @@ object GenericArraySizeProperty : SpecialProperty(
     override fun match(symbol: FirPropertySymbol): Boolean = symbol.callableId == kotlinCallableId("Array", "size")
 }
 
-object IntArraySizeProperty :
+object PrimitiveArraySizeProperty :
     SpecialProperty(
         PropertyEmbedding(
-            IntArraySizeGetter,
+            PrimitiveArraySizeGetter,
             setter = null,
             hasDefaultBehaviour = true,
             isUnique = false,
@@ -64,7 +65,8 @@ object IntArraySizeProperty :
         )
     ) {
     context(typeResolver: TypeResolver, session: FirSession)
-    override fun match(symbol: FirPropertySymbol): Boolean = symbol.callableId == kotlinCallableId("IntArray", "size")
+    override fun match(symbol: FirPropertySymbol): Boolean =
+        symbol.callableId?.let { it.classId in primitiveArrayClassIds && it.callableName.asString() == "size" } == true
 }
 
 object MultisetSizeProperty :
@@ -116,7 +118,7 @@ object CollectionSizeProperty :
 
 object SpecialProperties {
 
-    val all: List<SpecialProperty> = listOf(StringSizeProperty, IntArraySizeProperty, GenericArraySizeProperty, MultisetSizeProperty, CollectionSizeProperty)
+    val all: List<SpecialProperty> = listOf(StringSizeProperty, PrimitiveArraySizeProperty, GenericArraySizeProperty, MultisetSizeProperty, CollectionSizeProperty)
 
     context(typeResolver: TypeResolver, session: FirSession)
     fun lookup(symbol: FirPropertySymbol): PropertyEmbedding? = all.firstOrNull { it.match(symbol) }?.property

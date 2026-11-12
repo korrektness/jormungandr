@@ -89,7 +89,7 @@ Silicon's mapped model supplies optional Kotlin counterexample bindings for para
 receivers. `this` identifies a receiver; `old(path)` identifies a value in the function-entry state. Parameters cannot
 change, so a parameter's own entry value is not shown; entry values of fields reached through it are. A failure at
 function exit, a postcondition or a returns effect, binds the returned value as `result`. A `List` or other collection
-binds its size as `xs.size`, and an `IntArray` or `Array<T>` as `arr.size`, through any reference. Bindings follow declaration order,
+binds its size as `xs.size`, and a [primitive array](#primitive-arrays) or `Array<T>` as `arr.size`, through any reference. Bindings follow declaration order,
 with `this` first and `result` last; entry-state bindings follow the failing-state ones. A binding retains its
 declaration source, displayed as a line and column. Values render as Kotlin integers of every width, booleans, escaped
 characters, `null`, or enum entry names. Several enum names separated by `/` identify indistinguishable model values.
@@ -612,7 +612,7 @@ Each argument to `triggers()` becomes a separate trigger. This differs from Vipe
 
 SnaKt reasons about mutable heap data through ownership. A value is either
 *unique*, meaning one path owns it, or *shared*. Default `val` properties are
-immutable and need no annotations. A `var` property, or an `IntArray` or `Array<T>` element,
+immutable and need no annotations. A `var` property, or a primitive array or `Array<T>` element,
 is read and written for real only through a unique path.
 
 ### Annotations
@@ -862,9 +862,9 @@ states on those paths. A return value or `try` expression value is captured
 before the finalizer runs. An abrupt completion in the finalizer replaces the
 pending completion; nested finalizers run from the innermost outward.
 
-`IntArray`, `Array<T>` and String index bounds, division by zero, and integer overflow
+Primitive array, `Array<T>` and String index bounds, division by zero, and integer overflow
 remain verification obligations inside `try`. An element access of an unmodelled
-primitive array type is an ordinary library call, which may throw. The checked arithmetic
+primitive array type, such as `ShortArray`, is an ordinary library call, which may throw. The checked arithmetic
 fragment is described under Integer arithmetic. Verification does not establish freedom
 from exceptions in opaque library operations or from JVM resource, linkage,
 or asynchronous failures.
@@ -886,18 +886,24 @@ fun set(c: @Unique @Borrowed Cell) {
 }
 ```
 
-### `IntArray`
+### Primitive arrays
 
-An `IntArray` holds its elements as a sequence.
+`IntArray`, `ByteArray`, `CharArray` and `LongArray` hold their elements as a
+sequence of `Int`, `Byte`, `Char` and `Long` values respectively. Each element
+stays within its type's range, so `bytes[i].toInt()` lies in -128 through 127:
+widening an element is exact, which for `Byte` is sign extension. Other
+primitive array types have no element model. The rules below are stated for
+`IntArray` and apply to each modelled class.
 
 - `arr.size` needs no ownership and works on any array. It is never negative.
 - `arr[i]`, `arr[i] = v`, `arr.get(i)`, `arr.set(i, v)`, `arr[i] += v` and
   `arr[i]++` read and write the elements of a unique array.
   None of them moves the array.
-- On a shared array, an element read yields an arbitrary `Int` and an element
-  write is dropped. All element accesses check the index bounds, including
+- On a shared array, an element read yields an arbitrary value of the element
+  type and an element write is dropped. All element accesses check the index bounds, including
   discarded reads. In a specification, an element read needs a unique array.
-- `IntArray(n)` creates an array of `n` zeros. As with any constructor call, a
+- `IntArray(n)` creates an array of `n` zeros; `CharArray(n)` holds `n` copies of
+  the character with code zero. As with any constructor call, a
   local holding it owns it only when declared `@Unique IntArray`.
 - `IntArray(n) { init }` runs `init` on each index from `0` to `n - 1` in
   order, inlined into a loop. When the body of `init` is a single pure
@@ -922,7 +928,7 @@ fun swap(arr: @Unique @Borrowed IntArray, i: Int, j: Int) {
 ### `Array<T>`
 
 A unique generic array stores a sequence of references. Indexed reads and writes,
-including `get` and `set`, follow the ownership and bounds rules of `IntArray`.
+including `get` and `set`, follow the ownership and bounds rules of [primitive arrays](#primitive-arrays).
 A read inhales its static element type; the unchecked-cast assumption is in
 `docs/soundness.md`, "Type invariants". Elements themselves are shared values.
 Storing an owned reference moves that value, including through an erased cast.

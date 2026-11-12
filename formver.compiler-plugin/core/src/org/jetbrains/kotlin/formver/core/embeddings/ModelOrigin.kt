@@ -51,9 +51,8 @@ fun TypeEmbedding.modelOrigin(
     }
     val decoder = if (kind == ModelOrigin.Kind.REFERENCE) null else getNonNullable().injection.fromRef.name
     val arraySize = when (pretype) {
-        IntArrayEmbedding.classType -> IntArrayEmbedding.arraySizeFunction.name
         GenericArrayEmbedding.classType -> GenericArrayEmbedding.arraySizeFunction.name
-        else -> null
+        else -> PrimitiveArrayEmbedding.of(pretype)?.let { PrimitiveArrayEmbedding.arraySizeFunction.name }
     }
     return ModelOrigin(name, source, kind, unique, parameter, decoder, result = result, readOnly = readOnly, arraySize = arraySize)
 }

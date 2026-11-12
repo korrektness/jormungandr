@@ -186,17 +186,17 @@ jumps to each enclosing `catch` before the site's effects apply; a call's
 `catch` sees the state before the call. That is sound because a `try` body
 holds no owned state (SPECIFICATIONS.md, "Rejected constructs") and shared
 state is read as an arbitrary value. A failing arithmetic operation, and an
-`IntArray`, `Array<T>` or String index out of bounds, is a proof obligation instead, so a
+primitive array, `Array<T>` or String index out of bounds, is a proof obligation instead, so a
 `catch` never needs to see it. An unmatched
 exhaustive `when` has no edge: see "Closed hierarchies".
 
-Tests: `verification/exception_sites.kt::midTry,castCatch,sharedGetCatch,charArrayCatch`,
+Tests: `verification/exception_sites.kt::midTry,castCatch,sharedGetCatch,shortArrayCatch`,
 `verification/soundness/implicit_throws.kt`,
 `verification/soundness/equality.kt::equalsCatch`.
 
 ### Arrays
 
-An `IntArray`'s predicate holds a sequence of bounded integers. An `Array<T>`'s
+A primitive array's predicate holds a sequence of integers bounded by its element type. An `Array<T>`'s
 predicate holds a sequence of references with no element-type invariant. Both
 predicates tie the sequence length to a heap-independent length function, since
 an array's length never changes. Generic reads rely on the static-typing
@@ -206,8 +206,8 @@ and repeated reference. These encodings trust the documented stdlib bulk-operati
 contracts; same-array copy semantics have no encoding.
 
 Access, bounds and factory behaviour are specified in `SPECIFICATIONS.md`,
-"IntArray", "Array<T>" and "Exceptions". The encodings live in
-`embeddings/types/IntArrayEmbedding.kt`, `embeddings/types/GenericArrayEmbedding.kt`
+"Primitive arrays", "Array<T>" and "Exceptions". The encodings live in
+`embeddings/types/PrimitiveArrayEmbedding.kt`, `embeddings/types/GenericArrayEmbedding.kt`
 and `linearization/LinearizationVisitor.kt`.
 
 Pure shared-element results follow SPECIFICATIONS.md, "Pure functions and specifications".
@@ -227,7 +227,7 @@ Tests: `verification/pure_functions/array_element_readers.kt`,
 `stdlib/array/generic_array_bulk.kt::copyGrow,fillWindow,copyPastEnd,selfCopy`,
 `uniqueness_checker/generic_array.kt::fillMovesValue,copyResultMovesDestination`,
 `verification/soundness/erased_generics.kt::castArrayElement`,
-`verification/exception_sites.kt::sharedGetCatch,charArrayCatch`.
+`verification/exception_sites.kt::sharedGetCatch,shortArrayCatch`.
 
 ### `StringBuilder`
 

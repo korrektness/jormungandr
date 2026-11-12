@@ -41,7 +41,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.types.TypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.NothingTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.embeddings.types.asTypeEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.PrimitiveArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.GenericArrayEmbedding
 import org.jetbrains.kotlin.formver.intrinsics.plugin.GenericArrayBulk
 import org.jetbrains.kotlin.formver.core.embeddings.types.contentsField
@@ -1127,9 +1127,9 @@ data class LinearizationVisitor(
         }
     }
 
-    override fun visitIntArraySize(e: IntArraySize): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+    override fun visitPrimitiveArraySize(e: PrimitiveArraySize): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp = RuntimeTypeDomain.intInjection.toRef(
-            IntArrayEmbedding.arraySize(e.array.withoutOwnerUnfoldings().linearize().toViper(ctx), ctx.source.asPosition),
+            PrimitiveArrayEmbedding.arraySize(e.array.withoutOwnerUnfoldings().linearize().toViper(ctx), ctx.source.asPosition),
             pos = ctx.source.asPosition,
         )
     }
@@ -1144,12 +1144,12 @@ data class LinearizationVisitor(
         else -> this
     }
 
-    override fun visitIntArrayAllZero(e: IntArrayAllZero): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {
+    override fun visitPrimitiveArrayAllZero(e: PrimitiveArrayAllZero): Linearizable = object : OnlyToBuiltinLinearizable(e, this@LinearizationVisitor) {
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
-            IntArrayEmbedding.allZero(e.array.linearize().toViper(ctx), ctx.source.asPosition)
+            e.kind.allZero(e.array.linearize().toViper(ctx), ctx.source.asPosition)
     }
 
-    override fun visitIntArrayGet(e: IntArrayGet): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+    override fun visitPrimitiveArrayGet(e: PrimitiveArrayGet): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             val value = toViper(ctx)
             if (ctx is PureExpLinearizer) ctx.evaluateUnused(value)
@@ -1161,7 +1161,7 @@ data class LinearizationVisitor(
             val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = false)
             if (ctx.logicOperatorPolicy == LogicOperatorPolicy.CONVERT_TO_IF) ctx.assertInBounds(array, index, e.arraySymbol)
             val pos = ctx.source.asPosition
-            return ctx.addOwnedRead(IntArrayEmbedding.uniquePredicateAccess(array, pos), IntArrayEmbedding.element(array, index, pos), e.type, arrayPath)
+            return ctx.addOwnedRead(e.kind.uniquePredicateAccess(array, pos), PrimitiveArrayEmbedding.element(array, index, pos), e.type, arrayPath)
         }
     }
 
@@ -1187,7 +1187,7 @@ data class LinearizationVisitor(
             }
         }
 
-    override fun visitIntArrayInit(e: IntArrayInit): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+    override fun visitPrimitiveArrayInit(e: PrimitiveArrayInit): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp {
             e.initialization.linearize().toViperUnusedResult(ctx)
             return e.array.linearize().toViper(ctx)
@@ -1204,7 +1204,7 @@ data class LinearizationVisitor(
             val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = false)
             val pos = ctx.source.asPosition
             val contents = SeqMultisetDomain.toMultiset(array.fieldAccess(contentsField, pos), pos = pos)
-            return ctx.addOwnedRead(IntArrayEmbedding.uniquePredicateAccess(array, pos), contents, e.type, arrayPath)
+            return ctx.addOwnedRead(PrimitiveArrayEmbedding.INT.uniquePredicateAccess(array, pos), contents, e.type, arrayPath)
         }
     }
 
@@ -1279,7 +1279,7 @@ data class LinearizationVisitor(
         }
     }
 
-    override fun visitIntArraySet(e: IntArraySet): Linearizable = object : UnitResultLinearizable(e) {
+    override fun visitPrimitiveArraySet(e: PrimitiveArraySet): Linearizable = object : UnitResultLinearizable(e) {
         override fun toViperUnusedResult(ctx: LinearizationContext) {
             val arrayPath = ctx.ownedReceiverPath(e.array, e.receiverOwned, isWrite = true)
             val array = snapshotBefore(e.array.linearize().toViper(ctx), e.array.type, listOf(e.index, e.value), ctx)
@@ -1358,7 +1358,7 @@ data class LinearizationVisitor(
 
     /**
      * Runs the `StringBuilder` or `copyInto` updates that [value] consists of when they act on a path, the initialization of an
-     * [IntArrayInit], an [InlineCall] whose callee returns `@Unique`, or a conditional or block that yields a fresh
+     * [PrimitiveArrayInit], an [InlineCall] whose callee returns `@Unique`, or a conditional or block that yields a fresh
      * unique value on every path, and returns the path, the call's result or the temporary that each path moves its
      * value into, which then moves in place of [value]. Any other [value] is returned unchanged. A move folds its
      * source before the value is evaluated, which would close the path before the updates open it again, and the
@@ -1381,7 +1381,7 @@ data class LinearizationVisitor(
                 step.valueOf(receiver)
             }
         }
-        if (root is IntArrayInit) {
+        if (root is PrimitiveArrayInit) {
             value.linearize().toViperUnusedResult(ctx)
             return root.array
         }
@@ -1676,7 +1676,7 @@ private fun LinearizationContext.assertInBounds(array: Exp, index: Exp, arraySym
     fun role(bound: SourceRole.ArrayElementAccessCheck.Bound) = SourceRole.ArrayElementAccessCheck(bound, arraySymbol).asInfo
     addStatement { Stmt.Assert(Exp.GeCmp(index, Exp.IntLit(0), pos, role(SourceRole.ArrayElementAccessCheck.Bound.NEGATIVE)), pos) }
     addStatement {
-        Stmt.Assert(Exp.LtCmp(index, if (generic) GenericArrayEmbedding.arraySize(array, pos) else IntArrayEmbedding.arraySize(array, pos), pos, role(SourceRole.ArrayElementAccessCheck.Bound.NOT_BELOW_SIZE)), pos)
+        Stmt.Assert(Exp.LtCmp(index, if (generic) GenericArrayEmbedding.arraySize(array, pos) else PrimitiveArrayEmbedding.arraySize(array, pos), pos, role(SourceRole.ArrayElementAccessCheck.Bound.NOT_BELOW_SIZE)), pos)
     }
 }
 

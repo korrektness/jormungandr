@@ -60,7 +60,7 @@ fun <!VIPER_TEXT!>sharedGetCatch<!>(a: IntArray): Int {
     return x
 }
 // Other arrays have no bounds model: an element access is an ordinary call, which may throw.
-fun <!VIPER_TEXT!>charArrayCatch<!>(a: CharArray): Int {
+fun <!VIPER_TEXT!>shortArrayCatch<!>(a: ShortArray): Int {
     postconditions<Int> { it == 0 || it == 2 }
     var x = 0
     try { x = 1; a[5]; x = 2 } catch (e: Exception) { }

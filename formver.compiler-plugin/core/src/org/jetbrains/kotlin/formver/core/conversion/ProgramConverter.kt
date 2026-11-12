@@ -192,8 +192,11 @@ class ProgramConverter(
     override val linearizedBodyResolver = LinearizedBodyResolver()
 
 
-    private val usesIntArray: Boolean
-        get() = typeResolver.lookupClassTypeEmbedding(IntArrayEmbedding.classType.name) != null
+    private fun uses(array: PrimitiveArrayEmbedding): Boolean =
+        typeResolver.lookupClassTypeEmbedding(array.classType.name) != null
+
+    private val usesPrimitiveArray: Boolean
+        get() = PrimitiveArrayEmbedding.all.any { uses(it) }
 
     private val usesGenericArray: Boolean
         get() = typeResolver.lookupClassTypeEmbedding(GenericArrayEmbedding.classType.name) != null
@@ -209,7 +212,7 @@ class ProgramConverter(
                     SpecialFunctions.iterationSequence.takeIf { typeResolver.usesIterationSequence }.orEmpty() +
                 linearizedBodyResolver.functions + typeResolver.observerViewFunctions() + typeResolver.stringLiteralFunctions +
                 typeResolver.unmatchedWhenFunctions + typeResolver.castDefinednessFunctions +
-                listOfNotNull(IntArrayEmbedding.arraySizeFunction.takeIf { usesIntArray },
+                listOfNotNull(PrimitiveArrayEmbedding.arraySizeFunction.takeIf { usesPrimitiveArray },
                     GenericArrayEmbedding.arraySizeFunction.takeIf { usesGenericArray })
         ),
         methods = SpecialMethods.all + linearizedBodyResolver.methods + typeResolver.familyTransferMethods() + lawEncoding.methods +
@@ -218,11 +221,11 @@ class ProgramConverter(
         // Public fields with the same name are represented differently at `FieldEmbedding` level
         // but map to the same Viper field, so we deduplicate before emitting.
         fields = typeResolver.backingFields().distinctBy { it.name }.map { it.toViper() } +
-                listOfNotNull(contentsField.takeIf { usesIntArray || usesStringBuilder },
+                listOfNotNull(contentsField.takeIf { usesPrimitiveArray || usesStringBuilder },
                     GenericArrayEmbedding.contentsField.takeIf { usesGenericArray }),
         adts = emptyList(),
         domains = listOf(RuntimeTypeDomain(typeResolver)) +
-                listOfNotNull(SeqMultisetDomain.takeIf { usesIntArray && typeResolver.usesMultiset }) +
+                listOfNotNull(SeqMultisetDomain.takeIf { uses(PrimitiveArrayEmbedding.INT) && typeResolver.usesMultiset }) +
                 listOfNotNull(typeResolver.equalsRelationDomain()) +
                 TerminationMeasures.domains(linearizedBodyResolver.functions),
     ).withoutUncalledFunctions(SpecialFunctions.allNames)
@@ -870,9 +873,9 @@ class ProgramConverter(
             registerBuiltinHierarchy(symbol, GenericArrayEmbedding.classType)
             return GenericArrayEmbedding.classType
         }
-        if (symbol.classId == IntArrayEmbedding.classId) {
-            registerBuiltinHierarchy(symbol, IntArrayEmbedding.classType)
-            return IntArrayEmbedding.classType
+        PrimitiveArrayEmbedding.of(symbol.classId)?.let {
+            registerBuiltinHierarchy(symbol, it.classType)
+            return it.classType
         }
         if (symbol.classId in stringBuilderClassIds) {
             registerBuiltinHierarchy(symbol, StringBuilderEmbedding.classType)

@@ -36,7 +36,8 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Implies
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings.Not
 import org.jetbrains.kotlin.formver.intrinsics.plugin.ElementLoop
-import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayLoop
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isPrimitiveArrayLoop
+import org.jetbrains.kotlin.formver.core.embeddings.types.PrimitiveArrayEmbedding
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isCollectionLoop
 import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.types.coneType
@@ -98,7 +99,7 @@ private fun stdlibHofKind(symbol: FirCallableSymbol<*>, arity: Int): StdlibHof? 
                 else -> it.isScope && receiver != null
             }
         }
-        collectionsPackage -> hof.takeIf { symbol.isCollectionLoop() || symbol.isIntArrayLoop() }
+        collectionsPackage -> hof.takeIf { symbol.isCollectionLoop() || symbol.isPrimitiveArrayLoop() }
         textPackage -> hof.takeIf {
             it != StdlibHof.Fold && it != StdlibHof.Repeat && !it.isScope &&
                     it != StdlibHof.MapElements && it != StdlibHof.FilterElements &&
@@ -462,7 +463,9 @@ private fun StmtConversionContext.templateReceiver(
             )
         }
         else -> {
-            // stdlibHofKind restricts this remaining receiver to IntArray.
+            // stdlibHofKind restricts this remaining receiver to a modelled primitive array.
+            val kind = PrimitiveArrayEmbedding.of(receiverExp.resolvedType.classId)
+                ?: throw SnaktInternalException(receiverExp.source, "Element loop over unmodelled receiver ${receiverExp.resolvedType}.")
             val array = convert(receiverExp)
             // A `val` is read in place, so that an owned array is read through its own predicate; the lambda
             // cannot reassign it.
@@ -472,8 +475,8 @@ private fun StmtConversionContext.templateReceiver(
             val owned = inPlace != null && ownsBefore(head, receiverExp)
             TemplateReceiver(
                 variable,
-                IntArraySize(variable),
-                { IntArrayGet(variable, it, owned) },
+                PrimitiveArraySize(variable),
+                { PrimitiveArrayGet(kind, variable, it, owned) },
                 factsReadable = owned,
             )
         }

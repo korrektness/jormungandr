@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.intrinsics.plugin.primitiveArrayClassIds
 import org.jetbrains.kotlin.descriptors.isInterface
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
@@ -51,7 +52,7 @@ fun FirQualifiedAccessExpression.isLawValueOperation(): Boolean = toResolvedCall
     it.packageName.asString() == "kotlin" &&
             ((this is FirFunctionCall && it.className?.asString() in classes && it.callableName.asString() in operations) ||
                     (it.className?.asString() == "String" && it.callableName.asString() == "length") ||
-                    (it.className?.asString() in setOf("IntArray", "Array") &&
+                    ((it.classId in primitiveArrayClassIds || it.className?.asString() == "Array") &&
                             it.callableName.asString() == "size"))
 } == true
 
@@ -173,7 +174,7 @@ fun constructorInitializerConditions(
     val postconditions = fields.mapNotNull { (property, initializer) ->
         if (writes.mayChange(property)) return@mapNotNull null
         val readsOwnedState = initializer.subtree().any { expression ->
-            expression is FieldAccess || expression is PrimitiveFieldAccess || expression is IntArrayGet || expression is GenericArrayGet ||
+            expression is FieldAccess || expression is PrimitiveFieldAccess || expression is PrimitiveArrayGet || expression is GenericArrayGet ||
                 expression is FunctionCall && expression.function.formalArgs.any { it.isUnique }
         }
         if (readsOwnedState) return@mapNotNull null

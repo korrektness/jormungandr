@@ -72,15 +72,15 @@ internal class ExprPurityVisitor(
     override fun visitGenericArrayGet(e: GenericArrayGet) = e.allChildrenPure(this)
     override fun visitGenericArraySet(e: GenericArraySet): Boolean = false
     override fun visitGenericArrayBulkUpdate(e: GenericArrayBulkUpdate): Boolean = false
-    override fun visitIntArraySize(e: IntArraySize) = e.allChildrenPure(this)
-    override fun visitIntArrayAllZero(e: IntArrayAllZero) = e.allChildrenPure(this)
+    override fun visitPrimitiveArraySize(e: PrimitiveArraySize) = e.allChildrenPure(this)
+    override fun visitPrimitiveArrayAllZero(e: PrimitiveArrayAllZero) = e.allChildrenPure(this)
     override fun visitIntArrayContents(e: IntArrayContents) = e.allChildrenPure(this)
     override fun visitIterationSequenceContains(e: IterationSequenceContains) = e.allChildrenPure(this)
     override fun visitIterationSequenceGet(e: IterationSequenceGet) = e.allChildrenPure(this)
     override fun visitUnmatchedWhen(e: UnmatchedWhen) = e.allChildrenPure(this)
     override fun visitIterationSequenceOf(e: IterationSequenceOf) = e.allChildrenPure(this)
     override fun visitMultisetOf(e: MultisetOf) = e.allChildrenPure(this)
-    override fun visitIntArrayGet(e: IntArrayGet) = e.allChildrenPure(this)
+    override fun visitPrimitiveArrayGet(e: PrimitiveArrayGet) = e.allChildrenPure(this)
     override fun visitStringBuilderLength(e: StringBuilderLength) = e.allChildrenPure(this)
     override fun visitStringBuilderToString(e: StringBuilderToString) = e.allChildrenPure(this)
 
@@ -120,8 +120,8 @@ internal class ExprPurityVisitor(
     override fun visitAccEmbedding(e: AccEmbedding): Boolean = false
     override fun visitFold(e: Fold): Boolean = false
     override fun visitUnfold(e: Unfold): Boolean = false
-    override fun visitIntArraySet(e: IntArraySet): Boolean = false
-    override fun visitIntArrayInit(e: IntArrayInit): Boolean = false
+    override fun visitPrimitiveArraySet(e: PrimitiveArraySet): Boolean = false
+    override fun visitPrimitiveArrayInit(e: PrimitiveArrayInit): Boolean = false
     override fun visitCollectionListAllocation(e: CollectionListAllocation): Boolean = false
     override fun visitStringBuilderAppend(e: StringBuilderAppend): Boolean = false
     override fun visitStringBuilderClear(e: StringBuilderClear): Boolean = false

@@ -86,17 +86,17 @@ interface ExpVisitor<R> {
     fun visitGenericArrayAllNull(e: GenericArrayAllNull): R
     fun visitGenericArrayGet(e: GenericArrayGet): R
     fun visitGenericArraySet(e: GenericArraySet): R
-    fun visitIntArraySize(e: IntArraySize): R
-    fun visitIntArrayAllZero(e: IntArrayAllZero): R
+    fun visitPrimitiveArraySize(e: PrimitiveArraySize): R
+    fun visitPrimitiveArrayAllZero(e: PrimitiveArrayAllZero): R
     fun visitIntArrayContents(e: IntArrayContents): R
     fun visitIterationSequenceContains(e: IterationSequenceContains): R
     fun visitIterationSequenceGet(e: IterationSequenceGet): R
     fun visitUnmatchedWhen(e: UnmatchedWhen): R
     fun visitIterationSequenceOf(e: IterationSequenceOf): R
     fun visitMultisetOf(e: MultisetOf): R
-    fun visitIntArrayGet(e: IntArrayGet): R
-    fun visitIntArraySet(e: IntArraySet): R
-    fun visitIntArrayInit(e: IntArrayInit): R
+    fun visitPrimitiveArrayGet(e: PrimitiveArrayGet): R
+    fun visitPrimitiveArraySet(e: PrimitiveArraySet): R
+    fun visitPrimitiveArrayInit(e: PrimitiveArrayInit): R
     fun visitCollectionListAllocation(e: CollectionListAllocation): R
     fun visitStringBuilderLength(e: StringBuilderLength): R
     fun visitStringBuilderToString(e: StringBuilderToString): R
@@ -181,17 +181,17 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitGenericArrayAllNull(e: GenericArrayAllNull): R = visitDefault(e)
     override fun visitGenericArrayGet(e: GenericArrayGet): R = visitDefault(e)
     override fun visitGenericArraySet(e: GenericArraySet): R = visitDefault(e)
-    override fun visitIntArraySize(e: IntArraySize): R = visitDefault(e)
-    override fun visitIntArrayAllZero(e: IntArrayAllZero): R = visitDefault(e)
+    override fun visitPrimitiveArraySize(e: PrimitiveArraySize): R = visitDefault(e)
+    override fun visitPrimitiveArrayAllZero(e: PrimitiveArrayAllZero): R = visitDefault(e)
     override fun visitIntArrayContents(e: IntArrayContents): R = visitDefault(e)
     override fun visitIterationSequenceContains(e: IterationSequenceContains): R = visitDefault(e)
     override fun visitIterationSequenceGet(e: IterationSequenceGet): R = visitDefault(e)
     override fun visitUnmatchedWhen(e: UnmatchedWhen): R = visitDefault(e)
     override fun visitIterationSequenceOf(e: IterationSequenceOf): R = visitDefault(e)
     override fun visitMultisetOf(e: MultisetOf): R = visitDefault(e)
-    override fun visitIntArrayGet(e: IntArrayGet): R = visitDefault(e)
-    override fun visitIntArraySet(e: IntArraySet): R = visitDefault(e)
-    override fun visitIntArrayInit(e: IntArrayInit): R = visitDefault(e)
+    override fun visitPrimitiveArrayGet(e: PrimitiveArrayGet): R = visitDefault(e)
+    override fun visitPrimitiveArraySet(e: PrimitiveArraySet): R = visitDefault(e)
+    override fun visitPrimitiveArrayInit(e: PrimitiveArrayInit): R = visitDefault(e)
     override fun visitCollectionListAllocation(e: CollectionListAllocation): R = visitDefault(e)
     override fun visitStringBuilderLength(e: StringBuilderLength): R = visitDefault(e)
     override fun visitStringBuilderToString(e: StringBuilderToString): R = visitDefault(e)

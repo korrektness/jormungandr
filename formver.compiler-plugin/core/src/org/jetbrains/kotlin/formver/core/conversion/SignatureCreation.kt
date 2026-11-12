@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.formver.core.embeddings.expression.PlaceholderVariab
 import org.jetbrains.kotlin.formver.core.embeddings.properties.BackingFieldGetter
 import org.jetbrains.kotlin.formver.core.embeddings.types.ClassTypeEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.FunctionTypeEmbedding
-import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.PrimitiveArrayEmbedding
 import org.jetbrains.kotlin.formver.core.isBorrowed
 import org.jetbrains.kotlin.formver.core.isPure
 import org.jetbrains.kotlin.formver.core.isUnique
@@ -273,10 +273,10 @@ fun SignatureWithTarget<NonInlineCallable>.toConstructorSignature(symbol: FirFun
             }
             addPostconditions(initializerPostconditions)
             addPostconditions(fieldPostconditions)
-            if (symbol.resolvedReturnType.toRegularClassSymbol(converter.session)?.classId == IntArrayEmbedding.classId) {
+            PrimitiveArrayEmbedding.of(symbol.resolvedReturnType.toRegularClassSymbol(converter.session)?.classId)?.let { kind ->
                 val size = current.signature.params.single()
                 addPreconditions(listOf(OperatorExpEmbeddings.GeIntInt(size, IntLit(0))))
-                addPostconditions(listOf(EqCmp(IntArraySize(result), size), IntArrayAllZero(result)))
+                addPostconditions(listOf(EqCmp(PrimitiveArraySize(result), size), PrimitiveArrayAllZero(kind, result)))
             }
         }
 

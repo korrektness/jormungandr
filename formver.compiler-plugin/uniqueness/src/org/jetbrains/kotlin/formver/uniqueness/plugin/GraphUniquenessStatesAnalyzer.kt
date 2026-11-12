@@ -5,13 +5,13 @@
 
 package org.jetbrains.kotlin.formver.uniqueness.plugin
 
-import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayElementAccess
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isPrimitiveArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isGenericArrayElementAccess
 import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArraySetId
 import org.jetbrains.kotlin.formver.intrinsics.plugin.GenericArrayBulk
 import org.jetbrains.kotlin.formver.intrinsics.plugin.genericArrayBulk
 import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
-import org.jetbrains.kotlin.formver.intrinsics.plugin.isIntArrayLoop
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isPrimitiveArrayLoop
 import org.jetbrains.kotlin.formver.intrinsics.plugin.isCollectionLoop
 
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
@@ -119,7 +119,7 @@ fun UniquenessState.initializeParametersOf(function: FirFunction): UniquenessSta
  * Default arguments and lambdas called in place are analyzed as part of the enclosing flow; a lambda called in place
  * starts with its own parameters at their declared uniqueness.
  *
- * Calls to `@Pure` functions, element accesses of an `IntArray`, `StringBuilder` intrinsics, and declarations and calls
+ * Calls to `@Pure` functions, element accesses of a modelled primitive array, `StringBuilder` intrinsics, and declarations and calls
  * in [readOnlyContext], move nothing. A receiver temporary of a compound assignment or an increment (see
  * [receiverTemporaryInitializer]) is not tracked: its accesses resolve to its initializer.
  *
@@ -148,8 +148,8 @@ class GraphUniquenessStatesAnalyzer(
         this[Unit] ?: initialState
 
     private val FirFunctionCall.movesArguments: Boolean
-        get() = this !in readOnlyContext && !isPureCall(context.session) && !isIntArrayElementAccess() && !isGenericArrayElementAccess() &&
-                !isIntArrayLoop() && !isCollectionLoop() && genericArrayBulk() == null && stringBuilderIntrinsic(context.session) == null
+        get() = this !in readOnlyContext && !isPureCall(context.session) && !isPrimitiveArrayElementAccess() && !isGenericArrayElementAccess() &&
+                !isPrimitiveArrayLoop() && !isCollectionLoop() && genericArrayBulk() == null && stringBuilderIntrinsic(context.session) == null
 
     override fun visitSubGraph(node: CFGNodeWithSubgraphs<*>, graph: ControlFlowGraph): Boolean {
         return graph.extendsLocalFlow

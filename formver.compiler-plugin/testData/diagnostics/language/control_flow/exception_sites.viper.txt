@@ -385,9 +385,9 @@ method sharedGetCatch(a: Ref) returns (v_ret_0: Ref)
   label lbl_ret_0
 }
 
-/exception_sites.kt: info: Generated Viper text for charArrayCatch:
+/exception_sites.kt: info: Generated Viper text for shortArrayCatch:
 function size(this: Ref): Ref
-  requires isSubtype(typeOf(this), CharArray())
+  requires isSubtype(typeOf(this), ShortArray())
   ensures isSubtype(typeOf(result), intType())
 
 
@@ -396,8 +396,19 @@ method cause(this: Ref) returns (ret_4: Ref)
   ensures isSubtype(typeOf(ret_4), nullable(anyType()))
 
 
-method charArrayCatch(a: Ref) returns (v_ret_0: Ref)
-  requires isSubtype(typeOf(a), CharArray())
+method get(this: Ref, par_index: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), ShortArray())
+  requires isSubtype(typeOf(par_index), intType())
+  ensures isSubtype(typeOf(ret_2), shortType())
+
+
+method message(this: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
+
+
+method shortArrayCatch(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), ShortArray())
   ensures isSubtype(typeOf(v_ret_0), intType())
   ensures intFromRef(v_ret_0) == 0 || intFromRef(v_ret_0) == 2
 {
@@ -426,17 +437,6 @@ method charArrayCatch(a: Ref) returns (v_ret_0: Ref)
   goto lbl_ret_0
   label lbl_ret_0
 }
-
-method get(this: Ref, par_index: Ref) returns (ret_2: Ref)
-  requires isSubtype(typeOf(this), CharArray())
-  requires isSubtype(typeOf(par_index), intType())
-  ensures isSubtype(typeOf(ret_2), charType())
-
-
-method message(this: Ref) returns (ret_3: Ref)
-  requires isSubtype(typeOf(this), anyType())
-  ensures isSubtype(typeOf(ret_3), nullable(anyType()))
-
 
 /exception_sites.kt: info: Generated Viper text for longZeroCatch:
 method cause(this: Ref) returns (ret_3: Ref)

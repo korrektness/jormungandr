@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.formver.common.*
 import org.jetbrains.kotlin.formver.core.conversion.AccessPolicy
 import org.jetbrains.kotlin.formver.core.diagnostics.ErrorCollectionContext
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
+import org.jetbrains.kotlin.formver.core.embeddings.types.PrimitiveArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.FunctionSignatureImpl
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignatureImpl
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NonInlineCallableImpl
@@ -189,7 +190,7 @@ class ConversionFailureReportingTest {
     @Test
     fun `read-only traversal covers all read categories without preformatted payloads`() {
         val reads = listOf(
-            FieldAccess(root, field, false), IntArrayGet(root, IntLit(0), false),
+            FieldAccess(root, field, false), PrimitiveArrayGet(PrimitiveArrayEmbedding.INT, root, IntLit(0), false),
             IntArrayContents(root, false), StringBuilderLength(root, false),
         )
         val conditions = reads.map { read ->
@@ -211,7 +212,7 @@ class ConversionFailureReportingTest {
     fun `receiver paths preserve raw root and member symbols`() {
         val receiver = PrimitiveFieldAccess(root, field)
         val errors = Errors()
-        IntArrayGet(receiver, IntLit(0), false).checkReadOnlyVarReads(source(0), errors)
+        PrimitiveArrayGet(PrimitiveArrayEmbedding.INT, receiver, IntLit(0), false).checkReadOnlyVarReads(source(0), errors)
         val path = assertIs<ConversionOwnershipCondition.Read>(errors.failures.single().condition).receiver!!
         assertSame(symbol, path.root.symbol)
         assertEquals("root", path.root.name)
@@ -223,13 +224,13 @@ class ConversionFailureReportingTest {
     fun `old clears consumption context but still requires ownership`() {
         val consumed = setOf(root.name)
         val errors = Errors()
-        IntArrayGet(root, IntLit(0), true).checkReadOnlyVarReads(source(0), errors, consumed)
+        PrimitiveArrayGet(PrimitiveArrayEmbedding.INT, root, IntLit(0), true).checkReadOnlyVarReads(source(0), errors, consumed)
         assertEquals(ConversionOwnershipCondition.ReadReason.CONSUMED_ROOT,
             assertIs<ConversionOwnershipCondition.Read>(errors.failures.single().condition).reason)
         val old = Errors()
-        Old(IntArrayGet(root, IntLit(0), true)).checkReadOnlyVarReads(source(0), old, consumed)
+        Old(PrimitiveArrayGet(PrimitiveArrayEmbedding.INT, root, IntLit(0), true)).checkReadOnlyVarReads(source(0), old, consumed)
         assertTrue(old.failures.isEmpty())
-        Old(IntArrayGet(root, IntLit(0), false)).checkReadOnlyVarReads(source(0), old, consumed)
+        Old(PrimitiveArrayGet(PrimitiveArrayEmbedding.INT, root, IntLit(0), false)).checkReadOnlyVarReads(source(0), old, consumed)
         assertEquals(ConversionOwnershipCondition.ReadReason.NEEDS_UNIQUE_RECEIVER,
             assertIs<ConversionOwnershipCondition.Read>(old.failures.single().condition).reason)
     }

@@ -20,7 +20,7 @@ data class MultisetOf(val elements: List<ExpEmbedding>) : ExpEmbedding {
 }
 
 /**
- * The elements of an `IntArray` as a multiset. Reading them needs the array's unique predicate, as [IntArrayGet] does;
+ * The elements of an `IntArray` as a multiset. Reading them needs the array's unique predicate, as [PrimitiveArrayGet] does;
  * [receiverOwned] says whether the uniqueness checker finds [array] `Unique` before the read.
  */
 data class IntArrayContents(val array: ExpEmbedding, val receiverOwned: Boolean) : ExpEmbedding {

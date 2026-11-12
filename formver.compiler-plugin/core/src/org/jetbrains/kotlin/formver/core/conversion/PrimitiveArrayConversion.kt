@@ -24,50 +24,61 @@ import org.jetbrains.kotlin.formver.common.SnaktInternalException
 import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
 import org.jetbrains.kotlin.formver.core.embeddings.expression.*
-import org.jetbrains.kotlin.formver.core.embeddings.types.IntArrayEmbedding
+import org.jetbrains.kotlin.formver.core.embeddings.types.PrimitiveArrayEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.types.buildType
 import org.jetbrains.kotlin.formver.core.linearization.OwnedShape
 import org.jetbrains.kotlin.formver.core.purity.isPure
 import org.jetbrains.kotlin.formver.locality.plugin.receiverTemporaryInitializer
-import org.jetbrains.kotlin.formver.intrinsics.plugin.intArrayGetId
+import org.jetbrains.kotlin.formver.intrinsics.plugin.isPrimitiveArrayGet
 
 /**
- * Converts a call to `IntArray.get` or `IntArray.set`, in any syntactic form, to the intrinsic element access.
+ * Converts a call to `get` or `set` of a modelled primitive array, in any syntactic form, to the intrinsic element
+ * access.
  */
-fun StmtConversionContext.convertIntArrayElementAccess(call: FirFunctionCall): ExpEmbedding {
+fun StmtConversionContext.convertPrimitiveArrayElementAccess(call: FirFunctionCall): ExpEmbedding {
     val receiver = call.dispatchReceiver
-        ?: throw SnaktInternalException(call.source, "An IntArray element access has no receiver.")
+        ?: throw SnaktInternalException(call.source, "A primitive array element access has no receiver.")
+    val callableId = call.toResolvedCallableSymbol()?.callableId
+    val kind = PrimitiveArrayEmbedding.of(callableId?.classId)
+        ?: throw SnaktInternalException(call.source, "Element access of unmodelled class ${callableId?.classId}.")
     val array = convert(receiver)
     val args = call.argumentList.arguments.map { convert(it) }
     val owned = ownsBefore(call, receiver)
     val symbol = receiver.arraySymbol()
-    return if (call.toResolvedCallableSymbol()?.callableId == intArrayGetId) {
-        IntArrayGet(array, args[0], owned, symbol)
+    return if (callableId?.isPrimitiveArrayGet() == true) {
+        PrimitiveArrayGet(kind, array, args[0], owned, symbol)
     } else {
         warnIfUntrackedWrite(call, receiver, owned)
-        IntArraySet(array, args[0], args[1], owned, symbol)
+        PrimitiveArraySet(array, args[0], args[1], owned, symbol)
     }
 }
 
 /**
- * Whether [this] call is the `IntArray(size, init)` constructor.
+ * The modelled primitive array class whose `(size, init)` constructor [this] call is, or `null`.
  */
-fun FirFunctionCall.isIntArrayInit(): Boolean {
-    val symbol = calleeReference.symbol as? FirConstructorSymbol ?: return false
-    return symbol.callableId.classId == IntArrayEmbedding.classId && symbol.valueParameterSymbols.size == 2
+private fun FirFunctionCall.primitiveArrayInitKind(): PrimitiveArrayEmbedding? {
+    val symbol = calleeReference.symbol as? FirConstructorSymbol ?: return null
+    return PrimitiveArrayEmbedding.of(symbol.callableId.classId).takeIf { symbol.valueParameterSymbols.size == 2 }
 }
 
 /**
- * Converts `IntArray(size, init)` to `IntArray(size)` followed by a loop that writes `init(i)` to each element `i`,
- * with `init` inlined. When the body of `init` is a pure expression, the loop keeps the fact that each element written
+ * Whether [this] call is the `(size, init)` constructor of a modelled primitive array, such as `IntArray(size, init)`.
+ */
+fun FirFunctionCall.isPrimitiveArrayInit(): Boolean = primitiveArrayInitKind() != null
+
+/**
+ * Converts `C(size, init)`, for a modelled primitive array class `C`, to `C(size)` followed by a loop that writes
+ * `init(i)` to each element `i`, with `init` inlined. When the body of `init` is a pure expression, the loop keeps the fact that each element written
  * so far equals that expression at its index, so the fact holds of every element after the loop.
  */
-fun StmtConversionContext.convertIntArrayInit(call: FirFunctionCall): ExpEmbedding {
+fun StmtConversionContext.convertPrimitiveArrayInit(call: FirFunctionCall): ExpEmbedding {
+    val kind = call.primitiveArrayInitKind()
+        ?: throw SnaktInternalException(call.source, "Not a primitive array initializing constructor.")
     val (sizeArg, initArg) = call.argumentList.arguments
     val sizeValue = convert(sizeArg)
     val init = convert(initArg).ignoringMetaNodes() as? LambdaExp
-        ?: throw UnsupportedFeatureException(initArg.source, "an `IntArray` initializer that is not a lambda")
-    val arrayClass = session.symbolProvider.getClassLikeSymbolByClassId(IntArrayEmbedding.classId) as FirClassSymbol<*>
+        ?: throw UnsupportedFeatureException(initArg.source, "a primitive array initializer that is not a lambda")
+    val arrayClass = session.symbolProvider.getClassLikeSymbolByClassId(kind.classId) as FirClassSymbol<*>
     val sizedConstructor = arrayClass.declaredMemberScope(session, memberRequiredPhase = null).getDeclaredConstructors()
         .single { it.valueParameterSymbols.size == 1 }
     val intType = buildType { int() }
@@ -80,20 +91,20 @@ fun StmtConversionContext.convertIntArrayInit(call: FirFunctionCall): ExpEmbeddi
     val invariants = buildList {
         add(OperatorExpEmbeddings.GeIntInt(index, IntLit(0)))
         add(OperatorExpEmbeddings.LeIntInt(index, size))
-        add(EqCmp(IntArraySize(array), size))
+        add(EqCmp(PrimitiveArraySize(array), size))
         initValueAt(init)?.let { (j, value) ->
             val written = OperatorExpEmbeddings.And(
                 OperatorExpEmbeddings.GeIntInt(j, IntLit(0)),
                 OperatorExpEmbeddings.LtIntInt(j, index),
             )
-            add(ForAllEmbedding(j, listOf(OperatorExpEmbeddings.Implies(written, EqCmp(IntArrayGet(array, j, receiverOwned = true), value)))))
+            add(ForAllEmbedding(j, listOf(OperatorExpEmbeddings.Implies(written, EqCmp(PrimitiveArrayGet(kind, array, j, receiverOwned = true), value)))))
         }
     }
     // The array is fresh, so it is owned with no holes throughout the loop.
     val shapes = ownedShapes({ it.stateBefore(call) }, inScope) +
             OwnedShape(array, emptyList())
     val fill = withFreshWhile(label = null) {
-        val write = IntArraySet(array, index, withCallSite(call) { init.insertCall(listOf(index), this) }, receiverOwned = true)
+        val write = PrimitiveArraySet(array, index, withCallSite(call) { init.insertCall(listOf(index), this) }, receiverOwned = true)
         val step = Assign(index, OperatorExpEmbeddings.AddIntInt(index, IntLit(1)))
         loopOverUsedRoots(
             OperatorExpEmbeddings.LtIntInt(index, size),
@@ -106,7 +117,7 @@ fun StmtConversionContext.convertIntArrayInit(call: FirFunctionCall): ExpEmbeddi
         )
     }
     val construct = withCallSite(call) { embedAnyFunction(sizedConstructor).insertCall(listOf(size), this, array.type) }
-    return IntArrayInit(
+    return PrimitiveArrayInit(
         array,
         blockOf(
             Declare(size, sizeValue),
