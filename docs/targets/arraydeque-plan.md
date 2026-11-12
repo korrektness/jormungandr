@@ -112,9 +112,8 @@ verifies `result >= minCapacity` for non-negative arguments; the same body unann
 an annotated claim `result <= Int.MAX_VALUE - 8` fails (the `minCapacity > maxArraySize` branch returns
 `Int.MAX_VALUE`); `Int.MAX_VALUE + 1 == Int.MIN_VALUE` verifies in an annotated function.
 
-V3 lands in the same stage, because `newCapacity` is its only M use: `x shr c` for a constant `c` is
-`floorDiv(x, 2^(c and 31))`, the arithmetic shift with Kotlin's masked distance. `ushr` and `and` stay unmodelled;
-each needs its own unsigned or bitwise encoding.
+V3 lands in the same stage, because `newCapacity` is its only M use: `shr` and the other bitwise operations are
+modelled as SPECIFICATIONS.md § Bitwise operations describes.
 
 ### D4 and V5: element equality
 
@@ -213,7 +212,7 @@ A spike of a reduced port (P1 law, wrap-around helpers, `get`, `addLast`, `remov
 time including Gradle start-up, and no declaration came near the 300 s per-declaration timeout. The one exception
 was a law using `%`, which timed out in its helper; the port states offsets with conditional subtraction, never `%`.
 The landed foundations verify in 10–12 s wall per file (`generic_array_elements`, `generic_array_bulk`,
-`wrapping_arithmetic`, `int_shift`, `int_coerce_at_least`). The quantifier-cost risk of the note is therefore
+`wrapping_arithmetic`, `shifts`, `int_coerce_at_least`). The quantifier-cost risk of the note is therefore
 not the constraint. The constraints are these gaps:
 
 - G1: `===` is rejected when both operands may hold a boxed value, and a source class's specification has no

@@ -6,13 +6,15 @@
 package org.jetbrains.kotlin.formver.core.embeddings.callables
 
 import org.jetbrains.kotlin.formver.core.embeddings.expression.OperatorExpEmbeddings
+import org.jetbrains.kotlin.formver.core.embeddings.expression.BitwiseOperators
 import org.jetbrains.kotlin.formver.core.embeddings.expression.IntegerOperators
 
 
 object SpecialFunctions {
     val all
         get() = (OperatorExpEmbeddings.allTemplates + IntegerOperators.templates).map { it.refsOperation } +
-                org.jetbrains.kotlin.formver.core.embeddings.types.GenericArrayEmbedding.repeatFunction
+                org.jetbrains.kotlin.formver.core.embeddings.types.GenericArrayEmbedding.repeatFunction +
+                BitwiseOperators.allFunctions
 
     val iterationSequence
         get() = OperatorExpEmbeddings.iterationSequenceTemplates.map { it.refsOperation } +

@@ -73,20 +73,6 @@ object OperatorExpEmbeddings {
         viperImplementation { wrapInt(Exp.Sub(args[0], args[1], pos, info)) }
     }
 
-    val ShiftRightInt = buildBinaryOperator {
-        setName("shiftRightInt")
-        withSignature {
-            withParam { int() }
-            withParam { long() }
-            withReturnType { int() }
-        }
-        // The divisor is positive, so Viper division gives arithmetic shift's floor semantics.
-        viperImplementation { Exp.Div(args[0], args[1], pos, info) }
-        additionalConditions {
-            precondition { longInjection.fromRef(args[1]) gt 0.toExp() }
-        }
-    }
-
     val CompareIntInt = buildBinaryOperator {
         setName("compareInts")
         setSignature(intIntToIntType)
@@ -458,7 +444,7 @@ object OperatorExpEmbeddings {
 
     val allTemplates
         get() = listOf(
-            AddIntInt, SubIntInt, MulIntInt, DivIntInt, RemIntInt, NegInt, CompareIntInt, ShiftRightInt,
+            AddIntInt, SubIntInt, MulIntInt, DivIntInt, RemIntInt, NegInt, CompareIntInt,
             WrappingAddIntInt, WrappingSubIntInt,
             LeIntInt, GeIntInt, LtIntInt, GtIntInt,
             Not, And, Or, Implies, Xor,

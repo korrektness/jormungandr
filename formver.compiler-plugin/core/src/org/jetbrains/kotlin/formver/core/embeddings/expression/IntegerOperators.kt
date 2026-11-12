@@ -194,5 +194,6 @@ object IntegerOperators {
         }
     }
 
-    val templates get() = binary.values + wrappingBinary.values + wrappingLongBinary.values + unary.values + wrappingNarrowing.values
+    val templates get() = binary.values + wrappingBinary.values + wrappingLongBinary.values + unary.values + wrappingNarrowing.values +
+        BitwiseOperators.templates
 }

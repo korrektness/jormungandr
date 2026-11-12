@@ -1,0 +1,307 @@
+/bitwise_logic.kt: info: Generated Viper text for constants:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method constants() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert 12 == 12
+  assert 255 == 255
+  assert 240 == 240
+  assert -6 == -6
+  assert 2147483647 == 2147483647
+  assert 0 == 0
+  assert -1 ==
+    (let anon ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/bitwise_logic.kt: info: Generated Viper text for literalMasks:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method literalMasks(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  if (0 <= intFromRef(x) % 128) {
+    anon_0 := leInts(intToRef(intFromRef(x) % 128), intToRef(127))
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  assert (let anon_builtin ==
+      (remInts(intToRef(intFromRef(x) % 65536 - intFromRef(x) % 256), intToRef(256))) in
+      intFromRef(intToRef(intFromRef(x) % 65536 - intFromRef(x) % 256)) -
+      (intFromRef(intToRef(intFromRef(x) % 65536 - intFromRef(x) % 256)) <
+      0 !=
+      intFromRef(intToRef(256)) < 0 ?
+        -((intFromRef(intToRef(intFromRef(x) % 65536 - intFromRef(x) % 256)) <
+        0 ?
+          -intFromRef(intToRef(intFromRef(x) % 65536 - intFromRef(x) % 256)) :
+          intFromRef(intToRef(intFromRef(x) % 65536 - intFromRef(x) % 256))) \
+        (intFromRef(intToRef(256)) < 0 ?
+          -intFromRef(intToRef(256)) :
+          intFromRef(intToRef(256)))) :
+        (intFromRef(intToRef(intFromRef(x) % 65536 - intFromRef(x) % 256)) <
+        0 ?
+          -intFromRef(intToRef(intFromRef(x) % 65536 - intFromRef(x) % 256)) :
+          intFromRef(intToRef(intFromRef(x) % 65536 - intFromRef(x) % 256))) \
+        (intFromRef(intToRef(256)) < 0 ?
+          -intFromRef(intToRef(256)) :
+          intFromRef(intToRef(256)))) *
+      intFromRef(intToRef(256))) ==
+    0
+  assert intFromRef(x) % 65536 - intFromRef(x) % 256 >= 0
+  assert 0 == 0
+  assert intFromRef(x) == intFromRef(x)
+  assert intFromRef(x) == intFromRef(x)
+  assert -1 == -1
+  assert intFromRef(x) == intFromRef(x)
+  assert -intFromRef(x) - 1 == -intFromRef(x) - 1
+  assert (let anon_builtin ==
+      (plusInts(intToRef(intFromRef(x) - intFromRef(x) % 256), intToRef(intFromRef(x) %
+      256))) in
+      intFromRef(intToRef(intFromRef(x) - intFromRef(x) % 256)) +
+      intFromRef(intToRef(intFromRef(x) % 256))) ==
+    intFromRef(x)
+  assert (let anon_builtin ==
+      (plusInts(intToRef(intFromRef(x) % 256), intToRef(intFromRef(x) -
+      intFromRef(x) % 256))) in
+      intFromRef(intToRef(intFromRef(x) % 256)) +
+      intFromRef(intToRef(intFromRef(x) - intFromRef(x) % 256))) ==
+    intFromRef(x)
+  if (128 <=
+  (let bits ==
+    (intFromRef(x) % 128) in
+    bits + 128 - (bits % 256 - bits % 128))) {
+    anon_1 := leInts(intToRef((let bits ==
+        (intFromRef(x) % 128) in
+        bits + 128 - (bits % 256 - bits % 128))), intToRef(255))
+  } else {
+    anon_1 := boolToRef(false)}
+  assert boolFromRef(anon_1)
+  assert (let bits ==
+      (intFromRef(x) + 128 - (intFromRef(x) % 256 - intFromRef(x) % 128)) in
+      bits % 256 - bits % 128) ==
+    128
+  assert intFromRef(x) < 0 ==>
+    intFromRef(x) - intFromRef(x) % 2147483648 == -2147483648
+  assert intFromRef(x) >= 0 ==>
+    intFromRef(x) - intFromRef(x) % 2147483648 == 0
+  assert (let anon_builtin ==
+      (plusInts(intToRef(-intFromRef(x) - 1), x)) in
+      intFromRef(intToRef(-intFromRef(x) - 1)) + intFromRef(x)) ==
+    -1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/bitwise_logic.kt: info: Generated Viper text for wrongMask:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongMask(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(x) % 128 < 127
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/bitwise_logic.kt: info: Generated Viper text for unsignedByte:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method unsignedByte(b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b), byteType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  if (0 <= byteFromRef(b) % 256) {
+    anon_0 := leInts(intToRef(byteFromRef(b) % 256), intToRef(255))
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  assert (byteFromRef(b) < 0 ? -1 : (byteFromRef(b) > 0 ? 1 : 0)) < 0 ==>
+    byteFromRef(b) % 256 ==
+    (let anon_builtin ==
+      (plusByteInt(b, intToRef(256))) in
+      byteFromRef(b) + intFromRef(intToRef(256)))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/bitwise_logic.kt: info: Generated Viper text for zeroAndMinusOne:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method zeroAndMinusOne(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  if (intFromRef(b) == -1) {
+    assert bitAndInt(intFromRef(a), intFromRef(b)) == intFromRef(a)
+    assert bitOrInt(intFromRef(a), intFromRef(b)) == -1
+    assert bitXorInt(intFromRef(a), intFromRef(b)) == -intFromRef(a) - 1
+  }
+  if (intFromRef(a) == 0) {
+    assert bitAndInt(intFromRef(a), intFromRef(b)) == 0
+    assert bitOrInt(intFromRef(a), intFromRef(b)) == intFromRef(b)
+    assert bitXorInt(intFromRef(a), intFromRef(b)) == intFromRef(b)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/bitwise_logic.kt: info: Generated Viper text for disjointByDistance:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method disjointByDistance(lo: Ref, hi: Ref, d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(lo), intType())
+  requires isSubtype(typeOf(hi), intType())
+  requires isSubtype(typeOf(d), intType())
+  requires 0 <= intFromRef(lo) && intFromRef(lo) < 256 &&
+    8 <= intFromRef(d) &&
+    intFromRef(d) < 32
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (0 <= intFromRef(lo) &&
+    intFromRef(lo) < powerOfTwoInt(intFromRef(d)) ?
+      intFromRef(lo) + shiftLeftInt(intFromRef(hi), intFromRef(d)) :
+      bitOrInt(intFromRef(lo), shiftLeftInt(intFromRef(hi), intFromRef(d)))) ==
+    (let anon ==
+      (plusInts(lo, intToRef(shiftLeftInt(intFromRef(hi), intFromRef(d))))) in
+      intFromRef(lo) +
+      intFromRef(intToRef(shiftLeftInt(intFromRef(hi), intFromRef(d)))))
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/bitwise_logic.kt: info: Generated Viper text for variableMask:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method variableMask(x: Ref, s: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(s), intType())
+  requires 0 <= intFromRef(s) && intFromRef(s) < 31
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  if (0 <=
+  (let anon_builtin ==
+    (minusInts(intToRef(shiftLeftInt(1, intFromRef(s))), intToRef(1))) in
+    intFromRef(x) % powerOfTwoInt(intFromRef(s)))) {
+    anon_0 := ltInts(intToRef((let anon_builtin ==
+        (minusInts(intToRef(shiftLeftInt(1, intFromRef(s))), intToRef(1))) in
+        intFromRef(x) % powerOfTwoInt(intFromRef(s)))), intToRef(shiftLeftInt(1,
+      intFromRef(s))))
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/bitwise_logic.kt: info: Generated Viper text for wrongSymbolic:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrongSymbolic(a: Ref, b: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires intFromRef(a) >= 0 && intFromRef(b) >= 0
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert bitAndInt(intFromRef(a), intFromRef(b)) < intFromRef(a)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/bitwise_logic.kt: info: Generated Viper text for longMasks:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method longMasks(par_v: Ref, w: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_v), longType())
+  requires isSubtype(typeOf(w), longType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  if ((0 < longFromRef(par_v) % 128 ?
+    -1 :
+    (0 > longFromRef(par_v) % 128 ? 1 : 0)) <=
+  0) {
+    anon_0 := leInts(compareToLongLong(longToRef(longFromRef(par_v) % 128),
+      longToRef(127)), intToRef(0))
+  } else {
+    anon_0 := boolToRef(false)}
+  assert boolFromRef(anon_0)
+  assert bitXorLong(longFromRef(par_v), (let anon_builtin ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1)))) ==
+    -longFromRef(par_v) - 1
+  assert (let bits ==
+      (longFromRef(par_v) + 128 -
+      (longFromRef(par_v) % 256 - longFromRef(par_v) % 128)) in
+      bits % 256 - bits % 128) ==
+    128
+  assert (longFromRef(par_v) < 0 ? -1 : (longFromRef(par_v) > 0 ? 1 : 0)) <
+    0 ==>
+    longFromRef(par_v) - longFromRef(par_v) % --9223372036854775808 ==
+    -9223372036854775808
+  if (longFromRef(w) == 0) {
+    assert bitOrLong(longFromRef(par_v), longFromRef(w)) ==
+      longFromRef(par_v)
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/bitwise_logic.kt: info: Generated Viper text for lowByte:
+function lowByte(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures 0 <= intFromRef(result) && intFromRef(result) <= 255 &&
+    intFromRef(result) == intFromRef(x) % 256
+{
+  intToRef(intFromRef(x) % 256)
+}
+
+/bitwise_logic.kt: info: Generated Viper text for maskInSpecification:
+method maskInSpecification(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) % 2 == 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) % 2 == 1
+{
+  v_ret_0 := intToRef(intFromRef(x) + 1 - intFromRef(x) % 2)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

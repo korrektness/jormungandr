@@ -42,6 +42,12 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
+        @TestMetadata("bitwise_logic.kt")
+        public void testBitwise_logic() {
+          runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/bitwise_logic.kt");
+        }
+
+        @Test
         @TestMetadata("checked_integer.kt")
         public void testChecked_integer() {
           runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/checked_integer.kt");
@@ -60,9 +66,9 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         }
 
         @Test
-        @TestMetadata("int_shift.kt")
-        public void testInt_shift() {
-          runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/int_shift.kt");
+        @TestMetadata("shifts.kt")
+        public void testShifts() {
+          runTest("formver.compiler-plugin/testData/diagnostics/language/arithmetic/shifts.kt");
         }
 
         @Test
@@ -2699,6 +2705,22 @@ public class PhasedDiagnosticTestGenerated extends AbstractPhasedDiagnosticTest 
         @TestMetadata("reverse_linked.kt")
         public void testReverse_linked() {
           runTest("formver.compiler-plugin/testData/programs/algorithms/reverse_linked/reverse_linked.kt");
+        }
+      }
+
+      @Nested
+      @TestMetadata("formver.compiler-plugin/testData/programs/algorithms/varint")
+      @TestDataPath("$PROJECT_ROOT")
+      public class Varint {
+        @Test
+        public void testAllFilesPresentInVarint() {
+          KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("formver.compiler-plugin/testData/programs/algorithms/varint"), Pattern.compile("^(.+)\\.kt$"), null, true);
+        }
+
+        @Test
+        @TestMetadata("varint.kt")
+        public void testVarint() {
+          runTest("formver.compiler-plugin/testData/programs/algorithms/varint/varint.kt");
         }
       }
 

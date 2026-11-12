@@ -113,7 +113,9 @@ class InjectionImageFunction(
     val resultInjection: Injection,
     val checked: Boolean = false,
     val normalReturnCondition: ((List<Exp>) -> Exp)? = null,
-    additionalConditions: FunctionBuilder.() -> Unit = { }
+    additionalConditions: FunctionBuilder.() -> Unit = { },
+    /** Boxed operands are unboxed and [original] applied to them, rather than this function to the boxes. */
+    val expandsInline: Boolean = false,
 ) : Function by FunctionBuilder.build(name, {
     val args = argsInjections.map { injection ->
         val arg = argument(Type.Ref)

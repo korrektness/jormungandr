@@ -42,8 +42,7 @@ A function that uses a construct SnaKt does not translate gets an `UNSUPPORTED_F
 A call that SnaKt translates without knowing what it computes gets an `OPAQUE_CALL` warning, and the function is
 still verified. The call may throw, and its result is some value of its type. These are:
 - a call of a library function, or a read of a library property, that SnaKt gives no model: no built-in
-  translation, external specification, library contract or Kotlin contract. Library operators are calls too, such as
-  `and`, `or`, `shl` and `ushr` on `Int`;
+  translation, external specification, library contract or Kotlin contract. Library operators are calls too;
 - a read of a top-level property other than a `const val` or a `@Pure` property with a getter body, and a read of a
   Java static field.
 
@@ -129,7 +128,18 @@ Division truncates toward zero; remainder has the dividend's sign. A zero diviso
 
 `@WrappingIntArithmetic` selects two's-complement wrapping for resolved primitive binary `+` and `-` with an `Int` result. `@WrappingLongArithmetic` selects it for resolved primitive binary `+`, `-` and `*` with a `Long` result. `@WrappingNarrowing` selects two's-complement truncation for narrowing `toByte`, `toShort`, `toInt` and `toChar` conversions, so `200.toByte()` is `-56` and `(-1).toChar()` has code 65535; widening stays exact. Mixed Byte/Short/Int/Long operands follow Kotlin's overload resolution and exact widening. The annotations are independent and may coexist. They include compound assignments, the annotated function's body, its specifications and its `@Pure` body. Other operations, including increment/decrement, unary minus and division/remainder, retain their checks. User-defined operators remain ordinary calls. Each converted function (including an inline callee) and separately converted lambda uses its own declaration's mode; specification DSL blocks use their containing declaration's mode. Callers evaluate callee contracts in the callee's mode and subsequent caller arithmetic in their own mode. The trust report lists these semantic opt-ins separately; they encode Kotlin semantics exactly and introduce no assumption.
 
-`Int.shr` with a literal distance `c` is modelled as floor division by `2^(c and 31)`, including negative receivers. A variable distance is unsupported. Other integer shifts and bitwise operations have no intrinsic model.
+### Bitwise operations
+
+`and`, `or`, `xor`, `inv`, `shl`, `shr` and `ushr` on `Int` and `Long` have the JVM's two's-complement semantics in executable code and specifications. Shift distances are masked to their low 5 (`Int`) or 6 (`Long`) bits, so `x shl 33 == x shl 1` for an `Int`. `shl` wraps; it never reports `INTEGER_OVERFLOW`. None of these operations has a precondition.
+
+The encoding stays in integer arithmetic, and its cost depends on the operands:
+
+- A literal operand or shift distance becomes division and remainder by constant powers of two: `x and 0x7F` is `x mod 128`, `x shr 3` is floor division by 8. Literal masks and shifts add no case splits.
+- Operands with no bit in common, as seen from masks and literal shifts in the same expression (`(b0 and 0xFF) or ((b1 and 0xFF) shl 8)`), combine as `+`. So do `a op b` when `0 <= a < 2^k` holds and the low `k` bits of `b` are clear, as for `b = x shl d` with a literal or variable `d`.
+- `x and ((1 shl s) - 1)` written in one expression is the remainder of `x` by `2^s`.
+- With an operand of 0 or -1, the result follows directly, as in ZigZag's `(n shl 1) xor (n shr 31)`.
+- A variable shift distance multiplies or divides by a table of powers of two; a proof splits on the distance.
+- Other combinations of two non-literal operands are summed bit by bit. Such proofs, and failing proofs about them, can reach the verification timeout. So can chains of literal `xor`s other than 0 and -1.
 
 ## Equality
 

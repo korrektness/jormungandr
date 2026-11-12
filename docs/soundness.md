@@ -38,7 +38,7 @@ three things part of every result:
   comply with them.
 - **Opaque calls.** For a call or read reported as `OPAQUE_CALL`
   (SPECIFICATIONS.md, "Verification Control"), the result says nothing about
-  what the call computes. Test: `language/reporting/opaque_calls.kt::nibbleInRange,tableEntry`.
+  what the call computes. Test: `language/reporting/opaque_calls.kt::firstQuote,tableEntry`.
 - **Skipped declarations.** A declaration that SnaKt does not verify reports
   `VERIFICATION_SKIPPED` with a reason. A body converted without that warning is
   verified, including the body of a local function, which is a declaration of

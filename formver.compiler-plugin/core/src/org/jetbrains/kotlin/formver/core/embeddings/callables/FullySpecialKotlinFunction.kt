@@ -115,6 +115,27 @@ object SpecialKotlinFunctions {
                 operation(args[0])
             }
         }
+        for ((key, template) in BitwiseOperators.binaryTemplates) {
+            val (width, name) = key
+            val signature = buildFunctionPretype {
+                withDispatchReceiver { existing(width.pretype) }
+                // Shift distances are Int for both widths.
+                withParam { if (name in setOf("shl", "shr", "ushr")) int() else existing(width.pretype) }
+                withReturnType { existing(width.pretype) }
+            }
+            addFunction(signature, SpecialPackages.kotlin, className = width.name, name = name) { args, _ ->
+                template(args[0], args[1])
+            }
+        }
+        for ((width, template) in BitwiseOperators.invTemplates) {
+            val signature = buildFunctionPretype {
+                withDispatchReceiver { existing(width.pretype) }
+                withReturnType { existing(width.pretype) }
+            }
+            addFunction(signature, SpecialPackages.kotlin, className = width.name, name = "inv") { args, _ ->
+                template(args[0])
+            }
+        }
         val intIntToIntType = buildFunctionPretype {
             withDispatchReceiver { int() }
             withParam { int() }
@@ -128,11 +149,6 @@ object SpecialKotlinFunctions {
             addFunction(SpecialPackages.kotlin, className = "Int", name = "minus") { args, ctx ->
                 val operation = if (ctx.wrapsIntArithmetic) OperatorExpEmbeddings.WrappingSubIntInt else SubIntInt
                 operation(args[0], args[1])
-            }
-            addFunction(SpecialPackages.kotlin, className = "Int", name = "shr") { args, _ ->
-                val distance = args[1].ignoringCastsAndMetaNodes() as? IntLit
-                    ?: throw UnsupportedFeatureException(null, "Int.shr with a non-literal distance")
-                OperatorExpEmbeddings.ShiftRightInt(args[0], LongLit(1L shl (distance.value and (Int.SIZE_BITS - 1))))
             }
             addFunction(SpecialPackages.kotlin, className = "Int", name = "times") { args, _ ->
                 MulIntInt(args[0], args[1])

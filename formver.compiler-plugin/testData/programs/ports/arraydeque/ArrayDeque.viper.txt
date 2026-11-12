@@ -14663,8 +14663,8 @@ method f_newCapacity(oldCapacity: Ref, minCapacity: Ref)
     intFromRef(v_ret_0) > intFromRef(oldCapacity)
 {
   var l0_newCapacity: Ref
-  l0_newCapacity := wrappingPlusInts(oldCapacity, shiftRightInt(oldCapacity,
-    longToRef(2)))
+  l0_newCapacity := wrappingPlusInts(oldCapacity, intToRef(intFromRef(oldCapacity) \
+    2))
   if ((intFromRef(l0_newCapacity) - intFromRef(minCapacity) > 2147483647 ?
     intFromRef(l0_newCapacity) - intFromRef(minCapacity) - 4294967296 :
     (intFromRef(l0_newCapacity) - intFromRef(minCapacity) < -2147483648 ?
@@ -17476,7 +17476,7 @@ method checkedCapacity(oldCapacity: Ref, minCapacity: Ref)
   ensures intFromRef(v_ret_0) >= intFromRef(minCapacity)
 {
   var newCapacity: Ref
-  newCapacity := plusInts(oldCapacity, shiftRightInt(oldCapacity, longToRef(2)))
+  newCapacity := plusInts(oldCapacity, intToRef(intFromRef(oldCapacity) \ 2))
   if ((let anon ==
     (minusInts(newCapacity, minCapacity)) in
     intFromRef(newCapacity) - intFromRef(minCapacity)) <

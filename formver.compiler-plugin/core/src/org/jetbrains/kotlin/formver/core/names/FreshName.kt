@@ -65,6 +65,15 @@ data class AnonymousBuiltinName(override val n: Int) : NumberedName, NameTypeIsV
 }
 
 
+/** The operand a bitwise operation binds with `let`; [n] is the binding's nesting depth. */
+data class BitwiseOperandName(override val n: Int) : NumberedName, NameTypeIsVariable {
+    override val inViper: Boolean = true
+
+    override val candidates: List<CandidateName> = nameWithPrefixAndSuffixCandidates("bits", nameType, n.toString())
+
+    override val children: List<AnyName> = listOf(nameType)
+}
+
 /**
  * If you need the name for the return value of a function, use [FunctionResultVariableName] instead.
  */

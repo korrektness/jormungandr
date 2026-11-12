@@ -1,0 +1,253 @@
+/shifts.kt: info: Generated Viper text for literalDistances:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method literalDistances(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  assert intFromRef(n) \ 2 == intFromRef(n) \ 2
+  assert intFromRef(n) == intFromRef(n)
+  assert intFromRef(n) \ 2 == intFromRef(n) \ 2
+  assert intFromRef(n) == intFromRef(n)
+  assert intFromRef(n) == intFromRef(n)
+  if (intFromRef(n) < 0) {
+    anon_0 := intToRef(-1)
+  } else {
+    anon_0 := intToRef(0)}
+  assert intFromRef(n) \ 2147483648 == intFromRef(anon_0)
+  if (intFromRef(n) < 0) {
+    anon_1 := intToRef(1)
+  } else {
+    anon_1 := intToRef(0)}
+  assert intFromRef(n) % 4294967296 \ 2147483648 == intFromRef(anon_1)
+  if (intFromRef(n) \ 2 ==
+  (let anon_builtin ==
+    (divInts(n, intToRef(2))) in
+    (intFromRef(n) < 0 != intFromRef(intToRef(2)) < 0 ?
+      -((intFromRef(n) < 0 ? -intFromRef(n) : intFromRef(n)) \
+      (intFromRef(intToRef(2)) < 0 ?
+        -intFromRef(intToRef(2)) :
+        intFromRef(intToRef(2)))) :
+      (intFromRef(n) < 0 ? -intFromRef(n) : intFromRef(n)) \
+      (intFromRef(intToRef(2)) < 0 ?
+        -intFromRef(intToRef(2)) :
+        intFromRef(intToRef(2)))))) {
+    anon_2 := boolToRef(intFromRef(n) % 4294967296 \ 2 ==
+      (let anon_builtin ==
+        (divInts(n, intToRef(2))) in
+        (intFromRef(n) < 0 != intFromRef(intToRef(2)) < 0 ?
+          -((intFromRef(n) < 0 ? -intFromRef(n) : intFromRef(n)) \
+          (intFromRef(intToRef(2)) < 0 ?
+            -intFromRef(intToRef(2)) :
+            intFromRef(intToRef(2)))) :
+          (intFromRef(n) < 0 ? -intFromRef(n) : intFromRef(n)) \
+          (intFromRef(intToRef(2)) < 0 ?
+            -intFromRef(intToRef(2)) :
+            intFromRef(intToRef(2))))))
+  } else {
+    anon_2 := boolToRef(false)}
+  assert intFromRef(n) >= 0 ==> boolFromRef(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/shifts.kt: info: Generated Viper text for negativeReceiver:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method negativeReceiver(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires intFromRef(n) == -3
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert intFromRef(n) \ 2 == -2
+  assert intFromRef(n) % 4294967296 \ 2 ==
+    (let anon ==
+      (minusInts(intToRef(2147483647), intToRef(1))) in
+      intFromRef(intToRef(2147483647)) - intFromRef(intToRef(1)))
+  assert (let bits ==
+      (intFromRef(n) * 2 % 4294967296) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)) ==
+    -6
+  assert (let bits ==
+      (intFromRef(n) * 1073741824 % 4294967296) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)) ==
+    1073741824
+  assert intFromRef(n) \ 2 == -1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/shifts.kt: info: Generated Viper text for wrappingLeftShift:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method wrappingLeftShift(max: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(max), intType())
+  requires intFromRef(max) == 2147483647
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  assert (let bits ==
+      (intFromRef(max) * 2 % 4294967296) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)) ==
+    -2
+  assert -2147483648 == -2147483648
+  assert -2147483648 == -2147483648
+  assert 2147483647 == 2147483647
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/shifts.kt: info: Generated Viper text for variableDistances:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method variableDistances(x: Ref, d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  assert shiftUnsignedRightInt(intFromRef(x), intFromRef(d)) ==
+    shiftUnsignedRightInt(intFromRef(x), intFromRef(d) % 32)
+  assert shiftLeftInt(intFromRef(x), (let anon_builtin ==
+      (plusInts(d, intToRef(0))) in
+      intFromRef(d) + intFromRef(intToRef(0)))) ==
+    shiftLeftInt(intFromRef(x), intFromRef(d))
+  if (intFromRef(d) == 39) {
+    assert shiftLeftInt(intFromRef(x), intFromRef(d)) ==
+      (let bits ==
+        (intFromRef(x) * 128 % 4294967296) in
+        (bits >= 2147483648 ? bits - 4294967296 : bits))
+    assert shiftRightInt(intFromRef(x), intFromRef(d)) ==
+      intFromRef(x) \ 128
+  }
+  if ((let anon_builtin ==
+    (remInts(d, intToRef(32))) in
+    intFromRef(d) -
+    (intFromRef(d) < 0 != intFromRef(intToRef(32)) < 0 ?
+      -((intFromRef(d) < 0 ? -intFromRef(d) : intFromRef(d)) \
+      (intFromRef(intToRef(32)) < 0 ?
+        -intFromRef(intToRef(32)) :
+        intFromRef(intToRef(32)))) :
+      (intFromRef(d) < 0 ? -intFromRef(d) : intFromRef(d)) \
+      (intFromRef(intToRef(32)) < 0 ?
+        -intFromRef(intToRef(32)) :
+        intFromRef(intToRef(32)))) *
+    intFromRef(intToRef(32))) ==
+  0) {
+    assert shiftUnsignedRightInt(intFromRef(x), intFromRef(d)) ==
+      intFromRef(x)
+  }
+  if (0 < intFromRef(d)) {
+    anon_0 := ltInts(d, intToRef(32))
+  } else {
+    anon_0 := boolToRef(false)}
+  if (boolFromRef(anon_0)) {
+    assert shiftUnsignedRightInt(intFromRef(x), intFromRef(d)) >= 0
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/shifts.kt: info: Generated Viper text for longShifts:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method longShifts(n: Ref, d: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), longType())
+  requires isSubtype(typeOf(d), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  if ((longFromRef(n) < 0 ? -1 : (longFromRef(n) > 0 ? 1 : 0)) < 0) {
+    anon_0 := unaryMinusLong(longToRef(1))
+  } else {
+    anon_0 := longToRef(0)}
+  assert longFromRef(n) \ --9223372036854775808 == longFromRef(anon_0)
+  if ((longFromRef(n) < 0 ? -1 : (longFromRef(n) > 0 ? 1 : 0)) < 0) {
+    anon_1 := longToRef(1)
+  } else {
+    anon_1 := longToRef(0)}
+  assert longFromRef(n) % (2 * --9223372036854775808) \
+    --9223372036854775808 ==
+    longFromRef(anon_1)
+  assert longFromRef(n) == longFromRef(n)
+  assert -9223372036854775808 == -9223372036854775808
+  assert (let anon_builtin ==
+      (unaryMinusLong(longToRef(1))) in
+      -longFromRef(longToRef(1))) %
+    (2 * --9223372036854775808) \
+    2 ==
+    9223372036854775807
+  assert -2 ==
+    (let anon_builtin ==
+      (unaryMinusLong(longToRef(2))) in
+      -longFromRef(longToRef(2)))
+  if (intFromRef(d) == 65) {
+    assert shiftLeftLong(longFromRef(n), intFromRef(d)) ==
+      (let bits ==
+        (longFromRef(n) * 2 % (2 * --9223372036854775808)) in
+        (bits >= --9223372036854775808 ?
+          bits - 2 * --9223372036854775808 :
+          bits))
+    assert shiftUnsignedRightLong(longFromRef(n), intFromRef(d)) ==
+      longFromRef(n) % (2 * --9223372036854775808) \ 2
+  }
+  if (longFromRef(n) ==
+  (let anon_builtin ==
+    (unaryMinusLong(longToRef(3))) in
+    -longFromRef(longToRef(3)))) {
+    assert longFromRef(n) % (2 * --9223372036854775808) \ 2 ==
+      (let anon_builtin ==
+        (minusLongLong(longToRef(9223372036854775807), longToRef(1))) in
+        longFromRef(longToRef(9223372036854775807)) -
+        longFromRef(longToRef(1)))
+  }
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/shifts.kt: info: Generated Viper text for half:
+function half(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(x) \ 2
+{
+  intToRef(intFromRef(x) \ 2)
+}
+
+/shifts.kt: info: Generated Viper text for shiftInSpecification:
+function half(x: Ref): Ref
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(result), intType())
+  ensures intFromRef(result) == intFromRef(x) \ 2
+{
+  intToRef(intFromRef(x) \ 2)
+}
+
+method shiftInSpecification(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) % 4294967296 \ 2147483648 == 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= 0
+{
+  v_ret_0 := half(x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}

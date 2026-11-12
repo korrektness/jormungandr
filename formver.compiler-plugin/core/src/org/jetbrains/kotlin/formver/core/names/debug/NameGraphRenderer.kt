@@ -222,7 +222,7 @@ class NameGraphRenderer(val shortNameResolver: ShortNameResolver) {
 
             // No else branch, because FreshName is sealed. When adding a new name, the compiler will complain here.
             FunctionResultVariableName, ExtensionReceiverName, DispatchReceiverName,
-            is AnonymousBuiltinName, is AnonymousName, is PlaceholderArgumentName,
+            is AnonymousBuiltinName, is AnonymousName, is BitwiseOperandName, is PlaceholderArgumentName,
             is ReturnVariableName, is BreakLabelName, is CatchLabelName,
             is ContinueLabelName, is LoopHeadLabelName, is TryExitLabelName, is ReturnLabelName,
             is DomainAssociatedFuncName, is DomainFuncParameterName, is PredicateName, is SpecialFieldName,

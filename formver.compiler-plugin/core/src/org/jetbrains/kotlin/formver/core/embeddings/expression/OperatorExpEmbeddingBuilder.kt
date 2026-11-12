@@ -28,9 +28,11 @@ class OperatorExpEmbeddingBuilder {
     private var additionalConditions: (FunctionBuilder.() -> Unit)? = null
     private var checked = false
     private var normalReturnCondition: ((List<Exp>) -> Exp)? = null
+    private var expandsInline = false
 
     fun complete(): OperatorExpEmbeddingTemplate? {
         val callableType = callableType ?: error("Signature not specified to buildExpEmbedding.")
+        check(!(expandsInline && checked)) { "A checked operation cannot expand inline." }
         val argumentTypes = callableType.formalArgTypes
         val returnType = callableType.returnType
         val refsOperation = InjectionImageFunction(
@@ -40,7 +42,8 @@ class OperatorExpEmbeddingBuilder {
             returnType.injection,
             checked,
             normalReturnCondition,
-            additionalConditions ?: { }
+            additionalConditions ?: { },
+            expandsInline,
         )
         return OperatorExpEmbeddingTemplate.create(returnType, refsOperation)
     }
@@ -77,6 +80,14 @@ class OperatorExpEmbeddingBuilder {
     fun normalReturnCondition(block: (List<Exp>) -> Exp) {
         checked = true
         normalReturnCondition = block
+    }
+
+    /**
+     * Applies the Viper implementation to the operands' native values on every path, so that it can inspect literal
+     * operands. Only an unchecked operation may expand inline.
+     */
+    fun expandInline() {
+        expandsInline = true
     }
 
     fun additionalConditions(block: FunctionBuilder.() -> Unit) {

@@ -1,0 +1,360 @@
+/varint.kt: info: Generated Viper text for encodeVarint:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method encodeVarint(value: Ref, out: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), intType())
+  requires isSubtype(typeOf(out), IntArray())
+  requires acc(IntArray_unique(out), write)
+  requires arraySize(out) >= 5
+  ensures acc(IntArray_unique(out), write)
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 1 <= intFromRef(v_ret_0) && intFromRef(v_ret_0) <= 5
+  ensures (unfolding acc(IntArray_unique(out), write) in
+      0 <=
+      out.contents[(let anon_builtin_neg1 ==
+        (minusInts(v_ret_0, intToRef(1))) in
+        intFromRef(v_ret_0) - intFromRef(intToRef(1)))]) &&
+    (unfolding acc(IntArray_unique(out), write) in
+      out.contents[(let anon_builtin_neg1 ==
+        (minusInts(v_ret_0, intToRef(1))) in
+        intFromRef(v_ret_0) - intFromRef(intToRef(1)))] <=
+      127)
+  ensures (forall anon_builtin_0: Int ::
+      { out.contents[anon_builtin_0] }
+      { out.contents[anon_builtin_0] }
+      -2147483648 <= anon_builtin_0 && anon_builtin_0 <= 2147483647 ==>
+      0 <= anon_builtin_0 &&
+      anon_builtin_0 <
+      (let anon_builtin_neg1 ==
+        (minusInts(v_ret_0, intToRef(1))) in
+        intFromRef(v_ret_0) - intFromRef(intToRef(1))) ==>
+      (unfolding acc(IntArray_unique(out), write) in
+        128 <= out.contents[anon_builtin_0]) &&
+      (unfolding acc(IntArray_unique(out), write) in
+        out.contents[anon_builtin_0] <= 255))
+{
+  var l0_v: Ref
+  var i: Ref
+  var anon_1: Ref
+  l0_v := value
+  i := intToRef(0)
+  label cont
+    invariant acc(IntArray_unique(out), write)
+    invariant isSubtype(typeOf(l0_v), intType())
+    invariant isSubtype(typeOf(i), intType())
+    invariant isSubtype(typeOf(value), intType())
+    invariant isSubtype(typeOf(out), IntArray())
+    invariant 0 <= intFromRef(i) && intFromRef(i) <= 4
+    invariant intFromRef(l0_v) ==
+      shiftUnsignedRightInt(intFromRef(value), (let anon_builtin_neg1 ==
+        (timesInts(intToRef(7), i)) in
+        intFromRef(intToRef(7)) * intFromRef(i)))
+    invariant (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+        anon_builtin_1 <= 2147483647 &&
+        isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+        0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
+        (unfolding acc(IntArray_unique(out), write) in
+          128 <= out.contents[anon_builtin_1]) &&
+        (unfolding acc(IntArray_unique(out), write) in
+          out.contents[anon_builtin_1] <= 255))
+  anon_1 := notBool(boolToRef(intFromRef(l0_v) - intFromRef(l0_v) % 128 ==
+    0))
+  if (boolFromRef(anon_1)) {
+    var anon_0: Ref
+    assert intFromRef(i) >= 0
+    assert intFromRef(i) < arraySize(out)
+    unfold acc(IntArray_unique(out), write)
+    out.contents := out.contents[intFromRef(i) :=
+      (let bits ==
+        (intFromRef(l0_v) % 128) in
+        bits + 128 - (bits % 256 - bits % 128))]
+    l0_v := intToRef(intFromRef(l0_v) % 4294967296 \ 128)
+    anon_0 := i
+    i := plusInts(anon_0, intToRef(1))
+    fold acc(IntArray_unique(out), write)
+    goto cont
+  }
+  label break
+  assert isSubtype(typeOf(l0_v), intType())
+  assert isSubtype(typeOf(i), intType())
+  assert isSubtype(typeOf(value), intType())
+  assert isSubtype(typeOf(out), IntArray())
+  assert 0 <= intFromRef(i) && intFromRef(i) <= 4
+  assert intFromRef(l0_v) ==
+    shiftUnsignedRightInt(intFromRef(value), (let anon_builtin_neg1 ==
+      (timesInts(intToRef(7), i)) in
+      intFromRef(intToRef(7)) * intFromRef(i)))
+  assert (forall anon_builtin_1: Int ::anon_builtin_1 >= -2147483648 &&
+      anon_builtin_1 <= 2147483647 &&
+      isSubtype(typeOf(intToRef(anon_builtin_1)), intType()) ==>
+      0 <= anon_builtin_1 && anon_builtin_1 < intFromRef(i) ==>
+      (unfolding acc(IntArray_unique(out), write) in
+        128 <= out.contents[anon_builtin_1]) &&
+      (unfolding acc(IntArray_unique(out), write) in
+        out.contents[anon_builtin_1] <= 255))
+  assert intFromRef(i) >= 0
+  assert intFromRef(i) < arraySize(out)
+  unfold acc(IntArray_unique(out), write)
+  out.contents := out.contents[intFromRef(i) := intFromRef(l0_v)]
+  v_ret_0 := plusInts(i, intToRef(1))
+  fold acc(IntArray_unique(out), write)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/varint.kt: info: Generated Viper text for varintGroup:
+function varintGroup(value: Ref, par_index: Ref): Ref
+  requires isSubtype(typeOf(value), intType())
+  requires isSubtype(typeOf(par_index), intType())
+  requires 0 <= intFromRef(par_index) && intFromRef(par_index) <= 4
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(shiftUnsignedRightInt(intFromRef(value), (let anon ==
+    (timesInts(intToRef(7), par_index)) in
+    intFromRef(intToRef(7)) * intFromRef(par_index))) %
+  128)
+}
+
+/varint.kt: info: Generated Viper text for decodeStep:
+method decodeStep(par_result: Ref, b: Ref, shift: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_result), intType())
+  requires isSubtype(typeOf(b), intType())
+  requires isSubtype(typeOf(shift), intType())
+  requires 0 <= intFromRef(b) && intFromRef(b) <= 255
+  requires intFromRef(shift) == 0 || intFromRef(shift) == 7 ||
+    intFromRef(shift) == 14 ||
+    intFromRef(shift) == 21
+  requires 0 <= intFromRef(par_result) &&
+    shiftUnsignedRightInt(intFromRef(par_result), intFromRef(shift)) == 0
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures 0 <= intFromRef(v_ret_0) &&
+    shiftUnsignedRightInt(intFromRef(v_ret_0), (let anon ==
+      (plusInts(shift, intToRef(7))) in
+      intFromRef(shift) + intFromRef(intToRef(7)))) ==
+    0 &&
+    (let anon ==
+      (minusInts(intToRef(shiftLeftInt(1, intFromRef(shift))), intToRef(1))) in
+      intFromRef(v_ret_0) % powerOfTwoInt(intFromRef(shift))) ==
+    intFromRef(par_result)
+{
+  v_ret_0 := intToRef((0 <= intFromRef(par_result) &&
+    intFromRef(par_result) < powerOfTwoInt(intFromRef(shift)) ?
+      intFromRef(par_result) +
+      shiftLeftInt(intFromRef(b) % 128, intFromRef(shift)) :
+      bitOrInt(intFromRef(par_result), shiftLeftInt(intFromRef(b) % 128, intFromRef(shift)))))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/varint.kt: info: Generated Viper text for zigZagEncode:
+function zigZagEncode(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef((0 <= intFromRef(n) \ 2147483648 &&
+  intFromRef(n) \ 2147483648 < 2 ?
+    intFromRef(n) \ 2147483648 +
+    (let bits ==
+      (intFromRef(n) * 2 % 4294967296) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)) :
+    bitXorInt((let bits ==
+      (intFromRef(n) * 2 % 4294967296) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)), intFromRef(n) \
+    2147483648)))
+}
+
+/varint.kt: info: Generated Viper text for zigZagDecode:
+function zigZagDecode(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(bitXorInt(intFromRef(n) % 4294967296 \ 2, (let anon ==
+    (negInt(intToRef(intFromRef(n) % 2))) in
+    -intFromRef(intToRef(intFromRef(n) % 2)))))
+}
+
+/varint.kt: info: Generated Viper text for zigZagEncodeLong:
+function zigZagEncodeLong(n: Ref): Ref
+  requires isSubtype(typeOf(n), longType())
+  ensures isSubtype(typeOf(result), longType())
+{
+  longToRef((0 <= longFromRef(n) \ --9223372036854775808 &&
+  longFromRef(n) \ --9223372036854775808 < 2 ?
+    longFromRef(n) \ --9223372036854775808 +
+    (let bits ==
+      (longFromRef(n) * 2 % (2 * --9223372036854775808)) in
+      (bits >= --9223372036854775808 ?
+        bits - 2 * --9223372036854775808 :
+        bits)) :
+    bitXorLong((let bits ==
+      (longFromRef(n) * 2 % (2 * --9223372036854775808)) in
+      (bits >= --9223372036854775808 ?
+        bits - 2 * --9223372036854775808 :
+        bits)), longFromRef(n) \ --9223372036854775808)))
+}
+
+/varint.kt: info: Generated Viper text for zigZagDecodeLong:
+function zigZagDecodeLong(n: Ref): Ref
+  requires isSubtype(typeOf(n), longType())
+  ensures isSubtype(typeOf(result), longType())
+{
+  longToRef(bitXorLong(longFromRef(n) % (2 * --9223372036854775808) \ 2, (let anon ==
+    (unaryMinusLong(longToRef(longFromRef(n) % 2))) in
+    -longFromRef(longToRef(longFromRef(n) % 2)))))
+}
+
+/varint.kt: info: Generated Viper text for zigZagRoundTrip:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function zigZagDecode(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef(bitXorInt(intFromRef(n) % 4294967296 \ 2, (let anon_builtin ==
+    (negInt(intToRef(intFromRef(n) % 2))) in
+    -intFromRef(intToRef(intFromRef(n) % 2)))))
+}
+
+function zigZagDecodeLong(n: Ref): Ref
+  requires isSubtype(typeOf(n), longType())
+  ensures isSubtype(typeOf(result), longType())
+{
+  longToRef(bitXorLong(longFromRef(n) % (2 * --9223372036854775808) \ 2, (let anon_builtin ==
+    (unaryMinusLong(longToRef(longFromRef(n) % 2))) in
+    -longFromRef(longToRef(longFromRef(n) % 2)))))
+}
+
+function zigZagEncode(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef((0 <= intFromRef(n) \ 2147483648 &&
+  intFromRef(n) \ 2147483648 < 2 ?
+    intFromRef(n) \ 2147483648 +
+    (let bits ==
+      (intFromRef(n) * 2 % 4294967296) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)) :
+    bitXorInt((let bits ==
+      (intFromRef(n) * 2 % 4294967296) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)), intFromRef(n) \
+    2147483648)))
+}
+
+function zigZagEncodeLong(n: Ref): Ref
+  requires isSubtype(typeOf(n), longType())
+  ensures isSubtype(typeOf(result), longType())
+{
+  longToRef((0 <= longFromRef(n) \ --9223372036854775808 &&
+  longFromRef(n) \ --9223372036854775808 < 2 ?
+    longFromRef(n) \ --9223372036854775808 +
+    (let bits ==
+      (longFromRef(n) * 2 % (2 * --9223372036854775808)) in
+      (bits >= --9223372036854775808 ?
+        bits - 2 * --9223372036854775808 :
+        bits)) :
+    bitXorLong((let bits ==
+      (longFromRef(n) * 2 % (2 * --9223372036854775808)) in
+      (bits >= --9223372036854775808 ?
+        bits - 2 * --9223372036854775808 :
+        bits)), longFromRef(n) \ --9223372036854775808)))
+}
+
+method zigZagRoundTrip(n: Ref, m: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires isSubtype(typeOf(m), longType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_0: Ref
+  assert intFromRef(zigZagDecode(zigZagEncode(n))) == intFromRef(n)
+  assert longFromRef(zigZagDecodeLong(zigZagEncodeLong(m))) ==
+    longFromRef(m)
+  if (intFromRef(zigZagEncode(n)) % 4294967296 \ 2 == intFromRef(n)) {
+    anon_0 := boolToRef(intFromRef(zigZagEncode(n)) % 2 == 0)
+  } else {
+    anon_0 := boolToRef(false)}
+  assert intFromRef(n) >= 0 ==> boolFromRef(anon_0)
+  assert intFromRef(n) < 0 ==> intFromRef(zigZagEncode(n)) % 2 == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/varint.kt: info: Generated Viper text for zigZagSmallValues:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function zigZagEncode(n: Ref): Ref
+  requires isSubtype(typeOf(n), intType())
+  ensures isSubtype(typeOf(result), intType())
+{
+  intToRef((0 <= intFromRef(n) \ 2147483648 &&
+  intFromRef(n) \ 2147483648 < 2 ?
+    intFromRef(n) \ 2147483648 +
+    (let bits ==
+      (intFromRef(n) * 2 % 4294967296) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)) :
+    bitXorInt((let bits ==
+      (intFromRef(n) * 2 % 4294967296) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)), intFromRef(n) \
+    2147483648)))
+}
+
+method zigZagSmallValues(n: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(n), intType())
+  requires -1073741823 <= intFromRef(n) && intFromRef(n) <= 1073741823
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon: Ref
+  if (intFromRef(n) >= 0) {
+    anon := timesInts(intToRef(2), n)
+  } else {
+    anon := minusInts(timesInts(intToRef(-2), n), intToRef(1))}
+  assert intFromRef(zigZagEncode(n)) == intFromRef(anon)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/varint.kt: info: Generated Viper text for readIntLittleEndian:
+method readIntLittleEndian(b0: Ref, b1: Ref, b2: Ref, b3: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(b0), byteType())
+  requires isSubtype(typeOf(b1), byteType())
+  requires isSubtype(typeOf(b2), byteType())
+  requires isSubtype(typeOf(b3), byteType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) % 256 == byteFromRef(b0) % 256
+  ensures intFromRef(v_ret_0) \ 256 % 256 == byteFromRef(b1) % 256
+  ensures intFromRef(v_ret_0) \ 65536 % 256 == byteFromRef(b2) % 256
+  ensures intFromRef(v_ret_0) \ 16777216 == byteFromRef(b3)
+{
+  v_ret_0 := intToRef(byteFromRef(b0) % 256 + byteFromRef(b1) % 256 * 256 +
+    byteFromRef(b2) % 256 * 65536 +
+    (let bits ==
+      (byteFromRef(b3) % 256 * 16777216) in
+      (bits >= 2147483648 ? bits - 4294967296 : bits)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/varint.kt: info: Generated Viper text for wrongContinuationBit:
+method wrongContinuationBit(value: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(value), intType())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) <= 127
+{
+  v_ret_0 := intToRef((let bits ==
+      (intFromRef(value) % 128) in
+      bits + 128 - (bits % 256 - bits % 128)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}

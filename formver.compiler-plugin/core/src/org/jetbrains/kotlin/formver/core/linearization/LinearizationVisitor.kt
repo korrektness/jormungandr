@@ -747,6 +747,7 @@ data class LinearizationVisitor(
         }
 
         override fun toViper(ctx: LinearizationContext): Exp {
+            if (e.refsOperation.expandsInline) return e.refsOperation.resultInjection.toRef(toViperBuiltinType(ctx))
             val args = listOf(e.left.linearize().toViper(ctx), e.right.linearize().toViper(ctx))
             val normalReturn = e.refsOperation.normalReturnCondition
             val exceptionalExit = e.exceptionalExit
@@ -777,7 +778,8 @@ data class LinearizationVisitor(
         }
 
         override fun toViper(ctx: LinearizationContext): Exp =
-            e.refsOperation(e.inner.linearize().toViper(ctx), pos = ctx.source.asPosition, info = e.sourceRole.asInfo)
+            if (e.refsOperation.expandsInline) e.refsOperation.resultInjection.toRef(toViperBuiltinType(ctx))
+            else e.refsOperation(e.inner.linearize().toViper(ctx), pos = ctx.source.asPosition, info = e.sourceRole.asInfo)
 
         override fun toViperBuiltinType(ctx: LinearizationContext): Exp =
             if (e.refsOperation.checked) checkedBuiltinValue(e.refsOperation, toViper(ctx), ctx)
