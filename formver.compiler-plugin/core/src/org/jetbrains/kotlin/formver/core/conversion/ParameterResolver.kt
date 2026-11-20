@@ -34,11 +34,11 @@ fun ParameterResolver.resolveNamedReturnTarget(returnPointName: String): ReturnT
 class RootParameterResolver(
     val ctx: ProgramConversionContext,
     private val signature: FunctionSignature,
-    firArgs: List<FirValueParameterSymbol>,
+    parameterVariables: List<Pair<FirValueParameterSymbol, VariableEmbedding>>,
     override val labelName: String?,
     override val defaultResolvedReturnTarget: ReturnTarget
 ) : ParameterResolver {
-    private val parameters = firArgs.zip(signature.params).toMap()
+    private val parameters = parameterVariables.toMap()
     override fun tryResolveParameter(symbol: FirValueParameterSymbol): ExpEmbedding? = parameters[symbol]
     override fun tryResolveDispatchReceiver() = signature.dispatchReceiver
     override fun tryResolveExtensionReceiver(labelName: String) = (labelName == this.labelName).ifTrue {

@@ -5,6 +5,9 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.embeddings.callables.parameterVariables
+import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
+import org.jetbrains.kotlin.formver.core.parameterArguments
 import org.jetbrains.kotlin.formver.intrinsics.plugin.primitiveArrayClassIds
 import org.jetbrains.kotlin.descriptors.isInterface
 import org.jetbrains.kotlin.fir.FirElement
@@ -131,7 +134,7 @@ fun constructorInitializerConditions(
     val owner = symbol.resolvedReturnType.toRegularClassSymbol(program.session) ?: return emptyList()
     if (owner.origin != FirDeclarationOrigin.Source || !program.constructorFactsJustified(owner)) return emptyList()
     val receiver = PlaceholderVariableEmbedding(DispatchReceiverName, program.embedType(symbol.resolvedReturnType), isUnique = true)
-    val substitutions = symbol.valueParameterSymbols.zip(signature.params).associate { (symbol, value) ->
+    val substitutions = signature.parameterVariables(symbol).associate { (symbol, value) ->
         SubstitutedArgument.ValueParameter(symbol) to value
     } + (SubstitutedArgument.DispatchThis to receiver)
     val fields = linkedMapOf<FirPropertySymbol, ExpEmbedding>()
@@ -147,19 +150,19 @@ fun constructorInitializerConditions(
         val delegation = constructor.fir.delegatedConstructor
         val superConstructor = delegation?.calleeReference?.toResolvedConstructorSymbol()
         val superArgumentsStable = superConstructor != null && superConstructor.origin == FirDeclarationOrigin.Source &&
-            delegation.resolvedArgumentMapping.orEmpty().keys.all {
-                isStableInitializer(it, constructor.valueParameterSymbols.toSet())
+            delegation.parameterArguments(superConstructor).all { (_, argument) ->
+                isStableInitializer(argument, constructor.signatureParameterSymbols.toSet())
             } &&
-            superConstructor.valueParameterSymbols.all { parameter ->
-                delegation.resolvedArgumentMapping.orEmpty().values.any { it.symbol == parameter } ||
-                    parameter.fir.defaultValue?.let { isStableInitializer(it, superConstructor.valueParameterSymbols.toSet()) } == true
+            superConstructor.signatureParameterSymbols.all { parameter ->
+                delegation.parameterArguments(superConstructor).any { it.first == parameter } ||
+                    parameter.fir.defaultValue?.let { isStableInitializer(it, superConstructor.signatureParameterSymbols.toSet()) } == true
             }
         if (superConstructor != null && superArgumentsStable) {
-            val superArguments = delegation.resolvedArgumentMapping.orEmpty().map { (argument, parameter) ->
-                SubstitutedArgument.ValueParameter(parameter.symbol) to context.convert(argument)
+            val superArguments = delegation.parameterArguments(superConstructor).map { (parameter, argument) ->
+                SubstitutedArgument.ValueParameter(parameter) to context.convert(argument)
             }.toMap().toMutableMap<SubstitutedArgument, ExpEmbedding>()
             superArguments[SubstitutedArgument.DispatchThis] = receiver
-            for (parameter in superConstructor.valueParameterSymbols) {
+            for (parameter in superConstructor.signatureParameterSymbols) {
                 val key = SubstitutedArgument.ValueParameter(parameter)
                 if (key in superArguments) continue
                 val defaultValue = parameter.fir.defaultValue ?: error("Missing superclass constructor argument")
@@ -173,7 +176,7 @@ fun constructorInitializerConditions(
         }
         declaringClass.fir.declarations.filterIsInstance<FirProperty>().forEach { property ->
             property.initializer?.let { initializer ->
-                if (!isStableInitializer(initializer, constructor.valueParameterSymbols.toSet())) return@let
+                if (!isStableInitializer(initializer, constructor.signatureParameterSymbols.toSet())) return@let
                 initializers[property.symbol] = {
                     context.convert(initializer)
                 }

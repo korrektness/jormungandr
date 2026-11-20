@@ -67,10 +67,11 @@ private enum class StdlibHof(val callableName: Name, val arity: Int) {
     Also(Name.identifier("also"), arity = 1),
     Apply(Name.identifier("apply"), arity = 1),
     Run(Name.identifier("run"), arity = 1),
-    With(Name.identifier("with"), arity = 2);
+    With(Name.identifier("with"), arity = 2),
+    Context(Name.identifier("context"), arity = 2);
 
     val isScope: Boolean
-        get() = this in Let..With
+        get() = this in Let..Context
 
     constructor(loop: ElementLoop) : this(loop.callableName, arity = loop.arity)
 
@@ -94,7 +95,7 @@ private fun stdlibHofKind(symbol: FirCallableSymbol<*>, arity: Int): StdlibHof? 
     return when (id.packageName) {
         FqName("kotlin") -> hof.takeIf {
             when (it) {
-                StdlibHof.Repeat, StdlibHof.With -> receiver == null
+                StdlibHof.Repeat, StdlibHof.With, StdlibHof.Context -> receiver == null
                 StdlibHof.Run -> true
                 else -> it.isScope && receiver != null
             }
@@ -402,7 +403,7 @@ private fun StmtConversionContext.convertScopeCall(
     hof: StdlibHof,
     lambda: LambdaExp,
 ): ExpEmbedding {
-    val receiver = if (hof == StdlibHof.With) call.arguments.first() else call.extensionReceiver
+    val receiver = if (hof == StdlibHof.With || hof == StdlibHof.Context) call.arguments.first() else call.extensionReceiver
     val declaration = receiver?.let { declareAnonVar(embedType(it), convert(it)) }
     val invocation = withCallSite(call) { lambda.insertCall(listOfNotNull(declaration?.variable), this) }
     val result = if (hof == StdlibHof.Also || hof == StdlibHof.Apply) {

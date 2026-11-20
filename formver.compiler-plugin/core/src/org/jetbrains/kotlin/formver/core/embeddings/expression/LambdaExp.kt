@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.expression
 
+import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.formver.core.conversion.MethodConversionContext
@@ -34,11 +35,11 @@ class LambdaExp(
         ctx: StmtConversionContext,
     ): ExpEmbedding {
         val inlineBody = function.body ?: throw IllegalArgumentException("Lambda ${function.description} has a null body.")
-        val nonReceiverParamNames = function.valueParameters.map { SubstitutedArgument.ValueParameter(it.symbol) }
+        val nonReceiverParamNames = function.symbol.signatureParameterSymbols.map { SubstitutedArgument.ValueParameter(it) }
         //TODO: can lambdas have dispatch receiver?
         val receiverParamNames =
             if (function.receiverParameter != null) listOf(SubstitutedArgument.ExtensionThis) else emptyList()
-        val roots = listOfNotNull(function.receiverParameter?.symbol) + function.valueParameters.map { it.symbol }
+        val roots = listOfNotNull(function.receiverParameter?.symbol) + function.symbol.signatureParameterSymbols
         // A lambda called in place is analysed as part of the function it is written in.
         val enclosingAnalysis = parentCtx.ownershipFrame.analysis
         val analysis = enclosingAnalysis?.takeIf { it.hasState(inlineBody) }

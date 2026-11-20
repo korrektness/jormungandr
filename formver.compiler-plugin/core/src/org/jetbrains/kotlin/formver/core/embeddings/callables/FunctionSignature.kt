@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.embeddings.callables
 
+import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
+import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 import org.jetbrains.kotlin.fir.expressions.FirBlock
@@ -47,6 +49,15 @@ interface FunctionSignature {
 
     val formalArgs: List<VariableEmbedding>
         get() = listOfNotNull(dispatchReceiver, extensionReceiver) + params
+}
+
+/** Each parameter of [symbol] with the variable this signature lists for it, in signature order. */
+fun FunctionSignature.parameterVariables(symbol: FirFunctionSymbol<*>): List<Pair<FirValueParameterSymbol, VariableEmbedding>> {
+    val symbols = symbol.signatureParameterSymbols
+    check(symbols.size == params.size) {
+        "The signature of ${symbol.callableId} lists ${params.size} parameters; the function has ${symbols.size}."
+    }
+    return symbols.zip(params)
 }
 
 data class FunctionSignatureImpl(
@@ -231,7 +242,7 @@ data class InlineNamedFunction(
         val paramNames = buildList {
             if (callableType.dispatchReceiverType != null) add(SubstitutedArgument.DispatchThis)
             if (callableType.extensionReceiverType != null) add(SubstitutedArgument.ExtensionThis)
-            addAll(symbol.valueParameterSymbols.map { SubstitutedArgument.ValueParameter(it) })
+            addAll(symbol.signatureParameterSymbols.map { SubstitutedArgument.ValueParameter(it) })
         }
         val roots = paramNames.map {
             when (it) {

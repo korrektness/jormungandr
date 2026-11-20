@@ -5,6 +5,8 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.parameterArguments
+import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.impl.FirExpressionStub
 import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
@@ -22,12 +24,12 @@ import org.jetbrains.kotlin.utils.addIfNotNull
 /**
  * Inserts a call to [callee] whose arguments are named out of parameter order or left to their defaults.
  *
- * The arguments are evaluated in Kotlin's order: receivers, the explicit arguments as written, then the default of each
- * omitted parameter in parameter order; an omitted vararg parameter without a default receives an empty array. A
- * default may read the parameters before it, so it is converted with those parameters bound to the arguments already
- * evaluated, and with the callee's uniqueness facts, which own a path through a `@Unique` parameter. An argument
- * omitted for a function compiled without its source follows SPECIFICATIONS.md, "Inline functions and default
- * arguments".
+ * The arguments are evaluated in Kotlin's order: receivers, context arguments, the explicit arguments as written, then
+ * the default of each omitted parameter in parameter order; an omitted vararg parameter without a default receives an
+ * empty array. A default may read the parameters before it, so it is converted with those parameters bound to the
+ * arguments already evaluated, and with the callee's uniqueness facts, which own a path through a `@Unique` parameter.
+ * An argument omitted for a function compiled without its source follows SPECIFICATIONS.md, "Inline functions and
+ * default arguments".
  */
 @OptIn(SymbolInternals::class)
 fun StmtConversionContext.insertCallWithMappedArguments(
@@ -40,7 +42,7 @@ fun StmtConversionContext.insertCallWithMappedArguments(
         call.boundDispatchReceiver?.let { SubstitutedArgument.DispatchThis to it },
         call.extensionReceiver?.let { SubstitutedArgument.ExtensionThis to it },
     )
-    val parameters = receivers.map { it.first } + symbol.valueParameterSymbols.map { SubstitutedArgument.ValueParameter(it) }
+    val parameters = receivers.map { it.first } + symbol.signatureParameterSymbols.map { SubstitutedArgument.ValueParameter(it) }
     val formalTypes = parameters.zip(callee.callableType.formalArgTypes).toMap()
 
     val declarations = mutableListOf<Declare>()
@@ -52,12 +54,12 @@ fun StmtConversionContext.insertCallWithMappedArguments(
     }
 
     receivers.forEach { (parameter, receiver) -> bind(parameter, convert(receiver)) }
-    call.resolvedArgumentMapping.orEmpty().forEach { (argument, parameter) ->
-        val parameterArgument = SubstitutedArgument.ValueParameter(parameter.symbol)
-        bind(parameterArgument, convertArgument(call, argument, formalTypes.getValue(parameterArgument)))
+    call.parameterArguments(symbol).forEach { (parameterSymbol, argument) ->
+        val parameter = SubstitutedArgument.ValueParameter(parameterSymbol)
+        bind(parameter, convertArgument(call, argument, formalTypes.getValue(parameter)))
     }
     val calleeAnalysis = uniquenessAnalysisOf(symbol)
-    for (parameterSymbol in symbol.valueParameterSymbols) {
+    for (parameterSymbol in symbol.signatureParameterSymbols) {
         val parameter = SubstitutedArgument.ValueParameter(parameterSymbol)
         if (parameter in bound) continue
         val defaultValue = parameterSymbol.fir.defaultValue

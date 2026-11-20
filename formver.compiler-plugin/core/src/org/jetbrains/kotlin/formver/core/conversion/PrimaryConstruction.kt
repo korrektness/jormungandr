@@ -5,6 +5,9 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
+import org.jetbrains.kotlin.formver.core.embeddings.callables.parameterVariables
+import org.jetbrains.kotlin.formver.core.parameterArguments
 import org.jetbrains.kotlin.formver.locality.plugin.ConstructionPhases
 
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -57,8 +60,8 @@ private fun constructionFields(owner: FirRegularClassSymbol): List<FieldEmbeddin
     fun collect(symbol: FirRegularClassSymbol) {
         symbol.resolvedSuperTypes.mapNotNull { it.toRegularClassSymbol(program.session) }
             .filter { it.classKind == ClassKind.CLASS }.forEach(::collect)
-        symbol.fir.declarations.filterIsInstance<FirProperty>().forEach { property ->
-            (program.embedProperty(property.symbol).getter as? BackingFieldGetter)?.field?.let { fields += it }
+        symbol.instancePropertySymbols.forEach { property ->
+            (program.embedProperty(property).getter as? BackingFieldGetter)?.field?.let { fields += it }
         }
     }
     collect(owner)
@@ -111,13 +114,13 @@ fun constructionBody(
         val parent = delegation?.calleeReference?.toResolvedConstructorSymbol()
         if (parent != null && parent.origin == FirDeclarationOrigin.Source) {
             val parentArguments = mutableMapOf<SubstitutedArgument, ExpEmbedding>()
-            for ((argument, parameter) in delegation.resolvedArgumentMapping.orEmpty()) {
-                val value = program.freshAnonVar(program.embedType(parameter.symbol.resolvedReturnType))
+            for ((parameter, argument) in delegation.parameterArguments(parent)) {
+                val value = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
                 actions += Declare(value, context.convertArgument(delegation, argument, value.type),
-                    targetOwned = context(program.checkerContext) { parameter.symbol.isUnique() })
-                parentArguments[SubstitutedArgument.ValueParameter(parameter.symbol)] = value
+                    targetOwned = context(program.checkerContext) { parameter.isUnique() })
+                parentArguments[SubstitutedArgument.ValueParameter(parameter)] = value
             }
-            for (parameter in parent.valueParameterSymbols) {
+            for (parameter in parent.signatureParameterSymbols) {
                 val key = SubstitutedArgument.ValueParameter(parameter)
                 if (key in parentArguments) continue
                 val defaultContext = MethodConverter(program, signature,
@@ -154,7 +157,7 @@ fun constructionBody(
         }
         actions += boundary.withPosition(symbol.fir.source)
     }
-    initialize(constructor, constructor.valueParameterSymbols.zip(signature.params).associate { (parameter, value) ->
+    initialize(constructor, signature.parameterVariables(constructor).associate { (parameter, value) ->
         SubstitutedArgument.ValueParameter(parameter) to value
     })
     return ConvertedMethodBody(FunctionExp(signature, actions.toBlock(), target.label!!), target)

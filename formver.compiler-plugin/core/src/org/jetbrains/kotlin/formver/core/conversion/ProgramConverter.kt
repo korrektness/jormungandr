@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.embeddings.callables.parameterVariables
 import org.jetbrains.kotlin.fir.declarations.utils.isAbstract
 
 import org.jetbrains.kotlin.formver.intrinsics.plugin.stringBuilderClassIds
@@ -478,7 +479,7 @@ class ProgramConverter(
         val paramResolver = RootParameterResolver(
             this@ProgramConverter,
             signature.signature,
-            symbol.valueParameterSymbols,
+            signature.signature.parameterVariables(symbol),
             labelName,
             signature.returnTarget
         )
@@ -671,8 +672,13 @@ class ProgramConverter(
      * * Closed `var`: Maps to a backing field. This value needs permissions and can be changed.
      * * Open `val` / `var`: Maps to an impure method. Abstracted because subclasses can override the behavior, introduce side effects, or turn a `val` into a `var`.
      * * Extension properties are handled like open properties.
+     *
+     * A property with context parameters is an unsupported feature.
      */
     override fun embedProperty(symbol: FirPropertySymbol): PropertyEmbedding {
+        if (symbol.contextParameterSymbols.isNotEmpty()) {
+            throw UnsupportedFeatureException(symbol.source, "a property with context parameters")
+        }
         val model = symbol.externalSpecificationSymbol(session)
         if (model != symbol) return embedProperty(model).also { trust.recordBinding(symbol) }
         trust.recordAccessorOptOuts(symbol)
@@ -898,8 +904,7 @@ class ProgramConverter(
 
             classEmbedding
         }
-        // A static property, such as an enum's `entries`, is not a property of the class's instances.
-        symbol.propertySymbols.filter { it.dispatchReceiverType != null }.forEach {
+        symbol.instancePropertySymbols.forEach {
             embedProperty(it)
         }
         return embedding

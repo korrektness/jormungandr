@@ -5,6 +5,11 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.contextAndExplicitArguments
+import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
+import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.formver.core.parameterArguments
+import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
 import org.jetbrains.kotlin.fir.references.symbol
@@ -44,7 +49,7 @@ class ClassLawExpansion(
         check(classLawObserverFailure(symbol) == null) { "Invalid class-law observer reached conversion" }
         val function = classLawObserverBody(symbol)!!
         val signature = with(program) { function.toFunctionSignature() }.signature
-        val keys = listOf(SubstitutedArgument.DispatchThis) + function.valueParameterSymbols.map {
+        val keys = listOf(SubstitutedArgument.DispatchThis) + function.signatureParameterSymbols.map {
             SubstitutedArgument.ValueParameter(it)
         }
         if (args.size != signature.formalArgs.size || keys.size != signature.formalArgs.size) {
@@ -87,4 +92,24 @@ class ClassLawExpansion(
             program.typeResolver.classLawExpansion = saved
         }
     }
+}
+
+/**
+ * Converts [call], a class law's call of an observer of its own class, through [expansion]: the dispatch receiver,
+ * then the arguments in [symbol]'s signature order, each converted in the order the call passes it.
+ */
+fun StmtConversionContext.convertOwnObserverCall(
+    expansion: ClassLawExpansion,
+    call: FirFunctionCall,
+    symbol: FirFunctionSymbol<*>,
+): ExpEmbedding {
+    val arguments = if (call.resolvedArgumentMapping == null) {
+        call.contextAndExplicitArguments.map { convert(it) }
+    } else {
+        val values = call.parameterArguments(symbol).associate { (parameter, argument) -> parameter to convert(argument) }
+        symbol.signatureParameterSymbols.map { parameter ->
+            values[parameter] ?: throw UnsupportedFeatureException(call.source, "Omitted observer argument in class law")
+        }
+    }
+    return expansion.call(symbol, listOf(convert(call.dispatchReceiver!!)) + arguments)
 }

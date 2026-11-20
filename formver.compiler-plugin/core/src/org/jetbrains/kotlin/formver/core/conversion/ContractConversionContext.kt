@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.embeddings.callables.parameterVariables
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.callables.NamedFunctionSignature
 import org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis
@@ -20,7 +21,7 @@ internal fun ProgramConversionContext.createContractConversionContext(
     val rootResolver = RootParameterResolver(
         this,
         signature,
-        symbol.valueParameterSymbols,
+        signature.parameterVariables(symbol),
         symbol.name.asString(),
         returnTarget,
     )

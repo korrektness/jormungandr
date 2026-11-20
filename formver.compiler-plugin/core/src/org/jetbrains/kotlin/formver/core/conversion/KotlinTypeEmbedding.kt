@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.fir.types.renderReadable
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirAnonymousObjectSymbol
@@ -91,7 +92,7 @@ internal fun FunctionPretypeBuilder.embedFunctionPretypeWithBuilder(symbol: FirF
     symbol.extensionReceiverType?.let {
         withExtensionReceiver { embedTypeWithBuilder(it) }
     }
-    symbol.valueParameterSymbols.forEach { param ->
+    symbol.signatureParameterSymbols.forEach { param ->
         withParam {
             embedTypeWithBuilder(param.resolvedReturnType)
         }

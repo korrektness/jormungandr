@@ -5,6 +5,9 @@
 
 package org.jetbrains.kotlin.formver.core
 
+import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
+import org.jetbrains.kotlin.fir.expressions.FirContextArgumentListOwner
+import org.jetbrains.kotlin.fir.expressions.FirCall
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
@@ -29,6 +32,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.formver.readonly.plugin.isPure as isReadOnlyPure
 import org.jetbrains.kotlin.fir.symbols.impl.FirReceiverParameterSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirVariableSymbol
 import org.jetbrains.kotlin.formver.core.embeddings.SourceRole
 import org.jetbrains.kotlin.formver.core.names.SpecialPackages
@@ -49,7 +53,29 @@ import org.jetbrains.kotlin.text
 // val FirElement.calleeCallableSymbol: FirCallableSymbol<*>
 //     get() = calleeReference?.toResolvedCallableSymbol()!!
 val FirFunctionCall.functionCallArguments: List<FirExpression>
-    get() = listOfNotNull(boundDispatchReceiver, extensionReceiver) + argumentList.arguments
+    get() = listOfNotNull(boundDispatchReceiver, extensionReceiver) + contextAndExplicitArguments
+
+/** The arguments this call passes after its receivers, in signature order: its context arguments, then its explicit ones. */
+val FirFunctionCall.contextAndExplicitArguments: List<FirExpression>
+    get() = contextArguments + argumentList.arguments
+
+/** The parameters a signature of this function lists: its context parameters, then its value parameters. */
+val FirFunctionSymbol<*>.signatureParameterSymbols: List<FirValueParameterSymbol>
+    get() = contextParameterSymbols + valueParameterSymbols
+
+/**
+ * The arguments this call passes to [callee], each with the parameter it binds: the context arguments in parameter
+ * order, then the explicit arguments as written. A parameter left to its default has no entry.
+ */
+fun <T> T.parameterArguments(callee: FirFunctionSymbol<*>): List<Pair<FirValueParameterSymbol, FirExpression>>
+        where T : FirCall, T : FirContextArgumentListOwner {
+    check(contextArguments.size == callee.contextParameterSymbols.size) {
+        "A call to ${callee.callableId} passes ${contextArguments.size} context arguments for " +
+            "${callee.contextParameterSymbols.size} context parameters."
+    }
+    return callee.contextParameterSymbols.zip(contextArguments) +
+        resolvedArgumentMapping.orEmpty().map { (argument, parameter) -> parameter.symbol to argument }
+}
 
 /**
  * The receiver passed for the callee's dispatch receiver parameter. A static member has no such parameter, but FIR

@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirFunction
@@ -138,12 +139,15 @@ private fun FirNamedFunctionSymbol.isExternalFunctionModel(session: FirSession):
 
 /**
  * Whether this function has the type parameters of [target] and, with its type parameters read as those of
- * [target], the same extension receiver and value parameter types. Ownership annotations are not compared.
+ * [target], the same extension receiver, context parameter and value parameter types. Ownership annotations are not
+ * compared.
  */
 private fun FirNamedFunctionSymbol.hasParameterTypesOf(target: FirCallableSymbol<*>, session: FirSession): Boolean {
-    val targetParameters = (target as? FirFunctionSymbol<*>)?.valueParameterSymbols.orEmpty()
+    val targetFunction = target as? FirFunctionSymbol<*>
+    val targetParameters = targetFunction?.signatureParameterSymbols.orEmpty()
+    if (contextParameterSymbols.size != targetFunction?.contextParameterSymbols.orEmpty().size) return false
     if (typeParameterSymbols.size != target.typeParameterSymbols.size) return false
-    if (valueParameterSymbols.size != targetParameters.size) return false
+    if (signatureParameterSymbols.size != targetParameters.size) return false
     val substitutor = substitutorByMap(
         typeParameterSymbols.zip(target.typeParameterSymbols) { own, theirs ->
             own to ConeTypeParameterTypeImpl(theirs.toLookupTag(), isMarkedNullable = false)
@@ -154,7 +158,7 @@ private fun FirNamedFunctionSymbol.hasParameterTypesOf(target: FirCallableSymbol
     val targetReceiver = target.resolvedReceiverTypeRef?.coneType
     if ((receiver == null) != (targetReceiver == null)) return false
     if (receiver != null && !substitutor.substituteOrSelf(receiver).sameUpToAttributes(targetReceiver!!)) return false
-    return valueParameterSymbols.zip(targetParameters).all { (own, theirs) ->
+    return signatureParameterSymbols.zip(targetParameters).all { (own, theirs) ->
         substitutor.substituteOrSelf(own.resolvedReturnType).sameUpToAttributes(theirs.resolvedReturnType)
     }
 }

@@ -1,0 +1,475 @@
+/context_parameters.kt: info: Generated Viper text for Counter:
+function g_start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_start: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_start), intType())
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+  ensures intFromRef(g_start(v_ret_0)) == intFromRef(par_start)
+  ensures intFromRef(g_start(v_ret_0)) == intFromRef(par_start)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Counter()
+  anon := par_start
+  inhale intFromRef(g_start(v_ret_0)) == intFromRef(anon)
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/context_parameters.kt: info: Generated Viper text for Limit:
+function g_max(this: Ref): Ref
+  requires isSubtype(typeOf(this), Limit())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_max: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_max), intType())
+  ensures isSubtype(typeOf(v_ret_0), Limit())
+  ensures intFromRef(g_max(v_ret_0)) == intFromRef(par_max)
+  ensures intFromRef(g_max(v_ret_0)) == intFromRef(par_max)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Limit()
+  anon := par_max
+  inhale intFromRef(g_max(v_ret_0)) == intFromRef(anon)
+  fold acc(Limit_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Limit_unique(v_ret_0), write)
+}
+
+/context_parameters.kt: info: Generated Viper text for startOf:
+function start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method startOf(counter: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(start(counter))
+{
+  v_ret_0 := start(counter)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/context_parameters.kt: info: Generated Viper text for clamped:
+function max(this: Ref): Ref
+  requires isSubtype(typeOf(this), Limit())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method clamped(counter: Ref, limit: Ref, delta: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  requires isSubtype(typeOf(limit), Limit())
+  requires isSubtype(typeOf(delta), intType())
+  requires intFromRef(delta) >= 0
+  requires intFromRef(delta) <= 100
+  requires intFromRef(start(counter)) <= 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) <= intFromRef(max(limit))
+{
+  var sum: Ref
+  sum := plusInts(start(counter), delta)
+  if (intFromRef(sum) > intFromRef(max(limit))) {
+    v_ret_0 := max(limit)
+  } else {
+    v_ret_0 := sum}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/context_parameters.kt: info: Generated Viper text for forwardsContext:
+function start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method forwardsContext(counter: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(start(counter))
+{
+  v_ret_0 := startOf(counter)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method startOf(counter: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == intFromRef(start(counter))
+
+
+/context_parameters.kt: info: Generated Viper text for forwardsBothContexts:
+function max(this: Ref): Ref
+  requires isSubtype(typeOf(this), Limit())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method clamped(counter: Ref, limit: Ref, delta: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  requires isSubtype(typeOf(limit), Limit())
+  requires isSubtype(typeOf(delta), intType())
+  requires intFromRef(delta) >= 0
+  requires intFromRef(delta) <= 100
+  requires intFromRef(start(counter)) <= 100
+  ensures isSubtype(typeOf(ret_5), intType())
+  ensures intFromRef(ret_5) <= intFromRef(max(limit))
+
+
+method forwardsBothContexts(limit: Ref, counter: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(limit), Limit())
+  requires isSubtype(typeOf(counter), Counter())
+  requires intFromRef(max(limit)) >= 0
+  requires intFromRef(start(counter)) <= 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) <= intFromRef(max(limit))
+{
+  var anon: Ref
+  var v_ret_4: Ref
+  anon := counter
+  v_ret_4 := clamped(anon, limit, intToRef(0))
+  goto lbl_ret_4
+  label lbl_ret_4
+  v_ret_0 := v_ret_4
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/context_parameters.kt: info: Generated Viper text for withReceiverContext:
+function start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method startOf(counter: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(ret_4) == intFromRef(start(counter))
+
+
+method withReceiverContext(counter: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == intFromRef(start(counter))
+{
+  var anon: Ref
+  var v_ret_3: Ref
+  anon := counter
+  v_ret_3 := startOf(anon)
+  goto lbl_ret_3
+  label lbl_ret_3
+  v_ret_0 := v_ret_3
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/context_parameters.kt: info: Generated Viper text for withExplicitContext:
+function g_start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_start: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_start), intType())
+  ensures isSubtype(typeOf(ret_2), Counter())
+  ensures intFromRef(g_start(ret_2)) == intFromRef(par_start)
+  ensures intFromRef(g_start(ret_2)) == intFromRef(par_start)
+
+
+method startOf(counter: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(ret_5), intType())
+  ensures intFromRef(ret_5) == intFromRef(g_start(counter))
+
+
+method withExplicitContext() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_result: Ref
+  var anon: Ref
+  var v_ret_4: Ref
+  anon := con(intToRef(3))
+  fold acc(Counter_unique(anon), write)
+  v_ret_4 := startOf(anon)
+  goto lbl_ret_4
+  label lbl_ret_4
+  l0_result := v_ret_4
+  assert intFromRef(l0_result) == 3
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/context_parameters.kt: info: Generated Viper text for hasCounter:
+function start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method hasCounter(present: Ref, fallback: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(present), nullable(Counter()))
+  requires isSubtype(typeOf(fallback), nullable(Counter()))
+  ensures isSubtype(typeOf(v_ret_0), boolType())
+  ensures boolFromRef(v_ret_0) == true ==> present != nullValue()
+{
+  if (!(present == nullValue())) {
+    v_ret_0 := boolToRef(fallback == nullValue())
+  } else {
+    v_ret_0 := boolToRef(false)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/context_parameters.kt: info: Generated Viper text for startOrZero:
+function start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method hasCounter(present: Ref, fallback: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(present), nullable(Counter()))
+  requires isSubtype(typeOf(fallback), nullable(Counter()))
+  ensures isSubtype(typeOf(ret_1), boolType())
+  ensures boolFromRef(ret_1) == true ==> present != nullValue()
+
+
+method startOrZero(present: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(present), nullable(Counter()))
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  var anon: Ref
+  anon := hasCounter(present, nullValue())
+  if (boolFromRef(anon)) {
+    v_ret_0 := start(present)
+  } else {
+    v_ret_0 := intToRef(0)}
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/context_parameters.kt: info: Generated Viper text for offset:
+function max(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Limit())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function start(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method offset(v_this_extension: Ref, counter: Ref, first: Ref, second: Ref)
+  returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(v_this_extension), Limit())
+  requires isSubtype(typeOf(counter), Counter())
+  requires isSubtype(typeOf(first), intType())
+  requires isSubtype(typeOf(second), intType())
+  requires intFromRef(first) >= 0
+  requires intFromRef(first) <= 100
+  requires intFromRef(second) >= 0
+  requires intFromRef(second) <= 100
+  requires intFromRef(max(v_this_extension)) >= 0
+  requires intFromRef(max(v_this_extension)) <= 100
+  requires intFromRef(start(counter)) >= 0
+  requires intFromRef(start(counter)) <= 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (plusInts(minusInts(plusInts(start(counter), max(v_this_extension)), first),
+      second)) in
+      intFromRef(minusInts(plusInts(start(counter), max(v_this_extension)),
+      first)) +
+      intFromRef(second))
+{
+  v_ret_0 := plusInts(minusInts(plusInts(start(counter), max(v_this_extension)),
+    first), second)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/context_parameters.kt: info: Generated Viper text for namedArgumentsWithContext:
+function g_start(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function max(v_this: Ref): Ref
+  requires isSubtype(typeOf(v_this), Limit())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_start: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(par_start), intType())
+  ensures isSubtype(typeOf(ret_4), Counter())
+  ensures intFromRef(g_start(ret_4)) == intFromRef(par_start)
+  ensures intFromRef(g_start(ret_4)) == intFromRef(par_start)
+
+
+method namedArgumentsWithContext(limit: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(limit), Limit())
+  requires intFromRef(max(limit)) >= 0
+  requires intFromRef(max(limit)) <= 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    (let anon_builtin ==
+      (plusInts(intToRef(4), max(limit))) in
+      intFromRef(intToRef(4)) + intFromRef(max(limit)))
+{
+  var anon_0: Ref
+  var v_ret_6: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  anon_0 := con(intToRef(1))
+  fold acc(Counter_unique(anon_0), write)
+  anon_1 := intToRef(5)
+  anon_2 := intToRef(2)
+  v_ret_6 := offset(limit, anon_0, anon_2, anon_1)
+  goto lbl_ret_6
+  label lbl_ret_6
+  v_ret_0 := v_ret_6
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method offset(v_this_extension: Ref, counter: Ref, first: Ref, second: Ref)
+  returns (ret_7: Ref)
+  requires isSubtype(typeOf(v_this_extension), Limit())
+  requires isSubtype(typeOf(counter), Counter())
+  requires isSubtype(typeOf(first), intType())
+  requires isSubtype(typeOf(second), intType())
+  requires intFromRef(first) >= 0
+  requires intFromRef(first) <= 100
+  requires intFromRef(second) >= 0
+  requires intFromRef(second) <= 100
+  requires intFromRef(max(v_this_extension)) >= 0
+  requires intFromRef(max(v_this_extension)) <= 100
+  requires intFromRef(g_start(counter)) >= 0
+  requires intFromRef(g_start(counter)) <= 100
+  ensures isSubtype(typeOf(ret_7), intType())
+  ensures intFromRef(ret_7) ==
+    (let anon_builtin ==
+      (plusInts(minusInts(plusInts(g_start(counter), max(v_this_extension)),
+      first), second)) in
+      intFromRef(minusInts(plusInts(g_start(counter), max(v_this_extension)),
+      first)) +
+      intFromRef(second))
+
+
+/context_parameters.kt: info: Generated Viper text for runWithCounter:
+function start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method runWithCounter(counter: Ref, block: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  requires isSubtype(typeOf(block), functionType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  var anon: Ref
+  inhale isSubtype(typeOf(anon), nullable(anyType()))
+  v_ret_0 := anon
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/context_parameters.kt: info: Generated Viper text for inlineContextLambda:
+function g_start(this: Ref): Ref
+  requires isSubtype(typeOf(this), Counter())
+  ensures isSubtype(typeOf(result), intType())
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_start: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(par_start), intType())
+  ensures isSubtype(typeOf(ret_2), Counter())
+  ensures intFromRef(g_start(ret_2)) == intFromRef(par_start)
+  ensures intFromRef(g_start(ret_2)) == intFromRef(par_start)
+
+
+method inlineContextLambda() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var l0_result: Ref
+  var anon_1: Ref
+  var v_ret_5: Ref
+  var anon_0: Ref
+  var anon_2: Ref
+  var v_ret_6: Ref
+  anon_0 := con(intToRef(5))
+  fold acc(Counter_unique(anon_0), write)
+  v_ret_6 := startOf(anon_0)
+  goto lbl_ret_6
+  label lbl_ret_6
+  anon_2 := v_ret_6
+  v_ret_5 := anon_2
+  inhale isSubtype(typeOf(v_ret_5), nullable(anyType()))
+  goto lbl_ret_5
+  label lbl_ret_5
+  anon_1 := v_ret_5
+  l0_result := anon_1
+  inhale isSubtype(typeOf(l0_result), intType())
+  assert intFromRef(l0_result) == 5
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method runWithCounter(counter: Ref, block: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  requires isSubtype(typeOf(block), functionType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+method startOf(counter: Ref) returns (ret_7: Ref)
+  requires isSubtype(typeOf(counter), Counter())
+  ensures isSubtype(typeOf(ret_7), intType())
+  ensures intFromRef(ret_7) == intFromRef(g_start(counter))
+
+
+/context_parameters.kt: info: Generated Viper text for Scaled:
+function g_factor(this: Ref): Ref
+  requires isSubtype(typeOf(this), Scaled())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(par_factor: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(par_factor), intType())
+  ensures isSubtype(typeOf(v_ret_0), Scaled())
+  ensures intFromRef(g_factor(v_ret_0)) == intFromRef(par_factor)
+  ensures intFromRef(g_factor(v_ret_0)) == intFromRef(par_factor)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Scaled()
+  anon := par_factor
+  inhale intFromRef(g_factor(v_ret_0)) == intFromRef(anon)
+  fold acc(Scaled_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Scaled_unique(v_ret_0), write)
+}

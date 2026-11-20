@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.contextAndExplicitArguments
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.formver.common.ConversionOwnershipCondition
 
@@ -364,16 +365,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         val symbol = functionCall.toResolvedCallableSymbol() as? FirFunctionSymbol<*>
             ?: throw NotImplementedError("Only functions are expected as callables of function calls, got ${functionCall.toResolvedCallableSymbol()}")
         data.typeResolver.classLawExpansion?.let { expansion ->
-            if (expansion.isOwnAccess(functionCall)) {
-                val mapping = functionCall.resolvedArgumentMapping
-                val values = functionCall.argumentList.arguments.associateWith { data.convert(it) }
-                val arguments = if (mapping == null) values.values.toList() else symbol.valueParameterSymbols.map { parameter ->
-                    val argument = mapping.entries.singleOrNull { it.value.symbol == parameter }?.key
-                        ?: throw UnsupportedFeatureException(functionCall.source, "Omitted observer argument in class law")
-                    values.getValue(argument)
-                }
-                return expansion.call(symbol, listOf(data.convert(functionCall.dispatchReceiver!!)) + arguments)
-            }
+            if (expansion.isOwnAccess(functionCall)) return data.convertOwnObserverCall(expansion, functionCall, symbol)
         }
         if (symbol.isFormverFunctionNamed("loopInvariants") && !data.isAttachedLoopInvariants(functionCall)) {
             throw UnsupportedFeatureException(functionCall.source, "`loopInvariants` that does not lead the body of a supported loop")
@@ -451,7 +443,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             )
         val returnType = data.embedType(implicitInvokeCall.resolvedType)
         val receiverSymbol = receiver.calleeReference.toResolvedSymbol<FirBasedSymbol<*>>()!!
-        val args = implicitInvokeCall.argumentList.arguments.withVarargsHandled(data, implicitInvokeCall, function = null)
+        val args = implicitInvokeCall.contextAndExplicitArguments.withVarargsHandled(data, implicitInvokeCall, function = null)
         val isMember = receiverSymbol is FirPropertySymbol && !receiverSymbol.isLocal
         return when (val exp = if (isMember) null else data.embedLocalSymbol(receiverSymbol).ignoringMetaNodes()) {
             is LambdaExp -> {

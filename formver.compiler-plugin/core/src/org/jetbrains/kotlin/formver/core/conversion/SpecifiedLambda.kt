@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.embeddings.callables.parameterVariables
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
@@ -280,7 +281,7 @@ fun LiftedLambda.invokeSignature(inherited: CompleteFunctionSignature): Signatur
             source.function.body!!.statements.dropWhile { it.isExposes() }, source.function.returnTypeRef.coneType,
         )
         val (pre, post) = if (specification.precond != null || specification.postcond != null) {
-            val resolver = RootParameterResolver(converter, named.signature, source.function.symbol.valueParameterSymbols,
+            val resolver = RootParameterResolver(converter, named.signature, named.signature.parameterVariables(source.function.symbol),
                 source.function.symbol.label?.name, target)
             val postResolver = specification.returnVar?.let {
                 SubstitutedReturnParameterResolver(resolver, ReturnVarSubstitutor(it, named.signature.returns))
@@ -307,7 +308,7 @@ fun LiftedLambda.invokeBody(
     analysis: org.jetbrains.kotlin.formver.uniqueness.plugin.FunctionUniquenessAnalysis?,
 ): ConvertedMethodBody {
     val dispatch = signature.dispatchReceiver!!
-    val resolver = RootParameterResolver(converter, signature, source.function.symbol.valueParameterSymbols,
+    val resolver = RootParameterResolver(converter, signature, signature.parameterVariables(source.function.symbol),
         source.function.symbol.label?.name, target)
     val frame = OwnershipFrame.withStorage(analysis, dispatch) { facts, state ->
         org.jetbrains.kotlin.formver.core.linearization.OwnedShape(dispatch, captures.flatMap { (symbol, property) ->

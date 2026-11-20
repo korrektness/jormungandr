@@ -243,6 +243,15 @@ unsupported construct: loops, assignments to other variables, an `if` or `when` 
 to other functions. Supported standard-library scope functions are inlined as described under
 Inline functions and default arguments.
 
+### Context parameters
+
+A context parameter (`context(c: C) fun f()`) is an ordinary parameter of its function. Specifications and
+contracts may mention it like any other parameter, and it is shared unless annotated `@Unique` or `@Borrowed`.
+A call passes the context arguments Kotlin resolves for it, including a caller's own context parameter or the
+receiver of an enclosing `with(x) { }` or single-value `context(x) { }`. In the generated Viper method, the receivers come
+first, then the context parameters, then the value parameters. Lambdas with context parameters follow the same
+rule. A property with context parameters is reported as an unsupported construct.
+
 ### Specifications beside a member
 
 A member without a body, such as an abstract or interface member, takes its specification from a sibling function

@@ -1,5 +1,7 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
+import org.jetbrains.kotlin.formver.core.parameterArguments
+import org.jetbrains.kotlin.formver.core.signatureParameterSymbols
 import org.jetbrains.kotlin.KtSourceElement
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
@@ -50,6 +52,14 @@ data class SignatureWithTarget<out S : FunctionSignature>(
 @OptIn(DirectDeclarationsAccess::class)
 val FirRegularClassSymbol.propertySymbols: List<FirPropertySymbol>
     get() = declarationSymbols.filterIsInstance<FirPropertySymbol>()
+
+/**
+ * The properties of this class's instances that are embedded with the class. A static property, such as an enum's
+ * `entries`, is not one, and neither is a property with context parameters, which has no backing field and is reported
+ * as unsupported wherever it is embedded.
+ */
+val FirRegularClassSymbol.instancePropertySymbols: List<FirPropertySymbol>
+    get() = propertySymbols.filter { it.dispatchReceiverType != null && it.contextParameterSymbols.isEmpty() }
 
 private val FirFunctionSymbol<*>.containingPropertyOrSelf
     get() = when (this) {
@@ -109,7 +119,7 @@ fun FirFunctionSymbol<*>.toFunctionSignature(): SignatureWithTarget<FunctionSign
         )
     }
 
-    val parameterVariables = this.valueParameterSymbols.map {
+    val parameterVariables = this.signatureParameterSymbols.map {
         FirVariableEmbedding(
             it.embedName(),
             converter.embedType(it.resolvedReturnType),
@@ -210,12 +220,12 @@ private fun FirConstructorSymbol.initializedProperties(session: FirSession): Map
         property.correspondingValueParameterFromPrimaryConstructor?.let { it to property }
     }
     val delegation = fir.delegatedConstructor
-    val inherited = delegation?.calleeReference?.toResolvedConstructorSymbol()
-        ?.initializedProperties(session).orEmpty()
-    val passedOn = delegation?.resolvedArgumentMapping.orEmpty().flatMap { (argument, superParameter) ->
+    val parent = delegation?.calleeReference?.toResolvedConstructorSymbol()
+    val inherited = parent?.initializedProperties(session).orEmpty()
+    val passedOn = parent?.let { delegation.parameterArguments(it) }.orEmpty().flatMap { (superParameter, argument) ->
         val parameter = (argument as? FirPropertyAccessExpression)?.calleeReference?.toResolvedValueParameterSymbol()
             ?: return@flatMap emptyList()
-        inherited[superParameter.symbol].orEmpty().map { parameter to it }
+        inherited[superParameter].orEmpty().map { parameter to it }
     }
     return (declared + passedOn).groupBy({ it.first }, { it.second })
 }
