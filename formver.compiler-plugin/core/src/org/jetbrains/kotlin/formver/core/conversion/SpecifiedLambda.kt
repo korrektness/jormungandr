@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.common.KotlinCondition
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
@@ -137,6 +138,9 @@ private fun SpecifiedLambda.captureTypes(): Map<FirBasedSymbol<*>, org.jetbrains
     })
     function.accept(object : FirVisitorVoid() {
         override fun visitElement(element: FirElement) {
+            if (element is FirSuperReceiverExpression) {
+                throw UnsupportedFeatureException(element.source, "`super` in a lambda that is not inlined")
+            }
             if (element is FirThisReceiverExpression) {
                 val symbol = element.calleeReference.symbol
                 if (symbol is FirClassSymbol<*> || symbol is FirReceiverParameterSymbol && symbol !in localReceivers) {

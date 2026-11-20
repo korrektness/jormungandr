@@ -1,0 +1,192 @@
+/super_calls_failing.kt: info: Generated Viper text for get:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntSource())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+method get(this: Ref) returns (ret: Ref)
+  requires isSubtype(typeOf(this), IntSource())
+  ensures isSubtype(typeOf(ret), intType())
+
+
+/super_calls_failing.kt: info: Generated Viper text for value:
+function value(this: Ref): Ref
+  requires isSubtype(typeOf(this), IntSource())
+  requires acc(footprint(this), wildcard)
+  ensures isSubtype(typeOf(result), intType())
+
+
+/super_calls_failing.kt: info: Generated Viper text for Counter:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Counter())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Counter()
+  fold acc(Counter_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/super_calls_failing.kt: info: Generated Viper text for next:
+method next(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= intFromRef(x)
+{
+  v_ret_0 := plusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/super_calls_failing.kt: info: Generated Viper text for code:
+method code(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Coded())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := intToRef(4)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/super_calls_failing.kt: info: Generated Viper text for Stalled:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Stalled())
+  ensures isSubtype(typeOf(v_ret_0), Stalled()) &&
+    isSubtype(typeOf(v_ret_0), Counter())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Stalled()
+  fold acc(Counter_unique(v_ret_0), write)
+  fold acc(Stalled_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Stalled_unique(v_ret_0), write)
+  unfold acc(Counter_unique(v_ret_0), write)
+}
+
+/super_calls_failing.kt: info: Generated Viper text for next:
+method Counter_f_next(this: Ref, x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) >= intFromRef(x)
+
+
+method Stalled_f_next(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Stalled())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= intFromRef(x)
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Counter_f_next(this: Ref, x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  requires isSubtype(typeOf(this), Stalled())
+{
+  ret_3 := Stalled_f_next(this, x)
+  assert isSubtype(typeOf(ret_3), intType())
+  assert intFromRef(ret_3) >= intFromRef(x)
+}
+
+/super_calls_failing.kt: info: Generated Viper text for beyondContract:
+method beyondContract(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Stalled())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (plusInts(x, intToRef(1))) in
+      intFromRef(x) + intFromRef(intToRef(1)))
+{
+  v_ret_0 := next(this, x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method next(this: Ref, x: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) >= intFromRef(x)
+
+
+/super_calls_failing.kt: info: Generated Viper text for outOfRange:
+method next(this: Ref, x: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) >= intFromRef(x)
+
+
+method outOfRange(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Stalled())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+{
+  v_ret_0 := next(this, intToRef(200))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/super_calls_failing.kt: info: Generated Viper text for opaqueDefault:
+method code(this: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(this), Coded())
+  ensures isSubtype(typeOf(ret_2), intType())
+
+
+method opaqueDefault(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Stalled())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 4
+{
+  v_ret_0 := code(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/super_calls_failing.kt: info: Generated Viper text for Base:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Base()
+  fold acc(Base_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Base_unique(v_ret_0), write)
+}
+
+/super_calls_failing.kt: info: Generated Viper text for f:
+method f(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Base())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/super_calls_failing.kt: info: Generated Viper text for UniqueReceiver:
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), UniqueReceiver())
+  ensures isSubtype(typeOf(v_ret_0), UniqueReceiver()) &&
+    isSubtype(typeOf(v_ret_0), Base())
+{
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == UniqueReceiver()
+  fold acc(Base_unique(v_ret_0), write)
+  fold acc(UniqueReceiver_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(UniqueReceiver_unique(v_ret_0), write)
+  unfold acc(Base_unique(v_ret_0), write)
+}

@@ -115,6 +115,7 @@ private fun isStableInitializer(initializer: FirExpression, parameters: Set<FirV
                 !element.isAllowedInitializerAccess(parameters, program.session)
             val hasStateAccess = element is FirVariableAssignment || element is FirThisReceiverExpression
             if (hasStateAccess || hasClosure || unsupportedAccess) stable = false
+            if (element is FirVarargArgumentsExpression) stable = false
             element.acceptChildren(this)
         }
     })

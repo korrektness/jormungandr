@@ -414,3 +414,13 @@ fun `use another value after sharing a vararg element`(a: @Unique A, b: @Unique 
     shareVararg(Any(), b)
     consume(a)
 }
+
+fun `use after spreading into a vararg`(a: @Unique Array<Any>) {
+    shareVararg(Any(), *a)
+    consume(a)
+}
+
+fun `spread after consuming`(a: @Unique Array<Any>) {
+    consume(a)
+    shareVararg(*<!INVALID_MOVED_ACCESS!>a<!>)
+}

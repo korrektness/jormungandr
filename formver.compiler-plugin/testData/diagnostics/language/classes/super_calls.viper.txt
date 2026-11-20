@@ -1,0 +1,184 @@
+/super_calls.kt: info: Generated Viper text for Counter:
+method con() returns (v_ret_1: Ref)
+  ensures isSubtype(typeOf(v_ret_1), Counter())
+{
+  v_ret_1 := new()
+  inhale typeOf(v_ret_1) == Counter()
+  fold acc(Counter_unique(v_ret_1), write)
+  label lbl_ret_1
+  unfold acc(Counter_unique(v_ret_1), write)
+}
+
+method start(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/super_calls.kt: info: Generated Viper text for next:
+method next(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= intFromRef(x)
+{
+  v_ret_0 := plusInts(x, intToRef(1))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method start(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/super_calls.kt: info: Generated Viper text for start:
+method start(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  inhale isSubtype(typeOf(this), Counter())
+  v_ret_0 := intToRef(3)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/super_calls.kt: info: Generated Viper text for code:
+method code(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Coded())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 4
+{
+  v_ret_0 := intToRef(4)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/super_calls.kt: info: Generated Viper text for Stalled:
+method con() returns (v_ret_2: Ref)
+  ensures isSubtype(typeOf(v_ret_2), Stalled())
+  ensures isSubtype(typeOf(v_ret_2), Stalled()) &&
+    isSubtype(typeOf(v_ret_2), Counter())
+{
+  v_ret_2 := new()
+  inhale typeOf(v_ret_2) == Stalled()
+  fold acc(Counter_unique(v_ret_2), write)
+  fold acc(Stalled_unique(v_ret_2), write)
+  label lbl_ret_2
+  unfold acc(Stalled_unique(v_ret_2), write)
+  unfold acc(Counter_unique(v_ret_2), write)
+}
+
+method start(this: Ref) returns (ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_0), nullable(anyType()))
+
+
+/super_calls.kt: info: Generated Viper text for next:
+method Counter_f_next(this: Ref, x: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(ret_5), intType())
+  ensures intFromRef(ret_5) >= intFromRef(x)
+
+
+method Stalled_f_next(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Stalled())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= intFromRef(x)
+{
+  v_ret_0 := x
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Counter_f_next(this: Ref, x: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  requires isSubtype(typeOf(this), Stalled())
+{
+  ret_5 := Stalled_f_next(this, x)
+  assert isSubtype(typeOf(ret_5), intType())
+  assert intFromRef(ret_5) >= intFromRef(x)
+}
+
+method start(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/super_calls.kt: info: Generated Viper text for start:
+method start(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(v_ret_0), nullable(anyType()))
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  inhale isSubtype(typeOf(this), Stalled())
+  anon_1 := start(this)
+  anon_0 := anon_1
+  inhale isSubtype(typeOf(anon_0), intType())
+  v_ret_0 := anon_0
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/super_calls.kt: info: Generated Viper text for code:
+method Coded_f_code(this: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(this), Coded())
+  ensures isSubtype(typeOf(ret_4), intType())
+  ensures intFromRef(ret_4) == 4
+
+
+method Stalled_f_code(this: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Stalled())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == 4
+{
+  v_ret_0 := Coded_f_code(this)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method refines_Coded_f_code(this: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Coded())
+  requires isSubtype(typeOf(this), Stalled())
+{
+  ret_5 := Stalled_f_code(this)
+  assert isSubtype(typeOf(ret_5), intType())
+  assert intFromRef(ret_5) == 4
+}
+
+method start(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))
+
+
+/super_calls.kt: info: Generated Viper text for advanced:
+method advanced(this: Ref, x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(this), Stalled())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) >= intFromRef(x)
+{
+  v_ret_0 := next(this, x)
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+method next(this: Ref, x: Ref) returns (ret_5: Ref)
+  requires isSubtype(typeOf(this), Counter())
+  requires isSubtype(typeOf(x), intType())
+  requires intFromRef(x) > -100 && intFromRef(x) < 100
+  ensures isSubtype(typeOf(ret_5), intType())
+  ensures intFromRef(ret_5) >= intFromRef(x)
+
+
+method start(this: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(this), anyType())
+  ensures isSubtype(typeOf(ret_1), nullable(anyType()))

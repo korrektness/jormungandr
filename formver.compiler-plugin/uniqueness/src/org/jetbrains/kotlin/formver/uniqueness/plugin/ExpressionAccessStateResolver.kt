@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirSafeCallExpression
+import org.jetbrains.kotlin.fir.expressions.FirSpreadArgumentExpression
 import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.references.symbol
@@ -25,7 +26,8 @@ import org.jetbrains.kotlin.formver.type.plugin.UnifyingExpressionTypeFactResolv
 
 /**
  * Resolves the access-state contributed by [this] when it is the terminal expression of a larger expression. A
- * `StringBuilder` intrinsic that returns its receiver contributes the access-state of its receiver.
+ * `StringBuilder` intrinsic that returns its receiver contributes the access-state of its receiver. The arguments for
+ * a vararg parameter contribute those of their single elements: a spread `*a` copies `a`, which it only reads.
  */
 context(context: CheckerContext)
 fun FirExpression.resolveTerminalAccessState(): AccessState {
@@ -56,7 +58,8 @@ fun FirExpression.resolveTerminalAccessState(): AccessState {
             }
         }
         is FirVarargArgumentsExpression ->
-            arguments.fold(EmptyAccessState) { state, argument -> state.join(argument.resolveAccessState()) }
+            arguments.filterNot { it is FirSpreadArgumentExpression }
+                .fold(EmptyAccessState) { state, argument -> state.join(argument.resolveAccessState()) }
         is FirSafeCallExpression -> {
             val selector = selector
 

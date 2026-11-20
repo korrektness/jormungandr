@@ -113,7 +113,7 @@ fun constructionBody(
             val parentArguments = mutableMapOf<SubstitutedArgument, ExpEmbedding>()
             for ((argument, parameter) in delegation.resolvedArgumentMapping.orEmpty()) {
                 val value = program.freshAnonVar(program.embedType(parameter.symbol.resolvedReturnType))
-                actions += Declare(value, context.convert(argument),
+                actions += Declare(value, context.convertArgument(delegation, argument, value.type),
                     targetOwned = context(program.checkerContext) { parameter.symbol.isUnique() })
                 parentArguments[SubstitutedArgument.ValueParameter(parameter.symbol)] = value
             }
@@ -124,7 +124,9 @@ fun constructionBody(
                     InlineParameterResolver(parentArguments, null, target), program.scopeIndexProducer.getFresh(),
                     OwnershipFrame.root(program.uniquenessAnalysisOf(parent), emptyList()), constructionReceiver = receiver).statementCtxt()
                 val value = program.freshAnonVar(program.embedType(parameter.resolvedReturnType))
-                actions += Declare(value, defaultContext.convert(parameter.fir.defaultValue!!),
+                val converted = parameter.fir.defaultValue?.let { defaultContext.convert(it) }
+                    ?: context.omittedArgument(delegation, parameter, value.type)
+                actions += Declare(value, converted,
                     targetOwned = context(program.checkerContext) { parameter.isUnique() })
                 parentArguments[key] = value
             }

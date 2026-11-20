@@ -344,21 +344,12 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         }
     }
 
-    private fun List<FirExpression>.withVarargsHandled(data: StmtConversionContext, function: CallableEmbedding?) =
+    private fun List<FirExpression>.withVarargsHandled(data: StmtConversionContext, call: FirElement, function: CallableEmbedding?) =
         flatMap { arg ->
-            when (arg) {
-                is FirVarargArgumentsExpression -> {
-                    if (function == null || !function.isVerifyFunction) {
-                        throw UnsupportedFeatureException(
-                            arg.source, "vararg arguments to a function other than `verify`"
-                        )
-                    }
-                    data.withNoScope {
-                        arg.arguments.map { this.convert(it) }
-                    }
-                }
-
-                else -> listOf(data.convert(arg))
+            when {
+                arg !is FirVarargArgumentsExpression -> listOf(data.convert(arg))
+                function?.isVerifyFunction == true -> data.withNoScope { arg.arguments.map { this.convert(it) } }
+                else -> listOf(data.convertVarargArray(call, arg, data.embedType(arg.resolvedType)))
             }
         }
 
@@ -443,7 +434,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         if (!passedPositionally) {
             return data.insertCallWithMappedArguments(functionCall, symbol, callee, returnType)
         }
-        val args = functionCall.functionCallArguments.withVarargsHandled(data, callee)
+        val args = functionCall.functionCallArguments.withVarargsHandled(data, functionCall, callee)
         return data.withCallSite(functionCall) { callee.insertCall(args, this, returnType) }
     }
 
@@ -460,7 +451,7 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
             )
         val returnType = data.embedType(implicitInvokeCall.resolvedType)
         val receiverSymbol = receiver.calleeReference.toResolvedSymbol<FirBasedSymbol<*>>()!!
-        val args = implicitInvokeCall.argumentList.arguments.withVarargsHandled(data, function = null)
+        val args = implicitInvokeCall.argumentList.arguments.withVarargsHandled(data, implicitInvokeCall, function = null)
         val isMember = receiverSymbol is FirPropertySymbol && !receiverSymbol.isLocal
         return when (val exp = if (isMember) null else data.embedLocalSymbol(receiverSymbol).ignoringMetaNodes()) {
             is LambdaExp -> {
@@ -651,6 +642,28 @@ object StmtConversionVisitor : FirVisitor<ExpEmbedding, StmtConversionContext>()
         tryResolve(declSymbol)?.let { return it }
 
         throw SnaktInternalException(thisReceiverExpression.source, "No resolution approach to this symbol worked.")
+    }
+
+    /**
+     * `super` denotes `this`, so a call or property access through it statically dispatches to the named supertype
+     * member under that member's contract. It is rejected while `this` is under construction, is `@Unique` or is not a
+     * variable.
+     */
+    override fun visitSuperReceiverExpression(
+        superReceiverExpression: FirSuperReceiverExpression,
+        data: StmtConversionContext,
+    ): ExpEmbedding {
+        if (data.constructionReceiver != null) {
+            throw UnsupportedFeatureException(superReceiverExpression.source, "`super` while `this` is under construction")
+        }
+        val receiver = data.resolveDispatchReceiver()
+            ?: throw SnaktInternalException(superReceiverExpression.source, "A `super` receiver has no dispatch receiver to denote.")
+        val variable = receiver.ignoringMetaNodes() as? VariableEmbedding
+            ?: throw UnsupportedFeatureException(superReceiverExpression.source, "`super` whose `this` is not a variable")
+        if (variable.isUnique) {
+            throw UnsupportedFeatureException(superReceiverExpression.source, "`super` with a `@Unique` receiver")
+        }
+        return receiver
     }
 
     override fun visitTypeOperatorCall(

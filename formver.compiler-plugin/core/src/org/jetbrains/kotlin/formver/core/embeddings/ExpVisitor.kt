@@ -99,6 +99,7 @@ interface ExpVisitor<R> {
     fun visitPrimitiveArraySet(e: PrimitiveArraySet): R
     fun visitPrimitiveArrayInit(e: PrimitiveArrayInit): R
     fun visitCollectionListAllocation(e: CollectionListAllocation): R
+    fun visitVarargArray(e: VarargArray): R
     fun visitStringBuilderLength(e: StringBuilderLength): R
     fun visitStringBuilderToString(e: StringBuilderToString): R
     fun visitStringBuilderAppend(e: StringBuilderAppend): R
@@ -195,6 +196,7 @@ interface DefaultingExpVisitor<R> : ExpVisitor<R> {
     override fun visitPrimitiveArraySet(e: PrimitiveArraySet): R = visitDefault(e)
     override fun visitPrimitiveArrayInit(e: PrimitiveArrayInit): R = visitDefault(e)
     override fun visitCollectionListAllocation(e: CollectionListAllocation): R = visitDefault(e)
+    override fun visitVarargArray(e: VarargArray): R = visitDefault(e)
     override fun visitStringBuilderLength(e: StringBuilderLength): R = visitDefault(e)
     override fun visitStringBuilderToString(e: StringBuilderToString): R = visitDefault(e)
     override fun visitStringBuilderAppend(e: StringBuilderAppend): R = visitDefault(e)

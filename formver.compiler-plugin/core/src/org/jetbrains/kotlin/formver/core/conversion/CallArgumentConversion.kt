@@ -6,12 +6,10 @@
 package org.jetbrains.kotlin.formver.core.conversion
 
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
-import org.jetbrains.kotlin.fir.expressions.FirVarargArgumentsExpression
 import org.jetbrains.kotlin.fir.expressions.impl.FirExpressionStub
 import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
 import org.jetbrains.kotlin.fir.symbols.SymbolInternals
 import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
-import org.jetbrains.kotlin.formver.common.UnsupportedFeatureException
 import org.jetbrains.kotlin.formver.core.boundDispatchReceiver
 import org.jetbrains.kotlin.formver.core.embeddings.callables.CallableEmbedding
 import org.jetbrains.kotlin.formver.core.embeddings.callables.insertCall
@@ -25,10 +23,11 @@ import org.jetbrains.kotlin.utils.addIfNotNull
  * Inserts a call to [callee] whose arguments are named out of parameter order or left to their defaults.
  *
  * The arguments are evaluated in Kotlin's order: receivers, the explicit arguments as written, then the default of each
- * omitted parameter in parameter order. A default may read the parameters before it, so it is converted with those
- * parameters bound to the arguments already evaluated, and with the callee's uniqueness facts, which own a path through
- * a `@Unique` parameter. An argument omitted for a function compiled without its source follows SPECIFICATIONS.md,
- * "Inline functions and default arguments".
+ * omitted parameter in parameter order; an omitted vararg parameter without a default receives an empty array. A
+ * default may read the parameters before it, so it is converted with those parameters bound to the arguments already
+ * evaluated, and with the callee's uniqueness facts, which own a path through a `@Unique` parameter. An argument
+ * omitted for a function compiled without its source follows SPECIFICATIONS.md, "Inline functions and default
+ * arguments".
  */
 @OptIn(SymbolInternals::class)
 fun StmtConversionContext.insertCallWithMappedArguments(
@@ -54,17 +53,18 @@ fun StmtConversionContext.insertCallWithMappedArguments(
 
     receivers.forEach { (parameter, receiver) -> bind(parameter, convert(receiver)) }
     call.resolvedArgumentMapping.orEmpty().forEach { (argument, parameter) ->
-        if (argument is FirVarargArgumentsExpression) {
-            throw UnsupportedFeatureException(argument.source, "vararg arguments to a function other than `verify`")
-        }
-        bind(SubstitutedArgument.ValueParameter(parameter.symbol), convert(argument))
+        val parameterArgument = SubstitutedArgument.ValueParameter(parameter.symbol)
+        bind(parameterArgument, convertArgument(call, argument, formalTypes.getValue(parameterArgument)))
     }
     val calleeAnalysis = uniquenessAnalysisOf(symbol)
     for (parameterSymbol in symbol.valueParameterSymbols) {
         val parameter = SubstitutedArgument.ValueParameter(parameterSymbol)
         if (parameter in bound) continue
         val defaultValue = parameterSymbol.fir.defaultValue
-            ?: throw UnsupportedFeatureException(call.source, "omitted vararg argument")
+        if (defaultValue == null) {
+            bind(parameter, omittedArgument(call, parameterSymbol, formalTypes.getValue(parameter)))
+            continue
+        }
         if (defaultValue is FirExpressionStub) {
             bind(parameter, unconstrainedValue(formalTypes.getValue(parameter)))
             continue

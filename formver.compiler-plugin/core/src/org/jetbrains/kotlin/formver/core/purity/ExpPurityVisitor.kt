@@ -124,6 +124,7 @@ internal class ExprPurityVisitor(
     override fun visitPrimitiveArraySet(e: PrimitiveArraySet): Boolean = false
     override fun visitPrimitiveArrayInit(e: PrimitiveArrayInit): Boolean = false
     override fun visitCollectionListAllocation(e: CollectionListAllocation): Boolean = false
+    override fun visitVarargArray(e: VarargArray): Boolean = false
     override fun visitStringBuilderAppend(e: StringBuilderAppend): Boolean = false
     override fun visitStringBuilderClear(e: StringBuilderClear): Boolean = false
 }

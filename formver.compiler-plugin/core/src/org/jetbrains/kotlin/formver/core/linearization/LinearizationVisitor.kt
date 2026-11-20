@@ -53,6 +53,9 @@ import org.jetbrains.kotlin.formver.core.names.AnonymousBuiltinName
 import org.jetbrains.kotlin.formver.viper.ast.Declaration
 import org.jetbrains.kotlin.formver.viper.SymbolicName
 import org.jetbrains.kotlin.formver.viper.ast.Exp
+import org.jetbrains.kotlin.formver.viper.ast.Field
+import org.jetbrains.kotlin.formver.viper.ast.Position
+import org.jetbrains.kotlin.formver.viper.ast.eq
 import org.jetbrains.kotlin.formver.viper.ast.Method
 import org.jetbrains.kotlin.formver.viper.ast.Exp.Companion.toConjunction
 import org.jetbrains.kotlin.formver.viper.ast.Stmt
@@ -1214,6 +1217,36 @@ data class LinearizationVisitor(
             }
         }
 
+    override fun visitVarargArray(e: VarargArray): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
+        override fun toViper(ctx: LinearizationContext): Exp {
+            val model = VarargArrayModel.of(e.type)
+            val segments = e.parts.mapIndexed { i, part ->
+                val later = e.parts.drop(i + 1).map { it.value }
+                val source = if (part is VarargPart.Element) ctx.moveSource(part.value, targetOwned = false) else null
+                val value = snapshotBefore(part.value.linearize().toViper(ctx), part.value.type, later, ctx)
+                if (part is VarargPart.Element) ctx.finishMove(part.value, source, targetOwned = false, target = null)
+                when {
+                    model == null -> null
+                    part is VarargPart.Spread -> model.copy(ctx, part.value, value, part.sourceOwned)
+                    else -> Exp.ExplicitSeq(listOf(model.elementOf(value, ctx.source.asPosition)), ctx.source.asPosition)
+                }
+            }
+            val result = e.result.toLocalVarUse()
+            ctx.addDeclaration(e.result.toLocalVarDecl(ctx.source.asPosition))
+            ctx.addStatement { Stmt.New(result, emptyList(), ctx.source.asPosition) }
+            if (model != null) {
+                val contents = segments.filterNotNull().reduceOrNull { left, right -> Exp.SeqAppend(left, right) }
+                    ?: Exp.EmptySeq(model.elementType)
+                model.allocate(ctx, result, contents)
+            }
+            return result
+        }
+
+        override fun toViperUnusedResult(ctx: LinearizationContext) {
+            toViper(ctx)
+        }
+    }
+
     override fun visitPrimitiveArrayInit(e: PrimitiveArrayInit): Linearizable = object : DirectResultLinearizable(e, this@LinearizationVisitor) {
         override fun toViper(ctx: LinearizationContext): Exp {
             e.initialization.linearize().toViperUnusedResult(ctx)
@@ -1892,5 +1925,57 @@ private fun LinearizationContext.finishMove(
             state.acquire(this, target)
         }
         else -> state.release(this, target)
+    }
+}
+
+/** The element storage of an array class that a vararg parameter passes, for [VarargArray]. */
+private class VarargArrayModel(
+    val predicate: (Exp) -> Exp.PredicateAccess,
+    val contents: Field,
+    val size: (Exp) -> Exp,
+    val elementType: Type,
+    val elementOf: (Exp, Position) -> Exp,
+) {
+    /** Gives the fresh [array] its unique predicate and the elements [elements]. */
+    fun allocate(ctx: LinearizationContext, array: Exp, elements: Exp) {
+        val pos = ctx.source.asPosition
+        ctx.addStatement { Stmt.Inhale(predicate(array), pos) }
+        ctx.addStatement { Stmt.Inhale(Exp.Unfolding(predicate(array), array.fieldAccess(contents, pos) eq elements, pos), pos) }
+    }
+
+    /**
+     * Copies the array [value] that [source] evaluated to into a fresh array, and returns the copy's elements. The
+     * copy has the size of [value], and its elements equal those of [value] when [sourceOwned] makes them readable.
+     */
+    fun copy(ctx: LinearizationContext, source: ExpEmbedding, value: Exp, sourceOwned: Boolean): Exp {
+        val pos = ctx.source.asPosition
+        val copy = ctx.freshAnonVar(source.type).toLocalVarUse(pos)
+        ctx.addStatement { Stmt.New(copy, emptyList(), pos) }
+        ctx.addStatement { Stmt.Inhale(predicate(copy), pos) }
+        ctx.addStatement { Stmt.Inhale(size(copy) eq size(value), pos) }
+        val state = ctx.foldState
+        val path = ctx.ownedReceiverPath(source, sourceOwned, isWrite = false)
+        if (state != null && path != null) {
+            state.openOwn(ctx, path)
+            ctx.addStatement {
+                Stmt.Inhale(Exp.Unfolding(predicate(copy), copy.fieldAccess(contents, pos) eq value.fieldAccess(contents, pos), pos), pos)
+            }
+        }
+        return Exp.Unfolding(predicate(copy), copy.fieldAccess(contents, pos), pos)
+    }
+
+    companion object {
+        fun of(type: TypeEmbedding): VarargArrayModel? {
+            PrimitiveArrayEmbedding.of(type.pretype)?.let { kind ->
+                return VarargArrayModel(
+                    { kind.uniquePredicateAccess(it) }, contentsField, { PrimitiveArrayEmbedding.arraySize(it) }, Type.Int,
+                ) { ref, pos -> kind.element.type.injection.fromRef(ref, pos = pos) }
+            }
+            if (type.pretype != GenericArrayEmbedding.classType) return null
+            return VarargArrayModel(
+                { GenericArrayEmbedding.uniquePredicateAccess(it) }, GenericArrayEmbedding.contentsField,
+                { GenericArrayEmbedding.arraySize(it) }, Type.Ref,
+            ) { ref, _ -> ref }
+        }
     }
 }

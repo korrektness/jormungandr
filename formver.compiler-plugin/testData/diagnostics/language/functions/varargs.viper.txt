@@ -1,0 +1,494 @@
+/varargs.kt: info: Generated Viper text for count:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method count(xs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(xs), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == arraySize(xs)
+{
+  v_ret_0 := intToRef(arraySize(xs))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/varargs.kt: info: Generated Viper text for countChars:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method countChars(cs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(cs), CharArray())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == arraySize(cs)
+{
+  v_ret_0 := intToRef(arraySize(cs))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/varargs.kt: info: Generated Viper text for countAll:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method countAll(prefix: Ref, xs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(prefix), intType())
+  requires isSubtype(typeOf(xs), Array())
+  requires intFromRef(prefix) >= 0 && intFromRef(prefix) < 100 &&
+    referenceArraySize(xs) < 100
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) ==
+    (let anon ==
+      (plusInts(prefix, intToRef(referenceArraySize(xs)))) in
+      intFromRef(prefix) + intFromRef(intToRef(referenceArraySize(xs))))
+{
+  v_ret_0 := plusInts(prefix, intToRef(referenceArraySize(xs)))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/varargs.kt: info: Generated Viper text for flags:
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method flags(bs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(bs), BooleanArray())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/varargs.kt: info: Generated Viper text for elements:
+field contents: Seq[Int]
+
+field referenceContents: Seq[Ref]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method count(xs: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(xs), IntArray())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == arraySize(xs)
+
+
+method countAll(prefix: Ref, xs: Ref) returns (ret_3: Ref)
+  requires isSubtype(typeOf(prefix), intType())
+  requires isSubtype(typeOf(xs), Array())
+  requires intFromRef(prefix) >= 0 && intFromRef(prefix) < 100 &&
+    referenceArraySize(xs) < 100
+  ensures isSubtype(typeOf(ret_3), intType())
+  ensures intFromRef(ret_3) ==
+    (let anon_builtin ==
+      (plusInts(prefix, intToRef(referenceArraySize(xs)))) in
+      intFromRef(prefix) + intFromRef(intToRef(referenceArraySize(xs))))
+
+
+method countChars(cs: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(cs), CharArray())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == arraySize(cs)
+
+
+method elements() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var three: Ref
+  var anon_9: Ref
+  var anon_0: Ref
+  var l0_none: Ref
+  var anon_2: Ref
+  var anon_1: Ref
+  var chars: Ref
+  var anon_10: Ref
+  var anon_3: Ref
+  var strings: Ref
+  var anon_11: Ref
+  var anon_4: Ref
+  var omitted: Ref
+  var anon_5: Ref
+  var anon_7: Ref
+  var anon_6: Ref
+  var anon_12: Ref
+  var anon_13: Ref
+  var anon_8: Ref
+  anon_0 := new()
+  inhale acc(IntArray_unique(anon_0), write)
+  inhale (unfolding acc(IntArray_unique(anon_0), write) in
+      anon_0.contents ==
+      Seq(intFromRef(intToRef(1))) ++ Seq(intFromRef(intToRef(2))) ++
+      Seq(intFromRef(intToRef(3))))
+  inhale isSubtype(typeOf(anon_0), IntArray())
+  anon_9 := anon_0
+  three := count(anon_9)
+  anon_1 := new()
+  inhale acc(IntArray_unique(anon_1), write)
+  inhale (unfolding acc(IntArray_unique(anon_1), write) in
+      anon_1.contents == Seq[Int]())
+  inhale isSubtype(typeOf(anon_1), IntArray())
+  anon_2 := anon_1
+  l0_none := count(anon_2)
+  anon_3 := new()
+  inhale acc(CharArray_unique(anon_3), write)
+  inhale (unfolding acc(CharArray_unique(anon_3), write) in
+      anon_3.contents ==
+      Seq(charFromRef(charToRef(97))) ++ Seq(charFromRef(charToRef(98))))
+  inhale isSubtype(typeOf(anon_3), CharArray())
+  anon_10 := anon_3
+  chars := countChars(anon_10)
+  anon_4 := new()
+  inhale acc(Array_unique(anon_4), write)
+  inhale (unfolding acc(Array_unique(anon_4), write) in
+      anon_4.referenceContents == Seq(stringLit_0()) ++ Seq(stringLit_1()))
+  inhale isSubtype(typeOf(anon_4), Array())
+  anon_11 := anon_4
+  strings := countAll(intToRef(1), anon_11)
+  anon_5 := intToRef(2)
+  anon_6 := new()
+  inhale acc(Array_unique(anon_6), write)
+  inhale (unfolding acc(Array_unique(anon_6), write) in
+      anon_6.referenceContents == Seq[Ref]())
+  inhale isSubtype(typeOf(anon_6), Array())
+  anon_7 := anon_6
+  omitted := countAll(anon_5, anon_7)
+  anon_8 := new()
+  inhale isSubtype(typeOf(anon_8), BooleanArray())
+  anon_13 := anon_8
+  anon_12 := flags(anon_13)
+  assert intFromRef(three) == 3
+  assert intFromRef(l0_none) == 0
+  assert intFromRef(chars) == 2
+  assert intFromRef(strings) == 3
+  assert intFromRef(omitted) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+method flags(bs: Ref) returns (ret_4: Ref)
+  requires isSubtype(typeOf(bs), BooleanArray())
+  ensures isSubtype(typeOf(ret_4), unitType())
+
+
+/varargs.kt: info: Generated Viper text for spreadCopies:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method count(xs: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(xs), IntArray())
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) == arraySize(xs)
+
+
+method spreadCopies(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  requires acc(IntArray_unique(a), write)
+  requires arraySize(a) == 2
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var whole: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_0: Ref
+  var mixed: Ref
+  var anon_4: Ref
+  var anon_5: Ref
+  var anon_6: Ref
+  var anon_1: Ref
+  var anon_7: Ref
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  unfold acc(IntArray_unique(a), write)
+  a.contents := a.contents[0 := 5]
+  anon_3 := new()
+  inhale acc(IntArray_unique(anon_3), write)
+  inhale arraySize(anon_3) == arraySize(a)
+  inhale (unfolding acc(IntArray_unique(anon_3), write) in
+      anon_3.contents == a.contents)
+  anon_0 := new()
+  inhale acc(IntArray_unique(anon_0), write)
+  inhale (unfolding acc(IntArray_unique(anon_0), write) in
+      anon_0.contents ==
+      (unfolding acc(IntArray_unique(anon_3), write) in anon_3.contents))
+  inhale isSubtype(typeOf(anon_0), IntArray())
+  anon_2 := anon_0
+  whole := count(anon_2)
+  anon_5 := new()
+  inhale acc(IntArray_unique(anon_5), write)
+  inhale arraySize(anon_5) == arraySize(a)
+  inhale (unfolding acc(IntArray_unique(anon_5), write) in
+      anon_5.contents == a.contents)
+  anon_6 := new()
+  inhale acc(IntArray_unique(anon_6), write)
+  inhale arraySize(anon_6) == arraySize(a)
+  inhale (unfolding acc(IntArray_unique(anon_6), write) in
+      anon_6.contents == a.contents)
+  anon_1 := new()
+  inhale acc(IntArray_unique(anon_1), write)
+  inhale (unfolding acc(IntArray_unique(anon_1), write) in
+      anon_1.contents ==
+      Seq(intFromRef(intToRef(1))) ++
+      (unfolding acc(IntArray_unique(anon_5), write) in anon_5.contents) ++
+      Seq(intFromRef(intToRef(2))) ++
+      (unfolding acc(IntArray_unique(anon_6), write) in anon_6.contents))
+  inhale isSubtype(typeOf(anon_1), IntArray())
+  anon_4 := anon_1
+  mixed := count(anon_4)
+  assert intFromRef(whole) == 2
+  assert intFromRef(mixed) == 6
+  assert 0 >= 0
+  assert 0 < arraySize(a)
+  anon_7 := intToRef(a.contents[0])
+  assert intFromRef(anon_7) == 5
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/varargs.kt: info: Generated Viper text for genericSpreadCopies:
+field referenceContents: Seq[Ref]
+
+function referenceArraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method countAll(prefix: Ref, xs: Ref) returns (ret_2: Ref)
+  requires isSubtype(typeOf(prefix), intType())
+  requires isSubtype(typeOf(xs), Array())
+  requires intFromRef(prefix) >= 0 && intFromRef(prefix) < 100 &&
+    referenceArraySize(xs) < 100
+  ensures isSubtype(typeOf(ret_2), intType())
+  ensures intFromRef(ret_2) ==
+    (let anon_builtin ==
+      (plusInts(prefix, intToRef(referenceArraySize(xs)))) in
+      intFromRef(prefix) + intFromRef(intToRef(referenceArraySize(xs))))
+
+
+method genericSpreadCopies(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), Array())
+  requires acc(Array_unique(a), write)
+  requires referenceArraySize(a) == 1
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var copied: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  var anon_3: Ref
+  var anon_4: Ref
+  assert 0 >= 0
+  assert 0 < referenceArraySize(a)
+  unfold acc(Array_unique(a), write)
+  a.referenceContents := a.referenceContents[0 := stringLit()]
+  anon_2 := new()
+  inhale acc(Array_unique(anon_2), write)
+  inhale referenceArraySize(anon_2) == referenceArraySize(a)
+  inhale (unfolding acc(Array_unique(anon_2), write) in
+      anon_2.referenceContents == a.referenceContents)
+  anon_0 := new()
+  inhale acc(Array_unique(anon_0), write)
+  inhale (unfolding acc(Array_unique(anon_0), write) in
+      anon_0.referenceContents ==
+      (unfolding acc(Array_unique(anon_2), write) in
+        anon_2.referenceContents))
+  inhale isSubtype(typeOf(anon_0), Array())
+  anon_1 := anon_0
+  copied := countAll(intToRef(0), anon_1)
+  assert intFromRef(copied) == 1
+  assert 0 >= 0
+  assert 0 < referenceArraySize(a)
+  anon_4 := a.referenceContents[0]
+  anon_3 := anon_4
+  inhale isSubtype(typeOf(anon_3), nullable(stringType()))
+  assert anon_3 == stringLit()
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/varargs.kt: info: Generated Viper text for Bag:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Bag())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(xs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(xs), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), Bag())
+  ensures intFromRef(n(v_ret_0)) == arraySize(xs)
+{
+  var anon: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == Bag()
+  anon := intToRef(arraySize(xs))
+  inhale intFromRef(n(v_ret_0)) == intFromRef(anon)
+  fold acc(Bag_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(Bag_unique(v_ret_0), write)
+}
+
+/varargs.kt: info: Generated Viper text for EmptyBag:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Bag())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), EmptyBag())
+  ensures isSubtype(typeOf(v_ret_0), EmptyBag()) &&
+    isSubtype(typeOf(v_ret_0), Bag())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == EmptyBag()
+  anon_1 := new()
+  inhale acc(IntArray_unique(anon_1), write)
+  inhale (unfolding acc(IntArray_unique(anon_1), write) in
+      anon_1.contents == Seq[Int]())
+  inhale isSubtype(typeOf(anon_1), IntArray())
+  anon_0 := anon_1
+  anon_2 := intToRef(arraySize(anon_0))
+  inhale intFromRef(n(v_ret_0)) == intFromRef(anon_2)
+  fold acc(Bag_unique(v_ret_0), write)
+  fold acc(EmptyBag_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(EmptyBag_unique(v_ret_0), write)
+  unfold acc(Bag_unique(v_ret_0), write)
+}
+
+/varargs.kt: info: Generated Viper text for PairBag:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Bag())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), PairBag())
+  ensures isSubtype(typeOf(v_ret_0), PairBag()) &&
+    isSubtype(typeOf(v_ret_0), Bag())
+{
+  var anon_0: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  v_ret_0 := new()
+  inhale typeOf(v_ret_0) == PairBag()
+  anon_1 := new()
+  inhale acc(IntArray_unique(anon_1), write)
+  inhale (unfolding acc(IntArray_unique(anon_1), write) in
+      anon_1.contents ==
+      Seq(intFromRef(intToRef(1))) ++ Seq(intFromRef(intToRef(2))))
+  inhale isSubtype(typeOf(anon_1), IntArray())
+  anon_0 := anon_1
+  anon_2 := intToRef(arraySize(anon_0))
+  inhale intFromRef(n(v_ret_0)) == intFromRef(anon_2)
+  fold acc(Bag_unique(v_ret_0), write)
+  fold acc(PairBag_unique(v_ret_0), write)
+  label lbl_ret_0
+  unfold acc(PairBag_unique(v_ret_0), write)
+  unfold acc(Bag_unique(v_ret_0), write)
+}
+
+/varargs.kt: info: Generated Viper text for constructed:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function n(this: Ref): Ref
+  requires isSubtype(typeOf(this), Bag())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method con(xs: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(xs), IntArray())
+  ensures isSubtype(typeOf(ret_1), Bag())
+  ensures intFromRef(n(ret_1)) == arraySize(xs)
+
+
+method constructed(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_3: Ref
+  var anon_0: Ref
+  anon_3 := new()
+  inhale acc(IntArray_unique(anon_3), write)
+  inhale arraySize(anon_3) == arraySize(a)
+  anon_0 := new()
+  inhale acc(IntArray_unique(anon_0), write)
+  inhale (unfolding acc(IntArray_unique(anon_0), write) in
+      anon_0.contents ==
+      Seq(intFromRef(intToRef(1))) ++
+      (unfolding acc(IntArray_unique(anon_3), write) in anon_3.contents))
+  inhale isSubtype(typeOf(anon_0), IntArray())
+  anon_2 := anon_0
+  anon_1 := con(anon_2)
+  fold acc(Bag_unique(anon_1), write)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}

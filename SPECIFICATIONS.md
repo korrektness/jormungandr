@@ -357,6 +357,11 @@ class Refining : Base() {
 }
 ```
 
+A call or property access through `super`, as in `super.f()`, `super<I>.f()` or `super.p`, runs the named
+supertype member on `this`, whatever overrides it. The call is verified against that member's contract; a member
+without one gives the caller only its result type. `super` is an unsupported construct where `this` is under
+construction, in a constructor or initializer, where `this` is `@Unique`, and in a lambda that is not inlined.
+
 An override without a specification of its own has the specification of the declaration it overrides, and its body
 is verified against it. When several declarations it overrides have one, it has none and must write its own.
 
@@ -842,6 +847,31 @@ A function compiled without its source, such as a library function, keeps no
 default values. An argument omitted in a call of one is some value of the
 parameter's type: the callee's precondition must hold for every such value, and
 the caller learns its postcondition for an unknown one.
+
+### Vararg parameters
+
+A vararg parameter is an array: `vararg xs: Int` is an `IntArray`, and `vararg xs: T` is an `Array<out T>`. The
+callee holds it shared, so its elements are unknown there. Each call passes a fresh array holding its arguments in
+order, or an empty array when they are omitted. A spread `*a` contributes a copy of the elements of `a`: it reads
+`a`, which stays owned when it was. A single element argument is shared, so passing a unique path as one moves it.
+
+For a [primitive array](#primitive-arrays) with an element model and for `Array<T>`, the passed array's size is the
+number of elements, each single argument is the element at its index, and the elements copied from an owned array
+equal its elements. The elements copied from a shared array are unknown. For other array classes only the arguments'
+evaluation is modelled.
+
+```kotlin
+fun count(vararg xs: Int): Int {
+    postconditions<Int> { it == xs.size }
+    return xs.size
+}
+
+fun caller(a: @Unique IntArray) {
+    preconditions { a.size == 2 }
+    val n = count(1, *a, 2)
+    verify(n == 4)                // verifies; `a` is still owned
+}
+```
 
 ### Collection iteration
 

@@ -1,0 +1,134 @@
+/varargs_failing.kt: info: Generated Viper text for count:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method count(xs: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(xs), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), intType())
+  ensures intFromRef(v_ret_0) == arraySize(xs)
+{
+  v_ret_0 := intToRef(arraySize(xs))
+  goto lbl_ret_0
+  label lbl_ret_0
+}
+
+/varargs_failing.kt: info: Generated Viper text for wrongCount:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method count(xs: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(xs), IntArray())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == arraySize(xs)
+
+
+method wrongCount() returns (v_ret_0: Ref)
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var anon_1: Ref
+  var anon_0: Ref
+  anon_0 := new()
+  inhale acc(IntArray_unique(anon_0), write)
+  inhale (unfolding acc(IntArray_unique(anon_0), write) in
+      anon_0.contents ==
+      Seq(intFromRef(intToRef(1))) ++ Seq(intFromRef(intToRef(2))) ++
+      Seq(intFromRef(intToRef(3))))
+  inhale isSubtype(typeOf(anon_0), IntArray())
+  anon_1 := anon_0
+  n := count(anon_1)
+  assert intFromRef(n) == 2
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/varargs_failing.kt: info: Generated Viper text for sharedSpreadSize:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+function size(this: Ref): Ref
+  requires isSubtype(typeOf(this), BooleanArray())
+  ensures isSubtype(typeOf(result), intType())
+
+
+method count(xs: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(xs), IntArray())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == arraySize(xs)
+
+
+method sharedSpreadSize(a: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(a), IntArray())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var n: Ref
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  anon_2 := new()
+  inhale acc(IntArray_unique(anon_2), write)
+  inhale arraySize(anon_2) == arraySize(a)
+  anon_0 := new()
+  inhale acc(IntArray_unique(anon_0), write)
+  inhale (unfolding acc(IntArray_unique(anon_0), write) in
+      anon_0.contents ==
+      Seq(intFromRef(intToRef(1))) ++
+      (unfolding acc(IntArray_unique(anon_2), write) in anon_2.contents))
+  inhale isSubtype(typeOf(anon_0), IntArray())
+  anon_1 := anon_0
+  n := count(anon_1)
+  assert intFromRef(n) == 1
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
+
+/varargs_failing.kt: info: Generated Viper text for overflowingElement:
+field contents: Seq[Int]
+
+function arraySize(this: Ref): Int
+  ensures result >= 0
+  ensures result <= 2147483647
+
+
+method count(xs: Ref) returns (ret_1: Ref)
+  requires isSubtype(typeOf(xs), IntArray())
+  ensures isSubtype(typeOf(ret_1), intType())
+  ensures intFromRef(ret_1) == arraySize(xs)
+
+
+method overflowingElement(x: Ref) returns (v_ret_0: Ref)
+  requires isSubtype(typeOf(x), intType())
+  ensures isSubtype(typeOf(v_ret_0), unitType())
+{
+  var anon_1: Ref
+  var anon_2: Ref
+  var anon_0: Ref
+  anon_0 := new()
+  inhale acc(IntArray_unique(anon_0), write)
+  inhale (unfolding acc(IntArray_unique(anon_0), write) in
+      anon_0.contents ==
+      Seq(intFromRef(intToRef(1))) ++
+      Seq(intFromRef(plusInts(x, intToRef(1)))))
+  inhale isSubtype(typeOf(anon_0), IntArray())
+  anon_2 := anon_0
+  anon_1 := count(anon_2)
+  label lbl_ret_0
+  inhale isSubtype(typeOf(v_ret_0), unitType())
+}
